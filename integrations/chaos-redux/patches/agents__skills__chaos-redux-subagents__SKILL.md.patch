@@ -1,0 +1,43 @@
+--- a/.agents/skills/chaos-redux-subagents/SKILL.md
++++ b/.agents/skills/chaos-redux-subagents/SKILL.md
+@@ -39,7 +39,11 @@
+ 
+ Use `chaosx_improvement_loop_planner` for event improvement loop planning, detailed expansion specs, historical and regional research notes, and implementation-ready improvement handoffs. This replaces the old mechanic-expander role. It writes plans and addenda. It does not patch gameplay files.
+ 
+-Use `chaosx_asset_source_researcher` for real or archival image sourcing, real leader portraits, historical flags, historical symbols, user-provided source photos, source-image processing, animated portrait bases, and report, news, or super-event images that must depict real historical material.
++Use `chaosx_asset_source_researcher` for real or archival image sourcing, immutable real-person portrait sources, exact crop and crop-equality evidence, historical flags, historical symbols, user-provided source photos, source-image processing, animated portrait bases, and report, news, or super-event images that must depict real historical material. For a real-person portrait it stops at the source-and-crop handoff.
++
++Use `chaosx_hoi4_portrait_pipeline` for bounded Krea 2 production of a real-person leader, commander, operative, or named-officeholder portrait after the attributed source and exact crop exist. It produces candidates and evidence, then final PNG/DDS only after an independent audit PASS. It does not source identities, approve itself, or wire gameplay.
++
++Use `chaosx_portrait_identity_auditor` for independent read-only candidate review. It returns schema-valid likeness, style, mask, and provenance PASS, FAIL, or UNCERTAIN verdicts. It cannot generate, edit, rank, select, or convert candidates.
+ 
+ Use `chaosx_generated_event_art` for generated non-icon art, including fictional or alternate-history report images, news images, super-event images, fictional portraits, fictional flags, faction emblems, UI panels, dossier art, progression-state base art, and animated non-icon presentation pieces.
+ 
+@@ -126,6 +130,18 @@
+ ### Asset-production agents
+ 
+ Asset subagents create source files, processed previews, final DDS outputs, contact sheets, manifests, and asset handoffs. During active work, event-scoped evidence belongs under the temporary `docs/assets/<event_id>_<event_slug>/` workspace. They do not wire gameplay, localisation, GFX, GUI, events, focuses, decisions, or spreadsheets unless the parent gives a narrow exception.
++
++### Real-person portrait production agents
++
++Real-person portraits use a three-owner chain:
++
++1. `chaosx_asset_source_researcher` finds and verifies the real photograph, records provenance and rights, performs the subject-ownership search, and creates the exact source crop and equality evidence.
++2. `chaosx_hoi4_portrait_pipeline` runs the standalone ComfyUI production job and creates candidates, masks, comparisons, manifests, and final PNG/DDS only after a separate PASS.
++3. `chaosx_portrait_identity_auditor` reviews randomized candidates independently and returns schema-valid gate verdicts without selecting a winner.
++
++All three must be spawned with `fork_context=false` and context-complete prompts. The producer and auditor must have different identities and process ids. The producer cannot see or create its own approval. The auditor cannot receive producer ranking. The parent chooses among independently eligible candidates and owns runtime wiring, live-consumer validation, and the completion claim.
++
++Keep the ComfyUI MCP or API route inside `hoi4-portrait-pipeline` and the standalone portrait project. Do not create a central MCP skill. Use direct integration only after a topology preflight proves one session can access both machines. Otherwise use portable checksummed handoffs.
+ 
+ The parent owns temporary-workspace cleanup. Keep the event-scoped `docs/assets/` workspace while the event is active, blocked, awaiting review, or undergoing acceptance scenarios. Before declaring the event goal fully complete, promote durable provenance, licensing, attribution, coverage, review, and sprite-handoff facts into permanent event or plan documentation, verify that no runtime reference points into `docs/assets/`, then delete the complete event-scoped workspace. An absent workspace is expected for a fully complete event. Never delete a skill-local reference library or an unrelated event workspace.
+ 
+@@ -245,7 +261,7 @@
+ 
+ Country-identity asset work must not start until the parent has audited the candidate tag against vanilla, Chaos Redux, every installed Workshop mod, and other local mods, and has checked whether the national identity already exists in vanilla. A conflicting new tag must be remapped; a vanilla country identity must reuse the vanilla tag and preserve its meaningful content. Pass the locked tag and audit evidence into the context-free subagent prompt.
+ 
+-Portrait prompts must inspect the canonical reference root `C:/Users/klimp/OneDrive/Documents/Paradox Interactive/Hearts of Iron IV/mod/chaos_redux/.agents/skills/chaos-redux-event-assets/assets/vanilla_reference`, the matching leader, commander, or operative contact sheet, and the male quick-reference routing at `C:/Users/klimp/OneDrive/Documents/Paradox Interactive/Hearts of Iron IV/mod/chaos_redux/.agents/skills/chaos-redux-event-assets/assets/leader_portraits/README.md`. Real people require an attributed source, explicit head-and-shoulders crop, identity-preserving HOI4 painted finish, source/crop metadata, and comparison sheet. A polity that existed in whole or in part, represents a real community, or claims continuity from a real institution is grounded and must use sourced real people or authentic institutional material rather than an invented substitute. Fictional one-person portraits require ImageGen only when both the leader and polity are wholly fictional and deliberately high-chaos. They must look extraordinary and culturally coherent within the invented setting, not like normal interchangeable officers. Fictional councils, committees, juntas, boards, offices, and symbolic bodies require people-free institutional ImageGen compositions and institutional names; do not generate a crowd or invented officeholder.
++Portrait prompts must inspect the canonical reference root `C:/Users/klimp/OneDrive/Documents/Paradox Interactive/Hearts of Iron IV/mod/chaos_redux/.agents/skills/chaos-redux-event-assets/assets/vanilla_reference`, the matching leader, commander, or operative contact sheet, and the male quick-reference routing at `C:/Users/klimp/OneDrive/Documents/Paradox Interactive/Hearts of Iron IV/mod/chaos_redux/.agents/skills/chaos-redux-event-assets/assets/leader_portraits/README.md`. Real people require an attributed source, explicit head-and-shoulders crop, crop equality evidence, source/crop metadata, and a source handoff from `chaosx_asset_source_researcher`. Production then goes to `chaosx_hoi4_portrait_pipeline`, and likeness approval goes to the separate `chaosx_portrait_identity_auditor`. A polity that existed in whole or in part, represents a real community, or claims continuity from a real institution is grounded and must use sourced real people or authentic institutional material rather than an invented substitute. Fictional one-person portraits require ImageGen only when both the leader and polity are wholly fictional and deliberately high-chaos. They must look extraordinary and culturally coherent within the invented setting, not like normal interchangeable officers. Fictional councils, committees, juntas, boards, offices, and symbolic bodies require people-free institutional ImageGen compositions and institutional names; do not generate a crowd or invented officeholder.
+ 
+ 
+ 

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-07-26",
+  "status": "BLOCKED_NO_LIVE_TARGET_REPOSITORY",
+  "target": null,
+  "portable_package": {
+    "new_files": [
+      "integrations/agentic-hoi4-modding/replacements/.agents/skills/hoi4-portrait-pipeline/SKILL.md",
+      "integrations/agentic-hoi4-modding/replacements/.codex/agents/hoi4_portrait_identity_auditor.toml",
+      "integrations/agentic-hoi4-modding/replacements/.codex/agents/hoi4_portrait_pipeline.toml"
+    ],
+    "patch_templates": [
+      "integrations/agentic-hoi4-modding/patches/AGENTS.md.patch.template",
+      "integrations/agentic-hoi4-modding/patches/asset-routing.patch.template",
+      "integrations/agentic-hoi4-modding/patches/subagent-routing.patch.template"
+    ],
+    "custom_subagent_policy": "fork_context=false",
+    "parent_owns": ["final mod wiring", "live consumer validation", "final completion claim"]
+  },
+  "required_discovery_before_apply": [
+    "repository URL and branch",
+    "current AGENTS and skill topology",
+    "existing portrait/DDS/MCP routes",
+    "current subagent definitions",
+    "test and release commands"
+  ],
+  "blocking_reasons": [
+    "No live generic agentic HOI4 repository or authoritative URL/checkout was discoverable.",
+    "The proposal is kept portable and is not falsely presented as a live diff."
+  ]
+}
+

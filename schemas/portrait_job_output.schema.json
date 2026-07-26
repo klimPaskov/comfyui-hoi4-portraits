@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/portrait_job_output.schema.json",
+  "title": "HOI4 Portrait Job Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_id",
+    "status",
+    "exit_code",
+    "execution_profile",
+    "workflow_version",
+    "dependency_lock_version",
+    "source_sha256",
+    "prompt",
+    "seeds",
+    "dependencies",
+    "candidate_paths",
+    "audits",
+    "warnings",
+    "blockers",
+    "timing"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "job_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELED",
+        "BLOCKED",
+        "NEEDS_REVIEW"
+      ]
+    },
+    "exit_code": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99
+    },
+    "error_code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "error_message": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "execution_profile": {
+      "type": "string"
+    },
+    "workflow_version": {
+      "type": "string"
+    },
+    "dependency_lock_version": {
+      "type": "string"
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "prompt": {
+      "type": "string"
+    },
+    "seeds": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "candidate_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "selected_candidate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "audits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "style",
+        "mask",
+        "provenance"
+      ],
+      "properties": {
+        "identity": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "style": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "mask": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "provenance": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    },
+    "final_png": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "final_dds": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "final_checksums": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "manifest_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "comparison_sheet_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "number",
+          "string",
+          "null"
+        ]
+      }
+    },
+    "peak_memory": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": [
+          "number",
+          "string",
+          "null"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Private and generated job evidence
+jobs/**
+!jobs/.gitkeep
+private/**
+outputs/**
+comparisons/private/**
+audit/embeddings/**
+
+# Model weights and caches
+models/cache/**
+models/private/**
+loras/*.safetensors
+!loras/*.sha256
+**/*.ckpt
+**/*.pt
+**/*.pth
+**/*.gguf
+**/*.onnx
+**/*.bin
+**/*.engine
+
+# Private or proprietary backgrounds
+backgrounds/private/**
+
+# Managed external checkouts
+repos/comfyui/**
+repos/custom_nodes/**
+repos/agentic-hoi4-modding/**
+
+# RunPod and container caches
+.runpod/**
+.cache/**
+container/cache/**
+
+# Python and test caches
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.py[cod]
+
+# Logs and temporary files
+*.log
+*.tmp
+*.part
+*.swp
+.DS_Store
+Thumbs.db

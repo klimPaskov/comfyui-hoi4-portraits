@@ -1,0 +1,50 @@
+# Project-owned generated state and private inputs
+.DS_Store
+.env
+.env.*
+!.env.example
+jobs/
+evidence/
+backgrounds/private/
+backgrounds/source/
+outputs/
+models/
+comfyui/
+runpod/
+reports/runtime/
+reports/benchmarks/
+
+# Model and image artifacts must never enter Git.
+*.safetensors
+*.gguf
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.onnx
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.dds
+*.psd
+*.mp4
+*.mov
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Editor and OS state
+.idea/
+.vscode/
+.DS_Store
+

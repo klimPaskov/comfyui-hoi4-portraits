@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "backgrounds": [
+    {
+      "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
+      "role_scope": [
+        "country_leader",
+        "commander",
+        "operative"
+      ],
+      "source_class": "project_owned|installed_game_private_copy",
+      "source_path": "RESOLVE_FROM_LIVE_PROJECT_OR_INSTALLED_GAME",
+      "runtime_path": "backgrounds/private_or_redistributable/exact_file.png",
+      "source_definition": "Owning GFX or catalog reference",
+      "attribution": "RESOLVE",
+      "license_or_rights": "RESOLVE",
+      "redistribution_rule": "bundle_allowed|local_copy_only|blocked",
+      "width": null,
+      "height": null,
+      "sha256": "RESOLVE",
+      "approved_by": [],
+      "status": "BLOCKED_UNTIL_RESOLVED"
+    }
+  ]
+}

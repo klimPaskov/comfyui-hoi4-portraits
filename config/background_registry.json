@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "registry_status": "BLOCKED_UNTIL_RESOLVED",
+  "backgrounds": [
+    {
+      "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
+      "role_scope": ["country_leader", "commander", "operative"],
+      "source_class": "unresolved",
+      "source_path": null,
+      "runtime_path": null,
+      "source_definition": null,
+      "attribution": null,
+      "license_or_rights": null,
+      "redistribution_rule": "blocked",
+      "width": null,
+      "height": null,
+      "sha256": null,
+      "approved_by": [],
+      "status": "BLOCKED_UNTIL_RESOLVED",
+      "reason": "No approved project-owned or installed-game background was resolved during preflight."
+    }
+  ]
+}
+

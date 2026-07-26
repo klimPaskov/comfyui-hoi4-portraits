@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "review_date": "2026-07-26",
+  "status": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW",
+  "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.",
+  "sources": [
+    {
+      "name": "Krea 2 license",
+      "source_url": "https://www.krea.ai/krea-2-licensing",
+      "license_identifier": "Krea Community License",
+      "status": "REVIEW_REQUIRED",
+      "material_conditions": [
+        "commercial use is subject to the published revenue threshold and agreement terms",
+        "distribution requires the agreement notice and attribution obligations",
+        "content-filter and acceptable-use measures apply",
+        "model ownership remains with Krea and outputs are subject to compliance"
+      ],
+      "artifact_policy": "local_copy_only_until_owner_approval"
+    },
+    {
+      "name": "ComfyUI",
+      "source_url": "https://github.com/Comfy-Org/ComfyUI/blob/v0.24.0/LICENSE",
+      "license_identifier": "GPL-3.0",
+      "status": "PINNED_SOURCE_REVIEWED"
+    },
+    {
+      "name": "comfyui-krea2edit",
+      "source_url": "https://github.com/lbouaraba/comfyui-krea2edit/blob/cae442e11b59bcba04ed82f4c01ffe3752531fe1/LICENSE",
+      "license_identifier": "Apache-2.0",
+      "status": "PINNED_SOURCE_REVIEWED"
+    },
+    {
+      "name": "Qwen3-VL",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct",
+      "license_identifier": "Apache-2.0",
+      "status": "PRIMARY_CARD_REVIEWED"
+    },
+    {
+      "name": "Existing HOI4 style LoRA",
+      "source_url": null,
+      "license_identifier": null,
+      "status": "OWNER_REVIEW_REQUIRED",
+      "material_conditions": ["file is preserved byte-for-byte and is not redistributed by this repository"]
+    },
+    {
+      "name": "HOI4 portrait background",
+      "source_url": null,
+      "license_identifier": null,
+      "status": "BLOCKED_UNRESOLVED",
+      "material_conditions": ["no approved background registry entry exists yet"]
+    }
+  ],
+  "blocking_reasons": [
+    "Krea Community License applicability and distribution scope need project-owner approval.",
+    "The approved HOI4 background and its rights record are unresolved.",
+    "The existing style LoRA has an owner-controlled provenance/license record only."]
+}
+

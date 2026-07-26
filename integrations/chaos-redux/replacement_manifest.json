@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0.0",
+  "generated_from_uploaded_baselines": true,
+  "warning": "Compare every replacement against the live current repository before applying. Uploaded baselines may be older than the live Windows working copy.",
+  "files": [
+    {
+      "source": "AGENTS(4).md",
+      "destination": "AGENTS.md",
+      "source_sha256": "ed9cb54702589a3663273e96fb150259551394f0eed78ddf5d1889dad58c41fe",
+      "replacement_sha256": "fd3c73004c10eb26333d6c49f6c3afde65c6b1d47d87dcf7b114ee15125f020b",
+      "diff": "patches/AGENTS.md.patch"
+    },
+    {
+      "source": "chaos-redux-event-assets(4).md",
+      "destination": ".agents/skills/chaos-redux-event-assets/SKILL.md",
+      "source_sha256": "2b7d63f1407d861c70b44f62b0ab82ad5a653253de87c7ac667e19a4e06a6941",
+      "replacement_sha256": "476be4c4335d5ba4463f69773faa03c6d97a14ed19db95a0fb8b4f2e55de90e9",
+      "diff": "patches/agents__skills__chaos-redux-event-assets__SKILL.md.patch"
+    },
+    {
+      "source": "chaos-redux-subagents(4).md",
+      "destination": ".agents/skills/chaos-redux-subagents/SKILL.md",
+      "source_sha256": "148d7311e488b75b645ebb218d14bf32386db580aee2cdb39b65a452ead621c2",
+      "replacement_sha256": "394c789e90bfb0fcd928e0192a7697da48a8a85cba0675c6a06a99a8ae8ab3b5",
+      "diff": "patches/agents__skills__chaos-redux-subagents__SKILL.md.patch"
+    },
+    {
+      "source": "chaosx_asset_source_researcher(1).toml",
+      "destination": ".codex/agents/chaosx_asset_source_researcher.toml",
+      "source_sha256": "ebbbd47ffb0b931575c4e37ba7a5cec434df09dc00d5fc5807509621d919ccf9",
+      "replacement_sha256": "bed9d44083d7939f678a3608daa24e13245d49324c935825054d7101282a6545",
+      "diff": "patches/codex__agents__chaosx_asset_source_researcher.toml.patch"
+    },
+    {
+      "source": "chaosx_generated_event_art(1).toml",
+      "destination": ".codex/agents/chaosx_generated_event_art.toml",
+      "source_sha256": "fdc4610d1d17353ce9a3736a7aaf7f9c809d1a12634d4f238747945f60fe7b52",
+      "replacement_sha256": "1bd554b061f249789ee69d24a2c29116b38c24843b5eeaa4e44cbd94a6cd1e61",
+      "diff": "patches/codex__agents__chaosx_generated_event_art.toml.patch"
+    },
+    {
+      "source": "chaosx_country_package_auditor(1).toml",
+      "destination": ".codex/agents/chaosx_country_package_auditor.toml",
+      "source_sha256": "eb6564e92e1244c0e3396c1beaf2f81ad078fa50b885e9ca043b5d7f0bf0fe6b",
+      "replacement_sha256": "4250e469f45ad5d6de5a5c6c813c5b1bee9fe6607b5878f3df95bd79ade207b2",
+      "diff": "patches/codex__agents__chaosx_country_package_auditor.toml.patch"
+    },
+    {
+      "source": "chaosx_skill_maintainer(1).toml",
+      "destination": ".codex/agents/chaosx_skill_maintainer.toml",
+      "source_sha256": "c6c431d50d070be8eec67ad400fd5caada97035071eb74d2907623c7fea2fc9d",
+      "replacement_sha256": "e303ebe9b7ea8010d571ff3aca71b9e3f8edc5e116d5391ee52faa31038f25a5",
+      "diff": "patches/codex__agents__chaosx_skill_maintainer.toml.patch"
+    },
+    {
+      "source": null,
+      "destination": ".agents/skills/hoi4-portrait-pipeline/SKILL.md",
+      "source_sha256": null,
+      "replacement_sha256": "a2ab2a531bcfdd7b7689d58f667fea0b591f81efe5977859292d35f929405b8b",
+      "diff": null
+    },
+    {
+      "source": null,
+      "destination": ".codex/agents/chaosx_hoi4_portrait_pipeline.toml",
+      "source_sha256": null,
+      "replacement_sha256": "fdd3193d92b637f8de492541516d3ad3148b6e3b1a9d9a66cf4e79b16b6c8a4a",
+      "diff": null
+    },
+    {
+      "source": null,
+      "destination": ".codex/agents/chaosx_portrait_identity_auditor.toml",
+      "source_sha256": null,
+      "replacement_sha256": "d80ebe102f0fa7d5679880c9b6a4e22f4d8a25143f5042b526cbbc5b85fc6747",
+      "diff": null
+    }
+  ]
+}

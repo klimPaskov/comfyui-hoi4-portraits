@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "RESOLVE_AT_BOOTSTRAP",
+  "lock_version": "RESOLVE_AT_BOOTSTRAP",
+  "resolution_policy": "Resolve from the named official or primary source, pin the exact revision, then record size and SHA-256 before use. A missing checksum blocks execution.",
+  "workflows": [
+    {
+      "workflow_id": "human_local_mac_16gb",
+      "display_name": "Human Local Mac 16 GB",
+      "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
+      "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
+      "sha256": "RESOLVE_AT_BUILD",
+      "graph_spec_version": "RESOLVE_AT_BUILD",
+      "comfyui_commit": "RESOLVE_AT_BUILD",
+      "required_core_nodes": [],
+      "required_custom_nodes": [],
+      "required_models": [],
+      "exposed_controls": [],
+      "hidden_locked_controls": [],
+      "autoprompter_present": true,
+      "validation_status": "UNVALIDATED",
+      "load_test_evidence": null,
+      "execution_test_evidence": null
+    }
+  ]
+}

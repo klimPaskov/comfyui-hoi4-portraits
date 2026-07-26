@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.json text working-tree-encoding=UTF-8
+*.md text working-tree-encoding=UTF-8
+*.toml text working-tree-encoding=UTF-8
+*.py text working-tree-encoding=UTF-8
+*.patch text working-tree-encoding=UTF-8
+*.safetensors binary -diff
+*.gguf binary -diff
+*.dds binary -diff
+*.png binary -diff
+

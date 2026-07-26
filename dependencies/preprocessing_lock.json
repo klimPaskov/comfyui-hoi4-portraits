@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0",
+  "lock_version": "preprocess-2026-07-26.1",
+  "status": "PINNED_SOURCE_COMMITS_ARTIFACTS_UNVERIFIED",
+  "dependencies": [
+    {
+      "name": "BiRefNet",
+      "purpose": "person/hair/hat/accessory matting baseline",
+      "official_source": "https://github.com/ZhengPeng7/BiRefNet.git",
+      "source_revision": "25cb9309bacf3dde954e4584594e16e142c51de5",
+      "license": "Apache-2.0",
+      "artifact_url": null,
+      "artifact_revision": null,
+      "artifact_sha256": null,
+      "mandatory": true,
+      "status": "BLOCKED_CHECKSUM_REQUIRED"
+    },
+    {
+      "name": "DDColor",
+      "purpose": "conditional monochrome colorization",
+      "official_source": "https://github.com/piddnad/DDColor.git",
+      "source_revision": "2adb63f2656ac41cbdf7b894cddd94121a3faf13",
+      "license": "Apache-2.0",
+      "artifact_url": null,
+      "artifact_revision": null,
+      "artifact_sha256": null,
+      "mandatory": true,
+      "status": "BLOCKED_CHECKSUM_REQUIRED"
+    },
+    {
+      "name": "Real-ESRGAN",
+      "purpose": "optional conservative restoration A/B candidate",
+      "official_source": "https://github.com/xinntao/Real-ESRGAN.git",
+      "source_revision": "a4abfb2979a7bbff3f69f58f58ae324608821e27",
+      "license": "BSD-3-Clause",
+      "artifact_url": null,
+      "artifact_revision": null,
+      "artifact_sha256": null,
+      "mandatory": false,
+      "status": "OPTIONAL_BLOCKED_CHECKSUM_REQUIRED"
+    },
+    {
+      "name": "YuNet",
+      "purpose": "face proposal and subject disambiguation",
+      "official_source": "https://github.com/opencv/opencv_zoo.git",
+      "source_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+      "license": "Apache-2.0",
+      "artifact_url": null,
+      "artifact_revision": null,
+      "artifact_sha256": null,
+      "mandatory": true,
+      "status": "BLOCKED_CHECKSUM_REQUIRED"
+    },
+    {
+      "name": "MediaPipe Face Landmarker",
+      "purpose": "landmarks, pose, expression, geometry audit",
+      "official_source": "https://github.com/google-ai-edge/mediapipe.git",
+      "source_revision": "0ad5a71bcdff3d756dc5b07f93765aaeb4152538",
+      "license": "Apache-2.0",
+      "artifact_url": null,
+      "artifact_revision": null,
+      "artifact_sha256": null,
+      "mandatory": true,
+      "status": "BLOCKED_CHECKSUM_REQUIRED"
+    },
+    {
+      "name": "SFace",
+      "purpose": "face embedding identity signal",
+      "official_source": "https://github.com/opencv/opencv_zoo.git",
+      "source_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+      "license": "Apache-2.0",
+      "artifact_url": null,
+      "artifact_revision": null,
+      "artifact_sha256": null,
+      "mandatory": true,
+      "status": "BLOCKED_CHECKSUM_REQUIRED"
+    }
+  ]
+}
+

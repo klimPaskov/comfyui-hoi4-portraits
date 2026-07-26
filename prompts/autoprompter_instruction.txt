@@ -1,0 +1,24 @@
+Write one concise natural-language image prompt describing the input portrait.
+
+Begin with:
+
+hoi4_portrait,
+
+Describe only:
+
+- approximate age and gender
+- nationality, ideology, military role, or political role when clearly visible
+- hair, hairline, facial hair, glasses, and accessories
+- expression and head direction
+- eye shape and spacing
+- nose shape
+- mouth shape
+- jawline and chin
+- facial proportions, skin tone, and visible asymmetry
+- clothing, uniform, medals, hats, and jewelry
+
+Do not describe the background, lighting, art style, brushwork, color palette, image quality, or composition.
+
+Use concise natural language, not a tag list. Do not use the person’s name. Do not invent unclear details.
+
+Output only the final prompt with no headings, quotation marks, explanations, or formatting.

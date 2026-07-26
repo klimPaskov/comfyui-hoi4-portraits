@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-07-26",
+  "status": "PORTABLE_PACKAGE_READY_DIRECT_APPLY_BLOCKED",
+  "target": {
+    "path": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
+    "remote": "git@github.com:klimPaskov/Chaos-Redux.git",
+    "branch": "master",
+    "head": "420cfb326e8ec78ec5641b152f32fce2b2d94db6",
+    "unrelated_untracked_preserved": ["docs/assets/", "gfx/interface/ideas/test_icon.dds"]
+  },
+  "live_files_read": [
+    "AGENTS.md",
+    ".agents/skills/chaos-redux-event-assets/SKILL.md",
+    "interface/chaosx_characters.gfx",
+    "common/characters/REV.txt",
+    "common/characters/ZZZ.txt",
+    ".tools/convert_to_dds.py",
+    "gfx/leaders/portrait_leader_background.psd"
+  ],
+  "live_divergences": [
+    "The live event-assets skill differs from the uploaded replacement and does not include the newer portrait-source/audit boundary.",
+    "The live .agents/skills/chaos-redux-subagents/SKILL.md is absent even though the current AGENTS file references the skill.",
+    "No live .codex/agents/*.toml files were present to patch against.",
+    "No vanilla Hearts of Iron IV installation or offline vanilla documentation was present in the discovered mod workspace.",
+    "The live converter emits the uploaded uncompressed 32-bit BGRA contract, while sampled live portrait DDS files are DXT1; the standalone project therefore keeps an independent converter and blocks finalization until a consumer test is run."
+  ],
+  "dds_evidence": {
+    "converter": {"path": ".tools/convert_to_dds.py", "sha256": "21175ab7233e998f059cb9d3ec18a3646bb166bb3784cad853d687db460fc5f2", "declared_contract": "uncompressed_32bit_bgra_no_mipmaps"},
+    "background_source_candidate": {"path": "gfx/leaders/portrait_leader_background.psd", "sha256": "4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6", "dimensions": [156, 210], "status": "NOT_APPROVED_FOR_PIPELINE"},
+    "sampled_live_portraits": [
+      {"path": "gfx/leaders/AFR/portrait_AFR_king_of_africa.dds", "sha256": "e06262fdd1c77f9c7bbf33cbda61f32fddd6d4a535f29a6d78a4720e63b59e5b", "dimensions": [156, 210], "format": "DXT1"},
+      {"path": "gfx/leaders/CRU/portrait_CRU_crusader.dds", "sha256": "5536ea97df2271b7c9230c6fb6eec9686acc4c25f7995e6724ad74f2f5dd72cd", "dimensions": [156, 210], "format": "DXT1"},
+      {"path": "gfx/leaders/ENG/portrait_ENG_neville_chamberlain_immortal.dds", "sha256": "a8f8f22e80df2a706d2910a3e7953a88b9691083172f55e1956950ce1c500052", "dimensions": [156, 210], "format": "DXT1"},
+      {"path": "gfx/leaders/ZZZ/portrait_ZZZ_weaponized_demonic.dds", "sha256": "9c318ea12eb7209da081f67378d10b16e70fbe6827a56572bdcb70122b0a72d0", "dimensions": [156, 210], "format": "UNCOMPRESSED_BGRA_32"}
+    ]
+  },
+  "portable_package": {
+    "existing_proposals": ["integrations/chaos-redux/README.md", "integrations/chaos-redux/manifest.md", "integrations/chaos-redux/patches/", "integrations/chaos-redux/replacements/", "integrations/chaos-redux/new/"],
+    "custom_subagent_policy": "fork_context=false",
+    "parent_owns": ["final mod wiring", "live consumer validation", "final completion claim"],
+    "apply_status": "NOT_APPLIED_TO_LIVE_REPOSITORY"
+  },
+  "blocking_reasons": [
+    "Live baseline does not contain the proposed subagents and has unrelated untracked user work.",
+    "Approved background rights and live in-game consumer evidence are unresolved.",
+    "Direct application would overwrite or create files without a current target diff and required parent validation."
+  ]
+}

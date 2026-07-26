@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "thresholds_id": "UNSET_BLOCK_EXECUTION",
+  "calibration_dataset_id": "UNSET_BLOCK_EXECUTION",
+  "created_at": "RESOLVE_DURING_CALIBRATION",
+  "approved_by": [],
+  "face_embedding": {
+    "model": "UNSET",
+    "minimum_similarity": null,
+    "target_false_accept_rate_max": 0.001,
+    "target_false_reject_rate_max": 0.05
+  },
+  "landmarks": {
+    "model": "UNSET",
+    "max_normalized_error": null,
+    "region_limits": {
+      "eyes": null,
+      "nose": null,
+      "mouth": null,
+      "jaw": null
+    }
+  },
+  "pose": {
+    "max_yaw_delta_degrees": null,
+    "max_pitch_delta_degrees": null,
+    "max_roll_delta_degrees": null
+  },
+  "expression": {
+    "max_distance": null
+  },
+  "asymmetry": {
+    "max_change": null
+  },
+  "hair_and_accessories": {
+    "required_attribute_agreement": null
+  },
+  "mask": {
+    "minimum_interior_pixel_equality": 1.0,
+    "maximum_boundary_leakage_ratio": null
+  },
+  "style": {
+    "minimum_score": null,
+    "reference_set_id": "UNSET"
+  },
+  "fail_closed": true,
+  "notes": "Numeric acceptance values must be produced by calibration. Null values block all production jobs."
+}
