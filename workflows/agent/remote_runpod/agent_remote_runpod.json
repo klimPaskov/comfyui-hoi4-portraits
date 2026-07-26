@@ -1,0 +1,1845 @@
+{
+  "last_node_id": 23,
+  "last_link_id": 40,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "HOI4JobInput",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "execution_profile",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "job_contract_path",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "candidate_count",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "retry_limit",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "seed_policy",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "links": [
+            1,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            15,
+            33
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Job contract and profile",
+        "hoi4_group": "00 Job and source",
+        "hoi4_locked_controls": [
+          "execution_profile",
+          "candidate_count",
+          "retry_limit",
+          "seed_policy"
+        ]
+      },
+      "widgets_values": [
+        "agent_remote_runpod",
+        "jobs/<job_id>/input.json",
+        6,
+        2,
+        "derived"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "HOI4JobSource",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "source_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Load source only from job root",
+        "hoi4_group": "00 Job and source",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 3,
+      "type": "HOI4SourceGuard",
+      "pos": [
+        40,
+        510
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 2
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            5,
+            34
+          ]
+        },
+        {
+          "name": "source_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Provenance and source guard",
+        "hoi4_group": "00 Job and source",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "HOI4SubjectSelect",
+      "pos": [
+        360,
+        80
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 4
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "selection_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Deterministic subject selection",
+        "hoi4_group": "01 Subject selection",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "HOI4HeadShouldersCrop",
+      "pos": [
+        360,
+        300
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 6
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "crop_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Head and shoulders crop",
+        "hoi4_group": "02 Crop and source preparation",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "HOI4ConservativePrep",
+      "pos": [
+        360,
+        520
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 8
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "reference_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Conditional color and conservative restoration",
+        "hoi4_group": "03 Color and restoration",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "HOI4ForegroundMask",
+      "pos": [
+        680,
+        40
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 10
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 11
+        },
+        {
+          "name": "mask_model",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "mask_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Pinned foreground/mask analysis",
+        "hoi4_group": "04 Masks and approved background",
+        "hoi4_locked_controls": [
+          "mask_model"
+        ]
+      },
+      "widgets_values": [
+        "BiRefNet:PINNED_REQUIRED"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "HOI4MaskAndBackgroundGuard",
+      "pos": [
+        680,
+        270
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 12
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 13
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            17,
+            23,
+            25,
+            35
+          ]
+        },
+        {
+          "name": "composite",
+          "type": "IMAGE",
+          "links": [
+            36
+          ]
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            38
+          ]
+        },
+        {
+          "name": "background_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Approved background composite and foreground guard",
+        "hoi4_group": "04 Masks and approved background",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "HOI4PromptInput",
+      "pos": [
+        680,
+        540
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 15
+        },
+        {
+          "name": "prompt_source",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "links": [
+            22,
+            39
+          ]
+        },
+        {
+          "name": "prompt_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Agent prompt from job contract",
+        "hoi4_group": "05 Prompt",
+        "hoi4_locked_controls": [
+          "prompt_source"
+        ]
+      },
+      "widgets_values": [
+        "job_contract"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "UNETLoader",
+      "pos": [
+        1000,
+        80
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "unet_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "weight_dtype",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Krea 2 Turbo FP8",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": [
+          "unet_name",
+          "weight_dtype"
+        ]
+      },
+      "widgets_values": [
+        "krea2_turbo_fp8_scaled.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "LoraLoaderModelOnly",
+      "pos": [
+        1000,
+        260
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 16
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "strength_model",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Pinned Krea identity adapter",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": [
+          "lora_name",
+          "strength_model"
+        ]
+      },
+      "widgets_values": [
+        "krea2_identity_edit_v1_2.safetensors",
+        1.0
+      ]
+    },
+    {
+      "id": 12,
+      "type": "VAELoader",
+      "pos": [
+        1000,
+        450
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae_name",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "vae",
+          "type": "VAE",
+          "links": [
+            18,
+            32
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Krea VAE",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": [
+          "vae_name"
+        ]
+      },
+      "widgets_values": [
+        "qwen_image_vae.safetensors"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "VAEEncode",
+      "pos": [
+        1000,
+        610
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 17
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Encode identity reference",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "Krea2EditModelPatch",
+      "pos": [
+        1320,
+        200
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 19
+        },
+        {
+          "name": "source_latent",
+          "type": "LATENT",
+          "link": 20
+        },
+        {
+          "name": "fit_mode",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "ref_boost",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Krea 2 identity edit patch",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": [
+          "fit_mode",
+          "ref_boost"
+        ]
+      },
+      "widgets_values": [
+        "fit",
+        1.0
+      ]
+    },
+    {
+      "id": 15,
+      "type": "DualCLIPLoader",
+      "pos": [
+        1320,
+        430
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip_name1",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "clip_name2",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "type",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            21,
+            24
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Krea Qwen3-VL encoder",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": [
+          "clip_name1",
+          "clip_name2",
+          "type"
+        ]
+      },
+      "widgets_values": [
+        "qwen3vl_4b_fp8_scaled.safetensors",
+        "qwen3vl_4b_fp8_scaled.safetensors",
+        "krea2"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "Krea2EditGroundedEncode",
+      "pos": [
+        1640,
+        80
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 21
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": 22
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 23
+        },
+        {
+          "name": "grounding_px",
+          "type": "INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Grounded positive conditioning",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": [
+          "grounding_px"
+        ]
+      },
+      "widgets_values": [
+        64
+      ]
+    },
+    {
+      "id": 17,
+      "type": "Krea2EditGroundedEncode",
+      "pos": [
+        1640,
+        290
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 24
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 25
+        },
+        {
+          "name": "grounding_px",
+          "type": "INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Grounded empty negative conditioning",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": [
+          "prompt",
+          "grounding_px"
+        ]
+      },
+      "widgets_values": [
+        "",
+        64
+      ]
+    },
+    {
+      "id": 18,
+      "type": "LoraLoaderModelOnly",
+      "pos": [
+        1960,
+        200
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 26
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "strength_model",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Immutable HOI4 style LoRA",
+        "hoi4_group": "07 HOI4 style LoRA",
+        "hoi4_locked_controls": [
+          "lora_name"
+        ]
+      },
+      "widgets_values": [
+        "hoi4_portrait_new_style_lora.safetensors",
+        0.8
+      ]
+    },
+    {
+      "id": 19,
+      "type": "EmptySD3LatentImage",
+      "pos": [
+        1960,
+        430
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Profile work canvas",
+        "hoi4_group": "08 Candidate generation",
+        "hoi4_locked_controls": [
+          "width",
+          "height",
+          "batch_size"
+        ]
+      },
+      "widgets_values": [
+        1196,
+        1610,
+        1
+      ]
+    },
+    {
+      "id": 20,
+      "type": "KSampler",
+      "pos": [
+        2280,
+        120
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 27
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 28
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 29
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 30
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "cfg",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "sampler_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "scheduler",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "denoise",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Krea 2 Turbo candidate",
+        "hoi4_group": "08 Candidate generation",
+        "hoi4_locked_controls": [
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
+      },
+      "widgets_values": [
+        0,
+        8,
+        1.0,
+        "euler",
+        "simple",
+        1.0
+      ]
+    },
+    {
+      "id": 21,
+      "type": "VAEDecode",
+      "pos": [
+        2600,
+        120
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 31
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Decode candidate",
+        "hoi4_group": "09 Preview and evidence export",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "HOI4EvidenceExport",
+      "pos": [
+        2920,
+        120
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 33
+        },
+        {
+          "name": "source_master",
+          "type": "IMAGE",
+          "link": 34
+        },
+        {
+          "name": "processed_reference",
+          "type": "IMAGE",
+          "link": 35
+        },
+        {
+          "name": "approved_background",
+          "type": "IMAGE",
+          "link": 36
+        },
+        {
+          "name": "candidate",
+          "type": "IMAGE",
+          "link": 37
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 38
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": 39
+        },
+        {
+          "name": "candidate_index",
+          "type": "INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            40
+          ]
+        },
+        {
+          "name": "evidence_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Candidate evidence and audit handoff",
+        "hoi4_group": "09 Preview and evidence export",
+        "hoi4_locked_controls": [
+          "candidate_index"
+        ]
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 23,
+      "type": "SaveImage",
+      "pos": [
+        3240,
+        120
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 40
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Preview PNG only",
+        "hoi4_group": "09 Preview and evidence export",
+        "hoi4_locked_controls": [
+          "filename_prefix"
+        ]
+      },
+      "widgets_values": [
+        "evidence/candidates"
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      2,
+      1,
+      0,
+      3,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      3,
+      2,
+      0,
+      3,
+      1,
+      "IMAGE"
+    ],
+    [
+      4,
+      1,
+      0,
+      4,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      5,
+      3,
+      0,
+      4,
+      1,
+      "IMAGE"
+    ],
+    [
+      6,
+      1,
+      0,
+      5,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      7,
+      4,
+      0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      8,
+      1,
+      0,
+      6,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      9,
+      5,
+      0,
+      6,
+      1,
+      "IMAGE"
+    ],
+    [
+      10,
+      1,
+      0,
+      7,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      11,
+      6,
+      0,
+      7,
+      1,
+      "IMAGE"
+    ],
+    [
+      12,
+      1,
+      0,
+      8,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      13,
+      7,
+      0,
+      8,
+      1,
+      "IMAGE"
+    ],
+    [
+      14,
+      7,
+      1,
+      8,
+      2,
+      "MASK"
+    ],
+    [
+      15,
+      1,
+      0,
+      9,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      16,
+      10,
+      0,
+      11,
+      0,
+      "MODEL"
+    ],
+    [
+      17,
+      8,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      12,
+      0,
+      13,
+      1,
+      "VAE"
+    ],
+    [
+      19,
+      11,
+      0,
+      14,
+      0,
+      "MODEL"
+    ],
+    [
+      20,
+      13,
+      0,
+      14,
+      1,
+      "LATENT"
+    ],
+    [
+      21,
+      15,
+      0,
+      16,
+      0,
+      "CLIP"
+    ],
+    [
+      22,
+      9,
+      0,
+      16,
+      1,
+      "STRING"
+    ],
+    [
+      23,
+      8,
+      0,
+      16,
+      2,
+      "IMAGE"
+    ],
+    [
+      24,
+      15,
+      0,
+      17,
+      0,
+      "CLIP"
+    ],
+    [
+      25,
+      8,
+      0,
+      17,
+      2,
+      "IMAGE"
+    ],
+    [
+      26,
+      14,
+      0,
+      18,
+      0,
+      "MODEL"
+    ],
+    [
+      27,
+      18,
+      0,
+      20,
+      0,
+      "MODEL"
+    ],
+    [
+      28,
+      16,
+      0,
+      20,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      29,
+      17,
+      0,
+      20,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      30,
+      19,
+      0,
+      20,
+      3,
+      "LATENT"
+    ],
+    [
+      31,
+      20,
+      0,
+      21,
+      0,
+      "LATENT"
+    ],
+    [
+      32,
+      12,
+      0,
+      21,
+      1,
+      "VAE"
+    ],
+    [
+      33,
+      1,
+      0,
+      22,
+      0,
+      "HOI4_JOB"
+    ],
+    [
+      34,
+      3,
+      0,
+      22,
+      1,
+      "IMAGE"
+    ],
+    [
+      35,
+      8,
+      0,
+      22,
+      2,
+      "IMAGE"
+    ],
+    [
+      36,
+      8,
+      1,
+      22,
+      3,
+      "IMAGE"
+    ],
+    [
+      37,
+      21,
+      0,
+      22,
+      4,
+      "IMAGE"
+    ],
+    [
+      38,
+      8,
+      2,
+      22,
+      5,
+      "MASK"
+    ],
+    [
+      39,
+      9,
+      0,
+      22,
+      6,
+      "STRING"
+    ],
+    [
+      40,
+      22,
+      0,
+      23,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "00 Job and source",
+      "bounding": [
+        20,
+        20,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "01 Subject selection",
+      "bounding": [
+        660,
+        20,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "02 Crop and source preparation",
+      "bounding": [
+        1300,
+        20,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "03 Color and restoration",
+      "bounding": [
+        1940,
+        20,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "04 Masks and approved background",
+      "bounding": [
+        2580,
+        20,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "05 Prompt",
+      "bounding": [
+        20,
+        520,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "06 Krea 2 identity edit",
+      "bounding": [
+        660,
+        520,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "07 HOI4 style LoRA",
+      "bounding": [
+        1300,
+        520,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "08 Candidate generation",
+      "bounding": [
+        1940,
+        520,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    },
+    {
+      "title": "09 Preview and evidence export",
+      "bounding": [
+        2580,
+        520,
+        600,
+        440
+      ],
+      "color": "#335",
+      "font_size": 24
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7,
+      "offset": [
+        0,
+        0
+      ]
+    },
+    "schema_version": "1.0.0",
+    "graph_spec_version": "graph-spec-1.0.0",
+    "workflow_id": "agent_remote_runpod",
+    "execution_profile": "agent_remote_runpod",
+    "route": "remote_runpod",
+    "human_workflow": false,
+    "autoprompter": false,
+    "autoprompter_instruction_path": null,
+    "autoprompter_instruction_sha256": null,
+    "prompt_source": "job_contract",
+    "prompt_model": "job_contract",
+    "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
+    "work_canvas": {
+      "width": 1196,
+      "height": 1610,
+      "pixels": 1925560
+    },
+    "final_canvas": {
+      "width": 156,
+      "height": 210
+    },
+    "required_groups": [
+      "00 Job and source",
+      "01 Subject selection",
+      "02 Crop and source preparation",
+      "03 Color and restoration",
+      "04 Masks and approved background",
+      "05 Prompt",
+      "06 Krea 2 identity edit",
+      "07 HOI4 style LoRA",
+      "08 Candidate generation",
+      "09 Preview and evidence export"
+    ],
+    "locked_controls": {
+      "Job contract and profile": [
+        "execution_profile",
+        "candidate_count",
+        "retry_limit",
+        "seed_policy"
+      ],
+      "Pinned foreground/mask analysis": [
+        "mask_model"
+      ],
+      "Agent prompt from job contract": [
+        "prompt_source"
+      ],
+      "Krea 2 Turbo FP8": [
+        "unet_name",
+        "weight_dtype"
+      ],
+      "Pinned Krea identity adapter": [
+        "lora_name",
+        "strength_model"
+      ],
+      "Krea VAE": [
+        "vae_name"
+      ],
+      "Krea 2 identity edit patch": [
+        "fit_mode",
+        "ref_boost"
+      ],
+      "Krea Qwen3-VL encoder": [
+        "clip_name1",
+        "clip_name2",
+        "type"
+      ],
+      "Grounded positive conditioning": [
+        "grounding_px"
+      ],
+      "Grounded empty negative conditioning": [
+        "prompt",
+        "grounding_px"
+      ],
+      "Immutable HOI4 style LoRA": [
+        "lora_name"
+      ],
+      "Profile work canvas": [
+        "width",
+        "height",
+        "batch_size"
+      ],
+      "Krea 2 Turbo candidate": [
+        "steps",
+        "cfg",
+        "sampler_name",
+        "scheduler",
+        "denoise"
+      ],
+      "Candidate evidence and audit handoff": [
+        "candidate_index"
+      ],
+      "Preview PNG only": [
+        "filename_prefix"
+      ]
+    },
+    "required_core_nodes": [
+      "DualCLIPLoader",
+      "EmptySD3LatentImage",
+      "KSampler",
+      "LoraLoaderModelOnly",
+      "SaveImage",
+      "UNETLoader",
+      "VAEDecode",
+      "VAEEncode",
+      "VAELoader"
+    ],
+    "required_krea_nodes": [
+      "Krea2EditGroundedEncode",
+      "Krea2EditModelPatch"
+    ],
+    "required_project_nodes": [
+      "HOI4ConservativePrep",
+      "HOI4EvidenceExport",
+      "HOI4ForegroundMask",
+      "HOI4HeadShouldersCrop",
+      "HOI4JobInput",
+      "HOI4JobSource",
+      "HOI4MaskAndBackgroundGuard",
+      "HOI4PromptInput",
+      "HOI4SourceGuard",
+      "HOI4SubjectSelect"
+    ],
+    "candidate_budget": {
+      "max": 6,
+      "retry_max": 2
+    },
+    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow"
+  },
+  "version": 0.4
+}

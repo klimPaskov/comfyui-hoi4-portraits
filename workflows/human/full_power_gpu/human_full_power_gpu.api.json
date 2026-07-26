@@ -1,0 +1,449 @@
+{
+  "1": {
+    "class_type": "HOI4JobInput",
+    "inputs": {
+      "execution_profile": "human_full_power_gpu",
+      "job_contract_path": "jobs/<job_id>/input.json",
+      "candidate_count": 6,
+      "retry_limit": 2,
+      "seed_policy": "derived"
+    }
+  },
+  "2": {
+    "class_type": "HOI4JobSource",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ]
+    }
+  },
+  "3": {
+    "class_type": "HOI4SourceGuard",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "image": [
+        "2",
+        0
+      ]
+    }
+  },
+  "4": {
+    "class_type": "HOI4SubjectSelect",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "image": [
+        "3",
+        0
+      ]
+    }
+  },
+  "5": {
+    "class_type": "HOI4HeadShouldersCrop",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "image": [
+        "4",
+        0
+      ]
+    }
+  },
+  "6": {
+    "class_type": "HOI4ConservativePrep",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "image": [
+        "5",
+        0
+      ]
+    }
+  },
+  "7": {
+    "class_type": "HOI4ForegroundMask",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "image": [
+        "6",
+        0
+      ],
+      "mask_model": "BiRefNet:PINNED_REQUIRED"
+    }
+  },
+  "8": {
+    "class_type": "HOI4MaskAndBackgroundGuard",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "image": [
+        "7",
+        0
+      ],
+      "mask": [
+        "7",
+        1
+      ]
+    }
+  },
+  "9": {
+    "class_type": "HOI4AutopromptClient",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "image": [
+        "8",
+        0
+      ],
+      "instruction_text": "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nDescribe only:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, and jewelry\n\nDo not describe the background, lighting, art style, brushwork, color palette, image quality, or composition.\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent unclear details.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
+      "instruction_path": "prompts/autoprompter_instruction.txt",
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "prompt_source": "autoprompter"
+    }
+  },
+  "10": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_turbo_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "11": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "10",
+        0
+      ],
+      "lora_name": "krea2_identity_edit_v1_2.safetensors",
+      "strength_model": 1.0
+    }
+  },
+  "12": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "13": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "8",
+        0
+      ],
+      "vae": [
+        "12",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "Krea2EditModelPatch",
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "source_latent": [
+        "13",
+        0
+      ],
+      "fit_mode": "fit",
+      "ref_boost": 1.0
+    }
+  },
+  "15": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "qwen3vl_4b_fp8_scaled.safetensors",
+      "clip_name2": "qwen3vl_4b_fp8_scaled.safetensors",
+      "type": "krea2"
+    }
+  },
+  "16": {
+    "class_type": "Krea2EditGroundedEncode",
+    "inputs": {
+      "clip": [
+        "15",
+        0
+      ],
+      "prompt": [
+        "9",
+        0
+      ],
+      "image": [
+        "8",
+        0
+      ],
+      "grounding_px": 64
+    }
+  },
+  "17": {
+    "class_type": "Krea2EditGroundedEncode",
+    "inputs": {
+      "clip": [
+        "15",
+        0
+      ],
+      "prompt": "",
+      "image": [
+        "8",
+        0
+      ],
+      "grounding_px": 64
+    }
+  },
+  "18": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "14",
+        0
+      ],
+      "lora_name": "hoi4_portrait_new_style_lora.safetensors",
+      "strength_model": 0.8
+    }
+  },
+  "19": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 1196,
+      "height": 1610,
+      "batch_size": 1
+    }
+  },
+  "20": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "18",
+        0
+      ],
+      "positive": [
+        "16",
+        0
+      ],
+      "negative": [
+        "17",
+        0
+      ],
+      "latent_image": [
+        "19",
+        0
+      ],
+      "seed": 0,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "21": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "20",
+        0
+      ],
+      "vae": [
+        "12",
+        0
+      ]
+    }
+  },
+  "22": {
+    "class_type": "HOI4EvidenceExport",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "source_master": [
+        "3",
+        0
+      ],
+      "processed_reference": [
+        "8",
+        0
+      ],
+      "approved_background": [
+        "8",
+        1
+      ],
+      "candidate": [
+        "21",
+        0
+      ],
+      "mask": [
+        "8",
+        2
+      ],
+      "prompt": [
+        "9",
+        0
+      ],
+      "candidate_index": 0
+    }
+  },
+  "23": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "22",
+        0
+      ],
+      "filename_prefix": "evidence/candidates"
+    }
+  },
+  "_meta": {
+    "schema_version": "1.0.0",
+    "graph_spec_version": "graph-spec-1.0.0",
+    "workflow_id": "human_full_power_gpu",
+    "execution_profile": "human_full_power_gpu",
+    "route": "full_power_gpu",
+    "human_workflow": true,
+    "autoprompter": true,
+    "autoprompter_instruction_path": "prompts/autoprompter_instruction.txt",
+    "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+    "prompt_source": "autoprompter",
+    "prompt_model": "Qwen/Qwen3-VL-8B-Instruct",
+    "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
+    "work_canvas": {
+      "width": 1196,
+      "height": 1610,
+      "pixels": 1925560
+    },
+    "final_canvas": {
+      "width": 156,
+      "height": 210
+    },
+    "required_groups": [
+      "00 Job and source",
+      "01 Subject selection",
+      "02 Crop and source preparation",
+      "03 Color and restoration",
+      "04 Masks and approved background",
+      "05 Prompt",
+      "06 Krea 2 identity edit",
+      "07 HOI4 style LoRA",
+      "08 Candidate generation",
+      "09 Preview and evidence export"
+    ],
+    "locked_controls": {
+      "Job contract and profile": [
+        "execution_profile",
+        "candidate_count",
+        "retry_limit",
+        "seed_policy"
+      ],
+      "Pinned foreground/mask analysis": [
+        "mask_model"
+      ],
+      "Human-only exact autoprompter": [
+        "instruction_text",
+        "instruction_path",
+        "model_id",
+        "prompt_source"
+      ],
+      "Krea 2 Turbo FP8": [
+        "unet_name",
+        "weight_dtype"
+      ],
+      "Pinned Krea identity adapter": [
+        "lora_name",
+        "strength_model"
+      ],
+      "Krea VAE": [
+        "vae_name"
+      ],
+      "Krea 2 identity edit patch": [
+        "fit_mode",
+        "ref_boost"
+      ],
+      "Krea Qwen3-VL encoder": [
+        "clip_name1",
+        "clip_name2",
+        "type"
+      ],
+      "Grounded positive conditioning": [
+        "grounding_px"
+      ],
+      "Grounded empty negative conditioning": [
+        "prompt",
+        "grounding_px"
+      ],
+      "Immutable HOI4 style LoRA": [
+        "lora_name"
+      ],
+      "Profile work canvas": [
+        "width",
+        "height",
+        "batch_size"
+      ],
+      "Krea 2 Turbo candidate": [
+        "steps",
+        "cfg",
+        "sampler_name",
+        "scheduler",
+        "denoise"
+      ],
+      "Candidate evidence and audit handoff": [
+        "candidate_index"
+      ],
+      "Preview PNG only": [
+        "filename_prefix"
+      ]
+    },
+    "required_core_nodes": [
+      "DualCLIPLoader",
+      "EmptySD3LatentImage",
+      "KSampler",
+      "LoraLoaderModelOnly",
+      "SaveImage",
+      "UNETLoader",
+      "VAEDecode",
+      "VAEEncode",
+      "VAELoader"
+    ],
+    "required_krea_nodes": [
+      "Krea2EditGroundedEncode",
+      "Krea2EditModelPatch"
+    ],
+    "required_project_nodes": [
+      "HOI4AutopromptClient",
+      "HOI4ConservativePrep",
+      "HOI4EvidenceExport",
+      "HOI4ForegroundMask",
+      "HOI4HeadShouldersCrop",
+      "HOI4JobInput",
+      "HOI4JobSource",
+      "HOI4MaskAndBackgroundGuard",
+      "HOI4SourceGuard",
+      "HOI4SubjectSelect"
+    ],
+    "candidate_budget": {
+      "max": 6,
+      "retry_max": 2
+    },
+    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow"
+  }
+}

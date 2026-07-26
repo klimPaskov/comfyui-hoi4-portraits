@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0.0",
+  "matrix_id": "krea2_identity_style_factorial_v1",
+  "selection_order": [
+    "identity_gates",
+    "geometry_gates",
+    "accessories",
+    "mask",
+    "style",
+    "runtime",
+    "reproducibility"
+  ],
+  "staged_design": true,
+  "axes": {
+    "identity_adapter": [
+      "absent",
+      "full_v1_2",
+      "r128",
+      "r64"
+    ],
+    "style_lora": [
+      "absent",
+      "low",
+      "medium",
+      "high"
+    ],
+    "adapter_order": [
+      "identity_then_style",
+      "style_then_identity"
+    ],
+    "pass_structure": [
+      "single_pass",
+      "two_pass"
+    ],
+    "first_pass_reference": [
+      "processed_source",
+      "approved_composite"
+    ],
+    "mask_route": [
+      "no_generation_mask",
+      "person_mask",
+      "face_protection_or_subject_mask"
+    ],
+    "ref_boost": [
+      "lower",
+      "baseline",
+      "higher"
+    ],
+    "grounding_px": [
+      512,
+      768,
+      1024
+    ],
+    "steps": [
+      8,
+      10,
+      12
+    ],
+    "cfg": [
+      1.0
+    ],
+    "sampler": [
+      "euler_simple",
+      "qualified_alternative"
+    ],
+    "style_pass_denoise": [
+      0.1,
+      0.2,
+      0.3
+    ],
+    "working_resolution": [
+      "local_mac_canvas",
+      "full_power_canvas"
+    ]
+  },
+  "profiles": {
+    "human_local_mac_16gb": {
+      "candidate_budget": 2,
+      "retry_limit": 2,
+      "canvas": [
+        832,
+        1120
+      ]
+    },
+    "human_full_power_gpu": {
+      "candidate_budget": 6,
+      "retry_limit": 2,
+      "canvas": [
+        1196,
+        1610
+      ]
+    },
+    "agent_local_mac_16gb": {
+      "candidate_budget": 2,
+      "retry_limit": 2,
+      "canvas": [
+        832,
+        1120
+      ]
+    },
+    "agent_remote_runpod": {
+      "candidate_budget": 6,
+      "retry_limit": 2,
+      "canvas": [
+        1196,
+        1610
+      ]
+    }
+  },
+  "status": "PLANNED_BLOCKED_UNTIL_LIVE_RUNTIME_AND_CALIBRATION_FIXTURES",
+  "hard_rule": "eliminate identity failures before style ranking; no face swapping; no final output from an un-audited route"
+}
