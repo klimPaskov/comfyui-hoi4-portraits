@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-26T16:01:35.301669+00:00",
+  "created_at": "2026-07-26T18:55:19.179066+00:00",
   "profile": "agent_local_mac_16gb",
   "status": "BLOCKED_RUNTIME_UNAVAILABLE",
   "status_reason": "The target local runtime is not installed or its accelerator capability is not verified.",
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9821.\nPages active:                            359707.\nPages inactive:                          357773.\nPages speculative:                         3181.\nPages throttled:                              0.\nPages wired down:                        146079.\nPages purgeable:                           7597.\n\"Translation faults\":                  44849613.\nPages copy-on-write:                    4325331.\nPages zero filled:                     26066746.\nPages reactivated:                      1017126.\nPages purged:                            248634.\nFile-backed pages:                       259358.\nAnonymous pages:                         461303.\nPages stored in compressor:              286964.\nPages occupied by compressor:            129092.\nDecompressions:                          345535.\nCompressions:                            758291.\nPageins:                                3024994.\nPageouts:                                 10211.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               29245.\nPages active:                            349544.\nPages inactive:                          363543.\nPages speculative:                         3826.\nPages throttled:                              0.\nPages wired down:                        129413.\nPages purgeable:                          13545.\n\"Translation faults\":                  50239691.\nPages copy-on-write:                    4859224.\nPages zero filled:                     29379792.\nPages reactivated:                      1103372.\nPages purged:                            279301.\nFile-backed pages:                       261763.\nAnonymous pages:                         455150.\nPages stored in compressor:              292061.\nPages occupied by compressor:            130312.\nDecompressions:                          349681.\nCompressions:                            768545.\nPageins:                                3061631.\nPageouts:                                 10879.\nSwapins:                                      0.\nSwapouts:                                     0.",
           "stderr": ""
         }
       },
@@ -51,7 +51,7 @@
           "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   144Gi   280Gi    34%    1.6M  2.9G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   144Gi   279Gi    34%    1.6M  2.9G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }

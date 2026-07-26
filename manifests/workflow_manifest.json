@@ -48,7 +48,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28"
+        "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -110,7 +110,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28"
+        "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -171,7 +171,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28"
+        "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -231,7 +231,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28"
+        "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",

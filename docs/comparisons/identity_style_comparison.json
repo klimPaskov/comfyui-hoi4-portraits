@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "comparison_id": "identity-style-comparison-2026-07-26.1",
-  "created_at": "2026-07-26T16:01:35.891297+00:00",
+  "created_at": "2026-07-26T18:55:19.746671+00:00",
   "status": "BLOCKED_NO_REAL_CANDIDATES",
   "reason": "No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence.",
   "matrix_id": "krea2_identity_style_factorial_v1",

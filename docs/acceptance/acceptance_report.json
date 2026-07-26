@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-26T16:01:36.063698+00:00",
+  "created_at": "2026-07-26T18:55:19.919206+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 15,
   "gates": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               10358.\nPages active:                            359712.\nPages inactive:                          357777.\nPages speculative:                         3182.\nPages throttled:                              0.\nPages wired down:                        145535.\nPages purgeable:                           7733.\n\"Translation faults\":                  44775768.\nPages copy-on-write:                    4309696.\nPages zero filled:                     26053953.\nPages reactivated:                      1017126.\nPages purged:                            248634.\nFile-backed pages:                       259354.\nAnonymous pages:                         461317.\nPages stored in compressor:              286964.\nPages occupied by compressor:            129092.\nDecompressions:                          345535.\nCompressions:                            758291.\nPageins:                                3024786.\nPageouts:                                 10211.\nSwapins:                                      0.\nSwapouts:                                     0.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               28649.\nPages active:                            354512.\nPages inactive:                          363530.\nPages speculative:                         3837.\nPages throttled:                              0.\nPages wired down:                        124994.\nPages purgeable:                          15367.\n\"Translation faults\":                  50095598.\nPages copy-on-write:                    4829649.\nPages zero filled:                     29357234.\nPages reactivated:                      1103372.\nPages purged:                            279301.\nFile-backed pages:                       261776.\nAnonymous pages:                         460103.\nPages stored in compressor:              292061.\nPages occupied by compressor:            130312.\nDecompressions:                          349681.\nCompressions:                            768545.\nPageins:                                3061235.\nPageouts:                                 10879.\nSwapins:                                      0.\nSwapouts:                                     0.",
             "stderr": ""
           }
         },
@@ -499,7 +499,7 @@
             "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits"
           ],
           "returncode": 0,
-          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   144Gi   280Gi    34%    1.6M  2.9G    0%   /System/Volumes/Data",
+          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   144Gi   279Gi    34%    1.6M  2.9G    0%   /System/Volumes/Data",
           "stderr": ""
         },
         "available_tools": {
@@ -831,8 +831,8 @@
               "Krea2EditModelPatch"
             ],
             "class_matches": {
-              "Krea2EditGroundedEncode": false,
-              "Krea2EditModelPatch": false
+              "Krea2EditModelPatch": false,
+              "Krea2EditGroundedEncode": false
             },
             "signature_match": false,
             "status": "BLOCKED"
@@ -868,8 +868,8 @@
               "HOI4SourceGuard",
               "HOI4SubjectSelect"
             ],
-            "expected_source_tree_checksum": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28",
-            "actual_source_tree_checksum": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28",
+            "expected_source_tree_checksum": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1",
+            "actual_source_tree_checksum": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1",
             "source_checksum_match": true,
             "status": "PASS"
           }
@@ -889,8 +889,8 @@
             "profile_lock": "linux_amd64_cuda128",
             "path": "dependencies/runtime_profiles/linux_amd64_cuda128.lock.txt",
             "status": "PASS",
-            "expected_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
-            "actual_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+            "expected_sha256": "592fde5a23ae6cbcb02960aecaa112f1ef691709d57272466492e411f98dbd75",
+            "actual_sha256": "592fde5a23ae6cbcb02960aecaa112f1ef691709d57272466492e411f98dbd75",
             "content_ok": true,
             "invalid_packages": []
           },
@@ -898,8 +898,8 @@
             "profile_lock": "macos_arm64_cpu",
             "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt",
             "status": "PASS",
-            "expected_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
-            "actual_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+            "expected_sha256": "d2bf5423176996882a546a92e0698d10ce08e914288da6ad2655cae7d142b6df",
+            "actual_sha256": "d2bf5423176996882a546a92e0698d10ce08e914288da6ad2655cae7d142b6df",
             "content_ok": true,
             "invalid_packages": []
           }
@@ -1053,9 +1053,51 @@
             "expected_sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79"
           }
         ],
+        "source_artifact_checks": [
+          {
+            "name": "BiRefNet",
+            "filename": "config.json",
+            "status": "BLOCKED_NOT_INSTALLED",
+            "path": "models/preprocessing/birefnet/config.json",
+            "artifact_url": "https://huggingface.co/ZhengPeng7/BiRefNet/resolve/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/config.json",
+            "source_revision": "e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4",
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 405,
+            "sha256": null,
+            "expected_sha256": "c97ea21569daf66b205491a4635147dd3bc42c7c168b89d7d75b53f67ef548ae"
+          },
+          {
+            "name": "BiRefNet",
+            "filename": "BiRefNet_config.py",
+            "status": "BLOCKED_NOT_INSTALLED",
+            "path": "models/preprocessing/birefnet/BiRefNet_config.py",
+            "artifact_url": "https://huggingface.co/ZhengPeng7/BiRefNet/resolve/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/BiRefNet_config.py",
+            "source_revision": "e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4",
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 298,
+            "sha256": null,
+            "expected_sha256": "e7b8c2a74f6cea6a59553d517f71d47f2c1d90e670a13416af17c25fe2f3dc52"
+          },
+          {
+            "name": "BiRefNet",
+            "filename": "birefnet.py",
+            "status": "BLOCKED_NOT_INSTALLED",
+            "path": "models/preprocessing/birefnet/birefnet.py",
+            "artifact_url": "https://huggingface.co/ZhengPeng7/BiRefNet/resolve/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py",
+            "source_revision": "e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4",
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 91896,
+            "sha256": null,
+            "expected_sha256": "208771ae626f653d64128fbf2d6ac9f8e645c5cc5e286258a73ec3322bbfe5ef"
+          }
+        ],
         "missing_checksums": [],
         "unexpected_files": [],
         "mandatory_count": 5,
+        "source_artifact_count": 3,
         "source_verification_path": "docs/preflight/preprocessing_artifact_sources.json",
         "source_verification_status": "PASS",
         "source_verification_issues": []
@@ -1153,7 +1195,11 @@
             "source_url": "https://github.com/ZhengPeng7/BiRefNet/blob/25cb9309bacf3dde954e4584594e16e142c51de5/LICENSE",
             "artifact_source_url": "https://huggingface.co/ZhengPeng7/BiRefNet",
             "license_identifier": "Apache-2.0",
-            "status": "PRIMARY_SOURCE_REVIEWED"
+            "artifact_snapshot_license_metadata": "MIT",
+            "status": "REVIEW_REQUIRED_LICENSE_RECONCILIATION",
+            "material_conditions": [
+              "the pinned GitHub source and Hugging Face snapshot expose different license metadata; owner review must resolve which terms govern the downloaded weights and trusted runtime code before redistribution"
+            ]
           },
           {
             "name": "DDColor preprocessing artifact",
@@ -1621,7 +1667,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28"
+          "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
@@ -1683,7 +1729,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28"
+          "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
@@ -1744,7 +1790,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28"
+          "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
@@ -1804,7 +1850,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28"
+          "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
