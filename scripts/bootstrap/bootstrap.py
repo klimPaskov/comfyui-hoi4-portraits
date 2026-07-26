@@ -30,7 +30,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from portrait_pipeline.constants import ExitCode  # noqa: E402
 from portrait_pipeline.comfy_client import ComfyTransportError, LoopbackComfyClient  # noqa: E402
 from portrait_pipeline.graph_spec.builder import build_workflow_artifacts  # noqa: E402
-from portrait_pipeline.preflight import collect_preflight, render_markdown  # noqa: E402
+from portrait_pipeline.preflight import PROFILE_RUNTIME_LOCKS, collect_preflight, render_markdown  # noqa: E402
 from portrait_pipeline.util import atomic_json_write, sha256_file  # noqa: E402
 from portrait_pipeline.workflow_validation import validate_all_workflows  # noqa: E402
 
@@ -89,11 +89,12 @@ def _python_executable(venv: Path) -> Path:
     return candidate
 
 
-def _requirements_file(lock: dict[str, Any], runtime_lock: dict[str, Any]) -> Path:
+def _requirements_file(lock: dict[str, Any], runtime_lock: dict[str, Any], *, include_runtime: bool = True) -> Path:
     lines: list[str] = []
     seen: set[tuple[str, str]] = set()
     entries = [item for item in lock.get("dependencies", []) if item.get("kind") in {"python_package", "python_build_dependency"} and item.get("mandatory")]
-    entries.extend(item for item in runtime_lock.get("requirements", []) if item.get("mandatory"))
+    if include_runtime:
+        entries.extend(item for item in runtime_lock.get("requirements", []) if item.get("mandatory"))
     for entry in entries:
         name = str(entry.get("name", ""))
         version = str(entry.get("version_or_commit", entry.get("version", "")))
@@ -114,7 +115,7 @@ def _requirements_file(lock: dict[str, Any], runtime_lock: dict[str, Any]) -> Pa
     return Path(handle.name)
 
 
-def _install_python_environment(lock: dict[str, Any], runtime_lock: dict[str, Any], actions: list[dict[str, Any]]) -> Path:
+def _install_python_environment(lock: dict[str, Any], runtime_lock: dict[str, Any], actions: list[dict[str, Any]], profile: str) -> Path:
     uv = shutil.which("uv")
     if not uv:
         raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "uv is required for the pinned Python environment")
@@ -122,7 +123,20 @@ def _install_python_environment(lock: dict[str, Any], runtime_lock: dict[str, An
     if not venv.exists():
         actions.append(_run_checked([uv, "venv", str(venv), "--python", os.environ.get("PORTRAIT_PYTHON", "3.12")], ROOT))
     python = _python_executable(venv)
-    requirements = _requirements_file(lock, runtime_lock)
+    profile_for_lock = {
+        "local_mac_16gb": "agent_local_mac_16gb",
+        "full_power_gpu": "human_full_power_gpu",
+        "remote_runpod": "agent_remote_runpod",
+    }.get(profile, profile)
+    profile_lock_id = PROFILE_RUNTIME_LOCKS.get(profile_for_lock)
+    profile_lock = runtime_lock.get("profile_locks", {}).get(profile_lock_id, {}) if profile_lock_id else {}
+    profile_lock_path = ROOT / str(profile_lock.get("path", ""))
+    if not profile_lock_id or not profile_lock_path.is_file() or profile_lock.get("status") != "RESOLVED" or sha256_file(profile_lock_path) != profile_lock.get("sha256"):
+        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"resolved runtime profile lock is unavailable for {profile}")
+    actions.append({"action": "runtime_profile_lock_verified", "profile": profile, "path": str(profile_lock_path.relative_to(ROOT)), "sha256": sha256_file(profile_lock_path)})
+    profile_result = _run_checked([uv, "pip", "install", "--python", str(python), "--require-hashes", "-r", str(profile_lock_path)], ROOT)
+    actions.append({"action": "runtime_profile_installed", "profile": profile, "result": profile_result})
+    requirements = _requirements_file(lock, runtime_lock, include_runtime=False)
     try:
         actions.append(_run_checked([uv, "pip", "install", "--python", str(python), "--require-hashes", "-r", str(requirements)], ROOT))
         actions.append(_run_checked([uv, "pip", "install", "--python", str(python), "--no-deps", "-e", str(ROOT)], ROOT))
@@ -229,7 +243,7 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
     project_nodes.symlink_to(ROOT / "src" / "comfyui_hoi4_portrait_nodes", target_is_directory=True)
     actions.append({"action": "project_nodes_symlink", "path": str(project_nodes), "target": str(project_nodes.resolve())})
     runtime_lock = json.loads((ROOT / "dependencies" / "runtime_requirements_lock.json").read_text(encoding="utf-8"))
-    python = _install_python_environment(dependency_lock, runtime_lock, actions)
+    python = _install_python_environment(dependency_lock, runtime_lock, actions, profile)
     _restore_models(json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8")), profile, actions)
     lora_path = ROOT / "loras" / "hoi4_portrait_new_style_lora.safetensors"
     if not lora_path.is_file() or sha256_file(lora_path) != "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1":

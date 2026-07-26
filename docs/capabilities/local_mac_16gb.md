@@ -1,6 +1,6 @@
 # Initial Preflight Report
 
-- Collected: `2026-07-26T14:35:04.198073+00:00`
+- Collected: `2026-07-26T15:04:38.008427+00:00`
 - Status: **BLOCKED**
 - Installation permitted: **False**
 - Recommended exit code: `15`
@@ -17,7 +17,7 @@
 | `planning_package_checksums` | **PASS** | `{}` |
 | `model_artifact_preflight` | **BLOCKED** | `{"checks": [{"expected_sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1", "expected_size_bytes": 13141730784, "format": ".safetensors", "format_supported": true, "name": "krea2_turbo_fp8_scaled.safetensors", "path": "models/diffusion_models/krea2_turbo_fp8_scaled.safetensors", "present": false, "sha256": null, "size_bytes": null, "status": "BLOCKED"}, {"expected_sha256": "54bd5144df0bbc25dd6ccadfcb826b521445a1b06ae5a42570bdd2974ca87094", "expected_size_bytes": 524246796` |
 | `custom_node_preflight` | **BLOCKED** | `{"checks": [{"actual_revision": null, "class_matches": {"Krea2EditGroundedEncode": false, "Krea2EditModelPatch": false}, "expected_classes": ["Krea2EditGroundedEncode", "Krea2EditModelPatch"], "name": "comfyui-krea2edit", "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/comfyui/custom_nodes/comfyui-krea2edit", "present": false, "revision": "cae442e11b59bcba04ed82f4c01ffe3752531fe1", "revision_match": false, "signature_files": [], "signature_match": false, "status": "BLOCKED"}` |
-| `comfyui_runtime_dependency_lock` | **BLOCKED** | `{"path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/runtime_requirements_lock.json", "unresolved": ["comfyui-frontend-package", "comfyui-workflow-templates", "comfyui-embedded-docs", "torch", "torchsde", "torchvision", "torchaudio", "numpy", "einops", "transformers", "tokenizers", "sentencepiece", "safetensors", "aiohttp", "yarl", "pyyaml", "scipy", "tqdm", "psutil", "alembic", "SQLAlchemy", "filelock", "av", "comfy-kitchen", "comfy-aimdo", "requests", "simpleeval"` |
+| `comfyui_runtime_dependency_lock` | **PASS** | `{"checks": [{"actual_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5", "content_ok": true, "expected_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5", "invalid_packages": [], "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt", "profile_lock": "macos_arm64_cpu", "status": "PASS"}], "lock_status": "RESOLVED_PROFILE_LOCKS_LIVE_COMPATIBILITY_UNVERIFIED", "mode": "profile_locks", "path": "/Users/klimpaskov/Documents/Projects/comfyui-` |
 | `remote_topology_auth` | **NOT_APPLICABLE** | `{"credential_presence": {"GITHUB_TOKEN": false, "HF_TOKEN": false, "PORTRAIT_GATEWAY_TOKEN": false, "RUNPOD_API_KEY": false, "RUNPOD_ENDPOINT_ID": false}, "profile": "agent_local_mac_16gb", "raw_comfyui_binding": "not configured", "remote_gateway": "authenticated_only"}` |
 | `repository_preflight` | **PASS** | `{"chaos_redux": {"exists": true, "head": {"returncode": 0, "stderr": "", "stdout": "420cfb326e8ec78ec5641b152f32fce2b2d94db6"}, "is_git": true, "path": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux", "remote": {"returncode": 0, "stderr": "", "stdout": "origin\tgit@github.com:klimPaskov/Chaos-Redux.git (fetch)\norigin\tgit@github.com:klimPaskov/Chaos-Redux.git (push)"}, "status": {"returncode": 0, "stderr": "", "stdout": "## master...origin/master\n?? docs/ass` |
 | `calibrated_identity_thresholds` | **BLOCKED** | `{"approved_by": [], "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/config/identity_thresholds.json", "present": true, "thresholds_id": "UNSET_BLOCK_EXECUTION"}` |
@@ -32,7 +32,6 @@
 - No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.
 - Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.
 - One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.
-- The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.
 - No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
 - Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.

@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0",
+  "comparison_id": "identity-style-comparison-2026-07-26.1",
+  "created_at": "2026-07-26T15:12:46.107205+00:00",
+  "status": "BLOCKED_NO_REAL_CANDIDATES",
+  "reason": "No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence.",
+  "matrix_id": "krea2_identity_style_factorial_v1",
+  "selection_policy": {
+    "identity_first": true,
+    "selection_order": [
+      "identity_gates",
+      "geometry_gates",
+      "accessories",
+      "mask",
+      "style",
+      "runtime",
+      "reproducibility"
+    ],
+    "face_swap_permitted": false,
+    "style_ranking_before_identity": false
+  },
+  "candidate_counts": {
+    "observed": 0,
+    "required_for_matrix": "profile_budgeted"
+  },
+  "comparison_artifacts": [],
+  "metrics": {
+    "identity_pass_rate": null,
+    "geometry_pass_rate": null,
+    "expression_pass_rate": null,
+    "accessory_pass_rate": null,
+    "mask_pass_rate": null,
+    "style_pass_rate_among_identity_pass": null,
+    "median_runtime_seconds": null,
+    "tail_runtime_seconds": null,
+    "peak_memory_bytes": null,
+    "repeated_seed_variance": null
+  },
+  "preflight": {
+    "status": "BLOCKED",
+    "gate_statuses": {
+      "hardware_detection": "PASS",
+      "local_runtime_capability": "BLOCKED",
+      "immutable_style_lora": "PASS",
+      "approved_source_background": "BLOCKED",
+      "source_fixture_and_provenance": "BLOCKED",
+      "planning_package_checksums": "PASS",
+      "model_artifact_preflight": "BLOCKED",
+      "custom_node_preflight": "BLOCKED",
+      "comfyui_runtime_dependency_lock": "PASS",
+      "remote_topology_auth": "BLOCKED",
+      "repository_preflight": "PASS",
+      "calibrated_identity_thresholds": "BLOCKED",
+      "krea_live_compatibility": "BLOCKED",
+      "preprocessing_and_audit_dependencies": "BLOCKED",
+      "license_and_rights_review": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW"
+    },
+    "blockers": [
+      "The required MPS runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
+      "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
+      "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
+      "Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.",
+      "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
+      "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
+      "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
+      "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
+      "Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.",
+      "Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run.",
+      "License/rights review is not fully approved for Krea redistribution or the unresolved background."
+    ]
+  },
+  "claims": {
+    "identity_winner": null,
+    "style_winner": null,
+    "comparison_sheet": "NOT_CREATED",
+    "final_png": "NOT_CREATED",
+    "final_dds": "NOT_CREATED"
+  }
+}

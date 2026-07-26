@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0.0",
   "profile": "local_mac_16gb",
-  "created_at": "2026-07-26T14:35:04.198119+00:00",
+  "created_at": "2026-07-26T15:04:38.008470+00:00",
   "status": "BLOCKED",
   "installation_permitted": false,
   "preflight": {
     "schema_version": "1.0.0",
-    "collected_at": "2026-07-26T14:35:04.198073+00:00",
+    "collected_at": "2026-07-26T15:04:38.008427+00:00",
     "project_root": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits",
     "profile": "agent_local_mac_16gb",
     "hardware": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                8430.\nPages active:                            362523.\nPages inactive:                          348801.\nPages speculative:                        11627.\nPages throttled:                              0.\nPages wired down:                        143120.\nPages purgeable:                          10880.\n\"Translation faults\":                  28789243.\nPages copy-on-write:                    1964754.\nPages zero filled:                     19568713.\nPages reactivated:                       992632.\nPages purged:                            206390.\nFile-backed pages:                       267782.\nAnonymous pages:                         455169.\nPages stored in compressor:              292686.\nPages occupied by compressor:            130828.\nDecompressions:                          333406.\nCompressions:                            751636.\nPageins:                                2878714.\nPageouts:                                  9626.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                8784.\nPages active:                            360397.\nPages inactive:                          358696.\nPages speculative:                          913.\nPages throttled:                              0.\nPages wired down:                        148085.\nPages purgeable:                          11715.\n\"Translation faults\":                  32808891.\nPages copy-on-write:                    2517586.\nPages zero filled:                     21629735.\nPages reactivated:                       997636.\nPages purged:                            222188.\nFile-backed pages:                       255624.\nAnonymous pages:                         464382.\nPages stored in compressor:              289011.\nPages occupied by compressor:            129202.\nDecompressions:                          337030.\nCompressions:                            751636.\nPageins:                                2909911.\nPageouts:                                  9675.\nSwapins:                                      0.\nSwapouts:                                     0.",
           "stderr": ""
         }
       },
@@ -82,7 +82,7 @@
                 "/usr/bin/vm_stat"
               ],
               "returncode": 0,
-              "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                8430.\nPages active:                            362523.\nPages inactive:                          348801.\nPages speculative:                        11627.\nPages throttled:                              0.\nPages wired down:                        143120.\nPages purgeable:                          10880.\n\"Translation faults\":                  28789243.\nPages copy-on-write:                    1964754.\nPages zero filled:                     19568713.\nPages reactivated:                       992632.\nPages purged:                            206390.\nFile-backed pages:                       267782.\nAnonymous pages:                         455169.\nPages stored in compressor:              292686.\nPages occupied by compressor:            130828.\nDecompressions:                          333406.\nCompressions:                            751636.\nPageins:                                2878714.\nPageouts:                                  9626.\nSwapins:                                      0.\nSwapouts:                                     0.",
+              "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                8784.\nPages active:                            360397.\nPages inactive:                          358696.\nPages speculative:                          913.\nPages throttled:                              0.\nPages wired down:                        148085.\nPages purgeable:                          11715.\n\"Translation faults\":                  32808891.\nPages copy-on-write:                    2517586.\nPages zero filled:                     21629735.\nPages reactivated:                       997636.\nPages purged:                            222188.\nFile-backed pages:                       255624.\nAnonymous pages:                         464382.\nPages stored in compressor:              289011.\nPages occupied by compressor:            129202.\nDecompressions:                          337030.\nCompressions:                            751636.\nPageins:                                2909911.\nPageouts:                                  9675.\nSwapins:                                      0.\nSwapouts:                                     0.",
               "stderr": ""
             }
           },
@@ -779,8 +779,8 @@
                 "Krea2EditModelPatch"
               ],
               "class_matches": {
-                "Krea2EditModelPatch": false,
-                "Krea2EditGroundedEncode": false
+                "Krea2EditGroundedEncode": false,
+                "Krea2EditModelPatch": false
               },
               "signature_match": false,
               "status": "BLOCKED"
@@ -826,38 +826,22 @@
       },
       {
         "name": "comfyui_runtime_dependency_lock",
-        "status": "BLOCKED",
+        "status": "PASS",
         "evidence": {
           "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/runtime_requirements_lock.json",
-          "unresolved": [
-            "comfyui-frontend-package",
-            "comfyui-workflow-templates",
-            "comfyui-embedded-docs",
-            "torch",
-            "torchsde",
-            "torchvision",
-            "torchaudio",
-            "numpy",
-            "einops",
-            "transformers",
-            "tokenizers",
-            "sentencepiece",
-            "safetensors",
-            "aiohttp",
-            "yarl",
-            "pyyaml",
-            "scipy",
-            "tqdm",
-            "psutil",
-            "alembic",
-            "SQLAlchemy",
-            "filelock",
-            "av",
-            "comfy-kitchen",
-            "comfy-aimdo",
-            "requests",
-            "simpleeval",
-            "blake3"
+          "status": "PASS",
+          "mode": "profile_locks",
+          "lock_status": "RESOLVED_PROFILE_LOCKS_LIVE_COMPATIBILITY_UNVERIFIED",
+          "checks": [
+            {
+              "profile_lock": "macos_arm64_cpu",
+              "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt",
+              "status": "PASS",
+              "expected_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+              "actual_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+              "content_ok": true,
+              "invalid_packages": []
+            }
           ]
         }
       },
@@ -1057,7 +1041,6 @@
       "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
       "Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.",
       "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
-      "The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.",
       "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
       "Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.",
@@ -1073,7 +1056,7 @@
     {
       "action": "installation",
       "status": "SKIPPED_HARD_PREFLIGHT_BLOCK",
-      "reason": "The required MPS runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable. and The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked. and No legally usable source portrait fixture and complete provenance record is present for calibration or route execution. and Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified. and One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked. and The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums. and No live generic agentic HOI4 target repository was found; only the planning proposal is available. and Identity/style thresholds are still calibration placeholders; no production candidate may be accepted. and Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime. and Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run. and License/rights review is not fully approved for Krea redistribution or the unresolved background."
+      "reason": "The required MPS runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable. and The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked. and No legally usable source portrait fixture and complete provenance record is present for calibration or route execution. and Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified. and One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked. and No live generic agentic HOI4 target repository was found; only the planning proposal is available. and Identity/style thresholds are still calibration placeholders; no production candidate may be accepted. and Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime. and Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run. and License/rights review is not fully approved for Krea redistribution or the unresolved background."
     }
   ],
   "workflow_validation": [

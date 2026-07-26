@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "lock_version": "runpod-image-2026-07-26.1",
+  "status": "BLOCKED_UNRESOLVED_RUNTIME_LOCK",
+  "build_permitted": false,
+  "target": {"provider": "RunPod", "deployment": "Pod", "os": "linux", "architecture": "amd64"},
+  "base_image": {
+    "reference": "nvidia/cuda:12.8.1-cudnn-runtime-ubuntu22.04@sha256:59e0e4376a0f16d10b03d3a14344b80a866a1674cb4948cb318291387ac05010",
+    "tag": "12.8.1-cudnn-runtime-ubuntu22.04",
+    "digest": "sha256:59e0e4376a0f16d10b03d3a14344b80a866a1674cb4948cb318291387ac05010",
+    "platform": "linux/amd64",
+    "official_source": "https://hub.docker.com/layers/nvidia/cuda/12.8.1-cudnn-runtime-ubuntu22.04/images/sha256-59e0e4376a0f16d10b03d3a14344b80a866a1674cb4948cb318291387ac05010",
+    "verification_status": "PRIMARY_SOURCE_RECORDED"
+  },
+  "python": {
+    "version": "3.12.13",
+    "source": "official CPython or uv-managed distribution",
+    "artifact_sha256": null,
+    "status": "BLOCKED_IMAGE_ARTIFACT_HASH_REQUIRED"
+  },
+  "pytorch": {
+    "version": "2.11.0+cu128",
+    "cuda_variant": "cu128",
+    "official_index": "https://download.pytorch.org/whl/cu128",
+    "artifact_hashes": "dependencies/runtime_profiles/linux_amd64_cuda128.lock.txt",
+    "runtime_profile_lock_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+    "status": "PINNED_PROFILE_LOCK_LIVE_GPU_UNVERIFIED"
+  },
+  "project_pins": {
+    "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+    "comfyui_manager_commit": "2ce7556b3f36b2edf75b16605dd6109e5939fbd8",
+    "comfyui_krea2edit_commit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+    "project_node_tree_sha256": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f",
+    "style_lora_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
+  },
+  "models": {
+    "source": "dependencies/models.lock.json",
+    "policy": "download only exact official/primary revisions and SHA-256 values; never bake weights into public image layers",
+    "status": "PINNED_IN_PROJECT_LOCK_NOT_INSTALLED"
+  },
+  "system_packages": {"packages": [], "status": "BLOCKED_VERSION_PIN_REQUIRED"},
+  "unresolved": [
+    "Python artifact and checksum are not resolved for the image build.",
+    "The PyTorch/cu128 profile is checksum-locked, but a live GPU compatibility/import test is unverified.",
+    "System library versions are not pinned.",
+    "A live RunPod Pod, empty-volume bootstrap, remote authentication, and generation acceptance have not been run."
+  ],
+  "secrets_policy": {
+    "baked_into_image": false,
+    "required_runtime_secret_names": ["PORTRAIT_GATEWAY_TOKEN"],
+    "optional_runtime_secret_names": ["HF_TOKEN", "GITHUB_TOKEN"],
+    "values_recorded": false
+  }
+}

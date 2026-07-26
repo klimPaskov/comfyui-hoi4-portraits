@@ -126,6 +126,39 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(next(g["status"] for g in local["gates"] if g["name"] == "remote_topology_auth"), "NOT_APPLICABLE")
         self.assertEqual(next(g["status"] for g in remote["gates"] if g["name"] == "remote_topology_auth"), "BLOCKED")
 
+    def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
+        for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_remote_runpod"):
+            report = collect_preflight(self.root, profile=profile)
+            gate = next(gate for gate in report["gates"] if gate["name"] == "comfyui_runtime_dependency_lock")
+            self.assertEqual(gate["status"], "PASS", gate)
+            self.assertEqual(gate["evidence"]["mode"], "profile_locks")
+
+    def test_benchmark_and_comparison_reports_never_claim_generation_without_evidence(self):
+        from portrait_pipeline.benchmarks import build_benchmark_report
+        from portrait_pipeline.comparisons import build_comparison_report
+
+        benchmark = build_benchmark_report(self.root, "agent_local_mac_16gb")
+        self.assertNotEqual(benchmark["status"], "PASS")
+        self.assertEqual(benchmark["claims"]["final_png"], "NOT_CREATED")
+        self.assertEqual(benchmark["measurements"]["generation"]["candidate_count"], 0)
+        comparison = build_comparison_report(self.root)
+        self.assertEqual(comparison["status"], "BLOCKED_NO_REAL_CANDIDATES")
+        self.assertEqual(comparison["candidate_counts"]["observed"], 0)
+        self.assertIsNone(comparison["claims"]["identity_winner"])
+
+    def test_runpod_surface_is_fail_closed_and_keeps_raw_comfy_loopback(self):
+        image_lock = json.loads((self.root / "deploy/runpod/image_lock.json").read_text(encoding="utf-8"))
+        dockerfile = (self.root / "deploy/runpod/Dockerfile").read_text(encoding="utf-8")
+        gateway = (self.root / "src/portrait_pipeline/mcp/gateway.py").read_text(encoding="utf-8")
+        self.assertFalse(image_lock["build_permitted"])
+        self.assertTrue(image_lock["base_image"]["reference"].startswith("nvidia/cuda:"))
+        self.assertIn("127.0.0.1", dockerfile)
+        self.assertIn("IMAGE_LOCK_STATUS", dockerfile)
+        for route in ("/v1/uploads", "/v1/jobs", "/v1/capabilities"):
+            self.assertIn(route, (self.root / "deploy/runpod/README.md").read_text(encoding="utf-8"))
+        self.assertIn("agent_remote_runpod", gateway)
+        self.assertIn("arbitrary ComfyUI workflow submission", (self.root / "deploy/runpod/README.md").read_text(encoding="utf-8"))
+
     def test_remote_adapter_errors_use_authenticated_machine_contract(self):
         service = PortraitMcpService(self.root, remote=True)
         with self.assertRaises(AdapterError) as context:
@@ -135,6 +168,58 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(error["error"]["code"], "REMOTE_AUTH_OR_TRANSPORT_FAILED")
         self.assertIn("retryable", error["error"])
         self.assertIn("stage", error["error"])
+
+    def test_rest_gateway_auth_upload_and_idempotency(self):
+        import hashlib
+        import io
+        import threading
+        import urllib.error
+        import urllib.request
+        from http.server import ThreadingHTTPServer
+        from PIL import Image
+
+        from portrait_pipeline.mcp.gateway import PortraitGateway, _GatewayHandler
+
+        with tempfile.TemporaryDirectory() as directory, mock.patch.dict("os.environ", {"PORTRAIT_GATEWAY_TOKEN": "unit-token"}):
+            root = Path(directory)
+            (root / "schemas").symlink_to(self.root / "schemas", target_is_directory=True)
+            service = PortraitMcpService(root, remote=True)
+            application = PortraitGateway(root, service=service)
+            _GatewayHandler.application = application
+            server = ThreadingHTTPServer(("127.0.0.1", 0), _GatewayHandler)
+            worker = threading.Thread(target=server.serve_forever, daemon=True)
+            worker.start()
+            try:
+                base = f"http://127.0.0.1:{server.server_port}"
+                image_buffer = io.BytesIO()
+                Image.new("RGBA", (2, 2), (1, 2, 3, 255)).save(image_buffer, format="PNG")
+                image_bytes = image_buffer.getvalue()
+                digest = hashlib.sha256(image_bytes).hexdigest()
+
+                with self.assertRaises(urllib.error.HTTPError) as unauthorized:
+                    urllib.request.urlopen(urllib.request.Request(base + "/v1/health"), timeout=5)
+                self.assertEqual(unauthorized.exception.code, 401)
+
+                headers = {"Authorization": "Bearer unit-token", "Content-Type": "application/json", "Idempotency-Key": "upload-key-001"}
+                metadata = {"job_id": "gateway-test-001", "filename": "source.png", "mime_type": "image/png", "size_bytes": len(image_bytes), "sha256": digest}
+                request = urllib.request.Request(base + "/v1/uploads", data=json.dumps(metadata).encode("utf-8"), headers=headers, method="POST")
+                with urllib.request.urlopen(request, timeout=5) as response:
+                    upload = json.loads(response.read().decode("utf-8"))
+                    self.assertEqual(response.status, 201)
+                upload_id = upload["upload_id"]
+                put_headers = {"Authorization": "Bearer unit-token", "X-Portrait-Job-Id": "gateway-test-001", "Content-Type": "image/png", "Content-SHA256": digest}
+                request = urllib.request.Request(base + f"/v1/uploads/{upload_id}", data=image_bytes, headers=put_headers, method="PUT")
+                with urllib.request.urlopen(request, timeout=5) as response:
+                    uploaded = json.loads(response.read().decode("utf-8"))
+                self.assertEqual(uploaded["state"], "UPLOADED")
+                request = urllib.request.Request(base + "/v1/uploads", data=json.dumps(metadata).encode("utf-8"), headers=headers, method="POST")
+                with urllib.request.urlopen(request, timeout=5) as response:
+                    repeated = json.loads(response.read().decode("utf-8"))
+                self.assertEqual(repeated["upload_id"], upload_id)
+            finally:
+                server.shutdown()
+                server.server_close()
+                worker.join(timeout=5)
 
     def test_adapter_rejects_non_object_stdio_requests_without_crashing(self):
         import io

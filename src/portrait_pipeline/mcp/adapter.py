@@ -82,6 +82,11 @@ class PortraitMcpService:
         if not expected or not token or not secrets.compare_digest(token, expected):
             raise AdapterError(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "remote adapter authentication failed", retryable=False, stage="AUTHENTICATING_REMOTE_CALL")
 
+    def authenticate(self, token: str | None) -> None:
+        """Authorize a gateway request without performing a ComfyUI call."""
+
+        self._check_remote_auth(token)
+
     @staticmethod
     def _profile(params: dict[str, Any]) -> str | None:
         profile = params.get("profile")

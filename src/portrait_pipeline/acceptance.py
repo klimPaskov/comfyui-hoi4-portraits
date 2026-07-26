@@ -9,6 +9,8 @@ from typing import Any
 
 from .constants import ExitCode
 from .audit import independent_audit_blocked
+from .benchmarks import write_benchmark_reports
+from .comparisons import write_comparison_report
 from .dds import DdsValidationError, convert_png_to_dds
 from .experiments import build_matrix
 from .graph_spec.builder import build_workflow_artifacts
@@ -100,11 +102,94 @@ def _dds_gate(root: Path) -> dict[str, Any]:
     return {"status": "PASS" if negative_passed and positive_passed else "FAIL", "negative_gate": "PASS" if negative_passed else "FAIL", "positive_round_trip": "PASS" if positive_passed else "FAIL", "evidence": "synthetic-only; production DDS remains prohibited until a real independent all-PASS audit exists"}
 
 
+def _runpod_deployment_gate(root: Path) -> dict[str, Any]:
+    deployment_root = root / "deploy" / "runpod"
+    required = ["Dockerfile", "entrypoint.sh", "install_runtime.sh", "readiness.py", "healthcheck.sh", "image_lock.json", "README.md"]
+    missing = [name for name in required if not (deployment_root / name).is_file()]
+    image_lock: dict[str, Any] = {}
+    if not missing:
+        try:
+            image_lock = json.loads((deployment_root / "image_lock.json").read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            missing.append("image_lock.json:INVALID_JSON")
+    dockerfile = (deployment_root / "Dockerfile").read_text(encoding="utf-8") if (deployment_root / "Dockerfile").is_file() else ""
+    entrypoint = (deployment_root / "entrypoint.sh").read_text(encoding="utf-8") if (deployment_root / "entrypoint.sh").is_file() else ""
+    structural_checks = {
+        "base_image_digest_pinned": "@sha256:" in dockerfile,
+        "raw_comfy_loopback": "127.0.0.1" in dockerfile and "127.0.0.1" in entrypoint,
+        "gateway_secret_runtime_only": "PORTRAIT_GATEWAY_TOKEN" in entrypoint and "values_recorded" in json.dumps(image_lock),
+        "model_weights_not_baked": "models" in json.dumps(image_lock) and "models" in (deployment_root / ".dockerignore").read_text(encoding="utf-8") if (deployment_root / ".dockerignore").is_file() else False,
+    }
+    status = "PASS" if not missing and image_lock.get("build_permitted") is True and all(structural_checks.values()) else ("BLOCKED_UNRESOLVED_IMAGE_LOCK" if not missing else "BLOCKED_DEPLOYMENT_SURFACE_MISSING")
+    return {
+        "status": status,
+        "path": str(deployment_root.relative_to(root)),
+        "required_files": required,
+        "missing": missing,
+        "structural_checks": structural_checks,
+        "image_lock_status": image_lock.get("status"),
+        "build_permitted": image_lock.get("build_permitted"),
+        "unresolved": image_lock.get("unresolved", []),
+        "acceptance_policy": "The deployment surface is not a successful remote runtime claim until an empty-volume Pod passes the documented live acceptance sequence.",
+    }
+
+
+def _schema_gate(root: Path) -> dict[str, Any]:
+    schema_files = {
+        "benchmark": (root / "schemas/portrait_benchmark_report.schema.json", sorted((root / "docs/benchmarks").glob("*.json"))),
+        "comparison": (root / "schemas/portrait_comparison_report.schema.json", [root / "docs/comparisons/identity_style_comparison.json"]),
+    }
+    try:
+        from jsonschema import Draft202012Validator  # type: ignore
+    except ImportError as exc:
+        return {"status": "BLOCKED", "reason": f"normative JSON Schema validator is unavailable: {type(exc).__name__}", "checked": []}
+    checked: list[dict[str, Any]] = []
+    for name, (schema_path, reports) in schema_files.items():
+        try:
+            validator = Draft202012Validator(json.loads(schema_path.read_text(encoding="utf-8")))
+        except (OSError, json.JSONDecodeError) as exc:
+            return {"status": "BLOCKED", "reason": f"{name} schema is unreadable: {type(exc).__name__}", "checked": checked}
+        for report_path in reports:
+            try:
+                payload = json.loads(report_path.read_text(encoding="utf-8"))
+                errors = sorted(validator.iter_errors(payload), key=lambda error: list(error.path))
+            except (OSError, json.JSONDecodeError) as exc:
+                errors = [f"report unreadable: {type(exc).__name__}"]
+            checked.append({"schema": str(schema_path.relative_to(root)), "report": str(report_path.relative_to(root)), "status": "PASS" if not errors else "FAIL", "error": str(errors[0]) if errors else None})
+    return {"status": "PASS" if checked and all(item["status"] == "PASS" for item in checked) else "BLOCKED", "checked": checked}
+
+
 def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
     root_path = project_root(root)
     workflow_manifest = build_workflow_artifacts(root_path)
     preflight = collect_preflight(root_path)
     workflows = validate_all_workflows(root_path)
+    benchmark_reports = write_benchmark_reports(root_path)
+    benchmark_gate = {
+        "status": "PASS" if benchmark_reports and all(report["status"] == "PASS" for report in benchmark_reports) else "BLOCKED",
+        "reports": [
+            {
+                "profile": report["profile"],
+                "status": report["status"],
+                "json_path": f"docs/benchmarks/{report['profile']}.json",
+                "markdown_path": f"docs/benchmarks/{report['profile']}.md",
+                "expected_model_bytes": report["resource_model"]["expected_model_bytes"],
+                "peak_memory_bytes": report["resource_model"]["peak_memory_bytes"],
+                "peak_vram_bytes": report["resource_model"]["peak_vram_bytes"],
+            }
+            for report in benchmark_reports
+        ],
+        "policy": "A blocked report is evidence of an unmeasured or unavailable gate, never a successful benchmark claim.",
+    }
+    comparison_report = write_comparison_report(root_path)
+    comparison_gate = {
+        "status": comparison_report["status"],
+        "json_path": "docs/comparisons/identity_style_comparison.json",
+        "markdown_path": "docs/comparisons/identity_style_comparison.md",
+        "candidate_count": comparison_report["candidate_counts"]["observed"],
+        "reason": comparison_report["reason"],
+    }
+    schema_gate = _schema_gate(root_path)
     prompt_gate = _prompt_gate()
     lora = root_path / "loras" / "hoi4_portrait_new_style_lora.safetensors"
     lora_gate = {"status": "PASS" if lora.is_file() and sha256_file(lora) == "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1" else "FAIL", "sha256": sha256_file(lora) if lora.is_file() else None}
@@ -124,11 +209,12 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
         "direct_application": "NOT_PERFORMED",
     }
     dds_guard = _dds_gate(root_path)
+    runpod_deployment = _runpod_deployment_gate(root_path)
     report = {
         "schema_version": "1.0.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" else "PASS",
-        "recommended_exit_code": preflight["recommended_exit_code"] if preflight["status"] != "PASS" else 0,
+        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" or benchmark_gate["status"] != "PASS" or comparison_gate["status"] != "PASS" or runpod_deployment["status"] != "PASS" or schema_gate["status"] != "PASS" else "PASS",
+        "recommended_exit_code": preflight["recommended_exit_code"] if preflight["status"] != "PASS" else (int(ExitCode.AUDIT_UNCERTAIN) if comparison_gate["status"] != "PASS" else 0),
         "gates": {
             "package_checksums": next((gate for gate in preflight["gates"] if gate["name"] == "planning_package_checksums"), None),
             "hardware_detection": next((gate for gate in preflight["gates"] if gate["name"] == "hardware_detection"), None),
@@ -149,6 +235,10 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
             "autoprompter_validator": prompt_gate,
             "dds_gate": dds_guard,
             "identity_style_experiments": experiments,
+            "benchmark_reports": benchmark_gate,
+            "identity_style_comparison": comparison_gate,
+            "runpod_deployment_surface": runpod_deployment,
+            "schema_validation": schema_gate,
             "integration_packages": integration,
             "secret_scan": _secret_scan(root_path),
         },
@@ -182,6 +272,20 @@ def render_report(report: dict[str, Any]) -> str:
         lines.append(f"| `{name}` | **{status}** |")
     lines.extend(["", "## Blockers", ""])
     lines.extend(f"- {item}" for item in report["preflight_blockers"])
+    additional: list[str] = []
+    for name, value in report["gates"].items():
+        if not isinstance(value, dict) or value.get("status") in {"PASS", "NOT_APPLICABLE"}:
+            continue
+        if name in {"package_checksums", "hardware_detection", "hardware_runtime", "remote_topology_auth", "approved_background", "source_fixture_and_provenance", "dependencies_and_models", "custom_node_preflight", "runtime_dependency_lock", "krea_live_compatibility", "preprocessing_and_audit_dependencies", "calibrated_identity_thresholds", "repository_preflight", "licenses_and_rights"}:
+            continue
+        if name == "benchmark_reports":
+            detail = ", ".join(f"{item['profile']}={item['status']}" for item in value.get("reports", []))
+        else:
+            detail = str(value.get("reason") or value.get("image_lock_status") or value.get("status"))
+        additional.append(f"`{name}`: {detail}")
+    if additional:
+        lines.extend(["", "## Additional blocked or skipped surfaces", ""])
+        lines.extend(f"- {item}" for item in additional)
     lines.extend(["", "## Runtime claims", "", "```json", json.dumps(report["runtime_claims"], indent=2), "```", ""])
     return "\n".join(lines)
 

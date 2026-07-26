@@ -15,6 +15,12 @@ from .constants import ExitCode, PROFILE_LIMITS, STYLE_LORA_PATH, STYLE_LORA_SHA
 from .util import atomic_json_write, is_sha256, project_root, relative_safe_path, sha256_file, tree_sha256
 
 SUPPORTED_MODEL_SUFFIXES = {".safetensors", ".gguf"}
+PROFILE_RUNTIME_LOCKS = {
+    "human_local_mac_16gb": "macos_arm64_cpu",
+    "agent_local_mac_16gb": "macos_arm64_cpu",
+    "human_full_power_gpu": "linux_amd64_cuda128",
+    "agent_remote_runpod": "linux_amd64_cuda128",
+}
 
 
 def _command(*args: str) -> dict[str, Any]:
@@ -258,6 +264,46 @@ def _custom_node_preflight(root: Path) -> dict[str, Any]:
     return {"status": status, "lock_path": str(lock_path), "checks": checks}
 
 
+def _runtime_lock_preflight(root: Path, lock: dict[str, Any], profile: str | None) -> dict[str, Any]:
+    """Validate a profile lock without treating structural resolution as live compatibility."""
+
+    profile_locks = lock.get("profile_locks")
+    if not isinstance(profile_locks, dict):
+        unresolved = [item.get("name") for item in lock.get("requirements", []) if item.get("mandatory") and (item.get("sha256") is None or str(item.get("version", "")).startswith("UNRESOLVED"))]
+        return {"status": "PASS" if lock.get("status") == "RESOLVED" and not unresolved else "BLOCKED", "mode": "legacy", "unresolved": unresolved}
+
+    selected = [PROFILE_RUNTIME_LOCKS[profile]] if profile in PROFILE_RUNTIME_LOCKS else sorted(profile_locks)
+    checks: list[dict[str, Any]] = []
+    all_pass = True
+    for lock_id in selected:
+        entry = profile_locks.get(lock_id, {})
+        relative = entry.get("path")
+        path = root / str(relative) if isinstance(relative, str) else None
+        actual_sha = sha256_file(path) if path is not None and path.is_file() else None
+        content_ok = False
+        invalid_packages: list[str] = []
+        if path is not None and path.is_file():
+            blocks: list[str] = []
+            current: list[str] = []
+            for raw_line in path.read_text(encoding="utf-8").splitlines():
+                line = raw_line.strip()
+                if not line or line.startswith("#") or (line.startswith("--") and not line.startswith("--hash=")):
+                    continue
+                if raw_line and not raw_line[0].isspace() and current:
+                    blocks.append("\n".join(current))
+                    current = []
+                current.append(line)
+            if current:
+                blocks.append("\n".join(current))
+            invalid_packages = [block.splitlines()[0] for block in blocks if "==" not in block or "--hash=sha256:" not in block or "UNRESOLVED" in block]
+            content_ok = bool(blocks) and not invalid_packages
+        expected_sha = entry.get("sha256")
+        item_ok = entry.get("status") == "RESOLVED" and path is not None and path.is_file() and is_sha256(expected_sha) and actual_sha == expected_sha and content_ok
+        all_pass &= item_ok
+        checks.append({"profile_lock": lock_id, "path": relative, "status": "PASS" if item_ok else "BLOCKED", "expected_sha256": expected_sha, "actual_sha256": actual_sha, "content_ok": content_ok, "invalid_packages": invalid_packages})
+    return {"status": "PASS" if all_pass and checks else "BLOCKED", "mode": "profile_locks", "lock_status": lock.get("status"), "checks": checks}
+
+
 def collect_preflight(root: str | Path | None = None, *, profile: str | None = None) -> dict[str, Any]:
     root_path = project_root(root)
     if profile is not None and profile not in PROFILE_LIMITS:
@@ -365,9 +411,9 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
 
     runtime_lock_path = root_path / "dependencies" / "runtime_requirements_lock.json"
     runtime_lock = json.loads(runtime_lock_path.read_text(encoding="utf-8")) if runtime_lock_path.is_file() else {}
-    runtime_unresolved = [item.get("name") for item in runtime_lock.get("requirements", []) if item.get("mandatory") and (item.get("sha256") is None or str(item.get("version", "")).startswith("UNRESOLVED"))]
-    runtime_lock_status = "PASS" if runtime_lock.get("status") == "RESOLVED" and not runtime_unresolved else "BLOCKED"
-    gates.append({"name": "comfyui_runtime_dependency_lock", "status": runtime_lock_status, "evidence": {"path": str(runtime_lock_path), "unresolved": runtime_unresolved}})
+    runtime_lock_evidence = _runtime_lock_preflight(root_path, runtime_lock, profile)
+    runtime_lock_status = runtime_lock_evidence["status"]
+    gates.append({"name": "comfyui_runtime_dependency_lock", "status": runtime_lock_status, "evidence": {"path": str(runtime_lock_path), **runtime_lock_evidence}})
     if runtime_lock_status != "PASS":
         blockers.append("The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.")
 

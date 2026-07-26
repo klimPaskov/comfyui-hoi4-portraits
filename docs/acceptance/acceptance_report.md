@@ -16,7 +16,7 @@
 | `source_fixture_and_provenance` | **BLOCKED** |
 | `dependencies_and_models` | **BLOCKED** |
 | `custom_node_preflight` | **BLOCKED** |
-| `runtime_dependency_lock` | **BLOCKED** |
+| `runtime_dependency_lock` | **PASS** |
 | `krea_live_compatibility` | **BLOCKED** |
 | `preprocessing_and_audit_dependencies` | **BLOCKED** |
 | `calibrated_identity_thresholds` | **BLOCKED** |
@@ -26,6 +26,10 @@
 | `autoprompter_validator` | **PASS** |
 | `dds_gate` | **PASS** |
 | `identity_style_experiments` | **BLOCKED_UNTIL_RUNTIME** |
+| `benchmark_reports` | **BLOCKED** |
+| `identity_style_comparison` | **BLOCKED_NO_REAL_CANDIDATES** |
+| `runpod_deployment_surface` | **BLOCKED_UNRESOLVED_IMAGE_LOCK** |
+| `schema_validation` | **BLOCKED** |
 | `integration_packages` | **BLOCKED** |
 | `secret_scan` | **PASS** |
 
@@ -36,13 +40,21 @@
 - No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.
 - Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.
 - One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.
-- The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.
 - RunPod endpoint credentials are absent; remote submission/acceptance cannot run.
 - No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
 - Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.
 - Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run.
 - License/rights review is not fully approved for Krea redistribution or the unresolved background.
+
+## Additional blocked or skipped surfaces
+
+- `identity_style_experiments`: BLOCKED_UNTIL_RUNTIME
+- `benchmark_reports`: human_local_mac_16gb=BLOCKED_RUNTIME_UNAVAILABLE, human_full_power_gpu=BLOCKED_PREFLIGHT, agent_local_mac_16gb=BLOCKED_RUNTIME_UNAVAILABLE, agent_remote_runpod=BLOCKED_REMOTE_AUTH
+- `identity_style_comparison`: No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence.
+- `runpod_deployment_surface`: BLOCKED_UNRESOLVED_RUNTIME_LOCK
+- `schema_validation`: normative JSON Schema validator is unavailable: ModuleNotFoundError
+- `integration_packages`: BLOCKED
 
 ## Runtime claims
 

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-26T14:35:00.202995+00:00",
+  "created_at": "2026-07-26T15:12:46.276533+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 15,
   "gates": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               11454.\nPages active:                            358040.\nPages inactive:                          345711.\nPages speculative:                        11626.\nPages throttled:                              0.\nPages wired down:                        148112.\nPages purgeable:                           8157.\n\"Translation faults\":                  28734974.\nPages copy-on-write:                    1956942.\nPages zero filled:                     19548249.\nPages reactivated:                       992632.\nPages purged:                            206390.\nFile-backed pages:                       267781.\nAnonymous pages:                         447596.\nPages stored in compressor:              292686.\nPages occupied by compressor:            130828.\nDecompressions:                          333406.\nCompressions:                            751636.\nPageins:                                2878561.\nPageouts:                                  9626.\nSwapins:                                      0.\nSwapouts:                                     0.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                7836.\nPages active:                            362301.\nPages inactive:                          358926.\nPages speculative:                         2548.\nPages throttled:                              0.\nPages wired down:                        145575.\nPages purgeable:                          12806.\n\"Translation faults\":                  34583330.\nPages copy-on-write:                    2824449.\nPages zero filled:                     22224520.\nPages reactivated:                       998906.\nPages purged:                            224122.\nFile-backed pages:                       257669.\nAnonymous pages:                         466106.\nPages stored in compressor:              288593.\nPages occupied by compressor:            129094.\nDecompressions:                          337448.\nCompressions:                            751636.\nPageins:                                2916713.\nPageouts:                                  9675.\nSwapins:                                      0.\nSwapouts:                                     0.",
             "stderr": ""
           }
         },
@@ -811,8 +811,8 @@
               "Krea2EditModelPatch"
             ],
             "class_matches": {
-              "Krea2EditGroundedEncode": false,
-              "Krea2EditModelPatch": false
+              "Krea2EditModelPatch": false,
+              "Krea2EditGroundedEncode": false
             },
             "signature_match": false,
             "status": "BLOCKED"
@@ -858,38 +858,31 @@
     },
     "runtime_dependency_lock": {
       "name": "comfyui_runtime_dependency_lock",
-      "status": "BLOCKED",
+      "status": "PASS",
       "evidence": {
         "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/runtime_requirements_lock.json",
-        "unresolved": [
-          "comfyui-frontend-package",
-          "comfyui-workflow-templates",
-          "comfyui-embedded-docs",
-          "torch",
-          "torchsde",
-          "torchvision",
-          "torchaudio",
-          "numpy",
-          "einops",
-          "transformers",
-          "tokenizers",
-          "sentencepiece",
-          "safetensors",
-          "aiohttp",
-          "yarl",
-          "pyyaml",
-          "scipy",
-          "tqdm",
-          "psutil",
-          "alembic",
-          "SQLAlchemy",
-          "filelock",
-          "av",
-          "comfy-kitchen",
-          "comfy-aimdo",
-          "requests",
-          "simpleeval",
-          "blake3"
+        "status": "PASS",
+        "mode": "profile_locks",
+        "lock_status": "RESOLVED_PROFILE_LOCKS_LIVE_COMPATIBILITY_UNVERIFIED",
+        "checks": [
+          {
+            "profile_lock": "linux_amd64_cuda128",
+            "path": "dependencies/runtime_profiles/linux_amd64_cuda128.lock.txt",
+            "status": "PASS",
+            "expected_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+            "actual_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+            "content_ok": true,
+            "invalid_packages": []
+          },
+          {
+            "profile_lock": "macos_arm64_cpu",
+            "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt",
+            "status": "PASS",
+            "expected_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+            "actual_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+            "content_ok": true,
+            "invalid_packages": []
+          }
         ]
       }
     },
@@ -1324,6 +1317,89 @@
       "matrix_id": "krea2_identity_style_factorial_v1",
       "matrix_written": true
     },
+    "benchmark_reports": {
+      "status": "BLOCKED",
+      "reports": [
+        {
+          "profile": "human_local_mac_16gb",
+          "status": "BLOCKED_RUNTIME_UNAVAILABLE",
+          "json_path": "docs/benchmarks/human_local_mac_16gb.json",
+          "markdown_path": "docs/benchmarks/human_local_mac_16gb.md",
+          "expected_model_bytes": 24028311166,
+          "peak_memory_bytes": null,
+          "peak_vram_bytes": null
+        },
+        {
+          "profile": "human_full_power_gpu",
+          "status": "BLOCKED_PREFLIGHT",
+          "json_path": "docs/benchmarks/human_full_power_gpu.json",
+          "markdown_path": "docs/benchmarks/human_full_power_gpu.md",
+          "expected_model_bytes": 38229188758,
+          "peak_memory_bytes": null,
+          "peak_vram_bytes": null
+        },
+        {
+          "profile": "agent_local_mac_16gb",
+          "status": "BLOCKED_RUNTIME_UNAVAILABLE",
+          "json_path": "docs/benchmarks/agent_local_mac_16gb.json",
+          "markdown_path": "docs/benchmarks/agent_local_mac_16gb.md",
+          "expected_model_bytes": 20694849246,
+          "peak_memory_bytes": null,
+          "peak_vram_bytes": null
+        },
+        {
+          "profile": "agent_remote_runpod",
+          "status": "BLOCKED_REMOTE_AUTH",
+          "json_path": "docs/benchmarks/agent_remote_runpod.json",
+          "markdown_path": "docs/benchmarks/agent_remote_runpod.md",
+          "expected_model_bytes": 20694849246,
+          "peak_memory_bytes": null,
+          "peak_vram_bytes": null
+        }
+      ],
+      "policy": "A blocked report is evidence of an unmeasured or unavailable gate, never a successful benchmark claim."
+    },
+    "identity_style_comparison": {
+      "status": "BLOCKED_NO_REAL_CANDIDATES",
+      "json_path": "docs/comparisons/identity_style_comparison.json",
+      "markdown_path": "docs/comparisons/identity_style_comparison.md",
+      "candidate_count": 0,
+      "reason": "No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence."
+    },
+    "runpod_deployment_surface": {
+      "status": "BLOCKED_UNRESOLVED_IMAGE_LOCK",
+      "path": "deploy/runpod",
+      "required_files": [
+        "Dockerfile",
+        "entrypoint.sh",
+        "install_runtime.sh",
+        "readiness.py",
+        "healthcheck.sh",
+        "image_lock.json",
+        "README.md"
+      ],
+      "missing": [],
+      "structural_checks": {
+        "base_image_digest_pinned": true,
+        "raw_comfy_loopback": true,
+        "gateway_secret_runtime_only": true,
+        "model_weights_not_baked": true
+      },
+      "image_lock_status": "BLOCKED_UNRESOLVED_RUNTIME_LOCK",
+      "build_permitted": false,
+      "unresolved": [
+        "Python artifact and checksum are not resolved for the image build.",
+        "The PyTorch/cu128 profile is checksum-locked, but a live GPU compatibility/import test is unverified.",
+        "System library versions are not pinned.",
+        "A live RunPod Pod, empty-volume bootstrap, remote authentication, and generation acceptance have not been run."
+      ],
+      "acceptance_policy": "The deployment surface is not a successful remote runtime claim until an empty-volume Pod passes the documented live acceptance sequence."
+    },
+    "schema_validation": {
+      "status": "BLOCKED",
+      "reason": "normative JSON Schema validator is unavailable: ModuleNotFoundError",
+      "checked": []
+    },
     "integration_packages": {
       "status": "BLOCKED",
       "chaos_redux_live_review": "BLOCKED",
@@ -1343,7 +1419,6 @@
     "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
     "Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.",
     "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
-    "The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.",
     "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
     "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
     "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",

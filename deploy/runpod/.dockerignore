@@ -1,0 +1,16 @@
+models
+loras
+jobs
+evidence
+fixtures
+backgrounds
+outputs
+logs
+*.safetensors
+*.gguf
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.dds
+*.psd

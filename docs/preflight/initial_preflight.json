@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "collected_at": "2026-07-26T14:34:56.910409+00:00",
+  "collected_at": "2026-07-26T15:09:40.134099+00:00",
   "project_root": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits",
   "profile": null,
   "hardware": {
@@ -26,7 +26,7 @@
           "/usr/bin/vm_stat"
         ],
         "returncode": 0,
-        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               11880.\nPages active:                            360571.\nPages inactive:                          348159.\nPages speculative:                        11623.\nPages throttled:                              0.\nPages wired down:                        143120.\nPages purgeable:                           8729.\n\"Translation faults\":                  28686295.\nPages copy-on-write:                    1949816.\nPages zero filled:                     19533215.\nPages reactivated:                       992558.\nPages purged:                            206390.\nFile-backed pages:                       267780.\nAnonymous pages:                         452573.\nPages stored in compressor:              292686.\nPages occupied by compressor:            130828.\nDecompressions:                          333406.\nCompressions:                            751636.\nPageins:                                2878422.\nPageouts:                                  9626.\nSwapins:                                      0.\nSwapouts:                                     0.",
+        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9323.\nPages active:                            361635.\nPages inactive:                          360310.\nPages speculative:                          570.\nPages throttled:                              0.\nPages wired down:                        145244.\nPages purgeable:                          12198.\n\"Translation faults\":                  33740134.\nPages copy-on-write:                    2666578.\nPages zero filled:                     21982975.\nPages reactivated:                       998420.\nPages purged:                            223546.\nFile-backed pages:                       255465.\nAnonymous pages:                         467050.\nPages stored in compressor:              288601.\nPages occupied by compressor:            129103.\nDecompressions:                          337440.\nCompressions:                            751636.\nPageins:                                2913021.\nPageouts:                                  9675.\nSwapins:                                      0.\nSwapouts:                                     0.",
         "stderr": ""
       }
     },
@@ -76,7 +76,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               11880.\nPages active:                            360571.\nPages inactive:                          348159.\nPages speculative:                        11623.\nPages throttled:                              0.\nPages wired down:                        143120.\nPages purgeable:                           8729.\n\"Translation faults\":                  28686295.\nPages copy-on-write:                    1949816.\nPages zero filled:                     19533215.\nPages reactivated:                       992558.\nPages purged:                            206390.\nFile-backed pages:                       267780.\nAnonymous pages:                         452573.\nPages stored in compressor:              292686.\nPages occupied by compressor:            130828.\nDecompressions:                          333406.\nCompressions:                            751636.\nPageins:                                2878422.\nPageouts:                                  9626.\nSwapins:                                      0.\nSwapouts:                                     0.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9323.\nPages active:                            361635.\nPages inactive:                          360310.\nPages speculative:                          570.\nPages throttled:                              0.\nPages wired down:                        145244.\nPages purgeable:                          12198.\n\"Translation faults\":                  33740134.\nPages copy-on-write:                    2666578.\nPages zero filled:                     21982975.\nPages reactivated:                       998420.\nPages purged:                            223546.\nFile-backed pages:                       255465.\nAnonymous pages:                         467050.\nPages stored in compressor:              288601.\nPages occupied by compressor:            129103.\nDecompressions:                          337440.\nCompressions:                            751636.\nPageins:                                2913021.\nPageouts:                                  9675.\nSwapins:                                      0.\nSwapouts:                                     0.",
             "stderr": ""
           }
         },
@@ -895,38 +895,31 @@
     },
     {
       "name": "comfyui_runtime_dependency_lock",
-      "status": "BLOCKED",
+      "status": "PASS",
       "evidence": {
         "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/runtime_requirements_lock.json",
-        "unresolved": [
-          "comfyui-frontend-package",
-          "comfyui-workflow-templates",
-          "comfyui-embedded-docs",
-          "torch",
-          "torchsde",
-          "torchvision",
-          "torchaudio",
-          "numpy",
-          "einops",
-          "transformers",
-          "tokenizers",
-          "sentencepiece",
-          "safetensors",
-          "aiohttp",
-          "yarl",
-          "pyyaml",
-          "scipy",
-          "tqdm",
-          "psutil",
-          "alembic",
-          "SQLAlchemy",
-          "filelock",
-          "av",
-          "comfy-kitchen",
-          "comfy-aimdo",
-          "requests",
-          "simpleeval",
-          "blake3"
+        "status": "PASS",
+        "mode": "profile_locks",
+        "lock_status": "RESOLVED_PROFILE_LOCKS_LIVE_COMPATIBILITY_UNVERIFIED",
+        "checks": [
+          {
+            "profile_lock": "linux_amd64_cuda128",
+            "path": "dependencies/runtime_profiles/linux_amd64_cuda128.lock.txt",
+            "status": "PASS",
+            "expected_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+            "actual_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+            "content_ok": true,
+            "invalid_packages": []
+          },
+          {
+            "profile_lock": "macos_arm64_cpu",
+            "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt",
+            "status": "PASS",
+            "expected_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+            "actual_sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+            "content_ok": true,
+            "invalid_packages": []
+          }
         ]
       }
     },
@@ -1126,7 +1119,6 @@
     "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
     "Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.",
     "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
-    "The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.",
     "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
     "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
     "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",

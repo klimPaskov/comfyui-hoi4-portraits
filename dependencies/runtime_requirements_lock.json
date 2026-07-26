@@ -3,8 +3,30 @@
   "source": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/f49bdb655707b97952dcef40e12e5af1f08d2007/requirements.txt",
   "source_revision": "f49bdb655707b97952dcef40e12e5af1f08d2007",
   "retrieved_at": "2026-07-26",
-  "status": "BLOCKED_UNRESOLVED_PLATFORM_LOCK",
-  "policy": "Every transitive runtime package, platform wheel, and artifact hash must be resolved before installation. The upstream requirements file contains ranges/unpinned entries; this lock intentionally refuses to invent versions.",
+  "status": "RESOLVED_PROFILE_LOCKS_LIVE_COMPATIBILITY_UNVERIFIED",
+  "policy": "Profile lock files pin every resolved package and artifact hash for the target Python/platform/backend. Live ComfyUI import, Krea node compatibility, and model execution remain separate hard gates.",
+  "requirements_role": "TRACEABILITY_ONLY_UPSTREAM_CONSTRAINTS; install exclusively from the selected profile_locks entry",
+  "profile_locks": {
+    "macos_arm64_cpu": {
+      "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt",
+      "status": "RESOLVED",
+      "python_version": "3.12",
+      "python_platform": "aarch64-apple-darwin",
+      "torch_backend": "cpu",
+      "sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+      "resolver": "uv 0.11.7; official PyPI and PyTorch resolver metadata; no package installation performed"
+    },
+    "linux_amd64_cuda128": {
+      "path": "dependencies/runtime_profiles/linux_amd64_cuda128.lock.txt",
+      "status": "RESOLVED",
+      "python_version": "3.12",
+      "python_platform": "x86_64-manylinux_2_28",
+      "torch_backend": "cu128",
+      "torch_index": "https://download.pytorch.org/whl/cu128",
+      "sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+      "resolver": "uv 0.11.7; official PyPI and PyTorch resolver metadata; no package installation performed"
+    }
+  },
   "requirements": [
     {"name": "comfyui-frontend-package", "version": "1.44.19", "sha256": null, "mandatory": true},
     {"name": "comfyui-workflow-templates", "version": "0.9.94", "sha256": null, "mandatory": true},
