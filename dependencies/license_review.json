@@ -8,14 +8,23 @@
       "name": "Krea 2 license",
       "source_url": "https://www.krea.ai/krea-2-licensing",
       "license_identifier": "Krea Community License",
+      "license_version": "v.1 (2026-06-22)",
+      "source_reviewed_at": "2026-07-26",
       "status": "REVIEW_REQUIRED",
       "material_conditions": [
-        "commercial use is subject to the published revenue threshold and agreement terms",
-        "distribution requires the agreement notice and attribution obligations",
-        "content-filter and acceptable-use measures apply",
-        "model ownership remains with Krea and outputs are subject to compliance"
+        "commercial use of the model, derivatives, or outputs under the community agreement is limited to organizations below USD 1,000,000 trailing-twelve-month company-wide revenue; an enterprise license is required otherwise",
+        "distribution of the model or derivatives requires a copy of the agreement, Krea-prefixed model naming, and the prescribed attribution notice",
+        "reasonable content-filter measures and compliance with the acceptable-use policy are required",
+        "AI disclosure is required where applicable law, regulation, or platform policy requires it",
+        "Krea retains ownership of the model; outputs remain subject to agreement compliance"
       ],
-      "artifact_policy": "local_copy_only_until_owner_approval"
+      "artifact_policy": "local_copy_only_until_owner_approval",
+      "owner_decision_required": [
+        "confirm intended local, mod-development, and remote deployment use",
+        "confirm the project owner's commercial-revenue status and enterprise-license need",
+        "confirm whether any model or derivative distribution is planned",
+        "confirm content-filter and AI-disclosure controls"
+      ]
     },
     {
       "name": "ComfyUI",

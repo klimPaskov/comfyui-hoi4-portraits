@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "collected_at": "2026-07-26T15:54:39.884034+00:00",
+  "collected_at": "2026-07-26T16:01:24.933937+00:00",
   "project_root": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits",
   "profile": null,
   "hardware": {
@@ -26,7 +26,7 @@
           "/usr/bin/vm_stat"
         ],
         "returncode": 0,
-        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               11976.\nPages active:                            357093.\nPages inactive:                          359088.\nPages speculative:                         1216.\nPages throttled:                              0.\nPages wired down:                        146584.\nPages purgeable:                           6182.\n\"Translation faults\":                  43544506.\nPages copy-on-write:                    4156160.\nPages zero filled:                     25558590.\nPages reactivated:                      1014590.\nPages purged:                            246654.\nFile-backed pages:                       255668.\nAnonymous pages:                         461729.\nPages stored in compressor:              289228.\nPages occupied by compressor:            130195.\nDecompressions:                          343245.\nCompressions:                            758166.\nPageins:                                3010773.\nPageouts:                                 10136.\nSwapins:                                      0.\nSwapouts:                                     0.",
+        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               17753.\nPages active:                            358026.\nPages inactive:                          354029.\nPages speculative:                         2909.\nPages throttled:                              0.\nPages wired down:                        144268.\nPages purgeable:                           7883.\n\"Translation faults\":                  44684328.\nPages copy-on-write:                    4295686.\nPages zero filled:                     26029907.\nPages reactivated:                      1016996.\nPages purged:                            248634.\nFile-backed pages:                       252523.\nAnonymous pages:                         462441.\nPages stored in compressor:              286965.\nPages occupied by compressor:            129092.\nDecompressions:                          345534.\nCompressions:                            758291.\nPageins:                                3017819.\nPageouts:                                 10211.\nSwapins:                                      0.\nSwapouts:                                     0.",
         "stderr": ""
       }
     },
@@ -76,7 +76,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               11976.\nPages active:                            357093.\nPages inactive:                          359088.\nPages speculative:                         1216.\nPages throttled:                              0.\nPages wired down:                        146584.\nPages purgeable:                           6182.\n\"Translation faults\":                  43544506.\nPages copy-on-write:                    4156160.\nPages zero filled:                     25558590.\nPages reactivated:                      1014590.\nPages purged:                            246654.\nFile-backed pages:                       255668.\nAnonymous pages:                         461729.\nPages stored in compressor:              289228.\nPages occupied by compressor:            130195.\nDecompressions:                          343245.\nCompressions:                            758166.\nPageins:                                3010773.\nPageouts:                                 10136.\nSwapins:                                      0.\nSwapouts:                                     0.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               17753.\nPages active:                            358026.\nPages inactive:                          354029.\nPages speculative:                         2909.\nPages throttled:                              0.\nPages wired down:                        144268.\nPages purgeable:                           7883.\n\"Translation faults\":                  44684328.\nPages copy-on-write:                    4295686.\nPages zero filled:                     26029907.\nPages reactivated:                      1016996.\nPages purged:                            248634.\nFile-backed pages:                       252523.\nAnonymous pages:                         462441.\nPages stored in compressor:              286965.\nPages occupied by compressor:            129092.\nDecompressions:                          345534.\nCompressions:                            758291.\nPageins:                                3017819.\nPageouts:                                 10211.\nSwapins:                                      0.\nSwapouts:                                     0.",
             "stderr": ""
           }
         },
@@ -199,6 +199,8 @@
             "source_repository": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
             "repository_remote": "git@github.com:klimPaskov/Chaos-Redux.git",
             "repository_head": "420cfb326e8ec78ec5641b152f32fce2b2d94db6",
+            "repository_remote_head": "276ea88b959c0b1833c414476f3d9c69bf5a41ba",
+            "repository_remote_tree_url": "https://github.com/klimPaskov/Chaos-Redux/tree/276ea88b959c0b1833c414476f3d9c69bf5a41ba",
             "tracked_path": "gfx/leaders/portrait_leader_background.psd",
             "git_blob": "cd770b69f01d5c47f79d1d5baf30a6e455086109",
             "sha256": "4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6",
@@ -209,10 +211,28 @@
               210
             ],
             "decoded_channels": "RGBA",
+            "remote_artifact_verification": {
+              "source_url": "https://raw.githubusercontent.com/klimPaskov/Chaos-Redux/276ea88b959c0b1833c414476f3d9c69bf5a41ba/gfx/leaders/portrait_leader_background.psd",
+              "sha256": "4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6",
+              "size_bytes": 191777,
+              "decoded_format": "PSD",
+              "decoded_dimensions": [
+                156,
+                210
+              ],
+              "decoded_channels": "RGBA",
+              "status": "PASS_SOURCE_MATCH"
+            },
+            "remote_rights_scan": {
+              "repository_tree_sha": "276ea88b959c0b1833c414476f3d9c69bf5a41ba",
+              "root_license_like_entries": [],
+              "status": "BLOCKED_NO_LICENSE_RECORD",
+              "review_url": "https://github.com/klimPaskov/Chaos-Redux/tree/276ea88b959c0b1833c414476f3d9c69bf5a41ba"
+            },
             "runtime_ready": false,
             "status": "BLOCKED_RIGHTS_UNRESOLVED",
             "blocking_findings": [
-              "The live repository has no discovered LICENSE or COPYING record covering this asset.",
+              "The local checkout and current primary repository root have no discovered LICENSE, COPYING, or NOTICE record covering this asset.",
               "descriptor.mod identifies the mod but does not establish background rights or redistribution permission.",
               "The candidate is a PSD source, not the exact approved runtime background format/path required by the pipeline.",
               "No project-owner approval or attribution record authorizes use in this standalone pipeline."
@@ -848,8 +868,8 @@
               "Krea2EditModelPatch"
             ],
             "class_matches": {
-              "Krea2EditGroundedEncode": false,
-              "Krea2EditModelPatch": false
+              "Krea2EditModelPatch": false,
+              "Krea2EditGroundedEncode": false
             },
             "signature_match": false,
             "status": "BLOCKED"
@@ -1145,14 +1165,23 @@
             "name": "Krea 2 license",
             "source_url": "https://www.krea.ai/krea-2-licensing",
             "license_identifier": "Krea Community License",
+            "license_version": "v.1 (2026-06-22)",
+            "source_reviewed_at": "2026-07-26",
             "status": "REVIEW_REQUIRED",
             "material_conditions": [
-              "commercial use is subject to the published revenue threshold and agreement terms",
-              "distribution requires the agreement notice and attribution obligations",
-              "content-filter and acceptable-use measures apply",
-              "model ownership remains with Krea and outputs are subject to compliance"
+              "commercial use of the model, derivatives, or outputs under the community agreement is limited to organizations below USD 1,000,000 trailing-twelve-month company-wide revenue; an enterprise license is required otherwise",
+              "distribution of the model or derivatives requires a copy of the agreement, Krea-prefixed model naming, and the prescribed attribution notice",
+              "reasonable content-filter measures and compliance with the acceptable-use policy are required",
+              "AI disclosure is required where applicable law, regulation, or platform policy requires it",
+              "Krea retains ownership of the model; outputs remain subject to agreement compliance"
             ],
-            "artifact_policy": "local_copy_only_until_owner_approval"
+            "artifact_policy": "local_copy_only_until_owner_approval",
+            "owner_decision_required": [
+              "confirm intended local, mod-development, and remote deployment use",
+              "confirm the project owner's commercial-revenue status and enterprise-license need",
+              "confirm whether any model or derivative distribution is planned",
+              "confirm content-filter and AI-disclosure controls"
+            ]
           },
           {
             "name": "ComfyUI",

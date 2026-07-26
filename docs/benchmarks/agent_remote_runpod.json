@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-26T15:54:56.769835+00:00",
+  "created_at": "2026-07-26T16:01:35.640790+00:00",
   "profile": "agent_remote_runpod",
   "status": "BLOCKED_REMOTE_AUTH",
   "status_reason": "RunPod endpoint credentials and authenticated remote acceptance are unavailable.",
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               10586.\nPages active:                            356580.\nPages inactive:                          359064.\nPages speculative:                         1518.\nPages throttled:                              0.\nPages wired down:                        147773.\nPages purgeable:                           6047.\n\"Translation faults\":                  43743726.\nPages copy-on-write:                    4192547.\nPages zero filled:                     25603858.\nPages reactivated:                      1014596.\nPages purged:                            246654.\nFile-backed pages:                       255967.\nAnonymous pages:                         461195.\nPages stored in compressor:              289228.\nPages occupied by compressor:            130195.\nDecompressions:                          343245.\nCompressions:                            758166.\nPageins:                                3011354.\nPageouts:                                 10136.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               10011.\nPages active:                            359682.\nPages inactive:                          357773.\nPages speculative:                         3178.\nPages throttled:                              0.\nPages wired down:                        146129.\nPages purgeable:                           7597.\n\"Translation faults\":                  44878752.\nPages copy-on-write:                    4330998.\nPages zero filled:                     26071755.\nPages reactivated:                      1017126.\nPages purged:                            248634.\nFile-backed pages:                       259358.\nAnonymous pages:                         461275.\nPages stored in compressor:              286964.\nPages occupied by compressor:            129092.\nDecompressions:                          345535.\nCompressions:                            758291.\nPageins:                                3025100.\nPageouts:                                 10211.\nSwapins:                                      0.\nSwapouts:                                     0.",
           "stderr": ""
         }
       },
