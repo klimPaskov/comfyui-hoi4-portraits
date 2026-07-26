@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from .constants import ExitCode
+from .audit import independent_audit_blocked
+from .dds import DdsValidationError, convert_png_to_dds
 from .experiments import build_matrix
 from .graph_spec.builder import build_workflow_artifacts
 from .preflight import collect_preflight
@@ -58,6 +61,45 @@ def _secret_scan(root: Path) -> dict[str, Any]:
     return {"status": "PASS" if not findings else "FAIL", "findings": findings}
 
 
+def _dds_gate(root: Path) -> dict[str, Any]:
+    """Exercise both the negative audit gate and the locked DDS round trip.
+
+    This is a synthetic converter test only. It never creates a production
+    portrait and cannot substitute for an independent audit of a real job.
+    """
+
+    try:
+        from PIL import Image  # type: ignore
+    except ImportError as exc:
+        return {"status": "BLOCKED", "negative_gate": "NOT_RUN", "positive_round_trip": "NOT_RUN", "reason": f"Pillow unavailable: {type(exc).__name__}"}
+    with tempfile.TemporaryDirectory(prefix="hoi4-dds-acceptance-") as directory:
+        temp_root = Path(directory)
+        png_path = temp_root / "candidate.png"
+        blocked_audit_path = temp_root / "blocked-audit.json"
+        pass_audit_path = temp_root / "pass-audit.json"
+        dds_path = temp_root / "candidate.dds"
+        Image.new("RGBA", (156, 210), (17, 29, 43, 255)).save(png_path, format="PNG", optimize=False)
+        blocked = independent_audit_blocked("acceptance", "candidate-000")
+        blocked_audit_path.write_text(json.dumps(blocked), encoding="utf-8")
+        negative_passed = False
+        try:
+            convert_png_to_dds(png_path, temp_root / "blocked.dds", blocked_audit_path, root)
+        except DdsValidationError:
+            negative_passed = True
+        passing = independent_audit_blocked("acceptance", "candidate-000")
+        passing["thresholds_id"] = "synthetic-acceptance-only"
+        passing["verdict"] = "PASS"
+        passing["hard_gates"] = {name: "PASS" for name in passing["hard_gates"]}
+        pass_audit_path.write_text(json.dumps(passing), encoding="utf-8")
+        try:
+            positive = convert_png_to_dds(png_path, dds_path, pass_audit_path, root)
+            positive_passed = positive.get("pixel_round_trip") == "PASS" and positive.get("size_bytes") == 131168
+        except DdsValidationError as exc:
+            positive = {"error": type(exc).__name__}
+            positive_passed = False
+    return {"status": "PASS" if negative_passed and positive_passed else "FAIL", "negative_gate": "PASS" if negative_passed else "FAIL", "positive_round_trip": "PASS" if positive_passed else "FAIL", "evidence": "synthetic-only; production DDS remains prohibited until a real independent all-PASS audit exists"}
+
+
 def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
     root_path = project_root(root)
     workflow_manifest = build_workflow_artifacts(root_path)
@@ -67,26 +109,41 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
     lora = root_path / "loras" / "hoi4_portrait_new_style_lora.safetensors"
     lora_gate = {"status": "PASS" if lora.is_file() and sha256_file(lora) == "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1" else "FAIL", "sha256": sha256_file(lora) if lora.is_file() else None}
     experiments = {"status": "BLOCKED_UNTIL_RUNTIME", "matrix_id": build_matrix()["matrix_id"], "matrix_written": (root_path / "experiments" / "identity_style_matrix.json").is_file()}
+    chaos_review_path = root_path / "integrations/chaos-redux/live_review.json"
+    generic_review_path = root_path / "integrations/agentic-hoi4-modding/live_review.json"
+    chaos_review = json.loads(chaos_review_path.read_text(encoding="utf-8")) if chaos_review_path.is_file() else {}
+    generic_review = json.loads(generic_review_path.read_text(encoding="utf-8")) if generic_review_path.is_file() else {}
+    chaos_gate = "PASS" if chaos_review.get("status") == "APPLIED_AND_VALIDATED" else "BLOCKED"
+    generic_gate = "PASS" if generic_review.get("status") == "APPLIED_AND_VALIDATED" else "BLOCKED"
     integration = {
-        "status": "PASS" if (root_path / "integrations/chaos-redux/live_review.json").is_file() and (root_path / "integrations/agentic-hoi4-modding/live_review.json").is_file() else "BLOCKED",
-        "chaos_redux_live_review": "PASS" if (root_path / "integrations/chaos-redux/live_review.json").is_file() else "BLOCKED",
-        "generic_live_review": "PASS" if (root_path / "integrations/agentic-hoi4-modding/live_review.json").is_file() else "BLOCKED",
+        "status": "PASS" if chaos_gate == "PASS" and generic_gate == "PASS" else "BLOCKED",
+        "chaos_redux_live_review": chaos_gate,
+        "chaos_redux_status": chaos_review.get("status"),
+        "generic_live_review": generic_gate,
+        "generic_status": generic_review.get("status"),
+        "direct_application": "NOT_PERFORMED",
     }
-    dds_guard = {"status": "PASS" if True else "FAIL", "note": "negative gate is covered by the converter: missing/uncertain audit must return exit code 50; a runtime PNG round-trip is skipped until Pillow is installed."}
+    dds_guard = _dds_gate(root_path)
     report = {
         "schema_version": "1.0.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) else "PASS",
+        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" else "PASS",
         "recommended_exit_code": preflight["recommended_exit_code"] if preflight["status"] != "PASS" else 0,
         "gates": {
             "package_checksums": next((gate for gate in preflight["gates"] if gate["name"] == "planning_package_checksums"), None),
             "hardware_detection": next((gate for gate in preflight["gates"] if gate["name"] == "hardware_detection"), None),
             "hardware_runtime": next((gate for gate in preflight["gates"] if gate["name"] == "local_runtime_capability"), None),
+            "remote_topology_auth": next((gate for gate in preflight["gates"] if gate["name"] == "remote_topology_auth"), None),
             "immutable_lora": lora_gate,
             "approved_background": next((gate for gate in preflight["gates"] if gate["name"] == "approved_source_background"), None),
+            "source_fixture_and_provenance": next((gate for gate in preflight["gates"] if gate["name"] == "source_fixture_and_provenance"), None),
             "dependencies_and_models": next((gate for gate in preflight["gates"] if gate["name"] == "model_artifact_preflight"), None),
+            "custom_node_preflight": next((gate for gate in preflight["gates"] if gate["name"] == "custom_node_preflight"), None),
             "runtime_dependency_lock": next((gate for gate in preflight["gates"] if gate["name"] == "comfyui_runtime_dependency_lock"), None),
             "krea_live_compatibility": next((gate for gate in preflight["gates"] if gate["name"] == "krea_live_compatibility"), None),
+            "preprocessing_and_audit_dependencies": next((gate for gate in preflight["gates"] if gate["name"] == "preprocessing_and_audit_dependencies"), None),
+            "calibrated_identity_thresholds": next((gate for gate in preflight["gates"] if gate["name"] == "calibrated_identity_thresholds"), None),
+            "repository_preflight": next((gate for gate in preflight["gates"] if gate["name"] == "repository_preflight"), None),
             "licenses_and_rights": next((gate for gate in preflight["gates"] if gate["name"] == "license_and_rights_review"), None),
             "workflow_structure": workflows,
             "autoprompter_validator": prompt_gate,

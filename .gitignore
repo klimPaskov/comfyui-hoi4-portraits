@@ -13,6 +13,7 @@ comfyui/
 runpod/
 reports/runtime/
 reports/benchmarks/
+logs/
 
 # Model and image artifacts must never enter Git.
 *.safetensors
@@ -47,4 +48,3 @@ build/
 .idea/
 .vscode/
 .DS_Store
-

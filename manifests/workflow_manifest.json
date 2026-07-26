@@ -8,8 +8,8 @@
       "display_name": "human_local_mac_16gb",
       "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
       "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-      "sha256": "0f6f1da20e1be2ab4da79391c1ca0d83241175d577a2d2ea154af722e5964b17",
-      "api_sha256": "4407aca3cefeb25c943fb322c9778b5272bdb066bbb205035baf13de112a2f89",
+      "sha256": "fe72d154bc0d82bfa96ab202245598193a90d0f3437149c873e18c5aedd1a650",
+      "api_sha256": "a412c06475a7f87bf3f995442d9998d76532a372cce1588aa9c11c1a14d8ecb7",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
       "required_core_nodes": [
@@ -29,6 +29,7 @@
         "HOI4EvidenceExport",
         "HOI4ForegroundMask",
         "HOI4HeadShouldersCrop",
+        "HOI4HumanControls",
         "HOI4JobInput",
         "HOI4JobSource",
         "HOI4MaskAndBackgroundGuard",
@@ -37,6 +38,18 @@
         "Krea2EditGroundedEncode",
         "Krea2EditModelPatch"
       ],
+      "required_custom_node_packages": [
+        "comfyui-krea2edit",
+        "hoi4_portrait_project_nodes"
+      ],
+      "required_custom_node_revisions": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+      },
+      "required_custom_node_source_checksums": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f"
+      },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
         "qwen3vl_4b_fp8_scaled.safetensors",
@@ -57,8 +70,8 @@
       "display_name": "human_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-      "sha256": "3c7096a8a6c3ad87af0b274e215a6a657b631440789fff71a0d390a321f470d5",
-      "api_sha256": "ec6e436411b5cb80ab0db10cc61fe94b717fca4b974997933d7b5ebf7157c934",
+      "sha256": "eeb1a8581f543121a33914884e79e647d4005f7765652bd398e6a6e0e503182b",
+      "api_sha256": "6ee592bd938a284519216a385a9a17f65a8ea4cbabfdc1fbf28bd610cb00b8b9",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
       "required_core_nodes": [
@@ -78,6 +91,7 @@
         "HOI4EvidenceExport",
         "HOI4ForegroundMask",
         "HOI4HeadShouldersCrop",
+        "HOI4HumanControls",
         "HOI4JobInput",
         "HOI4JobSource",
         "HOI4MaskAndBackgroundGuard",
@@ -86,6 +100,18 @@
         "Krea2EditGroundedEncode",
         "Krea2EditModelPatch"
       ],
+      "required_custom_node_packages": [
+        "comfyui-krea2edit",
+        "hoi4_portrait_project_nodes"
+      ],
+      "required_custom_node_revisions": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+      },
+      "required_custom_node_source_checksums": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f"
+      },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
         "qwen3vl_4b_fp8_scaled.safetensors",
@@ -106,8 +132,8 @@
       "display_name": "agent_local_mac_16gb",
       "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
       "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-      "sha256": "61e2ce398713ffee0015c4c93b6fa6f21887e4637dbfcba6228902e0eb2a1294",
-      "api_sha256": "eb43ac41e09b0fd1159ad65d1c1f708b2e1126ac3645cc410264b725c2464bca",
+      "sha256": "44e4993f8a9ec20d6c0d4d721a3aaf5fd817dea6fcc638b88dcf59efa1cb8280",
+      "api_sha256": "799bc136f4d040443fb37c7d036cd2c96684108c05dc6f57300a46f1881cc496",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
       "required_core_nodes": [
@@ -135,6 +161,18 @@
         "Krea2EditGroundedEncode",
         "Krea2EditModelPatch"
       ],
+      "required_custom_node_packages": [
+        "comfyui-krea2edit",
+        "hoi4_portrait_project_nodes"
+      ],
+      "required_custom_node_revisions": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+      },
+      "required_custom_node_source_checksums": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f"
+      },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
         "qwen3vl_4b_fp8_scaled.safetensors",
@@ -154,8 +192,8 @@
       "display_name": "agent_remote_runpod",
       "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
       "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-      "sha256": "699b143f3d3d77e155ebd47b997a9cda4ffbc8f7ce493e1c40d7e67fe7a96b44",
-      "api_sha256": "38cf68d6e11cda30cc7f5e616ec7fb7191d9e829a460bad6a98aeec3c0edbd70",
+      "sha256": "48b0c46ae205c1ce9df53f884a68d9fb40f0e918981a6f1a46110e7f7fcd6642",
+      "api_sha256": "23f1aa18f576c36d00a76ecb65b4c1d6d892b0cfa056ae75ba91cbf24ce19872",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
       "required_core_nodes": [
@@ -183,6 +221,18 @@
         "Krea2EditGroundedEncode",
         "Krea2EditModelPatch"
       ],
+      "required_custom_node_packages": [
+        "comfyui-krea2edit",
+        "hoi4_portrait_project_nodes"
+      ],
+      "required_custom_node_revisions": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+      },
+      "required_custom_node_source_checksums": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f"
+      },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
         "qwen3vl_4b_fp8_scaled.safetensors",

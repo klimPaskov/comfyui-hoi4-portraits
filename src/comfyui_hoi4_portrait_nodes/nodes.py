@@ -1,17 +1,24 @@
 from __future__ import annotations
 
 import json
+import base64
+import binascii
+import hashlib
+import io
 import os
+import tempfile
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from portrait_pipeline.constants import ExitCode
 from portrait_pipeline.contracts import validate_job
 from portrait_pipeline.prompt import validate_prompt
-from portrait_pipeline.util import project_root, relative_safe_path, sha256_file
+from portrait_pipeline.constants import PROFILE_LIMITS
+from portrait_pipeline.util import atomic_json_write, project_root, relative_safe_path, sha256_file
 
 try:  # ComfyUI supplies torch/Pillow in its runtime.
     import torch  # type: ignore
@@ -19,9 +26,10 @@ except Exception:  # pragma: no cover - import-only path on a clean preflight ho
     torch = None
 
 try:
-    from PIL import Image  # type: ignore
+    from PIL import Image, ImageOps  # type: ignore
 except Exception:  # pragma: no cover - import-only path on a clean preflight host
     Image = None
+    ImageOps = None
 
 
 def _raise(code: ExitCode, message: str) -> None:
@@ -64,6 +72,102 @@ def _comfy_to_pil(image: Any) -> Any:
     return image
 
 
+def _job_root(job: dict[str, Any]) -> Path:
+    root = _project_from_job(job)
+    job_id = str(job.get("job_id", ""))
+    if not job_id or any(char not in "abcdefghijklmnopqrstuvwxyz0123456789_-" for char in job_id):
+        _raise(ExitCode.INPUT_SCHEMA_INVALID, "job id is invalid")
+    return relative_safe_path(root / "jobs", job_id)
+
+
+def _pixel_digest(image: Any) -> str:
+    digest = hashlib.sha256()
+    digest.update(f"{image.width}x{image.height}:{image.mode}".encode("ascii"))
+    digest.update(image.tobytes())
+    return digest.hexdigest()
+
+
+def _write_image(path: Path, image: Any, *, format_name: str = "PNG") -> dict[str, Any]:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile("wb", dir=path.parent, prefix=f".{path.name}.", suffix=".tmp", delete=False) as handle:
+            image.save(handle, format=format_name, optimize=False)
+            temporary = Path(handle.name)
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+    return {"path": str(path), "relative_path": str(path), "sha256": sha256_file(path), "width": image.width, "height": image.height, "mode": image.mode, "pixel_sha256": _pixel_digest(image)}
+
+
+def _read_project_job(job: dict[str, Any]) -> tuple[Path, Path]:
+    root = _project_from_job(job)
+    job_root = _job_root(job)
+    return root, job_root
+
+
+def _source_format_allowed(fmt: str | None) -> bool:
+    return fmt in {"PNG", "JPEG", "WEBP", "TIFF"}
+
+
+def _preprocessing_entry(root: Path, name: str) -> dict[str, Any]:
+    lock_path = root / "dependencies" / "preprocessing_lock.json"
+    try:
+        lock = json.loads(lock_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        _raise(ExitCode.DEPENDENCY_MISSING, f"preprocessing lock is unavailable: {type(exc).__name__}")
+    entries = [entry for entry in lock.get("dependencies", []) if entry.get("name") == name]
+    if not entries or lock.get("status") != "RESOLVED" or not isinstance(entries[0].get("artifact_sha256"), str) or len(entries[0]["artifact_sha256"]) != 64:
+        _raise(ExitCode.DEPENDENCY_MISSING, f"{name} preprocessing artifact is not locked and verified")
+    return entries[0]
+
+
+def _post_loopback_json(endpoint: str, payload: dict[str, Any], *, timeout: float = 120.0) -> dict[str, Any]:
+    if not endpoint:
+        _raise(ExitCode.DEPENDENCY_MISSING, "preprocessing service is not configured")
+    if not (endpoint.startswith("http://127.0.0.1:") or endpoint.startswith("http://localhost:")):
+        _raise(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "preprocessing service must be bound to loopback")
+    request = urllib.request.Request(endpoint, data=json.dumps(payload, ensure_ascii=False).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            body = json.loads(response.read().decode("utf-8"))
+    except (OSError, urllib.error.URLError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        _raise(ExitCode.DEPENDENCY_MISSING, f"loopback preprocessing service unavailable: {type(exc).__name__}")
+    if not isinstance(body, dict):
+        _raise(ExitCode.GENERATION_FAILED, "loopback preprocessing service returned a non-object response")
+    if body.get("status") not in {None, "PASS"}:
+        _raise(ExitCode.GENERATION_FAILED, f"loopback preprocessing service returned status {body.get('status')!r}")
+    return body
+
+
+def _write_subject_inventory(job: dict[str, Any], image: Any) -> dict[str, Any]:
+    root = _project_from_job(job)
+    entry = _preprocessing_entry(root, "YuNet")
+    endpoint = os.environ.get("HOI4_SUBJECT_SERVICE_LOOPBACK", "")
+    source = _comfy_to_pil(image).convert("RGB")
+    encoded = io.BytesIO()
+    source.save(encoded, format="PNG", optimize=False)
+    response = _post_loopback_json(endpoint, {"job_id": job.get("job_id"), "model": {"name": "YuNet", "source_revision": entry.get("source_revision"), "artifact_sha256": entry.get("artifact_sha256")}, "image_png_base64": base64.b64encode(encoded.getvalue()).decode("ascii")})
+    subjects = response.get("subjects")
+    selected = response.get("selected")
+    if not isinstance(subjects, list) or not subjects:
+        _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject service returned no auditable subjects")
+    if not isinstance(selected, dict):
+        if len(subjects) != 1:
+            _raise(ExitCode.AMBIGUOUS_SUBJECT, "subject service returned multiple plausible subjects without a deterministic selection")
+        selected = subjects[0]
+    bbox = selected.get("bbox_xyxy")
+    if not isinstance(bbox, list) or len(bbox) != 4 or not all(isinstance(value, int) and value >= 0 for value in bbox):
+        _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject service selected an invalid bounding box")
+    left, top, right, bottom = bbox
+    if right <= left or bottom <= top or left >= source.width or top >= source.height:
+        _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject service selected a box outside the source")
+    inventory = {"schema_version": "1.0.0", "analysis_status": "PASS", "model": {"name": "YuNet", "source_revision": entry.get("source_revision"), "artifact_sha256": entry.get("artifact_sha256")}, "subjects": subjects, "selected": {**selected, "bbox_xyxy": [left, top, min(right, source.width), min(bottom, source.height)]}}
+    atomic_json_write(_job_root(job) / "evidence" / "subject_inventory.json", inventory)
+    return inventory
+
+
 class HOI4JobInput:
     @classmethod
     def INPUT_TYPES(cls):
@@ -103,6 +207,104 @@ class HOI4JobInput:
         return (job,)
 
 
+class HOI4HumanControls:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "job": ("HOI4_JOB",),
+            "source_image_path": ("STRING", {"default": "<from_job_contract>"}),
+            "subject_selector_mode": (["automatic", "face_index", "bbox"], {"default": "automatic"}),
+            "face_index": ("INT", {"default": 0, "min": 0, "max": 63}),
+            "bbox_left": ("INT", {"default": 0, "min": 0}),
+            "bbox_top": ("INT", {"default": 0, "min": 0}),
+            "bbox_right": ("INT", {"default": 0, "min": 0}),
+            "bbox_bottom": ("INT", {"default": 0, "min": 0}),
+            "crop_override_left": ("INT", {"default": 0, "min": 0}),
+            "crop_override_top": ("INT", {"default": 0, "min": 0}),
+            "crop_override_right": ("INT", {"default": 0, "min": 0}),
+            "crop_override_bottom": ("INT", {"default": 0, "min": 0}),
+            "monochrome_mode": (["automatic", "force_skip", "force_run_with_review"], {"default": "automatic"}),
+            "restoration_level": (["none", "conservative", "qualified_enhanced"], {"default": "conservative"}),
+            "approved_background_registry_id": ("STRING", {"default": "<from_job_contract>"}),
+            "prompt_override": ("STRING", {"default": "", "multiline": True}),
+            "seed_mode": (["fixed", "derived", "random_recorded"], {"default": "derived"}),
+            "fixed_seed": ("INT", {"default": 0, "min": 0}),
+            "candidate_count": ("INT", {"default": 1, "min": 1, "max": 6}),
+            "output_job_id": ("STRING", {"default": "<job_id_from_contract>"}),
+        }, "optional": {}}
+
+    RETURN_TYPES = ("HOI4_JOB", "HOI4_META")
+    RETURN_NAMES = ("job", "control_meta")
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/00 Job and source"
+
+    def run(self, job: dict[str, Any], source_image_path: str, subject_selector_mode: str, face_index: int, bbox_left: int, bbox_top: int, bbox_right: int, bbox_bottom: int, crop_override_left: int, crop_override_top: int, crop_override_right: int, crop_override_bottom: int, monochrome_mode: str, restoration_level: str, approved_background_registry_id: str, prompt_override: str, seed_mode: str, fixed_seed: int, candidate_count: int, output_job_id: str):
+        root = _project_from_job(job)
+        if output_job_id not in {"", "<job_id_from_contract>", str(job.get("job_id"))}:
+            _raise(ExitCode.WORKFLOW_INVALID, "human control output_job_id cannot change the validated job root")
+        updated = json.loads(json.dumps(job))
+        resolved_source = source_image_path if source_image_path not in {"", "<from_job_contract>"} else updated.get("source_image_path")
+        if not isinstance(resolved_source, str) or Path(resolved_source).is_absolute():
+            _raise(ExitCode.SOURCE_INVALID, "human source control must be a project-relative path")
+        try:
+            source_path = relative_safe_path(root, resolved_source)
+        except ValueError:
+            _raise(ExitCode.SOURCE_INVALID, "human source control escapes the project root")
+        if not source_path.is_file():
+            _raise(ExitCode.SOURCE_INVALID, "human source control points to a missing image")
+        updated["source_image_path"] = resolved_source
+        if subject_selector_mode == "automatic":
+            # Retain an explicit selector already present in the validated job;
+            # otherwise the subject node will require an audited inventory.
+            pass
+        elif subject_selector_mode == "face_index":
+            updated["subject_selector"] = {"mode": "face_index", "face_index": int(face_index)}
+        elif subject_selector_mode == "bbox":
+            bbox = [int(bbox_left), int(bbox_top), int(bbox_right), int(bbox_bottom)]
+            if bbox[2] <= bbox[0] or bbox[3] <= bbox[1]:
+                _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "human bbox control is empty")
+            updated["subject_selector"] = {"mode": "bbox", "bbox_xyxy": bbox}
+        else:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown human subject-selector mode")
+        if candidate_count < 1 or candidate_count > int(PROFILE_LIMITS[str(job.get("execution_profile"))]["candidate_max"]):
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "human candidate count exceeds the locked profile ceiling")
+        updated["candidate_count"] = int(candidate_count)
+        if seed_mode == "fixed":
+            updated["seed_policy"] = {"mode": "fixed", "seed": int(fixed_seed)}
+        elif seed_mode in {"derived", "random_recorded"}:
+            updated["seed_policy"] = {"mode": seed_mode}
+        else:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown human seed mode")
+        if approved_background_registry_id not in {"", "<from_job_contract>"}:
+            registry_path = root / "config" / "background_registry.json"
+            registry = json.loads(registry_path.read_text(encoding="utf-8")) if registry_path.is_file() else {}
+            matches = [item for item in registry.get("backgrounds", []) if item.get("registry_id") == approved_background_registry_id and item.get("status") == "APPROVED"]
+            if not matches:
+                _raise(ExitCode.BACKGROUND_UNRESOLVED, "human background control does not identify an approved registry entry")
+            entry = matches[0]
+            updated["approved_background"] = {"registry_id": entry["registry_id"], "path": entry.get("runtime_path") or entry.get("path"), "sha256": entry.get("sha256")}
+        if prompt_override.strip():
+            result = validate_prompt(prompt_override, record_name=updated.get("subject_identity", {}).get("record_name"), allowed_claims=updated.get("allowed_autoprompt_claims"))
+            if not result.passed:
+                _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
+            updated["prompt"] = result.normalized_prompt
+        # The control node is allowed to change only the documented human
+        # controls. Revalidate the resulting contract before it reaches any
+        # producer node.
+        hidden = {key: updated.pop(key) for key in tuple(updated) if key.startswith("_")}
+        issues = validate_job(updated, root)
+        updated.update(hidden)
+        if issues:
+            first = issues[0]
+            _raise(first.code, f"{first.path}: {first.message}")
+        crop_override = [int(crop_override_left), int(crop_override_top), int(crop_override_right), int(crop_override_bottom)]
+        if not (crop_override[0] == crop_override[1] == crop_override[2] == crop_override[3] == 0):
+            if crop_override[2] <= crop_override[0] or crop_override[3] <= crop_override[1] or crop_override[2] - crop_override[0] <= 0:
+                _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "human crop override is empty")
+        control_meta = {"source": resolved_source, "subject_selector_mode": subject_selector_mode, "crop_override_xyxy": crop_override if any(crop_override) else None, "monochrome_mode": monochrome_mode, "restoration_level": restoration_level, "approved_background_registry_id": updated.get("approved_background", {}).get("registry_id"), "prompt_override": bool(prompt_override.strip()), "prompt_override_value": prompt_override if prompt_override.strip() else "", "seed_mode": seed_mode, "candidate_count": int(candidate_count), "output_job_id": updated.get("job_id")}
+        return updated, control_meta
+
+
 class HOI4JobSource:
     @classmethod
     def INPUT_TYPES(cls):
@@ -116,16 +318,52 @@ class HOI4JobSource:
     def run(self, job: dict[str, Any]):
         if Image is None:
             _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required to load the source portrait")
-        root = _project_from_job(job)
+        root, job_root = _read_project_job(job)
         path_value = str(job["source_image_path"])
-        path = relative_safe_path(root, path_value)
+        try:
+            path = relative_safe_path(root, path_value)
+        except ValueError:
+            _raise(ExitCode.SOURCE_INVALID, "source portrait path escapes the project root")
         if not path.is_file():
             _raise(ExitCode.SOURCE_INVALID, f"source portrait is missing: {path_value}")
         actual = sha256_file(path)
-        source_meta = {"path": str(path.relative_to(root)), "sha256": actual, "source_provenance": job.get("source_provenance")}
-        with Image.open(path) as image:
-            image.load()
-            return (_pil_to_comfy(image), source_meta)
+        original_target = relative_safe_path(job_root, f"source/original/{path.name}")
+        original_target.parent.mkdir(parents=True, exist_ok=True)
+        if original_target.is_file() and sha256_file(original_target) != actual:
+            _raise(ExitCode.SOURCE_INVALID, "immutable source snapshot conflicts with the current source bytes")
+        if not original_target.is_file():
+            with tempfile.NamedTemporaryFile("wb", dir=original_target.parent, prefix=f".{original_target.name}.", suffix=".tmp", delete=False) as target_handle:
+                temporary = Path(target_handle.name)
+                with path.open("rb") as source_handle:
+                    while chunk := source_handle.read(1024 * 1024):
+                        target_handle.write(chunk)
+            try:
+                os.replace(temporary, original_target)
+            finally:
+                if temporary.exists():
+                    temporary.unlink()
+            if not original_target.is_file() or sha256_file(original_target) != actual:
+                _raise(ExitCode.SOURCE_INVALID, "immutable source snapshot checksum verification failed")
+        try:
+            with Image.open(path) as opened:
+                fmt = opened.format
+                width, height = opened.size
+                if not _source_format_allowed(fmt):
+                    _raise(ExitCode.SOURCE_INVALID, f"unsupported source image format: {fmt}")
+                if width <= 0 or height <= 0 or width * height > 50_000_000:
+                    _raise(ExitCode.SOURCE_INVALID, "source image dimensions are unsafe")
+                orientation = opened.getexif().get(274, 1)
+                image = ImageOps.exif_transpose(opened).convert("RGB") if ImageOps is not None else opened.convert("RGB")
+                image.load()
+        except Exception as exc:
+            if isinstance(exc, RuntimeError):
+                raise
+            _raise(ExitCode.SOURCE_INVALID, f"source image decode failed: {type(exc).__name__}")
+        decoded_target = relative_safe_path(job_root, "source/decoded/master.png")
+        decoded_record = _write_image(decoded_target, image)
+        source_meta = {"path": str(path.relative_to(root)), "original_path": str(original_target.relative_to(job_root)), "decoded_master": str(decoded_target.relative_to(job_root)), "sha256": actual, "size_bytes": path.stat().st_size, "format": fmt, "original_dimensions": [width, height], "orientation_tag": orientation, "orientation_transform": "EXIF transpose" if orientation not in {None, 1} else "identity", "decoded_pixel_sha256": decoded_record["pixel_sha256"], "source_provenance": job.get("source_provenance")}
+        atomic_json_write(job_root / "evidence" / "source_intake.json", source_meta)
+        return (_pil_to_comfy(image), source_meta)
 
 
 class HOI4SourceGuard:
@@ -140,7 +378,10 @@ class HOI4SourceGuard:
 
     def run(self, job: dict[str, Any], image: Any):
         root = _project_from_job(job)
-        path = relative_safe_path(root, job["source_image_path"])
+        try:
+            path = relative_safe_path(root, job["source_image_path"])
+        except ValueError:
+            _raise(ExitCode.SOURCE_INVALID, "source path escapes the project root")
         if not path.is_file():
             _raise(ExitCode.SOURCE_INVALID, "source disappeared during execution")
         provenance = job.get("source_provenance", {})
@@ -161,69 +402,240 @@ class HOI4SubjectSelect:
 
     def run(self, job: dict[str, Any], image: Any):
         selector = job.get("subject_selector")
-        if selector is None and job.get("subject_identity", {}).get("real_person") is True:
-            _raise(ExitCode.AMBIGUOUS_SUBJECT, "real-person jobs require a deterministic selector or an audited single-face detector")
-        return image, {"selector": selector, "selection": "contract_or_preflight_confirmed"}
+        if selector is None:
+            inventory_path = _job_root(job) / "evidence" / "subject_inventory.json"
+            if not inventory_path.is_file():
+                _write_subject_inventory(job, image)
+            selector = {"mode": "subject_hint", "subject_hint": "service_selected_subject"}
+        if not isinstance(selector, dict) or selector.get("mode") not in {"bbox", "face_index", "subject_hint"}:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "subject selector is invalid")
+        if selector.get("mode") == "bbox":
+            bbox = selector.get("bbox_xyxy")
+            if not isinstance(bbox, list) or len(bbox) != 4 or not all(isinstance(value, int) and value >= 0 for value in bbox):
+                _raise(ExitCode.INPUT_SCHEMA_INVALID, "bbox selector must contain four non-negative integers")
+            left, top, right, bottom = bbox
+            if right <= left or bottom <= top or left >= int(image.shape[2]) or top >= int(image.shape[1]):
+                _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject bbox is outside the decoded source")
+            right = min(right, int(image.shape[2]))
+            bottom = min(bottom, int(image.shape[1]))
+            if right - left < 8 or bottom - top < 8:
+                _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject bbox is too small for an auditable portrait")
+            return image, {"selector": selector, "selection": "contract_bbox", "bbox_xyxy": [left, top, right, bottom], "face_analysis": "selector_only; live YuNet/person association still required"}
+        inventory_path = _job_root(job) / "evidence" / "subject_inventory.json"
+        if not inventory_path.is_file():
+            _write_subject_inventory(job, image)
+        try:
+            inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, f"subject inventory is invalid: {exc}")
+        if inventory.get("analysis_status") != "PASS":
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject inventory is not an auditable PASS result")
+        subjects = inventory.get("subjects")
+        if not isinstance(subjects, list) or not subjects:
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject inventory has no auditable proposals")
+        if selector.get("mode") == "face_index":
+            face_index = selector.get("face_index")
+            if not isinstance(face_index, int) or isinstance(face_index, bool) or face_index < 0:
+                _raise(ExitCode.INPUT_SCHEMA_INVALID, "face_index must be a non-negative integer")
+            if face_index >= len(subjects):
+                _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "face_index is outside the auditable subject inventory")
+            selected = subjects[face_index]
+            selection_label = "audited_face_index"
+        else:
+            selected = inventory.get("selected")
+            selection_label = "audited_inventory"
+        if not isinstance(selected, dict) or not isinstance(selected.get("bbox_xyxy"), list):
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject inventory has no selected auditable face")
+        bbox = selected["bbox_xyxy"]
+        if len(bbox) != 4 or not all(isinstance(value, int) and not isinstance(value, bool) and value >= 0 for value in bbox):
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject inventory selected an invalid bbox")
+        left, top, right, bottom = bbox
+        if right <= left or bottom <= top or left >= int(image.shape[2]) or top >= int(image.shape[1]):
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject inventory selected a bbox outside the decoded source")
+        right = min(right, int(image.shape[2]))
+        bottom = min(bottom, int(image.shape[1]))
+        if right - left < 8 or bottom - top < 8:
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject inventory selected a bbox too small for an auditable portrait")
+        return image, {"selector": selector, "selection": selection_label, "bbox_xyxy": [left, top, right, bottom], "inventory_path": str(inventory_path.relative_to(_job_root(job))), "inventory_sha256": sha256_file(inventory_path), "face_analysis": inventory.get("analysis_status", "unverified"), "selected_subject_index": selector.get("face_index") if selector.get("mode") == "face_index" else None}
 
 
 class HOI4HeadShouldersCrop:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",)}}
+        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "selection_meta": ("HOI4_META",)}, "optional": {"control_meta": ("HOI4_META",)}}
 
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "crop_meta")
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/02 Crop and source preparation"
 
-    def run(self, job: dict[str, Any], image: Any):
-        return image, {"crop": "delegated_to_calibrated_selector", "job_id": job.get("job_id")}
+    def run(self, job: dict[str, Any], image: Any, selection_meta: dict[str, Any], control_meta: dict[str, Any] | None = None):
+        if Image is None:
+            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required for exact crop generation")
+        source = _comfy_to_pil(image)
+        bbox = selection_meta.get("bbox_xyxy") if isinstance(selection_meta, dict) else None
+        if not isinstance(bbox, list) or len(bbox) != 4:
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject selection has no usable bbox")
+        left, top, right, bottom = [int(value) for value in bbox]
+        if not (0 <= left < right <= source.width and 0 <= top < bottom <= source.height):
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject bbox is outside the decoded master")
+        explicit = control_meta.get("crop_override_xyxy") if isinstance(control_meta, dict) and control_meta.get("crop_override_xyxy") else selection_meta.get("crop_xyxy") if isinstance(selection_meta, dict) else None
+        if isinstance(explicit, list) and len(explicit) == 4:
+            crop_left, crop_top, crop_right, crop_bottom = [int(value) for value in explicit]
+        else:
+            face_width = right - left
+            face_height = bottom - top
+            target_height = max(210, int(round(face_height * 4.2)))
+            target_width = max(156, int(round(target_height * 26 / 35)))
+            # Keep the crop ratio exact and bias the vertical placement toward
+            # the face's upper third so visible shoulders remain when present.
+            center_x = (left + right) / 2.0
+            center_y = top + face_height * 0.42
+            crop_left = int(round(center_x - target_width / 2.0))
+            crop_top = int(round(center_y - target_height * 0.30))
+            crop_right = crop_left + target_width
+            crop_bottom = crop_top + target_height
+        if crop_right <= crop_left or crop_bottom <= crop_top:
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "calculated crop is empty")
+        crop_width = crop_right - crop_left
+        crop_height = crop_bottom - crop_top
+        if crop_width * 35 != crop_height * 26:
+            # Correct only the derived/explicit canvas dimensions; do not
+            # silently alter the selected face or invent a new pose.
+            crop_height = int(round(crop_width * 35 / 26))
+            crop_bottom = crop_top + crop_height
+        fill = (0, 0, 0)
+        canvas = Image.new("RGB", (crop_width, crop_height), fill)
+        source_left = max(0, crop_left)
+        source_top = max(0, crop_top)
+        source_right = min(source.width, crop_right)
+        source_bottom = min(source.height, crop_bottom)
+        if source_right <= source_left or source_bottom <= source_top:
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "crop does not intersect the source")
+        patch = source.crop((source_left, source_top, source_right, source_bottom))
+        canvas.paste(patch, (source_left - crop_left, source_top - crop_top))
+        meta = {"job_id": job.get("job_id"), "crop_xyxy": [crop_left, crop_top, crop_right, crop_bottom], "source_intersection_xyxy": [source_left, source_top, source_right, source_bottom], "padding": {"left": max(0, -crop_left), "top": max(0, -crop_top), "right": max(0, crop_right - source.width), "bottom": max(0, crop_bottom - source.height)}, "aspect_ratio": "26:35", "selected_bbox_xyxy": [left, top, right, bottom], "pixel_sha256": _pixel_digest(canvas), "source_pixel_preserved_inside_intersection": True}
+        decoded = _pil_to_comfy(canvas)
+        job_root = _job_root(job)
+        meta["evidence_path"] = str((job_root / "evidence" / "reference" / "crop.png").relative_to(job_root))
+        _write_image(job_root / "evidence" / "reference" / "crop.png", canvas)
+        atomic_json_write(job_root / "evidence" / "crop.json", meta)
+        return decoded, meta
 
 
 class HOI4ConservativePrep:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",)}}
+        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "crop_meta": ("HOI4_META",)}, "optional": {"control_meta": ("HOI4_META",)}}
 
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "reference_meta")
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/03 Color and restoration"
 
-    def run(self, job: dict[str, Any], image: Any):
-        return image, {"colorization": "conditional", "restoration": "conservative", "identity_master_preserved": True}
+    def run(self, job: dict[str, Any], image: Any, crop_meta: dict[str, Any], control_meta: dict[str, Any] | None = None):
+        if Image is None:
+            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required for conservative source preparation")
+        source = _comfy_to_pil(image).convert("RGB")
+        pixels = list(source.getdata())
+        if not pixels:
+            _raise(ExitCode.SOURCE_INVALID, "cropped source contains no pixels")
+        chroma = [max(pixel) - min(pixel) for pixel in pixels]
+        sorted_chroma = sorted(chroma)
+        median_chroma = sorted_chroma[len(sorted_chroma) // 2]
+        neutral_fraction = sum(1 for value in chroma if value <= 5) / len(chroma)
+        if median_chroma <= 5 and neutral_fraction >= 0.92:
+            mono_status = "MONOCHROME"
+        elif median_chroma >= 12 or neutral_fraction < 0.65:
+            mono_status = "COLOR"
+        else:
+            mono_status = "UNCERTAIN"
+        profile = str(job.get("execution_profile", ""))
+        limits = PROFILE_LIMITS.get(profile)
+        if not limits:
+            _raise(ExitCode.WORKFLOW_INVALID, "job execution profile is unknown")
+        target = (int(limits["canvas_width"]), int(limits["canvas_height"]))
+        if source.size != target:
+            prepared = source.resize(target, Image.Resampling.LANCZOS)
+            resize_status = "LANCZOS_TO_PROFILE_CANVAS"
+        else:
+            prepared = source
+            resize_status = "IDENTITY_SIZE"
+        # Colorization remains conditional and is intentionally not faked by a
+        # color filter.  A monochrome master is retained when DDColor is not
+        # installed and qualified; the model preflight controls that branch.
+        requested_mono_mode = control_meta.get("monochrome_mode", "automatic") if isinstance(control_meta, dict) else "automatic"
+        requested_restore = control_meta.get("restoration_level", "conservative") if isinstance(control_meta, dict) else "conservative"
+        if requested_restore == "qualified_enhanced":
+            _raise(ExitCode.DEPENDENCY_MISSING, "qualified enhanced restoration requires a pinned, A/B-qualified restoration model")
+        if requested_mono_mode == "force_skip":
+            mono_status = "FORCED_SKIP"
+        if requested_mono_mode == "force_run_with_review" and mono_status == "MONOCHROME":
+            _raise(ExitCode.DEPENDENCY_MISSING, "force-run colorization requested but DDColor is not installed and qualified")
+        colorization_status = "BYPASSED_COLOR_INPUT" if mono_status in {"COLOR", "FORCED_SKIP"} else "SKIPPED_NO_APPROVED_COLORIZER" if mono_status == "MONOCHROME" else "SKIPPED_UNCERTAIN"
+        if requested_restore == "none":
+            resize_status = "PROFILE_RESIZE_ONLY"
+        meta = {"crop_meta": crop_meta, "monochrome": {"verdict": mono_status, "requested_mode": requested_mono_mode, "median_channel_chroma": median_chroma, "neutral_fraction": neutral_fraction}, "colorization": {"status": colorization_status, "model": "DDColor", "identity_master_preserved": True}, "restoration": {"requested_level": requested_restore, "status": "CONSERVATIVE_DETERMINISTIC", "operations": ["EXIF_oriented_decode", resize_status]}, "work_canvas": {"width": prepared.width, "height": prepared.height}, "pixel_sha256": _pixel_digest(prepared)}
+        job_root = _job_root(job)
+        _write_image(job_root / "evidence" / "reference" / "processed.png", prepared)
+        atomic_json_write(job_root / "evidence" / "reference" / "processed.json", meta)
+        return _pil_to_comfy(prepared), meta
 
 
 class HOI4ForegroundMask:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "mask_model": ("STRING", {"default": "BiRefNet:PINNED_REQUIRED"})}}
+        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "reference_meta": ("HOI4_META",), "mask_model": ("STRING", {"default": "BiRefNet"})}}
 
     RETURN_TYPES = ("IMAGE", "MASK", "HOI4_META")
     RETURN_NAMES = ("image", "mask", "mask_meta")
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/04 Masks and approved background"
 
-    def run(self, job: dict[str, Any], image: Any, mask_model: str):
-        if "PINNED_REQUIRED" in mask_model:
-            _raise(ExitCode.DEPENDENCY_MISSING, "BiRefNet mask model is not installed and verified")
-        service = os.environ.get("HOI4_MASK_SERVICE_LOOPBACK")
-        if not service or not (service.startswith("http://127.0.0.1:") or service.startswith("http://localhost:")):
-            _raise(ExitCode.DEPENDENCY_MISSING, "foreground mask service is not configured on loopback")
-        _raise(ExitCode.GENERATION_FAILED, "mask service integration is not live-qualified; no placeholder mask is permitted")
+    def run(self, job: dict[str, Any], image: Any, reference_meta: dict[str, Any], mask_model: str):
+        if mask_model != "BiRefNet":
+            _raise(ExitCode.WORKFLOW_INVALID, "foreground mask model is not the locked BiRefNet route")
+        if torch is None or Image is None:
+            _raise(ExitCode.DEPENDENCY_MISSING, "PyTorch and Pillow are required for the pinned foreground mask route")
+        root = _project_from_job(job)
+        entry = _preprocessing_entry(root, "BiRefNet")
+        source = _comfy_to_pil(image).convert("RGB")
+        image_bytes = io.BytesIO()
+        source.save(image_bytes, format="PNG", optimize=False)
+        response = _post_loopback_json(os.environ.get("HOI4_MASK_SERVICE_LOOPBACK", ""), {"job_id": job.get("job_id"), "model": {"name": "BiRefNet", "source_revision": entry.get("source_revision"), "artifact_sha256": entry.get("artifact_sha256")}, "image_png_base64": base64.b64encode(image_bytes.getvalue()).decode("ascii")})
+        model = response.get("model")
+        if not isinstance(model, dict) or model.get("name") != "BiRefNet" or model.get("source_revision") != entry.get("source_revision") or model.get("artifact_sha256") != entry.get("artifact_sha256"):
+            _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "mask service model identity does not match the preprocessing lock")
+        encoded_mask = response.get("mask_png_base64")
+        if not isinstance(encoded_mask, str):
+            _raise(ExitCode.MASK_AUDIT_FAILED, "mask service returned no PNG mask")
+        try:
+            mask_bytes = base64.b64decode(encoded_mask, validate=True)
+            with Image.open(io.BytesIO(mask_bytes)) as opened:
+                mask_image = opened.convert("L")
+                mask_image.load()
+        except (binascii.Error, ValueError, OSError) as exc:
+            _raise(ExitCode.MASK_AUDIT_FAILED, f"mask service returned an undecodable mask: {type(exc).__name__}")
+        if mask_image.size != source.size:
+            _raise(ExitCode.MASK_AUDIT_FAILED, "mask service dimensions do not match the processed reference")
+        mask_values = torch.frombuffer(bytearray(mask_image.tobytes()), dtype=torch.uint8).reshape(mask_image.height, mask_image.width).float().div(255.0).unsqueeze(0).to(device=image.device, dtype=image.dtype)
+        mask_record = {"model": model, "analysis_status": "PASS", "mask_path": "evidence/mask/foreground.png", "mask_sha256": _pixel_digest(mask_image), "reference_meta": reference_meta}
+        _write_image(_job_root(job) / "evidence" / "mask" / "foreground.png", mask_image)
+        atomic_json_write(_job_root(job) / "evidence" / "mask" / "foreground.json", mask_record)
+        return image, mask_values, mask_record
 
 
 class HOI4MaskAndBackgroundGuard:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "mask": ("MASK",)}}
+        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "mask": ("MASK",), "mask_meta": ("HOI4_META",)}}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "MASK", "HOI4_META")
     RETURN_NAMES = ("image", "composite", "mask", "background_meta")
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/04 Masks and approved background"
 
-    def run(self, job: dict[str, Any], image: Any, mask: Any):
+    def run(self, job: dict[str, Any], image: Any, mask: Any, mask_meta: dict[str, Any]):
         root = _project_from_job(job)
         registry_path = root / "config" / "background_registry.json"
         if not registry_path.is_file():
@@ -238,6 +650,8 @@ class HOI4MaskAndBackgroundGuard:
         background_value = matches[0].get("runtime_path")
         if not background_value:
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "approved background has no runtime path")
+        if requested.get("path") != background_value:
+            _raise(ExitCode.BACKGROUND_UNRESOLVED, "requested background path does not match the approved registry")
         background_path = relative_safe_path(root, background_value)
         if not background_path.is_file() or sha256_file(background_path) != requested.get("sha256"):
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "approved background file is missing or checksum mismatched")
@@ -245,30 +659,48 @@ class HOI4MaskAndBackgroundGuard:
             background_image = background_image.convert("RGB").resize((image.shape[2], image.shape[1]))
             background = _pil_to_comfy(background_image).to(device=image.device, dtype=image.dtype)
         working_mask = mask
+        if not hasattr(working_mask, "isfinite"):
+            _raise(ExitCode.MASK_AUDIT_FAILED, "foreground mask tensor is unavailable")
+        if not bool(torch.isfinite(working_mask).all().item()):
+            _raise(ExitCode.MASK_AUDIT_FAILED, "foreground mask contains non-finite values")
         if working_mask.ndim == 3:
             working_mask = working_mask.unsqueeze(-1)
         working_mask = working_mask.to(device=image.device, dtype=image.dtype).clamp(0, 1)
+        if working_mask.shape[0] != image.shape[0] or working_mask.shape[1] != image.shape[1] or working_mask.shape[2] != image.shape[2]:
+            _raise(ExitCode.MASK_AUDIT_FAILED, "foreground mask dimensions do not match the processed reference")
         composite = image * working_mask + background * (1.0 - working_mask)
-        return image, composite, mask, {"background_registry_id": requested["registry_id"], "background_sha256": requested["sha256"], "mask_semantics": "foreground_alpha; independently_audited", "foreground_integrity_required": True}
+        interior = working_mask >= 0.999
+        interior_pixels = int(interior[..., 0].sum().item()) if interior.ndim == 4 else int(interior.sum().item())
+        if interior_pixels:
+            difference = (image - composite).abs()
+            interior_difference = difference.masked_select(interior.expand_as(difference))
+            max_difference = float(interior_difference.max().item()) if interior_difference.numel() else 0.0
+            if max_difference != 0.0:
+                _raise(ExitCode.MASK_AUDIT_FAILED, "composite changed an eroded foreground interior pixel")
+        else:
+            _raise(ExitCode.MASK_AUDIT_FAILED, "foreground mask has no hard interior")
+        guard_meta = {"background_registry_id": requested["registry_id"], "background_sha256": requested["sha256"], "mask_semantics": "foreground_alpha; independently_audited", "foreground_integrity_required": True, "mask_meta": mask_meta, "hard_interior_pixels": interior_pixels, "interior_max_difference": 0.0, "boundary_blend_only": True}
+        atomic_json_write(_job_root(job) / "evidence" / "background_composite.json", guard_meta)
+        return image, composite, mask, guard_meta
 
 
 class HOI4PromptInput:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"job": ("HOI4_JOB",), "prompt_source": (["job_contract"], {"default": "job_contract"})}}
+        return {"required": {"job": ("HOI4_JOB",), "background_meta": ("HOI4_META",), "prompt_source": (["job_contract"], {"default": "job_contract"})}}
 
     RETURN_TYPES = ("STRING", "HOI4_META")
     RETURN_NAMES = ("prompt", "prompt_meta")
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/05 Prompt"
 
-    def run(self, job: dict[str, Any], prompt_source: str):
+    def run(self, job: dict[str, Any], background_meta: dict[str, Any], prompt_source: str):
         if prompt_source != "job_contract":
             _raise(ExitCode.WORKFLOW_INVALID, "agent prompt must come from the job contract")
         result = validate_prompt(prompt=str(job.get("prompt", "")), record_name=job.get("subject_identity", {}).get("record_name"), allowed_claims=job.get("allowed_autoprompt_claims"))
         if not result.passed:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
-        return result.normalized_prompt, {"source": "job_contract", "validator": result.as_dict()}
+        return result.normalized_prompt, {"source": "job_contract", "validator": result.as_dict(), "background_meta": background_meta}
 
 
 class HOI4AutopromptClient:
@@ -277,6 +709,8 @@ class HOI4AutopromptClient:
         return {"required": {
             "job": ("HOI4_JOB",),
             "image": ("IMAGE",),
+            "background_meta": ("HOI4_META",),
+            "control_meta": ("HOI4_META",),
             "instruction_text": ("STRING", {"multiline": True, "default": ""}),
             "instruction_path": ("STRING", {"default": "prompts/autoprompter_instruction.txt"}),
             "model_id": ("STRING", {"default": "Qwen/Qwen3-VL-4B-Instruct-GGUF"}),
@@ -288,7 +722,7 @@ class HOI4AutopromptClient:
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/05 Prompt"
 
-    def run(self, job: dict[str, Any], image: Any, instruction_text: str, instruction_path: str, model_id: str, prompt_source: str):
+    def run(self, job: dict[str, Any], image: Any, background_meta: dict[str, Any], control_meta: dict[str, Any], instruction_text: str, instruction_path: str, model_id: str, prompt_source: str):
         if prompt_source != "autoprompter":
             _raise(ExitCode.WORKFLOW_INVALID, "human autoprompter source is locked")
         expected_model = "Qwen/Qwen3-VL-4B-Instruct-GGUF" if job.get("execution_profile") == "human_local_mac_16gb" else "Qwen/Qwen3-VL-8B-Instruct"
@@ -299,16 +733,24 @@ class HOI4AutopromptClient:
         exact_instruction = exact_path.read_text(encoding="utf-8")
         if instruction_text != exact_instruction:
             _raise(ExitCode.WORKFLOW_INVALID, "autoprompter instruction does not exactly match the project file")
+        prompt_override = str(control_meta.get("prompt_override_value", "")) if isinstance(control_meta, dict) else ""
+        if prompt_override:
+            result = validate_prompt(prompt_override, record_name=job.get("subject_identity", {}).get("record_name"), allowed_claims=job.get("allowed_autoprompt_claims"))
+            if not result.passed:
+                _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
+            return result.normalized_prompt, {"source": "human_manual_override", "instruction_sha256": sha256_file(exact_path), "validator": result.as_dict(), "background_meta": background_meta}
         endpoint = os.environ.get("HOI4_AUTOPROMPTER_LOOPBACK", "http://127.0.0.1:8099/v1/chat/completions")
         if not endpoint.startswith("http://127.0.0.1:") and not endpoint.startswith("http://localhost:"):
             _raise(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "autoprompter is not bound to loopback")
-        encoded = json.dumps({"instruction": exact_instruction, "job_id": job.get("job_id"), "model_id": model_id, "image": "provided_in_process"}).encode("utf-8")
+        image_bytes = io.BytesIO()
+        _comfy_to_pil(image).save(image_bytes, format="PNG", optimize=False)
+        encoded = json.dumps({"instruction": exact_instruction, "job_id": job.get("job_id"), "model_id": model_id, "image_png_base64": base64.b64encode(image_bytes.getvalue()).decode("ascii"), "background_meta": background_meta}, ensure_ascii=False).encode("utf-8")
         request = urllib.request.Request(endpoint, data=encoded, headers={"Content-Type": "application/json"}, method="POST")
         try:
             with urllib.request.urlopen(request, timeout=120) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
-            _raise(ExitCode.DEPENDENCY_MISSING, f"loopback autoprompter sidecar unavailable: {exc}")
+            _raise(ExitCode.DEPENDENCY_MISSING, f"loopback autoprompter sidecar unavailable: {type(exc).__name__}")
         prompt = str(payload.get("prompt", ""))
         result = validate_prompt(prompt, record_name=job.get("subject_identity", {}).get("record_name"), allowed_claims=job.get("allowed_autoprompt_claims"))
         if not result.passed:
@@ -340,4 +782,36 @@ class HOI4EvidenceExport:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "candidate prompt failed the exact trigger gate")
         if approved_background is None:
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "approved composite is required for evidence")
-        return candidate, {"job_id": job.get("job_id"), "candidate_index": candidate_index, "source_master_present": source_master is not None, "processed_reference_present": processed_reference is not None, "approved_background_present": approved_background is not None, "mask_present": mask is not None, "finalization": "controller_and_independent_auditor_only"}
+        if candidate_index < 0:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "candidate index must be non-negative")
+        if Image is None:
+            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required for evidence export")
+        job_root = _job_root(job)
+        source_image = _comfy_to_pil(source_master).convert("RGB")
+        reference_image = _comfy_to_pil(processed_reference).convert("RGB")
+        background_image = _comfy_to_pil(approved_background).convert("RGB")
+        candidate_image = _comfy_to_pil(candidate).convert("RGB")
+        candidate_id = f"candidate-{int(candidate_index):03d}"
+        records = {
+            "source_master": _write_image(job_root / "evidence" / "source" / "master.png", source_image),
+            "processed_reference": _write_image(job_root / "evidence" / "reference" / "processed.png", reference_image),
+            "approved_background": _write_image(job_root / "evidence" / "background" / "approved_composite.png", background_image),
+            "candidate": _write_image(job_root / "candidates" / f"{candidate_id}.png", candidate_image),
+        }
+        if mask is not None:
+            mask_tensor = mask.detach().cpu().clamp(0, 1) if hasattr(mask, "detach") else mask
+            if hasattr(mask_tensor, "ndim") and mask_tensor.ndim == 3:
+                mask_tensor = mask_tensor[0]
+            if hasattr(mask_tensor, "mul"):
+                mask_pixels = (mask_tensor.mul(255).byte().numpy())
+                mask_image = Image.fromarray(mask_pixels, mode="L")
+            else:
+                mask_image = mask.convert("L") if hasattr(mask, "convert") else None
+            if mask_image is not None:
+                records["mask"] = _write_image(job_root / "evidence" / "mask" / f"{candidate_id}.png", mask_image)
+        prompt_path = job_root / "evidence" / "prompt" / f"{candidate_id}.txt"
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        prompt_path.write_text(prompt, encoding="utf-8")
+        evidence_meta = {"schema_version": "1.0.0", "job_id": job.get("job_id"), "candidate_id": candidate_id, "candidate_index": int(candidate_index), "records": records, "prompt_path": str(prompt_path.relative_to(job_root)), "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(), "finalization": "controller_and_independent_auditor_only", "exported_at": datetime.now(timezone.utc).isoformat()}
+        atomic_json_write(job_root / "evidence" / "candidates" / f"{candidate_id}.json", evidence_meta)
+        return candidate, evidence_meta

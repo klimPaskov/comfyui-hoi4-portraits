@@ -20,6 +20,7 @@ from .nodes import (
     HOI4ConservativePrep,
     HOI4EvidenceExport,
     HOI4ForegroundMask,
+    HOI4HumanControls,
     HOI4HeadShouldersCrop,
     HOI4JobInput,
     HOI4JobSource,
@@ -31,6 +32,7 @@ from .nodes import (
 
 NODE_CLASS_MAPPINGS = {
     "HOI4JobInput": HOI4JobInput,
+    "HOI4HumanControls": HOI4HumanControls,
     "HOI4JobSource": HOI4JobSource,
     "HOI4SourceGuard": HOI4SourceGuard,
     "HOI4SubjectSelect": HOI4SubjectSelect,
@@ -46,6 +48,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     key: value.replace("HOI4", "HOI4 ").replace("Input", "Input") for key, value in {
         "HOI4JobInput": "Job contract and profile",
+        "HOI4HumanControls": "Human review controls",
         "HOI4JobSource": "Job source loader",
         "HOI4SourceGuard": "Source provenance guard",
         "HOI4SubjectSelect": "Subject selector",

@@ -17,9 +17,10 @@
       "repository": "local-project-source",
       "revision": "graph-spec-1.0.0",
       "license": "MIT",
-      "source_tree_checksum": null,
+      "source_tree_checksum": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f",
       "classes": [
         "HOI4JobInput",
+        "HOI4HumanControls",
         "HOI4JobSource",
         "HOI4SourceGuard",
         "HOI4SubjectSelect",
@@ -41,4 +42,3 @@
     "missing_class_or_schema": "hard_block"
   }
 }
-

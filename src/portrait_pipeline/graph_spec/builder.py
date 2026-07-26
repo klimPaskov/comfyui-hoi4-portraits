@@ -42,6 +42,7 @@ PROJECT_NODES = {
     "HOI4AutopromptClient",
     "HOI4EvidenceExport",
 }
+HUMAN_ONLY_PROJECT_NODES = {"HOI4HumanControls"}
 FORBIDDEN_CLASS_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 
 
@@ -92,46 +93,57 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         input_types={"execution_profile": "STRING", "job_contract_path": "STRING", "candidate_count": "INT", "retry_limit": "INT", "seed_policy": "COMBO"},
         outputs=["job"], output_types=["HOI4_JOB"], pos=(40, 80), widgets=[profile, "jobs/<job_id>/input.json", int(limits["candidate_max"]), int(limits["retry_max"]), "derived"], locked=["execution_profile", "candidate_count", "retry_limit", "seed_policy"],
     ))
+    job_node_id = 24 if is_human else 1
+    if is_human:
+        nodes.append(_node(
+            24, "HOI4HumanControls", group["00 Job and source"], "Human review controls",
+            inputs={"job": Link(1), "source_image_path": "<from_job_contract>", "subject_selector_mode": "automatic", "face_index": 0, "bbox_left": 0, "bbox_top": 0, "bbox_right": 0, "bbox_bottom": 0, "crop_override_left": 0, "crop_override_top": 0, "crop_override_right": 0, "crop_override_bottom": 0, "monochrome_mode": "automatic", "restoration_level": "conservative", "approved_background_registry_id": "<from_job_contract>", "prompt_override": "", "seed_mode": "derived", "fixed_seed": 0, "candidate_count": int(limits["candidate_max"]), "output_job_id": "<job_id_from_contract>"},
+            input_types={"job": "HOI4_JOB", "source_image_path": "STRING", "subject_selector_mode": "COMBO", "face_index": "INT", "bbox_left": "INT", "bbox_top": "INT", "bbox_right": "INT", "bbox_bottom": "INT", "crop_override_left": "INT", "crop_override_top": "INT", "crop_override_right": "INT", "crop_override_bottom": "INT", "monochrome_mode": "COMBO", "restoration_level": "COMBO", "approved_background_registry_id": "STRING", "prompt_override": "STRING", "seed_mode": "COMBO", "fixed_seed": "INT", "candidate_count": "INT", "output_job_id": "STRING"},
+            outputs=["job", "control_meta"], output_types=["HOI4_JOB", "HOI4_META"], pos=(360, 80),
+            widgets=["<from_job_contract>", "automatic", 0, 0, 0, 0, 0, 0, 0, 0, "automatic", "conservative", "<from_job_contract>", "", "derived", 0, int(limits["candidate_max"]), "<job_id_from_contract>"],
+        ))
+    control_inputs = {"control_meta": Link(24, 1)} if is_human else {}
+    control_input_types = {"control_meta": "HOI4_META"} if is_human else {}
     nodes.append(_node(
         2, "HOI4JobSource", group["00 Job and source"], "Load source only from job root",
-        inputs={"job": Link(1)}, input_types={"job": "HOI4_JOB"}, outputs=["image", "source_meta"], output_types=["IMAGE", "HOI4_META"], pos=(40, 300),
+        inputs={"job": Link(job_node_id)}, input_types={"job": "HOI4_JOB"}, outputs=["image", "source_meta"], output_types=["IMAGE", "HOI4_META"], pos=(40, 300),
     ))
     nodes.append(_node(
         3, "HOI4SourceGuard", group["00 Job and source"], "Provenance and source guard",
-        inputs={"job": Link(1), "image": Link(2, 0)}, input_types={"job": "HOI4_JOB", "image": "IMAGE"}, outputs=["image", "source_meta"], output_types=["IMAGE", "HOI4_META"], pos=(40, 510),
+        inputs={"job": Link(job_node_id), "image": Link(2, 0)}, input_types={"job": "HOI4_JOB", "image": "IMAGE"}, outputs=["image", "source_meta"], output_types=["IMAGE", "HOI4_META"], pos=(40, 510),
     ))
     nodes.append(_node(
         4, "HOI4SubjectSelect", group["01 Subject selection"], "Deterministic subject selection",
-        inputs={"job": Link(1), "image": Link(3, 0)}, input_types={"job": "HOI4_JOB", "image": "IMAGE"}, outputs=["image", "selection_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 80),
+        inputs={"job": Link(job_node_id), "image": Link(3, 0)}, input_types={"job": "HOI4_JOB", "image": "IMAGE"}, outputs=["image", "selection_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 80),
     ))
     nodes.append(_node(
         5, "HOI4HeadShouldersCrop", group["02 Crop and source preparation"], "Head and shoulders crop",
-        inputs={"job": Link(1), "image": Link(4, 0)}, input_types={"job": "HOI4_JOB", "image": "IMAGE"}, outputs=["image", "crop_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 300),
+        inputs={"job": Link(job_node_id), "image": Link(4, 0), "selection_meta": Link(4, 1), **control_inputs}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "selection_meta": "HOI4_META", **control_input_types}, outputs=["image", "crop_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 300),
     ))
     nodes.append(_node(
         6, "HOI4ConservativePrep", group["03 Color and restoration"], "Conditional color and conservative restoration",
-        inputs={"job": Link(1), "image": Link(5, 0)}, input_types={"job": "HOI4_JOB", "image": "IMAGE"}, outputs=["image", "reference_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 520),
+        inputs={"job": Link(job_node_id), "image": Link(5, 0), "crop_meta": Link(5, 1), **control_inputs}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "crop_meta": "HOI4_META", **control_input_types}, outputs=["image", "reference_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 520),
     ))
     nodes.append(_node(
         7, "HOI4ForegroundMask", group["04 Masks and approved background"], "Pinned foreground/mask analysis",
-        inputs={"job": Link(1), "image": Link(6, 0), "mask_model": "BiRefNet:PINNED_REQUIRED"}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "mask_model": "STRING"}, outputs=["image", "mask", "mask_meta"], output_types=["IMAGE", "MASK", "HOI4_META"], pos=(680, 40), widgets=["BiRefNet:PINNED_REQUIRED"], locked=["mask_model"],
+        inputs={"job": Link(job_node_id), "image": Link(6, 0), "reference_meta": Link(6, 1), "mask_model": "BiRefNet"}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "reference_meta": "HOI4_META", "mask_model": "STRING"}, outputs=["image", "mask", "mask_meta"], output_types=["IMAGE", "MASK", "HOI4_META"], pos=(680, 40), widgets=["BiRefNet"], locked=["mask_model"],
     ))
     nodes.append(_node(
         8, "HOI4MaskAndBackgroundGuard", group["04 Masks and approved background"], "Approved background composite and foreground guard",
-        inputs={"job": Link(1), "image": Link(7, 0), "mask": Link(7, 1)}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "mask": "MASK"}, outputs=["image", "composite", "mask", "background_meta"], output_types=["IMAGE", "IMAGE", "MASK", "HOI4_META"], pos=(680, 270),
+        inputs={"job": Link(job_node_id), "image": Link(7, 0), "mask": Link(7, 1), "mask_meta": Link(7, 2)}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "mask": "MASK", "mask_meta": "HOI4_META"}, outputs=["image", "composite", "mask", "background_meta"], output_types=["IMAGE", "IMAGE", "MASK", "HOI4_META"], pos=(680, 270),
     ))
 
     if is_human:
         nodes.append(_node(
             9, "HOI4AutopromptClient", group["05 Prompt"], "Human-only exact autoprompter",
-            inputs={"job": Link(1), "image": Link(8, 0), "instruction_text": instruction, "instruction_path": AUTOPROMPTER_PATH, "model_id": limits["prompt_model"], "prompt_source": "autoprompter"},
-            input_types={"job": "HOI4_JOB", "image": "IMAGE", "instruction_text": "STRING", "instruction_path": "STRING", "model_id": "STRING", "prompt_source": "COMBO"},
+            inputs={"job": Link(job_node_id), "image": Link(8, 1), "background_meta": Link(8, 3), "control_meta": Link(24, 1), "instruction_text": instruction, "instruction_path": AUTOPROMPTER_PATH, "model_id": limits["prompt_model"], "prompt_source": "autoprompter"},
+            input_types={"job": "HOI4_JOB", "image": "IMAGE", "background_meta": "HOI4_META", "control_meta": "HOI4_META", "instruction_text": "STRING", "instruction_path": "STRING", "model_id": "STRING", "prompt_source": "COMBO"},
             outputs=["prompt", "prompt_meta"], output_types=["STRING", "HOI4_META"], pos=(680, 340), widgets=[instruction, AUTOPROMPTER_PATH, limits["prompt_model"], "autoprompter"], locked=["instruction_text", "instruction_path", "model_id", "prompt_source"],
         ))
     else:
         nodes.append(_node(
             9, "HOI4PromptInput", group["05 Prompt"], "Agent prompt from job contract",
-            inputs={"job": Link(1), "prompt_source": "job_contract"}, input_types={"job": "HOI4_JOB", "prompt_source": "COMBO"}, outputs=["prompt", "prompt_meta"], output_types=["STRING", "HOI4_META"], pos=(680, 540), widgets=["job_contract"], locked=["prompt_source"],
+            inputs={"job": Link(job_node_id), "background_meta": Link(8, 3), "prompt_source": "job_contract"}, input_types={"job": "HOI4_JOB", "background_meta": "HOI4_META", "prompt_source": "COMBO"}, outputs=["prompt", "prompt_meta"], output_types=["STRING", "HOI4_META"], pos=(680, 540), widgets=["job_contract"], locked=["prompt_source"],
         ))
 
     nodes.append(_node(
@@ -148,11 +160,11 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     ))
     nodes.append(_node(
         13, "VAEEncode", group["06 Krea 2 identity edit"], "Encode identity reference",
-        inputs={"pixels": Link(8, 0), "vae": Link(12)}, input_types={"pixels": "IMAGE", "vae": "VAE"}, outputs=["latent"], output_types=["LATENT"], pos=(1000, 610),
+        inputs={"pixels": Link(8, 1), "vae": Link(12)}, input_types={"pixels": "IMAGE", "vae": "VAE"}, outputs=["latent"], output_types=["LATENT"], pos=(1000, 610),
     ))
     nodes.append(_node(
         14, "Krea2EditModelPatch", group["06 Krea 2 identity edit"], "Krea 2 identity edit patch",
-        inputs={"model": Link(11), "source_latent": Link(13), "fit_mode": "fit", "ref_boost": 1.0}, input_types={"model": "MODEL", "source_latent": "LATENT", "fit_mode": "COMBO", "ref_boost": "FLOAT"}, outputs=["model"], output_types=["MODEL"], pos=(1320, 200), widgets=["fit", 1.0], locked=["fit_mode", "ref_boost"],
+        inputs={"model": Link(11), "source_latent": Link(13), "vae": Link(12), "source_image": Link(8, 1), "fit_mode": "fit", "ref_boost": 1.0}, input_types={"model": "MODEL", "source_latent": "LATENT", "vae": "VAE", "source_image": "IMAGE", "fit_mode": "COMBO", "ref_boost": "FLOAT"}, outputs=["model"], output_types=["MODEL"], pos=(1320, 200), widgets=["fit", 1.0], locked=["fit_mode", "ref_boost"],
     ))
     nodes.append(_node(
         15, "DualCLIPLoader", group["06 Krea 2 identity edit"], "Krea Qwen3-VL encoder",
@@ -160,11 +172,11 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     ))
     nodes.append(_node(
         16, "Krea2EditGroundedEncode", group["06 Krea 2 identity edit"], "Grounded positive conditioning",
-        inputs={"clip": Link(15), "prompt": Link(9, 0), "image": Link(8, 0), "grounding_px": 64}, input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"}, outputs=["conditioning"], output_types=["CONDITIONING"], pos=(1640, 80), widgets=[64], locked=["grounding_px"],
+        inputs={"clip": Link(15), "prompt": Link(9, 0), "image": Link(8, 1), "grounding_px": 768}, input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"}, outputs=["conditioning"], output_types=["CONDITIONING"], pos=(1640, 80), widgets=[768], locked=["grounding_px"],
     ))
     nodes.append(_node(
         17, "Krea2EditGroundedEncode", group["06 Krea 2 identity edit"], "Grounded empty negative conditioning",
-        inputs={"clip": Link(15), "prompt": "", "image": Link(8, 0), "grounding_px": 64}, input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"}, outputs=["conditioning"], output_types=["CONDITIONING"], pos=(1640, 290), widgets=["", 64], locked=["prompt", "grounding_px"],
+        inputs={"clip": Link(15), "prompt": "", "image": Link(8, 1), "grounding_px": 768}, input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"}, outputs=["conditioning"], output_types=["CONDITIONING"], pos=(1640, 290), widgets=["", 768], locked=["prompt", "grounding_px"],
     ))
     nodes.append(_node(
         18, "LoraLoaderModelOnly", group["07 HOI4 style LoRA"], "Immutable HOI4 style LoRA",
@@ -184,7 +196,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     ))
     nodes.append(_node(
         22, "HOI4EvidenceExport", group["09 Preview and evidence export"], "Candidate evidence and audit handoff",
-        inputs={"job": Link(1), "source_master": Link(3, 0), "processed_reference": Link(8, 0), "approved_background": Link(8, 1), "candidate": Link(21), "mask": Link(8, 2), "prompt": Link(9, 0), "candidate_index": 0}, input_types={"job": "HOI4_JOB", "source_master": "IMAGE", "processed_reference": "IMAGE", "approved_background": "IMAGE", "candidate": "IMAGE", "mask": "MASK", "prompt": "STRING", "candidate_index": "INT"}, outputs=["image", "evidence_meta"], output_types=["IMAGE", "HOI4_META"], pos=(2920, 120), widgets=[0], locked=["candidate_index"],
+        inputs={"job": Link(job_node_id), "source_master": Link(3, 0), "processed_reference": Link(6, 0), "approved_background": Link(8, 1), "candidate": Link(21), "mask": Link(8, 2), "prompt": Link(9, 0), "candidate_index": 0}, input_types={"job": "HOI4_JOB", "source_master": "IMAGE", "processed_reference": "IMAGE", "approved_background": "IMAGE", "candidate": "IMAGE", "mask": "MASK", "prompt": "STRING", "candidate_index": "INT"}, outputs=["image", "evidence_meta"], output_types=["IMAGE", "HOI4_META"], pos=(2920, 120), widgets=[0], locked=["candidate_index"],
     ))
     nodes.append(_node(
         23, "SaveImage", group["09 Preview and evidence export"], "Preview PNG only",
@@ -210,7 +222,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "locked_controls": {node.title: node.locked for node in nodes if node.locked},
         "required_core_nodes": sorted(CORE_NODES),
         "required_krea_nodes": sorted(KREA_NODES),
-        "required_project_nodes": sorted(PROJECT_NODES & {node.class_type for node in nodes}),
+        "required_project_nodes": sorted((PROJECT_NODES | (HUMAN_ONLY_PROJECT_NODES if is_human else set())) & {node.class_type for node in nodes}),
         "candidate_budget": {"max": int(limits["candidate_max"]), "retry_max": int(limits["retry_max"])},
         "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow",
     }
@@ -243,8 +255,12 @@ def validate_graph(graph: GraphSpec) -> None:
         if graph.metadata["prompt_source"] != "job_contract":
             raise ValueError("agent workflow prompt source must be the job contract")
     common_project_nodes = PROJECT_NODES - {"HOI4PromptInput", "HOI4AutopromptClient"}
+    if not graph.metadata["human_workflow"]:
+        common_project_nodes -= HUMAN_ONLY_PROJECT_NODES
     required = CORE_NODES | KREA_NODES | common_project_nodes
     required.add("HOI4AutopromptClient" if graph.metadata["human_workflow"] else "HOI4PromptInput")
+    if graph.metadata["human_workflow"]:
+        required |= HUMAN_ONLY_PROJECT_NODES
     missing = sorted(required - class_names)
     if missing:
         raise ValueError(f"workflow is missing required node classes: {missing}")
@@ -314,6 +330,14 @@ def _ui_json(graph: GraphSpec) -> dict[str, Any]:
 
 def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
     root_path = project_root(root)
+    custom_node_lock_path = root_path / "dependencies" / "custom_nodes.lock.json"
+    custom_node_lock = json.loads(custom_node_lock_path.read_text(encoding="utf-8")) if custom_node_lock_path.is_file() else {}
+    custom_node_entries = {str(item.get("name")): item for item in custom_node_lock.get("custom_nodes", [])}
+    custom_node_by_class = {
+        class_name: entry
+        for entry in custom_node_entries.values()
+        for class_name in entry.get("classes", [])
+    }
     paths = {
         "human_local_mac_16gb": root_path / "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "human_full_power_gpu": root_path / "workflows/human/full_power_gpu/human_full_power_gpu.json",
@@ -325,13 +349,16 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         graph = build_graph(workflow_id, root_path)
         classes = {node.class_type for node in graph.nodes}
         required_prompt_node = "HOI4AutopromptClient" if graph.metadata["human_workflow"] else "HOI4PromptInput"
-        required_custom_nodes = sorted(KREA_NODES | (PROJECT_NODES - {"HOI4PromptInput", "HOI4AutopromptClient"}) | {required_prompt_node})
+        required_custom_nodes = sorted(KREA_NODES | (PROJECT_NODES - {"HOI4PromptInput", "HOI4AutopromptClient"} - (set() if graph.metadata["human_workflow"] else HUMAN_ONLY_PROJECT_NODES)) | {required_prompt_node} | (HUMAN_ONLY_PROJECT_NODES if graph.metadata["human_workflow"] else set()))
         required_models = ["krea2_turbo_fp8_scaled.safetensors", "qwen3vl_4b_fp8_scaled.safetensors", "qwen_image_vae.safetensors", "krea2_identity_edit_v1_2.safetensors", "hoi4_portrait_new_style_lora.safetensors"]
         if graph.metadata["human_workflow"]:
             required_models.append("Qwen3VL-4B-Instruct-Q4_K_M.gguf" if "local" in workflow_id else "Qwen3-VL-8B-Instruct-BF16-shards")
         api_path = ui_path.with_suffix(".api.json")
         atomic_json_write(ui_path, _ui_json(graph))
         atomic_json_write(api_path, _api_json(graph))
+        required_node_packages = sorted({custom_node_by_class[class_name]["name"] for class_name in required_custom_nodes if class_name in custom_node_by_class})
+        required_node_revisions = {name: custom_node_entries[name].get("revision") for name in required_node_packages}
+        required_node_checksums = {name: custom_node_entries[name].get("source_tree_checksum") for name in required_node_packages}
         manifests.append({
             "workflow_id": workflow_id,
             "display_name": workflow_id,
@@ -343,6 +370,9 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
             "required_core_nodes": sorted(CORE_NODES),
             "required_custom_nodes": required_custom_nodes,
+            "required_custom_node_packages": required_node_packages,
+            "required_custom_node_revisions": required_node_revisions,
+            "required_custom_node_source_checksums": required_node_checksums,
             "required_models": required_models,
             "autoprompter_present": bool(PROFILE_LIMITS[workflow_id]["autoprompter"]),
             "prompt_source": "autoprompter" if PROFILE_LIMITS[workflow_id]["autoprompter"] else "job_contract",

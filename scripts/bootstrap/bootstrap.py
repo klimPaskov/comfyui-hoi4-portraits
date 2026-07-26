@@ -14,6 +14,12 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -22,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
 from portrait_pipeline.constants import ExitCode  # noqa: E402
+from portrait_pipeline.comfy_client import ComfyTransportError, LoopbackComfyClient  # noqa: E402
 from portrait_pipeline.graph_spec.builder import build_workflow_artifacts  # noqa: E402
 from portrait_pipeline.preflight import collect_preflight, render_markdown  # noqa: E402
 from portrait_pipeline.util import atomic_json_write, sha256_file  # noqa: E402
@@ -33,8 +40,168 @@ def _capability_report(profile: str, preflight: dict[str, Any], actions: list[di
 
 
 def _run(command: list[str], cwd: Path = ROOT) -> dict[str, Any]:
-    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False)
+    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False, timeout=900)
     return {"command": command, "returncode": result.returncode, "stdout": result.stdout[-2000:], "stderr": result.stderr[-2000:]}
+
+
+def _write_bootstrap_log(run_id: str, profile: str, actions: list[dict[str, Any]], status: str) -> Path:
+    path = ROOT / "logs" / "bootstrap" / f"{run_id}.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        handle.write(json.dumps({"run_id": run_id, "profile": profile, "status": status, "recorded_at": datetime.now(timezone.utc).isoformat()}, ensure_ascii=False) + "\n")
+        for action in actions:
+            handle.write(json.dumps(action, ensure_ascii=False) + "\n")
+    return path
+
+
+class BootstrapError(RuntimeError):
+    def __init__(self, code: ExitCode, message: str):
+        super().__init__(message)
+        self.code = code
+
+
+def _run_checked(command: list[str], cwd: Path = ROOT) -> dict[str, Any]:
+    try:
+        result = _run(command, cwd)
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"command failed to start: {command[0]}") from exc
+    if result["returncode"] != 0:
+        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"command failed: {command[0]}")
+    return result
+
+
+def _git_checkout(url: str, destination: Path, revision: str, actions: list[dict[str, Any]]) -> None:
+    if not destination.exists():
+        actions.append(_run_checked(["git", "clone", url, str(destination)], ROOT))
+    elif not (destination / ".git").exists():
+        raise BootstrapError(ExitCode.NODE_MISSING, f"refusing to use a non-Git checkout at {destination}")
+    actions.append(_run_checked(["git", "fetch", "--tags", "--force", "origin", revision], destination))
+    actions.append(_run_checked(["git", "checkout", "--detach", revision], destination))
+    actual = _run_checked(["git", "rev-parse", "HEAD"], destination)["stdout"].strip()
+    if actual != revision:
+        raise BootstrapError(ExitCode.NODE_MISSING, f"checkout revision mismatch at {destination}")
+
+
+def _python_executable(venv: Path) -> Path:
+    candidate = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    if not candidate.is_file():
+        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "pinned Python environment was not created")
+    return candidate
+
+
+def _requirements_file(lock: dict[str, Any], runtime_lock: dict[str, Any]) -> Path:
+    lines: list[str] = []
+    seen: set[tuple[str, str]] = set()
+    entries = [item for item in lock.get("dependencies", []) if item.get("kind") in {"python_package", "python_build_dependency"} and item.get("mandatory")]
+    entries.extend(item for item in runtime_lock.get("requirements", []) if item.get("mandatory"))
+    for entry in entries:
+        name = str(entry.get("name", ""))
+        version = str(entry.get("version_or_commit", entry.get("version", "")))
+        hashes = entry.get("sha256")
+        if isinstance(hashes, str):
+            hashes = [hashes]
+        if not name or not version or version.startswith("UNRESOLVED") or not isinstance(hashes, list) or not hashes:
+            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"dependency lock has no complete hash set for {name or 'unnamed package'}")
+        key = (name.casefold(), version)
+        if key in seen:
+            continue
+        seen.add(key)
+        lines.append(f"{name}=={version}")
+        lines.extend(f"    --hash=sha256:{value}" for value in hashes)
+    handle = tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".requirements.txt", delete=False)
+    handle.write("\n".join(lines) + "\n")
+    handle.close()
+    return Path(handle.name)
+
+
+def _install_python_environment(lock: dict[str, Any], runtime_lock: dict[str, Any], actions: list[dict[str, Any]]) -> Path:
+    uv = shutil.which("uv")
+    if not uv:
+        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "uv is required for the pinned Python environment")
+    venv = ROOT / ".venv"
+    if not venv.exists():
+        actions.append(_run_checked([uv, "venv", str(venv), "--python", os.environ.get("PORTRAIT_PYTHON", "3.12")], ROOT))
+    python = _python_executable(venv)
+    requirements = _requirements_file(lock, runtime_lock)
+    try:
+        actions.append(_run_checked([uv, "pip", "install", "--python", str(python), "--require-hashes", "-r", str(requirements)], ROOT))
+        actions.append(_run_checked([uv, "pip", "install", "--python", str(python), "--no-deps", "-e", str(ROOT)], ROOT))
+    finally:
+        requirements.unlink(missing_ok=True)
+    return python
+
+
+def _artifact_url(entry: dict[str, Any], filename: str) -> str:
+    source_url = str(entry.get("source_url", ""))
+    if "/tree/" in source_url:
+        source_path = str(entry.get("source_relative_path", filename))
+        source_url = source_url.replace("/tree/", "/resolve/", 1).rstrip("/") + "/" + urllib.parse.quote(source_path, safe="/")
+    return source_url
+
+
+def _download_verified(url: str, destination: Path, expected_size: int | None, expected_sha256: str, actions: list[dict[str, Any]]) -> None:
+    if destination.is_file():
+        actual_size = destination.stat().st_size
+        actual_sha = sha256_file(destination)
+        if actual_size == expected_size and actual_sha == expected_sha256:
+            actions.append({"action": "model_cache_hit", "path": str(destination.relative_to(ROOT)), "size_bytes": actual_size, "sha256": actual_sha})
+            return
+        raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, f"locked model checksum mismatch: {destination.relative_to(ROOT)}")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    request = urllib.request.Request(url, headers={"Authorization": f"Bearer {os.environ['HF_TOKEN']}"} if os.environ.get("HF_TOKEN") else {})
+    temporary: Path | None = None
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response, tempfile.NamedTemporaryFile("wb", dir=destination.parent, prefix=f".{destination.name}.", suffix=".download", delete=False) as handle:
+            temporary = Path(handle.name)
+            size = 0
+            while chunk := response.read(1024 * 1024):
+                size += len(chunk)
+                handle.write(chunk)
+        actual_sha = sha256_file(temporary)
+        if (expected_size is not None and size != expected_size) or actual_sha != expected_sha256:
+            raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, f"downloaded model checksum or size mismatch: {destination.relative_to(ROOT)}")
+        os.replace(temporary, destination)
+        temporary = None
+        actions.append({"action": "model_restored", "path": str(destination.relative_to(ROOT)), "url": url, "size_bytes": size, "sha256": actual_sha})
+    except urllib.error.HTTPError as exc:
+        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"official model source returned HTTP {exc.code}") from exc
+    except (urllib.error.URLError, OSError) as exc:
+        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "official model source was unavailable") from exc
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def _restore_models(model_lock: dict[str, Any], profile: str, actions: list[dict[str, Any]]) -> None:
+    workflow_profiles = {
+        "local_mac_16gb": {"human_local_mac_16gb", "agent_local_mac_16gb"},
+        "full_power_gpu": {"human_full_power_gpu"},
+        "remote_runpod": {"agent_remote_runpod"},
+    }[profile]
+    for entry in model_lock.get("models", []):
+        if not entry.get("mandatory") or not workflow_profiles.intersection(entry.get("profiles", [])):
+            continue
+        destination_root = ROOT / str(entry.get("destination_folder", "models"))
+        shard_hashes = entry.get("shard_sha256")
+        if isinstance(shard_hashes, dict):
+            shard_sizes = entry.get("shard_size_bytes", {})
+            for filename, expected_sha in sorted(shard_hashes.items()):
+                _download_verified(_artifact_url(entry, filename), destination_root / filename, shard_sizes.get(filename), str(expected_sha), actions)
+        else:
+            filename = str(entry.get("filename", ""))
+            if not filename or not entry.get("sha256"):
+                raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"model lock entry is incomplete: {entry.get('name')}")
+            _download_verified(_artifact_url(entry, filename), destination_root / filename, entry.get("size_bytes"), str(entry["sha256"]), actions)
+
+
+def _write_extra_model_paths(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
+    config = """hoi4_portrait:\n  base_path: {root}\n  diffusion_models: models/diffusion_models\n  unet: models/diffusion_models\n  text_encoders: models/text_encoders\n  vae: models/vae\n  loras: models/loras\n  autoprompter: models/autoprompter\n  is_default: true\n""".format(root=ROOT)
+    path = comfy_root / "extra_model_paths.yaml"
+    if path.is_file() and path.read_text(encoding="utf-8") != config:
+        raise BootstrapError(ExitCode.WORKFLOW_INVALID, f"existing ComfyUI extra model path config differs: {path}")
+    if not path.is_file():
+        path.write_text(config, encoding="utf-8")
+    actions.append({"action": "extra_model_paths_verified", "path": str(path.relative_to(ROOT))})
 
 
 def restore_from_lock(profile: str) -> list[dict[str, Any]]:
@@ -48,23 +215,63 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
     comfy_root = ROOT / "comfyui"
     dependency_lock = json.loads((ROOT / "dependencies" / "dependencies.lock.json").read_text(encoding="utf-8"))
     comfy = next(item for item in dependency_lock["dependencies"] if item["name"] == "ComfyUI")
-    if not comfy_root.exists():
-        actions.append(_run(["git", "clone", "https://github.com/Comfy-Org/ComfyUI.git", str(comfy_root)]))
-    actions.append(_run(["git", "fetch", "--tags", "--force", "origin"], comfy_root))
-    actions.append(_run(["git", "checkout", "--detach", comfy["version_or_commit"]], comfy_root))
+    _git_checkout(str(comfy["official_source"]), comfy_root, str(comfy["version_or_commit"]), actions)
     custom_root = comfy_root / "custom_nodes" / "comfyui-krea2edit"
-    if not custom_root.exists():
-        actions.append(_run(["git", "clone", "https://github.com/lbouaraba/comfyui-krea2edit.git", str(custom_root)], comfy_root))
-    actions.append(_run(["git", "checkout", "--detach", "cae442e11b59bcba04ed82f4c01ffe3752531fe1"], custom_root))
+    krea = next(item for item in dependency_lock["dependencies"] if item["name"] == "comfyui-krea2edit")
+    _git_checkout(str(krea["official_source"]), custom_root, str(krea["version_or_commit"]), actions)
+    manager = next(item for item in dependency_lock["dependencies"] if item["name"] == "ComfyUI-Manager")
+    _git_checkout(str(manager["official_source"]), comfy_root / "custom_nodes" / "ComfyUI-Manager", str(manager["version_or_commit"]), actions)
     project_nodes = comfy_root / "custom_nodes" / "hoi4_portrait_nodes"
     if project_nodes.exists() and project_nodes.is_symlink():
         project_nodes.unlink()
     elif project_nodes.exists():
-        raise RuntimeError(f"refusing to overwrite existing custom node path: {project_nodes}")
+        raise BootstrapError(ExitCode.NODE_MISSING, f"refusing to overwrite existing custom node path: {project_nodes}")
     project_nodes.symlink_to(ROOT / "src" / "comfyui_hoi4_portrait_nodes", target_is_directory=True)
     actions.append({"action": "project_nodes_symlink", "path": str(project_nodes), "target": str(project_nodes.resolve())})
-    build_workflow_artifacts(ROOT)
+    runtime_lock = json.loads((ROOT / "dependencies" / "runtime_requirements_lock.json").read_text(encoding="utf-8"))
+    python = _install_python_environment(dependency_lock, runtime_lock, actions)
+    _restore_models(json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8")), profile, actions)
+    lora_path = ROOT / "loras" / "hoi4_portrait_new_style_lora.safetensors"
+    if not lora_path.is_file() or sha256_file(lora_path) != "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1":
+        raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "immutable style LoRA is missing or changed")
+    actions.append({"action": "immutable_style_lora_verified", "path": str(lora_path.relative_to(ROOT)), "sha256": sha256_file(lora_path)})
+    _write_extra_model_paths(comfy_root, actions)
+    try:
+        build_workflow_artifacts(ROOT)
+    except (KeyError, ValueError) as exc:
+        raise BootstrapError(ExitCode.WORKFLOW_INVALID, "workflow generation failed against the locked graph contract") from exc
     actions.append({"action": "workflows_built", "status": "PASS"})
+    workflow_reports = validate_all_workflows(ROOT)
+    if any(report["structural_status"] != "PASS" for report in workflow_reports):
+        raise BootstrapError(ExitCode.WORKFLOW_INVALID, "workflow structural validation failed after restore")
+    actions.append({"action": "workflows_validated", "status": "PASS", "count": len(workflow_reports)})
+    log_path = ROOT / "logs" / "bootstrap" / "comfyui-smoke.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("ab") as log_handle:
+        process = subprocess.Popen([str(python), "main.py", "--listen", "127.0.0.1", "--port", "8188"], cwd=comfy_root, stdout=log_handle, stderr=subprocess.STDOUT)
+        try:
+            deadline = time.monotonic() + 120
+            while time.monotonic() < deadline:
+                try:
+                    client = LoopbackComfyClient(timeout=5.0)
+                    client.health()
+                    client.inventory()
+                    actions.append({"action": "loopback_comfyui_smoke", "status": "PASS", "pid": process.pid, "binding": "http://127.0.0.1:8188"})
+                    break
+                except ComfyTransportError:
+                    if process.poll() is not None:
+                        raise BootstrapError(ExitCode.WORKFLOW_INVALID, "ComfyUI exited before loopback smoke test completed")
+                    time.sleep(1)
+            else:
+                raise BootstrapError(ExitCode.WORKFLOW_INVALID, "ComfyUI loopback smoke test timed out")
+        finally:
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=15)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=15)
     return actions
 
 
@@ -73,7 +280,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--profile", required=True, choices=["local_mac_16gb", "full_power_gpu", "remote_runpod"])
     parser.add_argument("--restore-from-lock", action="store_true")
     args = parser.parse_args(argv)
-    preflight = collect_preflight(ROOT)
+    run_id = f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:8]}"
+    profile_name = args.profile
+    if profile_name == "full_power_gpu":
+        preflight_profile = "human_full_power_gpu"
+    elif profile_name == "remote_runpod":
+        preflight_profile = "agent_remote_runpod"
+    else:
+        preflight_profile = "agent_local_mac_16gb"
+    preflight = collect_preflight(ROOT, profile=preflight_profile)
     actions: list[dict[str, Any]] = []
     if preflight["status"] != "PASS":
         actions.append({"action": "installation", "status": "SKIPPED_HARD_PREFLIGHT_BLOCK", "reason": " and ".join(preflight["blockers"])})
@@ -82,15 +297,20 @@ def main(argv: list[str] | None = None) -> int:
         output_dir.mkdir(parents=True, exist_ok=True)
         atomic_json_write(output_dir / f"{args.profile}.json", report)
         (output_dir / f"{args.profile}.md").write_text(render_markdown(preflight), encoding="utf-8")
+        _write_bootstrap_log(run_id, args.profile, actions, preflight["status"])
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return int(preflight["recommended_exit_code"])
     if not args.restore_from_lock:
         print("preflight passed but --restore-from-lock is required; no install performed", file=sys.stderr)
+        _write_bootstrap_log(run_id, args.profile, [{"action": "installation", "status": "SKIPPED_RESTORE_FLAG_REQUIRED"}], "BLOCKED")
         return int(ExitCode.DEPENDENCY_MISSING)
     try:
         actions = restore_from_lock(args.profile)
-    except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
-        actions.append({"action": "installation", "status": "FAILED", "error": str(exc)})
+    except BootstrapError as exc:
+        actions.append({"action": "installation", "status": "FAILED", "error_code": int(exc.code), "error": str(exc)})
+        return_code = int(exc.code)
+    except (OSError, RuntimeError, KeyError, subprocess.SubprocessError) as exc:
+        actions.append({"action": "installation", "status": "FAILED", "error_code": int(ExitCode.DEPENDENCY_MISSING), "error": str(exc)})
         return_code = int(ExitCode.DEPENDENCY_MISSING)
     else:
         return_code = 0
@@ -99,10 +319,10 @@ def main(argv: list[str] | None = None) -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
     atomic_json_write(output_dir / f"{args.profile}.json", report)
     (output_dir / f"{args.profile}.md").write_text(render_markdown(preflight), encoding="utf-8")
+    _write_bootstrap_log(run_id, args.profile, actions, "PASS" if return_code == 0 else "FAILED")
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return return_code
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

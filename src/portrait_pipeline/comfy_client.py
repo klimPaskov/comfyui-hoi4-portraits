@@ -25,10 +25,12 @@ class ComfyResponse:
 
 
 class _JsonHttpClient:
-    def __init__(self, base_url: str, *, headers: dict[str, str] | None = None, timeout: float = 30.0):
+    def __init__(self, base_url: str, *, headers: dict[str, str] | None = None, timeout: float = 30.0, transport_error_code: ExitCode = ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, http_error_code: ExitCode = ExitCode.GENERATION_FAILED):
         self.base_url = base_url.rstrip("/")
         self.headers = headers or {}
         self.timeout = timeout
+        self.transport_error_code = transport_error_code
+        self.http_error_code = http_error_code
 
     def request(self, method: str, path: str, body: Any | None = None, *, timeout: float | None = None) -> ComfyResponse:
         url = self.base_url + "/" + path.lstrip("/")
@@ -46,9 +48,9 @@ class _JsonHttpClient:
                     decoded = {"raw_length": len(data)}
                 return ComfyResponse(response.status, decoded)
         except urllib.error.HTTPError as exc:
-            raise ComfyTransportError(ExitCode.GENERATION_FAILED, f"HTTP {exc.code} from protected runtime") from exc
+            raise ComfyTransportError(self.http_error_code, f"HTTP {exc.code} from protected runtime") from exc
         except (urllib.error.URLError, OSError, TimeoutError) as exc:
-            raise ComfyTransportError(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, f"runtime transport unavailable: {exc}") from exc
+            raise ComfyTransportError(self.transport_error_code, f"runtime transport unavailable: {exc}") from exc
 
 
 class LoopbackComfyClient(_JsonHttpClient):
@@ -58,7 +60,7 @@ class LoopbackComfyClient(_JsonHttpClient):
         parsed = urllib.parse.urlparse(base_url)
         if parsed.scheme != "http" or parsed.hostname not in {"127.0.0.1", "localhost", "::1"}:
             raise ValueError("raw ComfyUI client must use an HTTP loopback URL")
-        super().__init__(base_url, **kwargs)
+        super().__init__(base_url, transport_error_code=ExitCode.DEPENDENCY_MISSING, http_error_code=ExitCode.GENERATION_FAILED, **kwargs)
 
     def health(self) -> ComfyResponse:
         return self.request("GET", "/system_stats")
@@ -100,8 +102,10 @@ class AuthenticatedRemoteGatewayClient(_JsonHttpClient):
     def __init__(self, base_url: str, token: str, **kwargs: Any):
         if not token:
             raise ComfyTransportError(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "remote gateway token is missing")
-        super().__init__(base_url, headers={"Authorization": f"Bearer {token}", "X-Portrait-Client": "hoi4-portrait-pipeline/1"}, **kwargs)
+        parsed = urllib.parse.urlparse(base_url)
+        if parsed.scheme != "https" and parsed.hostname not in {"127.0.0.1", "localhost", "::1"}:
+            raise ComfyTransportError(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "remote gateway must use HTTPS")
+        super().__init__(base_url, headers={"Authorization": f"Bearer {token}", "X-Portrait-Client": "hoi4-portrait-pipeline/1"}, transport_error_code=ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, http_error_code=ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, **kwargs)
 
     def call_tool(self, name: str, params: dict[str, Any]) -> ComfyResponse:
         return self.request("POST", "/mcp", {"jsonrpc": "2.0", "id": secrets.token_hex(8), "method": name, "params": params})
-

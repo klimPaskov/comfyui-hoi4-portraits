@@ -27,6 +27,23 @@ def sha256_file(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
     return digest.hexdigest()
 
 
+def tree_sha256(root: str | Path) -> str:
+    """Hash a source tree deterministically by relative path and file bytes."""
+
+    root_path = Path(root).resolve()
+    digest = hashlib.sha256()
+    files = [
+        path for path in root_path.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts and path.suffix not in {".pyc", ".pyo"}
+    ]
+    for path in sorted(files, key=lambda item: item.relative_to(root_path).as_posix()):
+        digest.update(path.relative_to(root_path).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(bytes.fromhex(sha256_file(path)))
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def canonical_json(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
@@ -72,4 +89,3 @@ def scan_text_for_secrets(text: str) -> list[str]:
         if re.search(pattern, text):
             findings.append(label)
     return findings
-

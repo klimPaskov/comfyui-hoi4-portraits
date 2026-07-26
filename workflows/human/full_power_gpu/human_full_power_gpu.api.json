@@ -9,11 +9,39 @@
       "seed_policy": "derived"
     }
   },
+  "24": {
+    "class_type": "HOI4HumanControls",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "source_image_path": "<from_job_contract>",
+      "subject_selector_mode": "automatic",
+      "face_index": 0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 0,
+      "bbox_bottom": 0,
+      "crop_override_left": 0,
+      "crop_override_top": 0,
+      "crop_override_right": 0,
+      "crop_override_bottom": 0,
+      "monochrome_mode": "automatic",
+      "restoration_level": "conservative",
+      "approved_background_registry_id": "<from_job_contract>",
+      "prompt_override": "",
+      "seed_mode": "derived",
+      "fixed_seed": 0,
+      "candidate_count": 6,
+      "output_job_id": "<job_id_from_contract>"
+    }
+  },
   "2": {
     "class_type": "HOI4JobSource",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ]
     }
@@ -22,7 +50,7 @@
     "class_type": "HOI4SourceGuard",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ],
       "image": [
@@ -35,7 +63,7 @@
     "class_type": "HOI4SubjectSelect",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ],
       "image": [
@@ -48,12 +76,20 @@
     "class_type": "HOI4HeadShouldersCrop",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ],
       "image": [
         "4",
         0
+      ],
+      "selection_meta": [
+        "4",
+        1
+      ],
+      "control_meta": [
+        "24",
+        1
       ]
     }
   },
@@ -61,12 +97,20 @@
     "class_type": "HOI4ConservativePrep",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ],
       "image": [
         "5",
         0
+      ],
+      "crop_meta": [
+        "5",
+        1
+      ],
+      "control_meta": [
+        "24",
+        1
       ]
     }
   },
@@ -74,21 +118,25 @@
     "class_type": "HOI4ForegroundMask",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ],
       "image": [
         "6",
         0
       ],
-      "mask_model": "BiRefNet:PINNED_REQUIRED"
+      "reference_meta": [
+        "6",
+        1
+      ],
+      "mask_model": "BiRefNet"
     }
   },
   "8": {
     "class_type": "HOI4MaskAndBackgroundGuard",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ],
       "image": [
@@ -98,6 +146,10 @@
       "mask": [
         "7",
         1
+      ],
+      "mask_meta": [
+        "7",
+        2
       ]
     }
   },
@@ -105,12 +157,20 @@
     "class_type": "HOI4AutopromptClient",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ],
       "image": [
         "8",
-        0
+        1
+      ],
+      "background_meta": [
+        "8",
+        3
+      ],
+      "control_meta": [
+        "24",
+        1
       ],
       "instruction_text": "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nDescribe only:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, and jewelry\n\nDo not describe the background, lighting, art style, brushwork, color palette, image quality, or composition.\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent unclear details.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
       "instruction_path": "prompts/autoprompter_instruction.txt",
@@ -147,7 +207,7 @@
     "inputs": {
       "pixels": [
         "8",
-        0
+        1
       ],
       "vae": [
         "12",
@@ -165,6 +225,14 @@
       "source_latent": [
         "13",
         0
+      ],
+      "vae": [
+        "12",
+        0
+      ],
+      "source_image": [
+        "8",
+        1
       ],
       "fit_mode": "fit",
       "ref_boost": 1.0
@@ -191,9 +259,9 @@
       ],
       "image": [
         "8",
-        0
+        1
       ],
-      "grounding_px": 64
+      "grounding_px": 768
     }
   },
   "17": {
@@ -206,9 +274,9 @@
       "prompt": "",
       "image": [
         "8",
-        0
+        1
       ],
-      "grounding_px": 64
+      "grounding_px": 768
     }
   },
   "18": {
@@ -274,7 +342,7 @@
     "class_type": "HOI4EvidenceExport",
     "inputs": {
       "job": [
-        "1",
+        "24",
         0
       ],
       "source_master": [
@@ -282,7 +350,7 @@
         0
       ],
       "processed_reference": [
-        "8",
+        "6",
         0
       ],
       "approved_background": [
@@ -434,6 +502,7 @@
       "HOI4EvidenceExport",
       "HOI4ForegroundMask",
       "HOI4HeadShouldersCrop",
+      "HOI4HumanControls",
       "HOI4JobInput",
       "HOI4JobSource",
       "HOI4MaskAndBackgroundGuard",

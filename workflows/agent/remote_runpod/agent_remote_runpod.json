@@ -1,6 +1,6 @@
 {
   "last_node_id": 23,
-  "last_link_id": 40,
+  "last_link_id": 47,
   "nodes": [
     {
       "id": 1,
@@ -52,11 +52,11 @@
             2,
             4,
             6,
-            8,
-            10,
+            9,
             12,
             15,
-            33
+            19,
+            40
           ]
         }
       ],
@@ -152,7 +152,7 @@
           "type": "IMAGE",
           "links": [
             5,
-            34
+            41
           ]
         },
         {
@@ -205,7 +205,9 @@
         {
           "name": "selection_meta",
           "type": "HOI4_META",
-          "links": null
+          "links": [
+            8
+          ]
         }
       ],
       "properties": {
@@ -239,6 +241,11 @@
           "name": "image",
           "type": "IMAGE",
           "link": 7
+        },
+        {
+          "name": "selection_meta",
+          "type": "HOI4_META",
+          "link": 8
         }
       ],
       "outputs": [
@@ -246,13 +253,15 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            9
+            10
           ]
         },
         {
           "name": "crop_meta",
           "type": "HOI4_META",
-          "links": null
+          "links": [
+            11
+          ]
         }
       ],
       "properties": {
@@ -280,12 +289,17 @@
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 8
+          "link": 9
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 9
+          "link": 10
+        },
+        {
+          "name": "crop_meta",
+          "type": "HOI4_META",
+          "link": 11
         }
       ],
       "outputs": [
@@ -293,13 +307,16 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            11
+            13,
+            42
           ]
         },
         {
           "name": "reference_meta",
           "type": "HOI4_META",
-          "links": null
+          "links": [
+            14
+          ]
         }
       ],
       "properties": {
@@ -327,12 +344,17 @@
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 10
+          "link": 12
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 11
+          "link": 13
+        },
+        {
+          "name": "reference_meta",
+          "type": "HOI4_META",
+          "link": 14
         },
         {
           "name": "mask_model",
@@ -345,20 +367,22 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            13
+            16
           ]
         },
         {
           "name": "mask",
           "type": "MASK",
           "links": [
-            14
+            17
           ]
         },
         {
           "name": "mask_meta",
           "type": "HOI4_META",
-          "links": null
+          "links": [
+            18
+          ]
         }
       ],
       "properties": {
@@ -369,7 +393,7 @@
         ]
       },
       "widgets_values": [
-        "BiRefNet:PINNED_REQUIRED"
+        "BiRefNet"
       ]
     },
     {
@@ -390,48 +414,54 @@
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 12
+          "link": 15
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 13
+          "link": 16
         },
         {
           "name": "mask",
           "type": "MASK",
-          "link": 14
+          "link": 17
+        },
+        {
+          "name": "mask_meta",
+          "type": "HOI4_META",
+          "link": 18
         }
       ],
       "outputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "links": [
-            17,
-            23,
-            25,
-            35
-          ]
+          "links": null
         },
         {
           "name": "composite",
           "type": "IMAGE",
           "links": [
-            36
+            22,
+            27,
+            30,
+            32,
+            43
           ]
         },
         {
           "name": "mask",
           "type": "MASK",
           "links": [
-            38
+            45
           ]
         },
         {
           "name": "background_meta",
           "type": "HOI4_META",
-          "links": null
+          "links": [
+            20
+          ]
         }
       ],
       "properties": {
@@ -459,7 +489,12 @@
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 15
+          "link": 19
+        },
+        {
+          "name": "background_meta",
+          "type": "HOI4_META",
+          "link": 20
         },
         {
           "name": "prompt_source",
@@ -472,8 +507,8 @@
           "name": "prompt",
           "type": "STRING",
           "links": [
-            22,
-            39
+            29,
+            46
           ]
         },
         {
@@ -524,7 +559,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            16
+            21
           ]
         }
       ],
@@ -559,7 +594,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 16
+          "link": 21
         },
         {
           "name": "lora_name",
@@ -577,7 +612,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            19
+            24
           ]
         }
       ],
@@ -620,8 +655,9 @@
           "name": "vae",
           "type": "VAE",
           "links": [
-            18,
-            32
+            23,
+            26,
+            39
           ]
         }
       ],
@@ -654,12 +690,12 @@
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 17
+          "link": 22
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 18
+          "link": 23
         }
       ],
       "outputs": [
@@ -667,7 +703,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            20
+            25
           ]
         }
       ],
@@ -696,12 +732,22 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 19
+          "link": 24
         },
         {
           "name": "source_latent",
           "type": "LATENT",
-          "link": 20
+          "link": 25
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 26
+        },
+        {
+          "name": "source_image",
+          "type": "IMAGE",
+          "link": 27
         },
         {
           "name": "fit_mode",
@@ -719,7 +765,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            26
+            33
           ]
         }
       ],
@@ -772,8 +818,8 @@
           "name": "clip",
           "type": "CLIP",
           "links": [
-            21,
-            24
+            28,
+            31
           ]
         }
       ],
@@ -810,17 +856,17 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 21
+          "link": 28
         },
         {
           "name": "prompt",
           "type": "STRING",
-          "link": 22
+          "link": 29
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 23
+          "link": 30
         },
         {
           "name": "grounding_px",
@@ -833,7 +879,7 @@
           "name": "conditioning",
           "type": "CONDITIONING",
           "links": [
-            28
+            35
           ]
         }
       ],
@@ -845,7 +891,7 @@
         ]
       },
       "widgets_values": [
-        64
+        768
       ]
     },
     {
@@ -866,7 +912,7 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 24
+          "link": 31
         },
         {
           "name": "prompt",
@@ -876,7 +922,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 25
+          "link": 32
         },
         {
           "name": "grounding_px",
@@ -889,7 +935,7 @@
           "name": "conditioning",
           "type": "CONDITIONING",
           "links": [
-            29
+            36
           ]
         }
       ],
@@ -903,7 +949,7 @@
       },
       "widgets_values": [
         "",
-        64
+        768
       ]
     },
     {
@@ -924,7 +970,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 26
+          "link": 33
         },
         {
           "name": "lora_name",
@@ -942,7 +988,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            27
+            34
           ]
         }
       ],
@@ -994,7 +1040,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            30
+            37
           ]
         }
       ],
@@ -1031,22 +1077,22 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 27
+          "link": 34
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 28
+          "link": 35
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 29
+          "link": 36
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 30
+          "link": 37
         },
         {
           "name": "seed",
@@ -1084,7 +1130,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            31
+            38
           ]
         }
       ],
@@ -1126,12 +1172,12 @@
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 31
+          "link": 38
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 32
+          "link": 39
         }
       ],
       "outputs": [
@@ -1139,7 +1185,7 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            37
+            44
           ]
         }
       ],
@@ -1168,37 +1214,37 @@
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 33
+          "link": 40
         },
         {
           "name": "source_master",
           "type": "IMAGE",
-          "link": 34
+          "link": 41
         },
         {
           "name": "processed_reference",
           "type": "IMAGE",
-          "link": 35
+          "link": 42
         },
         {
           "name": "approved_background",
           "type": "IMAGE",
-          "link": 36
+          "link": 43
         },
         {
           "name": "candidate",
           "type": "IMAGE",
-          "link": 37
+          "link": 44
         },
         {
           "name": "mask",
           "type": "MASK",
-          "link": 38
+          "link": 45
         },
         {
           "name": "prompt",
           "type": "STRING",
-          "link": 39
+          "link": 46
         },
         {
           "name": "candidate_index",
@@ -1211,7 +1257,7 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            40
+            47
           ]
         },
         {
@@ -1249,7 +1295,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 40
+          "link": 47
         },
         {
           "name": "filename_prefix",
@@ -1329,6 +1375,14 @@
     ],
     [
       8,
+      4,
+      1,
+      5,
+      2,
+      "HOI4_META"
+    ],
+    [
+      9,
       1,
       0,
       6,
@@ -1336,7 +1390,7 @@
       "HOI4_JOB"
     ],
     [
-      9,
+      10,
       5,
       0,
       6,
@@ -1344,7 +1398,15 @@
       "IMAGE"
     ],
     [
-      10,
+      11,
+      5,
+      1,
+      6,
+      2,
+      "HOI4_META"
+    ],
+    [
+      12,
       1,
       0,
       7,
@@ -1352,7 +1414,7 @@
       "HOI4_JOB"
     ],
     [
-      11,
+      13,
       6,
       0,
       7,
@@ -1360,7 +1422,15 @@
       "IMAGE"
     ],
     [
-      12,
+      14,
+      6,
+      1,
+      7,
+      2,
+      "HOI4_META"
+    ],
+    [
+      15,
       1,
       0,
       8,
@@ -1368,7 +1438,7 @@
       "HOI4_JOB"
     ],
     [
-      13,
+      16,
       7,
       0,
       8,
@@ -1376,7 +1446,7 @@
       "IMAGE"
     ],
     [
-      14,
+      17,
       7,
       1,
       8,
@@ -1384,7 +1454,15 @@
       "MASK"
     ],
     [
-      15,
+      18,
+      7,
+      2,
+      8,
+      3,
+      "HOI4_META"
+    ],
+    [
+      19,
       1,
       0,
       9,
@@ -1392,7 +1470,15 @@
       "HOI4_JOB"
     ],
     [
-      16,
+      20,
+      8,
+      3,
+      9,
+      1,
+      "HOI4_META"
+    ],
+    [
+      21,
       10,
       0,
       11,
@@ -1400,15 +1486,15 @@
       "MODEL"
     ],
     [
-      17,
+      22,
       8,
-      0,
+      1,
       13,
       0,
       "IMAGE"
     ],
     [
-      18,
+      23,
       12,
       0,
       13,
@@ -1416,7 +1502,7 @@
       "VAE"
     ],
     [
-      19,
+      24,
       11,
       0,
       14,
@@ -1424,7 +1510,7 @@
       "MODEL"
     ],
     [
-      20,
+      25,
       13,
       0,
       14,
@@ -1432,7 +1518,23 @@
       "LATENT"
     ],
     [
-      21,
+      26,
+      12,
+      0,
+      14,
+      2,
+      "VAE"
+    ],
+    [
+      27,
+      8,
+      1,
+      14,
+      3,
+      "IMAGE"
+    ],
+    [
+      28,
       15,
       0,
       16,
@@ -1440,7 +1542,7 @@
       "CLIP"
     ],
     [
-      22,
+      29,
       9,
       0,
       16,
@@ -1448,15 +1550,15 @@
       "STRING"
     ],
     [
-      23,
+      30,
       8,
-      0,
+      1,
       16,
       2,
       "IMAGE"
     ],
     [
-      24,
+      31,
       15,
       0,
       17,
@@ -1464,15 +1566,15 @@
       "CLIP"
     ],
     [
-      25,
+      32,
       8,
-      0,
+      1,
       17,
       2,
       "IMAGE"
     ],
     [
-      26,
+      33,
       14,
       0,
       18,
@@ -1480,7 +1582,7 @@
       "MODEL"
     ],
     [
-      27,
+      34,
       18,
       0,
       20,
@@ -1488,7 +1590,7 @@
       "MODEL"
     ],
     [
-      28,
+      35,
       16,
       0,
       20,
@@ -1496,7 +1598,7 @@
       "CONDITIONING"
     ],
     [
-      29,
+      36,
       17,
       0,
       20,
@@ -1504,7 +1606,7 @@
       "CONDITIONING"
     ],
     [
-      30,
+      37,
       19,
       0,
       20,
@@ -1512,7 +1614,7 @@
       "LATENT"
     ],
     [
-      31,
+      38,
       20,
       0,
       21,
@@ -1520,7 +1622,7 @@
       "LATENT"
     ],
     [
-      32,
+      39,
       12,
       0,
       21,
@@ -1528,7 +1630,7 @@
       "VAE"
     ],
     [
-      33,
+      40,
       1,
       0,
       22,
@@ -1536,7 +1638,7 @@
       "HOI4_JOB"
     ],
     [
-      34,
+      41,
       3,
       0,
       22,
@@ -1544,15 +1646,15 @@
       "IMAGE"
     ],
     [
-      35,
-      8,
+      42,
+      6,
       0,
       22,
       2,
       "IMAGE"
     ],
     [
-      36,
+      43,
       8,
       1,
       22,
@@ -1560,7 +1662,7 @@
       "IMAGE"
     ],
     [
-      37,
+      44,
       21,
       0,
       22,
@@ -1568,7 +1670,7 @@
       "IMAGE"
     ],
     [
-      38,
+      45,
       8,
       2,
       22,
@@ -1576,7 +1678,7 @@
       "MASK"
     ],
     [
-      39,
+      46,
       9,
       0,
       22,
@@ -1584,7 +1686,7 @@
       "STRING"
     ],
     [
-      40,
+      47,
       22,
       0,
       23,

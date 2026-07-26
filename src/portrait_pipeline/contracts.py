@@ -15,7 +15,7 @@ from .constants import (
     PROFILE_LIMITS,
     WORKFLOW_VERSION,
 )
-from .util import is_sha256, project_root, sha256_file
+from .util import is_sha256, project_root, relative_safe_path, sha256_file
 
 
 @dataclass(frozen=True)
@@ -156,6 +156,12 @@ def validate_job_policy(job: dict[str, Any], root: str | Path | None = None) -> 
         if job.get("retry_limit", 0) > limits["retry_max"]:
             issues.append(ValidationIssue("retry_limit", f"exceeds profile ceiling {limits['retry_max']}"))
 
+    seed_policy = job.get("seed_policy")
+    if isinstance(seed_policy, dict) and seed_policy.get("mode") == "fixed":
+        seed = seed_policy.get("seed")
+        if not isinstance(seed, int) or isinstance(seed, bool) or seed < 0:
+            issues.append(ValidationIssue("seed_policy.seed", "fixed seed policy requires a non-negative integer seed"))
+
     prompt = job.get("prompt")
     if isinstance(prompt, str):
         if not prompt.startswith("hoi4_portrait,"):
@@ -187,10 +193,23 @@ def validate_job_policy(job: dict[str, Any], root: str | Path | None = None) -> 
                 entries = [item for item in registry.get("backgrounds", []) if item.get("registry_id") == background.get("registry_id")]
                 if not entries or entries[0].get("sha256") != background.get("sha256"):
                     issues.append(ValidationIssue("approved_background", "does not match the approved registry", ExitCode.BACKGROUND_UNRESOLVED))
+                elif entries[0].get("status") != "APPROVED":
+                    issues.append(ValidationIssue("approved_background", "registry entry is not approved", ExitCode.BACKGROUND_UNRESOLVED))
+                else:
+                    expected_path = entries[0].get("runtime_path") or entries[0].get("path")
+                    if expected_path and background.get("path") != expected_path:
+                        issues.append(ValidationIssue("approved_background.path", "does not match the approved registry path", ExitCode.BACKGROUND_UNRESOLVED))
     source_path = job.get("source_image_path")
-    if isinstance(source_path, str) and not Path(source_path).is_absolute():
-        source_path = root_path / source_path
-    if source_path and not Path(source_path).is_file():
+    if isinstance(source_path, str):
+        if Path(source_path).is_absolute():
+            issues.append(ValidationIssue("source_image_path", "source image path must be relative to the project job root", ExitCode.SOURCE_INVALID))
+        else:
+            try:
+                source_path = relative_safe_path(root_path, source_path)
+            except ValueError:
+                source_path = None
+                issues.append(ValidationIssue("source_image_path", "source image path escapes the project root", ExitCode.SOURCE_INVALID))
+    if isinstance(source_path, Path) and not source_path.is_file():
         issues.append(ValidationIssue("source_image_path", "source image is missing", ExitCode.SOURCE_INVALID))
     return issues
 
@@ -227,10 +246,11 @@ def build_blocked_output(
     source_path = (job or {}).get("source_image_path")
     source_sha = "0" * 64
     if source_path:
-        candidate = Path(source_path)
-        if not candidate.is_absolute():
-            candidate = root_path / candidate
-        if candidate.is_file():
+        try:
+            candidate = relative_safe_path(root_path, source_path)
+        except (TypeError, ValueError):
+            candidate = None
+        if candidate is not None and candidate.is_file():
             source_sha = sha256_file(candidate)
     profile = (job or {}).get("execution_profile", "unknown")
     return {
@@ -273,4 +293,3 @@ def main_validate_job() -> int:
     issues = validate_job(job, root)
     print(json.dumps({"valid": not issues, "issues": [issue.as_dict() for issue in issues]}, indent=2))
     return 0 if not issues else int(ExitCode.INPUT_SCHEMA_INVALID)
-
