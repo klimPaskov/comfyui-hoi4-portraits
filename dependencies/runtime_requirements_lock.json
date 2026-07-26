@@ -5,7 +5,13 @@
   "retrieved_at": "2026-07-26",
   "status": "RESOLVED_PROFILE_LOCKS_LIVE_COMPATIBILITY_UNVERIFIED",
   "policy": "Profile lock files pin every resolved package and artifact hash for the target Python/platform/backend. Live ComfyUI import, Krea node compatibility, and model execution remain separate hard gates.",
-  "requirements_role": "TRACEABILITY_ONLY_UPSTREAM_CONSTRAINTS; install exclusively from the selected profile_locks entry",
+  "requirements_role": "TRACEABILITY_ONLY_UPSTREAM_CONSTRAINTS; install exclusively from the selected profile_locks and project_lock entries",
+  "project_lock": {
+    "path": "dependencies/project_requirements.lock.txt",
+    "status": "RESOLVED",
+    "sha256": "f599d034d3f220212d5027ee9da862b30e793c9cded9cfb3e26da64d7f933f0e",
+    "resolver": "uv 0.11.7; project dependency closure for Python 3.12; no package installation performed"
+  },
   "profile_locks": {
     "macos_arm64_cpu": {
       "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt",

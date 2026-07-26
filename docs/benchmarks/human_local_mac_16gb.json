@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-26T15:12:44.894886+00:00",
+  "created_at": "2026-07-26T15:24:20.092099+00:00",
   "profile": "human_local_mac_16gb",
   "status": "BLOCKED_RUNTIME_UNAVAILABLE",
   "status_reason": "The target local runtime is not installed or its accelerator capability is not verified.",
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                7195.\nPages active:                            362674.\nPages inactive:                          359081.\nPages speculative:                         2555.\nPages throttled:                              0.\nPages wired down:                        145637.\nPages purgeable:                          12806.\n\"Translation faults\":                  34607486.\nPages copy-on-write:                    2829631.\nPages zero filled:                     22228246.\nPages reactivated:                       998906.\nPages purged:                            224122.\nFile-backed pages:                       257676.\nAnonymous pages:                         466634.\nPages stored in compressor:              288592.\nPages occupied by compressor:            129094.\nDecompressions:                          337449.\nCompressions:                            751636.\nPageins:                                2916779.\nPageouts:                                  9675.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                6592.\nPages active:                            363206.\nPages inactive:                          362057.\nPages speculative:                          284.\nPages throttled:                              0.\nPages wired down:                        145046.\nPages purgeable:                           7363.\n\"Translation faults\":                  37224536.\nPages copy-on-write:                    3242374.\nPages zero filled:                     23104688.\nPages reactivated:                      1001736.\nPages purged:                            233899.\nFile-backed pages:                       255384.\nAnonymous pages:                         470163.\nPages stored in compressor:              288427.\nPages occupied by compressor:            129082.\nDecompressions:                          337711.\nCompressions:                            751792.\nPageins:                                2926954.\nPageouts:                                  9758.\nSwapins:                                      0.\nSwapouts:                                     0.",
           "stderr": ""
         }
       },

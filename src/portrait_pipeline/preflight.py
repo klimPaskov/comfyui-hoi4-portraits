@@ -267,18 +267,7 @@ def _custom_node_preflight(root: Path) -> dict[str, Any]:
 def _runtime_lock_preflight(root: Path, lock: dict[str, Any], profile: str | None) -> dict[str, Any]:
     """Validate a profile lock without treating structural resolution as live compatibility."""
 
-    profile_locks = lock.get("profile_locks")
-    if not isinstance(profile_locks, dict):
-        unresolved = [item.get("name") for item in lock.get("requirements", []) if item.get("mandatory") and (item.get("sha256") is None or str(item.get("version", "")).startswith("UNRESOLVED"))]
-        return {"status": "PASS" if lock.get("status") == "RESOLVED" and not unresolved else "BLOCKED", "mode": "legacy", "unresolved": unresolved}
-
-    selected = [PROFILE_RUNTIME_LOCKS[profile]] if profile in PROFILE_RUNTIME_LOCKS else sorted(profile_locks)
-    checks: list[dict[str, Any]] = []
-    all_pass = True
-    for lock_id in selected:
-        entry = profile_locks.get(lock_id, {})
-        relative = entry.get("path")
-        path = root / str(relative) if isinstance(relative, str) else None
+    def hashed_requirements_check(path: Path | None, expected_sha: object, status: object) -> tuple[bool, dict[str, Any]]:
         actual_sha = sha256_file(path) if path is not None and path.is_file() else None
         content_ok = False
         invalid_packages: list[str] = []
@@ -297,11 +286,32 @@ def _runtime_lock_preflight(root: Path, lock: dict[str, Any], profile: str | Non
                 blocks.append("\n".join(current))
             invalid_packages = [block.splitlines()[0] for block in blocks if "==" not in block or "--hash=sha256:" not in block or "UNRESOLVED" in block]
             content_ok = bool(blocks) and not invalid_packages
+        item_ok = status == "RESOLVED" and path is not None and path.is_file() and is_sha256(expected_sha) and actual_sha == expected_sha and content_ok
+        return item_ok, {"status": "PASS" if item_ok else "BLOCKED", "expected_sha256": expected_sha, "actual_sha256": actual_sha, "content_ok": content_ok, "invalid_packages": invalid_packages}
+
+    profile_locks = lock.get("profile_locks")
+    if not isinstance(profile_locks, dict):
+        unresolved = [item.get("name") for item in lock.get("requirements", []) if item.get("mandatory") and (item.get("sha256") is None or str(item.get("version", "")).startswith("UNRESOLVED"))]
+        return {"status": "PASS" if lock.get("status") == "RESOLVED" and not unresolved else "BLOCKED", "mode": "legacy", "unresolved": unresolved}
+
+    selected = [PROFILE_RUNTIME_LOCKS[profile]] if profile in PROFILE_RUNTIME_LOCKS else sorted(profile_locks)
+    checks: list[dict[str, Any]] = []
+    all_pass = True
+    for lock_id in selected:
+        entry = profile_locks.get(lock_id, {})
+        relative = entry.get("path")
+        path = root / str(relative) if isinstance(relative, str) else None
         expected_sha = entry.get("sha256")
-        item_ok = entry.get("status") == "RESOLVED" and path is not None and path.is_file() and is_sha256(expected_sha) and actual_sha == expected_sha and content_ok
+        item_ok, content = hashed_requirements_check(path, expected_sha, entry.get("status"))
         all_pass &= item_ok
-        checks.append({"profile_lock": lock_id, "path": relative, "status": "PASS" if item_ok else "BLOCKED", "expected_sha256": expected_sha, "actual_sha256": actual_sha, "content_ok": content_ok, "invalid_packages": invalid_packages})
-    return {"status": "PASS" if all_pass and checks else "BLOCKED", "mode": "profile_locks", "lock_status": lock.get("status"), "checks": checks}
+        checks.append({"profile_lock": lock_id, "path": relative, **content})
+
+    project_entry = lock.get("project_lock", {})
+    project_relative = project_entry.get("path")
+    project_path = root / str(project_relative) if isinstance(project_relative, str) else None
+    project_ok, project_check = hashed_requirements_check(project_path, project_entry.get("sha256"), project_entry.get("status"))
+    all_pass &= project_ok
+    return {"status": "PASS" if all_pass and checks else "BLOCKED", "mode": "profile_locks", "lock_status": lock.get("status"), "checks": checks, "project_lock": {"path": project_relative, **project_check}}
 
 
 def collect_preflight(root: str | Path | None = None, *, profile: str | None = None) -> dict[str, Any]:

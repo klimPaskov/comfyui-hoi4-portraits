@@ -132,6 +132,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
             gate = next(gate for gate in report["gates"] if gate["name"] == "comfyui_runtime_dependency_lock")
             self.assertEqual(gate["status"], "PASS", gate)
             self.assertEqual(gate["evidence"]["mode"], "profile_locks")
+            self.assertEqual(gate["evidence"]["project_lock"]["status"], "PASS", gate)
 
     def test_benchmark_and_comparison_reports_never_claim_generation_without_evidence(self):
         from portrait_pipeline.benchmarks import build_benchmark_report
@@ -154,6 +155,8 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertTrue(image_lock["base_image"]["reference"].startswith("nvidia/cuda:"))
         self.assertIn("127.0.0.1", dockerfile)
         self.assertIn("IMAGE_LOCK_STATUS", dockerfile)
+        self.assertIn("COPY . /opt/portrait-project/", dockerfile)
+        self.assertIn("project_requirements.lock.txt", (self.root / "deploy/runpod/install_runtime.sh").read_text(encoding="utf-8"))
         for route in ("/v1/uploads", "/v1/jobs", "/v1/capabilities"):
             self.assertIn(route, (self.root / "deploy/runpod/README.md").read_text(encoding="utf-8"))
         self.assertIn("agent_remote_runpod", gateway)

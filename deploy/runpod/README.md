@@ -22,6 +22,11 @@ exact system package pins, and live GPU compatibility is unverified.
 `Dockerfile` refuses to build until that lock is changed to `RESOLVED` and the
 caller supplies exact system package pins.
 
+Builds must use the project root as context so the complete checksum-covered
+planning package is present: `docker build -f deploy/runpod/Dockerfile .`.
+The selected ComfyUI profile lock and the separate project dependency closure
+are both SHA-256 verified before installation.
+
 Required non-secret configuration is described by the environment variables in
 `09_runpod_architecture.md`; the only mandatory gateway secret is
 `PORTRAIT_GATEWAY_TOKEN`. The entrypoint refuses a non-loopback ComfyUI bind,
@@ -51,7 +56,7 @@ The `PUT` and upload-status requests carry the owning job id in
 `X-Portrait-Job-Id`; the gateway uses it to keep upload metadata and source
 bytes inside that job's contained directory.
 
-Every request uses bearer authentication. Uploads require an idempotency key,
+Every request uses an Authorization-header token. Uploads require an idempotency key,
 size and SHA-256 metadata, MIME validation, path containment, and a bounded
 body. Jobs require an idempotency key, a completed upload, the normative job
 schema, and `agent_remote_runpod`; arbitrary ComfyUI workflow submission is

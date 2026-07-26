@@ -89,32 +89,6 @@ def _python_executable(venv: Path) -> Path:
     return candidate
 
 
-def _requirements_file(lock: dict[str, Any], runtime_lock: dict[str, Any], *, include_runtime: bool = True) -> Path:
-    lines: list[str] = []
-    seen: set[tuple[str, str]] = set()
-    entries = [item for item in lock.get("dependencies", []) if item.get("kind") in {"python_package", "python_build_dependency"} and item.get("mandatory")]
-    if include_runtime:
-        entries.extend(item for item in runtime_lock.get("requirements", []) if item.get("mandatory"))
-    for entry in entries:
-        name = str(entry.get("name", ""))
-        version = str(entry.get("version_or_commit", entry.get("version", "")))
-        hashes = entry.get("sha256")
-        if isinstance(hashes, str):
-            hashes = [hashes]
-        if not name or not version or version.startswith("UNRESOLVED") or not isinstance(hashes, list) or not hashes:
-            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"dependency lock has no complete hash set for {name or 'unnamed package'}")
-        key = (name.casefold(), version)
-        if key in seen:
-            continue
-        seen.add(key)
-        lines.append(f"{name}=={version}")
-        lines.extend(f"    --hash=sha256:{value}" for value in hashes)
-    handle = tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".requirements.txt", delete=False)
-    handle.write("\n".join(lines) + "\n")
-    handle.close()
-    return Path(handle.name)
-
-
 def _install_python_environment(lock: dict[str, Any], runtime_lock: dict[str, Any], actions: list[dict[str, Any]], profile: str) -> Path:
     uv = shutil.which("uv")
     if not uv:
@@ -136,12 +110,13 @@ def _install_python_environment(lock: dict[str, Any], runtime_lock: dict[str, An
     actions.append({"action": "runtime_profile_lock_verified", "profile": profile, "path": str(profile_lock_path.relative_to(ROOT)), "sha256": sha256_file(profile_lock_path)})
     profile_result = _run_checked([uv, "pip", "install", "--python", str(python), "--require-hashes", "-r", str(profile_lock_path)], ROOT)
     actions.append({"action": "runtime_profile_installed", "profile": profile, "result": profile_result})
-    requirements = _requirements_file(lock, runtime_lock, include_runtime=False)
-    try:
-        actions.append(_run_checked([uv, "pip", "install", "--python", str(python), "--require-hashes", "-r", str(requirements)], ROOT))
-        actions.append(_run_checked([uv, "pip", "install", "--python", str(python), "--no-deps", "-e", str(ROOT)], ROOT))
-    finally:
-        requirements.unlink(missing_ok=True)
+    project_lock = runtime_lock.get("project_lock", {})
+    project_lock_path = ROOT / str(project_lock.get("path", ""))
+    if project_lock.get("status") != "RESOLVED" or not project_lock_path.is_file() or sha256_file(project_lock_path) != project_lock.get("sha256"):
+        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "resolved project dependency lock is unavailable")
+    actions.append({"action": "project_dependency_lock_verified", "path": str(project_lock_path.relative_to(ROOT)), "sha256": sha256_file(project_lock_path)})
+    actions.append(_run_checked([uv, "pip", "install", "--python", str(python), "--require-hashes", "-r", str(project_lock_path)], ROOT))
+    actions.append(_run_checked([uv, "pip", "install", "--python", str(python), "--no-deps", "-e", str(ROOT)], ROOT))
     return python
 
 

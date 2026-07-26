@@ -26,6 +26,11 @@
     "runtime_profile_lock_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
     "status": "PINNED_PROFILE_LOCK_LIVE_GPU_UNVERIFIED"
   },
+  "project_dependency_lock": {
+    "path": "dependencies/project_requirements.lock.txt",
+    "sha256": "f599d034d3f220212d5027ee9da862b30e793c9cded9cfb3e26da64d7f933f0e",
+    "status": "RESOLVED"
+  },
   "project_pins": {
     "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
     "comfyui_manager_commit": "2ce7556b3f36b2edf75b16605dd6109e5939fbd8",

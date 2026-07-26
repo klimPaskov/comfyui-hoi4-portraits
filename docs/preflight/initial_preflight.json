@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "collected_at": "2026-07-26T15:09:40.134099+00:00",
+  "collected_at": "2026-07-26T15:22:15.524278+00:00",
   "project_root": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits",
   "profile": null,
   "hardware": {
@@ -26,7 +26,7 @@
           "/usr/bin/vm_stat"
         ],
         "returncode": 0,
-        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9323.\nPages active:                            361635.\nPages inactive:                          360310.\nPages speculative:                          570.\nPages throttled:                              0.\nPages wired down:                        145244.\nPages purgeable:                          12198.\n\"Translation faults\":                  33740134.\nPages copy-on-write:                    2666578.\nPages zero filled:                     21982975.\nPages reactivated:                       998420.\nPages purged:                            223546.\nFile-backed pages:                       255465.\nAnonymous pages:                         467050.\nPages stored in compressor:              288601.\nPages occupied by compressor:            129103.\nDecompressions:                          337440.\nCompressions:                            751636.\nPageins:                                2913021.\nPageouts:                                  9675.\nSwapins:                                      0.\nSwapouts:                                     0.",
+        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9301.\nPages active:                            360641.\nPages inactive:                          358188.\nPages speculative:                         2098.\nPages throttled:                              0.\nPages wired down:                        146544.\nPages purgeable:                           7153.\n\"Translation faults\":                  36710767.\nPages copy-on-write:                    3151641.\nPages zero filled:                     22961882.\nPages reactivated:                      1000587.\nPages purged:                            233335.\nFile-backed pages:                       258683.\nAnonymous pages:                         462244.\nPages stored in compressor:              288278.\nPages occupied by compressor:            129016.\nDecompressions:                          337704.\nCompressions:                            751636.\nPageins:                                2923098.\nPageouts:                                  9700.\nSwapins:                                      0.\nSwapouts:                                     0.",
         "stderr": ""
       }
     },
@@ -76,7 +76,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9323.\nPages active:                            361635.\nPages inactive:                          360310.\nPages speculative:                          570.\nPages throttled:                              0.\nPages wired down:                        145244.\nPages purgeable:                          12198.\n\"Translation faults\":                  33740134.\nPages copy-on-write:                    2666578.\nPages zero filled:                     21982975.\nPages reactivated:                       998420.\nPages purged:                            223546.\nFile-backed pages:                       255465.\nAnonymous pages:                         467050.\nPages stored in compressor:              288601.\nPages occupied by compressor:            129103.\nDecompressions:                          337440.\nCompressions:                            751636.\nPageins:                                2913021.\nPageouts:                                  9675.\nSwapins:                                      0.\nSwapouts:                                     0.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9301.\nPages active:                            360641.\nPages inactive:                          358188.\nPages speculative:                         2098.\nPages throttled:                              0.\nPages wired down:                        146544.\nPages purgeable:                           7153.\n\"Translation faults\":                  36710767.\nPages copy-on-write:                    3151641.\nPages zero filled:                     22961882.\nPages reactivated:                      1000587.\nPages purged:                            233335.\nFile-backed pages:                       258683.\nAnonymous pages:                         462244.\nPages stored in compressor:              288278.\nPages occupied by compressor:            129016.\nDecompressions:                          337704.\nCompressions:                            751636.\nPageins:                                2923098.\nPageouts:                                  9700.\nSwapins:                                      0.\nSwapouts:                                     0.",
             "stderr": ""
           }
         },
@@ -920,7 +920,15 @@
             "content_ok": true,
             "invalid_packages": []
           }
-        ]
+        ],
+        "project_lock": {
+          "path": "dependencies/project_requirements.lock.txt",
+          "status": "PASS",
+          "expected_sha256": "f599d034d3f220212d5027ee9da862b30e793c9cded9cfb3e26da64d7f933f0e",
+          "actual_sha256": "f599d034d3f220212d5027ee9da862b30e793c9cded9cfb3e26da64d7f933f0e",
+          "content_ok": true,
+          "invalid_packages": []
+        }
       }
     },
     {

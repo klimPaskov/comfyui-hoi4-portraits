@@ -114,11 +114,16 @@ def _runpod_deployment_gate(root: Path) -> dict[str, Any]:
             missing.append("image_lock.json:INVALID_JSON")
     dockerfile = (deployment_root / "Dockerfile").read_text(encoding="utf-8") if (deployment_root / "Dockerfile").is_file() else ""
     entrypoint = (deployment_root / "entrypoint.sh").read_text(encoding="utf-8") if (deployment_root / "entrypoint.sh").is_file() else ""
+    install_runtime = (deployment_root / "install_runtime.sh").read_text(encoding="utf-8") if (deployment_root / "install_runtime.sh").is_file() else ""
+    project_lock = root / "dependencies" / "project_requirements.lock.txt"
+    project_lock_entry = image_lock.get("project_dependency_lock", {})
     structural_checks = {
         "base_image_digest_pinned": "@sha256:" in dockerfile,
         "raw_comfy_loopback": "127.0.0.1" in dockerfile and "127.0.0.1" in entrypoint,
         "gateway_secret_runtime_only": "PORTRAIT_GATEWAY_TOKEN" in entrypoint and "values_recorded" in json.dumps(image_lock),
         "model_weights_not_baked": "models" in json.dumps(image_lock) and "models" in (deployment_root / ".dockerignore").read_text(encoding="utf-8") if (deployment_root / ".dockerignore").is_file() else False,
+        "checksum_package_payload": "COPY . /opt/portrait-project/" in dockerfile,
+        "project_dependency_lock_pinned": project_lock.is_file() and project_lock_entry.get("status") == "RESOLVED" and sha256_file(project_lock) == project_lock_entry.get("sha256") and "--require-hashes --no-deps -r \"$project_lock\"" in install_runtime,
     }
     status = "PASS" if not missing and image_lock.get("build_permitted") is True and all(structural_checks.values()) else ("BLOCKED_UNRESOLVED_IMAGE_LOCK" if not missing else "BLOCKED_DEPLOYMENT_SURFACE_MISSING")
     return {
