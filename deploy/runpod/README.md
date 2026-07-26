@@ -27,6 +27,12 @@ planning package is present: `docker build -f deploy/runpod/Dockerfile .`.
 The selected ComfyUI profile lock and the separate project dependency closure
 are both SHA-256 verified before installation.
 
+The entrypoint starts the project-owned preprocessing sidecar on
+`127.0.0.1:${PORTRAIT_PREPROCESSING_PORT:-8790}` and passes only its loopback
+subject and mask endpoints to ComfyUI. The sidecar checks the pinned YuNet,
+MediaPipe, and BiRefNet artifacts (including trusted BiRefNet runtime-code
+files) before serving; a blocked health response prevents Pod readiness.
+
 Required non-secret configuration is described by the environment variables in
 `09_runpod_architecture.md`; the only mandatory gateway secret is
 `PORTRAIT_GATEWAY_TOKEN`. The entrypoint refuses a non-loopback ComfyUI bind,

@@ -10,6 +10,14 @@ def main() -> int:
     token = os.environ.get("PORTRAIT_GATEWAY_TOKEN")
     if not token:
         return 60
+    preprocessing_port = os.environ.get("PORTRAIT_PREPROCESSING_PORT", "8790")
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{preprocessing_port}/health", timeout=5) as response:
+            preprocessing = json.loads(response.read().decode("utf-8"))
+    except (OSError, urllib.error.URLError, json.JSONDecodeError):
+        return 20
+    if not isinstance(preprocessing, dict) or preprocessing.get("status") != "PASS":
+        return 20
     host = os.environ.get("PORTRAIT_GATEWAY_HOST_CHECK", "127.0.0.1")
     port = os.environ.get("PORTRAIT_GATEWAY_PORT", "8765")
     for route in ("/v1/health", "/v1/capabilities"):

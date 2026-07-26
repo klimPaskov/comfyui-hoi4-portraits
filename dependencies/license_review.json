@@ -49,7 +49,9 @@
       "source_url": "https://github.com/ZhengPeng7/BiRefNet/blob/25cb9309bacf3dde954e4584594e16e142c51de5/LICENSE",
       "artifact_source_url": "https://huggingface.co/ZhengPeng7/BiRefNet",
       "license_identifier": "Apache-2.0",
-      "status": "PRIMARY_SOURCE_REVIEWED"
+      "artifact_snapshot_license_metadata": "MIT",
+      "status": "REVIEW_REQUIRED_LICENSE_RECONCILIATION",
+      "material_conditions": ["the pinned GitHub source and Hugging Face snapshot expose different license metadata; owner review must resolve which terms govern the downloaded weights and trusted runtime code before redistribution"]
     },
     {
       "name": "DDColor preprocessing artifact",

@@ -11,6 +11,7 @@ set -Eeuo pipefail
 : "${PORTRAIT_MAX_ACTIVE_JOBS:=1}"
 : "${PORTRAIT_MAX_UPLOAD_BYTES:=26214400}"
 : "${PORTRAIT_IDLE_SHUTDOWN_MINUTES:=0}"
+: "${PORTRAIT_PREPROCESSING_PORT:=8790}"
 
 if [ "$COMFYUI_HOST" != "127.0.0.1" ]; then
   echo "COMFYUI_HOST must remain loopback-only" >&2
@@ -73,14 +74,39 @@ PYTHON_BIN="/opt/portrait-venv/bin/python"
 
 comfy_log="/workspace/hoi4-portraits/logs/comfyui.log"
 gateway_log="/workspace/hoi4-portraits/logs/gateway.log"
-"$PYTHON_BIN" "$PORTRAIT_PROJECT_ROOT/comfyui/main.py" --listen "$COMFYUI_HOST" --port "$COMFYUI_PORT" >"$comfy_log" 2>&1 &
-comfy_pid=$!
+preprocessing_log="/workspace/hoi4-portraits/logs/preprocessing-service.log"
+preprocessing_pid=""
+comfy_pid=""
 gateway_pid=""
 cleanup() {
   if [ -n "$gateway_pid" ] && kill -0 "$gateway_pid" 2>/dev/null; then kill "$gateway_pid" 2>/dev/null || true; fi
-  if kill -0 "$comfy_pid" 2>/dev/null; then kill "$comfy_pid" 2>/dev/null || true; fi
+  if [ -n "$comfy_pid" ] && kill -0 "$comfy_pid" 2>/dev/null; then kill "$comfy_pid" 2>/dev/null || true; fi
+  if [ -n "$preprocessing_pid" ] && kill -0 "$preprocessing_pid" 2>/dev/null; then kill "$preprocessing_pid" 2>/dev/null || true; fi
 }
 trap cleanup EXIT INT TERM
+
+"$PYTHON_BIN" -m portrait_pipeline.preprocessing_service --root "$PORTRAIT_PROJECT_ROOT" --host 127.0.0.1 --port "$PORTRAIT_PREPROCESSING_PORT" >"$preprocessing_log" 2>&1 &
+preprocessing_pid=$!
+export HOI4_SUBJECT_SERVICE_LOOPBACK="http://127.0.0.1:${PORTRAIT_PREPROCESSING_PORT}/v1/subject"
+export HOI4_MASK_SERVICE_LOOPBACK="http://127.0.0.1:${PORTRAIT_PREPROCESSING_PORT}/v1/mask"
+for _ in $(seq 1 120); do
+  if ! kill -0 "$preprocessing_pid" 2>/dev/null; then
+    echo "preprocessing sidecar exited before readiness" >&2
+    exit 20
+  fi
+  if "$PYTHON_BIN" -c 'import json,sys,urllib.request; port=sys.argv[1]; report=json.loads(urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2).read().decode("utf-8")); raise SystemExit(0 if report.get("status") == "PASS" else 20)' "$PORTRAIT_PREPROCESSING_PORT" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+if ! "$PYTHON_BIN" -c 'import json,sys,urllib.request; port=sys.argv[1]; report=json.loads(urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2).read().decode("utf-8")); raise SystemExit(0 if report.get("status") == "PASS" else 20)' "$PORTRAIT_PREPROCESSING_PORT" >/dev/null 2>&1; then
+  echo "preprocessing sidecar health did not pass; Pod is not ready" >&2
+  exit 20
+fi
+
+"$PYTHON_BIN" "$PORTRAIT_PROJECT_ROOT/comfyui/main.py" --listen "$COMFYUI_HOST" --port "$COMFYUI_PORT" >"$comfy_log" 2>&1 &
+comfy_pid=$!
 
 for _ in $(seq 1 120); do
   if ! kill -0 "$comfy_pid" 2>/dev/null; then

@@ -199,6 +199,38 @@ def _restore_preprocessing_models(preprocessing_lock: dict[str, Any], actions: l
         _download_verified(artifact_url, destination, artifact_size, artifact_hash, actions)
 
 
+def _restore_preprocessing_source_artifacts(preprocessing_lock: dict[str, Any], actions: list[dict[str, Any]]) -> None:
+    """Restore pinned local model-code files required by trusted remote code."""
+
+    for entry in preprocessing_lock.get("dependencies", []):
+        if not entry.get("mandatory"):
+            continue
+        source_artifacts = entry.get("source_artifacts")
+        if not isinstance(source_artifacts, dict) or not source_artifacts.get("runtime_required"):
+            continue
+        source_files = source_artifacts.get("files")
+        if not isinstance(source_files, list) or not source_files:
+            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"preprocessing source-artifact lock entry is incomplete: {entry.get('name')}")
+        for source_file in source_files:
+            if not isinstance(source_file, dict):
+                raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"preprocessing source-artifact entry is invalid: {entry.get('name')}")
+            destination_value = source_file.get("destination_path")
+            artifact_url = source_file.get("artifact_url")
+            artifact_size = source_file.get("size_bytes")
+            artifact_hash = source_file.get("sha256")
+            filename = source_file.get("filename")
+            if not isinstance(destination_value, str) or not isinstance(filename, str) or not isinstance(artifact_url, str) or not artifact_url.startswith("https://") or not isinstance(artifact_size, int) or not isinstance(artifact_hash, str):
+                raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"preprocessing source-artifact lock entry is incomplete: {entry.get('name')}")
+            destination = relative_safe_path(ROOT, destination_value)
+            if destination.name != filename or destination.suffix.casefold() not in {".py", ".json"}:
+                raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"preprocessing source-artifact format is unsupported: {entry.get('name')}")
+            try:
+                destination.relative_to((ROOT / "models" / "preprocessing").resolve())
+            except ValueError as exc:
+                raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"preprocessing source-artifact path escapes the controlled model root: {entry.get('name')}") from exc
+            _download_verified(artifact_url, destination, artifact_size, artifact_hash, actions)
+
+
 def _write_extra_model_paths(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
     config = """hoi4_portrait:\n  base_path: {root}\n  diffusion_models: models/diffusion_models\n  unet: models/diffusion_models\n  text_encoders: models/text_encoders\n  vae: models/vae\n  loras: models/loras\n  autoprompter: models/autoprompter\n  is_default: true\n""".format(root=ROOT)
     path = comfy_root / "extra_model_paths.yaml"
@@ -207,6 +239,49 @@ def _write_extra_model_paths(comfy_root: Path, actions: list[dict[str, Any]]) ->
     if not path.is_file():
         path.write_text(config, encoding="utf-8")
     actions.append({"action": "extra_model_paths_verified", "path": str(path.relative_to(ROOT))})
+
+
+def _terminate_process(process: subprocess.Popen[Any] | None) -> None:
+    if process is None or process.poll() is not None:
+        return
+    process.terminate()
+    try:
+        process.wait(timeout=15)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=15)
+
+
+def _start_preprocessing_service(python: Path, actions: list[dict[str, Any]]) -> tuple[subprocess.Popen[Any], dict[str, str]]:
+    port = int(os.environ.get("PORTRAIT_PREPROCESSING_PORT", "8790"))
+    if not 1024 <= port <= 65535:
+        raise BootstrapError(ExitCode.INPUT_SCHEMA_INVALID, "PORTRAIT_PREPROCESSING_PORT is outside the bounded range")
+    log_path = ROOT / "logs" / "bootstrap" / "preprocessing-service.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    environment = os.environ.copy()
+    environment["HOI4_SUBJECT_SERVICE_LOOPBACK"] = f"http://127.0.0.1:{port}/v1/subject"
+    environment["HOI4_MASK_SERVICE_LOOPBACK"] = f"http://127.0.0.1:{port}/v1/mask"
+    with log_path.open("ab") as log_handle:
+        process = subprocess.Popen([str(python), "-m", "portrait_pipeline.preprocessing_service", "--root", str(ROOT), "--host", "127.0.0.1", "--port", str(port)], cwd=ROOT, env=environment, stdout=log_handle, stderr=subprocess.STDOUT)
+    actions.append({"action": "preprocessing_service_started", "pid": process.pid, "binding": f"http://127.0.0.1:{port}", "subject_endpoint": environment["HOI4_SUBJECT_SERVICE_LOOPBACK"], "mask_endpoint": environment["HOI4_MASK_SERVICE_LOOPBACK"]})
+    deadline = time.monotonic() + 120
+    while time.monotonic() < deadline:
+        if process.poll() is not None:
+            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "preprocessing sidecar exited before health readiness")
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=5) as response:
+                health = json.loads(response.read().decode("utf-8"))
+            if isinstance(health, dict) and health.get("status") == "PASS":
+                actions.append({"action": "preprocessing_service_health", "status": "PASS", "binding": f"http://127.0.0.1:{port}", "checks": health.get("checks", [])})
+                return process, environment
+            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "preprocessing sidecar health is BLOCKED")
+        except BootstrapError:
+            _terminate_process(process)
+            raise
+        except (OSError, urllib.error.URLError, UnicodeDecodeError, json.JSONDecodeError):
+            time.sleep(1)
+    _terminate_process(process)
+    raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "preprocessing sidecar health check timed out")
 
 
 def restore_from_lock(profile: str) -> list[dict[str, Any]]:
@@ -236,7 +311,9 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
     runtime_lock = json.loads((ROOT / "dependencies" / "runtime_requirements_lock.json").read_text(encoding="utf-8"))
     python = _install_python_environment(dependency_lock, runtime_lock, actions, profile)
     _restore_models(json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8")), profile, actions)
-    _restore_preprocessing_models(json.loads((ROOT / "dependencies" / "preprocessing_lock.json").read_text(encoding="utf-8")), actions)
+    preprocessing_lock = json.loads((ROOT / "dependencies" / "preprocessing_lock.json").read_text(encoding="utf-8"))
+    _restore_preprocessing_models(preprocessing_lock, actions)
+    _restore_preprocessing_source_artifacts(preprocessing_lock, actions)
     lora_path = ROOT / "loras" / "hoi4_portrait_new_style_lora.safetensors"
     if not lora_path.is_file() or sha256_file(lora_path) != "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1":
         raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "immutable style LoRA is missing or changed")
@@ -251,33 +328,31 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
     if any(report["structural_status"] != "PASS" for report in workflow_reports):
         raise BootstrapError(ExitCode.WORKFLOW_INVALID, "workflow structural validation failed after restore")
     actions.append({"action": "workflows_validated", "status": "PASS", "count": len(workflow_reports)})
-    log_path = ROOT / "logs" / "bootstrap" / "comfyui-smoke.log"
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    with log_path.open("ab") as log_handle:
-        process = subprocess.Popen([str(python), "main.py", "--listen", "127.0.0.1", "--port", "8188"], cwd=comfy_root, stdout=log_handle, stderr=subprocess.STDOUT)
-        try:
-            deadline = time.monotonic() + 120
-            while time.monotonic() < deadline:
-                try:
-                    client = LoopbackComfyClient(timeout=5.0)
-                    client.health()
-                    client.inventory()
-                    actions.append({"action": "loopback_comfyui_smoke", "status": "PASS", "pid": process.pid, "binding": "http://127.0.0.1:8188"})
-                    break
-                except ComfyTransportError:
-                    if process.poll() is not None:
-                        raise BootstrapError(ExitCode.WORKFLOW_INVALID, "ComfyUI exited before loopback smoke test completed")
-                    time.sleep(1)
-            else:
-                raise BootstrapError(ExitCode.WORKFLOW_INVALID, "ComfyUI loopback smoke test timed out")
-        finally:
-            if process.poll() is None:
-                process.terminate()
-                try:
-                    process.wait(timeout=15)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait(timeout=15)
+    preprocessing_process, comfy_environment = _start_preprocessing_service(python, actions)
+    try:
+        log_path = ROOT / "logs" / "bootstrap" / "comfyui-smoke.log"
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        with log_path.open("ab") as log_handle:
+            process = subprocess.Popen([str(python), "main.py", "--listen", "127.0.0.1", "--port", "8188"], cwd=comfy_root, env=comfy_environment, stdout=log_handle, stderr=subprocess.STDOUT)
+            try:
+                deadline = time.monotonic() + 120
+                while time.monotonic() < deadline:
+                    try:
+                        client = LoopbackComfyClient(timeout=5.0)
+                        client.health()
+                        client.inventory()
+                        actions.append({"action": "loopback_comfyui_smoke", "status": "PASS", "pid": process.pid, "binding": "http://127.0.0.1:8188"})
+                        break
+                    except ComfyTransportError:
+                        if process.poll() is not None:
+                            raise BootstrapError(ExitCode.WORKFLOW_INVALID, "ComfyUI exited before loopback smoke test completed")
+                        time.sleep(1)
+                else:
+                    raise BootstrapError(ExitCode.WORKFLOW_INVALID, "ComfyUI loopback smoke test timed out")
+            finally:
+                _terminate_process(process)
+    finally:
+        _terminate_process(preprocessing_process)
     return actions
 
 

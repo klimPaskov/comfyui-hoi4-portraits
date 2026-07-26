@@ -17,7 +17,7 @@ hoi4-portrait-preflight = "portrait_pipeline.preflight:main"
 hoi4-portrait-build-workflows = "portrait_pipeline.graph_spec.builder:main"
 hoi4-portrait-acceptance = "portrait_pipeline.acceptance:main"
 hoi4-portrait-mcp = "portrait_pipeline.mcp.adapter:main"
+hoi4-portrait-preprocessing-service = "portrait_pipeline.preprocessing_service:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-

@@ -100,6 +100,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(report["status"], "BLOCKED")
         self.assertEqual(report["missing_checksums"], [])
         self.assertEqual(report["mandatory_count"], 5)
+        self.assertEqual(report["source_artifact_count"], 3)
         self.assertEqual(report["source_verification_status"], "PASS")
         self.assertEqual(report["source_verification_issues"], [])
         self.assertTrue(all(item["status"] == "BLOCKED_NOT_INSTALLED" for item in report["checks"]), report)

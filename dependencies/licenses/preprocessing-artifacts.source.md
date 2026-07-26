@@ -11,3 +11,5 @@ Verification date: 2026-07-26. The entries below are pinned to primary project s
 | SFace | `face_recognition_sface_2021dec.onnx` | `47534e27c9851bb1128ccc0102f1145e27f23f98` | 38,696,353 | `0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79` | [OpenCV Zoo model tree](https://github.com/opencv/opencv_zoo/tree/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_recognition_sface) |
 
 The lock is still runtime-blocked until every mandatory file is restored to its exact `destination_path` and verified again locally. The optional Real-ESRGAN branch remains explicitly unselected; it is not used by the conservative default route.
+
+BiRefNet license note: the pinned GitHub source is recorded as Apache-2.0 in the project lock, while the pinned Hugging Face snapshot exposes MIT metadata. This discrepancy is intentionally unresolved and remains a license gate; the trusted runtime-code files (`config.json`, `BiRefNet_config.py`, and `birefnet.py`) are separately pinned and checksum-verified when installed.

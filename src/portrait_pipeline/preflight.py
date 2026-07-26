@@ -198,6 +198,7 @@ def _preprocessing_artifact_preflight(root: Path, lock: dict[str, Any]) -> dict[
 
     dependencies = lock.get("dependencies", []) if isinstance(lock.get("dependencies", []), list) else []
     checks: list[dict[str, Any]] = []
+    source_checks: list[dict[str, Any]] = []
     preprocessing_root = (root / "models" / "preprocessing").resolve()
     expected_paths: set[Path] = set()
     missing_lock_fields: list[str] = []
@@ -262,6 +263,51 @@ def _preprocessing_artifact_preflight(root: Path, lock: dict[str, Any]) -> dict[
             status = "PASS"
         checks.append({"name": name, "status": status, "path": destination_value, "artifact_url": artifact_url, "artifact_revision": artifact_revision, "format": suffix or None, "format_expected": artifact_format, "format_supported": format_ok, "present": present, "size_bytes": actual_size, "expected_size_bytes": artifact_size, "sha256": actual_hash, "expected_sha256": artifact_hash})
 
+        source_artifacts = entry.get("source_artifacts")
+        if isinstance(source_artifacts, dict) and source_artifacts.get("runtime_required"):
+            source_revision = source_artifacts.get("source_revision")
+            source_files = source_artifacts.get("files")
+            source_lock_ok = isinstance(source_artifacts.get("source_url"), str) and source_artifacts["source_url"].startswith("https://") and isinstance(source_revision, str) and bool(source_revision) and isinstance(source_files, list) and bool(source_files)
+            if not source_lock_ok:
+                missing_lock_fields.append(f"{name}.source_artifacts")
+                all_pass = False
+                source_checks.append({"name": name, "status": "BLOCKED_LOCK_INCOMPLETE", "source_revision": source_revision})
+            else:
+                for source_file in source_files:
+                    if not isinstance(source_file, dict):
+                        missing_lock_fields.append(f"{name}.source_file")
+                        all_pass = False
+                        source_checks.append({"name": name, "status": "BLOCKED_LOCK_INCOMPLETE"})
+                        continue
+                    source_name = str(source_file.get("filename", ""))
+                    source_destination_value = source_file.get("destination_path")
+                    source_url = source_file.get("artifact_url")
+                    source_size = source_file.get("size_bytes")
+                    source_hash = source_file.get("sha256")
+                    source_required_ok = isinstance(source_destination_value, str) and isinstance(source_url, str) and source_url.startswith("https://") and isinstance(source_size, int) and source_size > 0 and is_sha256(source_hash) and Path(str(source_destination_value)).name == source_name and Path(str(source_destination_value)).suffix.casefold() in {".py", ".json"}
+                    if not source_required_ok:
+                        missing_lock_fields.append(f"{name}.{source_name or 'source_file'}")
+                        all_pass = False
+                        source_checks.append({"name": name, "filename": source_name, "status": "BLOCKED_LOCK_INCOMPLETE", "destination_path": source_destination_value, "artifact_url": source_url})
+                        continue
+                    try:
+                        source_destination = relative_safe_path(root, source_destination_value)
+                        source_destination.relative_to(preprocessing_root)
+                    except ValueError as exc:
+                        all_pass = False
+                        source_checks.append({"name": name, "filename": source_name, "status": "BLOCKED_LOCK_INCOMPLETE", "reason": str(exc), "destination_path": source_destination_value})
+                        continue
+                    expected_paths.add(source_destination.resolve())
+                    source_present = source_destination.is_file()
+                    source_actual_size = source_destination.stat().st_size if source_present else None
+                    source_actual_hash = sha256_file(source_destination) if source_present else None
+                    source_size_ok = source_present and source_actual_size == source_size
+                    source_hash_ok = source_present and source_actual_hash == source_hash
+                    source_item_ok = source_size_ok and source_hash_ok
+                    all_pass &= source_item_ok
+                    source_status = "PASS" if source_item_ok else "BLOCKED_NOT_INSTALLED" if not source_present else "BLOCKED_CHECKSUM_MISMATCH"
+                    source_checks.append({"name": name, "filename": source_name, "status": source_status, "path": source_destination_value, "artifact_url": source_url, "source_revision": source_revision, "present": source_present, "size_bytes": source_actual_size, "expected_size_bytes": source_size, "sha256": source_actual_hash, "expected_sha256": source_hash})
+
     unexpected: list[str] = []
     if preprocessing_root.is_dir():
         for path in preprocessing_root.rglob("*"):
@@ -313,6 +359,21 @@ def _preprocessing_artifact_preflight(root: Path, lock: dict[str, Any]) -> dict[
                 source_issues.append(f"source evidence mismatch for {name}: {field}")
         if source.get("metadata_status") != "PASS":
             source_issues.append(f"source evidence is not verified for {name}")
+        expected_source_files = entry.get("source_artifacts", {}).get("files", []) if isinstance(entry.get("source_artifacts"), dict) else []
+        if expected_source_files:
+            evidence_source_files = source.get("source_files")
+            if not isinstance(evidence_source_files, list):
+                source_issues.append(f"missing source-file evidence: {name}")
+            else:
+                expected_by_name = {item.get("filename"): item for item in expected_source_files if isinstance(item, dict)}
+                observed_by_name = {item.get("filename"): item for item in evidence_source_files if isinstance(item, dict)}
+                if set(expected_by_name) != set(observed_by_name):
+                    source_issues.append(f"source-file evidence names mismatch for {name}")
+                for filename, expected_file in expected_by_name.items():
+                    observed_file = observed_by_name.get(filename, {})
+                    for field in ("size_bytes", "sha256"):
+                        if observed_file.get(field) != expected_file.get(field):
+                            source_issues.append(f"source-file evidence mismatch for {name}/{filename}: {field}")
     unexpected_sources = sorted(set(source_entries) - mandatory_names)
     if unexpected_sources:
         source_issues.extend(f"unexpected source evidence: {name}" for name in unexpected_sources)
@@ -325,9 +386,11 @@ def _preprocessing_artifact_preflight(root: Path, lock: dict[str, Any]) -> dict[
         "status": "PASS" if all_pass and checks and not unexpected else "BLOCKED",
         "lock_status": lock.get("status"),
         "checks": checks,
+        "source_artifact_checks": source_checks,
         "missing_checksums": missing_lock_fields,
         "unexpected_files": sorted(unexpected),
         "mandatory_count": len(checks),
+        "source_artifact_count": len(source_checks),
         "source_verification_path": str(source_evidence_path.relative_to(root)),
         "source_verification_status": source_status,
         "source_verification_issues": source_issues,

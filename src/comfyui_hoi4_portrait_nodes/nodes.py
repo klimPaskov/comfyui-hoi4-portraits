@@ -160,6 +160,12 @@ def _post_loopback_json(endpoint: str, payload: dict[str, Any], *, timeout: floa
         _raise(ExitCode.DEPENDENCY_MISSING, f"loopback preprocessing service unavailable: {type(exc).__name__}")
     if not isinstance(body, dict):
         _raise(ExitCode.GENERATION_FAILED, "loopback preprocessing service returned a non-object response")
+    if body.get("status") == "BLOCKED":
+        try:
+            code = ExitCode(int(body.get("exit_code")))
+        except (TypeError, ValueError):
+            code = ExitCode.GENERATION_FAILED
+        _raise(code, str(body.get("error") or body.get("error_code") or "loopback preprocessing service blocked the operation"))
     if body.get("status") not in {None, "PASS"}:
         _raise(ExitCode.GENERATION_FAILED, f"loopback preprocessing service returned status {body.get('status')!r}")
     return body
@@ -173,10 +179,18 @@ def _write_subject_inventory(job: dict[str, Any], image: Any) -> dict[str, Any]:
     encoded = io.BytesIO()
     source.save(encoded, format="PNG", optimize=False)
     response = _post_loopback_json(endpoint, {"job_id": job.get("job_id"), "model": {"name": "YuNet", "source_revision": entry.get("source_revision"), "artifact_sha256": entry.get("artifact_sha256")}, "image_png_base64": base64.b64encode(encoded.getvalue()).decode("ascii")})
+    response_model = response.get("model")
+    if not isinstance(response_model, dict) or response_model.get("name") != "YuNet" or response_model.get("source_revision") != entry.get("source_revision") or response_model.get("artifact_sha256") != entry.get("artifact_sha256"):
+        _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "subject service model identity does not match the preprocessing lock")
+    if response.get("analysis_status") != "PASS":
+        _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject service did not return an auditable PASS analysis")
     subjects = response.get("subjects")
     selected = response.get("selected")
     if not isinstance(subjects, list) or not subjects:
         _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject service returned no auditable subjects")
+    for subject in subjects:
+        if not isinstance(subject, dict) or not isinstance(subject.get("person_association"), dict) or not isinstance(subject.get("landmarks"), dict):
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject service returned a subject without person association and landmarks")
     if not isinstance(selected, dict):
         if len(subjects) != 1:
             _raise(ExitCode.AMBIGUOUS_SUBJECT, "subject service returned multiple plausible subjects without a deterministic selection")
@@ -444,7 +458,39 @@ class HOI4SubjectSelect:
             bottom = min(bottom, int(image.shape[1]))
             if right - left < 8 or bottom - top < 8:
                 _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "subject bbox is too small for an auditable portrait")
-            return image, {"selector": selector, "selection": "contract_bbox", "bbox_xyxy": [left, top, right, bottom], "face_analysis": "selector_only; live YuNet/person association still required"}
+            inventory_path = _job_root(job) / "evidence" / "subject_inventory.json"
+            if not inventory_path.is_file():
+                _write_subject_inventory(job, image)
+            try:
+                inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as exc:
+                _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, f"subject inventory is invalid: {exc}")
+            if inventory.get("analysis_status") != "PASS" or not isinstance(inventory.get("subjects"), list):
+                _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "bbox selection requires an auditable subject inventory")
+
+            def iou(candidate: list[int]) -> float:
+                c_left, c_top, c_right, c_bottom = candidate
+                inter_left, inter_top = max(left, c_left), max(top, c_top)
+                inter_right, inter_bottom = min(right, c_right), min(bottom, c_bottom)
+                intersection = max(0, inter_right - inter_left) * max(0, inter_bottom - inter_top)
+                union = (right - left) * (bottom - top) + max(0, c_right - c_left) * max(0, c_bottom - c_top) - intersection
+                return intersection / union if union else 0.0
+
+            matches = []
+            for subject in inventory["subjects"]:
+                candidate = subject.get("bbox_xyxy") if isinstance(subject, dict) else None
+                if isinstance(candidate, list) and len(candidate) == 4 and all(isinstance(value, int) and not isinstance(value, bool) for value in candidate):
+                    overlap = iou(candidate)
+                    if overlap >= 0.5:
+                        matches.append((overlap, subject))
+            if not matches:
+                _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "contract bbox does not overlap an auditable YuNet/person-associated subject")
+            matches.sort(key=lambda item: (-item[0], item[1].get("subject_index", 0)))
+            if len(matches) > 1 and matches[0][0] == matches[1][0]:
+                _raise(ExitCode.AMBIGUOUS_SUBJECT, "contract bbox overlaps multiple equally plausible audited subjects")
+            selected = matches[0][1]
+            audited_bbox = selected["bbox_xyxy"]
+            return image, {"selector": selector, "selection": "audited_contract_bbox", "bbox_xyxy": audited_bbox, "requested_bbox_xyxy": [left, top, right, bottom], "inventory_path": str(inventory_path.relative_to(_job_root(job))), "inventory_sha256": sha256_file(inventory_path), "face_analysis": inventory.get("analysis_status", "unverified"), "selected_subject_index": selected.get("subject_index")}
         inventory_path = _job_root(job) / "evidence" / "subject_inventory.json"
         if not inventory_path.is_file():
             _write_subject_inventory(job, image)
