@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-26T15:33:06.781114+00:00",
+  "created_at": "2026-07-26T15:54:56.769835+00:00",
   "profile": "agent_remote_runpod",
   "status": "BLOCKED_REMOTE_AUTH",
   "status_reason": "RunPod endpoint credentials and authenticated remote acceptance are unavailable.",
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                5016.\nPages active:                            364749.\nPages inactive:                          359069.\nPages speculative:                          827.\nPages throttled:                              0.\nPages wired down:                        146932.\nPages purgeable:                           4713.\n\"Translation faults\":                  38802216.\nPages copy-on-write:                    3502173.\nPages zero filled:                     23674727.\nPages reactivated:                      1003546.\nPages purged:                            238289.\nFile-backed pages:                       254646.\nAnonymous pages:                         469999.\nPages stored in compressor:              287496.\nPages occupied by compressor:            129497.\nDecompressions:                          341738.\nCompressions:                            754926.\nPageins:                                2949290.\nPageouts:                                  9839.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               10586.\nPages active:                            356580.\nPages inactive:                          359064.\nPages speculative:                         1518.\nPages throttled:                              0.\nPages wired down:                        147773.\nPages purgeable:                           6047.\n\"Translation faults\":                  43743726.\nPages copy-on-write:                    4192547.\nPages zero filled:                     25603858.\nPages reactivated:                      1014596.\nPages purged:                            246654.\nFile-backed pages:                       255967.\nAnonymous pages:                         461195.\nPages stored in compressor:              289228.\nPages occupied by compressor:            130195.\nDecompressions:                          343245.\nCompressions:                            758166.\nPageins:                                3011354.\nPageouts:                                 10136.\nSwapins:                                      0.\nSwapouts:                                     0.",
           "stderr": ""
         }
       },
@@ -85,7 +85,7 @@
       "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
       "Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.",
-      "Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run.",
+      "Pinned preprocessing/audit model artifacts are not all installed and checksum-verified; masking, face analysis, and independent audit cannot run.",
       "License/rights review is not fully approved for Krea redistribution or the unresolved background."
     ]
   },

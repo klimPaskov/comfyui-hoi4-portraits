@@ -17,7 +17,7 @@
       "repository": "local-project-source",
       "revision": "graph-spec-1.0.0",
       "license": "MIT",
-      "source_tree_checksum": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f",
+      "source_tree_checksum": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28",
       "classes": [
         "HOI4JobInput",
         "HOI4HumanControls",

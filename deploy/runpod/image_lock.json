@@ -35,7 +35,7 @@
     "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
     "comfyui_manager_commit": "2ce7556b3f36b2edf75b16605dd6109e5939fbd8",
     "comfyui_krea2edit_commit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-    "project_node_tree_sha256": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f",
+    "project_node_tree_sha256": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28",
     "style_lora_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
   },
   "models": {

@@ -1,6 +1,6 @@
 # Initial Preflight Report
 
-- Collected: `2026-07-26T15:33:16.924913+00:00`
+- Collected: `2026-07-26T15:54:51.770313+00:00`
 - Status: **BLOCKED**
 - Installation permitted: **False**
 - Recommended exit code: `15`
@@ -22,7 +22,7 @@
 | `repository_preflight` | **PASS** | `{"chaos_redux": {"exists": true, "head": {"returncode": 0, "stderr": "", "stdout": "420cfb326e8ec78ec5641b152f32fce2b2d94db6"}, "is_git": true, "path": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux", "remote": {"returncode": 0, "stderr": "", "stdout": "origin\tgit@github.com:klimPaskov/Chaos-Redux.git (fetch)\norigin\tgit@github.com:klimPaskov/Chaos-Redux.git (push)"}, "status": {"returncode": 0, "stderr": "", "stdout": "## master...origin/master\n?? docs/ass` |
 | `calibrated_identity_thresholds` | **BLOCKED** | `{"approved_by": [], "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/config/identity_thresholds.json", "present": true, "thresholds_id": "UNSET_BLOCK_EXECUTION"}` |
 | `krea_live_compatibility` | **BLOCKED** | `{"compatibility_review": {"conclusion": "The workflows are structurally delivered but Krea live compatibility is not proven. Installation and generation remain fail-closed until a verified compatible ComfyUI revision/node signature is installed and exercised.", "findings": [{"finding": "The primary Krea2EditModelPatch contract exposes VAE and source_image inputs for fit mode; the generated graph supplies both from the approved composite and Krea VAE.", "id": "krea2edit_fit_inputs", "status": "PA` |
-| `preprocessing_and_audit_dependencies` | **BLOCKED** | `{"missing_checksums": ["BiRefNet", "DDColor", "YuNet", "MediaPipe Face Landmarker", "SFace"], "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/preprocessing_lock.json"}` |
+| `preprocessing_and_audit_dependencies` | **BLOCKED** | `{"checks": [{"artifact_revision": "e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4", "artifact_url": "https://huggingface.co/ZhengPeng7/BiRefNet/resolve/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/model.safetensors", "expected_sha256": "9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154", "expected_size_bytes": 444473596, "format": ".safetensors", "format_expected": "safetensors", "format_supported": true, "name": "BiRefNet", "path": "models/preprocessing/birefnet/model.safetensors", "presen` |
 | `license_and_rights_review` | **BLOCKED_PENDING_PROJECT_OWNER_REVIEW** | `{"blocking_reasons": ["Krea Community License applicability and distribution scope need project-owner approval.", "The approved HOI4 background and its rights record are unresolved.", "The existing style LoRA has an owner-controlled provenance/license record only."], "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.", "review_date": "2026-07-26", "sche` |
 
 ## Blockers
@@ -35,7 +35,7 @@
 - No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
 - Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.
-- Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run.
+- Pinned preprocessing/audit model artifacts are not all installed and checksum-verified; masking, face analysis, and independent audit cannot run.
 - License/rights review is not fully approved for Krea redistribution or the unresolved background.
 
 ## Installation decision

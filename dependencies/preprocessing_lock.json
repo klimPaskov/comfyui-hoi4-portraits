@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "lock_version": "preprocess-2026-07-26.1",
-  "status": "PINNED_SOURCE_COMMITS_ARTIFACTS_UNVERIFIED",
+  "status": "PINNED_ARTIFACTS_NOT_INSTALLED",
   "dependencies": [
     {
       "name": "BiRefNet",
@@ -9,11 +9,16 @@
       "official_source": "https://github.com/ZhengPeng7/BiRefNet.git",
       "source_revision": "25cb9309bacf3dde954e4584594e16e142c51de5",
       "license": "Apache-2.0",
-      "artifact_url": null,
-      "artifact_revision": null,
-      "artifact_sha256": null,
+      "artifact_source": "https://huggingface.co/ZhengPeng7/BiRefNet",
+      "artifact_url": "https://huggingface.co/ZhengPeng7/BiRefNet/resolve/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/model.safetensors",
+      "artifact_revision": "e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4",
+      "artifact_filename": "model.safetensors",
+      "artifact_format": "safetensors",
+      "artifact_size_bytes": 444473596,
+      "artifact_sha256": "9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154",
+      "destination_path": "models/preprocessing/birefnet/model.safetensors",
       "mandatory": true,
-      "status": "BLOCKED_CHECKSUM_REQUIRED"
+      "status": "PINNED_NOT_INSTALLED"
     },
     {
       "name": "DDColor",
@@ -21,11 +26,16 @@
       "official_source": "https://github.com/piddnad/DDColor.git",
       "source_revision": "2adb63f2656ac41cbdf7b894cddd94121a3faf13",
       "license": "Apache-2.0",
-      "artifact_url": null,
-      "artifact_revision": null,
-      "artifact_sha256": null,
+      "artifact_source": "https://huggingface.co/piddnad/ddcolor_modelscope",
+      "artifact_url": "https://huggingface.co/piddnad/ddcolor_modelscope/resolve/060f67494e31883a4b13cb27f889f3154847ada4/pytorch_model.bin",
+      "artifact_revision": "060f67494e31883a4b13cb27f889f3154847ada4",
+      "artifact_filename": "pytorch_model.bin",
+      "artifact_format": "pytorch_bin",
+      "artifact_size_bytes": 911914869,
+      "artifact_sha256": "d81711971ec59200da26d5e8a1afae8dd3778d495ea8ad7a7dadc769f403f7e7",
+      "destination_path": "models/preprocessing/ddcolor/pytorch_model.bin",
       "mandatory": true,
-      "status": "BLOCKED_CHECKSUM_REQUIRED"
+      "status": "PINNED_NOT_INSTALLED"
     },
     {
       "name": "Real-ESRGAN",
@@ -37,7 +47,7 @@
       "artifact_revision": null,
       "artifact_sha256": null,
       "mandatory": false,
-      "status": "OPTIONAL_BLOCKED_CHECKSUM_REQUIRED"
+      "status": "OPTIONAL_NOT_SELECTED"
     },
     {
       "name": "YuNet",
@@ -45,11 +55,16 @@
       "official_source": "https://github.com/opencv/opencv_zoo.git",
       "source_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
       "license": "Apache-2.0",
-      "artifact_url": null,
-      "artifact_revision": null,
-      "artifact_sha256": null,
+      "artifact_source": "https://github.com/opencv/opencv_zoo/tree/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet",
+      "artifact_url": "https://github.com/opencv/opencv_zoo/raw/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+      "artifact_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+      "artifact_filename": "face_detection_yunet_2023mar.onnx",
+      "artifact_format": "onnx",
+      "artifact_size_bytes": 232589,
+      "artifact_sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
+      "destination_path": "models/preprocessing/yunet/face_detection_yunet_2023mar.onnx",
       "mandatory": true,
-      "status": "BLOCKED_CHECKSUM_REQUIRED"
+      "status": "PINNED_NOT_INSTALLED"
     },
     {
       "name": "MediaPipe Face Landmarker",
@@ -57,11 +72,17 @@
       "official_source": "https://github.com/google-ai-edge/mediapipe.git",
       "source_revision": "0ad5a71bcdff3d756dc5b07f93765aaeb4152538",
       "license": "Apache-2.0",
-      "artifact_url": null,
-      "artifact_revision": null,
-      "artifact_sha256": null,
+      "artifact_source": "https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker/python",
+      "artifact_url": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+      "artifact_revision": "float16/1",
+      "artifact_filename": "face_landmarker.task",
+      "artifact_format": "mediapipe_task",
+      "artifact_size_bytes": 3758596,
+      "artifact_sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
+      "storage_generation": "1683136941916318",
+      "destination_path": "models/preprocessing/mediapipe/face_landmarker.task",
       "mandatory": true,
-      "status": "BLOCKED_CHECKSUM_REQUIRED"
+      "status": "PINNED_NOT_INSTALLED"
     },
     {
       "name": "SFace",
@@ -69,12 +90,16 @@
       "official_source": "https://github.com/opencv/opencv_zoo.git",
       "source_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
       "license": "Apache-2.0",
-      "artifact_url": null,
-      "artifact_revision": null,
-      "artifact_sha256": null,
+      "artifact_source": "https://github.com/opencv/opencv_zoo/tree/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_recognition_sface",
+      "artifact_url": "https://github.com/opencv/opencv_zoo/raw/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_recognition_sface/face_recognition_sface_2021dec.onnx",
+      "artifact_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+      "artifact_filename": "face_recognition_sface_2021dec.onnx",
+      "artifact_format": "onnx",
+      "artifact_size_bytes": 38696353,
+      "artifact_sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79",
+      "destination_path": "models/preprocessing/sface/face_recognition_sface_2021dec.onnx",
       "mandatory": true,
-      "status": "BLOCKED_CHECKSUM_REQUIRED"
+      "status": "PINNED_NOT_INSTALLED"
     }
   ]
 }
-

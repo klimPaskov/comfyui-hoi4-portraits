@@ -36,6 +36,34 @@
       "status": "PRIMARY_CARD_REVIEWED"
     },
     {
+      "name": "BiRefNet preprocessing artifact",
+      "source_url": "https://github.com/ZhengPeng7/BiRefNet/blob/25cb9309bacf3dde954e4584594e16e142c51de5/LICENSE",
+      "artifact_source_url": "https://huggingface.co/ZhengPeng7/BiRefNet",
+      "license_identifier": "Apache-2.0",
+      "status": "PRIMARY_SOURCE_REVIEWED"
+    },
+    {
+      "name": "DDColor preprocessing artifact",
+      "source_url": "https://github.com/piddnad/DDColor/blob/2adb63f2656ac41cbdf7b894cddd94121a3faf13/LICENSE",
+      "artifact_source_url": "https://huggingface.co/piddnad/ddcolor_modelscope",
+      "license_identifier": "Apache-2.0",
+      "status": "PRIMARY_SOURCE_REVIEWED"
+    },
+    {
+      "name": "OpenCV Zoo YuNet and SFace artifacts",
+      "source_url": "https://github.com/opencv/opencv_zoo/blob/47534e27c9851bb1128ccc0102f1145e27f23f98/LICENSE",
+      "artifact_source_url": "https://github.com/opencv/opencv_zoo/tree/47534e27c9851bb1128ccc0102f1145e27f23f98/models",
+      "license_identifier": "Apache-2.0",
+      "status": "PRIMARY_SOURCE_REVIEWED"
+    },
+    {
+      "name": "MediaPipe Face Landmarker artifact",
+      "source_url": "https://github.com/google-ai-edge/mediapipe/blob/0ad5a71bcdff3d756dc5b07f93765aaeb4152538/LICENSE",
+      "artifact_source_url": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+      "license_identifier": "Apache-2.0",
+      "status": "PRIMARY_SOURCE_REVIEWED"
+    },
+    {
       "name": "Existing HOI4 style LoRA",
       "source_url": null,
       "license_identifier": null,
@@ -55,4 +83,3 @@
     "The approved HOI4 background and its rights record are unresolved.",
     "The existing style LoRA has an owner-controlled provenance/license record only."]
 }
-

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-26T15:33:06.131378+00:00",
+  "created_at": "2026-07-26T15:54:56.118112+00:00",
   "profile": "human_full_power_gpu",
   "status": "BLOCKED_PREFLIGHT",
   "status_reason": "One or more mandatory preflight gates remain blocked.",
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                5064.\nPages active:                            359846.\nPages inactive:                          358445.\nPages speculative:                          825.\nPages throttled:                              0.\nPages wired down:                        152641.\nPages purgeable:                           4969.\n\"Translation faults\":                  38749806.\nPages copy-on-write:                    3491257.\nPages zero filled:                     23666585.\nPages reactivated:                      1003546.\nPages purged:                            238289.\nFile-backed pages:                       254635.\nAnonymous pages:                         464481.\nPages stored in compressor:              287497.\nPages occupied by compressor:            129497.\nDecompressions:                          341737.\nCompressions:                            754926.\nPageins:                                2949113.\nPageouts:                                  9839.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               10829.\nPages active:                            359733.\nPages inactive:                          359065.\nPages speculative:                         1515.\nPages throttled:                              0.\nPages wired down:                        144553.\nPages purgeable:                           6190.\n\"Translation faults\":                  43691421.\nPages copy-on-write:                    4181666.\nPages zero filled:                     25595731.\nPages reactivated:                      1014592.\nPages purged:                            246654.\nFile-backed pages:                       255967.\nAnonymous pages:                         464346.\nPages stored in compressor:              289228.\nPages occupied by compressor:            130195.\nDecompressions:                          343245.\nCompressions:                            758166.\nPageins:                                3011182.\nPageouts:                                 10136.\nSwapins:                                      0.\nSwapouts:                                     0.",
           "stderr": ""
         }
       },
@@ -85,7 +85,7 @@
       "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
       "Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.",
-      "Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run.",
+      "Pinned preprocessing/audit model artifacts are not all installed and checksum-verified; masking, face analysis, and independent audit cannot run.",
       "License/rights review is not fully approved for Krea redistribution or the unresolved background."
     ]
   },

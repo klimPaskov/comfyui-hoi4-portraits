@@ -15,6 +15,12 @@ from .constants import ExitCode, PROFILE_LIMITS, STYLE_LORA_PATH, STYLE_LORA_SHA
 from .util import atomic_json_write, is_sha256, project_root, relative_safe_path, sha256_file, tree_sha256
 
 SUPPORTED_MODEL_SUFFIXES = {".safetensors", ".gguf"}
+SUPPORTED_PREPROCESSING_SUFFIXES = {
+    ".bin": "pytorch_bin",
+    ".onnx": "onnx",
+    ".safetensors": "safetensors",
+    ".task": "mediapipe_task",
+}
 PROFILE_RUNTIME_LOCKS = {
     "human_local_mac_16gb": "macos_arm64_cpu",
     "agent_local_mac_16gb": "macos_arm64_cpu",
@@ -177,6 +183,155 @@ def _model_artifact_preflight(root: Path, model_root: Path, entries: list[dict[s
     if unexpected:
         all_pass = False
     return {"status": "PASS" if all_pass and bool(scoped) else "BLOCKED", "profile": profile, "checks": checks, "unexpected_files": sorted(unexpected), "scoped_mandatory_models": [entry.get("name") for entry in scoped]}
+
+
+def _preprocessing_artifact_preflight(root: Path, lock: dict[str, Any]) -> dict[str, Any]:
+    """Verify the exact preprocessing artifacts, not only their lock metadata.
+
+    Preprocessing artifacts use formats that are intentionally separate from
+    the ComfyUI diffusion-model allowlist.  A complete lock is still a
+    blocked runtime until every mandatory artifact is present, size-matched,
+    and SHA-256 verified.  Unknown files under the controlled preprocessing
+    directory are rejected so a service cannot silently select an unlocked
+    model.
+    """
+
+    dependencies = lock.get("dependencies", []) if isinstance(lock.get("dependencies", []), list) else []
+    checks: list[dict[str, Any]] = []
+    preprocessing_root = (root / "models" / "preprocessing").resolve()
+    expected_paths: set[Path] = set()
+    missing_lock_fields: list[str] = []
+    all_pass = bool(dependencies)
+    for entry in dependencies:
+        if not entry.get("mandatory"):
+            continue
+        name = str(entry.get("name", ""))
+        destination_value = entry.get("destination_path")
+        filename = entry.get("artifact_filename")
+        artifact_url = entry.get("artifact_url")
+        artifact_revision = entry.get("artifact_revision")
+        artifact_hash = entry.get("artifact_sha256")
+        artifact_size = entry.get("artifact_size_bytes")
+        artifact_format = entry.get("artifact_format")
+        required_ok = (
+            isinstance(destination_value, str)
+            and isinstance(filename, str)
+            and isinstance(artifact_url, str)
+            and artifact_url.startswith("https://")
+            and isinstance(artifact_revision, str)
+            and bool(artifact_revision)
+            and is_sha256(artifact_hash)
+            and isinstance(artifact_size, int)
+            and artifact_size > 0
+            and artifact_format in set(SUPPORTED_PREPROCESSING_SUFFIXES.values())
+        )
+        if not required_ok:
+            missing_lock_fields.append(name or "<unnamed>")
+            all_pass = False
+            checks.append({"name": name, "status": "BLOCKED_LOCK_INCOMPLETE", "artifact_url": artifact_url, "artifact_revision": artifact_revision, "expected_sha256": artifact_hash, "expected_size_bytes": artifact_size, "destination_path": destination_value})
+            continue
+        try:
+            destination = relative_safe_path(root, destination_value)
+        except ValueError as exc:
+            all_pass = False
+            checks.append({"name": name, "status": "BLOCKED_LOCK_INCOMPLETE", "reason": str(exc), "destination_path": destination_value})
+            continue
+        try:
+            destination.relative_to(preprocessing_root)
+        except ValueError:
+            all_pass = False
+            checks.append({"name": name, "status": "BLOCKED_LOCK_INCOMPLETE", "reason": "destination must remain under models/preprocessing", "destination_path": destination_value})
+            continue
+        expected_paths.add(destination.resolve())
+        suffix = destination.suffix.casefold()
+        format_ok = suffix in SUPPORTED_PREPROCESSING_SUFFIXES and SUPPORTED_PREPROCESSING_SUFFIXES[suffix] == artifact_format and destination.name == filename
+        actual_hash = sha256_file(destination) if destination.is_file() else None
+        actual_size = destination.stat().st_size if destination.is_file() else None
+        present = destination.is_file()
+        size_ok = present and actual_size == artifact_size
+        hash_ok = present and actual_hash == artifact_hash
+        item_ok = format_ok and size_ok and hash_ok
+        all_pass &= item_ok
+        if not present:
+            status = "BLOCKED_NOT_INSTALLED"
+        elif not format_ok:
+            status = "BLOCKED_UNSUPPORTED_FORMAT"
+        elif not size_ok or not hash_ok:
+            status = "BLOCKED_CHECKSUM_MISMATCH"
+        else:
+            status = "PASS"
+        checks.append({"name": name, "status": status, "path": destination_value, "artifact_url": artifact_url, "artifact_revision": artifact_revision, "format": suffix or None, "format_expected": artifact_format, "format_supported": format_ok, "present": present, "size_bytes": actual_size, "expected_size_bytes": artifact_size, "sha256": actual_hash, "expected_sha256": artifact_hash})
+
+    unexpected: list[str] = []
+    if preprocessing_root.is_dir():
+        for path in preprocessing_root.rglob("*"):
+            if path.is_file() and path.resolve() not in expected_paths:
+                unexpected.append(str(path.relative_to(root)))
+    if unexpected:
+        all_pass = False
+
+    source_evidence_path = root / "docs" / "preflight" / "preprocessing_artifact_sources.json"
+    source_issues: list[str] = []
+    source_status = "BLOCKED_MISSING"
+    source_entries: dict[str, dict[str, Any]] = {}
+    if source_evidence_path.is_file():
+        try:
+            source_evidence = json.loads(source_evidence_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            source_evidence = {}
+            source_issues.append(f"cannot read source evidence: {type(exc).__name__}")
+        if isinstance(source_evidence, dict):
+            raw_sources = source_evidence.get("sources")
+            if isinstance(source_evidence.get("status"), str) and source_evidence["status"].startswith("PASS_METADATA_ONLY") and isinstance(raw_sources, list):
+                for item in raw_sources:
+                    if isinstance(item, dict) and isinstance(item.get("name"), str):
+                        if item["name"] in source_entries:
+                            source_issues.append(f"duplicate source evidence: {item['name']}")
+                        source_entries[item["name"]] = item
+            else:
+                source_issues.append("source evidence status or sources list is incomplete")
+        else:
+            source_issues.append("source evidence root must be an object")
+
+    mandatory_names = {str(entry.get("name", "")) for entry in dependencies if entry.get("mandatory")}
+    for entry in dependencies:
+        if not entry.get("mandatory"):
+            continue
+        name = str(entry.get("name", ""))
+        source = source_entries.get(name)
+        if source is None:
+            source_issues.append(f"missing source evidence: {name or '<unnamed>'}")
+            continue
+        expected = {
+            "revision": entry.get("artifact_revision"),
+            "artifact": entry.get("artifact_filename"),
+            "size_bytes": entry.get("artifact_size_bytes"),
+            "sha256": entry.get("artifact_sha256"),
+        }
+        for field, value in expected.items():
+            if source.get(field) != value:
+                source_issues.append(f"source evidence mismatch for {name}: {field}")
+        if source.get("metadata_status") != "PASS":
+            source_issues.append(f"source evidence is not verified for {name}")
+    unexpected_sources = sorted(set(source_entries) - mandatory_names)
+    if unexpected_sources:
+        source_issues.extend(f"unexpected source evidence: {name}" for name in unexpected_sources)
+    if source_evidence_path.is_file() and not source_issues:
+        source_status = "PASS"
+    else:
+        all_pass = False
+
+    return {
+        "status": "PASS" if all_pass and checks and not unexpected else "BLOCKED",
+        "lock_status": lock.get("status"),
+        "checks": checks,
+        "missing_checksums": missing_lock_fields,
+        "unexpected_files": sorted(unexpected),
+        "mandatory_count": len(checks),
+        "source_verification_path": str(source_evidence_path.relative_to(root)),
+        "source_verification_status": source_status,
+        "source_verification_issues": source_issues,
+    }
 
 
 def _background_preflight(root: Path, registry_path: Path, registry: dict[str, Any]) -> dict[str, Any]:
@@ -463,11 +618,11 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
 
     preprocessing_lock_path = root_path / "dependencies" / "preprocessing_lock.json"
     preprocessing_lock = json.loads(preprocessing_lock_path.read_text(encoding="utf-8")) if preprocessing_lock_path.is_file() else {}
-    preprocessing_missing = [entry.get("name") for entry in preprocessing_lock.get("dependencies", []) if entry.get("mandatory") and not entry.get("artifact_sha256")]
-    preprocessing_status = "PASS" if not preprocessing_missing else "BLOCKED"
-    gates.append({"name": "preprocessing_and_audit_dependencies", "status": preprocessing_status, "evidence": {"path": str(preprocessing_lock_path), "missing_checksums": preprocessing_missing}})
+    preprocessing_evidence = _preprocessing_artifact_preflight(root_path, preprocessing_lock)
+    preprocessing_status = preprocessing_evidence["status"]
+    gates.append({"name": "preprocessing_and_audit_dependencies", "status": preprocessing_status, "evidence": {"path": str(preprocessing_lock_path), **preprocessing_evidence}})
     if preprocessing_status != "PASS":
-        blockers.append("Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run.")
+        blockers.append("Pinned preprocessing/audit model artifacts are not all installed and checksum-verified; masking, face analysis, and independent audit cannot run.")
 
     license_review = json.loads((root_path / "dependencies" / "license_review.json").read_text(encoding="utf-8"))
     license_status = license_review.get("status", "BLOCKED")

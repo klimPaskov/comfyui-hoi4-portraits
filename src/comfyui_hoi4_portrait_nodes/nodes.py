@@ -118,9 +118,33 @@ def _preprocessing_entry(root: Path, name: str) -> dict[str, Any]:
     except (OSError, json.JSONDecodeError) as exc:
         _raise(ExitCode.DEPENDENCY_MISSING, f"preprocessing lock is unavailable: {type(exc).__name__}")
     entries = [entry for entry in lock.get("dependencies", []) if entry.get("name") == name]
-    if not entries or lock.get("status") != "RESOLVED" or not isinstance(entries[0].get("artifact_sha256"), str) or len(entries[0]["artifact_sha256"]) != 64:
+    entry = entries[0] if entries else {}
+    if (
+        not entries
+        or lock.get("status") not in {"PINNED_ARTIFACTS_NOT_INSTALLED", "RESOLVED"}
+        or not isinstance(entry.get("artifact_sha256"), str)
+        or len(entry["artifact_sha256"]) != 64
+        or not isinstance(entry.get("artifact_url"), str)
+        or not entry["artifact_url"].startswith("https://")
+        or not isinstance(entry.get("destination_path"), str)
+    ):
         _raise(ExitCode.DEPENDENCY_MISSING, f"{name} preprocessing artifact is not locked and verified")
-    return entries[0]
+    try:
+        destination = relative_safe_path(root, entry["destination_path"])
+    except (KeyError, ValueError) as exc:
+        _raise(ExitCode.DEPENDENCY_MISSING, f"{name} preprocessing destination is invalid: {type(exc).__name__}")
+    expected_size = entry.get("artifact_size_bytes")
+    expected_format = entry.get("artifact_format")
+    supported_formats = {".bin": "pytorch_bin", ".onnx": "onnx", ".safetensors": "safetensors", ".task": "mediapipe_task"}
+    if not destination.is_file():
+        _raise(ExitCode.DEPENDENCY_MISSING, f"{name} preprocessing artifact is not installed")
+    if destination.suffix.casefold() not in supported_formats or supported_formats[destination.suffix.casefold()] != expected_format:
+        _raise(ExitCode.DEPENDENCY_MISSING, f"{name} preprocessing artifact format is unsupported")
+    if not isinstance(expected_size, int) or destination.stat().st_size != expected_size:
+        _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, f"{name} preprocessing artifact size does not match the lock")
+    if sha256_file(destination) != entry["artifact_sha256"]:
+        _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, f"{name} preprocessing artifact checksum does not match the lock")
+    return entry
 
 
 def _post_loopback_json(endpoint: str, payload: dict[str, Any], *, timeout: float = 120.0) -> dict[str, Any]:

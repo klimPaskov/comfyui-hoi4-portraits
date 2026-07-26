@@ -25,6 +25,13 @@ caches are ignored by Git. The existing style LoRA remains at its original path
 and is verified against SHA-256
 `2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1`.
 
+The mandatory preprocessing lock now records exact primary-source revisions,
+artifact sizes, formats, destination paths, and SHA-256 values for BiRefNet,
+DDColor, YuNet, MediaPipe Face Landmarker, and SFace. The artifacts are not
+installed on this host; preflight reports `BLOCKED_NOT_INSTALLED` for each and
+will not treat metadata-only pins as runtime evidence. The verification record
+is `dependencies/licenses/preprocessing-artifacts.source.md`.
+
 ## Runtime boundary
 
 The four workflows are structurally generated and validated. Their runtime
@@ -32,4 +39,3 @@ load/execution status is `BLOCKED_UNVERIFIED` until the pinned ComfyUI runtime,
 Krea nodes/models, preprocessing/audit assets, approved background, calibration
 thresholds, and (for RunPod) authenticated endpoint are live-tested. No final
 PNG, DDS, or mod wiring was created.
-

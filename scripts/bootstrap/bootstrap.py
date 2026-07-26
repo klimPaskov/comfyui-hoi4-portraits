@@ -31,7 +31,7 @@ from portrait_pipeline.constants import ExitCode  # noqa: E402
 from portrait_pipeline.comfy_client import ComfyTransportError, LoopbackComfyClient  # noqa: E402
 from portrait_pipeline.graph_spec.builder import build_workflow_artifacts  # noqa: E402
 from portrait_pipeline.preflight import PROFILE_RUNTIME_LOCKS, collect_preflight, render_markdown  # noqa: E402
-from portrait_pipeline.util import atomic_json_write, sha256_file  # noqa: E402
+from portrait_pipeline.util import atomic_json_write, relative_safe_path, sha256_file  # noqa: E402
 from portrait_pipeline.workflow_validation import validate_all_workflows  # noqa: E402
 
 
@@ -183,6 +183,22 @@ def _restore_models(model_lock: dict[str, Any], profile: str, actions: list[dict
             _download_verified(_artifact_url(entry, filename), destination_root / filename, entry.get("size_bytes"), str(entry["sha256"]), actions)
 
 
+def _restore_preprocessing_models(preprocessing_lock: dict[str, Any], actions: list[dict[str, Any]]) -> None:
+    """Restore mandatory preprocessing artifacts from their exact primary URLs."""
+
+    for entry in preprocessing_lock.get("dependencies", []):
+        if not entry.get("mandatory"):
+            continue
+        destination_value = entry.get("destination_path")
+        artifact_url = entry.get("artifact_url")
+        artifact_size = entry.get("artifact_size_bytes")
+        artifact_hash = entry.get("artifact_sha256")
+        if not isinstance(destination_value, str) or not isinstance(artifact_url, str) or not artifact_url.startswith("https://") or not isinstance(artifact_size, int) or not isinstance(artifact_hash, str):
+            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"preprocessing lock entry is incomplete: {entry.get('name')}")
+        destination = relative_safe_path(ROOT, destination_value)
+        _download_verified(artifact_url, destination, artifact_size, artifact_hash, actions)
+
+
 def _write_extra_model_paths(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
     config = """hoi4_portrait:\n  base_path: {root}\n  diffusion_models: models/diffusion_models\n  unet: models/diffusion_models\n  text_encoders: models/text_encoders\n  vae: models/vae\n  loras: models/loras\n  autoprompter: models/autoprompter\n  is_default: true\n""".format(root=ROOT)
     path = comfy_root / "extra_model_paths.yaml"
@@ -220,6 +236,7 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
     runtime_lock = json.loads((ROOT / "dependencies" / "runtime_requirements_lock.json").read_text(encoding="utf-8"))
     python = _install_python_environment(dependency_lock, runtime_lock, actions, profile)
     _restore_models(json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8")), profile, actions)
+    _restore_preprocessing_models(json.loads((ROOT / "dependencies" / "preprocessing_lock.json").read_text(encoding="utf-8")), actions)
     lora_path = ROOT / "loras" / "hoi4_portrait_new_style_lora.safetensors"
     if not lora_path.is_file() or sha256_file(lora_path) != "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1":
         raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "immutable style LoRA is missing or changed")

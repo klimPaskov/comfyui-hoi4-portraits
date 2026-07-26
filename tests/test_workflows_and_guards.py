@@ -10,7 +10,7 @@ from portrait_pipeline.audit import independent_audit_blocked
 from portrait_pipeline.dds import DdsValidationError, convert_png_to_dds
 from portrait_pipeline.graph_spec.builder import build_workflow_artifacts
 from portrait_pipeline.mcp.adapter import AdapterError, PortraitMcpService
-from portrait_pipeline.preflight import _model_artifact_preflight, collect_preflight
+from portrait_pipeline.preflight import _model_artifact_preflight, _preprocessing_artifact_preflight, collect_preflight
 from portrait_pipeline.workflow_validation import validate_all_workflows
 from portrait_pipeline.util import project_root
 from comfyui_hoi4_portrait_nodes import NODE_CLASS_MAPPINGS
@@ -93,6 +93,16 @@ class WorkflowAndGuardTests(unittest.TestCase):
             unsupported = dict(entry, filename="sample.bin")
             model_path.rename(model_root / "sample.bin")
             self.assertEqual(_model_artifact_preflight(root, model_root, [unsupported], "agent_local_mac_16gb")["status"], "BLOCKED")
+
+    def test_preprocessing_lock_is_complete_but_uninstalled_artifacts_block(self):
+        lock = json.loads((self.root / "dependencies/preprocessing_lock.json").read_text(encoding="utf-8"))
+        report = _preprocessing_artifact_preflight(self.root, lock)
+        self.assertEqual(report["status"], "BLOCKED")
+        self.assertEqual(report["missing_checksums"], [])
+        self.assertEqual(report["mandatory_count"], 5)
+        self.assertEqual(report["source_verification_status"], "PASS")
+        self.assertEqual(report["source_verification_issues"], [])
+        self.assertTrue(all(item["status"] == "BLOCKED_NOT_INSTALLED" for item in report["checks"]), report)
 
     def test_human_face_index_selects_the_indexed_audited_subject(self):
         from types import SimpleNamespace

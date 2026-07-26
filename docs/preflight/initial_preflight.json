@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "collected_at": "2026-07-26T15:33:50.101424+00:00",
+  "collected_at": "2026-07-26T15:54:39.884034+00:00",
   "project_root": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits",
   "profile": null,
   "hardware": {
@@ -26,7 +26,7 @@
           "/usr/bin/vm_stat"
         ],
         "returncode": 0,
-        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                4060.\nPages active:                            362331.\nPages inactive:                          361259.\nPages speculative:                          171.\nPages throttled:                              0.\nPages wired down:                        148206.\nPages purgeable:                           5562.\n\"Translation faults\":                  39314350.\nPages copy-on-write:                    3579472.\nPages zero filled:                     23839064.\nPages reactivated:                      1003635.\nPages purged:                            239891.\nFile-backed pages:                       251964.\nAnonymous pages:                         471797.\nPages stored in compressor:              287368.\nPages occupied by compressor:            129399.\nDecompressions:                          341866.\nCompressions:                            754926.\nPageins:                                2950783.\nPageouts:                                  9859.\nSwapins:                                      0.\nSwapouts:                                     0.",
+        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               11976.\nPages active:                            357093.\nPages inactive:                          359088.\nPages speculative:                         1216.\nPages throttled:                              0.\nPages wired down:                        146584.\nPages purgeable:                           6182.\n\"Translation faults\":                  43544506.\nPages copy-on-write:                    4156160.\nPages zero filled:                     25558590.\nPages reactivated:                      1014590.\nPages purged:                            246654.\nFile-backed pages:                       255668.\nAnonymous pages:                         461729.\nPages stored in compressor:              289228.\nPages occupied by compressor:            130195.\nDecompressions:                          343245.\nCompressions:                            758166.\nPageins:                                3010773.\nPageouts:                                 10136.\nSwapins:                                      0.\nSwapouts:                                     0.",
         "stderr": ""
       }
     },
@@ -76,7 +76,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                4060.\nPages active:                            362331.\nPages inactive:                          361259.\nPages speculative:                          171.\nPages throttled:                              0.\nPages wired down:                        148206.\nPages purgeable:                           5562.\n\"Translation faults\":                  39314350.\nPages copy-on-write:                    3579472.\nPages zero filled:                     23839064.\nPages reactivated:                      1003635.\nPages purged:                            239891.\nFile-backed pages:                       251964.\nAnonymous pages:                         471797.\nPages stored in compressor:              287368.\nPages occupied by compressor:            129399.\nDecompressions:                          341866.\nCompressions:                            754926.\nPageins:                                2950783.\nPageouts:                                  9859.\nSwapins:                                      0.\nSwapouts:                                     0.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               11976.\nPages active:                            357093.\nPages inactive:                          359088.\nPages speculative:                         1216.\nPages throttled:                              0.\nPages wired down:                        146584.\nPages purgeable:                           6182.\n\"Translation faults\":                  43544506.\nPages copy-on-write:                    4156160.\nPages zero filled:                     25558590.\nPages reactivated:                      1014590.\nPages purged:                            246654.\nFile-backed pages:                       255668.\nAnonymous pages:                         461729.\nPages stored in compressor:              289228.\nPages occupied by compressor:            130195.\nDecompressions:                          343245.\nCompressions:                            758166.\nPageins:                                3010773.\nPageouts:                                 10136.\nSwapins:                                      0.\nSwapouts:                                     0.",
             "stderr": ""
           }
         },
@@ -848,8 +848,8 @@
               "Krea2EditModelPatch"
             ],
             "class_matches": {
-              "Krea2EditModelPatch": false,
-              "Krea2EditGroundedEncode": false
+              "Krea2EditGroundedEncode": false,
+              "Krea2EditModelPatch": false
             },
             "signature_match": false,
             "status": "BLOCKED"
@@ -885,8 +885,8 @@
               "HOI4SourceGuard",
               "HOI4SubjectSelect"
             ],
-            "expected_source_tree_checksum": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f",
-            "actual_source_tree_checksum": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f",
+            "expected_source_tree_checksum": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28",
+            "actual_source_tree_checksum": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28",
             "source_checksum_match": true,
             "status": "PASS"
           }
@@ -1045,13 +1045,91 @@
       "status": "BLOCKED",
       "evidence": {
         "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/preprocessing_lock.json",
-        "missing_checksums": [
-          "BiRefNet",
-          "DDColor",
-          "YuNet",
-          "MediaPipe Face Landmarker",
-          "SFace"
-        ]
+        "status": "BLOCKED",
+        "lock_status": "PINNED_ARTIFACTS_NOT_INSTALLED",
+        "checks": [
+          {
+            "name": "BiRefNet",
+            "status": "BLOCKED_NOT_INSTALLED",
+            "path": "models/preprocessing/birefnet/model.safetensors",
+            "artifact_url": "https://huggingface.co/ZhengPeng7/BiRefNet/resolve/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/model.safetensors",
+            "artifact_revision": "e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4",
+            "format": ".safetensors",
+            "format_expected": "safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 444473596,
+            "sha256": null,
+            "expected_sha256": "9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154"
+          },
+          {
+            "name": "DDColor",
+            "status": "BLOCKED_NOT_INSTALLED",
+            "path": "models/preprocessing/ddcolor/pytorch_model.bin",
+            "artifact_url": "https://huggingface.co/piddnad/ddcolor_modelscope/resolve/060f67494e31883a4b13cb27f889f3154847ada4/pytorch_model.bin",
+            "artifact_revision": "060f67494e31883a4b13cb27f889f3154847ada4",
+            "format": ".bin",
+            "format_expected": "pytorch_bin",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 911914869,
+            "sha256": null,
+            "expected_sha256": "d81711971ec59200da26d5e8a1afae8dd3778d495ea8ad7a7dadc769f403f7e7"
+          },
+          {
+            "name": "YuNet",
+            "status": "BLOCKED_NOT_INSTALLED",
+            "path": "models/preprocessing/yunet/face_detection_yunet_2023mar.onnx",
+            "artifact_url": "https://github.com/opencv/opencv_zoo/raw/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+            "artifact_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+            "format": ".onnx",
+            "format_expected": "onnx",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 232589,
+            "sha256": null,
+            "expected_sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
+          },
+          {
+            "name": "MediaPipe Face Landmarker",
+            "status": "BLOCKED_NOT_INSTALLED",
+            "path": "models/preprocessing/mediapipe/face_landmarker.task",
+            "artifact_url": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+            "artifact_revision": "float16/1",
+            "format": ".task",
+            "format_expected": "mediapipe_task",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 3758596,
+            "sha256": null,
+            "expected_sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+          },
+          {
+            "name": "SFace",
+            "status": "BLOCKED_NOT_INSTALLED",
+            "path": "models/preprocessing/sface/face_recognition_sface_2021dec.onnx",
+            "artifact_url": "https://github.com/opencv/opencv_zoo/raw/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_recognition_sface/face_recognition_sface_2021dec.onnx",
+            "artifact_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+            "format": ".onnx",
+            "format_expected": "onnx",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 38696353,
+            "sha256": null,
+            "expected_sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79"
+          }
+        ],
+        "missing_checksums": [],
+        "unexpected_files": [],
+        "mandatory_count": 5,
+        "source_verification_path": "docs/preflight/preprocessing_artifact_sources.json",
+        "source_verification_status": "PASS",
+        "source_verification_issues": []
       }
     },
     {
@@ -1095,6 +1173,34 @@
             "status": "PRIMARY_CARD_REVIEWED"
           },
           {
+            "name": "BiRefNet preprocessing artifact",
+            "source_url": "https://github.com/ZhengPeng7/BiRefNet/blob/25cb9309bacf3dde954e4584594e16e142c51de5/LICENSE",
+            "artifact_source_url": "https://huggingface.co/ZhengPeng7/BiRefNet",
+            "license_identifier": "Apache-2.0",
+            "status": "PRIMARY_SOURCE_REVIEWED"
+          },
+          {
+            "name": "DDColor preprocessing artifact",
+            "source_url": "https://github.com/piddnad/DDColor/blob/2adb63f2656ac41cbdf7b894cddd94121a3faf13/LICENSE",
+            "artifact_source_url": "https://huggingface.co/piddnad/ddcolor_modelscope",
+            "license_identifier": "Apache-2.0",
+            "status": "PRIMARY_SOURCE_REVIEWED"
+          },
+          {
+            "name": "OpenCV Zoo YuNet and SFace artifacts",
+            "source_url": "https://github.com/opencv/opencv_zoo/blob/47534e27c9851bb1128ccc0102f1145e27f23f98/LICENSE",
+            "artifact_source_url": "https://github.com/opencv/opencv_zoo/tree/47534e27c9851bb1128ccc0102f1145e27f23f98/models",
+            "license_identifier": "Apache-2.0",
+            "status": "PRIMARY_SOURCE_REVIEWED"
+          },
+          {
+            "name": "MediaPipe Face Landmarker artifact",
+            "source_url": "https://github.com/google-ai-edge/mediapipe/blob/0ad5a71bcdff3d756dc5b07f93765aaeb4152538/LICENSE",
+            "artifact_source_url": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+            "license_identifier": "Apache-2.0",
+            "status": "PRIMARY_SOURCE_REVIEWED"
+          },
+          {
             "name": "Existing HOI4 style LoRA",
             "source_url": null,
             "license_identifier": null,
@@ -1131,7 +1237,7 @@
     "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
     "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
     "Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.",
-    "Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run.",
+    "Pinned preprocessing/audit model artifacts are not all installed and checksum-verified; masking, face analysis, and independent audit cannot run.",
     "License/rights review is not fully approved for Krea redistribution or the unresolved background."
   ],
   "status": "BLOCKED",
