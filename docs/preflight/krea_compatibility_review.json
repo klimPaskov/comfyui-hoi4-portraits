@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-07-26",
+  "status": "BLOCKED_PINNED_CORE_SCHEMA_UNVERIFIED",
+  "policy": "Krea 2 Turbo may not be installed or executed until the exact ComfyUI core/custom-node schema is verified in a live pinned runtime.",
+  "sources": [
+    {
+      "role": "official_comfyui_krea_2_documentation",
+      "url": "https://docs.comfy.org/tutorials/image/krea/krea-2",
+      "revision_or_date": "live official documentation reviewed 2026-07-26"
+    },
+    {
+      "role": "primary_krea2edit_node_readme",
+      "url": "https://raw.githubusercontent.com/lbouaraba/comfyui-krea2edit/cae442e11b59bcba04ed82f4c01ffe3752531fe1/README.md",
+      "revision_or_date": "cae442e11b59bcba04ed82f4c01ffe3752531fe1"
+    },
+    {
+      "role": "pinned_comfyui_core_source",
+      "url": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/f49bdb655707b97952dcef40e12e5af1f08d2007/nodes.py",
+      "revision_or_date": "f49bdb655707b97952dcef40e12e5af1f08d2007"
+    }
+  ],
+  "findings": [
+    {
+      "id": "krea2edit_fit_inputs",
+      "status": "PASS",
+      "finding": "The primary Krea2EditModelPatch contract exposes VAE and source_image inputs for fit mode; the generated graph supplies both from the approved composite and Krea VAE."
+    },
+    {
+      "id": "krea2edit_grounding",
+      "status": "PASS",
+      "finding": "The primary node documentation identifies 768 pixels as the grounded-encode default and describes a trained range beginning at 512; the generated graph locks grounding_px to 768."
+    },
+    {
+      "id": "pinned_core_loader_type",
+      "status": "BLOCKED",
+      "finding": "The pinned ComfyUI nodes.py DualCLIPLoader type choices do not include krea2, while the Krea graph requires the Krea 2 loader contract. A newer verified core or an exact compatible node implementation is required; changing the type blindly would make the workflow less safe, not more loadable."
+    },
+    {
+      "id": "live_runtime_execution",
+      "status": "BLOCKED",
+      "finding": "ComfyUI, the Krea custom node checkout, and the required model artifacts are not installed; node import, model loading, graph load, and an eight-step Turbo execution remain unverified."
+    }
+  ],
+  "conclusion": "The workflows are structurally delivered but Krea live compatibility is not proven. Installation and generation remain fail-closed until a verified compatible ComfyUI revision/node signature is installed and exercised."
+}

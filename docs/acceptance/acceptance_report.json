@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-26T13:24:44.881596+00:00",
+  "created_at": "2026-07-26T14:35:00.202995+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 15,
   "gates": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               13031.\nPages active:                            363781.\nPages inactive:                          364811.\nPages speculative:                         1089.\nPages throttled:                              0.\nPages wired down:                        130877.\nPages purgeable:                          14592.\n\"Translation faults\":                  20265553.\nPages copy-on-write:                     918822.\nPages zero filled:                     14637167.\nPages reactivated:                       913672.\nPages purged:                            160658.\nFile-backed pages:                       284829.\nAnonymous pages:                         444852.\nPages stored in compressor:              297773.\nPages occupied by compressor:            131986.\nDecompressions:                          318941.\nCompressions:                            738222.\nPageins:                                2829284.\nPageouts:                                  9434.\nSwapins:                                      0.\nSwapouts:                                     0.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               11454.\nPages active:                            358040.\nPages inactive:                          345711.\nPages speculative:                        11626.\nPages throttled:                              0.\nPages wired down:                        148112.\nPages purgeable:                           8157.\n\"Translation faults\":                  28734974.\nPages copy-on-write:                    1956942.\nPages zero filled:                     19548249.\nPages reactivated:                       992632.\nPages purged:                            206390.\nFile-backed pages:                       267781.\nAnonymous pages:                         447596.\nPages stored in compressor:              292686.\nPages occupied by compressor:            130828.\nDecompressions:                          333406.\nCompressions:                            751636.\nPageins:                                2878561.\nPageouts:                                  9626.\nSwapins:                                      0.\nSwapouts:                                     0.",
             "stderr": ""
           }
         },
@@ -501,6 +501,50 @@
           "returncode": 0,
           "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   144Gi   280Gi    34%    1.6M  2.9G    0%   /System/Volumes/Data",
           "stderr": ""
+        },
+        "available_tools": {
+          "uv": {
+            "command": "uv",
+            "path": "/Users/klimpaskov/.local/bin/uv",
+            "present": true,
+            "probe": {
+              "command": [
+                "/Users/klimpaskov/.local/bin/uv",
+                "--version"
+              ],
+              "returncode": 0,
+              "stdout": "uv 0.11.7 (9d177269e 2026-04-15 aarch64-apple-darwin)",
+              "stderr": ""
+            }
+          },
+          "brew": {
+            "command": "brew",
+            "path": "/opt/homebrew/bin/brew",
+            "present": true,
+            "probe": {
+              "command": [
+                "/opt/homebrew/bin/brew",
+                "--version"
+              ],
+              "returncode": 0,
+              "stdout": "Homebrew 6.0.2",
+              "stderr": ""
+            }
+          },
+          "docker": {
+            "command": "docker",
+            "path": "/usr/local/bin/docker",
+            "present": true,
+            "probe": {
+              "command": [
+                "/usr/local/bin/docker",
+                "--version"
+              ],
+              "returncode": 0,
+              "stdout": "Docker version 29.4.1, build 055a478",
+              "stderr": ""
+            }
+          }
         }
       }
     },
@@ -508,6 +552,7 @@
       "name": "local_runtime_capability",
       "status": "BLOCKED",
       "evidence": {
+        "profile": null,
         "python_version": "3.9.6",
         "python_floor": ">=3.10",
         "python_floor_ok": false,
@@ -516,7 +561,26 @@
           "error_type": "ModuleNotFoundError",
           "error": "No module named 'torch'"
         },
-        "comfy_cli": null
+        "comfy_cli": null,
+        "comfy_runtime_present": false,
+        "required_accelerator": "MPS",
+        "accelerator_ok": false
+      }
+    },
+    "remote_topology_auth": {
+      "name": "remote_topology_auth",
+      "status": "BLOCKED",
+      "evidence": {
+        "profile": null,
+        "credential_presence": {
+          "RUNPOD_API_KEY": false,
+          "RUNPOD_ENDPOINT_ID": false,
+          "HF_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "PORTRAIT_GATEWAY_TOKEN": false
+        },
+        "raw_comfyui_binding": "not configured",
+        "remote_gateway": "authenticated_only"
       }
     },
     "immutable_lora": {
@@ -527,43 +591,269 @@
       "name": "approved_source_background",
       "status": "BLOCKED",
       "evidence": {
+        "status": "BLOCKED",
         "registry_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/config/background_registry.json",
-        "registry": {
-          "schema_version": "1.0.0",
-          "registry_status": "BLOCKED_UNTIL_RESOLVED",
-          "backgrounds": [
-            {
-              "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
-              "role_scope": [
-                "country_leader",
-                "commander",
-                "operative"
+        "registry_status": "BLOCKED_UNTIL_RESOLVED",
+        "entries": [
+          {
+            "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
+            "status": "BLOCKED_UNTIL_RESOLVED",
+            "path": null,
+            "expected_sha256": null,
+            "actual_sha256": null,
+            "path_error": "runtime path is missing",
+            "status_check": "BLOCKED"
+          }
+        ],
+        "candidate_evidence_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/docs/preflight/background_candidates.json",
+        "candidate_evidence": [
+          {
+            "candidate_id": "chaos-redux-portrait-leader-background-psd",
+            "source_repository": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
+            "repository_remote": "git@github.com:klimPaskov/Chaos-Redux.git",
+            "repository_head": "420cfb326e8ec78ec5641b152f32fce2b2d94db6",
+            "tracked_path": "gfx/leaders/portrait_leader_background.psd",
+            "git_blob": "cd770b69f01d5c47f79d1d5baf30a6e455086109",
+            "sha256": "4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6",
+            "size_bytes": 191777,
+            "decoded_format": "PSD",
+            "decoded_dimensions": [
+              156,
+              210
+            ],
+            "decoded_channels": "RGBA",
+            "runtime_ready": false,
+            "status": "BLOCKED_RIGHTS_UNRESOLVED",
+            "blocking_findings": [
+              "The live repository has no discovered LICENSE or COPYING record covering this asset.",
+              "descriptor.mod identifies the mod but does not establish background rights or redistribution permission.",
+              "The candidate is a PSD source, not the exact approved runtime background format/path required by the pipeline.",
+              "No project-owner approval or attribution record authorizes use in this standalone pipeline."
+            ],
+            "preserved_live_repository_state": {
+              "unrelated_untracked_paths": [
+                "docs/assets/",
+                "gfx/interface/ideas/test_icon.dds"
               ],
-              "source_class": "unresolved",
-              "source_path": null,
-              "runtime_path": null,
-              "source_definition": null,
-              "attribution": null,
-              "license_or_rights": null,
-              "redistribution_rule": "blocked",
-              "width": null,
-              "height": null,
-              "sha256": null,
-              "approved_by": [],
-              "status": "BLOCKED_UNTIL_RESOLVED",
-              "reason": "No approved project-owned or installed-game background was resolved during preflight."
+              "mutation_performed": false
             }
-          ]
-        }
+          }
+        ]
+      }
+    },
+    "source_fixture_and_provenance": {
+      "name": "source_fixture_and_provenance",
+      "status": "BLOCKED",
+      "evidence": {
+        "fixture_files": [],
+        "manifest_template": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/tests/fixture_manifest.template.json"
       }
     },
     "dependencies_and_models": {
       "name": "model_artifact_preflight",
       "status": "BLOCKED",
       "evidence": {
+        "status": "BLOCKED",
+        "profile": null,
+        "checks": [
+          {
+            "name": "krea2_turbo_fp8_scaled.safetensors",
+            "path": "models/diffusion_models/krea2_turbo_fp8_scaled.safetensors",
+            "format": ".safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 13141730784,
+            "sha256": null,
+            "expected_sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "qwen3vl_4b_fp8_scaled.safetensors",
+            "path": "models/text_encoders/qwen3vl_4b_fp8_scaled.safetensors",
+            "format": ".safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 5242467968,
+            "sha256": null,
+            "expected_sha256": "54bd5144df0bbc25dd6ccadfcb826b521445a1b06ae5a42570bdd2974ca87094",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "qwen_image_vae.safetensors",
+            "path": "models/vae/qwen_image_vae.safetensors",
+            "format": ".safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 253806246,
+            "sha256": null,
+            "expected_sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "krea2_identity_edit_v1_2.safetensors",
+            "path": "models/loras/krea2_identity_edit_v1_2.safetensors",
+            "format": ".safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 1828256432,
+            "sha256": null,
+            "expected_sha256": "6adf9a69cc9502d286db7b69964d37da7e9cfe4b05b4d004bc275f087d3fd3cf",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "Qwen3VL-4B-Instruct-Q4_K_M.gguf",
+            "path": "models/autoprompter/Qwen3VL-4B-Instruct-Q4_K_M.gguf",
+            "format": ".gguf",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 2497281664,
+            "sha256": null,
+            "expected_sha256": "66358cb18bb6b3b1b6675aa412c7a88ef01d228f481184d13668e5201c730a0a",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "mmproj-Qwen3VL-4B-Instruct-F16.gguf",
+            "path": "models/autoprompter/mmproj-Qwen3VL-4B-Instruct-F16.gguf",
+            "format": ".gguf",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 836180256,
+            "sha256": null,
+            "expected_sha256": "256f3a43bd4205ffef48d6b92715e1e70b5b0e9aef06522584967513a9985331",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+            "path": "models/autoprompter/model-00001-of-00004.safetensors",
+            "format": ".safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 4902275944,
+            "sha256": null,
+            "expected_sha256": "d5d0aef0eb170fc7453a296c43c0849a56f510555d3588e4fd662bb35490aefa",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+            "path": "models/autoprompter/model-00002-of-00004.safetensors",
+            "format": ".safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 4915962496,
+            "sha256": null,
+            "expected_sha256": "8be88fb5501e4d5719a6d4cc212e6a13480330e74f3e8c77daa1a68f199106b5",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+            "path": "models/autoprompter/model-00003-of-00004.safetensors",
+            "format": ".safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 4999831048,
+            "sha256": null,
+            "expected_sha256": "83de00eafe6e0d57ccd009dbcf71c9974d74df2f016c27afb7e95aafd16b2192",
+            "status": "BLOCKED"
+          },
+          {
+            "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+            "path": "models/autoprompter/model-00004-of-00004.safetensors",
+            "format": ".safetensors",
+            "format_supported": true,
+            "present": false,
+            "size_bytes": null,
+            "expected_size_bytes": 2716270024,
+            "sha256": null,
+            "expected_sha256": "0a88b98e9f96270973f567e6a2c103ede6ccdf915ca3075e21c755604d0377a5",
+            "status": "BLOCKED"
+          }
+        ],
+        "unexpected_files": [],
+        "scoped_mandatory_models": [
+          "krea2_turbo_fp8_scaled.safetensors",
+          "qwen3vl_4b_fp8_scaled.safetensors",
+          "qwen_image_vae.safetensors",
+          "krea2_identity_edit_v1_2.safetensors",
+          "Qwen3VL-4B-Instruct-Q4_K_M.gguf",
+          "mmproj-Qwen3VL-4B-Instruct-F16.gguf",
+          "Qwen3-VL-8B-Instruct-BF16-shards"
+        ],
         "local_files": [],
-        "locked_models": 7,
-        "unsupported_or_unverified": []
+        "locked_models": 7
+      }
+    },
+    "custom_node_preflight": {
+      "name": "custom_node_preflight",
+      "status": "BLOCKED",
+      "evidence": {
+        "status": "BLOCKED",
+        "lock_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/custom_nodes.lock.json",
+        "checks": [
+          {
+            "name": "comfyui-krea2edit",
+            "revision": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+            "actual_revision": null,
+            "revision_match": false,
+            "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/comfyui/custom_nodes/comfyui-krea2edit",
+            "present": false,
+            "signature_files": [],
+            "expected_classes": [
+              "Krea2EditGroundedEncode",
+              "Krea2EditModelPatch"
+            ],
+            "class_matches": {
+              "Krea2EditGroundedEncode": false,
+              "Krea2EditModelPatch": false
+            },
+            "signature_match": false,
+            "status": "BLOCKED"
+          },
+          {
+            "name": "hoi4_portrait_project_nodes",
+            "present": true,
+            "expected_classes": [
+              "HOI4AutopromptClient",
+              "HOI4ConservativePrep",
+              "HOI4EvidenceExport",
+              "HOI4ForegroundMask",
+              "HOI4HeadShouldersCrop",
+              "HOI4HumanControls",
+              "HOI4JobInput",
+              "HOI4JobSource",
+              "HOI4MaskAndBackgroundGuard",
+              "HOI4PromptInput",
+              "HOI4SourceGuard",
+              "HOI4SubjectSelect"
+            ],
+            "actual_classes": [
+              "HOI4AutopromptClient",
+              "HOI4ConservativePrep",
+              "HOI4EvidenceExport",
+              "HOI4ForegroundMask",
+              "HOI4HeadShouldersCrop",
+              "HOI4HumanControls",
+              "HOI4JobInput",
+              "HOI4JobSource",
+              "HOI4MaskAndBackgroundGuard",
+              "HOI4PromptInput",
+              "HOI4SourceGuard",
+              "HOI4SubjectSelect"
+            ],
+            "expected_source_tree_checksum": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f",
+            "actual_source_tree_checksum": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f",
+            "source_checksum_match": true,
+            "status": "PASS"
+          }
+        ]
       }
     },
     "runtime_dependency_lock": {
@@ -607,7 +897,107 @@
       "name": "krea_live_compatibility",
       "status": "BLOCKED",
       "evidence": {
-        "reason": "ComfyUI and the pinned Krea custom node are not installed; node signatures and a live Turbo execution are unverified."
+        "reason": "Krea live compatibility, node import, model loading, graph loading, and an eight-step Turbo execution are unverified.",
+        "compatibility_review_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/docs/preflight/krea_compatibility_review.json",
+        "compatibility_review_status": "BLOCKED_PINNED_CORE_SCHEMA_UNVERIFIED",
+        "compatibility_review": {
+          "schema_version": "1.0.0",
+          "reviewed_at": "2026-07-26",
+          "status": "BLOCKED_PINNED_CORE_SCHEMA_UNVERIFIED",
+          "policy": "Krea 2 Turbo may not be installed or executed until the exact ComfyUI core/custom-node schema is verified in a live pinned runtime.",
+          "sources": [
+            {
+              "role": "official_comfyui_krea_2_documentation",
+              "url": "https://docs.comfy.org/tutorials/image/krea/krea-2",
+              "revision_or_date": "live official documentation reviewed 2026-07-26"
+            },
+            {
+              "role": "primary_krea2edit_node_readme",
+              "url": "https://raw.githubusercontent.com/lbouaraba/comfyui-krea2edit/cae442e11b59bcba04ed82f4c01ffe3752531fe1/README.md",
+              "revision_or_date": "cae442e11b59bcba04ed82f4c01ffe3752531fe1"
+            },
+            {
+              "role": "pinned_comfyui_core_source",
+              "url": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/f49bdb655707b97952dcef40e12e5af1f08d2007/nodes.py",
+              "revision_or_date": "f49bdb655707b97952dcef40e12e5af1f08d2007"
+            }
+          ],
+          "findings": [
+            {
+              "id": "krea2edit_fit_inputs",
+              "status": "PASS",
+              "finding": "The primary Krea2EditModelPatch contract exposes VAE and source_image inputs for fit mode; the generated graph supplies both from the approved composite and Krea VAE."
+            },
+            {
+              "id": "krea2edit_grounding",
+              "status": "PASS",
+              "finding": "The primary node documentation identifies 768 pixels as the grounded-encode default and describes a trained range beginning at 512; the generated graph locks grounding_px to 768."
+            },
+            {
+              "id": "pinned_core_loader_type",
+              "status": "BLOCKED",
+              "finding": "The pinned ComfyUI nodes.py DualCLIPLoader type choices do not include krea2, while the Krea graph requires the Krea 2 loader contract. A newer verified core or an exact compatible node implementation is required; changing the type blindly would make the workflow less safe, not more loadable."
+            },
+            {
+              "id": "live_runtime_execution",
+              "status": "BLOCKED",
+              "finding": "ComfyUI, the Krea custom node checkout, and the required model artifacts are not installed; node import, model loading, graph load, and an eight-step Turbo execution remain unverified."
+            }
+          ],
+          "conclusion": "The workflows are structurally delivered but Krea live compatibility is not proven. Installation and generation remain fail-closed until a verified compatible ComfyUI revision/node signature is installed and exercised."
+        }
+      }
+    },
+    "preprocessing_and_audit_dependencies": {
+      "name": "preprocessing_and_audit_dependencies",
+      "status": "BLOCKED",
+      "evidence": {
+        "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/preprocessing_lock.json",
+        "missing_checksums": [
+          "BiRefNet",
+          "DDColor",
+          "YuNet",
+          "MediaPipe Face Landmarker",
+          "SFace"
+        ]
+      }
+    },
+    "calibrated_identity_thresholds": {
+      "name": "calibrated_identity_thresholds",
+      "status": "BLOCKED",
+      "evidence": {
+        "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/config/identity_thresholds.json",
+        "present": true,
+        "thresholds_id": "UNSET_BLOCK_EXECUTION",
+        "approved_by": []
+      }
+    },
+    "repository_preflight": {
+      "name": "repository_preflight",
+      "status": "PASS",
+      "evidence": {
+        "chaos_redux": {
+          "path": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
+          "exists": true,
+          "is_git": true,
+          "status": {
+            "returncode": 0,
+            "stdout": "## master...origin/master\n?? docs/assets/\n?? gfx/interface/ideas/test_icon.dds",
+            "stderr": ""
+          },
+          "head": {
+            "returncode": 0,
+            "stdout": "420cfb326e8ec78ec5641b152f32fce2b2d94db6",
+            "stderr": ""
+          },
+          "remote": {
+            "returncode": 0,
+            "stdout": "origin\tgit@github.com:klimPaskov/Chaos-Redux.git (fetch)\norigin\tgit@github.com:klimPaskov/Chaos-Redux.git (push)",
+            "stderr": ""
+          }
+        },
+        "generic_candidates": [],
+        "generic_target_status": "UNAVAILABLE"
       }
     },
     "licenses_and_rights": {
@@ -681,34 +1071,34 @@
         "workflow_id": "human_local_mac_16gb",
         "ui_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "api_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-        "ui_sha256": "0f6f1da20e1be2ab4da79391c1ca0d83241175d577a2d2ea154af722e5964b17",
-        "api_sha256": "4407aca3cefeb25c943fb322c9778b5272bdb066bbb205035baf13de112a2f89",
+        "ui_sha256": "fe72d154bc0d82bfa96ab202245598193a90d0f3437149c873e18c5aedd1a650",
+        "api_sha256": "a412c06475a7f87bf3f995442d9998d76532a372cce1588aa9c11c1a14d8ecb7",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
-        "node_count": 23,
+        "node_count": 24,
         "group_count": 10,
-        "api_node_count": 23
+        "api_node_count": 24
       },
       {
         "workflow_id": "human_full_power_gpu",
         "ui_path": "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "api_path": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-        "ui_sha256": "3c7096a8a6c3ad87af0b274e215a6a657b631440789fff71a0d390a321f470d5",
-        "api_sha256": "ec6e436411b5cb80ab0db10cc61fe94b717fca4b974997933d7b5ebf7157c934",
+        "ui_sha256": "eeb1a8581f543121a33914884e79e647d4005f7765652bd398e6a6e0e503182b",
+        "api_sha256": "6ee592bd938a284519216a385a9a17f65a8ea4cbabfdc1fbf28bd610cb00b8b9",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
-        "node_count": 23,
+        "node_count": 24,
         "group_count": 10,
-        "api_node_count": 23
+        "api_node_count": 24
       },
       {
         "workflow_id": "agent_local_mac_16gb",
         "ui_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "api_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-        "ui_sha256": "61e2ce398713ffee0015c4c93b6fa6f21887e4637dbfcba6228902e0eb2a1294",
-        "api_sha256": "eb43ac41e09b0fd1159ad65d1c1f708b2e1126ac3645cc410264b725c2464bca",
+        "ui_sha256": "44e4993f8a9ec20d6c0d4d721a3aaf5fd817dea6fcc638b88dcf59efa1cb8280",
+        "api_sha256": "799bc136f4d040443fb37c7d036cd2c96684108c05dc6f57300a46f1881cc496",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
@@ -720,8 +1110,8 @@
         "workflow_id": "agent_remote_runpod",
         "ui_path": "workflows/agent/remote_runpod/agent_remote_runpod.json",
         "api_path": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-        "ui_sha256": "699b143f3d3d77e155ebd47b997a9cda4ffbc8f7ce493e1c40d7e67fe7a96b44",
-        "api_sha256": "38cf68d6e11cda30cc7f5e616ec7fb7191d9e829a460bad6a98aeec3c0edbd70",
+        "ui_sha256": "48b0c46ae205c1ce9df53f884a68d9fb40f0e918981a6f1a46110e7f7fcd6642",
+        "api_sha256": "23f1aa18f576c36d00a76ecb65b4c1d6d892b0cfa056ae75ba91cbf24ce19872",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
@@ -925,7 +1315,9 @@
     },
     "dds_gate": {
       "status": "PASS",
-      "note": "negative gate is covered by the converter: missing/uncertain audit must return exit code 50; a runtime PNG round-trip is skipped until Pillow is installed."
+      "negative_gate": "PASS",
+      "positive_round_trip": "PASS",
+      "evidence": "synthetic-only; production DDS remains prohibited until a real independent all-PASS audit exists"
     },
     "identity_style_experiments": {
       "status": "BLOCKED_UNTIL_RUNTIME",
@@ -933,9 +1325,12 @@
       "matrix_written": true
     },
     "integration_packages": {
-      "status": "PASS",
-      "chaos_redux_live_review": "PASS",
-      "generic_live_review": "PASS"
+      "status": "BLOCKED",
+      "chaos_redux_live_review": "BLOCKED",
+      "chaos_redux_status": "PORTABLE_PACKAGE_READY_DIRECT_APPLY_BLOCKED",
+      "generic_live_review": "BLOCKED",
+      "generic_status": "BLOCKED_NO_LIVE_TARGET_REPOSITORY",
+      "direct_application": "NOT_PERFORMED"
     },
     "secret_scan": {
       "status": "PASS",
@@ -943,10 +1338,11 @@
     }
   },
   "preflight_blockers": [
-    "PyTorch/MPS and ComfyUI are not installed or MPS capability is not verified; local execution cannot be claimed.",
+    "The required MPS runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
     "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
     "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
     "Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.",
+    "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
     "The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.",
     "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
     "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
@@ -965,8 +1361,8 @@
         "display_name": "human_local_mac_16gb",
         "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-        "sha256": "0f6f1da20e1be2ab4da79391c1ca0d83241175d577a2d2ea154af722e5964b17",
-        "api_sha256": "4407aca3cefeb25c943fb322c9778b5272bdb066bbb205035baf13de112a2f89",
+        "sha256": "fe72d154bc0d82bfa96ab202245598193a90d0f3437149c873e18c5aedd1a650",
+        "api_sha256": "a412c06475a7f87bf3f995442d9998d76532a372cce1588aa9c11c1a14d8ecb7",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
         "required_core_nodes": [
@@ -986,6 +1382,7 @@
           "HOI4EvidenceExport",
           "HOI4ForegroundMask",
           "HOI4HeadShouldersCrop",
+          "HOI4HumanControls",
           "HOI4JobInput",
           "HOI4JobSource",
           "HOI4MaskAndBackgroundGuard",
@@ -994,6 +1391,18 @@
           "Krea2EditGroundedEncode",
           "Krea2EditModelPatch"
         ],
+        "required_custom_node_packages": [
+          "comfyui-krea2edit",
+          "hoi4_portrait_project_nodes"
+        ],
+        "required_custom_node_revisions": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        },
+        "required_custom_node_source_checksums": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f"
+        },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
           "qwen3vl_4b_fp8_scaled.safetensors",
@@ -1014,8 +1423,8 @@
         "display_name": "human_full_power_gpu",
         "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-        "sha256": "3c7096a8a6c3ad87af0b274e215a6a657b631440789fff71a0d390a321f470d5",
-        "api_sha256": "ec6e436411b5cb80ab0db10cc61fe94b717fca4b974997933d7b5ebf7157c934",
+        "sha256": "eeb1a8581f543121a33914884e79e647d4005f7765652bd398e6a6e0e503182b",
+        "api_sha256": "6ee592bd938a284519216a385a9a17f65a8ea4cbabfdc1fbf28bd610cb00b8b9",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
         "required_core_nodes": [
@@ -1035,6 +1444,7 @@
           "HOI4EvidenceExport",
           "HOI4ForegroundMask",
           "HOI4HeadShouldersCrop",
+          "HOI4HumanControls",
           "HOI4JobInput",
           "HOI4JobSource",
           "HOI4MaskAndBackgroundGuard",
@@ -1043,6 +1453,18 @@
           "Krea2EditGroundedEncode",
           "Krea2EditModelPatch"
         ],
+        "required_custom_node_packages": [
+          "comfyui-krea2edit",
+          "hoi4_portrait_project_nodes"
+        ],
+        "required_custom_node_revisions": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        },
+        "required_custom_node_source_checksums": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f"
+        },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
           "qwen3vl_4b_fp8_scaled.safetensors",
@@ -1063,8 +1485,8 @@
         "display_name": "agent_local_mac_16gb",
         "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-        "sha256": "61e2ce398713ffee0015c4c93b6fa6f21887e4637dbfcba6228902e0eb2a1294",
-        "api_sha256": "eb43ac41e09b0fd1159ad65d1c1f708b2e1126ac3645cc410264b725c2464bca",
+        "sha256": "44e4993f8a9ec20d6c0d4d721a3aaf5fd817dea6fcc638b88dcf59efa1cb8280",
+        "api_sha256": "799bc136f4d040443fb37c7d036cd2c96684108c05dc6f57300a46f1881cc496",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
         "required_core_nodes": [
@@ -1092,6 +1514,18 @@
           "Krea2EditGroundedEncode",
           "Krea2EditModelPatch"
         ],
+        "required_custom_node_packages": [
+          "comfyui-krea2edit",
+          "hoi4_portrait_project_nodes"
+        ],
+        "required_custom_node_revisions": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        },
+        "required_custom_node_source_checksums": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f"
+        },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
           "qwen3vl_4b_fp8_scaled.safetensors",
@@ -1111,8 +1545,8 @@
         "display_name": "agent_remote_runpod",
         "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
         "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-        "sha256": "699b143f3d3d77e155ebd47b997a9cda4ffbc8f7ce493e1c40d7e67fe7a96b44",
-        "api_sha256": "38cf68d6e11cda30cc7f5e616ec7fb7191d9e829a460bad6a98aeec3c0edbd70",
+        "sha256": "48b0c46ae205c1ce9df53f884a68d9fb40f0e918981a6f1a46110e7f7fcd6642",
+        "api_sha256": "23f1aa18f576c36d00a76ecb65b4c1d6d892b0cfa056ae75ba91cbf24ce19872",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
         "required_core_nodes": [
@@ -1140,6 +1574,18 @@
           "Krea2EditGroundedEncode",
           "Krea2EditModelPatch"
         ],
+        "required_custom_node_packages": [
+          "comfyui-krea2edit",
+          "hoi4_portrait_project_nodes"
+        ],
+        "required_custom_node_revisions": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        },
+        "required_custom_node_source_checksums": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "61b8d2f5a72da1da908535cebf44534accebc4822b0cb2aa13d31479ae4e1a9f"
+        },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
           "qwen3vl_4b_fp8_scaled.safetensors",
