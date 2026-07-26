@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0.0",
   "profile": "local_mac_16gb",
-  "created_at": "2026-07-26T15:22:21.490542+00:00",
+  "created_at": "2026-07-26T15:33:16.924962+00:00",
   "status": "BLOCKED",
   "installation_permitted": false,
   "preflight": {
     "schema_version": "1.0.0",
-    "collected_at": "2026-07-26T15:22:21.490495+00:00",
+    "collected_at": "2026-07-26T15:33:16.924913+00:00",
     "project_root": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits",
     "profile": "agent_local_mac_16gb",
     "hardware": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9606.\nPages active:                            361935.\nPages inactive:                          359109.\nPages speculative:                         2109.\nPages throttled:                              0.\nPages wired down:                        144741.\nPages purgeable:                           7153.\n\"Translation faults\":                  36754996.\nPages copy-on-write:                    3159344.\nPages zero filled:                     22971632.\nPages reactivated:                      1000587.\nPages purged:                            233335.\nFile-backed pages:                       258695.\nAnonymous pages:                         464458.\nPages stored in compressor:              288278.\nPages occupied by compressor:            129016.\nDecompressions:                          337704.\nCompressions:                            751636.\nPageins:                                2923246.\nPageouts:                                  9700.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                5780.\nPages active:                            363988.\nPages inactive:                          362377.\nPages speculative:                          843.\nPages throttled:                              0.\nPages wired down:                        143865.\nPages purgeable:                           7189.\n\"Translation faults\":                  38910763.\nPages copy-on-write:                    3517866.\nPages zero filled:                     23710942.\nPages reactivated:                      1003548.\nPages purged:                            238481.\nFile-backed pages:                       254725.\nAnonymous pages:                         472483.\nPages stored in compressor:              287496.\nPages occupied by compressor:            129497.\nDecompressions:                          341738.\nCompressions:                            754926.\nPageins:                                2949615.\nPageouts:                                  9839.\nSwapins:                                      0.\nSwapouts:                                     0.",
           "stderr": ""
         }
       },
@@ -82,7 +82,7 @@
                 "/usr/bin/vm_stat"
               ],
               "returncode": 0,
-              "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                9606.\nPages active:                            361935.\nPages inactive:                          359109.\nPages speculative:                         2109.\nPages throttled:                              0.\nPages wired down:                        144741.\nPages purgeable:                           7153.\n\"Translation faults\":                  36754996.\nPages copy-on-write:                    3159344.\nPages zero filled:                     22971632.\nPages reactivated:                      1000587.\nPages purged:                            233335.\nFile-backed pages:                       258695.\nAnonymous pages:                         464458.\nPages stored in compressor:              288278.\nPages occupied by compressor:            129016.\nDecompressions:                          337704.\nCompressions:                            751636.\nPageins:                                2923246.\nPageouts:                                  9700.\nSwapins:                                      0.\nSwapouts:                                     0.",
+              "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                5780.\nPages active:                            363988.\nPages inactive:                          362377.\nPages speculative:                          843.\nPages throttled:                              0.\nPages wired down:                        143865.\nPages purgeable:                           7189.\n\"Translation faults\":                  38910763.\nPages copy-on-write:                    3517866.\nPages zero filled:                     23710942.\nPages reactivated:                      1003548.\nPages purged:                            238481.\nFile-backed pages:                       254725.\nAnonymous pages:                         472483.\nPages stored in compressor:              287496.\nPages occupied by compressor:            129497.\nDecompressions:                          341738.\nCompressions:                            754926.\nPageins:                                2949615.\nPageouts:                                  9839.\nSwapins:                                      0.\nSwapouts:                                     0.",
               "stderr": ""
             }
           },
@@ -779,8 +779,8 @@
                 "Krea2EditModelPatch"
               ],
               "class_matches": {
-                "Krea2EditGroundedEncode": false,
-                "Krea2EditModelPatch": false
+                "Krea2EditModelPatch": false,
+                "Krea2EditGroundedEncode": false
               },
               "signature_match": false,
               "status": "BLOCKED"
@@ -846,8 +846,8 @@
           "project_lock": {
             "path": "dependencies/project_requirements.lock.txt",
             "status": "PASS",
-            "expected_sha256": "f599d034d3f220212d5027ee9da862b30e793c9cded9cfb3e26da64d7f933f0e",
-            "actual_sha256": "f599d034d3f220212d5027ee9da862b30e793c9cded9cfb3e26da64d7f933f0e",
+            "expected_sha256": "00f81a288e5a521a802ea86ac348e219dbcd0dc961b43dad8bc294687937bad9",
+            "actual_sha256": "00f81a288e5a521a802ea86ac348e219dbcd0dc961b43dad8bc294687937bad9",
             "content_ok": true,
             "invalid_packages": []
           }

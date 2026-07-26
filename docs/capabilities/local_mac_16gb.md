@@ -1,6 +1,6 @@
 # Initial Preflight Report
 
-- Collected: `2026-07-26T15:22:21.490495+00:00`
+- Collected: `2026-07-26T15:33:16.924913+00:00`
 - Status: **BLOCKED**
 - Installation permitted: **False**
 - Recommended exit code: `15`

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-26T15:24:20.417643+00:00",
+  "created_at": "2026-07-26T15:33:06.131378+00:00",
   "profile": "human_full_power_gpu",
   "status": "BLOCKED_PREFLIGHT",
   "status_reason": "One or more mandatory preflight gates remain blocked.",
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                6289.\nPages active:                            363098.\nPages inactive:                          362188.\nPages speculative:                          286.\nPages throttled:                              0.\nPages wired down:                        145093.\nPages purgeable:                           7363.\n\"Translation faults\":                  37247640.\nPages copy-on-write:                    3247506.\nPages zero filled:                     23107805.\nPages reactivated:                      1001736.\nPages purged:                            233899.\nFile-backed pages:                       255385.\nAnonymous pages:                         470187.\nPages stored in compressor:              288427.\nPages occupied by compressor:            129082.\nDecompressions:                          337711.\nCompressions:                            751792.\nPageins:                                2927020.\nPageouts:                                  9758.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                5064.\nPages active:                            359846.\nPages inactive:                          358445.\nPages speculative:                          825.\nPages throttled:                              0.\nPages wired down:                        152641.\nPages purgeable:                           4969.\n\"Translation faults\":                  38749806.\nPages copy-on-write:                    3491257.\nPages zero filled:                     23666585.\nPages reactivated:                      1003546.\nPages purged:                            238289.\nFile-backed pages:                       254635.\nAnonymous pages:                         464481.\nPages stored in compressor:              287497.\nPages occupied by compressor:            129497.\nDecompressions:                          341737.\nCompressions:                            754926.\nPageins:                                2949113.\nPageouts:                                  9839.\nSwapins:                                      0.\nSwapouts:                                     0.",
           "stderr": ""
         }
       },

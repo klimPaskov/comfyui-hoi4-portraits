@@ -28,7 +28,7 @@
   },
   "project_dependency_lock": {
     "path": "dependencies/project_requirements.lock.txt",
-    "sha256": "f599d034d3f220212d5027ee9da862b30e793c9cded9cfb3e26da64d7f933f0e",
+    "sha256": "00f81a288e5a521a802ea86ac348e219dbcd0dc961b43dad8bc294687937bad9",
     "status": "RESOLVED"
   },
   "project_pins": {
