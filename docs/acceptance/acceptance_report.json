@@ -1,0 +1,1171 @@
+{
+  "schema_version": "1.0.0",
+  "created_at": "2026-07-26T13:24:44.881596+00:00",
+  "overall_status": "BLOCKED",
+  "recommended_exit_code": 15,
+  "gates": {
+    "package_checksums": {
+      "name": "planning_package_checksums",
+      "status": "PASS",
+      "results": [
+        {
+          "path": "00_executive_brief.md",
+          "expected": "5a592ac7e0acf735c7fa2fcab06c14b68a45d252dc7f6dedbf26a10d2b236f09",
+          "actual": "5a592ac7e0acf735c7fa2fcab06c14b68a45d252dc7f6dedbf26a10d2b236f09",
+          "match": true
+        },
+        {
+          "path": "01_current_capability_and_dependency_audit.md",
+          "expected": "f73d267958523bbb8c5299d30efb2ab951a5c13ce53951255b89543e53cb62b7",
+          "actual": "f73d267958523bbb8c5299d30efb2ab951a5c13ce53951255b89543e53cb62b7",
+          "match": true
+        },
+        {
+          "path": "02_system_architecture.md",
+          "expected": "2ed20971a716a8d50eaa16699fa167b42f8a27d986e4f8db150d11bc075cf35c",
+          "actual": "2ed20971a716a8d50eaa16699fa167b42f8a27d986e4f8db150d11bc075cf35c",
+          "match": true
+        },
+        {
+          "path": "03_shared_processing_pipeline.md",
+          "expected": "a88b98b930bbea39b4dd119d1082b45a60e152b55c23f6ee29db81f0b35fcfbc",
+          "actual": "a88b98b930bbea39b4dd119d1082b45a60e152b55c23f6ee29db81f0b35fcfbc",
+          "match": true
+        },
+        {
+          "path": "04_four_workflow_specifications.md",
+          "expected": "eca0ebe1336ab5488b5eaec8395950a7e4d23826307d28768888d4b90c3b3941",
+          "actual": "eca0ebe1336ab5488b5eaec8395950a7e4d23826307d28768888d4b90c3b3941",
+          "match": true
+        },
+        {
+          "path": "05_identity_preservation_and_audit.md",
+          "expected": "2cab2cafc2b9f9debd03278c1f9feec5c25231d1853dbcfc43d1d2c425b51ea0",
+          "actual": "2cab2cafc2b9f9debd03278c1f9feec5c25231d1853dbcfc43d1d2c425b51ea0",
+          "match": true
+        },
+        {
+          "path": "06_autoprompter_specification.md",
+          "expected": "f7349e65ba3b19639f575d3ac26b3da7bb70c36e7fc0ad4543fbbf582a5b2033",
+          "actual": "f7349e65ba3b19639f575d3ac26b3da7bb70c36e7fc0ad4543fbbf582a5b2033",
+          "match": true
+        },
+        {
+          "path": "07_mac_16gb_execution_profile.md",
+          "expected": "a3780def2ae07e28a95faf223bc4405ac71fc4ea2bf7887ca9f33fbb857b3164",
+          "actual": "a3780def2ae07e28a95faf223bc4405ac71fc4ea2bf7887ca9f33fbb857b3164",
+          "match": true
+        },
+        {
+          "path": "08_full_power_gpu_profile.md",
+          "expected": "8e3aa33d912f27915ce76d5aa9f2d13b634e477c53db13590a61a8c9b5531208",
+          "actual": "8e3aa33d912f27915ce76d5aa9f2d13b634e477c53db13590a61a8c9b5531208",
+          "match": true
+        },
+        {
+          "path": "09_runpod_architecture.md",
+          "expected": "7858bbd6682059f8b078c02c548166475cf37968567d8d5eb312d965bffe87fb",
+          "actual": "7858bbd6682059f8b078c02c548166475cf37968567d8d5eb312d965bffe87fb",
+          "match": true
+        },
+        {
+          "path": "10_comfyui_mcp_contract.md",
+          "expected": "5678b06ee237c8e81ca344e1e23b0be4cb83097f8c26e4ffb46ddb825710f482",
+          "actual": "5678b06ee237c8e81ca344e1e23b0be4cb83097f8c26e4ffb46ddb825710f482",
+          "match": true
+        },
+        {
+          "path": "11_agent_job_api.md",
+          "expected": "61a547f2a5594ebee184c2b63c63fa4b7f01394f3841c864f412126a41fb6719",
+          "actual": "61a547f2a5594ebee184c2b63c63fa4b7f01394f3841c864f412126a41fb6719",
+          "match": true
+        },
+        {
+          "path": "12_model_and_custom_node_manifest.md",
+          "expected": "e197121970e97e9bcfbb7cfd8b503300da101665ae089bf09f4c3b7a82a757ef",
+          "actual": "e197121970e97e9bcfbb7cfd8b503300da101665ae089bf09f4c3b7a82a757ef",
+          "match": true
+        },
+        {
+          "path": "13_bootstrap_and_installation_plan.md",
+          "expected": "d3ebe92937376f0a018945f2a7d473060711c6ad898423efd5342f6935b4a9cb",
+          "actual": "d3ebe92937376f0a018945f2a7d473060711c6ad898423efd5342f6935b4a9cb",
+          "match": true
+        },
+        {
+          "path": "14_dds_export_and_validation.md",
+          "expected": "dad293518140ca91f54f110a293e5844812b5bc328f665731b9fa707231b3b62",
+          "actual": "dad293518140ca91f54f110a293e5844812b5bc328f665731b9fa707231b3b62",
+          "match": true
+        },
+        {
+          "path": "15_test_matrix_and_acceptance_criteria.md",
+          "expected": "0d85dce3d30dab43fc839730fdb74fe4ccec8b7a243b8941631521353a83a8e0",
+          "actual": "0d85dce3d30dab43fc839730fdb74fe4ccec8b7a243b8941631521353a83a8e0",
+          "match": true
+        },
+        {
+          "path": "16_security_licensing_and_provenance.md",
+          "expected": "2fb23496fc6b57fae3daac25cb21494ccca3c4707688bdcd79e7c45911d6b8dc",
+          "actual": "2fb23496fc6b57fae3daac25cb21494ccca3c4707688bdcd79e7c45911d6b8dc",
+          "match": true
+        },
+        {
+          "path": "17_chaos_redux_integration.md",
+          "expected": "ef292a0d6414088100f8d8180cb10afe6042077b7aa349637689303c747c36ad",
+          "actual": "ef292a0d6414088100f8d8180cb10afe6042077b7aa349637689303c747c36ad",
+          "match": true
+        },
+        {
+          "path": "18_agentic_hoi4_modding_integration.md",
+          "expected": "61439422ae76dad54b03bad910cc87c9e33de424d7e487391963c3b481dd9770",
+          "actual": "61439422ae76dad54b03bad910cc87c9e33de424d7e487391963c3b481dd9770",
+          "match": true
+        },
+        {
+          "path": "19_git_branch_commit_and_release_plan.md",
+          "expected": "e2af1642c79922ff1a9d5d8a39920c76d7f15c5eb54577fad406bc664dc15b28",
+          "actual": "e2af1642c79922ff1a9d5d8a39920c76d7f15c5eb54577fad406bc664dc15b28",
+          "match": true
+        },
+        {
+          "path": "20_implementation_order.md",
+          "expected": "04a80d110355d86d0271e3fcf5d2679040d51554e3628e2a2dd3ed0cfa0d61b0",
+          "actual": "04a80d110355d86d0271e3fcf5d2679040d51554e3628e2a2dd3ed0cfa0d61b0",
+          "match": true
+        },
+        {
+          "path": "21_risks_blockers_and_fallbacks.md",
+          "expected": "961b1479227a7fd481754679e7fe31c0cc8b203bdcf45b47b86608e736fbc206",
+          "actual": "961b1479227a7fd481754679e7fe31c0cc8b203bdcf45b47b86608e736fbc206",
+          "match": true
+        },
+        {
+          "path": "22_source_reading_report.md",
+          "expected": "7d5824544747df4131d06c6b1c2bd5d3d9d0250635f813d80acd61a23f8a031f",
+          "actual": "7d5824544747df4131d06c6b1c2bd5d3d9d0250635f813d80acd61a23f8a031f",
+          "match": true
+        },
+        {
+          "path": "23_primary_source_bibliography.md",
+          "expected": "ef519ee8b2babb6a063d37371f94e7b9513e05fe5015b9cab2cbcbe48d32f84e",
+          "actual": "ef519ee8b2babb6a063d37371f94e7b9513e05fe5015b9cab2cbcbe48d32f84e",
+          "match": true
+        },
+        {
+          "path": "24_package_validation_report.md",
+          "expected": "828d57c4f6df911d9aed0cadfc96d6ba622df406ef6250bb222c0ffd3a184213",
+          "actual": "828d57c4f6df911d9aed0cadfc96d6ba622df406ef6250bb222c0ffd3a184213",
+          "match": true
+        },
+        {
+          "path": "README.md",
+          "expected": "3902bb099f80a6a925991d4e2031d72036c6b72ec7d62f296a10f0e827899db6",
+          "actual": "3902bb099f80a6a925991d4e2031d72036c6b72ec7d62f296a10f0e827899db6",
+          "match": true
+        },
+        {
+          "path": "bootstrap/bootstrap_command_contract.json",
+          "expected": "94729d82777238191d534a0eadbe2ccd2a24b701d23bc2e6e7acb612a9869ab2",
+          "actual": "94729d82777238191d534a0eadbe2ccd2a24b701d23bc2e6e7acb612a9869ab2",
+          "match": true
+        },
+        {
+          "path": "config/background_registry.template.json",
+          "expected": "45c7a6a7925e001f06f342c811a9abdcb7d915d9f4ea6d0b25a88e97fa81175a",
+          "actual": "45c7a6a7925e001f06f342c811a9abdcb7d915d9f4ea6d0b25a88e97fa81175a",
+          "match": true
+        },
+        {
+          "path": "config/identity_thresholds.template.json",
+          "expected": "22535eb128ee93470b91b9d8b78a7a935a0ecf90cedac6a244840866b4347375",
+          "actual": "22535eb128ee93470b91b9d8b78a7a935a0ecf90cedac6a244840866b4347375",
+          "match": true
+        },
+        {
+          "path": "integrations/agentic-hoi4-modding/README.md",
+          "expected": "e50753ae9fc724cd780f3d40757a4c38df7514f3009e4111b69581e4faef3ff1",
+          "actual": "e50753ae9fc724cd780f3d40757a4c38df7514f3009e4111b69581e4faef3ff1",
+          "match": true
+        },
+        {
+          "path": "integrations/agentic-hoi4-modding/manifest.md",
+          "expected": "ebdd6fac1e0bfe482bd091cdca3420e0ee7fad4d2cc65fa0a6a0d20daf862c86",
+          "actual": "ebdd6fac1e0bfe482bd091cdca3420e0ee7fad4d2cc65fa0a6a0d20daf862c86",
+          "match": true
+        },
+        {
+          "path": "integrations/agentic-hoi4-modding/patches/AGENTS.md.patch.template",
+          "expected": "8717fd0e733a9154c30ac3ec49a113e236ccb4145edcf58e9dbb2ce3adcdb746",
+          "actual": "8717fd0e733a9154c30ac3ec49a113e236ccb4145edcf58e9dbb2ce3adcdb746",
+          "match": true
+        },
+        {
+          "path": "integrations/agentic-hoi4-modding/patches/asset-routing.patch.template",
+          "expected": "12467c07368ae4a1a423f73f3167156c135f9b355800c504241fbb8020fff5c3",
+          "actual": "12467c07368ae4a1a423f73f3167156c135f9b355800c504241fbb8020fff5c3",
+          "match": true
+        },
+        {
+          "path": "integrations/agentic-hoi4-modding/patches/subagent-routing.patch.template",
+          "expected": "dd07ca9077a95c9878b2ce07d811c46b995c7a3b17c4667000d2f4fe4201f44f",
+          "actual": "dd07ca9077a95c9878b2ce07d811c46b995c7a3b17c4667000d2f4fe4201f44f",
+          "match": true
+        },
+        {
+          "path": "integrations/agentic-hoi4-modding/replacements/.agents/skills/hoi4-portrait-pipeline/SKILL.md",
+          "expected": "e9586d914499b0ef55d86c1d67b3227e9d0caabc0780d96404822d57d8207052",
+          "actual": "e9586d914499b0ef55d86c1d67b3227e9d0caabc0780d96404822d57d8207052",
+          "match": true
+        },
+        {
+          "path": "integrations/agentic-hoi4-modding/replacements/.codex/agents/hoi4_portrait_identity_auditor.toml",
+          "expected": "4bac76adfe566edae71b238b982f17c2444cf78425cc5116adcedcd941107c78",
+          "actual": "4bac76adfe566edae71b238b982f17c2444cf78425cc5116adcedcd941107c78",
+          "match": true
+        },
+        {
+          "path": "integrations/agentic-hoi4-modding/replacements/.codex/agents/hoi4_portrait_pipeline.toml",
+          "expected": "1bd2df0799d9a50bb124f4c1642a09497306fd4a7133a6e570b5965f02b0efa1",
+          "actual": "1bd2df0799d9a50bb124f4c1642a09497306fd4a7133a6e570b5965f02b0efa1",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/README.md",
+          "expected": "98ea89eef450b16ae4d788bb3ec7159368acd3c661122ead47d4f858da830cf2",
+          "actual": "98ea89eef450b16ae4d788bb3ec7159368acd3c661122ead47d4f858da830cf2",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/manifest.md",
+          "expected": "bc5e185a11c95bbd56229d6570e7fe39f8f174dbf47f50593bac2b22372619b8",
+          "actual": "bc5e185a11c95bbd56229d6570e7fe39f8f174dbf47f50593bac2b22372619b8",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/new/.agents/skills/hoi4-portrait-pipeline/SKILL.md",
+          "expected": "a2ab2a531bcfdd7b7689d58f667fea0b591f81efe5977859292d35f929405b8b",
+          "actual": "a2ab2a531bcfdd7b7689d58f667fea0b591f81efe5977859292d35f929405b8b",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/new/.codex/agents/chaosx_hoi4_portrait_pipeline.toml",
+          "expected": "fdd3193d92b637f8de492541516d3ad3148b6e3b1a9d9a66cf4e79b16b6c8a4a",
+          "actual": "fdd3193d92b637f8de492541516d3ad3148b6e3b1a9d9a66cf4e79b16b6c8a4a",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/new/.codex/agents/chaosx_portrait_identity_auditor.toml",
+          "expected": "d80ebe102f0fa7d5679880c9b6a4e22f4d8a25143f5042b526cbbc5b85fc6747",
+          "actual": "d80ebe102f0fa7d5679880c9b6a4e22f4d8a25143f5042b526cbbc5b85fc6747",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/patches/AGENTS.md.patch",
+          "expected": "64fc429c8a831745e2285d4ff9f9ee7ce7f021336aa5befdb27e8993dc8dea8a",
+          "actual": "64fc429c8a831745e2285d4ff9f9ee7ce7f021336aa5befdb27e8993dc8dea8a",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/patches/agents__skills__chaos-redux-event-assets__SKILL.md.patch",
+          "expected": "81c21b7973b619a902b765f2130315f719532995b6795b082ce3628f45a05272",
+          "actual": "81c21b7973b619a902b765f2130315f719532995b6795b082ce3628f45a05272",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/patches/agents__skills__chaos-redux-subagents__SKILL.md.patch",
+          "expected": "96d6e1953dd848b020878e0607e0177845eae8266c394ba61d9c7f5dace37a22",
+          "actual": "96d6e1953dd848b020878e0607e0177845eae8266c394ba61d9c7f5dace37a22",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/patches/codex__agents__chaosx_asset_source_researcher.toml.patch",
+          "expected": "d1cdfdd125e9671c81a35d609b9afa5e1d78990dfea3c2f615e7fddeca65a664",
+          "actual": "d1cdfdd125e9671c81a35d609b9afa5e1d78990dfea3c2f615e7fddeca65a664",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/patches/codex__agents__chaosx_country_package_auditor.toml.patch",
+          "expected": "6af8132ce5085cc1985dd2cfc7b66ce4a21fe86486342adbe64bff0c5e51559b",
+          "actual": "6af8132ce5085cc1985dd2cfc7b66ce4a21fe86486342adbe64bff0c5e51559b",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/patches/codex__agents__chaosx_generated_event_art.toml.patch",
+          "expected": "5b8652673f37ea30cc54c73740c53c88a703edfe8e73239d113993d7da0b838b",
+          "actual": "5b8652673f37ea30cc54c73740c53c88a703edfe8e73239d113993d7da0b838b",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/patches/codex__agents__chaosx_skill_maintainer.toml.patch",
+          "expected": "d09550f0654ddf8d8bb85ab4664e3fbd65439dc57f493678ce1fd2230dc9a856",
+          "actual": "d09550f0654ddf8d8bb85ab4664e3fbd65439dc57f493678ce1fd2230dc9a856",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacement_manifest.json",
+          "expected": "af9bdea18b475b1b56f6d20e919fd1af3cab7301fba572e3b87e1799cb153d71",
+          "actual": "af9bdea18b475b1b56f6d20e919fd1af3cab7301fba572e3b87e1799cb153d71",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.agents/skills/chaos-redux-event-assets/SKILL.md",
+          "expected": "476be4c4335d5ba4463f69773faa03c6d97a14ed19db95a0fb8b4f2e55de90e9",
+          "actual": "476be4c4335d5ba4463f69773faa03c6d97a14ed19db95a0fb8b4f2e55de90e9",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.agents/skills/chaos-redux-subagents/SKILL.md",
+          "expected": "394c789e90bfb0fcd928e0192a7697da48a8a85cba0675c6a06a99a8ae8ab3b5",
+          "actual": "394c789e90bfb0fcd928e0192a7697da48a8a85cba0675c6a06a99a8ae8ab3b5",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.agents/skills/hoi4-portrait-pipeline/SKILL.md",
+          "expected": "a2ab2a531bcfdd7b7689d58f667fea0b591f81efe5977859292d35f929405b8b",
+          "actual": "a2ab2a531bcfdd7b7689d58f667fea0b591f81efe5977859292d35f929405b8b",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.codex/agents/chaosx_asset_source_researcher.toml",
+          "expected": "bed9d44083d7939f678a3608daa24e13245d49324c935825054d7101282a6545",
+          "actual": "bed9d44083d7939f678a3608daa24e13245d49324c935825054d7101282a6545",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.codex/agents/chaosx_country_package_auditor.toml",
+          "expected": "4250e469f45ad5d6de5a5c6c813c5b1bee9fe6607b5878f3df95bd79ade207b2",
+          "actual": "4250e469f45ad5d6de5a5c6c813c5b1bee9fe6607b5878f3df95bd79ade207b2",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.codex/agents/chaosx_generated_event_art.toml",
+          "expected": "1bd554b061f249789ee69d24a2c29116b38c24843b5eeaa4e44cbd94a6cd1e61",
+          "actual": "1bd554b061f249789ee69d24a2c29116b38c24843b5eeaa4e44cbd94a6cd1e61",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.codex/agents/chaosx_hoi4_portrait_pipeline.toml",
+          "expected": "fdd3193d92b637f8de492541516d3ad3148b6e3b1a9d9a66cf4e79b16b6c8a4a",
+          "actual": "fdd3193d92b637f8de492541516d3ad3148b6e3b1a9d9a66cf4e79b16b6c8a4a",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.codex/agents/chaosx_portrait_identity_auditor.toml",
+          "expected": "d80ebe102f0fa7d5679880c9b6a4e22f4d8a25143f5042b526cbbc5b85fc6747",
+          "actual": "d80ebe102f0fa7d5679880c9b6a4e22f4d8a25143f5042b526cbbc5b85fc6747",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/.codex/agents/chaosx_skill_maintainer.toml",
+          "expected": "e303ebe9b7ea8010d571ff3aca71b9e3f8edc5e116d5391ee52faa31038f25a5",
+          "actual": "e303ebe9b7ea8010d571ff3aca71b9e3f8edc5e116d5391ee52faa31038f25a5",
+          "match": true
+        },
+        {
+          "path": "integrations/chaos-redux/replacements/AGENTS.md",
+          "expected": "fd3c73004c10eb26333d6c49f6c3afde65c6b1d47d87dcf7b114ee15125f020b",
+          "actual": "fd3c73004c10eb26333d6c49f6c3afde65c6b1d47d87dcf7b114ee15125f020b",
+          "match": true
+        },
+        {
+          "path": "manifests/dependency_manifest_template.json",
+          "expected": "34bc65b18664c0a9d0025db4194fc2b233ec2882b60c8ef7d6b13c31849d6d02",
+          "actual": "34bc65b18664c0a9d0025db4194fc2b233ec2882b60c8ef7d6b13c31849d6d02",
+          "match": true
+        },
+        {
+          "path": "manifests/model_manifest_template.json",
+          "expected": "59fc298734d0cd7a609244cd8ad906a11c31a1c538de86cc4e9810e3d290cfec",
+          "actual": "59fc298734d0cd7a609244cd8ad906a11c31a1c538de86cc4e9810e3d290cfec",
+          "match": true
+        },
+        {
+          "path": "manifests/workflow_manifest_template.json",
+          "expected": "bcb3f718c5b33371f49db39af070ede07b928702f622d93f6bb08c0947df7733",
+          "actual": "bcb3f718c5b33371f49db39af070ede07b928702f622d93f6bb08c0947df7733",
+          "match": true
+        },
+        {
+          "path": "mcp/project_owned_mcp_contract.json",
+          "expected": "e6ed19a2a2215c6f21b57653e0408f35c669eb8f67cca5373d7f639c4925e668",
+          "actual": "e6ed19a2a2215c6f21b57653e0408f35c669eb8f67cca5373d7f639c4925e668",
+          "match": true
+        },
+        {
+          "path": "prompts/autoprompter_instruction.txt",
+          "expected": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+          "actual": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+          "match": true
+        },
+        {
+          "path": "prompts/implementation_goal_prompt.md",
+          "expected": "f471faae84368f9689fb2aa3bf5a89e462ad1ee83c1197b9424bf2e46af44ec5",
+          "actual": "f471faae84368f9689fb2aa3bf5a89e462ad1ee83c1197b9424bf2e46af44ec5",
+          "match": true
+        },
+        {
+          "path": "schemas/portrait_audit.schema.json",
+          "expected": "0d0c526585a6b35557f277b4c711ee29783d9ca435d7953b0cd4be200053825b",
+          "actual": "0d0c526585a6b35557f277b4c711ee29783d9ca435d7953b0cd4be200053825b",
+          "match": true
+        },
+        {
+          "path": "schemas/portrait_job_input.schema.json",
+          "expected": "914987b132912f6d71a1f588529aa0363a487323f03e84ce69efa205754728e7",
+          "actual": "914987b132912f6d71a1f588529aa0363a487323f03e84ce69efa205754728e7",
+          "match": true
+        },
+        {
+          "path": "schemas/portrait_job_output.schema.json",
+          "expected": "9f163a1c9d90a81011e50f8ae669e8775a0b217f61a788d02f39fbe872849d50",
+          "actual": "9f163a1c9d90a81011e50f8ae669e8775a0b217f61a788d02f39fbe872849d50",
+          "match": true
+        },
+        {
+          "path": "templates/standalone_project/.gitattributes",
+          "expected": "c53ef7cb09d429380997c2e3353dfc9727955803913a56e8c199ed2e5b65693f",
+          "actual": "c53ef7cb09d429380997c2e3353dfc9727955803913a56e8c199ed2e5b65693f",
+          "match": true
+        },
+        {
+          "path": "templates/standalone_project/.gitignore",
+          "expected": "ed0fb960fcd5b87d36eacae97b94e5f78f018ee7bbb764317c8336b62f4df45a",
+          "actual": "ed0fb960fcd5b87d36eacae97b94e5f78f018ee7bbb764317c8336b62f4df45a",
+          "match": true
+        },
+        {
+          "path": "templates/standalone_project/README.md",
+          "expected": "ffe2858ea117fc29cbac07129dce2e72435a648ceec04142dba95c86bf727e87",
+          "actual": "ffe2858ea117fc29cbac07129dce2e72435a648ceec04142dba95c86bf727e87",
+          "match": true
+        },
+        {
+          "path": "tests/fixture_manifest.template.json",
+          "expected": "fa9f19331e6b5cda6ce6de9bfbecb7246591392451a53bf1c05ded13d550d586",
+          "actual": "fa9f19331e6b5cda6ce6de9bfbecb7246591392451a53bf1c05ded13d550d586",
+          "match": true
+        },
+        {
+          "path": "workflows/workflow_delivery_contract.md",
+          "expected": "b851b68814dc3267c26eb1a5783c1f141119b4d1c5063a87902864ecf83a0bea",
+          "actual": "b851b68814dc3267c26eb1a5783c1f141119b4d1c5063a87902864ecf83a0bea",
+          "match": true
+        }
+      ]
+    },
+    "hardware_detection": {
+      "name": "hardware_detection",
+      "status": "PASS",
+      "evidence": {
+        "platform": "macOS-26.4.1-arm64-arm-64bit",
+        "python": "3.9.6 (default, Apr  7 2026, 02:38:40) \n[Clang 21.0.0 (clang-2100.0.123.102)]",
+        "machine": "arm64",
+        "processor": "arm",
+        "memory": {
+          "memsize_bytes": "17179869184",
+          "cpu_count": "10",
+          "arm64": "1",
+          "swap": {
+            "command": [
+              "/usr/sbin/sysctl",
+              "vm.swapusage"
+            ],
+            "returncode": 0,
+            "stdout": "vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)",
+            "stderr": ""
+          },
+          "vm_stat": {
+            "command": [
+              "/usr/bin/vm_stat"
+            ],
+            "returncode": 0,
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               13031.\nPages active:                            363781.\nPages inactive:                          364811.\nPages speculative:                         1089.\nPages throttled:                              0.\nPages wired down:                        130877.\nPages purgeable:                          14592.\n\"Translation faults\":                  20265553.\nPages copy-on-write:                     918822.\nPages zero filled:                     14637167.\nPages reactivated:                       913672.\nPages purged:                            160658.\nFile-backed pages:                       284829.\nAnonymous pages:                         444852.\nPages stored in compressor:              297773.\nPages occupied by compressor:            131986.\nDecompressions:                          318941.\nCompressions:                            738222.\nPageins:                                2829284.\nPageouts:                                  9434.\nSwapins:                                      0.\nSwapouts:                                     0.",
+            "stderr": ""
+          }
+        },
+        "sw_vers": {
+          "command": [
+            "sw_vers"
+          ],
+          "returncode": 0,
+          "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.4.1\nBuildVersion:\t\t25E253",
+          "stderr": ""
+        },
+        "disk": {
+          "command": [
+            "df",
+            "-h",
+            "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits"
+          ],
+          "returncode": 0,
+          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   144Gi   280Gi    34%    1.6M  2.9G    0%   /System/Volumes/Data",
+          "stderr": ""
+        }
+      }
+    },
+    "hardware_runtime": {
+      "name": "local_runtime_capability",
+      "status": "BLOCKED",
+      "evidence": {
+        "python_version": "3.9.6",
+        "python_floor": ">=3.10",
+        "python_floor_ok": false,
+        "torch": {
+          "installed": false,
+          "error_type": "ModuleNotFoundError",
+          "error": "No module named 'torch'"
+        },
+        "comfy_cli": null
+      }
+    },
+    "immutable_lora": {
+      "status": "PASS",
+      "sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
+    },
+    "approved_background": {
+      "name": "approved_source_background",
+      "status": "BLOCKED",
+      "evidence": {
+        "registry_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/config/background_registry.json",
+        "registry": {
+          "schema_version": "1.0.0",
+          "registry_status": "BLOCKED_UNTIL_RESOLVED",
+          "backgrounds": [
+            {
+              "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
+              "role_scope": [
+                "country_leader",
+                "commander",
+                "operative"
+              ],
+              "source_class": "unresolved",
+              "source_path": null,
+              "runtime_path": null,
+              "source_definition": null,
+              "attribution": null,
+              "license_or_rights": null,
+              "redistribution_rule": "blocked",
+              "width": null,
+              "height": null,
+              "sha256": null,
+              "approved_by": [],
+              "status": "BLOCKED_UNTIL_RESOLVED",
+              "reason": "No approved project-owned or installed-game background was resolved during preflight."
+            }
+          ]
+        }
+      }
+    },
+    "dependencies_and_models": {
+      "name": "model_artifact_preflight",
+      "status": "BLOCKED",
+      "evidence": {
+        "local_files": [],
+        "locked_models": 7,
+        "unsupported_or_unverified": []
+      }
+    },
+    "runtime_dependency_lock": {
+      "name": "comfyui_runtime_dependency_lock",
+      "status": "BLOCKED",
+      "evidence": {
+        "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/runtime_requirements_lock.json",
+        "unresolved": [
+          "comfyui-frontend-package",
+          "comfyui-workflow-templates",
+          "comfyui-embedded-docs",
+          "torch",
+          "torchsde",
+          "torchvision",
+          "torchaudio",
+          "numpy",
+          "einops",
+          "transformers",
+          "tokenizers",
+          "sentencepiece",
+          "safetensors",
+          "aiohttp",
+          "yarl",
+          "pyyaml",
+          "scipy",
+          "tqdm",
+          "psutil",
+          "alembic",
+          "SQLAlchemy",
+          "filelock",
+          "av",
+          "comfy-kitchen",
+          "comfy-aimdo",
+          "requests",
+          "simpleeval",
+          "blake3"
+        ]
+      }
+    },
+    "krea_live_compatibility": {
+      "name": "krea_live_compatibility",
+      "status": "BLOCKED",
+      "evidence": {
+        "reason": "ComfyUI and the pinned Krea custom node are not installed; node signatures and a live Turbo execution are unverified."
+      }
+    },
+    "licenses_and_rights": {
+      "name": "license_and_rights_review",
+      "status": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW",
+      "evidence": {
+        "schema_version": "1.0.0",
+        "review_date": "2026-07-26",
+        "status": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW",
+        "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.",
+        "sources": [
+          {
+            "name": "Krea 2 license",
+            "source_url": "https://www.krea.ai/krea-2-licensing",
+            "license_identifier": "Krea Community License",
+            "status": "REVIEW_REQUIRED",
+            "material_conditions": [
+              "commercial use is subject to the published revenue threshold and agreement terms",
+              "distribution requires the agreement notice and attribution obligations",
+              "content-filter and acceptable-use measures apply",
+              "model ownership remains with Krea and outputs are subject to compliance"
+            ],
+            "artifact_policy": "local_copy_only_until_owner_approval"
+          },
+          {
+            "name": "ComfyUI",
+            "source_url": "https://github.com/Comfy-Org/ComfyUI/blob/v0.24.0/LICENSE",
+            "license_identifier": "GPL-3.0",
+            "status": "PINNED_SOURCE_REVIEWED"
+          },
+          {
+            "name": "comfyui-krea2edit",
+            "source_url": "https://github.com/lbouaraba/comfyui-krea2edit/blob/cae442e11b59bcba04ed82f4c01ffe3752531fe1/LICENSE",
+            "license_identifier": "Apache-2.0",
+            "status": "PINNED_SOURCE_REVIEWED"
+          },
+          {
+            "name": "Qwen3-VL",
+            "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct",
+            "license_identifier": "Apache-2.0",
+            "status": "PRIMARY_CARD_REVIEWED"
+          },
+          {
+            "name": "Existing HOI4 style LoRA",
+            "source_url": null,
+            "license_identifier": null,
+            "status": "OWNER_REVIEW_REQUIRED",
+            "material_conditions": [
+              "file is preserved byte-for-byte and is not redistributed by this repository"
+            ]
+          },
+          {
+            "name": "HOI4 portrait background",
+            "source_url": null,
+            "license_identifier": null,
+            "status": "BLOCKED_UNRESOLVED",
+            "material_conditions": [
+              "no approved background registry entry exists yet"
+            ]
+          }
+        ],
+        "blocking_reasons": [
+          "Krea Community License applicability and distribution scope need project-owner approval.",
+          "The approved HOI4 background and its rights record are unresolved.",
+          "The existing style LoRA has an owner-controlled provenance/license record only."
+        ]
+      }
+    },
+    "workflow_structure": [
+      {
+        "workflow_id": "human_local_mac_16gb",
+        "ui_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
+        "api_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
+        "ui_sha256": "0f6f1da20e1be2ab4da79391c1ca0d83241175d577a2d2ea154af722e5964b17",
+        "api_sha256": "4407aca3cefeb25c943fb322c9778b5272bdb066bbb205035baf13de112a2f89",
+        "structural_status": "PASS",
+        "runtime_status": "BLOCKED_UNVERIFIED",
+        "issues": [],
+        "node_count": 23,
+        "group_count": 10,
+        "api_node_count": 23
+      },
+      {
+        "workflow_id": "human_full_power_gpu",
+        "ui_path": "workflows/human/full_power_gpu/human_full_power_gpu.json",
+        "api_path": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
+        "ui_sha256": "3c7096a8a6c3ad87af0b274e215a6a657b631440789fff71a0d390a321f470d5",
+        "api_sha256": "ec6e436411b5cb80ab0db10cc61fe94b717fca4b974997933d7b5ebf7157c934",
+        "structural_status": "PASS",
+        "runtime_status": "BLOCKED_UNVERIFIED",
+        "issues": [],
+        "node_count": 23,
+        "group_count": 10,
+        "api_node_count": 23
+      },
+      {
+        "workflow_id": "agent_local_mac_16gb",
+        "ui_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
+        "api_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
+        "ui_sha256": "61e2ce398713ffee0015c4c93b6fa6f21887e4637dbfcba6228902e0eb2a1294",
+        "api_sha256": "eb43ac41e09b0fd1159ad65d1c1f708b2e1126ac3645cc410264b725c2464bca",
+        "structural_status": "PASS",
+        "runtime_status": "BLOCKED_UNVERIFIED",
+        "issues": [],
+        "node_count": 23,
+        "group_count": 10,
+        "api_node_count": 23
+      },
+      {
+        "workflow_id": "agent_remote_runpod",
+        "ui_path": "workflows/agent/remote_runpod/agent_remote_runpod.json",
+        "api_path": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
+        "ui_sha256": "699b143f3d3d77e155ebd47b997a9cda4ffbc8f7ce493e1c40d7e67fe7a96b44",
+        "api_sha256": "38cf68d6e11cda30cc7f5e616ec7fb7191d9e829a460bad6a98aeec3c0edbd70",
+        "structural_status": "PASS",
+        "runtime_status": "BLOCKED_UNVERIFIED",
+        "issues": [],
+        "node_count": 23,
+        "group_count": 10,
+        "api_node_count": 23
+      }
+    ],
+    "autoprompter_validator": {
+      "status": "PASS",
+      "cases": [
+        {
+          "name": "valid",
+          "passed": true,
+          "expected": true,
+          "match": true,
+          "result": {
+            "passed": true,
+            "normalized_prompt": "hoi4_portrait, a middle-aged man with an oval face, short hair, glasses, and a neutral expression",
+            "failure_codes": [],
+            "findings": [],
+            "claims": {}
+          }
+        },
+        {
+          "name": "wrong_trigger",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_PREFIX_INVALID"
+            ],
+            "findings": [],
+            "claims": {}
+          }
+        },
+        {
+          "name": "heading",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_PREFIX_INVALID"
+            ],
+            "findings": [],
+            "claims": {}
+          }
+        },
+        {
+          "name": "quoted",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_FORMAT_INVALID",
+              "AUTOPROMPT_PREFIX_INVALID"
+            ],
+            "findings": [
+              "quotation or Markdown wrapper"
+            ],
+            "claims": {}
+          }
+        },
+        {
+          "name": "paragraph",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_FORMAT_INVALID"
+            ],
+            "findings": [
+              "prompt must be one non-empty line"
+            ],
+            "claims": {}
+          }
+        },
+        {
+          "name": "name_leak",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_NAME_LEAK"
+            ],
+            "findings": [
+              "subject name or alias appears: John Example"
+            ],
+            "claims": {}
+          }
+        },
+        {
+          "name": "background",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_PROHIBITED_CONTENT"
+            ],
+            "findings": [
+              "prohibited background claim"
+            ],
+            "claims": {}
+          }
+        },
+        {
+          "name": "lighting",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_PROHIBITED_CONTENT"
+            ],
+            "findings": [
+              "prohibited lighting claim"
+            ],
+            "claims": {}
+          }
+        },
+        {
+          "name": "style",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_PROHIBITED_CONTENT"
+            ],
+            "findings": [
+              "prohibited style claim"
+            ],
+            "claims": {}
+          }
+        },
+        {
+          "name": "nationality",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_UNVERIFIED_CLAIM"
+            ],
+            "findings": [
+              "unsupported nationality: german"
+            ],
+            "claims": {
+              "nationality": [
+                "german"
+              ]
+            }
+          }
+        },
+        {
+          "name": "medal",
+          "passed": false,
+          "expected": false,
+          "match": true,
+          "result": {
+            "passed": false,
+            "normalized_prompt": null,
+            "failure_codes": [
+              "AUTOPROMPT_UNVERIFIED_CLAIM"
+            ],
+            "findings": [
+              "unsupported medals_or_insignia: medal"
+            ],
+            "claims": {
+              "medals_or_insignia": [
+                "medal"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "dds_gate": {
+      "status": "PASS",
+      "note": "negative gate is covered by the converter: missing/uncertain audit must return exit code 50; a runtime PNG round-trip is skipped until Pillow is installed."
+    },
+    "identity_style_experiments": {
+      "status": "BLOCKED_UNTIL_RUNTIME",
+      "matrix_id": "krea2_identity_style_factorial_v1",
+      "matrix_written": true
+    },
+    "integration_packages": {
+      "status": "PASS",
+      "chaos_redux_live_review": "PASS",
+      "generic_live_review": "PASS"
+    },
+    "secret_scan": {
+      "status": "PASS",
+      "findings": []
+    }
+  },
+  "preflight_blockers": [
+    "PyTorch/MPS and ComfyUI are not installed or MPS capability is not verified; local execution cannot be claimed.",
+    "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
+    "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
+    "Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.",
+    "The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.",
+    "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
+    "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
+    "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
+    "Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.",
+    "Pinned preprocessing/audit model artifacts have no verified checksums; masking, face analysis, and independent audit cannot run.",
+    "License/rights review is not fully approved for Krea redistribution or the unresolved background."
+  ],
+  "workflow_manifest": {
+    "schema_version": "1.0.0",
+    "generated_at": "2026-07-26",
+    "lock_version": "workflows-2026-07-26.1",
+    "workflows": [
+      {
+        "workflow_id": "human_local_mac_16gb",
+        "display_name": "human_local_mac_16gb",
+        "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
+        "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
+        "sha256": "0f6f1da20e1be2ab4da79391c1ca0d83241175d577a2d2ea154af722e5964b17",
+        "api_sha256": "4407aca3cefeb25c943fb322c9778b5272bdb066bbb205035baf13de112a2f89",
+        "graph_spec_version": "graph-spec-1.0.0",
+        "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+        "required_core_nodes": [
+          "DualCLIPLoader",
+          "EmptySD3LatentImage",
+          "KSampler",
+          "LoraLoaderModelOnly",
+          "SaveImage",
+          "UNETLoader",
+          "VAEDecode",
+          "VAEEncode",
+          "VAELoader"
+        ],
+        "required_custom_nodes": [
+          "HOI4AutopromptClient",
+          "HOI4ConservativePrep",
+          "HOI4EvidenceExport",
+          "HOI4ForegroundMask",
+          "HOI4HeadShouldersCrop",
+          "HOI4JobInput",
+          "HOI4JobSource",
+          "HOI4MaskAndBackgroundGuard",
+          "HOI4SourceGuard",
+          "HOI4SubjectSelect",
+          "Krea2EditGroundedEncode",
+          "Krea2EditModelPatch"
+        ],
+        "required_models": [
+          "krea2_turbo_fp8_scaled.safetensors",
+          "qwen3vl_4b_fp8_scaled.safetensors",
+          "qwen_image_vae.safetensors",
+          "krea2_identity_edit_v1_2.safetensors",
+          "hoi4_portrait_new_style_lora.safetensors",
+          "Qwen3VL-4B-Instruct-Q4_K_M.gguf"
+        ],
+        "autoprompter_present": true,
+        "prompt_source": "autoprompter",
+        "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+        "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+        "load_test_evidence": null,
+        "execution_test_evidence": null
+      },
+      {
+        "workflow_id": "human_full_power_gpu",
+        "display_name": "human_full_power_gpu",
+        "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
+        "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
+        "sha256": "3c7096a8a6c3ad87af0b274e215a6a657b631440789fff71a0d390a321f470d5",
+        "api_sha256": "ec6e436411b5cb80ab0db10cc61fe94b717fca4b974997933d7b5ebf7157c934",
+        "graph_spec_version": "graph-spec-1.0.0",
+        "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+        "required_core_nodes": [
+          "DualCLIPLoader",
+          "EmptySD3LatentImage",
+          "KSampler",
+          "LoraLoaderModelOnly",
+          "SaveImage",
+          "UNETLoader",
+          "VAEDecode",
+          "VAEEncode",
+          "VAELoader"
+        ],
+        "required_custom_nodes": [
+          "HOI4AutopromptClient",
+          "HOI4ConservativePrep",
+          "HOI4EvidenceExport",
+          "HOI4ForegroundMask",
+          "HOI4HeadShouldersCrop",
+          "HOI4JobInput",
+          "HOI4JobSource",
+          "HOI4MaskAndBackgroundGuard",
+          "HOI4SourceGuard",
+          "HOI4SubjectSelect",
+          "Krea2EditGroundedEncode",
+          "Krea2EditModelPatch"
+        ],
+        "required_models": [
+          "krea2_turbo_fp8_scaled.safetensors",
+          "qwen3vl_4b_fp8_scaled.safetensors",
+          "qwen_image_vae.safetensors",
+          "krea2_identity_edit_v1_2.safetensors",
+          "hoi4_portrait_new_style_lora.safetensors",
+          "Qwen3-VL-8B-Instruct-BF16-shards"
+        ],
+        "autoprompter_present": true,
+        "prompt_source": "autoprompter",
+        "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+        "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+        "load_test_evidence": null,
+        "execution_test_evidence": null
+      },
+      {
+        "workflow_id": "agent_local_mac_16gb",
+        "display_name": "agent_local_mac_16gb",
+        "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
+        "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
+        "sha256": "61e2ce398713ffee0015c4c93b6fa6f21887e4637dbfcba6228902e0eb2a1294",
+        "api_sha256": "eb43ac41e09b0fd1159ad65d1c1f708b2e1126ac3645cc410264b725c2464bca",
+        "graph_spec_version": "graph-spec-1.0.0",
+        "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+        "required_core_nodes": [
+          "DualCLIPLoader",
+          "EmptySD3LatentImage",
+          "KSampler",
+          "LoraLoaderModelOnly",
+          "SaveImage",
+          "UNETLoader",
+          "VAEDecode",
+          "VAEEncode",
+          "VAELoader"
+        ],
+        "required_custom_nodes": [
+          "HOI4ConservativePrep",
+          "HOI4EvidenceExport",
+          "HOI4ForegroundMask",
+          "HOI4HeadShouldersCrop",
+          "HOI4JobInput",
+          "HOI4JobSource",
+          "HOI4MaskAndBackgroundGuard",
+          "HOI4PromptInput",
+          "HOI4SourceGuard",
+          "HOI4SubjectSelect",
+          "Krea2EditGroundedEncode",
+          "Krea2EditModelPatch"
+        ],
+        "required_models": [
+          "krea2_turbo_fp8_scaled.safetensors",
+          "qwen3vl_4b_fp8_scaled.safetensors",
+          "qwen_image_vae.safetensors",
+          "krea2_identity_edit_v1_2.safetensors",
+          "hoi4_portrait_new_style_lora.safetensors"
+        ],
+        "autoprompter_present": false,
+        "prompt_source": "job_contract",
+        "autoprompter_instruction_sha256": null,
+        "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+        "load_test_evidence": null,
+        "execution_test_evidence": null
+      },
+      {
+        "workflow_id": "agent_remote_runpod",
+        "display_name": "agent_remote_runpod",
+        "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
+        "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
+        "sha256": "699b143f3d3d77e155ebd47b997a9cda4ffbc8f7ce493e1c40d7e67fe7a96b44",
+        "api_sha256": "38cf68d6e11cda30cc7f5e616ec7fb7191d9e829a460bad6a98aeec3c0edbd70",
+        "graph_spec_version": "graph-spec-1.0.0",
+        "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+        "required_core_nodes": [
+          "DualCLIPLoader",
+          "EmptySD3LatentImage",
+          "KSampler",
+          "LoraLoaderModelOnly",
+          "SaveImage",
+          "UNETLoader",
+          "VAEDecode",
+          "VAEEncode",
+          "VAELoader"
+        ],
+        "required_custom_nodes": [
+          "HOI4ConservativePrep",
+          "HOI4EvidenceExport",
+          "HOI4ForegroundMask",
+          "HOI4HeadShouldersCrop",
+          "HOI4JobInput",
+          "HOI4JobSource",
+          "HOI4MaskAndBackgroundGuard",
+          "HOI4PromptInput",
+          "HOI4SourceGuard",
+          "HOI4SubjectSelect",
+          "Krea2EditGroundedEncode",
+          "Krea2EditModelPatch"
+        ],
+        "required_models": [
+          "krea2_turbo_fp8_scaled.safetensors",
+          "qwen3vl_4b_fp8_scaled.safetensors",
+          "qwen_image_vae.safetensors",
+          "krea2_identity_edit_v1_2.safetensors",
+          "hoi4_portrait_new_style_lora.safetensors"
+        ],
+        "autoprompter_present": false,
+        "prompt_source": "job_contract",
+        "autoprompter_instruction_sha256": null,
+        "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+        "load_test_evidence": null,
+        "execution_test_evidence": null
+      }
+    ],
+    "status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
+  },
+  "runtime_claims": {
+    "local_mac_execution": "NOT_CLAIMED",
+    "remote_runpod_execution": "NOT_CLAIMED",
+    "final_png": "NOT_CREATED",
+    "final_dds": "NOT_CREATED",
+    "mod_wiring": "PARENT_AGENT_ONLY"
+  },
+  "source_pins": {
+    "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+    "style_lora_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
+  }
+}
