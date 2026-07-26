@@ -19,7 +19,7 @@
       "python_version": "3.12",
       "python_platform": "aarch64-apple-darwin",
       "torch_backend": "cpu",
-      "sha256": "5d9aec55d311dc6f7dc2ca8ab8ab219e11fd101600e7664796c4bdfc43a225b5",
+      "sha256": "d2bf5423176996882a546a92e0698d10ce08e914288da6ad2655cae7d142b6df",
       "resolver": "uv 0.11.7; official PyPI and PyTorch resolver metadata; no package installation performed"
     },
     "linux_amd64_cuda128": {
@@ -29,7 +29,7 @@
       "python_platform": "x86_64-manylinux_2_28",
       "torch_backend": "cu128",
       "torch_index": "https://download.pytorch.org/whl/cu128",
-      "sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+      "sha256": "592fde5a23ae6cbcb02960aecaa112f1ef691709d57272466492e411f98dbd75",
       "resolver": "uv 0.11.7; official PyPI and PyTorch resolver metadata; no package installation performed"
     }
   },
