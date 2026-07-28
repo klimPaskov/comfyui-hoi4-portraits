@@ -27,10 +27,12 @@ and is verified against SHA-256
 
 The mandatory preprocessing lock now records exact primary-source revisions,
 artifact sizes, formats, destination paths, and SHA-256 values for BiRefNet,
-DDColor, YuNet, MediaPipe Face Landmarker, and SFace. The artifacts are not
-installed on this host; preflight reports `BLOCKED_NOT_INSTALLED` for each and
-will not treat metadata-only pins as runtime evidence. The verification record
-is `dependencies/licenses/preprocessing-artifacts.source.md`.
+DDColor, YuNet, MediaPipe Face Landmarker, and SFace. All five mandatory
+artifacts and the pinned BiRefNet runtime source files are installed and
+checksum-verified locally; a source-specific qualification fixture has passed
+YuNet, MediaPipe, and BiRefNet on MPS. The verification record is
+`dependencies/licenses/preprocessing-artifacts.source.md`, with the bounded
+execution evidence in `docs/preflight/source_fixture_execution.json`.
 
 ## Runtime boundary
 

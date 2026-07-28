@@ -261,6 +261,13 @@ class PreprocessingService:
             try:
                 model = AutoModelForImageSegmentation.from_pretrained(str(artifact.path.parent), trust_remote_code=True, local_files_only=True)
                 model.to(device)
+                # The pinned BiRefNet snapshot is stored in half precision.
+                # MPS can execute that representation directly, but CPU
+                # convolutions are more reliable when the model is promoted
+                # to float32.  Keep the conversion explicit so the input
+                # tensor and model parameters cannot silently diverge.
+                if getattr(device, "type", None) == "cpu":
+                    model.float()
                 model.eval()
             except (OSError, RuntimeError, ValueError, ImportError) as exc:
                 raise PreprocessingBlocked(ExitCode.DEPENDENCY_MISSING, "pinned BiRefNet could not be loaded from local artifacts", details={"type": type(exc).__name__}) from exc
@@ -278,7 +285,9 @@ class PreprocessingService:
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ])
-            tensor = transform(image).unsqueeze(0).to(device)
+            parameter = next(model.parameters(), None)
+            dtype = getattr(parameter, "dtype", None)
+            tensor = transform(image).unsqueeze(0).to(device=device, dtype=dtype or torch.float32)
             with self._inference_lock:
                 with torch.inference_mode():
                     output = model(tensor)

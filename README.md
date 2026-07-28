@@ -8,7 +8,7 @@ The project separates image generation from acceptance. ComfyUI owns the model g
 
 The four workflow files are present and live-schema loadable in the pinned ComfyUI checkout. The local Mac runtime, preprocessing sidecar, autoprompter validation, model locks, and workflow contracts are installed and verified.
 
-Production generation is intentionally still gated. The current acceptance report is **BLOCKED (exit code 15)** because this checkout has no approved source portrait fixture, approved background rights record, calibrated production thresholds, RunPod credentials, or owner approval for the applicable model/source licenses. A schema/UI test is safe; a production portrait claim is not.
+Production generation is intentionally still gated. The current acceptance report is **BLOCKED (exit code 15)** because the available source is qualification-only (not production-authorized), the background rights record is unresolved, production thresholds are uncalibrated, RunPod credentials/image qualification are unavailable, and applicable model/source licenses still need owner review. A schema/UI test and local preprocessing qualification are safe; a production portrait claim is not.
 
 ## Start here
 

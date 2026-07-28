@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-28T15:02:46.328752+00:00",
+  "created_at": "2026-07-28T15:46:24.510903+00:00",
   "profile": "agent_remote_runpod",
   "status": "BLOCKED_REMOTE_AUTH",
   "status_reason": "RunPod endpoint credentials and authenticated remote acceptance are unavailable.",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 1024.00M  used = 44.94M  free = 979.06M  (encrypted)",
+          "stdout": "vm.swapusage: total = 3072.00M  used = 2068.56M  free = 1003.44M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14203.\nPages active:                                 269668.\nPages inactive:                               262095.\nPages speculative:                             10494.\nPages throttled:                                   0.\nPages wired down:                             204975.\nPages purgeable:                                8983.\n\"Translation faults\":                       41342027.\nPages copy-on-write:                         3594899.\nPages zero filled:                          22377142.\nPages reactivated:                           1602162.\nPages purged:                                 416276.\nFile-backed pages:                            323886.\nAnonymous pages:                              218371.\nPages stored in compressor:                   536901.\nPages occupied by compressor:                 244010.\nDecompressions:                               644028.\nCompressions:                                1432945.\nPageins:                                   249426238.\nPageouts:                                      20515.\nSwapins:                                         156.\nSwapouts:                                       2876.\nPages tagged:                                 109099.\nPages tagged resident:                         60781.\nPages tagged compressed:                       48318.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4435.\nPages tag-storage free:                          480.\nPages tag-storage non-tag pageable:            27776.\nPages tag-storage non-tag wired:                  77.\nBytes of compressed tags:                    6648704.\nTagged compressions:                          115603.\nTagged decompressions:                         61237.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15291.\nPages active:                                 200544.\nPages inactive:                               261279.\nPages speculative:                              6757.\nPages throttled:                                   0.\nPages wired down:                             180687.\nPages purgeable:                                 289.\n\"Translation faults\":                       54106344.\nPages copy-on-write:                         4561081.\nPages zero filled:                          28888810.\nPages reactivated:                           3742640.\nPages purged:                                 697642.\nFile-backed pages:                            329924.\nAnonymous pages:                              138656.\nPages stored in compressor:                   888080.\nPages occupied by compressor:                 341415.\nDecompressions:                              2087566.\nCompressions:                                3665753.\nPageins:                                   342972276.\nPageouts:                                      25160.\nSwapins:                                        9588.\nSwapouts:                                     141092.\nPages tagged:                                 103468.\nPages tagged resident:                         54000.\nPages tagged compressed:                       49468.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4419.\nPages tag-storage free:                          274.\nPages tag-storage non-tag pageable:            27995.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    7164288.\nTagged compressions:                          208895.\nTagged decompressions:                        139035.",
           "stderr": ""
         }
       },
@@ -51,7 +51,7 @@
           "<project-root>"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   183Gi   255Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   182Gi   253Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }
@@ -64,7 +64,7 @@
       "local_runtime_capability": "PASS",
       "immutable_style_lora": "PASS",
       "approved_source_background": "BLOCKED",
-      "source_fixture_and_provenance": "BLOCKED",
+      "source_fixture_and_provenance": "PASS",
       "planning_package_checksums": "PASS",
       "model_artifact_preflight": "PASS",
       "custom_node_preflight": "PASS",
@@ -79,7 +79,6 @@
     },
     "blockers": [
       "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
-      "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
       "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
       "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
@@ -168,7 +167,7 @@
     },
     "dry_validation_job": {
       "status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND",
-      "reason": "The live schema probe passed, but no legally usable source fixture and approved background are available."
+      "reason": "The live schema probe and private preprocessing qualification passed, but no production-authorized source fixture and approved background are available."
     },
     "generation": {
       "status": "BLOCKED_NOT_ATTEMPTED",

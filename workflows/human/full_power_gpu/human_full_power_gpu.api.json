@@ -412,7 +412,7 @@
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "21",
+        "22",
         0
       ]
     }
@@ -531,8 +531,15 @@
       "PREVIEW 1 • crop / identity reference",
       "PREVIEW 2 • prepared reference",
       "PREVIEW 3 • approved background",
-      "PREVIEW 4 • final candidate"
+      "PREVIEW 4 • same image as SaveImage"
     ],
+    "final_preview_save_pair": {
+      "preview_node_id": 28,
+      "save_node_id": 23,
+      "shared_source_node_id": 22,
+      "shared_source_slot": 0,
+      "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
+    },
     "required_krea_nodes": [
       "Krea2EditGroundedEncode",
       "Krea2EditModelPatch"

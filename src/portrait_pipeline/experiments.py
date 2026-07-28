@@ -42,7 +42,7 @@ def build_matrix() -> dict[str, Any]:
         "execution_status": "NOT_RUN",
         "required_eight_step_turbo_status": "NOT_RUN",
         "required_prerequisites": [
-            "legally usable source fixture with immutable provenance",
+            "production-authorized source fixture with immutable provenance",
             "approved HOI4 background registry entry",
             "approved calibrated identity/style thresholds",
             "live model-loading and source-specific execution evidence",

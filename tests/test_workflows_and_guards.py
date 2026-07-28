@@ -12,7 +12,7 @@ from portrait_pipeline.graph_spec.builder import build_workflow_artifacts
 from portrait_pipeline.mcp.adapter import AdapterError, PortraitMcpService
 from portrait_pipeline.preflight import _model_artifact_preflight, _preprocessing_artifact_preflight, collect_preflight
 from portrait_pipeline.workflow_validation import validate_all_workflows
-from portrait_pipeline.util import project_root
+from portrait_pipeline.util import project_root, sanitize_public_paths
 from comfyui_hoi4_portrait_nodes import NODE_CLASS_MAPPINGS
 
 
@@ -43,6 +43,24 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertNotIn("HOI4AutopromptClient", json.dumps(data))
             self.assertNotIn("HOI4HumanControls", json.dumps(data))
             self.assertEqual(data["_meta"]["prompt_source"], "job_contract")
+
+    def test_human_final_preview_shares_the_saved_image_source(self):
+        for path in (self.root / "workflows/human").glob("**/*.api.json"):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(data["23"]["inputs"]["images"], ["22", 0])
+            self.assertEqual(data["28"]["inputs"]["images"], ["22", 0])
+            pair = data["_meta"]["final_preview_save_pair"]
+            self.assertEqual(pair["preview_node_id"], 28)
+            self.assertEqual(pair["save_node_id"], 23)
+            self.assertEqual(pair["shared_source_node_id"], 22)
+        for path in (self.root / "workflows/agent").glob("**/*.api.json"):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            self.assertIsNone(data["_meta"]["final_preview_save_pair"]["preview_node_id"])
+
+    def test_public_evidence_redacts_host_local_paths(self):
+        sanitized = sanitize_public_paths({"root": str(self.root), "external": "/Users/example/private/source.png"}, self.root)
+        self.assertEqual(sanitized["root"], "<project-root>")
+        self.assertEqual(sanitized["external"], "<local-path>")
 
     def test_human_workflows_expose_controls_and_project_node_signatures_match(self):
         for path in (self.root / "workflows/human").glob("**/*.api.json"):

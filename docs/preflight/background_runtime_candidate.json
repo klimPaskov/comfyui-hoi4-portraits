@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "created_at": "2026-07-28T15:24:17.156386+00:00",
+  "status": "CANDIDATE_RUNTIME_READY_OWNER_APPROVAL_REQUIRED",
+  "checks": {
+    "source_present": true,
+    "source_path": "<external-repository>/gfx/leaders/portrait_leader_background.psd",
+    "source_sha256": "4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6",
+    "source_sha256_match": true,
+    "decoded_dimensions": [
+      156,
+      210
+    ],
+    "decoded_format": "PSD",
+    "runtime_path": "backgrounds/private/chaos_redux_portrait_leader_background.png",
+    "runtime_sha256": "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e",
+    "runtime_ready": true
+  },
+  "rights": {
+    "source_class": "installed_project_repository",
+    "source_repository": "Chaos Redux live checkout",
+    "source_license_record": "not found in live repository root",
+    "redistribution_rule": "local_copy_only_until_owner_approval",
+    "attribution": "owner must provide or confirm"
+  },
+  "approval": {
+    "status": "PENDING_PROJECT_OWNER_REVIEW",
+    "approved_by": [],
+    "registry_update_permitted": false
+  },
+  "production_policy": {
+    "config_registry_modified": false,
+    "generation_permitted": false,
+    "dds_promotion_permitted": false
+  }
+}

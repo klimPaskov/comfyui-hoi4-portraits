@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0.0",
   "comparison_id": "identity-style-comparison-2026-07-26.1",
-  "created_at": "2026-07-28T15:03:04.606233+00:00",
+  "created_at": "2026-07-28T15:46:42.080063+00:00",
   "status": "BLOCKED_NO_REAL_CANDIDATES",
-  "reason": "No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence.",
+  "reason": "No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.",
   "matrix_id": "krea2_identity_style_factorial_v1",
   "selection_policy": {
     "identity_first": true,
@@ -43,7 +43,7 @@
       "local_runtime_capability": "PASS",
       "immutable_style_lora": "PASS",
       "approved_source_background": "BLOCKED",
-      "source_fixture_and_provenance": "BLOCKED",
+      "source_fixture_and_provenance": "PASS",
       "planning_package_checksums": "PASS",
       "model_artifact_preflight": "PASS",
       "custom_node_preflight": "PASS",
@@ -58,7 +58,6 @@
     },
     "blockers": [
       "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
-      "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
       "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
       "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",

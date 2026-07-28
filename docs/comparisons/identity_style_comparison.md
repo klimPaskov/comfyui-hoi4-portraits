@@ -1,7 +1,7 @@
 # Identity and Style Comparison
 
 - Status: **BLOCKED_NO_REAL_CANDIDATES**
-- Reason: No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence.
+- Reason: No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.
 - Matrix: `krea2_identity_style_factorial_v1`
 
 No candidate comparison was generated. The absence of a sheet is intentional while the hard gates are blocked.
@@ -13,7 +13,6 @@ identity_gates → geometry_gates → accessories → mask → style → runtime
 ## Blockers
 
 - The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.
-- No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.
 - RunPod endpoint credentials are absent; remote submission/acceptance cannot run.
 - No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.

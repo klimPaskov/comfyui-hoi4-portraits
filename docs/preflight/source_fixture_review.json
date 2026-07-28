@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-07-28",
+  "status": "LOCAL_QUALIFICATION_FIXTURE_PRESENT_PRODUCTION_RIGHTS_SCOPE_LIMITED",
+  "policy": "A legally usable calibration fixture may exercise preprocessing and audit qualification, but it does not approve a real-person production job or waive Krea, background, threshold, or owner-review gates.",
+  "fixture_manifest": "fixtures/private/manifest.json",
+  "fixtures": [
+    {
+      "fixture_id": "loc_dag_1518_portrait",
+      "source_class": "public_domain_primary_archive",
+      "source_record": "https://www.loc.gov/item/2017648668/",
+      "rights_evidence": "Library of Congress identifies the Daguerreotype Collection as public domain/free to use and reuse and lists no known restrictions on publication.",
+      "source_sha256": "e200e5e38f5a8d51a46018be167c14eab8c6327a1c58b00bffee35225d1b5091",
+      "private_path": "fixtures/private/loc_dag_1518_portrait.jpg",
+      "git_policy": "not tracked; ignored private fixture",
+      "qualification_scope": ["preprocessing", "crop", "mask", "calibration candidate"],
+      "production_authorization": "not_granted"
+    }
+  ]
+}

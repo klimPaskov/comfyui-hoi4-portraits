@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-28T15:03:04.822065+00:00",
+  "created_at": "2026-07-28T15:46:42.293286+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 15,
   "gates": {
@@ -160,8 +160,8 @@
         },
         {
           "path": "README.md",
-          "expected": "7ab7e62b6e80f2e6e91f5f89bb3623ef004ea62ec792462ca38e273e8e025d5d",
-          "actual": "7ab7e62b6e80f2e6e91f5f89bb3623ef004ea62ec792462ca38e273e8e025d5d",
+          "expected": "7d28880ddc572d7007b622d2ca346fac006c596a472b6c1b1c7ad04f86fd29ce",
+          "actual": "7d28880ddc572d7007b622d2ca346fac006c596a472b6c1b1c7ad04f86fd29ce",
           "match": true
         },
         {
@@ -472,7 +472,7 @@
               "vm.swapusage"
             ],
             "returncode": 0,
-            "stdout": "vm.swapusage: total = 1024.00M  used = 44.94M  free = 979.06M  (encrypted)",
+            "stdout": "vm.swapusage: total = 3072.00M  used = 2068.56M  free = 1003.44M  (encrypted)",
             "stderr": ""
           },
           "vm_stat": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15079.\nPages active:                                 303945.\nPages inactive:                               296251.\nPages speculative:                              7024.\nPages throttled:                                   0.\nPages wired down:                             147989.\nPages purgeable:                                1177.\n\"Translation faults\":                       40927501.\nPages copy-on-write:                         3558416.\nPages zero filled:                          22125834.\nPages reactivated:                           1513287.\nPages purged:                                 405969.\nFile-backed pages:                            394164.\nAnonymous pages:                              213056.\nPages stored in compressor:                   557777.\nPages occupied by compressor:                 235473.\nDecompressions:                               574714.\nCompressions:                                1359573.\nPageins:                                   241255055.\nPageouts:                                      20339.\nSwapins:                                         156.\nSwapouts:                                       2876.\nPages tagged:                                 109709.\nPages tagged resident:                         57837.\nPages tagged compressed:                       51872.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4460.\nPages tag-storage free:                          192.\nPages tag-storage non-tag pageable:            28038.\nPages tag-storage non-tag wired:                  78.\nBytes of compressed tags:                    7310016.\nTagged compressions:                          115183.\nTagged decompressions:                         57268.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15135.\nPages active:                                 241808.\nPages inactive:                               234765.\nPages speculative:                              6160.\nPages throttled:                                   0.\nPages wired down:                             187441.\nPages purgeable:                                4633.\n\"Translation faults\":                       53736037.\nPages copy-on-write:                         4526364.\nPages zero filled:                          28764349.\nPages reactivated:                           3534369.\nPages purged:                                 688924.\nFile-backed pages:                            275027.\nAnonymous pages:                              207706.\nPages stored in compressor:                   824736.\nPages occupied by compressor:                 320190.\nDecompressions:                              2024725.\nCompressions:                                3530419.\nPageins:                                   334915821.\nPageouts:                                      24974.\nSwapins:                                        9504.\nSwapouts:                                     141092.\nPages tagged:                                 104530.\nPages tagged resident:                         60421.\nPages tagged compressed:                       44109.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4448.\nPages tag-storage free:                          228.\nPages tag-storage non-tag pageable:            28012.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    6048704.\nTagged compressions:                          200888.\nTagged decompressions:                        136395.",
             "stderr": ""
           }
         },
@@ -499,17 +499,17 @@
             "<project-root>"
           ],
           "returncode": 0,
-          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   183Gi   255Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
+          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   182Gi   253Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
           "stderr": ""
         },
         "available_tools": {
           "uv": {
             "command": "uv",
-            "path": "<tool-path>/uv",
+            "path": "<local-path>",
             "present": true,
             "probe": {
               "command": [
-                "<tool-path>/uv",
+                "<local-path>",
                 "--version"
               ],
               "returncode": 0,
@@ -698,9 +698,12 @@
     },
     "source_fixture_and_provenance": {
       "name": "source_fixture_and_provenance",
-      "status": "BLOCKED",
+      "status": "PASS",
       "evidence": {
-        "fixture_files": [],
+        "fixture_files": [
+          "fixtures/private/loc_dag_1518_portrait.jpg",
+          "fixtures/private/manifest.json"
+        ],
         "manifest_template": "<project-root>/tests/fixture_manifest.template.json"
       }
     },
@@ -1175,7 +1178,7 @@
             {
               "id": "live_runtime_execution",
               "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
-              "finding": "The live schema check passed, but no legally usable source fixture, approved background, calibrated thresholds, or independent audit evidence is present. Model loading and the required eight-step Turbo identity-edit execution were not attempted; production generation remains fail-closed."
+              "finding": "The live schema check and private preprocessing qualification passed, but no production-authorized source fixture, approved background, calibrated thresholds, or independent audit evidence is present. Model loading and the required eight-step Turbo identity-edit execution were not attempted; production generation remains fail-closed."
             }
           ],
           "conclusion": "Krea live core/node/schema compatibility is verified in the pinned loopback runtime and all four workflows are live-schema loadable. This does not establish source-specific model execution or production suitability: the required eight-step run, identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked by missing approved source/background and rights evidence."
@@ -1184,7 +1187,7 @@
         "live_probe_status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
         "live_probe": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-28T14:52:31.534434+00:00",
+          "checked_at": "2026-07-28T15:35:26.417306+00:00",
           "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
           "server": {
             "base_url": "http://127.0.0.1:8188",
@@ -1193,7 +1196,7 @@
               "system": {
                 "os": "darwin",
                 "ram_total": 17179869184,
-                "ram_free": 5339365376,
+                "ram_free": 4960550912,
                 "comfyui_version": "0.25.0",
                 "required_frontend_version": "1.45.19",
                 "installed_templates_version": "0.10.0",
@@ -1243,9 +1246,9 @@
                   "type": "mps",
                   "index": null,
                   "vram_total": 17179869184,
-                  "vram_free": 5336809472,
+                  "vram_free": 4960583680,
                   "torch_vram_total": 17179869184,
-                  "torch_vram_free": 5336809472
+                  "torch_vram_free": 4960583680
                 }
               ]
             }
@@ -3067,7 +3070,7 @@
           "execution": {
             "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
             "attempted": false,
-            "fixture_present": false,
+            "fixture_present": true,
             "background_resolved": false,
             "eight_step_turbo_execution": "NOT_RUN",
             "model_loading": "NOT_RUN",
@@ -3089,7 +3092,7 @@
         "lock_status": "PINNED_LOCAL_AND_FULL_POWER_RUNTIME_EXECUTION_UNVERIFIED",
         "runtime_report": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-28T13:00:42.897738+00:00",
+          "checked_at": "2026-07-28T15:30:58.385975+00:00",
           "status": "PASS_HEALTH_AND_NEGATIVE_VALIDATION",
           "profile": "human_local_mac_16gb",
           "full_power": {
@@ -3099,10 +3102,8 @@
             "processor_class": "Qwen3VLProcessor",
             "config_class": "Qwen3VLConfig",
             "config_model_type": "qwen3_vl",
-            "execution": "BLOCKED_TARGET_CUDA_UNAVAILABLE",
-            "cuda_available": false,
-            "execution_probe": "AutoprompterService.start_upstream()",
-            "execution_error": "human_full_power_gpu autoprompter requires CUDA; the current host has no CUDA device"
+            "execution": "NOT_RUN_CUDA_UNAVAILABLE",
+            "cuda_available": false
           },
           "negative_validation": {
             "status": "PASS",
@@ -3110,7 +3111,7 @@
             "observed_http_status": 400,
             "observed_error_code": "AUTOPROMPT_UNVERIFIED_CLAIM"
           },
-          "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A legally usable source fixture is required for positive qualification.",
+          "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A production-authorized source fixture is required for positive generation qualification.",
           "runtime": {
             "binary": ".runtime/llama-cpp/b9637/llama-b9637/llama-server",
             "model": "models/autoprompter/Qwen3VL-4B-Instruct-Q4_K_M.gguf",
@@ -3135,18 +3136,18 @@
             }
           },
           "positive_generation": {
-            "status": "BLOCKED_NO_LEGAL_SOURCE_FIXTURE"
+            "status": "BLOCKED_NO_PRODUCTION_AUTHORIZED_SOURCE"
           },
           "staging": {
             "one_request_at_a_time": true,
             "background_metadata_forwarded": false,
             "binding": "http://127.0.0.1:8099",
-            "process_shutdown_verified_by_caller": true
+            "process_shutdown_verified_by_caller": false
           }
         },
         "local_sidecar_status": "PASS",
         "full_power_format_status": "PASS",
-        "positive_generation_status": "BLOCKED_NO_LEGAL_SOURCE_FIXTURE",
+        "positive_generation_status": "BLOCKED_NO_PRODUCTION_AUTHORIZED_SOURCE",
         "production_prompt_claim": "NOT_CLAIMED"
       }
     },
@@ -3156,7 +3157,7 @@
       "evidence": {
         "path": "<project-root>/dependencies/preprocessing_lock.json",
         "status": "PASS",
-        "lock_status": "PINNED_ARTIFACTS_NOT_INSTALLED",
+        "lock_status": "RESOLVED",
         "checks": [
           {
             "name": "BiRefNet",
@@ -3299,7 +3300,7 @@
       "status": "PASS",
       "evidence": {
         "chaos_redux": {
-          "path": "<external-repository>",
+          "path": "<local-path> Interactive/Hearts of Iron IV/mod/Chaos-Redux",
           "exists": true,
           "is_git": true,
           "status": {
@@ -3434,8 +3435,8 @@
         "workflow_id": "human_local_mac_16gb",
         "ui_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "api_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-        "ui_sha256": "707ecf53add111eae11fed2b9725942d01be57bf0a7851b9948ff7641821955a",
-        "api_sha256": "42839f9485a94d7939424f15d8f8a0d5999b23bc32ea6f6ad9d6e6aa7499b0e8",
+        "ui_sha256": "1b9dd3ecd9251063fe034ca2e31ebc819a9c3d39f4d6fb46c77e062bac0b8138",
+        "api_sha256": "44a08bd08c0d7e6ec3b6bd012343f9a51d41dc80b66bba8122317c5b99aeecc9",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
@@ -3447,8 +3448,8 @@
         "workflow_id": "human_full_power_gpu",
         "ui_path": "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "api_path": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-        "ui_sha256": "3e7fb37d30734745364cfb47e695d3e0180ff8a7175ceabae3e36dd33b6f605c",
-        "api_sha256": "0694be10d73743819df35d2fcda3a3fb38120ae703186c5ecf2bc26a48c3a365",
+        "ui_sha256": "30de42d8914cd90e20b8a53343d28b806f65a471259459e1e0f924bd9ed2613c",
+        "api_sha256": "114b5aa599ab588fb8c4e7615e5caebd20a4be7648b8008aae2ff8abf52ed5c3",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
@@ -3460,8 +3461,8 @@
         "workflow_id": "agent_local_mac_16gb",
         "ui_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "api_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-        "ui_sha256": "cc3af6c86ffa03bcc74406e90822f0f00be55c416babc8023c212d2dc5dc690a",
-        "api_sha256": "c1672bd5216c4e33c74adeb315a2273296f88f2cc9807ac2d713da18d3107894",
+        "ui_sha256": "cef5ef221ad2981d6dc9458023435c35324fc6c4881125cb0b2de0bd3361429c",
+        "api_sha256": "90838f5adb2a3d28401cd822e4f1d3e6cd2909e698f0ecf7d8a4a8074ea7906a",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
@@ -3473,8 +3474,8 @@
         "workflow_id": "agent_remote_runpod",
         "ui_path": "workflows/agent/remote_runpod/agent_remote_runpod.json",
         "api_path": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-        "ui_sha256": "bd14dfe367c93698aa88ad604800e122088c80190c640e862d6eadccafb855ca",
-        "api_sha256": "17607d5eb6ba11e97372286ba49ee44165f56534bd6adf2f7d97d46036f44a7b",
+        "ui_sha256": "9c2c5535a9528d40dc4ffbbaa8fec296d6fa862d45cc58bb56038167ba0a0c70",
+        "api_sha256": "de06c0bc360c92b82899f36472d5043846f7611e146d05f00e9bb7d17c4d792c",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
@@ -3743,7 +3744,7 @@
       "json_path": "docs/comparisons/identity_style_comparison.json",
       "markdown_path": "docs/comparisons/identity_style_comparison.md",
       "candidate_count": 0,
-      "reason": "No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence."
+      "reason": "No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence."
     },
     "runpod_deployment_surface": {
       "status": "BLOCKED_UNRESOLVED_IMAGE_LOCK",
@@ -3844,7 +3845,6 @@
   },
   "preflight_blockers": [
     "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
-    "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
     "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
     "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
     "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
@@ -3861,8 +3861,8 @@
         "display_name": "human_local_mac_16gb",
         "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-        "sha256": "707ecf53add111eae11fed2b9725942d01be57bf0a7851b9948ff7641821955a",
-        "api_sha256": "42839f9485a94d7939424f15d8f8a0d5999b23bc32ea6f6ad9d6e6aa7499b0e8",
+        "sha256": "1b9dd3ecd9251063fe034ca2e31ebc819a9c3d39f4d6fb46c77e062bac0b8138",
+        "api_sha256": "44a08bd08c0d7e6ec3b6bd012343f9a51d41dc80b66bba8122317c5b99aeecc9",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
         "required_core_nodes": [
@@ -3918,20 +3918,27 @@
           "PREVIEW 1 • crop / identity reference",
           "PREVIEW 2 • prepared reference",
           "PREVIEW 3 • approved background",
-          "PREVIEW 4 • final candidate"
+          "PREVIEW 4 • same image as SaveImage"
         ],
+        "final_preview_save_pair": {
+          "preview_node_id": 28,
+          "save_node_id": 23,
+          "shared_source_node_id": 22,
+          "shared_source_slot": 0,
+          "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
+        },
         "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
         "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T14:52:31.534434+00:00"
+          "checked_at": "2026-07-28T15:35:26.417306+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
           "attempted": false,
-          "fixture_present": false,
+          "fixture_present": true,
           "background_resolved": false,
           "eight_step_turbo_execution": "NOT_RUN",
           "model_loading": "NOT_RUN",
@@ -3943,8 +3950,8 @@
         "display_name": "human_full_power_gpu",
         "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-        "sha256": "3e7fb37d30734745364cfb47e695d3e0180ff8a7175ceabae3e36dd33b6f605c",
-        "api_sha256": "0694be10d73743819df35d2fcda3a3fb38120ae703186c5ecf2bc26a48c3a365",
+        "sha256": "30de42d8914cd90e20b8a53343d28b806f65a471259459e1e0f924bd9ed2613c",
+        "api_sha256": "114b5aa599ab588fb8c4e7615e5caebd20a4be7648b8008aae2ff8abf52ed5c3",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
         "required_core_nodes": [
@@ -4000,20 +4007,27 @@
           "PREVIEW 1 • crop / identity reference",
           "PREVIEW 2 • prepared reference",
           "PREVIEW 3 • approved background",
-          "PREVIEW 4 • final candidate"
+          "PREVIEW 4 • same image as SaveImage"
         ],
+        "final_preview_save_pair": {
+          "preview_node_id": 28,
+          "save_node_id": 23,
+          "shared_source_node_id": 22,
+          "shared_source_slot": 0,
+          "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
+        },
         "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
         "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T14:52:31.534434+00:00"
+          "checked_at": "2026-07-28T15:35:26.417306+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
           "attempted": false,
-          "fixture_present": false,
+          "fixture_present": true,
           "background_resolved": false,
           "eight_step_turbo_execution": "NOT_RUN",
           "model_loading": "NOT_RUN",
@@ -4025,8 +4039,8 @@
         "display_name": "agent_local_mac_16gb",
         "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-        "sha256": "cc3af6c86ffa03bcc74406e90822f0f00be55c416babc8023c212d2dc5dc690a",
-        "api_sha256": "c1672bd5216c4e33c74adeb315a2273296f88f2cc9807ac2d713da18d3107894",
+        "sha256": "cef5ef221ad2981d6dc9458023435c35324fc6c4881125cb0b2de0bd3361429c",
+        "api_sha256": "90838f5adb2a3d28401cd822e4f1d3e6cd2909e698f0ecf7d8a4a8074ea7906a",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
         "required_core_nodes": [
@@ -4076,18 +4090,25 @@
         "autoprompter_present": false,
         "prompt_source": "job_contract",
         "preview_nodes": [],
+        "final_preview_save_pair": {
+          "preview_node_id": null,
+          "save_node_id": 23,
+          "shared_source_node_id": 22,
+          "shared_source_slot": 0,
+          "policy": "agent_save_only"
+        },
         "autoprompter_instruction_sha256": null,
         "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T14:52:31.534434+00:00"
+          "checked_at": "2026-07-28T15:35:26.417306+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
           "attempted": false,
-          "fixture_present": false,
+          "fixture_present": true,
           "background_resolved": false,
           "eight_step_turbo_execution": "NOT_RUN",
           "model_loading": "NOT_RUN",
@@ -4099,8 +4120,8 @@
         "display_name": "agent_remote_runpod",
         "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
         "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-        "sha256": "bd14dfe367c93698aa88ad604800e122088c80190c640e862d6eadccafb855ca",
-        "api_sha256": "17607d5eb6ba11e97372286ba49ee44165f56534bd6adf2f7d97d46036f44a7b",
+        "sha256": "9c2c5535a9528d40dc4ffbbaa8fec296d6fa862d45cc58bb56038167ba0a0c70",
+        "api_sha256": "de06c0bc360c92b82899f36472d5043846f7611e146d05f00e9bb7d17c4d792c",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
         "required_core_nodes": [
@@ -4150,18 +4171,25 @@
         "autoprompter_present": false,
         "prompt_source": "job_contract",
         "preview_nodes": [],
+        "final_preview_save_pair": {
+          "preview_node_id": null,
+          "save_node_id": 23,
+          "shared_source_node_id": 22,
+          "shared_source_slot": 0,
+          "policy": "agent_save_only"
+        },
         "autoprompter_instruction_sha256": null,
         "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T14:52:31.534434+00:00"
+          "checked_at": "2026-07-28T15:35:26.417306+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
           "attempted": false,
-          "fixture_present": false,
+          "fixture_present": true,
           "background_resolved": false,
           "eight_step_turbo_execution": "NOT_RUN",
           "model_loading": "NOT_RUN",

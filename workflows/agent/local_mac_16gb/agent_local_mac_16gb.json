@@ -1861,7 +1861,7 @@
       "bounding": [
         4060,
         40,
-        780,
+        980,
         920
       ],
       "color": "#457b9d",
@@ -1983,6 +1983,13 @@
       "VAELoader"
     ],
     "preview_nodes": [],
+    "final_preview_save_pair": {
+      "preview_node_id": null,
+      "save_node_id": 23,
+      "shared_source_node_id": 22,
+      "shared_source_slot": 0,
+      "policy": "agent_save_only"
+    },
     "required_krea_nodes": [
       "Krea2EditGroundedEncode",
       "Krea2EditModelPatch"

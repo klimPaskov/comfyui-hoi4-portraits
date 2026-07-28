@@ -59,7 +59,7 @@ GROUP_LAYOUT = {
     "06 Krea 2 identity edit": (2720, 40, 620, 920),
     "07 HOI4 style LoRA": (3380, 40, 300, 620),
     "08 Candidate generation": (3720, 40, 300, 620),
-    "09 Preview and evidence export": (4060, 40, 780, 920),
+    "09 Preview and evidence export": (4060, 40, 980, 920),
 }
 
 GROUP_COLORS = {
@@ -264,8 +264,8 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
                 inputs={"images": Link(8, 1)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4390, 500),
             ),
             _node(
-                28, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 4 • final candidate",
-                inputs={"images": Link(21, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4390, 700),
+                28, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 4 • same image as SaveImage",
+                inputs={"images": Link(22, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4690, 300),
             ),
         ])
 
@@ -290,6 +290,13 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "locked_controls": {node.title: node.locked for node in nodes if node.locked},
         "required_core_nodes": sorted(CORE_NODES | ({PREVIEW_NODE} if is_human else set())),
         "preview_nodes": [node.title for node in nodes if node.class_type == PREVIEW_NODE],
+        "final_preview_save_pair": {
+            "preview_node_id": 28 if is_human else None,
+            "save_node_id": 23,
+            "shared_source_node_id": 22,
+            "shared_source_slot": 0,
+            "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image" if is_human else "agent_save_only",
+        },
         "required_krea_nodes": sorted(KREA_NODES),
         "required_project_nodes": sorted((PROJECT_NODES | (HUMAN_ONLY_PROJECT_NODES if is_human else set())) & {node.class_type for node in nodes}),
         "candidate_budget": {"max": int(limits["candidate_max"]), "retry_max": int(limits["retry_max"])},
@@ -354,7 +361,7 @@ def _apply_visual_layout(nodes: list[NodeSpec]) -> None:
         14: (3050, 160), 15: (3050, 360), 16: (3050, 560), 17: (3050, 760),
         18: (3400, 240), 19: (3740, 150), 20: (3740, 360),
         21: (4080, 100), 22: (4390, 100), 23: (4390, 300),
-        25: (4080, 300), 26: (4080, 500), 27: (4390, 500), 28: (4390, 700),
+        25: (4080, 300), 26: (4080, 500), 27: (4390, 500), 28: (4690, 300),
     }
     for node in nodes:
         if node.node_id in positions:
@@ -479,6 +486,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             "autoprompter_present": bool(PROFILE_LIMITS[workflow_id]["autoprompter"]),
             "prompt_source": "autoprompter" if PROFILE_LIMITS[workflow_id]["autoprompter"] else "job_contract",
             "preview_nodes": graph.metadata.get("preview_nodes", []),
+            "final_preview_save_pair": graph.metadata.get("final_preview_save_pair"),
             "autoprompter_instruction_sha256": graph.metadata["autoprompter_instruction_sha256"],
             "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if live_schema_pass else "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
             "load_test_evidence": {"path": str(live_probe_path.relative_to(root_path)), "status": "PASS", "checked_at": live_probe.get("checked_at")} if live_schema_pass else None,

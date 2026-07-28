@@ -27,7 +27,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 | `preprocessing_and_audit_dependencies` | **PASS** |
 | `remote_topology_auth` | **NOT_APPLICABLE** |
 | `repository_preflight` | **PASS** |
-| `source_fixture_and_provenance` | **BLOCKED** |
+| `source_fixture_and_provenance` | **PASS** |
 
 ## Measurements
 
@@ -45,7 +45,6 @@ This report contains no successful generation claim. File-size arithmetic is a r
 ## Blockers
 
 - The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.
-- No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.
 - No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
 - Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.

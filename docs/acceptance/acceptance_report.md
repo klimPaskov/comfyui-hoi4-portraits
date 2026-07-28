@@ -13,7 +13,7 @@
 | `remote_topology_auth` | **BLOCKED** |
 | `immutable_lora` | **PASS** |
 | `approved_background` | **BLOCKED** |
-| `source_fixture_and_provenance` | **BLOCKED** |
+| `source_fixture_and_provenance` | **PASS** |
 | `dependencies_and_models` | **PASS** |
 | `custom_node_preflight` | **PASS** |
 | `runtime_dependency_lock` | **PASS** |
@@ -37,7 +37,6 @@
 ## Blockers
 
 - The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.
-- No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.
 - RunPod endpoint credentials are absent; remote submission/acceptance cannot run.
 - No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
@@ -48,7 +47,7 @@
 
 - `identity_style_experiments`: The matrix is recorded but execution is fail-closed until an approved source fixture, background, calibrated thresholds, and source-specific runtime evidence exist.
 - `benchmark_reports`: human_local_mac_16gb=BLOCKED_PREFLIGHT, human_full_power_gpu=BLOCKED_PREFLIGHT, agent_local_mac_16gb=BLOCKED_PREFLIGHT, agent_remote_runpod=BLOCKED_REMOTE_AUTH
-- `identity_style_comparison`: No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence.
+- `identity_style_comparison`: No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.
 - `runpod_deployment_surface`: BLOCKED_UNRESOLVED_RUNTIME_LOCK
 - `integration_packages`: BLOCKED
 

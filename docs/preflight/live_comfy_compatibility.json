@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "checked_at": "2026-07-28T14:52:31.534434+00:00",
+  "checked_at": "2026-07-28T15:35:26.417306+00:00",
   "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
   "server": {
     "base_url": "http://127.0.0.1:8188",
@@ -9,7 +9,7 @@
       "system": {
         "os": "darwin",
         "ram_total": 17179869184,
-        "ram_free": 5339365376,
+        "ram_free": 4960550912,
         "comfyui_version": "0.25.0",
         "required_frontend_version": "1.45.19",
         "installed_templates_version": "0.10.0",
@@ -59,9 +59,9 @@
           "type": "mps",
           "index": null,
           "vram_total": 17179869184,
-          "vram_free": 5336809472,
+          "vram_free": 4960583680,
           "torch_vram_total": 17179869184,
-          "torch_vram_free": 5336809472
+          "torch_vram_free": 4960583680
         }
       ]
     }
@@ -1883,7 +1883,7 @@
   "execution": {
     "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
     "attempted": false,
-    "fixture_present": false,
+    "fixture_present": true,
     "background_resolved": false,
     "eight_step_turbo_execution": "NOT_RUN",
     "model_loading": "NOT_RUN",

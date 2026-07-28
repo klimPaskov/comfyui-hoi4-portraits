@@ -10,7 +10,7 @@ from typing import Any, Iterable
 from .constants import PROFILE_LIMITS, STYLE_LORA_PATH, STYLE_LORA_SHA256
 from .experiments import build_matrix
 from .preflight import collect_preflight
-from .util import atomic_json_write, project_root, sha256_file
+from .util import atomic_json_write, project_root, sanitize_public_paths, sha256_file
 from .workflow_validation import validate_all_workflows
 
 
@@ -203,7 +203,7 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
             "workflow_structure": structural,
             "runtime_health": runtime_health,
             "workflow_load": workflow_load,
-            "dry_validation_job": {"status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND", "reason": "The live schema probe passed, but no legally usable source fixture and approved background are available."},
+            "dry_validation_job": {"status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND", "reason": "The live schema probe and private preprocessing qualification passed, but no production-authorized source fixture and approved background are available."},
             "generation": {"status": "BLOCKED_NOT_ATTEMPTED", "candidate_count": 0, "reason": "Portrait generation was not attempted while source, background, threshold, and audit gates remained blocked."},
             "thermal": {"status": "NOT_MEASURED", "samples": [], "reason": "No generation session was run."},
             "quality": {"status": "NOT_MEASURED", "candidate_count": 0, "identity_pass_rate": None, "style_pass_rate_among_identity_pass": None},
@@ -272,7 +272,7 @@ def write_benchmark_reports(root: str | Path | None = None, profiles: Iterable[s
     reports = []
     for profile in selected:
         report = build_benchmark_report(root_path, profile)
-        atomic_json_write(output_dir / f"{profile}.json", report)
+        atomic_json_write(output_dir / f"{profile}.json", sanitize_public_paths(report, root_path))
         (output_dir / f"{profile}.md").write_text(render_benchmark_markdown(report), encoding="utf-8")
         reports.append(report)
     return reports

@@ -437,7 +437,15 @@ def _preprocessing_artifact_preflight(root: Path, lock: dict[str, Any]) -> dict[
             source_issues.append(f"cannot read source evidence: {type(exc).__name__}")
         if isinstance(source_evidence, dict):
             raw_sources = source_evidence.get("sources")
-            if isinstance(source_evidence.get("status"), str) and source_evidence["status"].startswith("PASS_METADATA_ONLY") and isinstance(raw_sources, list):
+            source_evidence_status = source_evidence.get("status")
+            source_evidence_accepted = (
+                isinstance(source_evidence_status, str)
+                and (
+                    source_evidence_status.startswith("PASS_METADATA_ONLY")
+                    or source_evidence_status == "PASS_PRIMARY_SOURCE_AND_LOCAL_CHECKSUMS"
+                )
+            )
+            if source_evidence_accepted and isinstance(raw_sources, list):
                 for item in raw_sources:
                     if isinstance(item, dict) and isinstance(item.get("name"), str):
                         if item["name"] in source_entries:

@@ -8,7 +8,7 @@ These images are sanitized public documentation assets. They are not production 
 
 ![Human workflow preview-stage detail](assets/workflow_human_local_mac_16gb_preview_stage.png)
 
-*The colored stage board includes four human-only preview checkpoints: crop/reference, prepared reference, approved background, and final candidate.*
+*The colored stage board includes four human-only preview checkpoints: crop/reference, prepared reference, approved background, and final candidate. In the current graph, the final preview shares the exact image input used by `SaveImage`.*
 
 ![Example job input contract](assets/input_contract_example.png)
 

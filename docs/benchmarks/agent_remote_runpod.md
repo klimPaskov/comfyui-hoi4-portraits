@@ -27,7 +27,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 | `preprocessing_and_audit_dependencies` | **PASS** |
 | `remote_topology_auth` | **BLOCKED** |
 | `repository_preflight` | **PASS** |
-| `source_fixture_and_provenance` | **BLOCKED** |
+| `source_fixture_and_provenance` | **PASS** |
 
 ## Measurements
 
@@ -45,7 +45,6 @@ This report contains no successful generation claim. File-size arithmetic is a r
 ## Blockers
 
 - The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.
-- No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.
 - RunPod endpoint credentials are absent; remote submission/acceptance cannot run.
 - No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.

@@ -62,6 +62,33 @@ def atomic_json_write(path: str | Path, value: Any) -> None:
     os.replace(temporary, destination)
 
 
+def sanitize_public_paths(value: Any, root: str | Path) -> Any:
+    """Redact host-local paths before writing checked-in public evidence.
+
+    Runtime preflight objects intentionally retain absolute paths for local
+    diagnostics.  Their checked-in reports must remain portable and must not
+    disclose the operator's home directory or external checkout layout.
+    """
+
+    root_text = str(Path(root).resolve())
+
+    def clean(item: Any) -> Any:
+        if isinstance(item, dict):
+            return {key: clean(child) for key, child in item.items()}
+        if isinstance(item, list):
+            return [clean(child) for child in item]
+        if isinstance(item, tuple):
+            return [clean(child) for child in item]
+        if not isinstance(item, str):
+            return item
+        text = item.replace(root_text, "<project-root>")
+        text = re.sub(r"(?<![A-Za-z0-9_])/(?:Users|home)/[^\s\"'<>]+", "<local-path>", text)
+        text = re.sub(r"(?<![A-Za-z0-9_])[A-Za-z]:/[^\s\"'<>]+", "<local-path>", text)
+        return text
+
+    return clean(value)
+
+
 def relative_safe_path(root: str | Path, path: str | Path) -> Path:
     root_path = Path(root).resolve()
     target = (root_path / path).resolve() if not Path(path).is_absolute() else Path(path).resolve()

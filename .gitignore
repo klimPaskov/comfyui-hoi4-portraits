@@ -5,6 +5,7 @@
 !.env.example
 jobs/
 evidence/
+fixtures/private/
 backgrounds/private/
 backgrounds/source/
 outputs/

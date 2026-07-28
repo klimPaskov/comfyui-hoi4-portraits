@@ -22,7 +22,7 @@ def build_comparison_report(root: str | Path | None = None) -> dict[str, Any]:
         "comparison_id": "identity-style-comparison-2026-07-26.1",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "status": "BLOCKED_NO_REAL_CANDIDATES",
-        "reason": "No comparison sheet or candidate ranking is produced without a legally usable source fixture, live runtime, calibrated thresholds, and independent audit evidence.",
+        "reason": "No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.",
         "matrix_id": build_matrix()["matrix_id"],
         "selection_policy": {
             "identity_first": True,

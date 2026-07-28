@@ -70,7 +70,7 @@ def main(argv: list[str] | None = None) -> int:
         "profile": "human_local_mac_16gb",
         "full_power": _full_power_format_probe(root),
         "negative_validation": {"status": "NOT_RUN"},
-        "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A legally usable source fixture is required for positive qualification.",
+        "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A production-authorized source fixture is required for positive generation qualification.",
     }
     try:
         service = AutoprompterService(root, profile="human_local_mac_16gb")
@@ -93,7 +93,7 @@ def main(argv: list[str] | None = None) -> int:
             body = json.loads(exc.read().decode("utf-8"))
             error_message = body.get("error", {}).get("message", "") if isinstance(body, dict) else ""
             negative = {"status": "PASS" if exc.code == 400 and "AUTOPROMPT_UNVERIFIED_CLAIM" in error_message else "FAIL", "expected": "HTTP_400_AUTOPROMPT_UNVERIFIED_CLAIM", "observed_http_status": exc.code, "observed_error_code": "AUTOPROMPT_UNVERIFIED_CLAIM" if "AUTOPROMPT_UNVERIFIED_CLAIM" in error_message else None}
-        report.update({"status": "PASS_HEALTH_AND_NEGATIVE_VALIDATION", "runtime": {"binary": str(service.binary.relative_to(root)), "model": str(service.model.relative_to(root)), "mmproj": str(service.mmproj.relative_to(root)), "health": health, "models": models}, "negative_validation": negative, "positive_generation": {"status": "BLOCKED_NO_LEGAL_SOURCE_FIXTURE"}, "staging": {"one_request_at_a_time": True, "background_metadata_forwarded": False, "binding": args.base_url, "process_shutdown_verified_by_caller": False}})
+        report.update({"status": "PASS_HEALTH_AND_NEGATIVE_VALIDATION", "runtime": {"binary": str(service.binary.relative_to(root)), "model": str(service.model.relative_to(root)), "mmproj": str(service.mmproj.relative_to(root)), "health": health, "models": models}, "negative_validation": negative, "positive_generation": {"status": "BLOCKED_NO_PRODUCTION_AUTHORIZED_SOURCE"}, "staging": {"one_request_at_a_time": True, "background_metadata_forwarded": False, "binding": args.base_url, "process_shutdown_verified_by_caller": False}})
     except Exception as exc:  # evidence records why the probe did not run
         report["error"] = {"type": type(exc).__name__, "message": str(exc)}
     atomic_json_write(root / "docs" / "preflight" / "autoprompter_runtime_test.json", report)

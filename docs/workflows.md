@@ -28,7 +28,7 @@ The workflow graph does not silently substitute a missing background, invent pro
 
 The human profiles call the project autoprompter with the exact instruction in [`prompts/autoprompter_instruction.txt`](../prompts/autoprompter_instruction.txt). The local Mac uses the pinned 4B GGUF sidecar; the full-power route uses the pinned Qwen3-VL 8B BF16 Transformers format and requires CUDA.
 
-Both human graphs now include four read-only `PreviewImage` checkpoints in the final stage panel: crop/reference, prepared reference, approved background, and final candidate. They are there to make human review visible inside ComfyUI; they do not bypass provenance, audit, DDS, or integration gates.
+Both human graphs now include four read-only `PreviewImage` checkpoints in the final stage panel: crop/reference, prepared reference, approved background, and final candidate. The final checkpoint is wired to the same evidence-export image as `SaveImage`, so the visible preview is exactly the image being saved. They do not bypass provenance, audit, DDS, or integration gates.
 
 ## Agent workflows
 

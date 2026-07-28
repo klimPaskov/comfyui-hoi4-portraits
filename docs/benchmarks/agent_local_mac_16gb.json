@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-28T15:02:35.829023+00:00",
+  "created_at": "2026-07-28T15:46:14.658210+00:00",
   "profile": "agent_local_mac_16gb",
   "status": "BLOCKED_PREFLIGHT",
   "status_reason": "One or more mandatory preflight gates remain blocked.",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 1024.00M  used = 44.94M  free = 979.06M  (encrypted)",
+          "stdout": "vm.swapusage: total = 3072.00M  used = 2068.56M  free = 1003.44M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15384.\nPages active:                                 300131.\nPages inactive:                               291018.\nPages speculative:                              8397.\nPages throttled:                                   0.\nPages wired down:                             147438.\nPages purgeable:                                 289.\n\"Translation faults\":                       41153891.\nPages copy-on-write:                         3585553.\nPages zero filled:                          22225804.\nPages reactivated:                           1540482.\nPages purged:                                 415238.\nFile-backed pages:                            401719.\nAnonymous pages:                              197827.\nPages stored in compressor:                   575388.\nPages occupied by compressor:                 243780.\nDecompressions:                               579060.\nCompressions:                                1382814.\nPageins:                                   247867777.\nPageouts:                                      20467.\nSwapins:                                         156.\nSwapouts:                                       2876.\nPages tagged:                                 108888.\nPages tagged resident:                         57200.\nPages tagged compressed:                       51688.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4438.\nPages tag-storage free:                          162.\nPages tag-storage non-tag pageable:            28090.\nPages tag-storage non-tag wired:                  78.\nBytes of compressed tags:                    7275136.\nTagged compressions:                          115224.\nTagged decompressions:                         57492.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14599.\nPages active:                                 235552.\nPages inactive:                               228647.\nPages speculative:                              6809.\nPages throttled:                                   0.\nPages wired down:                             177607.\nPages purgeable:                                 297.\n\"Translation faults\":                       54036335.\nPages copy-on-write:                         4552430.\nPages zero filled:                          28860696.\nPages reactivated:                           3742381.\nPages purged:                                 697013.\nFile-backed pages:                            333565.\nAnonymous pages:                              137443.\nPages stored in compressor:                   891059.\nPages occupied by compressor:                 342528.\nDecompressions:                              2084636.\nCompressions:                                3665753.\nPageins:                                   341458332.\nPageouts:                                      25125.\nSwapins:                                        9576.\nSwapouts:                                     141092.\nPages tagged:                                 103404.\nPages tagged resident:                         53911.\nPages tagged compressed:                       49493.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4419.\nPages tag-storage free:                          704.\nPages tag-storage non-tag pageable:            27565.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    7166912.\nTagged compressions:                          208895.\nTagged decompressions:                        139012.",
           "stderr": ""
         }
       },
@@ -51,7 +51,7 @@
           "<project-root>"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   183Gi   255Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   182Gi   253Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }
@@ -64,7 +64,7 @@
       "local_runtime_capability": "PASS",
       "immutable_style_lora": "PASS",
       "approved_source_background": "BLOCKED",
-      "source_fixture_and_provenance": "BLOCKED",
+      "source_fixture_and_provenance": "PASS",
       "planning_package_checksums": "PASS",
       "model_artifact_preflight": "PASS",
       "custom_node_preflight": "PASS",
@@ -79,7 +79,6 @@
     },
     "blockers": [
       "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
-      "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
       "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
       "Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.",
@@ -166,7 +165,7 @@
     },
     "dry_validation_job": {
       "status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND",
-      "reason": "The live schema probe passed, but no legally usable source fixture and approved background are available."
+      "reason": "The live schema probe and private preprocessing qualification passed, but no production-authorized source fixture and approved background are available."
     },
     "generation": {
       "status": "BLOCKED_NOT_ATTEMPTED",

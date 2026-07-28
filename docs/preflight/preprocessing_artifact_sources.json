@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "verified_at": "2026-07-26",
-  "status": "PASS_METADATA_ONLY_ARTIFACTS_NOT_INSTALLED",
+  "status": "PASS_PRIMARY_SOURCE_AND_LOCAL_CHECKSUMS",
   "policy": "Read-only verification against primary project/model metadata and the official Google-hosted task asset. No weight is stored in the repository.",
   "sources": [
     {

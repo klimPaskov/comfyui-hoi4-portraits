@@ -8,8 +8,8 @@
       "display_name": "human_local_mac_16gb",
       "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
       "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-      "sha256": "707ecf53add111eae11fed2b9725942d01be57bf0a7851b9948ff7641821955a",
-      "api_sha256": "42839f9485a94d7939424f15d8f8a0d5999b23bc32ea6f6ad9d6e6aa7499b0e8",
+      "sha256": "1b9dd3ecd9251063fe034ca2e31ebc819a9c3d39f4d6fb46c77e062bac0b8138",
+      "api_sha256": "44a08bd08c0d7e6ec3b6bd012343f9a51d41dc80b66bba8122317c5b99aeecc9",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -65,20 +65,27 @@
         "PREVIEW 1 • crop / identity reference",
         "PREVIEW 2 • prepared reference",
         "PREVIEW 3 • approved background",
-        "PREVIEW 4 • final candidate"
+        "PREVIEW 4 • same image as SaveImage"
       ],
+      "final_preview_save_pair": {
+        "preview_node_id": 28,
+        "save_node_id": 23,
+        "shared_source_node_id": 22,
+        "shared_source_slot": 0,
+        "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
+      },
       "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
       "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T14:52:31.534434+00:00"
+        "checked_at": "2026-07-28T15:35:26.417306+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
         "attempted": false,
-        "fixture_present": false,
+        "fixture_present": true,
         "background_resolved": false,
         "eight_step_turbo_execution": "NOT_RUN",
         "model_loading": "NOT_RUN",
@@ -90,8 +97,8 @@
       "display_name": "human_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-      "sha256": "3e7fb37d30734745364cfb47e695d3e0180ff8a7175ceabae3e36dd33b6f605c",
-      "api_sha256": "0694be10d73743819df35d2fcda3a3fb38120ae703186c5ecf2bc26a48c3a365",
+      "sha256": "30de42d8914cd90e20b8a53343d28b806f65a471259459e1e0f924bd9ed2613c",
+      "api_sha256": "114b5aa599ab588fb8c4e7615e5caebd20a4be7648b8008aae2ff8abf52ed5c3",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -147,20 +154,27 @@
         "PREVIEW 1 • crop / identity reference",
         "PREVIEW 2 • prepared reference",
         "PREVIEW 3 • approved background",
-        "PREVIEW 4 • final candidate"
+        "PREVIEW 4 • same image as SaveImage"
       ],
+      "final_preview_save_pair": {
+        "preview_node_id": 28,
+        "save_node_id": 23,
+        "shared_source_node_id": 22,
+        "shared_source_slot": 0,
+        "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
+      },
       "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
       "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T14:52:31.534434+00:00"
+        "checked_at": "2026-07-28T15:35:26.417306+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
         "attempted": false,
-        "fixture_present": false,
+        "fixture_present": true,
         "background_resolved": false,
         "eight_step_turbo_execution": "NOT_RUN",
         "model_loading": "NOT_RUN",
@@ -172,8 +186,8 @@
       "display_name": "agent_local_mac_16gb",
       "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
       "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-      "sha256": "cc3af6c86ffa03bcc74406e90822f0f00be55c416babc8023c212d2dc5dc690a",
-      "api_sha256": "c1672bd5216c4e33c74adeb315a2273296f88f2cc9807ac2d713da18d3107894",
+      "sha256": "cef5ef221ad2981d6dc9458023435c35324fc6c4881125cb0b2de0bd3361429c",
+      "api_sha256": "90838f5adb2a3d28401cd822e4f1d3e6cd2909e698f0ecf7d8a4a8074ea7906a",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -223,18 +237,25 @@
       "autoprompter_present": false,
       "prompt_source": "job_contract",
       "preview_nodes": [],
+      "final_preview_save_pair": {
+        "preview_node_id": null,
+        "save_node_id": 23,
+        "shared_source_node_id": 22,
+        "shared_source_slot": 0,
+        "policy": "agent_save_only"
+      },
       "autoprompter_instruction_sha256": null,
       "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T14:52:31.534434+00:00"
+        "checked_at": "2026-07-28T15:35:26.417306+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
         "attempted": false,
-        "fixture_present": false,
+        "fixture_present": true,
         "background_resolved": false,
         "eight_step_turbo_execution": "NOT_RUN",
         "model_loading": "NOT_RUN",
@@ -246,8 +267,8 @@
       "display_name": "agent_remote_runpod",
       "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
       "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-      "sha256": "bd14dfe367c93698aa88ad604800e122088c80190c640e862d6eadccafb855ca",
-      "api_sha256": "17607d5eb6ba11e97372286ba49ee44165f56534bd6adf2f7d97d46036f44a7b",
+      "sha256": "9c2c5535a9528d40dc4ffbbaa8fec296d6fa862d45cc58bb56038167ba0a0c70",
+      "api_sha256": "de06c0bc360c92b82899f36472d5043846f7611e146d05f00e9bb7d17c4d792c",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -297,18 +318,25 @@
       "autoprompter_present": false,
       "prompt_source": "job_contract",
       "preview_nodes": [],
+      "final_preview_save_pair": {
+        "preview_node_id": null,
+        "save_node_id": 23,
+        "shared_source_node_id": 22,
+        "shared_source_slot": 0,
+        "policy": "agent_save_only"
+      },
       "autoprompter_instruction_sha256": null,
       "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T14:52:31.534434+00:00"
+        "checked_at": "2026-07-28T15:35:26.417306+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
         "attempted": false,
-        "fixture_present": false,
+        "fixture_present": true,
         "background_resolved": false,
         "eight_step_turbo_execution": "NOT_RUN",
         "model_loading": "NOT_RUN",

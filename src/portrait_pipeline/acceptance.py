@@ -17,7 +17,7 @@ from .experiments import build_matrix
 from .graph_spec.builder import build_workflow_artifacts
 from .preflight import collect_preflight
 from .prompt import autoprompter_instruction_sha256, validate_prompt
-from .util import project_root, scan_text_for_secrets, sha256_file
+from .util import project_root, sanitize_public_paths, scan_text_for_secrets, sha256_file
 from .workflow_validation import validate_all_workflows
 
 
@@ -367,7 +367,8 @@ def main(argv: list[str] | None = None) -> int:
     report = run_acceptance(root_path)
     output_dir = root_path / "docs" / "acceptance"
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "acceptance_report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    public_report = sanitize_public_paths(report, root_path)
+    (output_dir / "acceptance_report.json").write_text(json.dumps(public_report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     (output_dir / "acceptance_report.md").write_text(render_report(report), encoding="utf-8")
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return int(report["recommended_exit_code"])

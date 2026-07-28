@@ -18,8 +18,9 @@ all four workflow checks. The model artifact preflight separately records the
 required local model files and SHA-256 values.
 
 This is a schema/import qualification result, not a production generation
-claim. No approved source fixture, approved background, calibrated identity
-thresholds, or independent auditor evidence is available. Consequently model
-loading and the required eight-step Turbo identity-edit execution were not
+claim. The private source fixture is authorized for preprocessing qualification
+only; no production source authorization, approved background, calibrated
+identity thresholds, or independent auditor evidence is available. Consequently
+model loading and the required eight-step Turbo identity-edit execution were not
 attempted, the experiment matrix remains blocked, and no PNG/DDS/mod output is
 permitted.
