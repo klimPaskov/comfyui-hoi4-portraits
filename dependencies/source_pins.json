@@ -12,8 +12,8 @@
     {
       "name": "ComfyUI official repository",
       "url": "https://github.com/Comfy-Org/ComfyUI",
-      "revision": "f49bdb655707b97952dcef40e12e5af1f08d2007",
-      "tag": "v0.24.0",
+      "revision": "2a610155821d670a2d8047e654e5fce96b790eb5",
+      "tag": null,
       "source_class": "first_party_repository"
     },
     {
@@ -69,4 +69,3 @@
     }
   ]
 }
-

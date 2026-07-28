@@ -784,7 +784,7 @@
     },
     {
       "id": 15,
-      "type": "DualCLIPLoader",
+      "type": "CLIPLoader",
       "pos": [
         1320,
         430
@@ -798,12 +798,7 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "clip_name1",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "clip_name2",
+          "name": "clip_name",
           "type": "COMBO",
           "link": null
         },
@@ -827,13 +822,11 @@
         "Node name for S&R": "Krea Qwen3-VL encoder",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": [
-          "clip_name1",
-          "clip_name2",
+          "clip_name",
           "type"
         ]
       },
       "widgets_values": [
-        "qwen3vl_4b_fp8_scaled.safetensors",
         "qwen3vl_4b_fp8_scaled.safetensors",
         "krea2"
       ]
@@ -1877,8 +1870,7 @@
         "ref_boost"
       ],
       "Krea Qwen3-VL encoder": [
-        "clip_name1",
-        "clip_name2",
+        "clip_name",
         "type"
       ],
       "Grounded positive conditioning": [
@@ -1911,7 +1903,7 @@
       ]
     },
     "required_core_nodes": [
-      "DualCLIPLoader",
+      "CLIPLoader",
       "EmptySD3LatentImage",
       "KSampler",
       "LoraLoaderModelOnly",

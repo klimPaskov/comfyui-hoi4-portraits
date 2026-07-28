@@ -54,6 +54,48 @@ def _write_bootstrap_log(run_id: str, profile: str, actions: list[dict[str, Any]
     return path
 
 
+def _qualification_install_decision(preflight: dict[str, Any], *, owner_authorized: bool) -> tuple[bool, list[str]]:
+    """Decide whether missing installable inputs may be provisioned.
+
+    A normal restore remains strictly fail-closed.  The explicit private
+    qualification mode exists because a clean machine necessarily fails the
+    runtime/model/node gates before those components can be installed.  It
+    does not waive production gates: background, source-rights, calibration,
+    live compatibility, remote-auth, and final-audit gates remain blockers.
+    """
+
+    if not owner_authorized:
+        return False, ["private qualification installation requires explicit owner authorization"]
+    hard_refusals: list[str] = []
+    for gate in preflight.get("gates", []):
+        if not isinstance(gate, dict):
+            continue
+        name = str(gate.get("name", ""))
+        status = str(gate.get("status", ""))
+        evidence = gate.get("evidence", {})
+        if name == "planning_package_checksums" and status != "PASS":
+            hard_refusals.append("planning package checksum verification is not PASS")
+        if name == "immutable_style_lora" and status != "PASS":
+            hard_refusals.append("immutable style LoRA verification is not PASS")
+        if name == "license_and_rights_review" and status not in {"PASS", "APPROVED", "RESOLVED"}:
+            # The command explicitly authorizes a private qualification copy,
+            # but never converts the unresolved review into production
+            # clearance.  The action is recorded below and reports stay
+            # BLOCKED until the owner resolves scope and terms.
+            continue
+        if name in {"model_artifact_preflight", "preprocessing_and_audit_dependencies"}:
+            checks = evidence.get("checks", []) if isinstance(evidence, dict) else []
+            if any(isinstance(item, dict) and str(item.get("status", "")).startswith("BLOCKED_CHECKSUM") for item in checks):
+                hard_refusals.append(f"{name} reports a checksum mismatch")
+            if any(isinstance(item, dict) and item.get("status") == "BLOCKED_UNSUPPORTED_FORMAT" for item in checks):
+                hard_refusals.append(f"{name} reports an unsupported artifact format")
+        if name == "custom_node_preflight" and status == "BLOCKED":
+            packages = evidence.get("packages", []) if isinstance(evidence, dict) else []
+            if any(isinstance(item, dict) and item.get("status") == "BLOCKED_CHECKSUM_MISMATCH" for item in packages):
+                hard_refusals.append("custom-node preflight reports a checksum mismatch")
+    return not hard_refusals, hard_refusals
+
+
 class BootstrapError(RuntimeError):
     def __init__(self, code: ExitCode, message: str):
         super().__init__(message)
@@ -181,6 +223,20 @@ def _restore_models(model_lock: dict[str, Any], profile: str, actions: list[dict
             if not filename or not entry.get("sha256"):
                 raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"model lock entry is incomplete: {entry.get('name')}")
             _download_verified(_artifact_url(entry, filename), destination_root / filename, entry.get("size_bytes"), str(entry["sha256"]), actions)
+        runtime_files = entry.get("runtime_files")
+        if isinstance(runtime_files, list):
+            for runtime_file in runtime_files:
+                if not isinstance(runtime_file, dict):
+                    raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"runtime metadata entry is invalid: {entry.get('name')}")
+                filename = runtime_file.get("filename")
+                source_relative_path = runtime_file.get("source_relative_path")
+                source_url = runtime_file.get("source_url")
+                expected_size = runtime_file.get("size_bytes")
+                expected_hash = runtime_file.get("sha256")
+                if not isinstance(filename, str) or not isinstance(source_relative_path, str) or not isinstance(source_url, str) or not source_url.startswith("https://") or not isinstance(expected_size, int) or not isinstance(expected_hash, str):
+                    raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"runtime metadata lock entry is incomplete: {entry.get('name')}")
+                runtime_entry = {"source_url": source_url, "source_relative_path": source_relative_path}
+                _download_verified(_artifact_url(runtime_entry, filename), destination_root / filename, expected_size, expected_hash, actions)
 
 
 def _restore_preprocessing_models(preprocessing_lock: dict[str, Any], actions: list[dict[str, Any]]) -> None:
@@ -232,7 +288,11 @@ def _restore_preprocessing_source_artifacts(preprocessing_lock: dict[str, Any], 
 
 
 def _write_extra_model_paths(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
-    config = """hoi4_portrait:\n  base_path: {root}\n  diffusion_models: models/diffusion_models\n  unet: models/diffusion_models\n  text_encoders: models/text_encoders\n  vae: models/vae\n  loras: models/loras\n  autoprompter: models/autoprompter\n  is_default: true\n""".format(root=ROOT)
+    # The project-owned style LoRA is immutable and must be loaded from its
+    # original read-only path.  Keep downloaded model artifacts under
+    # models/loras, while adding the immutable project directory to the same
+    # ComfyUI search category without copying or rewriting the file.
+    config = """hoi4_portrait:\n  base_path: {root}\n  diffusion_models: models/diffusion_models\n  unet: models/diffusion_models\n  text_encoders: models/text_encoders\n  vae: models/vae\n  loras: |\n    models/loras\n    loras\n  autoprompter: models/autoprompter\n  is_default: true\n""".format(root=ROOT)
     path = comfy_root / "extra_model_paths.yaml"
     if path.is_file() and path.read_text(encoding="utf-8") != config:
         raise BootstrapError(ExitCode.WORKFLOW_INVALID, f"existing ComfyUI extra model path config differs: {path}")
@@ -318,6 +378,9 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
     if not lora_path.is_file() or sha256_file(lora_path) != "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1":
         raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "immutable style LoRA is missing or changed")
     actions.append({"action": "immutable_style_lora_verified", "path": str(lora_path.relative_to(ROOT)), "sha256": sha256_file(lora_path)})
+    if profile == "local_mac_16gb":
+        sidecar_check = _run_checked([str(python), "-m", "portrait_pipeline.autoprompter_service", "--root", str(ROOT), "--profile", "human_local_mac_16gb", "--check-only"], ROOT)
+        actions.append({"action": "autoprompter_runtime_lock_verified", "status": "PASS", "result": sidecar_check})
     _write_extra_model_paths(comfy_root, actions)
     try:
         build_workflow_artifacts(ROOT)
@@ -360,6 +423,19 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Fail-closed HOI4 portrait bootstrap.")
     parser.add_argument("--profile", required=True, choices=["local_mac_16gb", "full_power_gpu", "remote_runpod"])
     parser.add_argument("--restore-from-lock", action="store_true")
+    parser.add_argument(
+        "--private-qualification-install",
+        action="store_true",
+        help=(
+            "provision missing pinned runtime, node, and model inputs for a private qualification run; "
+            "requires --owner-authorized-private-install and never waives production gates"
+        ),
+    )
+    parser.add_argument(
+        "--owner-authorized-private-install",
+        action="store_true",
+        help="record the user's explicit authorization for private Krea/model qualification copies",
+    )
     args = parser.parse_args(argv)
     run_id = f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:8]}"
     profile_name = args.profile
@@ -371,7 +447,14 @@ def main(argv: list[str] | None = None) -> int:
         preflight_profile = "agent_local_mac_16gb"
     preflight = collect_preflight(ROOT, profile=preflight_profile)
     actions: list[dict[str, Any]] = []
-    if preflight["status"] != "PASS":
+    qualification_allowed, qualification_refusals = _qualification_install_decision(
+        preflight,
+        owner_authorized=args.owner_authorized_private_install,
+    )
+    qualification_mode = args.private_qualification_install and qualification_allowed
+    if args.private_qualification_install and not qualification_allowed:
+        actions.append({"action": "qualification_installation", "status": "BLOCKED", "reasons": qualification_refusals})
+    if preflight["status"] != "PASS" and not qualification_mode:
         actions.append({"action": "installation", "status": "SKIPPED_HARD_PREFLIGHT_BLOCK", "reason": " and ".join(preflight["blockers"])})
         report = _capability_report(args.profile, preflight, actions)
         output_dir = ROOT / "docs" / "capabilities"
@@ -386,7 +469,15 @@ def main(argv: list[str] | None = None) -> int:
         _write_bootstrap_log(run_id, args.profile, [{"action": "installation", "status": "SKIPPED_RESTORE_FLAG_REQUIRED"}], "BLOCKED")
         return int(ExitCode.DEPENDENCY_MISSING)
     try:
-        actions = restore_from_lock(args.profile)
+        qualification_action = {
+            "action": "qualification_installation",
+            "status": "AUTHORIZED_PRIVATE_ONLY",
+            "scope": "pinned local/private qualification artifacts; no production or redistribution clearance",
+            "owner_authorized": True,
+            "remaining_production_blockers": preflight["blockers"],
+        }
+        restore_actions = restore_from_lock(args.profile)
+        actions = ([qualification_action] if qualification_mode else []) + restore_actions
     except BootstrapError as exc:
         actions.append({"action": "installation", "status": "FAILED", "error_code": int(exc.code), "error": str(exc)})
         return_code = int(exc.code)

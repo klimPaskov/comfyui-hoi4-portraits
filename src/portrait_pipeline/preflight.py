@@ -15,6 +15,7 @@ from .constants import ExitCode, PROFILE_LIMITS, STYLE_LORA_PATH, STYLE_LORA_SHA
 from .util import atomic_json_write, is_sha256, project_root, relative_safe_path, sha256_file, tree_sha256
 
 SUPPORTED_MODEL_SUFFIXES = {".safetensors", ".gguf"}
+SUPPORTED_MODEL_RUNTIME_SUFFIXES = {".json", ".txt"}
 SUPPORTED_PREPROCESSING_SUFFIXES = {
     ".bin": "pytorch_bin",
     ".onnx": "onnx",
@@ -55,6 +56,77 @@ def _tool_version(command: str, *args: str) -> dict[str, Any]:
     if path is not None:
         result["probe"] = _command(path, *args)
     return result
+
+
+def _runtime_python(root: Path) -> Path:
+    """Select the project-owned interpreter used by the installed runtime."""
+
+    for candidate in (root / ".venv" / "bin" / "python", root / ".venv" / "bin" / "python3"):
+        if candidate.is_file():
+            return candidate
+    return Path(sys.executable)
+
+
+def _runtime_probe(root: Path) -> dict[str, Any]:
+    """Probe the selected project interpreter in a subprocess.
+
+    The host Python on macOS is commonly an older system interpreter.  It is
+    useful hardware evidence, but it is not the runtime that bootstrap
+    installs or that ComfyUI serves.  Keep both facts separate and base the
+    execution gate on this measured project interpreter.
+    """
+
+    runtime_python = _runtime_python(root)
+    probe_code = (
+        "import json, sys\n"
+        "result = {'python_executable': sys.executable, 'python_version': sys.version, "
+        "'python_version_info': [sys.version_info[0], sys.version_info[1], sys.version_info[2]]}\n"
+        "try:\n"
+        "    import torch\n"
+        "    mps = getattr(getattr(torch, 'backends', None), 'mps', None)\n"
+        "    result['torch'] = {'installed': True, 'version': getattr(torch, '__version__', None), "
+        "'mps_built': bool(mps and mps.is_built()), 'mps_available': bool(mps and mps.is_available()), "
+        "'cuda_available': bool(getattr(torch, 'cuda', None) and torch.cuda.is_available())}\n"
+        "except Exception as exc:\n"
+        "    result['torch'] = {'installed': False, 'error_type': type(exc).__name__, 'error': str(exc)}\n"
+        "for module_name, key in (('pydantic', 'pydantic'), ('pydantic_settings', 'pydantic_settings'), "
+        "('transformers', 'transformers')):\n"
+        "    try:\n"
+        "        module = __import__(module_name)\n"
+        "        result[key] = {'installed': True, 'version': getattr(module, '__version__', None)}\n"
+        "    except Exception as exc:\n"
+        "        result[key] = {'installed': False, 'error_type': type(exc).__name__, 'error': str(exc)}\n"
+        "print(json.dumps(result, sort_keys=True))"
+    )
+    try:
+        completed = subprocess.run(
+            [str(runtime_python), "-c", probe_code],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=90,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        return {
+            "python_executable": str(runtime_python),
+            "status": "BLOCKED",
+            "error_type": type(exc).__name__,
+            "error": str(exc),
+        }
+    evidence: dict[str, Any] = {
+        "python_executable": str(runtime_python),
+        "returncode": completed.returncode,
+        "stderr": completed.stderr.strip(),
+        "status": "PASS" if completed.returncode == 0 else "BLOCKED",
+    }
+    try:
+        payload = json.loads(completed.stdout) if completed.stdout.strip() else {}
+    except json.JSONDecodeError as exc:
+        payload = {"parse_error": str(exc), "stdout": completed.stdout.strip()}
+    if isinstance(payload, dict):
+        evidence.update(payload)
+    return evidence
 
 
 def _memory_snapshot() -> dict[str, Any]:
@@ -139,8 +211,23 @@ def _model_artifact_preflight(root: Path, model_root: Path, entries: list[dict[s
 
     scoped = [entry for entry in entries if entry.get("mandatory") and _profile_applies(entry, profile)]
     expected_paths: set[Path] = set()
+    locked_paths: set[Path] = set()
+    managed_directories: set[Path] = set()
     checks: list[dict[str, Any]] = []
     all_pass = True
+    for entry in entries:
+        destination = (root / str(entry.get("destination_folder", "models"))).resolve()
+        managed_directories.add(destination)
+        shard_hashes = entry.get("shard_sha256")
+        if isinstance(shard_hashes, dict):
+            locked_paths.update(destination / filename for filename in shard_hashes)
+        elif isinstance(entry.get("filename"), str):
+            locked_paths.add(destination / str(entry["filename"]))
+        runtime_files = entry.get("runtime_files")
+        if isinstance(runtime_files, list):
+            for runtime_file in runtime_files:
+                if isinstance(runtime_file, dict) and isinstance(runtime_file.get("filename"), str):
+                    locked_paths.add(destination / str(runtime_file["filename"]))
     for entry in scoped:
         destination = root / str(entry.get("destination_folder", "models"))
         shard_hashes = entry.get("shard_sha256")
@@ -157,28 +244,50 @@ def _model_artifact_preflight(root: Path, model_root: Path, entries: list[dict[s
                 item_ok = path.is_file() and format_ok and size_ok and hash_ok
                 all_pass &= item_ok
                 checks.append({"name": entry.get("name"), "path": str(path.relative_to(root)), "format": Path(filename).suffix.casefold() or None, "format_supported": format_ok, "present": path.is_file(), "size_bytes": actual_size, "expected_size_bytes": shard_sizes.get(filename), "sha256": actual_hash, "expected_sha256": expected_hash, "status": "PASS" if item_ok else "BLOCKED"})
-            continue
-        filename = entry.get("filename")
-        expected_hash = entry.get("sha256")
-        if not isinstance(filename, str) or not filename or not is_sha256(expected_hash):
-            all_pass = False
-            checks.append({"name": entry.get("name"), "status": "BLOCKED", "reason": "locked filename or SHA-256 is missing"})
-            continue
-        format_ok = Path(filename).suffix.casefold() in SUPPORTED_MODEL_SUFFIXES
-        path = destination / filename
-        expected_paths.add(path.resolve())
-        actual_hash = sha256_file(path) if path.is_file() else None
-        actual_size = path.stat().st_size if path.is_file() else None
-        expected_size = entry.get("size_bytes")
-        size_ok = expected_size is None or actual_size == expected_size
-        item_ok = path.is_file() and format_ok and size_ok and actual_hash == expected_hash
-        all_pass &= item_ok
-        checks.append({"name": entry.get("name"), "path": str(path.relative_to(root)), "format": Path(filename).suffix.casefold() or None, "format_supported": format_ok, "present": path.is_file(), "size_bytes": actual_size, "expected_size_bytes": expected_size, "sha256": actual_hash, "expected_sha256": expected_hash, "status": "PASS" if item_ok else "BLOCKED"})
+        else:
+            filename = entry.get("filename")
+            expected_hash = entry.get("sha256")
+            if not isinstance(filename, str) or not filename or not is_sha256(expected_hash):
+                all_pass = False
+                checks.append({"name": entry.get("name"), "status": "BLOCKED", "reason": "locked filename or SHA-256 is missing"})
+            else:
+                format_ok = Path(filename).suffix.casefold() in SUPPORTED_MODEL_SUFFIXES
+                path = destination / filename
+                expected_paths.add(path.resolve())
+                actual_hash = sha256_file(path) if path.is_file() else None
+                actual_size = path.stat().st_size if path.is_file() else None
+                expected_size = entry.get("size_bytes")
+                size_ok = expected_size is None or actual_size == expected_size
+                item_ok = path.is_file() and format_ok and size_ok and actual_hash == expected_hash
+                all_pass &= item_ok
+                checks.append({"name": entry.get("name"), "path": str(path.relative_to(root)), "format": Path(filename).suffix.casefold() or None, "format_supported": format_ok, "present": path.is_file(), "size_bytes": actual_size, "expected_size_bytes": expected_size, "sha256": actual_hash, "expected_sha256": expected_hash, "status": "PASS" if item_ok else "BLOCKED"})
+
+        runtime_files = entry.get("runtime_files")
+        if isinstance(runtime_files, list):
+            for runtime_file in runtime_files:
+                if not isinstance(runtime_file, dict):
+                    all_pass = False
+                    checks.append({"name": entry.get("name"), "kind": "runtime_metadata", "status": "BLOCKED", "reason": "runtime file entry is not an object"})
+                    continue
+                filename = runtime_file.get("filename")
+                expected_hash = runtime_file.get("sha256")
+                expected_size = runtime_file.get("size_bytes")
+                format_ok = isinstance(filename, str) and Path(filename).suffix.casefold() in SUPPORTED_MODEL_RUNTIME_SUFFIXES
+                path = destination / str(filename or "")
+                actual_hash = sha256_file(path) if path.is_file() else None
+                actual_size = path.stat().st_size if path.is_file() else None
+                size_ok = isinstance(expected_size, int) and actual_size == expected_size
+                item_ok = format_ok and path.is_file() and size_ok and is_sha256(expected_hash) and actual_hash == expected_hash
+                all_pass &= item_ok
+                checks.append({"name": entry.get("name"), "kind": "runtime_metadata", "path": str(path.relative_to(root)), "format": Path(filename).suffix.casefold() if isinstance(filename, str) else None, "format_supported": format_ok, "present": path.is_file(), "size_bytes": actual_size, "expected_size_bytes": expected_size, "sha256": actual_hash, "expected_sha256": expected_hash, "status": "PASS" if item_ok else "BLOCKED"})
+        continue
 
     unexpected: list[str] = []
     if model_root.is_dir():
         for path in model_root.rglob("*"):
-            if path.is_file() and path.resolve() not in expected_paths:
+            if path.is_file() and path.resolve() not in locked_paths and any(
+                path.resolve().is_relative_to(directory) for directory in managed_directories
+            ):
                 unexpected.append(str(path.relative_to(root)))
     if unexpected:
         all_pass = False
@@ -397,6 +506,43 @@ def _preprocessing_artifact_preflight(root: Path, lock: dict[str, Any]) -> dict[
     }
 
 
+def _autoprompter_preflight(root: Path, profile: str | None) -> dict[str, Any]:
+    """Verify the human prompt runtime evidence without claiming prompt quality."""
+
+    lock_path = root / "dependencies" / "autoprompter_runtime.lock.json"
+    report_path = root / "docs" / "preflight" / "autoprompter_runtime_test.json"
+    evidence: dict[str, Any] = {
+        "lock_path": str(lock_path.relative_to(root)),
+        "report_path": str(report_path.relative_to(root)),
+        "profile": profile,
+        "instruction_sha256": sha256_file(root / "prompts" / "autoprompter_instruction.txt") if (root / "prompts" / "autoprompter_instruction.txt").is_file() else None,
+    }
+    try:
+        lock = json.loads(lock_path.read_text(encoding="utf-8"))
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {"status": "BLOCKED", **evidence, "reason": f"autoprompter lock/evidence is unreadable: {type(exc).__name__}"}
+    evidence.update({"lock_status": lock.get("status"), "runtime_report": report})
+    local = report.get("runtime", {}) if isinstance(report, dict) else {}
+    local_health = local.get("health", {}) if isinstance(local, dict) else {}
+    local_pass = report.get("status") == "PASS_HEALTH_AND_NEGATIVE_VALIDATION" and report.get("negative_validation", {}).get("status") == "PASS" and local_health.get("status") == "PASS"
+    full_power = report.get("full_power", {}) if isinstance(report, dict) else {}
+    full_format_pass = full_power.get("status") == "PASS_FORMAT_AND_PROCESSOR_SCHEMA"
+    if profile in {"agent_local_mac_16gb", "agent_remote_runpod"}:
+        status = "NOT_APPLICABLE"
+    elif profile == "human_local_mac_16gb":
+        status = "PASS" if local_pass and full_format_pass else "BLOCKED"
+    elif profile == "human_full_power_gpu":
+        status = "PASS_FORMAT_ONLY_EXECUTION_BLOCKED" if full_format_pass and full_power.get("execution") == "BLOCKED_TARGET_CUDA_UNAVAILABLE" else "BLOCKED"
+    else:
+        status = "PASS_LOCAL_AND_FULL_POWER_FORMAT_ONLY" if local_pass and full_format_pass else "BLOCKED"
+    evidence["local_sidecar_status"] = "PASS" if local_pass else "BLOCKED"
+    evidence["full_power_format_status"] = "PASS" if full_format_pass else "BLOCKED"
+    evidence["positive_generation_status"] = report.get("positive_generation", {}).get("status")
+    evidence["production_prompt_claim"] = "NOT_CLAIMED"
+    return {"status": status, **evidence}
+
+
 def _background_preflight(root: Path, registry_path: Path, registry: dict[str, Any]) -> dict[str, Any]:
     entries: list[dict[str, Any]] = []
     for item in registry.get("backgrounds", []):
@@ -549,17 +695,8 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     background_resolved = background_evidence["status"] == "PASS"
     model_root = root_path / "models"
     comfy_path = shutil.which("comfy") or shutil.which("comfy-cli")
-    try:
-        import torch  # type: ignore
-
-        torch_probe: dict[str, Any] = {
-            "installed": True,
-            "version": getattr(torch, "__version__", None),
-            "mps_available": bool(getattr(getattr(torch, "backends", None), "mps", None) and torch.backends.mps.is_available()),
-            "cuda_available": bool(getattr(torch, "cuda", None) and torch.cuda.is_available()),
-        }
-    except Exception as exc:  # missing optional dependency is a reportable gate, not a crash
-        torch_probe = {"installed": False, "error_type": type(exc).__name__, "error": str(exc)}
+    runtime_probe = _runtime_probe(root_path)
+    torch_probe = runtime_probe.get("torch", {}) if isinstance(runtime_probe.get("torch"), dict) else {}
 
     blockers: list[str] = []
     gates: list[dict[str, Any]] = []
@@ -579,7 +716,8 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
         "status": "PASS" if hardware["memory"].get("memsize_bytes") == "17179869184" and platform.system() == "Darwin" else "UNVERIFIED",
         "evidence": {**hardware, "available_tools": {name: _tool_version(name, "--version") for name in ("uv", "brew", "docker")}},
     })
-    python_floor_ok = sys.version_info >= (3, 10)
+    runtime_version_info = runtime_probe.get("python_version_info", [])
+    python_floor_ok = isinstance(runtime_version_info, list) and len(runtime_version_info) >= 2 and tuple(runtime_version_info[:2]) >= (3, 10)
     local_profile = profile in {"human_local_mac_16gb", "agent_local_mac_16gb"} if profile else True
     full_gpu_profile = profile == "human_full_power_gpu"
     comfy_runtime_present = bool(comfy_path) or (root_path / "comfyui" / "main.py").is_file()
@@ -588,7 +726,7 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     gates.append({
         "name": "local_runtime_capability",
         "status": "PASS" if (not local_profile and not full_gpu_profile) or (python_floor_ok and torch_probe.get("installed") and accelerator_ok and comfy_runtime_present) else "BLOCKED",
-        "evidence": {"profile": profile, "python_version": platform.python_version(), "python_floor": ">=3.10", "python_floor_ok": python_floor_ok, "torch": torch_probe, "comfy_cli": comfy_path, "comfy_runtime_present": comfy_runtime_present, "required_accelerator": required_accelerator, "accelerator_ok": accelerator_ok},
+        "evidence": {"profile": profile, "python_version": runtime_probe.get("python_version"), "python_executable": runtime_probe.get("python_executable"), "host_python_version": platform.python_version(), "python_floor": ">=3.10", "python_floor_ok": python_floor_ok, "torch": torch_probe, "runtime_probe": runtime_probe, "comfy_cli": comfy_path, "comfy_runtime_present": comfy_runtime_present, "required_accelerator": required_accelerator, "accelerator_ok": accelerator_ok},
     })
     if gates[-1]["status"] == "BLOCKED" and (profile is None or local_profile or full_gpu_profile):
         blockers.append(f"The required {required_accelerator} runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.")
@@ -626,7 +764,9 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
 
     model_entries = json.loads((root_path / "dependencies" / "models.lock.json").read_text(encoding="utf-8")).get("models", [])
     local_model_files = [str(path.relative_to(root_path)) for path in model_root.rglob("*") if path.is_file()] if model_root.is_dir() else []
-    model_evidence = _model_artifact_preflight(root_path, model_root, model_entries, profile)
+    model_profile = "human_local_mac_16gb" if profile == "agent_local_mac_16gb" else profile
+    model_evidence = _model_artifact_preflight(root_path, model_root, model_entries, model_profile)
+    model_evidence["requested_profile"] = profile
     model_status = model_evidence["status"]
     gates.append({"name": "model_artifact_preflight", "status": model_status, "evidence": {**model_evidence, "local_files": local_model_files, "locked_models": len(model_entries)}})
     if model_status != "PASS":
@@ -676,8 +816,25 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
         krea_review = json.loads(krea_review_path.read_text(encoding="utf-8")) if krea_review_path.is_file() else {"status": "MISSING"}
     except json.JSONDecodeError:
         krea_review = {"status": "INVALID_JSON"}
-    gates.append({"name": "krea_live_compatibility", "status": "BLOCKED", "evidence": {"reason": "Krea live compatibility, node import, model loading, graph loading, and an eight-step Turbo execution are unverified.", "compatibility_review_path": str(krea_review_path), "compatibility_review_status": krea_review.get("status"), "compatibility_review": krea_review}})
-    blockers.append("Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.")
+    live_krea_path = root_path / "docs" / "preflight" / "live_comfy_compatibility.json"
+    try:
+        live_krea = json.loads(live_krea_path.read_text(encoding="utf-8")) if live_krea_path.is_file() else {"status": "MISSING"}
+    except json.JSONDecodeError:
+        live_krea = {"status": "INVALID_JSON"}
+    live_schema_pass = live_krea.get("status") == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED"
+    krea_status = "PASS" if live_schema_pass and krea_review.get("status") == "BLOCKED_EXECUTION_NOT_MEASURED" else "BLOCKED"
+    gates.append({"name": "krea_live_compatibility", "status": krea_status, "evidence": {"reason": "Live core/node/schema compatibility is verified; source-specific model loading and the eight-step Turbo execution remain a separate qualification gate.", "compatibility_review_path": str(krea_review_path), "compatibility_review_status": krea_review.get("status"), "compatibility_review": krea_review, "live_probe_path": str(live_krea_path), "live_probe_status": live_krea.get("status"), "live_probe": live_krea}})
+    if krea_status != "PASS":
+        blockers.append("Krea 2 Turbo live core/node/schema compatibility is not verified in the pinned runtime.")
+    blockers.append("Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.")
+
+    autoprompter_evidence = _autoprompter_preflight(root_path, profile)
+    autoprompter_status = autoprompter_evidence["status"]
+    gates.append({"name": "autoprompter_runtime", "status": autoprompter_status, "evidence": autoprompter_evidence})
+    if autoprompter_status == "BLOCKED":
+        blockers.append("The required human autoprompter runtime lock or live local sidecar evidence is unavailable.")
+    elif autoprompter_status == "PASS_FORMAT_ONLY_EXECUTION_BLOCKED":
+        blockers.append("The full-power human autoprompter format is pinned and processor-verified, but target CUDA execution is unavailable on the detected host.")
 
     preprocessing_lock_path = root_path / "dependencies" / "preprocessing_lock.json"
     preprocessing_lock = json.loads(preprocessing_lock_path.read_text(encoding="utf-8")) if preprocessing_lock_path.is_file() else {}

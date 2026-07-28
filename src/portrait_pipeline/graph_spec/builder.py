@@ -20,7 +20,7 @@ from .model import GraphSpec, Link, NodeSpec
 CORE_NODES = {
     "UNETLoader",
     "LoraLoaderModelOnly",
-    "DualCLIPLoader",
+    "CLIPLoader",
     "VAELoader",
     "VAEEncode",
     "EmptySD3LatentImage",
@@ -167,8 +167,8 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         inputs={"model": Link(11), "source_latent": Link(13), "vae": Link(12), "source_image": Link(8, 1), "fit_mode": "fit", "ref_boost": 1.0}, input_types={"model": "MODEL", "source_latent": "LATENT", "vae": "VAE", "source_image": "IMAGE", "fit_mode": "COMBO", "ref_boost": "FLOAT"}, outputs=["model"], output_types=["MODEL"], pos=(1320, 200), widgets=["fit", 1.0], locked=["fit_mode", "ref_boost"],
     ))
     nodes.append(_node(
-        15, "DualCLIPLoader", group["06 Krea 2 identity edit"], "Krea Qwen3-VL encoder",
-        inputs={"clip_name1": "qwen3vl_4b_fp8_scaled.safetensors", "clip_name2": "qwen3vl_4b_fp8_scaled.safetensors", "type": "krea2"}, input_types={"clip_name1": "COMBO", "clip_name2": "COMBO", "type": "COMBO"}, outputs=["clip"], output_types=["CLIP"], pos=(1320, 430), widgets=["qwen3vl_4b_fp8_scaled.safetensors", "qwen3vl_4b_fp8_scaled.safetensors", "krea2"], locked=["clip_name1", "clip_name2", "type"],
+        15, "CLIPLoader", group["06 Krea 2 identity edit"], "Krea Qwen3-VL encoder",
+        inputs={"clip_name": "qwen3vl_4b_fp8_scaled.safetensors", "type": "krea2"}, input_types={"clip_name": "COMBO", "type": "COMBO"}, outputs=["clip"], output_types=["CLIP"], pos=(1320, 430), widgets=["qwen3vl_4b_fp8_scaled.safetensors", "krea2"], locked=["clip_name", "type"],
     ))
     nodes.append(_node(
         16, "Krea2EditGroundedEncode", group["06 Krea 2 identity edit"], "Grounded positive conditioning",
@@ -345,6 +345,12 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         "agent_remote_runpod": root_path / "workflows/agent/remote_runpod/agent_remote_runpod.json",
     }
     manifests: list[dict[str, Any]] = []
+    live_probe_path = root_path / "docs" / "preflight" / "live_comfy_compatibility.json"
+    try:
+        live_probe = json.loads(live_probe_path.read_text(encoding="utf-8")) if live_probe_path.is_file() else {}
+    except (OSError, json.JSONDecodeError):
+        live_probe = {}
+    live_workflows = {item.get("workflow_id"): item for item in live_probe.get("workflows", []) if isinstance(item, dict)}
     for workflow_id, ui_path in paths.items():
         graph = build_graph(workflow_id, root_path)
         classes = {node.class_type for node in graph.nodes}
@@ -359,6 +365,8 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         required_node_packages = sorted({custom_node_by_class[class_name]["name"] for class_name in required_custom_nodes if class_name in custom_node_by_class})
         required_node_revisions = {name: custom_node_entries[name].get("revision") for name in required_node_packages}
         required_node_checksums = {name: custom_node_entries[name].get("source_tree_checksum") for name in required_node_packages}
+        live_workflow = live_workflows.get(workflow_id, {})
+        live_schema_pass = live_workflow.get("status") == "PASS" and live_probe.get("status") == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED"
         manifests.append({
             "workflow_id": workflow_id,
             "display_name": workflow_id,
@@ -367,7 +375,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             "sha256": sha256_file(ui_path),
             "api_sha256": sha256_file(api_path),
             "graph_spec_version": WORKFLOW_VERSION,
-            "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+            "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
             "required_core_nodes": sorted(CORE_NODES),
             "required_custom_nodes": required_custom_nodes,
             "required_custom_node_packages": required_node_packages,
@@ -377,11 +385,12 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             "autoprompter_present": bool(PROFILE_LIMITS[workflow_id]["autoprompter"]),
             "prompt_source": "autoprompter" if PROFILE_LIMITS[workflow_id]["autoprompter"] else "job_contract",
             "autoprompter_instruction_sha256": graph.metadata["autoprompter_instruction_sha256"],
-            "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
-            "load_test_evidence": None,
-            "execution_test_evidence": None,
+            "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if live_schema_pass else "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+            "load_test_evidence": {"path": str(live_probe_path.relative_to(root_path)), "status": "PASS", "checked_at": live_probe.get("checked_at")} if live_schema_pass else None,
+            "execution_test_evidence": {"path": str(live_probe_path.relative_to(root_path)), **live_probe.get("execution", {})} if live_schema_pass else None,
         })
-    manifest = {"schema_version": "1.0.0", "generated_at": "2026-07-26", "lock_version": "workflows-2026-07-26.1", "workflows": manifests, "status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED"}
+    manifest_status = "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if manifests and all(item.get("validation_status") == "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" for item in manifests) else "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
+    manifest = {"schema_version": "1.0.0", "generated_at": "2026-07-28", "lock_version": "workflows-2026-07-26.1", "workflows": manifests, "status": manifest_status}
     atomic_json_write(root_path / "manifests/workflow_manifest.json", manifest)
     return manifest
 

@@ -1,19 +1,25 @@
 # Krea 2 Compatibility Review
 
-Status: **BLOCKED_PINNED_CORE_SCHEMA_UNVERIFIED**.
+Status: **BLOCKED_EXECUTION_NOT_MEASURED**.
 
-The generated graph now follows the primary `comfyui-krea2edit` contract for
-`fit` mode: `Krea2EditModelPatch` receives the Krea VAE and the approved
-composite source image, and both grounded encoders use the documented 768-pixel
-baseline. The official ComfyUI Krea 2 documentation also identifies Turbo as
-the eight-step route.
+The live pinned runtime now verifies the Krea 2 core and node contract. ComfyUI
+revision `2a610155821d670a2d8047e654e5fce96b790eb5` exposes `CLIPLoader` with
+the `krea2` type required by the primary `comfyui-krea2edit` checkout at
+`cae442e11b59bcba04ed82f4c01ffe3752531fe1`. The loopback server imported both
+the Krea nodes and the project nodes, and all four API workflows matched the
+live `/object_info` input registry. The Krea patch receives the VAE and source
+image for `fit` mode; grounded encoding is locked to the documented 768-pixel
+baseline; and the human/agent prompt split remains intact.
 
-The pinned ComfyUI core revision
-`f49bdb655707b97952dcef40e12e5af1f08d2007` does not list `krea2` among the
-`DualCLIPLoader` type choices in its primary `nodes.py` source. The exact
-workflow therefore cannot be called loadable against the current lock without
-a live verification of a compatible core/node combination. The loader type is
-not silently changed. No Krea model is installed and no generation is claimed.
+The machine-readable live evidence is
+`docs/preflight/live_comfy_compatibility.json`. It records the loopback binding,
+core revision, ComfyUI/PyTorch versions, node presence, live input schemas, and
+all four workflow checks. The model artifact preflight separately records the
+required local model files and SHA-256 values.
 
-Primary evidence and the machine-readable finding are in
-`docs/preflight/krea_compatibility_review.json`.
+This is a schema/import qualification result, not a production generation
+claim. No approved source fixture, approved background, calibrated identity
+thresholds, or independent auditor evidence is available. Consequently model
+loading and the required eight-step Turbo identity-edit execution were not
+attempted, the experiment matrix remains blocked, and no PNG/DDS/mod output is
+permitted.

@@ -17,6 +17,7 @@ runpod/
 reports/runtime/
 reports/benchmarks/
 logs/
+.runtime/
 
 # Model and image artifacts must never enter Git.
 *.safetensors

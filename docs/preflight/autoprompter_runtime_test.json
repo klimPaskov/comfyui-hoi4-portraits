@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "checked_at": "2026-07-28T13:00:42.897738+00:00",
+  "status": "PASS_HEALTH_AND_NEGATIVE_VALIDATION",
+  "profile": "human_local_mac_16gb",
+  "full_power": {
+    "status": "PASS_FORMAT_AND_PROCESSOR_SCHEMA",
+    "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+    "model_root": "models/autoprompter",
+    "processor_class": "Qwen3VLProcessor",
+    "config_class": "Qwen3VLConfig",
+    "config_model_type": "qwen3_vl",
+    "execution": "BLOCKED_TARGET_CUDA_UNAVAILABLE",
+    "cuda_available": false,
+    "execution_probe": "AutoprompterService.start_upstream()",
+    "execution_error": "human_full_power_gpu autoprompter requires CUDA; the current host has no CUDA device"
+  },
+  "negative_validation": {
+    "status": "PASS",
+    "expected": "HTTP_400_AUTOPROMPT_UNVERIFIED_CLAIM",
+    "observed_http_status": 400,
+    "observed_error_code": "AUTOPROMPT_UNVERIFIED_CLAIM"
+  },
+  "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A legally usable source fixture is required for positive qualification.",
+  "runtime": {
+    "binary": ".runtime/llama-cpp/b9637/llama-b9637/llama-server",
+    "model": "models/autoprompter/Qwen3VL-4B-Instruct-Q4_K_M.gguf",
+    "mmproj": "models/autoprompter/mmproj-Qwen3VL-4B-Instruct-F16.gguf",
+    "health": {
+      "status": "PASS",
+      "binding": "http://127.0.0.1:8099",
+      "upstream": true,
+      "profile": "human_local_mac_16gb",
+      "model_id": "Qwen/Qwen3-VL-4B-Instruct-GGUF",
+      "instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8"
+    },
+    "models": {
+      "object": "list",
+      "data": [
+        {
+          "id": "Qwen/Qwen3-VL-4B-Instruct-GGUF",
+          "object": "model",
+          "owned_by": "Qwen"
+        }
+      ]
+    }
+  },
+  "positive_generation": {
+    "status": "BLOCKED_NO_LEGAL_SOURCE_FIXTURE"
+  },
+  "staging": {
+    "one_request_at_a_time": true,
+    "background_metadata_forwarded": false,
+    "binding": "http://127.0.0.1:8099",
+    "process_shutdown_verified_by_caller": true
+  }
+}

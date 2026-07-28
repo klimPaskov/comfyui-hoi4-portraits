@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "lock_version": "autoprompter-runtime-2026-07-28.1",
+  "status": "PINNED_LOCAL_AND_FULL_POWER_RUNTIME_EXECUTION_UNVERIFIED",
+  "policy": "The human autoprompter is staged on loopback, accepts one request at a time, receives only the processed subject image and exact instruction, and is terminated before Krea model loading.",
+  "source": {
+    "repository": "https://github.com/ggml-org/llama.cpp.git",
+    "tag": "b9637",
+    "commit": "aedb2a5e9ca3d4064148bbb919e0ddc0c1b70ab3",
+    "release_url": "https://github.com/ggml-org/llama.cpp/releases/tag/b9637",
+    "license": "MIT"
+  },
+  "artifacts": {
+    "macos_arm64": {
+      "filename": "llama-b9637-bin-macos-arm64.tar.gz",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b9637/llama-b9637-bin-macos-arm64.tar.gz",
+      "size_bytes": 10586927,
+      "sha256": "72a93f3e68c31de3e438d462669aad1fcdb423b995e9c41033cc7d27a9a3ac69",
+      "install_path": ".runtime/llama-cpp/b9637/llama-b9637/llama-server",
+      "extracted_binary_size_bytes": 33472,
+      "extracted_binary_sha256": "c68b4016e18701e8293e3730a8f13272d8d2d6c10139c8b00421332604b06347"
+    }
+  },
+  "local_profile": {
+    "model_path": "models/autoprompter/Qwen3VL-4B-Instruct-Q4_K_M.gguf",
+    "model_size_bytes": 2497281664,
+    "model_sha256": "66358cb18bb6b3b1b6675aa412c7a88ef01d228f481184d13668e5201c730a0a",
+    "mmproj_path": "models/autoprompter/mmproj-Qwen3VL-4B-Instruct-F16.gguf",
+    "mmproj_size_bytes": 836180256,
+    "mmproj_sha256": "256f3a43bd4205ffef48d6b92715e1e70b5b0e9aef06522584967513a9985331",
+    "host": "127.0.0.1",
+    "proxy_port": 8099,
+    "llama_server_port": 8100,
+    "context_size": 4096,
+    "max_tokens": 256,
+    "parallel_requests": 1,
+    "temperature": 0.0,
+    "image_input": "processed_reference_only"
+  },
+  "full_power_profile": {
+    "model_source": "Qwen/Qwen3-VL-8B-Instruct",
+    "model_revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "status": "PINNED_TRANSFORMERS_FORMAT_EXECUTION_UNVERIFIED",
+    "model_root": "models/autoprompter",
+    "loader": "transformers.Qwen3VLForConditionalGeneration",
+    "processor": "transformers.AutoProcessor",
+    "transformers_version": "5.14.1",
+    "torch_dtype": "bfloat16",
+    "device_requirement": "CUDA",
+    "model_lock_entry": "Qwen3-VL-8B-Instruct-BF16-shards",
+    "metadata_files_locked_in_models_lock": true,
+    "execution_status": "NOT_RUN_TARGET_CUDA_UNAVAILABLE_ON_HOST",
+    "reason": "The official BF16 safetensor shards and Transformers metadata are installed and pinned. Full-power execution still requires a CUDA host; the Mac MPS host cannot be relabeled as a full-power qualification run."
+  },
+  "protocol": {
+    "proxy_endpoint": "/v1/chat/completions",
+    "client_payload": "project-private instruction/image envelope",
+    "upstream_payload": "OpenAI-compatible multimodal chat completion",
+    "background_metadata_forwarded": false,
+    "raw_server_public_binding": false
+  }
+}

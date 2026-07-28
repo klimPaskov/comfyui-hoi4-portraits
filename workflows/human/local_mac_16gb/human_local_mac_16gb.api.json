@@ -239,10 +239,9 @@
     }
   },
   "15": {
-    "class_type": "DualCLIPLoader",
+    "class_type": "CLIPLoader",
     "inputs": {
-      "clip_name1": "qwen3vl_4b_fp8_scaled.safetensors",
-      "clip_name2": "qwen3vl_4b_fp8_scaled.safetensors",
+      "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
       "type": "krea2"
     }
   },
@@ -448,8 +447,7 @@
         "ref_boost"
       ],
       "Krea Qwen3-VL encoder": [
-        "clip_name1",
-        "clip_name2",
+        "clip_name",
         "type"
       ],
       "Grounded positive conditioning": [
@@ -482,7 +480,7 @@
       ]
     },
     "required_core_nodes": [
-      "DualCLIPLoader",
+      "CLIPLoader",
       "EmptySD3LatentImage",
       "KSampler",
       "LoraLoaderModelOnly",

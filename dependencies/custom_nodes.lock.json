@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "lock_version": "custom-nodes-2026-07-26.1",
-  "status": "PINNED_BUT_NOT_INSTALLED",
+  "status": "PINNED_LIVE_IMPORT_PASS_EXECUTION_UNVERIFIED",
   "custom_nodes": [
     {
       "name": "comfyui-krea2edit",
@@ -10,14 +10,14 @@
       "license": "Apache-2.0",
       "source_tree_checksum": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
       "classes": ["Krea2EditModelPatch", "Krea2EditGroundedEncode"],
-      "status": "NOT_INSTALLED_LIVE_SIGNATURE_UNVERIFIED"
+      "status": "INSTALLED_LIVE_SIGNATURE_PASS_EXECUTION_UNVERIFIED"
     },
     {
       "name": "hoi4_portrait_project_nodes",
       "repository": "local-project-source",
       "revision": "graph-spec-1.0.0",
       "license": "MIT",
-      "source_tree_checksum": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1",
+      "source_tree_checksum": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382",
       "classes": [
         "HOI4JobInput",
         "HOI4HumanControls",
@@ -32,7 +32,7 @@
         "HOI4AutopromptClient",
         "HOI4EvidenceExport"
       ],
-      "status": "SOURCE_PRESENT_IMPORT_TEST_PENDING"
+      "status": "SOURCE_PRESENT_LIVE_IMPORT_PASS_EXECUTION_UNVERIFIED"
     }
   ],
   "security_policy": {

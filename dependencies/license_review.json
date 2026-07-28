@@ -28,7 +28,7 @@
     },
     {
       "name": "ComfyUI",
-      "source_url": "https://github.com/Comfy-Org/ComfyUI/blob/v0.24.0/LICENSE",
+      "source_url": "https://github.com/Comfy-Org/ComfyUI/blob/2a610155821d670a2d8047e654e5fce96b790eb5/LICENSE",
       "license_identifier": "GPL-3.0",
       "status": "PINNED_SOURCE_REVIEWED"
     },

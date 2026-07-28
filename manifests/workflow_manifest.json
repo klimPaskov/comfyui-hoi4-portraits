@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-26",
+  "generated_at": "2026-07-28",
   "lock_version": "workflows-2026-07-26.1",
   "workflows": [
     {
@@ -8,12 +8,12 @@
       "display_name": "human_local_mac_16gb",
       "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
       "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-      "sha256": "fe72d154bc0d82bfa96ab202245598193a90d0f3437149c873e18c5aedd1a650",
-      "api_sha256": "a412c06475a7f87bf3f995442d9998d76532a372cce1588aa9c11c1a14d8ecb7",
+      "sha256": "85142e85a0e60635e43180c9946fbe283819c729952cd34b60b04985286d29c7",
+      "api_sha256": "ebc2f01ed2c262cf013438eb26821c7575df2967920909b6f026b2cf7ba0bb50",
       "graph_spec_version": "graph-spec-1.0.0",
-      "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+      "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
-        "DualCLIPLoader",
+        "CLIPLoader",
         "EmptySD3LatentImage",
         "KSampler",
         "LoraLoaderModelOnly",
@@ -48,7 +48,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
+        "hoi4_portrait_project_nodes": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -61,21 +61,34 @@
       "autoprompter_present": true,
       "prompt_source": "autoprompter",
       "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
-      "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
-      "load_test_evidence": null,
-      "execution_test_evidence": null
+      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "load_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "PASS",
+        "checked_at": "2026-07-28T13:11:38.964901+00:00"
+      },
+      "execution_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+        "attempted": false,
+        "fixture_present": false,
+        "background_resolved": false,
+        "eight_step_turbo_execution": "NOT_RUN",
+        "model_loading": "NOT_RUN",
+        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+      }
     },
     {
       "workflow_id": "human_full_power_gpu",
       "display_name": "human_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-      "sha256": "eeb1a8581f543121a33914884e79e647d4005f7765652bd398e6a6e0e503182b",
-      "api_sha256": "6ee592bd938a284519216a385a9a17f65a8ea4cbabfdc1fbf28bd610cb00b8b9",
+      "sha256": "7bd77ba83631cdec783f8bcdb7220acaee04aa27bb5bf5b15a553a06bdd84d7e",
+      "api_sha256": "d8a6c65f97242b0cbce9d0e9bd1b3d35da97b4c26a90e7b5df76a9c3b2024a6e",
       "graph_spec_version": "graph-spec-1.0.0",
-      "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+      "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
-        "DualCLIPLoader",
+        "CLIPLoader",
         "EmptySD3LatentImage",
         "KSampler",
         "LoraLoaderModelOnly",
@@ -110,7 +123,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
+        "hoi4_portrait_project_nodes": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -123,21 +136,34 @@
       "autoprompter_present": true,
       "prompt_source": "autoprompter",
       "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
-      "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
-      "load_test_evidence": null,
-      "execution_test_evidence": null
+      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "load_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "PASS",
+        "checked_at": "2026-07-28T13:11:38.964901+00:00"
+      },
+      "execution_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+        "attempted": false,
+        "fixture_present": false,
+        "background_resolved": false,
+        "eight_step_turbo_execution": "NOT_RUN",
+        "model_loading": "NOT_RUN",
+        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+      }
     },
     {
       "workflow_id": "agent_local_mac_16gb",
       "display_name": "agent_local_mac_16gb",
       "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
       "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-      "sha256": "44e4993f8a9ec20d6c0d4d721a3aaf5fd817dea6fcc638b88dcf59efa1cb8280",
-      "api_sha256": "799bc136f4d040443fb37c7d036cd2c96684108c05dc6f57300a46f1881cc496",
+      "sha256": "d9b30b5fe2ea4dd643db3b732070279fafdd005de148cb22b9be1d7dc8fb3cc9",
+      "api_sha256": "8142b545b7057be020044d21012baef63705f87dd1a816926f8a287018774d9d",
       "graph_spec_version": "graph-spec-1.0.0",
-      "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+      "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
-        "DualCLIPLoader",
+        "CLIPLoader",
         "EmptySD3LatentImage",
         "KSampler",
         "LoraLoaderModelOnly",
@@ -171,7 +197,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
+        "hoi4_portrait_project_nodes": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -183,21 +209,34 @@
       "autoprompter_present": false,
       "prompt_source": "job_contract",
       "autoprompter_instruction_sha256": null,
-      "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
-      "load_test_evidence": null,
-      "execution_test_evidence": null
+      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "load_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "PASS",
+        "checked_at": "2026-07-28T13:11:38.964901+00:00"
+      },
+      "execution_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+        "attempted": false,
+        "fixture_present": false,
+        "background_resolved": false,
+        "eight_step_turbo_execution": "NOT_RUN",
+        "model_loading": "NOT_RUN",
+        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+      }
     },
     {
       "workflow_id": "agent_remote_runpod",
       "display_name": "agent_remote_runpod",
       "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
       "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-      "sha256": "48b0c46ae205c1ce9df53f884a68d9fb40f0e918981a6f1a46110e7f7fcd6642",
-      "api_sha256": "23f1aa18f576c36d00a76ecb65b4c1d6d892b0cfa056ae75ba91cbf24ce19872",
+      "sha256": "aedc1e4b29b2c298a626d4fd38c56808f656cfcc4545bdcc78a2e4d08d0a2075",
+      "api_sha256": "13a610ea4d5dea4b464171599f325975fe511be414e7f83258f99a844264c12f",
       "graph_spec_version": "graph-spec-1.0.0",
-      "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+      "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
-        "DualCLIPLoader",
+        "CLIPLoader",
         "EmptySD3LatentImage",
         "KSampler",
         "LoraLoaderModelOnly",
@@ -231,7 +270,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "33e90c3d378896bed1e8217f9296b73c677fba705df5387218ba6c5a77af2ee1"
+        "hoi4_portrait_project_nodes": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -243,10 +282,23 @@
       "autoprompter_present": false,
       "prompt_source": "job_contract",
       "autoprompter_instruction_sha256": null,
-      "validation_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
-      "load_test_evidence": null,
-      "execution_test_evidence": null
+      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "load_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "PASS",
+        "checked_at": "2026-07-28T13:11:38.964901+00:00"
+      },
+      "execution_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+        "attempted": false,
+        "fixture_present": false,
+        "background_resolved": false,
+        "eight_step_turbo_execution": "NOT_RUN",
+        "model_loading": "NOT_RUN",
+        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+      }
     }
   ],
-  "status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
+  "status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED"
 }

@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0.0",
-  "profile": "local_mac_16gb",
-  "created_at": "2026-07-28T13:16:18.173647+00:00",
+  "profile": "full_power_gpu",
+  "created_at": "2026-07-28T13:16:41.672131+00:00",
   "status": "BLOCKED",
   "installation_permitted": false,
   "preflight": {
     "schema_version": "1.0.0",
-    "collected_at": "2026-07-28T13:16:18.173583+00:00",
+    "collected_at": "2026-07-28T13:16:41.672063+00:00",
     "project_root": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits",
-    "profile": "agent_local_mac_16gb",
+    "profile": "human_full_power_gpu",
     "hardware": {
       "platform": "macOS-26.5.2-arm64-arm-64bit",
       "python": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15123.\nPages active:                                 254982.\nPages inactive:                               405598.\nPages speculative:                              5829.\nPages throttled:                                   0.\nPages wired down:                             137849.\nPages purgeable:                                2049.\n\"Translation faults\":                       29322877.\nPages copy-on-write:                         2482079.\nPages zero filled:                          15658325.\nPages reactivated:                           1114149.\nPages purged:                                 271221.\nFile-backed pages:                            493674.\nAnonymous pages:                              172735.\nPages stored in compressor:                   452631.\nPages occupied by compressor:                 185916.\nDecompressions:                               312376.\nCompressions:                                 934076.\nPageins:                                   133615821.\nPageouts:                                      15590.\nSwapins:                                           4.\nSwapouts:                                       2848.\nPages tagged:                                 101211.\nPages tagged resident:                         53155.\nPages tagged compressed:                       48056.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 3979.\nPages tag-storage free:                          171.\nPages tag-storage non-tag pageable:            28542.\nPages tag-storage non-tag wired:                  76.\nBytes of compressed tags:                    6581952.\nTagged compressions:                           79239.\nTagged decompressions:                         26801.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15140.\nPages active:                                 255323.\nPages inactive:                               403631.\nPages speculative:                              7120.\nPages throttled:                                   0.\nPages wired down:                             138978.\nPages purgeable:                                  50.\n\"Translation faults\":                       29447849.\nPages copy-on-write:                         2493617.\nPages zero filled:                          15706160.\nPages reactivated:                           1114232.\nPages purged:                                 273555.\nFile-backed pages:                            492954.\nAnonymous pages:                              173120.\nPages stored in compressor:                   452583.\nPages occupied by compressor:                 185894.\nDecompressions:                               312424.\nCompressions:                                 934076.\nPageins:                                   135170585.\nPageouts:                                      15601.\nSwapins:                                           4.\nSwapouts:                                       2848.\nPages tagged:                                 101179.\nPages tagged resident:                         53126.\nPages tagged compressed:                       48053.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 3979.\nPages tag-storage free:                          179.\nPages tag-storage non-tag pageable:            28534.\nPages tag-storage non-tag wired:                  76.\nBytes of compressed tags:                    6581696.\nTagged compressions:                           79239.\nTagged decompressions:                         26804.",
           "stderr": ""
         }
       },
@@ -82,7 +82,7 @@
                 "/usr/bin/vm_stat"
               ],
               "returncode": 0,
-              "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15123.\nPages active:                                 254982.\nPages inactive:                               405598.\nPages speculative:                              5829.\nPages throttled:                                   0.\nPages wired down:                             137849.\nPages purgeable:                                2049.\n\"Translation faults\":                       29322877.\nPages copy-on-write:                         2482079.\nPages zero filled:                          15658325.\nPages reactivated:                           1114149.\nPages purged:                                 271221.\nFile-backed pages:                            493674.\nAnonymous pages:                              172735.\nPages stored in compressor:                   452631.\nPages occupied by compressor:                 185916.\nDecompressions:                               312376.\nCompressions:                                 934076.\nPageins:                                   133615821.\nPageouts:                                      15590.\nSwapins:                                           4.\nSwapouts:                                       2848.\nPages tagged:                                 101211.\nPages tagged resident:                         53155.\nPages tagged compressed:                       48056.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 3979.\nPages tag-storage free:                          171.\nPages tag-storage non-tag pageable:            28542.\nPages tag-storage non-tag wired:                  76.\nBytes of compressed tags:                    6581952.\nTagged compressions:                           79239.\nTagged decompressions:                         26801.",
+              "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15140.\nPages active:                                 255323.\nPages inactive:                               403631.\nPages speculative:                              7120.\nPages throttled:                                   0.\nPages wired down:                             138978.\nPages purgeable:                                  50.\n\"Translation faults\":                       29447849.\nPages copy-on-write:                         2493617.\nPages zero filled:                          15706160.\nPages reactivated:                           1114232.\nPages purged:                                 273555.\nFile-backed pages:                            492954.\nAnonymous pages:                              173120.\nPages stored in compressor:                   452583.\nPages occupied by compressor:                 185894.\nDecompressions:                               312424.\nCompressions:                                 934076.\nPageins:                                   135170585.\nPageouts:                                      15601.\nSwapins:                                           4.\nSwapouts:                                       2848.\nPages tagged:                                 101179.\nPages tagged resident:                         53126.\nPages tagged compressed:                       48053.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 3979.\nPages tag-storage free:                          179.\nPages tag-storage non-tag pageable:            28534.\nPages tag-storage non-tag wired:                  76.\nBytes of compressed tags:                    6581696.\nTagged compressions:                           79239.\nTagged decompressions:                         26804.",
               "stderr": ""
             }
           },
@@ -152,9 +152,9 @@
       },
       {
         "name": "local_runtime_capability",
-        "status": "PASS",
+        "status": "BLOCKED",
         "evidence": {
-          "profile": "agent_local_mac_16gb",
+          "profile": "human_full_power_gpu",
           "python_version": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
           "python_executable": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/.venv/bin/python",
           "host_python_version": "3.12.13",
@@ -200,8 +200,8 @@
           },
           "comfy_cli": null,
           "comfy_runtime_present": true,
-          "required_accelerator": "MPS",
-          "accelerator_ok": true
+          "required_accelerator": "CUDA",
+          "accelerator_ok": false
         }
       },
       {
@@ -752,7 +752,7 @@
         "status": "PASS",
         "evidence": {
           "status": "PASS",
-          "profile": "human_local_mac_16gb",
+          "profile": "human_full_power_gpu",
           "checks": [
             {
               "name": "krea2_turbo_fp8_scaled.safetensors",
@@ -803,27 +803,181 @@
               "status": "PASS"
             },
             {
-              "name": "Qwen3VL-4B-Instruct-Q4_K_M.gguf",
-              "path": "models/autoprompter/Qwen3VL-4B-Instruct-Q4_K_M.gguf",
-              "format": ".gguf",
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "path": "models/autoprompter/model-00001-of-00004.safetensors",
+              "format": ".safetensors",
               "format_supported": true,
               "present": true,
-              "size_bytes": 2497281664,
-              "expected_size_bytes": 2497281664,
-              "sha256": "66358cb18bb6b3b1b6675aa412c7a88ef01d228f481184d13668e5201c730a0a",
-              "expected_sha256": "66358cb18bb6b3b1b6675aa412c7a88ef01d228f481184d13668e5201c730a0a",
+              "size_bytes": 4902275944,
+              "expected_size_bytes": 4902275944,
+              "sha256": "d5d0aef0eb170fc7453a296c43c0849a56f510555d3588e4fd662bb35490aefa",
+              "expected_sha256": "d5d0aef0eb170fc7453a296c43c0849a56f510555d3588e4fd662bb35490aefa",
               "status": "PASS"
             },
             {
-              "name": "mmproj-Qwen3VL-4B-Instruct-F16.gguf",
-              "path": "models/autoprompter/mmproj-Qwen3VL-4B-Instruct-F16.gguf",
-              "format": ".gguf",
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "path": "models/autoprompter/model-00002-of-00004.safetensors",
+              "format": ".safetensors",
               "format_supported": true,
               "present": true,
-              "size_bytes": 836180256,
-              "expected_size_bytes": 836180256,
-              "sha256": "256f3a43bd4205ffef48d6b92715e1e70b5b0e9aef06522584967513a9985331",
-              "expected_sha256": "256f3a43bd4205ffef48d6b92715e1e70b5b0e9aef06522584967513a9985331",
+              "size_bytes": 4915962496,
+              "expected_size_bytes": 4915962496,
+              "sha256": "8be88fb5501e4d5719a6d4cc212e6a13480330e74f3e8c77daa1a68f199106b5",
+              "expected_sha256": "8be88fb5501e4d5719a6d4cc212e6a13480330e74f3e8c77daa1a68f199106b5",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "path": "models/autoprompter/model-00003-of-00004.safetensors",
+              "format": ".safetensors",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 4999831048,
+              "expected_size_bytes": 4999831048,
+              "sha256": "83de00eafe6e0d57ccd009dbcf71c9974d74df2f016c27afb7e95aafd16b2192",
+              "expected_sha256": "83de00eafe6e0d57ccd009dbcf71c9974d74df2f016c27afb7e95aafd16b2192",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "path": "models/autoprompter/model-00004-of-00004.safetensors",
+              "format": ".safetensors",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 2716270024,
+              "expected_size_bytes": 2716270024,
+              "sha256": "0a88b98e9f96270973f567e6a2c103ede6ccdf915ca3075e21c755604d0377a5",
+              "expected_sha256": "0a88b98e9f96270973f567e6a2c103ede6ccdf915ca3075e21c755604d0377a5",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/chat_template.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 5499,
+              "expected_size_bytes": 5499,
+              "sha256": "5c72a170d2a4a1a3bc5adad2e689ae28138a9700e5b8c96c0266331e86c0acce",
+              "expected_sha256": "5c72a170d2a4a1a3bc5adad2e689ae28138a9700e5b8c96c0266331e86c0acce",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/config.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 1474,
+              "expected_size_bytes": 1474,
+              "sha256": "5cd452860dc1e9c29dd71cc3cef7f39b338b7a40793f7a260655c2d3568f3661",
+              "expected_sha256": "5cd452860dc1e9c29dd71cc3cef7f39b338b7a40793f7a260655c2d3568f3661",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/generation_config.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 269,
+              "expected_size_bytes": 269,
+              "sha256": "8469742d1fce0de951c8909b26a2c0c0d8490837ce476efb114da9e0cefc4d44",
+              "expected_sha256": "8469742d1fce0de951c8909b26a2c0c0d8490837ce476efb114da9e0cefc4d44",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/merges.txt",
+              "format": ".txt",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 1671839,
+              "expected_size_bytes": 1671839,
+              "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+              "expected_sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/model.safetensors.index.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 67759,
+              "expected_size_bytes": 67759,
+              "sha256": "520b2e05079402e9468a8701d03d1154d14b2599593afb6effa7fb60c1bff070",
+              "expected_sha256": "520b2e05079402e9468a8701d03d1154d14b2599593afb6effa7fb60c1bff070",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/preprocessor_config.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 390,
+              "expected_size_bytes": 390,
+              "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "expected_sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/tokenizer.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 7032403,
+              "expected_size_bytes": 7032403,
+              "sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+              "expected_sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/tokenizer_config.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 10868,
+              "expected_size_bytes": 10868,
+              "sha256": "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399",
+              "expected_sha256": "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/video_preprocessor_config.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 385,
+              "expected_size_bytes": 385,
+              "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "expected_sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "status": "PASS"
+            },
+            {
+              "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+              "kind": "runtime_metadata",
+              "path": "models/autoprompter/vocab.json",
+              "format": ".json",
+              "format_supported": true,
+              "present": true,
+              "size_bytes": 2776833,
+              "expected_size_bytes": 2776833,
+              "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+              "expected_sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
               "status": "PASS"
             }
           ],
@@ -833,10 +987,9 @@
             "qwen3vl_4b_fp8_scaled.safetensors",
             "qwen_image_vae.safetensors",
             "krea2_identity_edit_v1_2.safetensors",
-            "Qwen3VL-4B-Instruct-Q4_K_M.gguf",
-            "mmproj-Qwen3VL-4B-Instruct-F16.gguf"
+            "Qwen3-VL-8B-Instruct-BF16-shards"
           ],
-          "requested_profile": "agent_local_mac_16gb",
+          "requested_profile": "human_full_power_gpu",
           "local_files": [
             "models/text_encoders/qwen3vl_4b_fp8_scaled.safetensors",
             "models/autoprompter/model-00004-of-00004.safetensors",
@@ -948,11 +1101,11 @@
           "lock_status": "RESOLVED_PROFILE_LOCKS_LIVE_COMPATIBILITY_UNVERIFIED",
           "checks": [
             {
-              "profile_lock": "macos_arm64_cpu",
-              "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt",
+              "profile_lock": "linux_amd64_cuda128",
+              "path": "dependencies/runtime_profiles/linux_amd64_cuda128.lock.txt",
               "status": "PASS",
-              "expected_sha256": "08f1820931fb6b9595472ae711f3d037f270a901582c9cca231619deb3f2ad8d",
-              "actual_sha256": "08f1820931fb6b9595472ae711f3d037f270a901582c9cca231619deb3f2ad8d",
+              "expected_sha256": "31c8fe0bd331a681b7d4b291b254869a8cc9ebe12dd3665d621e6001c69fcbd5",
+              "actual_sha256": "31c8fe0bd331a681b7d4b291b254869a8cc9ebe12dd3665d621e6001c69fcbd5",
               "content_ok": true,
               "invalid_packages": []
             }
@@ -971,7 +1124,7 @@
         "name": "remote_topology_auth",
         "status": "NOT_APPLICABLE",
         "evidence": {
-          "profile": "agent_local_mac_16gb",
+          "profile": "human_full_power_gpu",
           "credential_presence": {
             "RUNPOD_API_KEY": false,
             "RUNPOD_ENDPOINT_ID": false,
@@ -2898,12 +3051,12 @@
       },
       {
         "name": "autoprompter_runtime",
-        "status": "NOT_APPLICABLE",
+        "status": "PASS_FORMAT_ONLY_EXECUTION_BLOCKED",
         "evidence": {
-          "status": "NOT_APPLICABLE",
+          "status": "PASS_FORMAT_ONLY_EXECUTION_BLOCKED",
           "lock_path": "dependencies/autoprompter_runtime.lock.json",
           "report_path": "docs/preflight/autoprompter_runtime_test.json",
-          "profile": "agent_local_mac_16gb",
+          "profile": "human_full_power_gpu",
           "instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
           "lock_status": "PINNED_LOCAL_AND_FULL_POWER_RUNTIME_EXECUTION_UNVERIFIED",
           "runtime_report": {
@@ -3212,11 +3365,13 @@
       }
     ],
     "blockers": [
+      "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
       "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
       "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
       "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
       "Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.",
+      "The full-power human autoprompter format is pinned and processor-verified, but target CUDA execution is unavailable on the detected host.",
       "License/rights review is not fully approved for Krea redistribution or the unresolved background."
     ],
     "status": "BLOCKED",
@@ -3228,7 +3383,7 @@
     {
       "action": "installation",
       "status": "SKIPPED_HARD_PREFLIGHT_BLOCK",
-      "reason": "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked. and No legally usable source portrait fixture and complete provenance record is present for calibration or route execution. and No live generic agentic HOI4 target repository was found; only the planning proposal is available. and Identity/style thresholds are still calibration placeholders; no production candidate may be accepted. and Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available. and License/rights review is not fully approved for Krea redistribution or the unresolved background."
+      "reason": "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable. and The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked. and No legally usable source portrait fixture and complete provenance record is present for calibration or route execution. and No live generic agentic HOI4 target repository was found; only the planning proposal is available. and Identity/style thresholds are still calibration placeholders; no production candidate may be accepted. and Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available. and The full-power human autoprompter format is pinned and processor-verified, but target CUDA execution is unavailable on the detected host. and License/rights review is not fully approved for Krea redistribution or the unresolved background."
     }
   ],
   "workflow_validation": [

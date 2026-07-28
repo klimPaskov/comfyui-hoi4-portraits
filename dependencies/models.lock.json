@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "generated_at": "2026-07-26T00:00:00Z",
   "lock_version": "models-2026-07-26.1",
-  "resolution_status": "PINNED_BUT_NOT_INSTALLED",
+  "resolution_status": "PINNED_ARTIFACTS_LIVE_SCHEMA_VERIFIED_EXECUTION_UNVERIFIED",
   "resolution_policy": "Use only the named official or primary source, verify the exact revision and artifact SHA-256 before installation, and fail closed on a missing or mismatching file.",
   "models": [
     {
@@ -23,7 +23,7 @@
       "quantization_or_dtype": "FP8 scaled",
       "loader_node": "UNETLoader",
       "mandatory": true,
-      "live_compatibility": "NOT_RUN_COMFYUI_NOT_INSTALLED"
+      "live_compatibility": "LIVE_SCHEMA_VERIFIED_EXECUTION_UNVERIFIED"
     },
     {
       "name": "qwen3vl_4b_fp8_scaled.safetensors",
@@ -41,9 +41,9 @@
       "destination_folder": "models/text_encoders",
       "profiles": ["human_full_power_gpu", "agent_remote_runpod", "human_local_mac_16gb", "agent_local_mac_16gb"],
       "quantization_or_dtype": "FP8 scaled",
-      "loader_node": "DualCLIPLoader",
+      "loader_node": "CLIPLoader(type=krea2)",
       "mandatory": true,
-      "live_compatibility": "NOT_RUN_COMFYUI_NOT_INSTALLED"
+      "live_compatibility": "LIVE_SCHEMA_VERIFIED_EXECUTION_UNVERIFIED"
     },
     {
       "name": "qwen_image_vae.safetensors",
@@ -63,7 +63,7 @@
       "quantization_or_dtype": "safetensors",
       "loader_node": "VAELoader",
       "mandatory": true,
-      "live_compatibility": "NOT_RUN_COMFYUI_NOT_INSTALLED"
+      "live_compatibility": "LIVE_SCHEMA_VERIFIED_EXECUTION_UNVERIFIED"
     },
     {
       "name": "krea2_identity_edit_v1_2.safetensors",
@@ -81,7 +81,7 @@
       "quantization_or_dtype": "safetensors FP/BF16 adapter",
       "loader_node": "LoraLoaderModelOnly",
       "mandatory": true,
-      "live_compatibility": "NOT_RUN_COMFYUI_NOT_INSTALLED",
+      "live_compatibility": "LIVE_SCHEMA_VERIFIED_EXECUTION_UNVERIFIED",
       "policy": "identity_edit_only; face_swap_nodes_and_prompt_routes_forbidden"
     },
     {
@@ -100,7 +100,7 @@
       "quantization_or_dtype": "Q4_K_M GGUF",
       "loader_node": "HOI4AutopromptClient",
       "mandatory": true,
-      "live_compatibility": "NOT_RUN_PYTHON_AND_SIDEcar_NOT_INSTALLED"
+      "live_compatibility": "LIVE_SIDECAR_HEALTH_AND_NEGATIVE_VALIDATION"
     },
     {
       "name": "mmproj-Qwen3VL-4B-Instruct-F16.gguf",
@@ -118,7 +118,7 @@
       "quantization_or_dtype": "F16 GGUF projector",
       "loader_node": "HOI4AutopromptClient",
       "mandatory": true,
-      "live_compatibility": "NOT_RUN_PYTHON_AND_SIDEcar_NOT_INSTALLED"
+      "live_compatibility": "LIVE_SIDECAR_HEALTH_AND_NEGATIVE_VALIDATION"
     },
     {
       "name": "Qwen3-VL-8B-Instruct-BF16-shards",
@@ -148,7 +148,19 @@
       "quantization_or_dtype": "BF16 safetensors shards",
       "loader_node": "HOI4AutopromptClient",
       "mandatory": true,
-      "live_compatibility": "NOT_RUN_PYTHON_AND_SIDEcar_NOT_INSTALLED"
+      "live_compatibility": "PINNED_TRANSFORMERS_FORMAT_EXECUTION_UNVERIFIED",
+      "runtime_files": [
+        {"filename": "chat_template.json", "source_relative_path": "chat_template.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 5499, "sha256": "5c72a170d2a4a1a3bc5adad2e689ae28138a9700e5b8c96c0266331e86c0acce"},
+        {"filename": "config.json", "source_relative_path": "config.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 1474, "sha256": "5cd452860dc1e9c29dd71cc3cef7f39b338b7a40793f7a260655c2d3568f3661"},
+        {"filename": "generation_config.json", "source_relative_path": "generation_config.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 269, "sha256": "8469742d1fce0de951c8909b26a2c0c0d8490837ce476efb114da9e0cefc4d44"},
+        {"filename": "merges.txt", "source_relative_path": "merges.txt", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 1671839, "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"},
+        {"filename": "model.safetensors.index.json", "source_relative_path": "model.safetensors.index.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 67759, "sha256": "520b2e05079402e9468a8701d03d1154d14b2599593afb6effa7fb60c1bff070"},
+        {"filename": "preprocessor_config.json", "source_relative_path": "preprocessor_config.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 390, "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"},
+        {"filename": "tokenizer.json", "source_relative_path": "tokenizer.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 7032403, "sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7"},
+        {"filename": "tokenizer_config.json", "source_relative_path": "tokenizer_config.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 10868, "sha256": "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399"},
+        {"filename": "video_preprocessor_config.json", "source_relative_path": "video_preprocessor_config.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 385, "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"},
+        {"filename": "vocab.json", "source_relative_path": "vocab.json", "source_url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/tree/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b", "size_bytes": 2776833, "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"}
+      ]
     }
   ],
   "project_owned_immutable_files": [

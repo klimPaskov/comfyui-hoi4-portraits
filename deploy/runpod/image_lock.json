@@ -23,19 +23,19 @@
     "cuda_variant": "cu128",
     "official_index": "https://download.pytorch.org/whl/cu128",
     "artifact_hashes": "dependencies/runtime_profiles/linux_amd64_cuda128.lock.txt",
-    "runtime_profile_lock_sha256": "4e45be103d6cf17b882e2824a45cc3a818296ae5ead6b88b622030ba615cfc0b",
+    "runtime_profile_lock_sha256": "31c8fe0bd331a681b7d4b291b254869a8cc9ebe12dd3665d621e6001c69fcbd5",
     "status": "PINNED_PROFILE_LOCK_LIVE_GPU_UNVERIFIED"
   },
   "project_dependency_lock": {
     "path": "dependencies/project_requirements.lock.txt",
-    "sha256": "00f81a288e5a521a802ea86ac348e219dbcd0dc961b43dad8bc294687937bad9",
+    "sha256": "220517d011643ddfa66739d6fe79c487633c095cd10c95f5e7de0e45414b878f",
     "status": "RESOLVED"
   },
   "project_pins": {
-    "comfyui_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+    "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
     "comfyui_manager_commit": "2ce7556b3f36b2edf75b16605dd6109e5939fbd8",
     "comfyui_krea2edit_commit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-    "project_node_tree_sha256": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28",
+    "project_node_tree_sha256": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382",
     "style_lora_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
   },
   "models": {

@@ -10,15 +10,15 @@
       "kind": "git_repository",
       "purpose": "pinned local ComfyUI runtime",
       "official_source": "https://github.com/Comfy-Org/ComfyUI.git",
-      "version_or_commit": "f49bdb655707b97952dcef40e12e5af1f08d2007",
+      "version_or_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "license": "GPL-3.0",
       "redistribution_permission": "allowed_with_license_obligations",
-      "install_method": "git clone --branch v0.24.0 followed by git checkout f49bdb655707b97952dcef40e12e5af1f08d2007",
+      "install_method": "git clone followed by git checkout 2a610155821d670a2d8047e654e5fce96b790eb5",
       "destination": "comfyui",
       "sha256": null,
       "profiles": ["all"],
       "mandatory": true,
-      "compatibility_notes": "Official repository revision is pinned; runtime import/load test is still required. Git trees do not have one artifact SHA in this lock."
+      "compatibility_notes": "Official Krea 2 support commit is pinned; runtime import/load and workflow execution tests remain required. Git trees do not have one artifact SHA in this lock."
     },
     {
       "name": "comfyui-krea2edit",
@@ -105,7 +105,7 @@
       "redistribution_permission": "allowed",
       "install_method": "copy or symlink the checked-out project node package into ComfyUI/custom_nodes",
       "destination": "comfyui/custom_nodes/hoi4_portrait_nodes",
-      "sha256": "2d80d6000a27d2fe23842480cd606f3bef9f07173acdf33d5616ea46294dac28",
+      "sha256": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382",
       "profiles": ["all"],
       "mandatory": true,
       "compatibility_notes": "Source checksum is recorded in the release manifest after each bounded commit."

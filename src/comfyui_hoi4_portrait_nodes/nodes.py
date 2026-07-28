@@ -6,10 +6,13 @@ import binascii
 import hashlib
 import io
 import os
+import subprocess
+import sys
 import tempfile
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import urlsplit
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -169,6 +172,54 @@ def _post_loopback_json(endpoint: str, payload: dict[str, Any], *, timeout: floa
     if body.get("status") not in {None, "PASS"}:
         _raise(ExitCode.GENERATION_FAILED, f"loopback preprocessing service returned status {body.get('status')!r}")
     return body
+
+
+def _post_autoprompt_staged(root: Path, endpoint: str, payload: dict[str, Any], profile: str) -> dict[str, Any]:
+    """Use an existing loopback sidecar or launch one for this single request.
+
+    The owned sidecar is terminated before this node returns so the controller
+    can proceed to Krea loading without retaining the VLM process.
+    """
+
+    parsed = urlsplit(endpoint)
+    if parsed.scheme != "http" or parsed.hostname not in {"127.0.0.1", "localhost"}:
+        _raise(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "autoprompter is not bound to loopback")
+    base = f"http://{parsed.netloc}"
+    owned: subprocess.Popen[Any] | None = None
+    try:
+        try:
+            with urllib.request.urlopen(base + "/health", timeout=2) as response:
+                health = json.loads(response.read().decode("utf-8"))
+            if not isinstance(health, dict) or health.get("status") != "PASS" or health.get("model_id") != payload.get("model_id"):
+                raise OSError("autoprompter health is not PASS")
+        except (OSError, urllib.error.URLError, json.JSONDecodeError):
+            runtime_python = root / ".venv" / "bin" / "python"
+            if not runtime_python.is_file():
+                runtime_python = Path(sys.executable)
+            port = int(parsed.port or 8099)
+            owned = subprocess.Popen([str(runtime_python), "-m", "portrait_pipeline.autoprompter_service", "--root", str(root), "--profile", profile, "--port", str(port), "--upstream-port", str(port + 1)], cwd=root, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            deadline = time.monotonic() + 180
+            while time.monotonic() < deadline:
+                if owned.poll() is not None:
+                    _raise(ExitCode.DEPENDENCY_MISSING, "staged autoprompter sidecar exited before readiness")
+                try:
+                    with urllib.request.urlopen(base + "/health", timeout=2) as response:
+                        health = json.loads(response.read().decode("utf-8"))
+                    if isinstance(health, dict) and health.get("status") == "PASS" and health.get("model_id") == payload.get("model_id"):
+                        break
+                except (OSError, urllib.error.URLError, json.JSONDecodeError):
+                    time.sleep(0.5)
+            else:
+                _raise(ExitCode.DEPENDENCY_MISSING, "staged autoprompter sidecar health timed out")
+        return _post_loopback_json(endpoint, payload, timeout=180.0)
+    finally:
+        if owned is not None and owned.poll() is None:
+            owned.terminate()
+            try:
+                owned.wait(timeout=20)
+            except subprocess.TimeoutExpired:
+                owned.kill()
+                owned.wait(timeout=20)
 
 
 def _write_subject_inventory(job: dict[str, Any], image: Any) -> dict[str, Any]:
@@ -815,10 +866,10 @@ class HOI4AutopromptClient:
         image_bytes = io.BytesIO()
         _comfy_to_pil(image).save(image_bytes, format="PNG", optimize=False)
         encoded = json.dumps({"instruction": exact_instruction, "job_id": job.get("job_id"), "model_id": model_id, "image_png_base64": base64.b64encode(image_bytes.getvalue()).decode("ascii"), "background_meta": background_meta}, ensure_ascii=False).encode("utf-8")
-        request = urllib.request.Request(endpoint, data=encoded, headers={"Content-Type": "application/json"}, method="POST")
         try:
-            with urllib.request.urlopen(request, timeout=120) as response:
-                payload = json.loads(response.read().decode("utf-8"))
+            payload = _post_autoprompt_staged(root, endpoint, json.loads(encoded.decode("utf-8")), str(job.get("execution_profile")))
+        except RuntimeError:
+            raise
         except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
             _raise(ExitCode.DEPENDENCY_MISSING, f"loopback autoprompter sidecar unavailable: {type(exc).__name__}")
         prompt = str(payload.get("prompt", ""))

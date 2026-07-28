@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0.0",
-  "reviewed_at": "2026-07-26",
-  "status": "BLOCKED_PINNED_CORE_SCHEMA_UNVERIFIED",
-  "policy": "Krea 2 Turbo may not be installed or executed until the exact ComfyUI core/custom-node schema is verified in a live pinned runtime.",
+  "reviewed_at": "2026-07-28",
+  "status": "BLOCKED_EXECUTION_NOT_MEASURED",
+  "policy": "Krea 2 Turbo may be used for private qualification only after the exact ComfyUI core/custom-node schema is verified in the live pinned runtime; production execution remains blocked until source, background, calibration, and independent-audit gates pass.",
   "sources": [
     {
       "role": "official_comfyui_krea_2_documentation",
@@ -16,8 +16,13 @@
     },
     {
       "role": "pinned_comfyui_core_source",
-      "url": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/f49bdb655707b97952dcef40e12e5af1f08d2007/nodes.py",
-      "revision_or_date": "f49bdb655707b97952dcef40e12e5af1f08d2007"
+      "url": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/2a610155821d670a2d8047e654e5fce96b790eb5/nodes.py",
+      "revision_or_date": "2a610155821d670a2d8047e654e5fce96b790eb5"
+    },
+    {
+      "role": "live_loopback_registry_probe",
+      "url": "http://127.0.0.1:8188/object_info",
+      "revision_or_date": "live probe recorded 2026-07-28; machine evidence docs/preflight/live_comfy_compatibility.json"
     }
   ],
   "findings": [
@@ -33,14 +38,24 @@
     },
     {
       "id": "pinned_core_loader_type",
-      "status": "BLOCKED",
-      "finding": "The pinned ComfyUI nodes.py DualCLIPLoader type choices do not include krea2, while the Krea graph requires the Krea 2 loader contract. A newer verified core or an exact compatible node implementation is required; changing the type blindly would make the workflow less safe, not more loadable."
+      "status": "PASS",
+      "finding": "The pinned ComfyUI revision 2a610155821d670a2d8047e654e5fce96b790eb5 exposes CLIPLoader with the krea2 type choice required by the primary Krea node contract. The live registry probe confirms the choice."
+    },
+    {
+      "id": "live_node_import_and_workflow_schema",
+      "status": "PASS",
+      "finding": "The pinned ComfyUI checkout and pinned comfyui-krea2edit checkout import on the local loopback server. All four API workflows match the live node registry, including Krea2EditModelPatch fit inputs, Krea2EditGroundedEncode inputs, and CLIPLoader type=krea2."
+    },
+    {
+      "id": "model_artifact_inventory",
+      "status": "PASS_CHECKSUM_VERIFIED",
+      "finding": "The required local qualification model files are present and SHA-256 verified by the model artifact preflight. This is an artifact inventory result, not proof that all weights can be resident or executed on the 16 GB Mac."
     },
     {
       "id": "live_runtime_execution",
-      "status": "BLOCKED",
-      "finding": "ComfyUI, the Krea custom node checkout, and the required model artifacts are not installed; node import, model loading, graph load, and an eight-step Turbo execution remain unverified."
+      "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+      "finding": "The live schema check passed, but no legally usable source fixture, approved background, calibrated thresholds, or independent audit evidence is present. Model loading and the required eight-step Turbo identity-edit execution were not attempted; production generation remains fail-closed."
     }
   ],
-  "conclusion": "The workflows are structurally delivered but Krea live compatibility is not proven. Installation and generation remain fail-closed until a verified compatible ComfyUI revision/node signature is installed and exercised."
+  "conclusion": "Krea live core/node/schema compatibility is verified in the pinned loopback runtime and all four workflows are live-schema loadable. This does not establish source-specific model execution or production suitability: the required eight-step run, identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked by missing approved source/background and rights evidence."
 }
