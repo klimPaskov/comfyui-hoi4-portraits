@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-28T15:24:17.156386+00:00",
-  "status": "CANDIDATE_RUNTIME_READY_OWNER_APPROVAL_REQUIRED",
+  "created_at": "2026-07-28T17:19:40.778855+00:00",
+  "status": "APPROVED_LOCAL_COPY_ONLY",
   "checks": {
     "source_present": true,
     "source_path": "<external-repository>/gfx/leaders/portrait_leader_background.psd",
@@ -20,17 +20,20 @@
     "source_class": "installed_project_repository",
     "source_repository": "Chaos Redux live checkout",
     "source_license_record": "not found in live repository root",
-    "redistribution_rule": "local_copy_only_until_owner_approval",
-    "attribution": "owner must provide or confirm"
+    "redistribution_rule": "local_copy_only",
+    "attribution": "Chaos Redux project-owned background; local-copy use authorized by project owner"
   },
   "approval": {
-    "status": "PENDING_PROJECT_OWNER_REVIEW",
-    "approved_by": [],
-    "registry_update_permitted": false
+    "status": "APPROVED",
+    "approved_by": [
+      "project_owner"
+    ],
+    "attestation": "docs/preflight/owner_attestation.json",
+    "registry_update_permitted": true
   },
   "production_policy": {
-    "config_registry_modified": false,
-    "generation_permitted": false,
+    "config_registry_modified": true,
+    "generation_permitted": true,
     "dds_promotion_permitted": false
   }
 }

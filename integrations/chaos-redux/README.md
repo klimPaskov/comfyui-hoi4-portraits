@@ -14,7 +14,7 @@ This directory is a drag-and-drop proposal generated from the complete uploaded 
 
 Direct integration is allowed only when the implementation session proves read and write access to both:
 
-- `/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits`
+- `<project-root>`
 - the live Chaos Redux repository on the Windows machine
 
 Record machine names, absolute roots, transport, permissions, credential boundary, line-ending policy, and rollback method. Do not assume one Codex session can access both computers.

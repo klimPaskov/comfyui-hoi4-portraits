@@ -1,7 +1,7 @@
 # Benchmark Report: `agent_remote_runpod`
 
-- Status: **BLOCKED_REMOTE_AUTH**
-- Reason: RunPod endpoint credentials and authenticated remote acceptance are unavailable.
+- Status: **DEFERRED_OUT_OF_SCOPE**
+- Reason: RunPod live execution was explicitly deferred by the project owner for the current scope.
 - Expected locked model bytes: `20694849246`
 - Physical memory bytes: `17179869184`
 - Capacity assessment: **MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY**
@@ -12,7 +12,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 
 | Gate | Status |
 | --- | --- |
-| `approved_source_background` | **BLOCKED** |
+| `approved_source_background` | **PASS** |
 | `autoprompter_runtime` | **NOT_APPLICABLE** |
 | `calibrated_identity_thresholds` | **BLOCKED** |
 | `comfyui_runtime_dependency_lock` | **PASS** |
@@ -20,12 +20,12 @@ This report contains no successful generation claim. File-size arithmetic is a r
 | `hardware_detection` | **PASS** |
 | `immutable_style_lora` | **PASS** |
 | `krea_live_compatibility` | **PASS** |
-| `license_and_rights_review` | **BLOCKED_PENDING_PROJECT_OWNER_REVIEW** |
+| `license_and_rights_review` | **APPROVED** |
 | `local_runtime_capability` | **PASS** |
 | `model_artifact_preflight` | **PASS** |
 | `planning_package_checksums` | **PASS** |
 | `preprocessing_and_audit_dependencies` | **PASS** |
-| `remote_topology_auth` | **BLOCKED** |
+| `remote_topology_auth` | **DEFERRED_OUT_OF_SCOPE** |
 | `repository_preflight` | **PASS** |
 | `source_fixture_and_provenance` | **PASS** |
 
@@ -44,12 +44,8 @@ This report contains no successful generation claim. File-size arithmetic is a r
 
 ## Blockers
 
-- The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.
-- RunPod endpoint credentials are absent; remote submission/acceptance cannot run.
-- No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
-- Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.
-- License/rights review is not fully approved for Krea redistribution or the unresolved background.
+- Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.
 
 ## Required follow-up
 

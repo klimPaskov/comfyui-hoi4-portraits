@@ -18,6 +18,7 @@ Machine-readable evidence is retained alongside its Markdown summary:
 - [`preflight/initial_preflight.md`](preflight/initial_preflight.md)
 - [`preflight/live_comfy_compatibility.json`](preflight/live_comfy_compatibility.json)
 - [`preflight/autoprompter_runtime_test.json`](preflight/autoprompter_runtime_test.json)
+- [`preflight/local_human_execution_2026-07-28.json`](preflight/local_human_execution_2026-07-28.json)
 - [`acceptance/acceptance_report.md`](acceptance/acceptance_report.md)
 - [`capabilities/local_mac_16gb.md`](capabilities/local_mac_16gb.md)
 - [`capabilities/full_power_gpu.md`](capabilities/full_power_gpu.md)

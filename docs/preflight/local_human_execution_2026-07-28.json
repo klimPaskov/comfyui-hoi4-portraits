@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0.0",
+  "observed_at": "2026-07-28T17:57:45Z",
+  "status": "BLOCKED_LOCAL_16GB_MEMORY_INFEASIBLE",
+  "execution_profile": "human_local_mac_16gb",
+  "scope": "private_user_fixture_local_qualification",
+  "source_fixture": {
+    "class": "user_provided_private",
+    "archive_sha256": "4aa689b7ff8fa0ae183b93f79f9553fb6388f95573eef00ac68f1d9603c7243e",
+    "path_policy": "private_and_ignored",
+    "redistribution": false
+  },
+  "hardware": {
+    "os": "darwin",
+    "architecture": "arm64",
+    "ram_bytes": 17179869184,
+    "accelerator": "mps",
+    "comfyui_revision": "2a610155821d670a2d8047e654e5fce96b790eb5",
+    "pytorch_version": "2.11.0"
+  },
+  "stage_results": {
+    "job_contract_validation": "PASS",
+    "source_intake_and_immutable_snapshot": "PASS",
+    "subject_selection": "PASS",
+    "crop_and_conservative_preprocessing": "PASS",
+    "foreground_mask_and_approved_background": "PASS",
+    "human_autoprompter_health": "PASS",
+    "human_autoprompter_composited_reference": "BLOCKED_UNVERIFIED_CLAIM",
+    "manual_prompt_override_validation": "PASS",
+    "krea_model_and_conditioning": "PASS_REACHED_SAMPLER",
+    "krea_sampler": "BLOCKED_LOCAL_MEMORY_PRESSURE_AFTER_FP8_WORKAROUND",
+    "candidate_export": "NOT_REACHED",
+    "independent_audit": "NOT_RUN",
+    "dds_and_mod_integration": "NOT_CREATED"
+  },
+  "measured_error": {
+    "node": "KSampler",
+    "type": "TypeError",
+    "message": "Trying to convert Float8_e4m3fn to the MPS backend but it does not have support for that dtype.",
+    "runtime_seconds": 28.38,
+    "model": {
+      "filename": "krea2_turbo_fp8_scaled.safetensors",
+      "official_revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+      "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1"
+    }
+  },
+  "compatibility_workaround": {
+    "status": "APPLIED_AND_VERIFIED_DTYPE_PATH",
+    "script": "scripts/runtime/apply_mps_fp8_workaround.py",
+    "basis": "https://github.com/Comfy-Org/ComfyUI/discussions/13273",
+    "source_class": "primary_repository_discussion; local_workaround_not_upstream",
+    "runtime_files": [
+      "comfyui/comfy/float.py",
+      ".venv/lib/python3.12/site-packages/comfy_kitchen/backends/eager/quantization.py"
+    ],
+    "checks": [
+      "FP8 stochastic rounding marker verified",
+      "FP8 dequantization marker verified",
+      "both runtime files passed Python compilation",
+      "patched MPS run passed the original Float8_e4m3fn exception site"
+    ],
+    "model_and_lora_mutated": false
+  },
+  "attempts": [
+    {
+      "prompt_id": "dfabec0f-eebe-4061-be6b-f89e3d30cd7a",
+      "status": "BLOCKED_INPUT_CONTEXT_VALIDATION_BUG",
+      "node": "HOI4JobInput"
+    },
+    {
+      "prompt_id": "4dbce885-6581-4075-9ef4-7481537b5882",
+      "status": "BLOCKED_PREPROCESSING_ENDPOINT_NOT_INHERITED",
+      "node": "HOI4SubjectSelect"
+    },
+    {
+      "prompt_id": "7b6e05d5-a0d6-434b-93bd-07c42f4cd001",
+      "status": "BLOCKED_AUTOPROMPTER_UNVERIFIED_CLAIM",
+      "node": "HOI4AutopromptClient"
+    },
+    {
+      "prompt_id": "c37ce543-38fd-4eea-9bce-383c4fdd14ec",
+      "status": "BLOCKED_MPS_FLOAT8_UNSUPPORTED",
+      "node": "KSampler"
+    },
+    {
+      "prompt_id": "a3d4472f-f05f-45fa-b4c3-984e8ad1a8f4",
+      "status": "BLOCKED_LOCAL_MEMORY_PRESSURE_AFTER_FP8_WORKAROUND",
+      "node": "KSampler",
+      "canvas": "832x1120",
+      "sampler_progress": "0/8",
+      "result": "interrupted_before_first_step_completion"
+    },
+    {
+      "prompt_id": "3e94745d-9c79-46a1-a19d-12730591511a",
+      "status": "BLOCKED_LOCAL_MEMORY_PRESSURE_AFTER_FP8_WORKAROUND",
+      "node": "KSampler",
+      "canvas": "416x560_diagnostic_only",
+      "sampler_progress": "0/8",
+      "result": "interrupted_before_first_step_completion"
+    }
+  ],
+  "conclusion": "The local workaround removes the FP8-to-MPS dtype exception without changing the locked model or immutable LoRA, but the full 12B Krea route remains infeasible on this detected 16 GB Mac because model residency and CPU/MPS offload exhaust practical memory before the first sampler step completes. No generated after portrait, final PNG, DDS, or mod integration is claimed."
+}

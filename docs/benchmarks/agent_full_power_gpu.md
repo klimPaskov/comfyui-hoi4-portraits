@@ -1,7 +1,7 @@
-# Benchmark Report: `agent_local_mac_16gb`
+# Benchmark Report: `agent_full_power_gpu`
 
-- Status: **BLOCKED_PREFLIGHT**
-- Reason: One or more mandatory preflight gates remain blocked.
+- Status: **BLOCKED_RUNTIME_UNAVAILABLE**
+- Reason: The target local runtime is not installed or its accelerator capability is not verified.
 - Expected locked model bytes: `20694849246`
 - Physical memory bytes: `17179869184`
 - Capacity assessment: **MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY**
@@ -21,7 +21,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 | `immutable_style_lora` | **PASS** |
 | `krea_live_compatibility` | **PASS** |
 | `license_and_rights_review` | **APPROVED** |
-| `local_runtime_capability` | **PASS** |
+| `local_runtime_capability` | **BLOCKED** |
 | `model_artifact_preflight` | **PASS** |
 | `planning_package_checksums` | **PASS** |
 | `preprocessing_and_audit_dependencies` | **PASS** |
@@ -44,6 +44,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 
 ## Blockers
 
+- The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
 - Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.
 

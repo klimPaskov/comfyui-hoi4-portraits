@@ -1,6 +1,8 @@
 # Generic Agentic HOI4 Modding Integration
 
-This package contains complete repository-neutral portrait skill and subagent files. The live generic repository URL and current checkout were unavailable during planning, so this directory does not pretend that an exact diff against current repository files exists.
+This package contains the repository-neutral portrait skill and subagent files, plus a review record for the live target repository supplied by the project owner.
+
+The target was read and updated locally on branch `codex/portrait-pipeline`. The changes remain uncommitted and unpushed by instruction; this package does not claim that the target GitHub repository has been changed.
 
 ## Complete proposed new files
 
@@ -22,9 +24,11 @@ The templates define the exact rules that must be merged into the live repositor
 
 Do not invent the repository URL. Resolve it from current project configuration, an existing checkout, Git remotes, or explicit user input.
 
-Suggested checkout area:
+Reviewed checkout area:
 
-`/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/repos/agentic-hoi4-modding`
+`<project-root>/repos/Agentic-HOI4-Modding`
+
+Live target: [klimPaskov/Agentic-HOI4-Modding](https://github.com/klimPaskov/Agentic-HOI4-Modding)
 
 Before editing:
 
@@ -36,6 +40,12 @@ Before editing:
 6. update an existing equivalent instead of duplicating it
 7. inspect the repository's converter and validation rules
 8. inspect current tests and release process
+
+## Local review result
+
+The supplied target was inspected and the portrait integration was applied locally to the target working tree. The applied files are recorded in `live_review.json` and include the skill, producer/auditor agents, Codex routing, AGENTS routing, README guidance, and setup-manifest entries. The target's existing setup manifest still reports baseline expected-file drift, so final live-consumer acceptance remains open.
+
+The target branch is intentionally not pushed. A future publish step must review and commit the target changes in bounded commits, run the target repository's own checks, and then perform parent-owned live-consumer validation.
 
 ## Installation plan
 
@@ -50,7 +60,7 @@ Before editing:
 9. Push without force.
 10. Open a draft pull request and report branch, commits, checks, and pull-request details.
 
-When the URL, authentication, or permissions are unavailable, produce a clean patch series and, when a local Git repository exists, a Git bundle. Report the exact blocker. Do not invent a pull request.
+When the URL, authentication, or permissions are unavailable, produce a clean patch series and, when a local Git repository exists, a Git bundle. Report the exact blocker. Do not invent a pull request. The current target is available locally, but publishing is intentionally deferred.
 
 ## Validation
 
@@ -65,7 +75,7 @@ PY
 
 git diff --check
 rg -n "hoi4-portrait-pipeline|hoi4_portrait_pipeline|hoi4_portrait_identity_auditor" AGENTS.md .agents .codex/agents
-rg -n "Chaos Redux|chaosx_|C:/Users/klimp" .agents/skills/hoi4-portrait-pipeline .codex/agents/hoi4_portrait_pipeline.toml .codex/agents/hoi4_portrait_identity_auditor.toml
+rg -n "Chaos Redux|chaosx_|C:/Users/example" .agents/skills/hoi4-portrait-pipeline .codex/agents/hoi4_portrait_pipeline.toml .codex/agents/hoi4_portrait_identity_auditor.toml
 ```
 
 The final `rg` command must return no matches in the three generic files.

@@ -1,7 +1,7 @@
 # Benchmark Report: `human_full_power_gpu`
 
-- Status: **BLOCKED_PREFLIGHT**
-- Reason: One or more mandatory preflight gates remain blocked.
+- Status: **BLOCKED_RUNTIME_UNAVAILABLE**
+- Reason: The target local runtime is not installed or its accelerator capability is not verified.
 - Expected locked model bytes: `38229188758`
 - Physical memory bytes: `17179869184`
 - Capacity assessment: **MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY**
@@ -12,7 +12,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 
 | Gate | Status |
 | --- | --- |
-| `approved_source_background` | **BLOCKED** |
+| `approved_source_background` | **PASS** |
 | `autoprompter_runtime` | **BLOCKED** |
 | `calibrated_identity_thresholds` | **BLOCKED** |
 | `comfyui_runtime_dependency_lock` | **PASS** |
@@ -20,7 +20,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 | `hardware_detection` | **PASS** |
 | `immutable_style_lora` | **PASS** |
 | `krea_live_compatibility` | **PASS** |
-| `license_and_rights_review` | **BLOCKED_PENDING_PROJECT_OWNER_REVIEW** |
+| `license_and_rights_review` | **APPROVED** |
 | `local_runtime_capability` | **BLOCKED** |
 | `model_artifact_preflight` | **PASS** |
 | `planning_package_checksums` | **PASS** |
@@ -45,12 +45,9 @@ This report contains no successful generation claim. File-size arithmetic is a r
 ## Blockers
 
 - The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.
-- The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.
-- No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
-- Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.
+- Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.
 - The required human autoprompter runtime lock or live local sidecar evidence is unavailable.
-- License/rights review is not fully approved for Krea redistribution or the unresolved background.
 
 ## Required follow-up
 

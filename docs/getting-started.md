@@ -20,17 +20,37 @@ python3.12 scripts/bootstrap/bootstrap.py \
   --owner-authorized-private-install
 ```
 
-Use `full_power_gpu` on a CUDA host. Use `remote_runpod` only after the remote image lock and gateway credentials are resolved. A normal restore remains fail-closed and will stop on missing source, background, license, threshold, checksum, or capability evidence.
+Use `full_power_gpu` on a CUDA host for the human route. Use `agent_full_power_gpu` for the local-NVIDIA agent route. Use `remote_runpod` only after the remote image lock and gateway credentials are resolved. A normal restore remains fail-closed and will stop on missing source, background, license, threshold, checksum, or capability evidence.
 
 The exact model and dependency revisions are recorded in [`dependencies/models.lock.json`](../dependencies/models.lock.json), [`dependencies/autoprompter_runtime.lock.json`](../dependencies/autoprompter_runtime.lock.json), and the runtime profile locks.
 
-## 3. Start ComfyUI on loopback
+## 3. Start the loopback services
+
+Start the preprocessing sidecar in one terminal:
 
 ```bash
+.venv/bin/python -m portrait_pipeline.preprocessing_service \
+  --root "$PWD" --host 127.0.0.1 --port 8790
+```
+
+Start ComfyUI in another terminal with the sidecar endpoints explicitly bound to loopback:
+
+```bash
+HOI4_PORTRAIT_PROJECT_ROOT="$PWD" \
+HOI4_SUBJECT_SERVICE_LOOPBACK="http://127.0.0.1:8790/v1/subject" \
+HOI4_MASK_SERVICE_LOOPBACK="http://127.0.0.1:8790/v1/mask" \
 .venv/bin/python comfyui/main.py --listen 127.0.0.1 --port 8188
 ```
 
 Raw ComfyUI is intentionally not exposed publicly. Remote operations go through the authenticated project gateway, not directly to ComfyUI.
+
+On Apple Silicon, check the reversible FP8/MPS fallback before starting ComfyUI:
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/runtime/apply_mps_fp8_workaround.py --check
+```
+
+Use `--apply` only on the pinned local checkout when the check identifies the expected runtime files. This workaround is not an upstream feature and does not override the local 16 GB capacity gate.
 
 ## 4. Load a workflow
 
@@ -51,7 +71,18 @@ Use the exact schema at [`schemas/portrait_job_input.schema.json`](../schemas/po
 Validate a contract before submitting it:
 
 ```bash
-PYTHONPATH=src .venv/bin/python -m portrait_pipeline.contracts path/to/job.json
+PYTHONPATH=src .venv/bin/python - <<'PY'
+import json
+from pathlib import Path
+from portrait_pipeline.contracts import validate_job
+
+root = Path.cwd()
+path = root / "jobs" / "<job_id>" / "input.json"
+job = json.loads(path.read_text(encoding="utf-8"))
+issues = validate_job(job, root)
+print(json.dumps({"valid": not issues, "issues": [issue.as_dict() for issue in issues]}, indent=2))
+raise SystemExit(0 if not issues else 10)
+PY
 ```
 
 If your checkout exposes the console entry point, the equivalent is:

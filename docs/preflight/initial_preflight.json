@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "collected_at": "2026-07-28T13:17:17.390132+00:00",
+  "collected_at": "2026-07-28T18:51:59.486501+00:00",
   "project_root": "<project-root>",
   "profile": null,
   "hardware": {
@@ -18,7 +18,7 @@
           "vm.swapusage"
         ],
         "returncode": 0,
-        "stdout": "vm.swapusage: total = 1024.00M  used = 44.50M  free = 979.50M  (encrypted)",
+        "stdout": "vm.swapusage: total = 8192.00M  used = 6761.56M  free = 1430.44M  (encrypted)",
         "stderr": ""
       },
       "vm_stat": {
@@ -26,7 +26,7 @@
           "/usr/bin/vm_stat"
         ],
         "returncode": 0,
-        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15007.\nPages active:                                 273709.\nPages inactive:                               385662.\nPages speculative:                              6002.\nPages throttled:                                   0.\nPages wired down:                             142630.\nPages purgeable:                                 410.\n\"Translation faults\":                       29627941.\nPages copy-on-write:                         2507793.\nPages zero filled:                          15785069.\nPages reactivated:                           1114301.\nPages purged:                                 273945.\nFile-backed pages:                            476766.\nAnonymous pages:                              188607.\nPages stored in compressor:                   444261.\nPages occupied by compressor:                 183051.\nDecompressions:                               320738.\nCompressions:                                 934076.\nPageins:                                   137597837.\nPageouts:                                      15789.\nSwapins:                                           4.\nSwapouts:                                       2848.\nPages tagged:                                 102051.\nPages tagged resident:                         56631.\nPages tagged compressed:                       45420.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 3979.\nPages tag-storage free:                          143.\nPages tag-storage non-tag pageable:            28570.\nPages tag-storage non-tag wired:                  76.\nBytes of compressed tags:                    6045568.\nTagged compressions:                           79239.\nTagged decompressions:                         29429.",
+        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14960.\nPages active:                                 260312.\nPages inactive:                               525620.\nPages speculative:                              4941.\nPages throttled:                                   0.\nPages wired down:                             138415.\nPages purgeable:                                 215.\n\"Translation faults\":                      121846180.\nPages copy-on-write:                         8432394.\nPages zero filled:                          65539613.\nPages reactivated:                          24444374.\nPages purged:                                1654483.\nFile-backed pages:                            588446.\nAnonymous pages:                              202427.\nPages stored in compressor:                   773221.\nPages occupied by compressor:                  61322.\nDecompressions:                             36715669.\nCompressions:                               49357943.\nPageins:                                   468313049.\nPageouts:                                      40613.\nSwapins:                                     9784910.\nSwapouts:                                   13379550.\nPages tagged:                                  76128.\nPages tagged resident:                         64318.\nPages tagged compressed:                       11810.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4311.\nPages tag-storage free:                          227.\nPages tag-storage non-tag pageable:            28149.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    1731968.\nTagged compressions:                          743057.\nTagged decompressions:                        636188.",
         "stderr": ""
       }
     },
@@ -45,7 +45,7 @@
         "<project-root>"
       ],
       "returncode": 0,
-      "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   183Gi   255Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
+      "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   181Gi   249Gi    43%    1.7M  2.6G    0%   /System/Volumes/Data",
       "stderr": ""
     }
   },
@@ -68,7 +68,7 @@
               "vm.swapusage"
             ],
             "returncode": 0,
-            "stdout": "vm.swapusage: total = 1024.00M  used = 44.50M  free = 979.50M  (encrypted)",
+            "stdout": "vm.swapusage: total = 8192.00M  used = 6761.56M  free = 1430.44M  (encrypted)",
             "stderr": ""
           },
           "vm_stat": {
@@ -76,7 +76,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15007.\nPages active:                                 273709.\nPages inactive:                               385662.\nPages speculative:                              6002.\nPages throttled:                                   0.\nPages wired down:                             142630.\nPages purgeable:                                 410.\n\"Translation faults\":                       29627941.\nPages copy-on-write:                         2507793.\nPages zero filled:                          15785069.\nPages reactivated:                           1114301.\nPages purged:                                 273945.\nFile-backed pages:                            476766.\nAnonymous pages:                              188607.\nPages stored in compressor:                   444261.\nPages occupied by compressor:                 183051.\nDecompressions:                               320738.\nCompressions:                                 934076.\nPageins:                                   137597837.\nPageouts:                                      15789.\nSwapins:                                           4.\nSwapouts:                                       2848.\nPages tagged:                                 102051.\nPages tagged resident:                         56631.\nPages tagged compressed:                       45420.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 3979.\nPages tag-storage free:                          143.\nPages tag-storage non-tag pageable:            28570.\nPages tag-storage non-tag wired:                  76.\nBytes of compressed tags:                    6045568.\nTagged compressions:                           79239.\nTagged decompressions:                         29429.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14960.\nPages active:                                 260312.\nPages inactive:                               525620.\nPages speculative:                              4941.\nPages throttled:                                   0.\nPages wired down:                             138415.\nPages purgeable:                                 215.\n\"Translation faults\":                      121846180.\nPages copy-on-write:                         8432394.\nPages zero filled:                          65539613.\nPages reactivated:                          24444374.\nPages purged:                                1654483.\nFile-backed pages:                            588446.\nAnonymous pages:                              202427.\nPages stored in compressor:                   773221.\nPages occupied by compressor:                  61322.\nDecompressions:                             36715669.\nCompressions:                               49357943.\nPageins:                                   468313049.\nPageouts:                                      40613.\nSwapins:                                     9784910.\nSwapouts:                                   13379550.\nPages tagged:                                  76128.\nPages tagged resident:                         64318.\nPages tagged compressed:                       11810.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4311.\nPages tag-storage free:                          227.\nPages tag-storage non-tag pageable:            28149.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    1731968.\nTagged compressions:                          743057.\nTagged decompressions:                        636188.",
             "stderr": ""
           }
         },
@@ -95,17 +95,17 @@
             "<project-root>"
           ],
           "returncode": 0,
-          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   183Gi   255Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
+          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   181Gi   249Gi    43%    1.7M  2.6G    0%   /System/Volumes/Data",
           "stderr": ""
         },
         "available_tools": {
           "uv": {
             "command": "uv",
-            "path": "<tool-path>/uv",
+            "path": "<local-path>",
             "present": true,
             "probe": {
               "command": [
-                "<tool-path>/uv",
+                "<local-path>",
                 "--version"
               ],
               "returncode": 0,
@@ -123,7 +123,7 @@
                 "--version"
               ],
               "returncode": 0,
-              "stdout": "Homebrew 6.0.2",
+              "stdout": "Homebrew 6.0.13",
               "stderr": ""
             }
           },
@@ -211,20 +211,20 @@
     },
     {
       "name": "approved_source_background",
-      "status": "BLOCKED",
+      "status": "PASS",
       "evidence": {
-        "status": "BLOCKED",
+        "status": "PASS",
         "registry_path": "<project-root>/config/background_registry.json",
-        "registry_status": "BLOCKED_UNTIL_RESOLVED",
+        "registry_status": "RESOLVED",
         "entries": [
           {
-            "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
-            "status": "BLOCKED_UNTIL_RESOLVED",
-            "path": null,
-            "expected_sha256": null,
-            "actual_sha256": null,
-            "path_error": "runtime path is missing",
-            "status_check": "BLOCKED"
+            "registry_id": "chaos-redux-portrait-leader-background",
+            "status": "APPROVED",
+            "path": "backgrounds/private/chaos_redux_portrait_leader_background.png",
+            "expected_sha256": "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e",
+            "actual_sha256": "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e",
+            "path_error": null,
+            "status_check": "PASS"
           }
         ],
         "candidate_evidence_path": "<project-root>/docs/preflight/background_candidates.json",
@@ -285,9 +285,46 @@
     },
     {
       "name": "source_fixture_and_provenance",
-      "status": "BLOCKED",
+      "status": "PASS",
       "evidence": {
-        "fixture_files": [],
+        "fixture_files": [
+          "fixtures/private/loc_dag_1518_portrait.jpg",
+          "fixtures/private/manifest.json",
+          "fixtures/private/user_portraits_2026-07-28/fixture_manifest.json",
+          "fixtures/private/user_portraits_2026-07-28/portraits/BAY_otto_von_lossow_identity_preserve_trial_02.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/AFX_louis_ruquoy_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/HAW_samuel_wilder_king_identity_preserve.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/WLS_george_cornwallis_west_identity_preserve_retry_04.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/ARX_Vittorio_Verne_identity_preserve_imagegen.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/ASX_vincenzo_di_benedetto_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/HBX_william_stephens_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/BAY_friedrich_dollmann_identity_preserve_trial_03.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/AGX_pieter_reenalda_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/ARX_emilio_lussu_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/AJX_walter_simons_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/WLS_david_grenfell_identity_preserve_retry_05.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/RHI_wilhelm_marx_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/BAY_rupprecht_of_bavaria_identity_preserve.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/AFX_fernand_jacquet_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/RHI_josef_harpe_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/RHI_gustav_adolf_von_zangen_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/AFX_jules_destree_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/AGX_douwe_kalma_identity_preserve_trial_02.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/SCO_cunninghame_graham_identity_preserve_trial_02.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/AFX_herman_baltia_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/WLS_j_h_thomas_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/AFX_herman_baltia_identity_preserve_trial_02.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/HAW_david_kalakaua_kawananakoa_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/CHU_federal_presidium_galimzhan_ibrahimov_hoi4_repaint_v1.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/ARX_Pietro_Pinna_Parpaglia_identity_preserve_imagegen.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/SCO_victor_fortune_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/RHI_karl_jarres_identity_preserve_trial_04.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/DOX_prempeh_ii_identity_preserve_imagegen.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/FIJ_ratu_sir_lala_sukuna_identity_preserve.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/RHI_josef_friedrich_matthes_identity_preserve.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/WLS_lewis_pugh_evans_identity_preserve_trial_01.png",
+          "fixtures/private/user_portraits_2026-07-28/portraits/WLS_saunders_lewis_identity_preserve_trial_01.png"
+        ],
         "manifest_template": "<project-root>/tests/fixture_manifest.template.json"
       }
     },
@@ -447,8 +484,8 @@
         },
         {
           "path": "README.md",
-          "expected": "3902bb099f80a6a925991d4e2031d72036c6b72ec7d62f296a10f0e827899db6",
-          "actual": "3902bb099f80a6a925991d4e2031d72036c6b72ec7d62f296a10f0e827899db6",
+          "expected": "157433eaa272e1f45d6e7c1907d166da007b67249e602ba827a3bad3ba38843f",
+          "actual": "157433eaa272e1f45d6e7c1907d166da007b67249e602ba827a3bad3ba38843f",
           "match": true
         },
         {
@@ -465,20 +502,20 @@
         },
         {
           "path": "config/identity_thresholds.template.json",
-          "expected": "22535eb128ee93470b91b9d8b78a7a935a0ecf90cedac6a244840866b4347375",
-          "actual": "22535eb128ee93470b91b9d8b78a7a935a0ecf90cedac6a244840866b4347375",
+          "expected": "32a5ac34143d081867bed404b1e03096a884e8155d724bb37e2c439b1c74ecfc",
+          "actual": "32a5ac34143d081867bed404b1e03096a884e8155d724bb37e2c439b1c74ecfc",
           "match": true
         },
         {
           "path": "integrations/agentic-hoi4-modding/README.md",
-          "expected": "e50753ae9fc724cd780f3d40757a4c38df7514f3009e4111b69581e4faef3ff1",
-          "actual": "e50753ae9fc724cd780f3d40757a4c38df7514f3009e4111b69581e4faef3ff1",
+          "expected": "614bab97245b5666ca22e9cd1009117fc78b8a03c5b71dbd00535bd63a3cfb7d",
+          "actual": "614bab97245b5666ca22e9cd1009117fc78b8a03c5b71dbd00535bd63a3cfb7d",
           "match": true
         },
         {
           "path": "integrations/agentic-hoi4-modding/manifest.md",
-          "expected": "ebdd6fac1e0bfe482bd091cdca3420e0ee7fad4d2cc65fa0a6a0d20daf862c86",
-          "actual": "ebdd6fac1e0bfe482bd091cdca3420e0ee7fad4d2cc65fa0a6a0d20daf862c86",
+          "expected": "febbf71302e2a660a97a77dcb698f176692fd58304857a462cd39762ea97c541",
+          "actual": "febbf71302e2a660a97a77dcb698f176692fd58304857a462cd39762ea97c541",
           "match": true
         },
         {
@@ -519,8 +556,8 @@
         },
         {
           "path": "integrations/chaos-redux/README.md",
-          "expected": "98ea89eef450b16ae4d788bb3ec7159368acd3c661122ead47d4f858da830cf2",
-          "actual": "98ea89eef450b16ae4d788bb3ec7159368acd3c661122ead47d4f858da830cf2",
+          "expected": "f0f728b3a296c0358190bc0a491d40dd159622598a0aa3872fd002623d801733",
+          "actual": "f0f728b3a296c0358190bc0a491d40dd159622598a0aa3872fd002623d801733",
           "match": true
         },
         {
@@ -699,8 +736,8 @@
         },
         {
           "path": "schemas/portrait_job_input.schema.json",
-          "expected": "914987b132912f6d71a1f588529aa0363a487323f03e84ce69efa205754728e7",
-          "actual": "914987b132912f6d71a1f588529aa0363a487323f03e84ce69efa205754728e7",
+          "expected": "ceab5c7e026ae91b5012ace012ed1836d4d3db820e6c389ead1a78e16c7dcda5",
+          "actual": "ceab5c7e026ae91b5012ace012ed1836d4d3db820e6c389ead1a78e16c7dcda5",
           "match": true
         },
         {
@@ -1066,8 +1103,8 @@
               "Krea2EditModelPatch"
             ],
             "class_matches": {
-              "Krea2EditModelPatch": true,
-              "Krea2EditGroundedEncode": true
+              "Krea2EditGroundedEncode": true,
+              "Krea2EditModelPatch": true
             },
             "signature_match": true,
             "status": "PASS"
@@ -1103,8 +1140,8 @@
               "HOI4SourceGuard",
               "HOI4SubjectSelect"
             ],
-            "expected_source_tree_checksum": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382",
-            "actual_source_tree_checksum": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382",
+            "expected_source_tree_checksum": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9",
+            "actual_source_tree_checksum": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9",
             "source_checksum_match": true,
             "status": "PASS"
           }
@@ -1151,7 +1188,7 @@
     },
     {
       "name": "remote_topology_auth",
-      "status": "BLOCKED",
+      "status": "DEFERRED_OUT_OF_SCOPE",
       "evidence": {
         "profile": null,
         "credential_presence": {
@@ -1162,7 +1199,18 @@
           "PORTRAIT_GATEWAY_TOKEN": false
         },
         "raw_comfyui_binding": "not configured",
-        "remote_gateway": "authenticated_only"
+        "remote_gateway": "authenticated_only",
+        "owner_scope": {
+          "status": "PASS",
+          "path": "<project-root>/docs/preflight/owner_attestation.json",
+          "scope": {
+            "local_qualification": true,
+            "mod_development": true,
+            "public_code_repository": true,
+            "runpod_live_deployment": "DEFERRED_OUT_OF_CURRENT_SCOPE"
+          }
+        },
+        "live_execution": "NOT_RUN"
       }
     },
     {
@@ -1170,7 +1218,7 @@
       "status": "PASS",
       "evidence": {
         "chaos_redux": {
-          "path": "<external-repository>",
+          "path": "<local-path> Interactive/Hearts of Iron IV/mod/Chaos-Redux",
           "exists": true,
           "is_git": true,
           "status": {
@@ -1189,8 +1237,11 @@
             "stderr": ""
           }
         },
-        "generic_candidates": [],
-        "generic_target_status": "UNAVAILABLE"
+        "generic_candidates": [
+          "<project-root>/repos/Agentic-HOI4-Modding",
+          "<project-root>/repos/agentic-hoi4-modding"
+        ],
+        "generic_target_status": "FOUND"
       }
     },
     {
@@ -1199,6 +1250,11 @@
       "evidence": {
         "path": "<project-root>/config/identity_thresholds.json",
         "present": true,
+        "status": "BLOCKED_UNTIL_CALIBRATION",
+        "accepted_statuses": [
+          "APPROVED",
+          "RESOLVED"
+        ],
         "thresholds_id": "UNSET_BLOCK_EXECUTION",
         "approved_by": []
       }
@@ -1207,19 +1263,19 @@
       "name": "krea_live_compatibility",
       "status": "PASS",
       "evidence": {
-        "reason": "Live core/node/schema compatibility is verified; source-specific model loading and the eight-step Turbo execution remain a separate qualification gate.",
+        "reason": "Live core/node/schema compatibility is verified; source-specific execution remains a separate qualification gate and the detected 16 GB Mac has a measured memory/offload blocker.",
         "compatibility_review_path": "<project-root>/docs/preflight/krea_compatibility_review.json",
-        "compatibility_review_status": "BLOCKED_EXECUTION_NOT_MEASURED",
+        "compatibility_review_status": "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE",
         "compatibility_review": {
           "schema_version": "1.0.0",
           "reviewed_at": "2026-07-28",
-          "status": "BLOCKED_EXECUTION_NOT_MEASURED",
+          "status": "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE",
           "policy": "Krea 2 Turbo may be used for private qualification only after the exact ComfyUI core/custom-node schema is verified in the live pinned runtime; production execution remains blocked until source, background, calibration, and independent-audit gates pass.",
           "sources": [
             {
               "role": "official_comfyui_krea_2_documentation",
               "url": "https://docs.comfy.org/tutorials/image/krea/krea-2",
-              "revision_or_date": "live official documentation reviewed 2026-07-26"
+              "revision_or_date": "live official documentation reviewed 2026-07-28"
             },
             {
               "role": "primary_krea2edit_node_readme",
@@ -1246,7 +1302,17 @@
             {
               "id": "krea2edit_grounding",
               "status": "PASS",
-              "finding": "The primary node documentation identifies 768 pixels as the grounded-encode default and describes a trained range beginning at 512; the generated graph locks grounding_px to 768."
+              "finding": "The primary node documentation identifies 768 pixels as the grounded-encode default and describes the v1.2 trained range as 384–768; the generated graph locks grounding_px to 768."
+            },
+            {
+              "id": "official_turbo_sampling_and_canvas",
+              "status": "PASS",
+              "finding": "The official ComfyUI Krea 2 documentation identifies Turbo as an eight-step distilled checkpoint and documents a 2 MP upper output range. The generated graph locks 8 steps, CFG 1, and an 832x1120 work canvas (0.93 MP)."
+            },
+            {
+              "id": "krea2edit_fit_and_reference_fidelity",
+              "status": "PASS",
+              "finding": "The primary node documentation identifies v1.2 fit geometry and ref_boost as the reference-fidelity control; the generated graph supplies source_image and VAE to fit mode and locks ref_boost to 1.0."
             },
             {
               "id": "pinned_core_loader_type",
@@ -1256,7 +1322,7 @@
             {
               "id": "live_node_import_and_workflow_schema",
               "status": "PASS",
-              "finding": "The pinned ComfyUI checkout and pinned comfyui-krea2edit checkout import on the local loopback server. All four API workflows match the live node registry, including Krea2EditModelPatch fit inputs, Krea2EditGroundedEncode inputs, and CLIPLoader type=krea2."
+              "finding": "The pinned ComfyUI checkout and pinned comfyui-krea2edit checkout import on the local loopback server. All five API workflows match the live node registry, including Krea2EditModelPatch fit inputs, Krea2EditGroundedEncode inputs, and CLIPLoader type=krea2."
             },
             {
               "id": "model_artifact_inventory",
@@ -1265,17 +1331,17 @@
             },
             {
               "id": "live_runtime_execution",
-              "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
-              "finding": "The live schema check passed, but no legally usable source fixture, approved background, calibrated thresholds, or independent audit evidence is present. Model loading and the required eight-step Turbo identity-edit execution were not attempted; production generation remains fail-closed."
+              "status": "BLOCKED_LOCAL_16GB_MEMORY_INFEASIBLE",
+              "finding": "The private user fixture, approved local-copy-only background, model checksums, and preprocessing route passed. The first MPS attempt exposed the FP8 dtype limitation; the documented CPU-dequantization workaround then passed that exception site, but full-resolution and reduced diagnostic runs exhausted practical unified-memory/offload headroom before the first sampler step completed. Production generation remains fail-closed."
             }
           ],
-          "conclusion": "Krea live core/node/schema compatibility is verified in the pinned loopback runtime and all four workflows are live-schema loadable. This does not establish source-specific model execution or production suitability: the required eight-step run, identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked by missing approved source/background and rights evidence."
+          "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The locked 12B route remains infeasible on the detected 16 GB Mac because practical model residency and offload pressure prevent the first sampler step from completing. This does not establish production suitability: the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
         },
         "live_probe_path": "<project-root>/docs/preflight/live_comfy_compatibility.json",
         "live_probe_status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
         "live_probe": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-28T13:11:38.964901+00:00",
+          "checked_at": "2026-07-28T18:45:44.622547+00:00",
           "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
           "server": {
             "base_url": "http://127.0.0.1:8188",
@@ -1284,7 +1350,7 @@
               "system": {
                 "os": "darwin",
                 "ram_total": 17179869184,
-                "ram_free": 7063027712,
+                "ram_free": 8988327936,
                 "comfyui_version": "0.25.0",
                 "required_frontend_version": "1.45.19",
                 "installed_templates_version": "0.10.0",
@@ -1325,7 +1391,13 @@
                   "--listen",
                   "127.0.0.1",
                   "--port",
-                  "8188"
+                  "8188",
+                  "--lowvram",
+                  "--cpu-vae",
+                  "--preview-method",
+                  "auto",
+                  "--disable-smart-memory",
+                  "--cache-none"
                 ]
               },
               "devices": [
@@ -1334,9 +1406,9 @@
                   "type": "mps",
                   "index": null,
                   "vram_total": 17179869184,
-                  "vram_free": 7063060480,
+                  "vram_free": 8988393472,
                   "torch_vram_total": 17179869184,
-                  "torch_vram_free": 7063060480
+                  "torch_vram_free": 8988393472
                 }
               ]
             }
@@ -1355,6 +1427,7 @@
             "Krea2EditGroundedEncode": true,
             "Krea2EditModelPatch": true,
             "LoraLoaderModelOnly": true,
+            "PreviewImage": true,
             "SaveImage": true,
             "UNETLoader": true,
             "VAEDecode": true,
@@ -1365,6 +1438,7 @@
             "loopback_binding": true,
             "pinned_core_revision": true,
             "core_nodes_present": true,
+            "preview_node_present": true,
             "krea_nodes_present": true,
             "cliploader_krea2_choice": true,
             "krea_patch_fit_contract": true,
@@ -1840,6 +1914,50 @@
                     "filename_prefix",
                     "images"
                   ]
+                },
+                {
+                  "node_id": "25",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "26",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "27",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "28",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
                 }
               ],
               "prompt_source": "autoprompter",
@@ -2287,6 +2405,50 @@
                     "filename_prefix",
                     "images"
                   ]
+                },
+                {
+                  "node_id": "25",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "26",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "27",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "28",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
                 }
               ],
               "prompt_source": "autoprompter",
@@ -2295,6 +2457,392 @@
             {
               "workflow_id": "agent_local_mac_16gb",
               "path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
+              "status": "PASS",
+              "issues": [],
+              "checked_nodes": [
+                {
+                  "node_id": "1",
+                  "class_type": "HOI4JobInput",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "candidate_count",
+                    "execution_profile",
+                    "job_contract_path",
+                    "retry_limit",
+                    "seed_policy"
+                  ],
+                  "workflow_input_names": [
+                    "candidate_count",
+                    "execution_profile",
+                    "job_contract_path",
+                    "retry_limit",
+                    "seed_policy"
+                  ]
+                },
+                {
+                  "node_id": "2",
+                  "class_type": "HOI4JobSource",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "3",
+                  "class_type": "HOI4SourceGuard",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "4",
+                  "class_type": "HOI4SubjectSelect",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "5",
+                  "class_type": "HOI4HeadShouldersCrop",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "control_meta",
+                    "image",
+                    "job",
+                    "selection_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "selection_meta"
+                  ]
+                },
+                {
+                  "node_id": "6",
+                  "class_type": "HOI4ConservativePrep",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "control_meta",
+                    "crop_meta",
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "crop_meta",
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "7",
+                  "class_type": "HOI4ForegroundMask",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job",
+                    "mask_model",
+                    "reference_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "mask_model",
+                    "reference_meta"
+                  ]
+                },
+                {
+                  "node_id": "8",
+                  "class_type": "HOI4MaskAndBackgroundGuard",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job",
+                    "mask",
+                    "mask_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "mask",
+                    "mask_meta"
+                  ]
+                },
+                {
+                  "node_id": "9",
+                  "class_type": "HOI4PromptInput",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "background_meta",
+                    "job",
+                    "prompt_source"
+                  ],
+                  "workflow_input_names": [
+                    "background_meta",
+                    "job",
+                    "prompt_source"
+                  ]
+                },
+                {
+                  "node_id": "10",
+                  "class_type": "UNETLoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "unet_name",
+                    "weight_dtype"
+                  ],
+                  "workflow_input_names": [
+                    "unet_name",
+                    "weight_dtype"
+                  ]
+                },
+                {
+                  "node_id": "11",
+                  "class_type": "LoraLoaderModelOnly",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ],
+                  "workflow_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "12",
+                  "class_type": "VAELoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "vae_name"
+                  ],
+                  "workflow_input_names": [
+                    "vae_name"
+                  ]
+                },
+                {
+                  "node_id": "13",
+                  "class_type": "VAEEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "pixels",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "pixels",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "14",
+                  "class_type": "Krea2EditModelPatch",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "fit_mode",
+                    "model",
+                    "ref_boost",
+                    "ref_boost_a",
+                    "ref_boost_mask",
+                    "source_image",
+                    "source_image_b",
+                    "source_latent",
+                    "source_latent_b",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "fit_mode",
+                    "model",
+                    "ref_boost",
+                    "source_image",
+                    "source_latent",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "15",
+                  "class_type": "CLIPLoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip_name",
+                    "device",
+                    "type"
+                  ],
+                  "workflow_input_names": [
+                    "clip_name",
+                    "type"
+                  ]
+                },
+                {
+                  "node_id": "16",
+                  "class_type": "Krea2EditGroundedEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "image_b",
+                    "prompt",
+                    "system_prompt"
+                  ],
+                  "workflow_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "prompt"
+                  ]
+                },
+                {
+                  "node_id": "17",
+                  "class_type": "Krea2EditGroundedEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "image_b",
+                    "prompt",
+                    "system_prompt"
+                  ],
+                  "workflow_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "prompt"
+                  ]
+                },
+                {
+                  "node_id": "18",
+                  "class_type": "LoraLoaderModelOnly",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ],
+                  "workflow_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "19",
+                  "class_type": "EmptySD3LatentImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "batch_size",
+                    "height",
+                    "width"
+                  ],
+                  "workflow_input_names": [
+                    "batch_size",
+                    "height",
+                    "width"
+                  ]
+                },
+                {
+                  "node_id": "20",
+                  "class_type": "KSampler",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "cfg",
+                    "denoise",
+                    "latent_image",
+                    "model",
+                    "negative",
+                    "positive",
+                    "sampler_name",
+                    "scheduler",
+                    "seed",
+                    "steps"
+                  ],
+                  "workflow_input_names": [
+                    "cfg",
+                    "denoise",
+                    "latent_image",
+                    "model",
+                    "negative",
+                    "positive",
+                    "sampler_name",
+                    "scheduler",
+                    "seed",
+                    "steps"
+                  ]
+                },
+                {
+                  "node_id": "21",
+                  "class_type": "VAEDecode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "samples",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "samples",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "22",
+                  "class_type": "HOI4EvidenceExport",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "approved_background",
+                    "candidate",
+                    "candidate_index",
+                    "job",
+                    "mask",
+                    "processed_reference",
+                    "prompt",
+                    "source_master"
+                  ],
+                  "workflow_input_names": [
+                    "approved_background",
+                    "candidate",
+                    "candidate_index",
+                    "job",
+                    "mask",
+                    "processed_reference",
+                    "prompt",
+                    "source_master"
+                  ]
+                },
+                {
+                  "node_id": "23",
+                  "class_type": "SaveImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "filename_prefix",
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "filename_prefix",
+                    "images"
+                  ]
+                }
+              ],
+              "prompt_source": "job_contract",
+              "human_workflow": false
+            },
+            {
+              "workflow_id": "agent_full_power_gpu",
+              "path": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
               "status": "PASS",
               "issues": [],
               "checked_nodes": [
@@ -3066,10 +3614,10 @@
             }
           ],
           "execution": {
-            "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+            "status": "NOT_RUN_CALIBRATION_REQUIRED",
             "attempted": false,
-            "fixture_present": false,
-            "background_resolved": false,
+            "fixture_present": true,
+            "background_resolved": true,
             "eight_step_turbo_execution": "NOT_RUN",
             "model_loading": "NOT_RUN",
             "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
@@ -3090,7 +3638,7 @@
         "lock_status": "PINNED_LOCAL_AND_FULL_POWER_RUNTIME_EXECUTION_UNVERIFIED",
         "runtime_report": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-28T13:00:42.897738+00:00",
+          "checked_at": "2026-07-28T15:30:58.385975+00:00",
           "status": "PASS_HEALTH_AND_NEGATIVE_VALIDATION",
           "profile": "human_local_mac_16gb",
           "full_power": {
@@ -3100,10 +3648,8 @@
             "processor_class": "Qwen3VLProcessor",
             "config_class": "Qwen3VLConfig",
             "config_model_type": "qwen3_vl",
-            "execution": "BLOCKED_TARGET_CUDA_UNAVAILABLE",
-            "cuda_available": false,
-            "execution_probe": "AutoprompterService.start_upstream()",
-            "execution_error": "human_full_power_gpu autoprompter requires CUDA; the current host has no CUDA device"
+            "execution": "NOT_RUN_CUDA_UNAVAILABLE",
+            "cuda_available": false
           },
           "negative_validation": {
             "status": "PASS",
@@ -3111,7 +3657,7 @@
             "observed_http_status": 400,
             "observed_error_code": "AUTOPROMPT_UNVERIFIED_CLAIM"
           },
-          "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A legally usable source fixture is required for positive qualification.",
+          "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A production-authorized source fixture is required for positive generation qualification.",
           "runtime": {
             "binary": ".runtime/llama-cpp/b9637/llama-b9637/llama-server",
             "model": "models/autoprompter/Qwen3VL-4B-Instruct-Q4_K_M.gguf",
@@ -3136,18 +3682,18 @@
             }
           },
           "positive_generation": {
-            "status": "BLOCKED_NO_LEGAL_SOURCE_FIXTURE"
+            "status": "BLOCKED_NO_PRODUCTION_AUTHORIZED_SOURCE"
           },
           "staging": {
             "one_request_at_a_time": true,
             "background_metadata_forwarded": false,
             "binding": "http://127.0.0.1:8099",
-            "process_shutdown_verified_by_caller": true
+            "process_shutdown_verified_by_caller": false
           }
         },
         "local_sidecar_status": "PASS",
         "full_power_format_status": "PASS",
-        "positive_generation_status": "BLOCKED_NO_LEGAL_SOURCE_FIXTURE",
+        "positive_generation_status": "BLOCKED_NO_PRODUCTION_AUTHORIZED_SOURCE",
         "production_prompt_claim": "NOT_CLAIMED"
       }
     },
@@ -3157,7 +3703,7 @@
       "evidence": {
         "path": "<project-root>/dependencies/preprocessing_lock.json",
         "status": "PASS",
-        "lock_status": "PINNED_ARTIFACTS_NOT_INSTALLED",
+        "lock_status": "RESOLVED",
         "checks": [
           {
             "name": "BiRefNet",
@@ -3287,11 +3833,13 @@
     },
     {
       "name": "license_and_rights_review",
-      "status": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW",
+      "status": "APPROVED",
       "evidence": {
         "schema_version": "1.0.0",
-        "review_date": "2026-07-26",
-        "status": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW",
+        "review_date": "2026-07-28",
+        "status": "APPROVED",
+        "approval_attestation": "docs/preflight/owner_attestation.json",
+        "approved_scope": "local qualification and mod development; no model, LoRA, private background, or private source redistribution",
         "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.",
         "sources": [
           {
@@ -3299,8 +3847,8 @@
             "source_url": "https://www.krea.ai/krea-2-licensing",
             "license_identifier": "Krea Community License",
             "license_version": "v.1 (2026-06-22)",
-            "source_reviewed_at": "2026-07-26",
-            "status": "REVIEW_REQUIRED",
+            "source_reviewed_at": "2026-07-28",
+            "status": "OWNER_APPROVED_LOCAL_USE_ONLY",
             "material_conditions": [
               "commercial use of the model, derivatives, or outputs under the community agreement is limited to organizations below USD 1,000,000 trailing-twelve-month company-wide revenue; an enterprise license is required otherwise",
               "distribution of the model or derivatives requires a copy of the agreement, Krea-prefixed model naming, and the prescribed attribution notice",
@@ -3308,13 +3856,11 @@
               "AI disclosure is required where applicable law, regulation, or platform policy requires it",
               "Krea retains ownership of the model; outputs remain subject to agreement compliance"
             ],
-            "artifact_policy": "local_copy_only_until_owner_approval",
-            "owner_decision_required": [
-              "confirm intended local, mod-development, and remote deployment use",
-              "confirm the project owner's commercial-revenue status and enterprise-license need",
-              "confirm whether any model or derivative distribution is planned",
-              "confirm content-filter and AI-disclosure controls"
-            ]
+            "artifact_policy": "local_copy_only",
+            "owner_decision": "approved for local qualification and mod development; RunPod deployment deferred; no model distribution",
+            "commercial_use_decision": "use remains subject to the Krea Community License revenue threshold and enterprise-license requirement",
+            "content_filter_decision": "prompt validation, independent audit, human review, and fail-closed promotion",
+            "ai_disclosure_decision": "apply where required by law, regulation, or platform policy"
           },
           {
             "name": "ComfyUI",
@@ -3340,9 +3886,9 @@
             "artifact_source_url": "https://huggingface.co/ZhengPeng7/BiRefNet",
             "license_identifier": "Apache-2.0",
             "artifact_snapshot_license_metadata": "MIT",
-            "status": "REVIEW_REQUIRED_LICENSE_RECONCILIATION",
+            "status": "OWNER_APPROVED_LOCAL_USE_LICENSE_RECONCILIATION_OPEN",
             "material_conditions": [
-              "the pinned GitHub source and Hugging Face snapshot expose different license metadata; owner review must resolve which terms govern the downloaded weights and trusted runtime code before redistribution"
+              "the pinned GitHub source and Hugging Face snapshot expose different license metadata; local use is approved, but redistribution remains prohibited until the metadata discrepancy is resolved"
             ]
           },
           {
@@ -3370,7 +3916,7 @@
             "name": "Existing HOI4 style LoRA",
             "source_url": null,
             "license_identifier": null,
-            "status": "OWNER_REVIEW_REQUIRED",
+            "status": "OWNER_APPROVED_PRIVATE_ONLY",
             "material_conditions": [
               "file is preserved byte-for-byte and is not redistributed by this repository"
             ]
@@ -3379,31 +3925,26 @@
             "name": "HOI4 portrait background",
             "source_url": null,
             "license_identifier": null,
-            "status": "BLOCKED_UNRESOLVED",
+            "status": "OWNER_APPROVED_LOCAL_COPY_ONLY",
             "material_conditions": [
-              "no approved background registry entry exists yet"
+              "approved registry entry is local-copy-only and is not redistributed"
             ]
           }
         ],
         "blocking_reasons": [
-          "Krea Community License applicability and distribution scope need project-owner approval.",
-          "The approved HOI4 background and its rights record are unresolved.",
-          "The existing style LoRA has an owner-controlled provenance/license record only."
+          "Krea Community License use is approved only for local qualification and mod development under the recorded conditions; model distribution remains prohibited.",
+          "BiRefNet source and snapshot license metadata still require reconciliation before redistribution.",
+          "The existing style LoRA remains private and immutable."
         ]
       }
     }
   ],
   "blockers": [
-    "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
-    "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
-    "RunPod endpoint credentials are absent; remote submission/acceptance cannot run.",
-    "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
     "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
-    "Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.",
-    "License/rights review is not fully approved for Krea redistribution or the unresolved background."
+    "Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required."
   ],
   "status": "BLOCKED",
-  "recommended_exit_code": 15,
+  "recommended_exit_code": 20,
   "installation_permitted": false,
   "policy": "No model, node, or runtime installation is authorized while a hard preflight blocker remains."
 }

@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-28T16:49:59.898464+00:00",
+  "created_at": "2026-07-28T18:52:43.802851+00:00",
   "profile": "human_full_power_gpu",
-  "status": "BLOCKED_PREFLIGHT",
-  "status_reason": "One or more mandatory preflight gates remain blocked.",
+  "status": "BLOCKED_RUNTIME_UNAVAILABLE",
+  "status_reason": "The target local runtime is not installed or its accelerator capability is not verified.",
   "hardware": {
     "platform": "macOS-26.5.2-arm64-arm-64bit",
     "python": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 3072.00M  used = 2012.56M  free = 1059.44M  (encrypted)",
+          "stdout": "vm.swapusage: total = 8192.00M  used = 6761.56M  free = 1430.44M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14805.\nPages active:                                 233085.\nPages inactive:                               284224.\nPages speculative:                              6300.\nPages throttled:                                   0.\nPages wired down:                             141645.\nPages purgeable:                                  27.\n\"Translation faults\":                       56637587.\nPages copy-on-write:                         4856596.\nPages zero filled:                          30245943.\nPages reactivated:                           4205833.\nPages purged:                                 734359.\nFile-backed pages:                            362924.\nAnonymous pages:                              160685.\nPages stored in compressor:                   883628.\nPages occupied by compressor:                 325809.\nDecompressions:                              2268091.\nCompressions:                                3891546.\nPageins:                                   364830920.\nPageouts:                                      25863.\nSwapins:                                       12989.\nSwapouts:                                     141092.\nPages tagged:                                 103600.\nPages tagged resident:                         58167.\nPages tagged compressed:                       45433.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4408.\nPages tag-storage free:                          278.\nPages tag-storage non-tag pageable:            28006.\nPages tag-storage non-tag wired:                  76.\nBytes of compressed tags:                    6469376.\nTagged compressions:                          217978.\nTagged decompressions:                        152075.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15330.\nPages active:                                 271094.\nPages inactive:                               514646.\nPages speculative:                              6330.\nPages throttled:                                   0.\nPages wired down:                             137275.\nPages purgeable:                                   4.\n\"Translation faults\":                      122095655.\nPages copy-on-write:                         8459982.\nPages zero filled:                          65651981.\nPages reactivated:                          24444553.\nPages purged:                                1659738.\nFile-backed pages:                            578772.\nAnonymous pages:                              213298.\nPages stored in compressor:                   773194.\nPages occupied by compressor:                  61327.\nDecompressions:                             36715696.\nCompressions:                               49357943.\nPageins:                                   475128041.\nPageouts:                                      40734.\nSwapins:                                     9784918.\nSwapouts:                                   13379550.\nPages tagged:                                  76144.\nPages tagged resident:                         64344.\nPages tagged compressed:                       11800.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4311.\nPages tag-storage free:                          155.\nPages tag-storage non-tag pageable:            28221.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    1731200.\nTagged compressions:                          743057.\nTagged decompressions:                        636198.",
           "stderr": ""
         }
       },
@@ -51,19 +51,19 @@
           "<project-root>"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   182Gi   253Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   181Gi   249Gi    43%    1.7M  2.6G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }
   },
   "preflight": {
     "status": "BLOCKED",
-    "recommended_exit_code": 15,
+    "recommended_exit_code": 20,
     "gate_statuses": {
       "hardware_detection": "PASS",
       "local_runtime_capability": "BLOCKED",
       "immutable_style_lora": "PASS",
-      "approved_source_background": "BLOCKED",
+      "approved_source_background": "PASS",
       "source_fixture_and_provenance": "PASS",
       "planning_package_checksums": "PASS",
       "model_artifact_preflight": "PASS",
@@ -75,16 +75,13 @@
       "krea_live_compatibility": "PASS",
       "autoprompter_runtime": "BLOCKED",
       "preprocessing_and_audit_dependencies": "PASS",
-      "license_and_rights_review": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW"
+      "license_and_rights_review": "APPROVED"
     },
     "blockers": [
       "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
-      "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
-      "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
-      "Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.",
-      "The required human autoprompter runtime lock or live local sidecar evidence is unavailable.",
-      "License/rights review is not fully approved for Krea redistribution or the unresolved background."
+      "Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.",
+      "The required human autoprompter runtime lock or live local sidecar evidence is unavailable."
     ]
   },
   "resource_model": {
@@ -217,7 +214,7 @@
     "record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence"
   ],
   "claims": {
-    "local_generation": "NOT_APPLICABLE",
+    "local_generation": "NOT_CLAIMED",
     "remote_generation": "NOT_APPLICABLE",
     "local_preprocessing_and_validation": "STRUCTURE_ONLY",
     "final_png": "NOT_CREATED",

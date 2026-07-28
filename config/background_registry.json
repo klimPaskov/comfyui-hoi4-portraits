@@ -1,24 +1,23 @@
 {
   "schema_version": "1.0.0",
-  "registry_status": "BLOCKED_UNTIL_RESOLVED",
+  "registry_status": "RESOLVED",
   "backgrounds": [
     {
-      "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
+      "registry_id": "chaos-redux-portrait-leader-background",
       "role_scope": ["country_leader", "commander", "operative"],
-      "source_class": "unresolved",
-      "source_path": null,
-      "runtime_path": null,
-      "source_definition": null,
-      "attribution": null,
-      "license_or_rights": null,
-      "redistribution_rule": "blocked",
-      "width": null,
-      "height": null,
-      "sha256": null,
-      "approved_by": [],
-      "status": "BLOCKED_UNTIL_RESOLVED",
-      "reason": "No approved project-owned or installed-game background was resolved during preflight."
+      "source_class": "project_owned_local_copy",
+      "source_path": "Chaos Redux live checkout/gfx/leaders/portrait_leader_background.psd",
+      "runtime_path": "backgrounds/private/chaos_redux_portrait_leader_background.png",
+      "source_definition": "Chaos Redux live checkout at reviewed source revision; source SHA-256 4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6",
+      "attribution": "Chaos Redux project-owned background; local-copy use authorized by project owner",
+      "license_or_rights": "Project-owner authorization for local qualification and mod development; no redistribution",
+      "redistribution_rule": "local_copy_only",
+      "width": 156,
+      "height": 210,
+      "sha256": "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e",
+      "approved_by": ["project_owner"],
+      "approval_attestation": "docs/preflight/owner_attestation.json",
+      "status": "APPROVED"
     }
   ]
 }
-

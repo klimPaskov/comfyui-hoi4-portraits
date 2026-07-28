@@ -1,7 +1,9 @@
 {
   "schema_version": "1.0.0",
-  "review_date": "2026-07-26",
-  "status": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW",
+  "review_date": "2026-07-28",
+  "status": "APPROVED",
+  "approval_attestation": "docs/preflight/owner_attestation.json",
+  "approved_scope": "local qualification and mod development; no model, LoRA, private background, or private source redistribution",
   "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.",
   "sources": [
     {
@@ -9,8 +11,8 @@
       "source_url": "https://www.krea.ai/krea-2-licensing",
       "license_identifier": "Krea Community License",
       "license_version": "v.1 (2026-06-22)",
-      "source_reviewed_at": "2026-07-26",
-      "status": "REVIEW_REQUIRED",
+      "source_reviewed_at": "2026-07-28",
+      "status": "OWNER_APPROVED_LOCAL_USE_ONLY",
       "material_conditions": [
         "commercial use of the model, derivatives, or outputs under the community agreement is limited to organizations below USD 1,000,000 trailing-twelve-month company-wide revenue; an enterprise license is required otherwise",
         "distribution of the model or derivatives requires a copy of the agreement, Krea-prefixed model naming, and the prescribed attribution notice",
@@ -18,13 +20,11 @@
         "AI disclosure is required where applicable law, regulation, or platform policy requires it",
         "Krea retains ownership of the model; outputs remain subject to agreement compliance"
       ],
-      "artifact_policy": "local_copy_only_until_owner_approval",
-      "owner_decision_required": [
-        "confirm intended local, mod-development, and remote deployment use",
-        "confirm the project owner's commercial-revenue status and enterprise-license need",
-        "confirm whether any model or derivative distribution is planned",
-        "confirm content-filter and AI-disclosure controls"
-      ]
+      "artifact_policy": "local_copy_only",
+      "owner_decision": "approved for local qualification and mod development; RunPod deployment deferred; no model distribution",
+      "commercial_use_decision": "use remains subject to the Krea Community License revenue threshold and enterprise-license requirement",
+      "content_filter_decision": "prompt validation, independent audit, human review, and fail-closed promotion",
+      "ai_disclosure_decision": "apply where required by law, regulation, or platform policy"
     },
     {
       "name": "ComfyUI",
@@ -50,8 +50,8 @@
       "artifact_source_url": "https://huggingface.co/ZhengPeng7/BiRefNet",
       "license_identifier": "Apache-2.0",
       "artifact_snapshot_license_metadata": "MIT",
-      "status": "REVIEW_REQUIRED_LICENSE_RECONCILIATION",
-      "material_conditions": ["the pinned GitHub source and Hugging Face snapshot expose different license metadata; owner review must resolve which terms govern the downloaded weights and trusted runtime code before redistribution"]
+      "status": "OWNER_APPROVED_LOCAL_USE_LICENSE_RECONCILIATION_OPEN",
+      "material_conditions": ["the pinned GitHub source and Hugging Face snapshot expose different license metadata; local use is approved, but redistribution remains prohibited until the metadata discrepancy is resolved"]
     },
     {
       "name": "DDColor preprocessing artifact",
@@ -78,19 +78,19 @@
       "name": "Existing HOI4 style LoRA",
       "source_url": null,
       "license_identifier": null,
-      "status": "OWNER_REVIEW_REQUIRED",
+      "status": "OWNER_APPROVED_PRIVATE_ONLY",
       "material_conditions": ["file is preserved byte-for-byte and is not redistributed by this repository"]
     },
     {
       "name": "HOI4 portrait background",
       "source_url": null,
       "license_identifier": null,
-      "status": "BLOCKED_UNRESOLVED",
-      "material_conditions": ["no approved background registry entry exists yet"]
+      "status": "OWNER_APPROVED_LOCAL_COPY_ONLY",
+      "material_conditions": ["approved registry entry is local-copy-only and is not redistributed"]
     }
   ],
   "blocking_reasons": [
-    "Krea Community License applicability and distribution scope need project-owner approval.",
-    "The approved HOI4 background and its rights record are unresolved.",
-    "The existing style LoRA has an owner-controlled provenance/license record only."]
+    "Krea Community License use is approved only for local qualification and mod development under the recorded conditions; model distribution remains prohibited.",
+    "BiRefNet source and snapshot license metadata still require reconciliation before redistribution.",
+    "The existing style LoRA remains private and immutable."]
 }

@@ -3,7 +3,7 @@
   "reviewed_at": "2026-07-26",
   "status": "PORTABLE_PACKAGE_READY_DIRECT_APPLY_BLOCKED",
   "target": {
-    "path": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
+    "path": "<external-repository>/Chaos-Redux",
     "remote": "git@github.com:klimPaskov/Chaos-Redux.git",
     "branch": "master",
     "head": "420cfb326e8ec78ec5641b152f32fce2b2d94db6",

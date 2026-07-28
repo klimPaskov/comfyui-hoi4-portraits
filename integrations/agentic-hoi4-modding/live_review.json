@@ -1,8 +1,43 @@
 {
   "schema_version": "1.0.0",
-  "reviewed_at": "2026-07-26",
-  "status": "BLOCKED_NO_LIVE_TARGET_REPOSITORY",
-  "target": null,
+  "reviewed_at": "2026-07-28",
+  "status": "APPLIED_LOCAL_UNPUSHED_TARGET_BRANCH",
+  "target": {
+    "repository": "https://github.com/klimPaskov/Agentic-HOI4-Modding",
+    "checkout": "<project-root>/repos/Agentic-HOI4-Modding",
+    "branch": "codex/portrait-pipeline",
+    "base_branch": "main",
+    "base_revision": "54da3e7a43cce43f15edc54ef80fb0099822b3e",
+    "working_tree_revision": "54da3e7a43cce43f15edc54ef80fb0099822b3e",
+    "working_tree_status": "UNCOMMITTED_LOCAL_CHANGES",
+    "push_status": "NOT_PUSHED_BY_USER_INSTRUCTION"
+  },
+  "live_discovery": {
+    "remote_and_branch_read": true,
+    "current_AGENTS_and_skill_topology_read": true,
+    "portrait_DDS_MCP_and_subagent_routes_reviewed": true,
+    "current_tests_and_release_surface_reviewed": true,
+    "existing_equivalent_portrait_route_found": false
+  },
+  "applied_files": [
+    ".agents/skills/hoi4-portrait-pipeline/SKILL.md",
+    ".codex/agents/hoi4_portrait_pipeline.toml",
+    ".codex/agents/hoi4_portrait_identity_auditor.toml",
+    ".codex/config.toml",
+    "AGENTS_template.md",
+    "README.md",
+    "hoi4-mod-setup.manifest.json",
+    "docs/agentic-hoi4-portrait-pipeline.md"
+  ],
+  "validation": {
+    "toml_parse": "PASS",
+    "json_parse": "PASS",
+    "git_diff_check": "PASS",
+    "generic_leak_scan": "PASS",
+    "target_manifest_baseline": "BLOCKED_PREEXISTING_EXPECTED_FILE_DRIFT",
+    "target_live_consumer_validation": "NOT_RUN",
+    "final_mod_wiring": "PARENT_OWNED_NOT_RUN"
+  },
   "portable_package": {
     "new_files": [
       "integrations/agentic-hoi4-modding/replacements/.agents/skills/hoi4-portrait-pipeline/SKILL.md",
@@ -25,8 +60,8 @@
     "test and release commands"
   ],
   "blocking_reasons": [
-    "No live generic agentic HOI4 repository or authoritative URL/checkout was discoverable.",
-    "The proposal is kept portable and is not falsely presented as a live diff."
+    "The target working tree has not been committed or pushed by explicit user instruction.",
+    "The target setup manifest reports baseline expected-file drift that must be reconciled before a final target acceptance claim.",
+    "Parent-owned final mod wiring and live-consumer validation have not been run."
   ]
 }
-

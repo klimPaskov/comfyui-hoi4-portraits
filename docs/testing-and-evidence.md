@@ -14,9 +14,10 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
 
 ## Current evidence
 
-- `28/28` automated tests pass.
-- Four workflows are structurally valid and live-schema loadable in the pinned loopback ComfyUI.
+- The automated suite is rerun after every bounded change; the current count is reported by `scripts/run_tests.py`.
+- The required four workflows plus the local-NVIDIA agent workflow are structurally valid and live-schema loadable in the pinned loopback ComfyUI.
 - Local preprocessing artifacts and the private autoprompter health/negative-validation path are verified.
+- The live human-local qualification run measured the Apple MPS `Float8_e4m3fn` incompatibility, then verified the reversible CPU-dequantization workaround and measured practical 16 GB memory/offload infeasibility before the first sampler step completed. See [`preflight/local_human_execution_2026-07-28.json`](preflight/local_human_execution_2026-07-28.json) and [`../scripts/runtime/apply_mps_fp8_workaround.py`](../scripts/runtime/apply_mps_fp8_workaround.py).
 - The private Library of Congress qualification fixture passes YuNet, MediaPipe Face Landmarker, and BiRefNet on MPS. Run it with:
 
   ```bash
@@ -26,11 +27,11 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
   Raw landmarks and mattes remain under the ignored `jobs/` root; the checked-in summary is `docs/preflight/source_fixture_execution.json`.
 - The full-power autoprompter format and processor schema are verified, but CUDA execution is unavailable on the detected Mac.
 - DDS acceptance is synthetic-only; production DDS remains prohibited without an independent auditor PASS.
-- The current acceptance report is `BLOCKED` with exit code `15`.
+- The current acceptance report is `BLOCKED` with exit code `20`.
 
 ## Current blockers
 
-The acceptance report directly records every blocked or deferred gate. The important production blockers are an unresolved approved background and rights record, no production-approved source fixture authorization, uncalibrated identity/style thresholds, pending license review, absent RunPod credentials/image qualification, and no live generic target repository.
+The acceptance report directly records every blocked or deferred gate. The important production blockers are the measured local MPS/FP8 incompatibility, uncalibrated identity/style thresholds, incomplete independent-audit evidence, the still-unqualified source-specific Krea execution path, and the deferred remote RunPod qualification. RunPod is outside the current live scope, but its workflow and authenticated gateway remain fail-closed.
 
 These blockers are deliberate. The project does not label schema validation, preprocessing qualification, dry-run reports, or a blocked output as local image generation.
 
@@ -41,6 +42,7 @@ These blockers are deliberate. The project does not label schema validation, pre
 - [Autoprompter runtime test](preflight/autoprompter_runtime_test.json)
 - [Source fixture review](preflight/source_fixture_review.json)
 - [Source fixture preprocessing execution](preflight/source_fixture_execution.json)
+- [Live human-local execution evidence](preflight/local_human_execution_2026-07-28.json)
 - [Background runtime candidate](preflight/background_runtime_candidate.json)
 - [Acceptance report](acceptance/acceptance_report.md)
 - [Identity/style matrix](../experiments/identity_style_matrix.json)

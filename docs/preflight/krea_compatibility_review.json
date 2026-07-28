@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "reviewed_at": "2026-07-28",
-  "status": "BLOCKED_EXECUTION_NOT_MEASURED",
+  "status": "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE",
   "policy": "Krea 2 Turbo may be used for private qualification only after the exact ComfyUI core/custom-node schema is verified in the live pinned runtime; production execution remains blocked until source, background, calibration, and independent-audit gates pass.",
   "sources": [
     {
@@ -54,7 +54,7 @@
     {
       "id": "live_node_import_and_workflow_schema",
       "status": "PASS",
-      "finding": "The pinned ComfyUI checkout and pinned comfyui-krea2edit checkout import on the local loopback server. All four API workflows match the live node registry, including Krea2EditModelPatch fit inputs, Krea2EditGroundedEncode inputs, and CLIPLoader type=krea2."
+      "finding": "The pinned ComfyUI checkout and pinned comfyui-krea2edit checkout import on the local loopback server. All five API workflows match the live node registry, including Krea2EditModelPatch fit inputs, Krea2EditGroundedEncode inputs, and CLIPLoader type=krea2."
     },
     {
       "id": "model_artifact_inventory",
@@ -63,9 +63,9 @@
     },
     {
       "id": "live_runtime_execution",
-      "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
-      "finding": "The live schema check and private preprocessing qualification passed, but no production-authorized source fixture, approved background, calibrated thresholds, or independent audit evidence is present. Model loading and the required eight-step Turbo identity-edit execution were not attempted; production generation remains fail-closed."
+      "status": "BLOCKED_LOCAL_16GB_MEMORY_INFEASIBLE",
+      "finding": "The private user fixture, approved local-copy-only background, model checksums, and preprocessing route passed. The first MPS attempt exposed the FP8 dtype limitation; the documented CPU-dequantization workaround then passed that exception site, but full-resolution and reduced diagnostic runs exhausted practical unified-memory/offload headroom before the first sampler step completed. Production generation remains fail-closed."
     }
   ],
-  "conclusion": "Krea live core/node/schema compatibility is verified in the pinned loopback runtime and all four workflows are live-schema loadable. This does not establish source-specific model execution or production suitability: the required eight-step run, identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked by missing approved source/background and rights evidence."
+  "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The locked 12B route remains infeasible on the detected 16 GB Mac because practical model residency and offload pressure prevent the first sampler step from completing. This does not establish production suitability: the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
 }

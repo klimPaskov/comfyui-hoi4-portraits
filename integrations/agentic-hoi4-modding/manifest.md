@@ -1,6 +1,10 @@
 # Generic Integration Manifest
 
-**Status:** complete new files plus anchor-based patch templates. Exact live-repository diffs were not possible because the repository URL and checkout were unavailable.
+**Live target review status:** `APPLIED_LOCAL_UNPUSHED_TARGET_BRANCH`
+
+The target repository is [klimPaskov/Agentic-HOI4-Modding](https://github.com/klimPaskov/Agentic-HOI4-Modding). The local target branch is `codex/portrait-pipeline` at base revision `54da3e7a43cce43f15edc54ef80fb0099822b3e`. It has not been pushed. See `live_review.json` for the exact applied-file ledger and validation status.
+
+**Status:** complete new files plus anchor-based patch templates; the live target was read and updated locally, but target manifest reconciliation and parent-owned live-consumer validation remain open.
 
 ## Complete new-file ledger
 
@@ -27,6 +31,8 @@
 - existing ComfyUI or MCP route
 - current DDS converter and validation
 - test and release commands
+
+The supplied target was reviewed against these requirements before the local-only apply. The target's existing setup manifest reports baseline expected-file drift and remains a separate acceptance item.
 
 ## Apply rule
 

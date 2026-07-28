@@ -1,6 +1,6 @@
 # Workflow guide
 
-All four graphs are standalone ComfyUI files generated from the versioned graph specification. Their UI JSON files are for loading into ComfyUI; the `.api.json` files are API-format payloads for the controller and tests.
+The required four graphs plus the local-NVIDIA agent convenience graph are standalone ComfyUI files generated from the versioned graph specification. Their UI JSON files are for loading into ComfyUI; the `.api.json` files are API-format payloads for the controller and tests.
 
 ## Route comparison
 
@@ -9,6 +9,7 @@ All four graphs are standalone ComfyUI files generated from the versioned graph 
 | `human_local_mac_16gb` | Exact autoprompter instruction | MPS | Yes | No |
 | `human_full_power_gpu` | Exact autoprompter instruction | CUDA | Yes | No |
 | `agent_local_mac_16gb` | `portrait_job_input.prompt` | MPS | No | No |
+| `agent_full_power_gpu` | `portrait_job_input.prompt` | Local CUDA | No | No |
 | `agent_remote_runpod` | `portrait_job_input.prompt` | Remote CUDA | No | Yes |
 
 ## Shared stages
@@ -22,7 +23,7 @@ All four graphs are standalone ComfyUI files generated from the versioned graph 
 7. Bounded candidate generation.
 8. Evidence export for independent auditing.
 
-The workflow graph does not silently substitute a missing background, invent provenance, rewrite a rejected prompt, or approve its own output.
+The workflow graph does not silently substitute a missing background, invent provenance, rewrite a rejected prompt, or approve its own output. On the detected 16 GB Mac, the live qualification run measured the locked FP8 checkpoint's MPS dtype failure, then measured the remaining memory/offload infeasibility after the reversible CPU-dequantization workaround. The Mac profile remains blocked for practical generation; the NVIDIA profiles require a CUDA host.
 
 ## Human workflows
 

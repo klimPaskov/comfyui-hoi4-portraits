@@ -1,5 +1,6 @@
 {
   "schema_version": "1.0.0",
+  "status": "BLOCKED_UNTIL_CALIBRATION",
   "thresholds_id": "UNSET_BLOCK_EXECUTION",
   "calibration_dataset_id": "UNSET_BLOCK_EXECUTION",
   "created_at": "RESOLVE_DURING_CALIBRATION",

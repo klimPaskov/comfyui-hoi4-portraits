@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "attestation_id": "owner-approval-2026-07-28-local-qualification",
+  "attested_at": "2026-07-28",
+  "attested_by": "project_owner",
+  "attestation_source": "explicit project-owner approval in the active Codex task",
+  "scope": {
+    "local_qualification": true,
+    "mod_development": true,
+    "public_code_repository": true,
+    "runpod_live_deployment": "DEFERRED_OUT_OF_CURRENT_SCOPE"
+  },
+  "approvals": {
+    "chaos_redux_background": {
+      "candidate_id": "chaos-redux-portrait-leader-background-psd",
+      "source_sha256": "4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6",
+      "runtime_sha256": "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e",
+      "approved": true,
+      "redistribution_rule": "local_copy_only",
+      "attribution": "Chaos Redux project-owned background; use authorized by the project owner for local qualification and mod development",
+      "public_repository_policy": "runtime background remains private and is not committed"
+    },
+    "krea_2_community_license": {
+      "approved": true,
+      "use_scope": "local qualification and mod development",
+      "model_distribution": false,
+      "output_distribution": "subject to the Krea 2 Community License and applicable source rights",
+      "content_controls": "prompt validation, output audit, human review, and fail-closed promotion",
+      "ai_disclosure": "apply where required by law, regulation, or platform policy"
+    },
+    "preprocessing_artifacts": {
+      "approved": true,
+      "scope": "local qualification and private job evidence",
+      "redistribution": false
+    },
+    "immutable_style_lora": {
+      "approved": true,
+      "sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
+      "mutation_policy": "immutable",
+      "redistribution": false
+    },
+    "public_domain_source_fixture": {
+      "fixture_id": "loc_dag_1518_portrait",
+      "approved": true,
+      "scope": "local calibration and qualification; retain biometric evidence privately"
+    }
+  },
+  "limitations": [
+    "This attestation does not grant rights to redistribute Krea weights, the private style LoRA, the private background, or private source portraits.",
+    "It does not approve a candidate without an independent all-gate PASS audit.",
+    "RunPod live deployment and authenticated remote acceptance are deferred by explicit project-owner scope decision."
+  ]
+}

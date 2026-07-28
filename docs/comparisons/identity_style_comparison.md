@@ -12,12 +12,8 @@ identity_gates → geometry_gates → accessories → mask → style → runtime
 
 ## Blockers
 
-- The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.
-- RunPod endpoint credentials are absent; remote submission/acceptance cannot run.
-- No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
-- Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.
-- License/rights review is not fully approved for Krea redistribution or the unresolved background.
+- Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.
 
 ## Metrics
 

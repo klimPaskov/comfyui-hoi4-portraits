@@ -1,7 +1,7 @@
 # Acceptance Report
 
 - Overall: **BLOCKED**
-- Recommended exit code: `15`
+- Recommended exit code: `20`
 
 ## Gate summary
 
@@ -10,9 +10,9 @@
 | `package_checksums` | **PASS** |
 | `hardware_detection` | **PASS** |
 | `hardware_runtime` | **PASS** |
-| `remote_topology_auth` | **BLOCKED** |
+| `remote_topology_auth` | **DEFERRED_OUT_OF_SCOPE** |
 | `immutable_lora` | **PASS** |
-| `approved_background` | **BLOCKED** |
+| `approved_background` | **PASS** |
 | `source_fixture_and_provenance` | **PASS** |
 | `dependencies_and_models` | **PASS** |
 | `custom_node_preflight` | **PASS** |
@@ -22,31 +22,27 @@
 | `preprocessing_and_audit_dependencies` | **PASS** |
 | `calibrated_identity_thresholds` | **BLOCKED** |
 | `repository_preflight` | **PASS** |
-| `licenses_and_rights` | **BLOCKED_PENDING_PROJECT_OWNER_REVIEW** |
+| `licenses_and_rights` | **APPROVED** |
 | `workflow_structure` | **PASS** |
 | `autoprompter_validator` | **PASS** |
 | `dds_gate` | **PASS** |
 | `identity_style_experiments` | **PLANNED_BLOCKED_UNTIL_APPROVED_FIXTURE_BACKGROUND_THRESHOLDS** |
 | `benchmark_reports` | **BLOCKED** |
 | `identity_style_comparison` | **BLOCKED_NO_REAL_CANDIDATES** |
-| `runpod_deployment_surface` | **BLOCKED_UNRESOLVED_IMAGE_LOCK** |
+| `runpod_deployment_surface` | **DEFERRED_OUT_OF_SCOPE** |
 | `schema_validation` | **PASS** |
 | `integration_packages` | **BLOCKED** |
 | `secret_scan` | **PASS** |
 
 ## Blockers
 
-- The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.
-- RunPod endpoint credentials are absent; remote submission/acceptance cannot run.
-- No live generic agentic HOI4 target repository was found; only the planning proposal is available.
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
-- Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.
-- License/rights review is not fully approved for Krea redistribution or the unresolved background.
+- Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.
 
 ## Additional blocked or skipped surfaces
 
 - `identity_style_experiments`: The matrix is recorded but execution is fail-closed until an approved source fixture, background, calibrated thresholds, and source-specific runtime evidence exist.
-- `benchmark_reports`: human_local_mac_16gb=BLOCKED_PREFLIGHT, human_full_power_gpu=BLOCKED_PREFLIGHT, agent_local_mac_16gb=BLOCKED_PREFLIGHT, agent_remote_runpod=BLOCKED_REMOTE_AUTH
+- `benchmark_reports`: human_local_mac_16gb=BLOCKED_PREFLIGHT, human_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_local_mac_16gb=BLOCKED_PREFLIGHT, agent_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_remote_runpod=DEFERRED_OUT_OF_SCOPE
 - `identity_style_comparison`: No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.
 - `runpod_deployment_surface`: BLOCKED_UNRESOLVED_RUNTIME_LOCK
 - `integration_packages`: BLOCKED
