@@ -16,7 +16,7 @@ from .workflow_validation import validate_all_workflows
 
 BENCHMARK_SCHEMA_VERSION = "1.0.0"
 BENCHMARK_REPORT_VERSION = "runtime-capability-2026-07-26.1"
-LOCAL_PROFILES = {"human_local_mac_16gb", "agent_local_mac_16gb"}
+LOCAL_PROFILES = {"human_local_mac_16gb", "agent_local_mac_16gb", "human_full_power_gpu", "agent_full_power_gpu"}
 REMOTE_PROFILES = {"agent_remote_runpod"}
 
 
@@ -109,8 +109,12 @@ def _blocked_status(profile: str, preflight: dict[str, Any]) -> tuple[str, str]:
     statuses = _gate_statuses(preflight)
     if profile in LOCAL_PROFILES and statuses.get("local_runtime_capability") != "PASS":
         return "BLOCKED_RUNTIME_UNAVAILABLE", "The target local runtime is not installed or its accelerator capability is not verified."
-    if profile in REMOTE_PROFILES and statuses.get("remote_topology_auth") != "PASS":
-        return "BLOCKED_REMOTE_AUTH", "RunPod endpoint credentials and authenticated remote acceptance are unavailable."
+    if profile in REMOTE_PROFILES:
+        remote_status = statuses.get("remote_topology_auth")
+        if remote_status == "DEFERRED_OUT_OF_SCOPE":
+            return "DEFERRED_OUT_OF_SCOPE", "RunPod live execution was explicitly deferred by the project owner for the current scope."
+        if remote_status != "PASS":
+            return "BLOCKED_REMOTE_AUTH", "RunPod endpoint credentials and authenticated remote acceptance are unavailable."
     if preflight.get("status") != "PASS":
         return "BLOCKED_PREFLIGHT", "One or more mandatory preflight gates remain blocked."
     return "BLOCKED_RUNTIME_UNAVAILABLE", "No live ComfyUI health, load, and generation measurements were recorded."
@@ -164,7 +168,7 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
     runtime_health, workflow_load = _live_schema_measurements(root_path, profile)
     if profile in LOCAL_PROFILES and gate_statuses.get("local_runtime_capability") == "PASS":
         runtime_health["target_profile_accelerator"] = "MPS"
-    elif profile == "human_full_power_gpu":
+    elif profile in {"human_full_power_gpu", "agent_full_power_gpu"}:
         runtime_health["target_profile_accelerator"] = "CUDA"
         runtime_health["target_profile_accelerator_status"] = gate_statuses.get("local_runtime_capability")
     elif profile == "agent_remote_runpod":

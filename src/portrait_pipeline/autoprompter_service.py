@@ -289,7 +289,7 @@ class AutoprompterService:
             raise AutoprompterServiceError("autoprompter accepts PNG input only")
         if self.profile == "human_full_power_gpu":
             prompt = self._complete_full_power(image_value)
-            validation = validate_prompt(prompt)
+            validation = validate_prompt(prompt, allowed_claims=payload.get("allowed_claims"))
             if not validation.passed:
                 raise AutoprompterServiceError("autoprompt failed validation: " + ",".join(validation.failure_codes))
             return {"prompt": validation.normalized_prompt, "model": self.model_id, "validator": validation.as_dict()}
@@ -310,7 +310,7 @@ class AutoprompterService:
             raise AutoprompterServiceError("llama-server response has no assistant content") from exc
         if not isinstance(prompt, str):
             raise AutoprompterServiceError("llama-server assistant content is not text")
-        validation = validate_prompt(prompt)
+        validation = validate_prompt(prompt, allowed_claims=payload.get("allowed_claims"))
         if not validation.passed:
             raise AutoprompterServiceError("autoprompt failed validation: " + ",".join(validation.failure_codes))
         return {"prompt": validation.normalized_prompt, "model": self.model_id, "validator": validation.as_dict()}

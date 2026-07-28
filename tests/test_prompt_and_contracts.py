@@ -24,6 +24,23 @@ class PromptAndContractTests(unittest.TestCase):
         self.assertFalse(result.passed)
         self.assertIn("AUTOPROMPT_NAME_LEAK", result.failure_codes)
 
+    def test_explicit_uniform_claims_can_be_authorized_without_allowing_nationality(self):
+        result = validate_prompt(
+            "hoi4_portrait, a military officer wearing a uniform with insignia",
+            allowed_claims={
+                "roles": ["officer"],
+                "medals_or_insignia": ["insignia"],
+                "organization_or_branch": ["uniform", "military"],
+            },
+        )
+        self.assertTrue(result.passed, result.as_dict())
+        nationality = validate_prompt(
+            "hoi4_portrait, an American military officer",
+            allowed_claims={"roles": ["officer"], "organization_or_branch": ["military"]},
+        )
+        self.assertFalse(nationality.passed)
+        self.assertIn("AUTOPROMPT_UNVERIFIED_CLAIM", nationality.failure_codes)
+
     def test_input_schema_has_strict_profile_enum(self):
         root = project_root()
         valid = {
@@ -44,6 +61,10 @@ class PromptAndContractTests(unittest.TestCase):
             "style_thresholds_id": "calibrated-style-1",
             "final_png_path": "final/fixture.png",
             "final_dds_path": "final/fixture.dds",
+            "allowed_autoprompt_claims": {
+                "roles": ["officer"],
+                "organization_or_branch": ["uniform"],
+            },
         }
         self.assertEqual(validate_schema(valid, root / "schemas/portrait_job_input.schema.json"), [])
         invalid = dict(valid)
@@ -53,4 +74,3 @@ class PromptAndContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

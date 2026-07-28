@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
 from unittest import mock
 from pathlib import Path
 
 from portrait_pipeline.audit import audit_is_promotion_pass, independent_audit_blocked
+from portrait_pipeline.constants import CALIBRATED_THRESHOLD_STATUSES
+from portrait_pipeline.controller import JobController
 from portrait_pipeline.dds import DdsValidationError, convert_png_to_dds
 from portrait_pipeline.graph_spec.builder import build_workflow_artifacts
 from portrait_pipeline.mcp.adapter import AdapterError, PortraitMcpService
@@ -22,11 +25,17 @@ class WorkflowAndGuardTests(unittest.TestCase):
         cls.root = project_root()
         build_workflow_artifacts(cls.root)
 
-    def test_four_workflows_are_structurally_valid(self):
+    def test_required_and_local_nvidia_workflows_are_structurally_valid(self):
         reports = validate_all_workflows(self.root)
-        self.assertEqual(len(reports), 4)
+        self.assertEqual(len(reports), 5)
         for report in reports:
             self.assertEqual(report["structural_status"], "PASS", report)
+
+    def test_local_nvidia_agent_is_routable_through_controller_and_adapter(self):
+        controller_path = JobController(self.root)._workflow_api_path("agent_full_power_gpu")
+        adapter_path = PortraitMcpService(self.root)._workflow_path("agent_full_power_gpu")
+        self.assertEqual(controller_path, adapter_path)
+        self.assertTrue(controller_path.is_file())
 
     def test_human_workflows_keep_exact_instruction(self):
         instruction = (self.root / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")
@@ -81,7 +90,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_krea_graph_matches_primary_fit_contract_and_records_schema_blocker(self):
         review = json.loads((self.root / "docs/preflight/krea_compatibility_review.json").read_text(encoding="utf-8"))
-        self.assertEqual(review["status"], "BLOCKED_EXECUTION_NOT_MEASURED")
+        self.assertEqual(review["status"], "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE")
         self.assertEqual(next(item["status"] for item in review["findings"] if item["id"] == "pinned_core_loader_type"), "PASS")
         for path in self.root.joinpath("workflows").glob("**/*.api.json"):
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -90,6 +99,48 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertEqual(patch_inputs["source_image"], ["8", 1])
             self.assertEqual(data["16"]["inputs"]["grounding_px"], 768)
             self.assertEqual(data["17"]["inputs"]["grounding_px"], 768)
+
+    def test_job_input_validates_public_contract_before_private_runtime_context(self):
+        background = json.loads((self.root / "config/background_registry.json").read_text(encoding="utf-8"))["backgrounds"][0]
+        job = {
+            "schema_version": "1.0.0",
+            "job_id": "input-context-001",
+            "execution_profile": "human_local_mac_16gb",
+            "source_image_path": "README.md",
+            "source_provenance": {"source_class": "user_provided", "attribution": "unit-test", "rights_notes": "unit-test"},
+            "subject_identity": {"record_name": "unit_test_subject", "identity_classification": "approved_fictional_subject", "real_person": False},
+            "subject_selector": None,
+            "prompt": "hoi4_portrait, a person with a neutral expression",
+            "intended_hoi4_role": "country_leader",
+            "final_output_stem": "input_context_subject",
+            "approved_background": {"registry_id": background["registry_id"], "path": background["runtime_path"], "sha256": background["sha256"]},
+            "seed_policy": {"mode": "derived"},
+            "candidate_count": 1,
+            "retry_limit": 0,
+            "identity_thresholds_id": "UNSET_BLOCK_EXECUTION",
+            "style_thresholds_id": "UNSET_BLOCK_EXECUTION",
+            "final_png_path": "jobs/input-context-001/final/input_context_subject.png",
+            "final_dds_path": "jobs/input-context-001/final/input_context_subject.dds",
+        }
+        contract_dir = self.root / "jobs" / "input-context-001"
+        contract_dir.mkdir(parents=True, exist_ok=True)
+        contract_path = contract_dir / "input.json"
+        contract_path.write_text(json.dumps(job), encoding="utf-8")
+        try:
+            with mock.patch.dict(os.environ, {"HOI4_PORTRAIT_PROJECT_ROOT": str(self.root)}):
+                (validated,) = NODE_CLASS_MAPPINGS["HOI4JobInput"]().run(
+                    "human_local_mac_16gb",
+                    "jobs/input-context-001/input.json",
+                    1,
+                    0,
+                    "derived",
+                )
+            self.assertEqual(validated["job_id"], "input-context-001")
+            self.assertEqual(validated["_workflow_execution_profile"], "human_local_mac_16gb")
+            self.assertEqual(validated["_project_root"], str(self.root))
+        finally:
+            contract_path.unlink(missing_ok=True)
+            contract_dir.rmdir()
 
     def test_model_preflight_rejects_mismatch_and_unlocked_files(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -153,10 +204,14 @@ class WorkflowAndGuardTests(unittest.TestCase):
         local = collect_preflight(self.root, profile="agent_local_mac_16gb")
         remote = collect_preflight(self.root, profile="agent_remote_runpod")
         self.assertEqual(next(g["status"] for g in local["gates"] if g["name"] == "remote_topology_auth"), "NOT_APPLICABLE")
-        self.assertEqual(next(g["status"] for g in remote["gates"] if g["name"] == "remote_topology_auth"), "BLOCKED")
+        self.assertEqual(next(g["status"] for g in remote["gates"] if g["name"] == "remote_topology_auth"), "DEFERRED_OUT_OF_SCOPE")
+
+    def test_calibrated_threshold_status_gate_is_consistent(self):
+        self.assertEqual(CALIBRATED_THRESHOLD_STATUSES, frozenset({"APPROVED", "RESOLVED"}))
+        self.assertNotIn("BLOCKED_UNTIL_CALIBRATION", CALIBRATED_THRESHOLD_STATUSES)
 
     def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
-        for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_remote_runpod"):
+        for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"):
             report = collect_preflight(self.root, profile=profile)
             gate = next(gate for gate in report["gates"] if gate["name"] == "comfyui_runtime_dependency_lock")
             self.assertEqual(gate["status"], "PASS", gate)

@@ -31,7 +31,7 @@ from portrait_pipeline.constants import ExitCode  # noqa: E402
 from portrait_pipeline.comfy_client import ComfyTransportError, LoopbackComfyClient  # noqa: E402
 from portrait_pipeline.graph_spec.builder import build_workflow_artifacts  # noqa: E402
 from portrait_pipeline.preflight import PROFILE_RUNTIME_LOCKS, collect_preflight, render_markdown  # noqa: E402
-from portrait_pipeline.util import atomic_json_write, relative_safe_path, sha256_file  # noqa: E402
+from portrait_pipeline.util import atomic_json_write, relative_safe_path, sanitize_public_paths, sha256_file  # noqa: E402
 from portrait_pipeline.workflow_validation import validate_all_workflows  # noqa: E402
 
 
@@ -207,6 +207,7 @@ def _restore_models(model_lock: dict[str, Any], profile: str, actions: list[dict
     workflow_profiles = {
         "local_mac_16gb": {"human_local_mac_16gb", "agent_local_mac_16gb"},
         "full_power_gpu": {"human_full_power_gpu"},
+        "agent_full_power_gpu": {"agent_full_power_gpu"},
         "remote_runpod": {"agent_remote_runpod"},
     }[profile]
     for entry in model_lock.get("models", []):
@@ -421,7 +422,7 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Fail-closed HOI4 portrait bootstrap.")
-    parser.add_argument("--profile", required=True, choices=["local_mac_16gb", "full_power_gpu", "remote_runpod"])
+    parser.add_argument("--profile", required=True, choices=["local_mac_16gb", "full_power_gpu", "agent_full_power_gpu", "remote_runpod"])
     parser.add_argument("--restore-from-lock", action="store_true")
     parser.add_argument(
         "--private-qualification-install",
@@ -441,6 +442,8 @@ def main(argv: list[str] | None = None) -> int:
     profile_name = args.profile
     if profile_name == "full_power_gpu":
         preflight_profile = "human_full_power_gpu"
+    elif profile_name == "agent_full_power_gpu":
+        preflight_profile = "agent_full_power_gpu"
     elif profile_name == "remote_runpod":
         preflight_profile = "agent_remote_runpod"
     else:
@@ -459,8 +462,10 @@ def main(argv: list[str] | None = None) -> int:
         report = _capability_report(args.profile, preflight, actions)
         output_dir = ROOT / "docs" / "capabilities"
         output_dir.mkdir(parents=True, exist_ok=True)
-        atomic_json_write(output_dir / f"{args.profile}.json", report)
-        (output_dir / f"{args.profile}.md").write_text(render_markdown(preflight), encoding="utf-8")
+        public_report = sanitize_public_paths(report, ROOT)
+        public_preflight = sanitize_public_paths(preflight, ROOT)
+        atomic_json_write(output_dir / f"{args.profile}.json", public_report)
+        (output_dir / f"{args.profile}.md").write_text(render_markdown(public_preflight), encoding="utf-8")
         _write_bootstrap_log(run_id, args.profile, actions, preflight["status"])
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return int(preflight["recommended_exit_code"])
@@ -489,8 +494,10 @@ def main(argv: list[str] | None = None) -> int:
     report = _capability_report(args.profile, preflight, actions)
     output_dir = ROOT / "docs" / "capabilities"
     output_dir.mkdir(parents=True, exist_ok=True)
-    atomic_json_write(output_dir / f"{args.profile}.json", report)
-    (output_dir / f"{args.profile}.md").write_text(render_markdown(preflight), encoding="utf-8")
+    public_report = sanitize_public_paths(report, ROOT)
+    public_preflight = sanitize_public_paths(preflight, ROOT)
+    atomic_json_write(output_dir / f"{args.profile}.json", public_report)
+    (output_dir / f"{args.profile}.md").write_text(render_markdown(public_preflight), encoding="utf-8")
     _write_bootstrap_log(run_id, args.profile, actions, "PASS" if return_code == 0 else "FAILED")
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return return_code

@@ -106,6 +106,13 @@ def _dds_gate(root: Path) -> dict[str, Any]:
 
 def _runpod_deployment_gate(root: Path) -> dict[str, Any]:
     deployment_root = root / "deploy" / "runpod"
+    owner_attestation_path = root / "docs" / "preflight" / "owner_attestation.json"
+    owner_scope: dict[str, Any] = {}
+    try:
+        owner_scope = json.loads(owner_attestation_path.read_text(encoding="utf-8")).get("scope", {})
+    except (OSError, json.JSONDecodeError):
+        owner_scope = {}
+    deferred = owner_scope.get("runpod_live_deployment") == "DEFERRED_OUT_OF_CURRENT_SCOPE"
     required = ["Dockerfile", "entrypoint.sh", "install_runtime.sh", "readiness.py", "healthcheck.sh", "image_lock.json", "README.md"]
     missing = [name for name in required if not (deployment_root / name).is_file()]
     image_lock: dict[str, Any] = {}
@@ -129,7 +136,7 @@ def _runpod_deployment_gate(root: Path) -> dict[str, Any]:
     }
     status = "PASS" if not missing and image_lock.get("build_permitted") is True and all(structural_checks.values()) else ("BLOCKED_UNRESOLVED_IMAGE_LOCK" if not missing else "BLOCKED_DEPLOYMENT_SURFACE_MISSING")
     return {
-        "status": status,
+        "status": "DEFERRED_OUT_OF_SCOPE" if deferred else status,
         "path": str(deployment_root.relative_to(root)),
         "required_files": required,
         "missing": missing,
@@ -137,6 +144,8 @@ def _runpod_deployment_gate(root: Path) -> dict[str, Any]:
         "image_lock_status": image_lock.get("status"),
         "build_permitted": image_lock.get("build_permitted"),
         "unresolved": image_lock.get("unresolved", []),
+        "owner_scope": owner_scope,
+        "live_execution": "NOT_RUN_DEFERRED" if deferred else "NOT_RUN",
         "acceptance_policy": "The deployment surface is not a successful remote runtime claim until an empty-volume Pod passes the documented live acceptance sequence.",
     }
 
@@ -279,7 +288,7 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
     report = {
         "schema_version": "1.0.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" or benchmark_gate["status"] != "PASS" or comparison_gate["status"] != "PASS" or runpod_deployment["status"] != "PASS" or schema_gate["status"] != "PASS" else "PASS",
+        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" or benchmark_gate["status"] != "PASS" or comparison_gate["status"] != "PASS" or runpod_deployment["status"] not in {"PASS", "DEFERRED_OUT_OF_SCOPE"} or schema_gate["status"] != "PASS" else "PASS",
         "recommended_exit_code": preflight["recommended_exit_code"] if preflight["status"] != "PASS" else (int(ExitCode.AUDIT_UNCERTAIN) if comparison_gate["status"] != "PASS" else 0),
         "gates": {
             "package_checksums": next((gate for gate in preflight["gates"] if gate["name"] == "planning_package_checksums"), None),

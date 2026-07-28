@@ -1,9 +1,9 @@
 """Resolve the locally installed Chaos Redux portrait background privately.
 
-This is a resolver, not an approval step.  It copies/decode-converts only the
+This is a resolver, not an approval step. It copies/decode-converts only the
 locally available source into the ignored private background area and emits a
-candidate record.  ``config/background_registry.json`` remains unchanged
-until the project owner supplies an explicit rights decision.
+candidate record. If an exact owner-approved registry entry already exists,
+re-resolution preserves that approval; it never creates or broadens approval.
 """
 
 from __future__ import annotations
@@ -25,6 +25,31 @@ OUTPUT_RELATIVE = Path("backgrounds/private/chaos_redux_portrait_leader_backgrou
 
 def _default_source() -> Path:
     return Path.home() / "Documents" / "Paradox Interactive" / "Hearts of Iron IV" / "mod" / "Chaos-Redux" / "gfx" / "leaders" / "portrait_leader_background.psd"
+
+
+def _existing_approval(root: Path, runtime_sha256: str) -> dict[str, object] | None:
+    """Return an exact prior approval, if the registry already contains one."""
+
+    registry_path = root / "config" / "background_registry.json"
+    if not registry_path.is_file():
+        return None
+    try:
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if registry.get("registry_status") != "RESOLVED":
+        return None
+    for entry in registry.get("backgrounds", []):
+        if (
+            isinstance(entry, dict)
+            and entry.get("status") == "APPROVED"
+            and entry.get("runtime_path") == str(OUTPUT_RELATIVE)
+            and entry.get("sha256") == runtime_sha256
+            and entry.get("approved_by")
+            and entry.get("approval_attestation")
+        ):
+            return entry
+    return None
 
 
 def resolve(root: Path, source: Path) -> dict[str, object]:
@@ -82,7 +107,34 @@ def resolve(root: Path, source: Path) -> dict[str, object]:
 
     checks["runtime_sha256"] = sha256_file(output)
     checks["runtime_ready"] = True
-    report = {
+    approved_entry = _existing_approval(root, str(checks["runtime_sha256"]))
+    if approved_entry is not None:
+        report = {
+            "schema_version": "1.0.0",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "status": "APPROVED_LOCAL_COPY_ONLY",
+            "checks": checks,
+            "rights": {
+                "source_class": "installed_project_repository",
+                "source_repository": "Chaos Redux live checkout",
+                "source_license_record": "not found in live repository root",
+                "redistribution_rule": "local_copy_only",
+                "attribution": approved_entry.get("attribution"),
+            },
+            "approval": {
+                "status": "APPROVED",
+                "approved_by": approved_entry.get("approved_by", []),
+                "attestation": approved_entry.get("approval_attestation"),
+                "registry_update_permitted": True,
+            },
+            "production_policy": {
+                "config_registry_modified": True,
+                "generation_permitted": True,
+                "dds_promotion_permitted": False,
+            },
+        }
+    else:
+        report = {
         "schema_version": "1.0.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "status": "CANDIDATE_RUNTIME_READY_OWNER_APPROVAL_REQUIRED",

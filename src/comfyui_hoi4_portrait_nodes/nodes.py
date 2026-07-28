@@ -285,14 +285,18 @@ class HOI4JobInput:
             _raise(ExitCode.SOURCE_INVALID, f"job contract missing: {job_contract_path}")
         except json.JSONDecodeError as exc:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, f"job contract is not valid JSON: {exc}")
-        job["_project_root"] = str(root)
-        job["_workflow_execution_profile"] = execution_profile
         issues = validate_job(job, root)
         if issues:
             first = issues[0]
             _raise(first.code, f"{first.path}: {first.message}")
         if job.get("execution_profile") != execution_profile:
             _raise(ExitCode.WORKFLOW_INVALID, "job profile does not match the loaded workflow")
+        # Internal runtime context is deliberately added only after strict
+        # contract validation. The public job schema has additionalProperties
+        # disabled, so validating the context-enriched object would reject the
+        # node's own private fields before any workflow stage can run.
+        job["_project_root"] = str(root)
+        job["_workflow_execution_profile"] = execution_profile
         return (job,)
 
 
@@ -865,7 +869,7 @@ class HOI4AutopromptClient:
             _raise(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "autoprompter is not bound to loopback")
         image_bytes = io.BytesIO()
         _comfy_to_pil(image).save(image_bytes, format="PNG", optimize=False)
-        encoded = json.dumps({"instruction": exact_instruction, "job_id": job.get("job_id"), "model_id": model_id, "image_png_base64": base64.b64encode(image_bytes.getvalue()).decode("ascii"), "background_meta": background_meta}, ensure_ascii=False).encode("utf-8")
+        encoded = json.dumps({"instruction": exact_instruction, "job_id": job.get("job_id"), "model_id": model_id, "image_png_base64": base64.b64encode(image_bytes.getvalue()).decode("ascii"), "background_meta": background_meta, "allowed_claims": job.get("allowed_autoprompt_claims", {})}, ensure_ascii=False).encode("utf-8")
         try:
             payload = _post_autoprompt_staged(root, endpoint, json.loads(encoded.decode("utf-8")), str(job.get("execution_profile")))
         except RuntimeError:

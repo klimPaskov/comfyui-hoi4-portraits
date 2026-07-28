@@ -443,6 +443,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         "human_local_mac_16gb": root_path / "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "human_full_power_gpu": root_path / "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "agent_local_mac_16gb": root_path / "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
+        "agent_full_power_gpu": root_path / "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
         "agent_remote_runpod": root_path / "workflows/agent/remote_runpod/agent_remote_runpod.json",
     }
     manifests: list[dict[str, Any]] = []
@@ -499,7 +500,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build all four deterministic ComfyUI workflow artifacts.")
+    parser = argparse.ArgumentParser(description="Build all configured deterministic ComfyUI workflow artifacts.")
     parser.add_argument("--root", type=Path, default=None)
     args = parser.parse_args(argv)
     manifest = build_workflow_artifacts(args.root)

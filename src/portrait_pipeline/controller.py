@@ -12,6 +12,7 @@ from typing import Any
 
 from .audit import audit_is_promotion_pass, load_audits
 from .constants import (
+    CALIBRATED_THRESHOLD_STATUSES,
     DEPENDENCY_LOCK_VERSION,
     ExitCode,
     JobStatus,
@@ -124,6 +125,7 @@ class JobController:
             "human_local_mac_16gb": self.root / "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
             "human_full_power_gpu": self.root / "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
             "agent_local_mac_16gb": self.root / "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
+            "agent_full_power_gpu": self.root / "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
             "agent_remote_runpod": self.root / "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
         }
         try:
@@ -306,7 +308,7 @@ class JobController:
         thresholds_path = self.root / "config" / "identity_thresholds.json"
         thresholds = json.loads(thresholds_path.read_text(encoding="utf-8")) if thresholds_path.is_file() else {}
         threshold_id = thresholds.get("thresholds_id")
-        thresholds_ready = thresholds.get("status") == "RESOLVED" and thresholds.get("fail_closed") is True and threshold_id not in {None, "UNSET_BLOCK_EXECUTION"}
+        thresholds_ready = thresholds.get("status") in CALIBRATED_THRESHOLD_STATUSES and thresholds.get("fail_closed") is True and threshold_id not in {None, "UNSET_BLOCK_EXECUTION"}
         for audit in audits:
             if audit.get("job_id") != job_id:
                 audit_blockers.append(f"audit {audit.get('candidate_id')} belongs to a different job")

@@ -20,6 +20,9 @@ reports/benchmarks/
 logs/
 .runtime/
 
+# Local live-target checkouts are working copies, never public project content.
+repos/
+
 # Model and image artifacts must never enter Git.
 *.safetensors
 *.gguf
@@ -31,6 +34,7 @@ logs/
 *.png
 !docs/assets/
 !docs/assets/*.png
+!docs/assets/**/*.png
 *.jpg
 *.jpeg
 *.webp

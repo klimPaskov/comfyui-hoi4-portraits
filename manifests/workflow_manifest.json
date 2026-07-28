@@ -49,7 +49,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382"
+        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -79,14 +79,14 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T16:48:49.124432+00:00"
+        "checked_at": "2026-07-28T18:45:44.622547+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
-        "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+        "status": "NOT_RUN_CALIBRATION_REQUIRED",
         "attempted": false,
         "fixture_present": true,
-        "background_resolved": false,
+        "background_resolved": true,
         "eight_step_turbo_execution": "NOT_RUN",
         "model_loading": "NOT_RUN",
         "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
@@ -138,7 +138,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382"
+        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -168,14 +168,14 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T16:48:49.124432+00:00"
+        "checked_at": "2026-07-28T18:45:44.622547+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
-        "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+        "status": "NOT_RUN_CALIBRATION_REQUIRED",
         "attempted": false,
         "fixture_present": true,
-        "background_resolved": false,
+        "background_resolved": true,
         "eight_step_turbo_execution": "NOT_RUN",
         "model_loading": "NOT_RUN",
         "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
@@ -225,7 +225,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382"
+        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -249,14 +249,95 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T16:48:49.124432+00:00"
+        "checked_at": "2026-07-28T18:45:44.622547+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
-        "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+        "status": "NOT_RUN_CALIBRATION_REQUIRED",
         "attempted": false,
         "fixture_present": true,
-        "background_resolved": false,
+        "background_resolved": true,
+        "eight_step_turbo_execution": "NOT_RUN",
+        "model_loading": "NOT_RUN",
+        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+      }
+    },
+    {
+      "workflow_id": "agent_full_power_gpu",
+      "display_name": "agent_full_power_gpu",
+      "workflow_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
+      "api_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
+      "sha256": "2401f892615094e54139344c4e0304e69e24d559e563a38c5d7f79734d277d7c",
+      "api_sha256": "ebf8c240c672eb5dbd4db933ff179838e409856392caee1361b68d5ee79a1feb",
+      "graph_spec_version": "graph-spec-1.0.0",
+      "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
+      "required_core_nodes": [
+        "CLIPLoader",
+        "EmptySD3LatentImage",
+        "KSampler",
+        "LoraLoaderModelOnly",
+        "SaveImage",
+        "UNETLoader",
+        "VAEDecode",
+        "VAEEncode",
+        "VAELoader"
+      ],
+      "required_custom_nodes": [
+        "HOI4ConservativePrep",
+        "HOI4EvidenceExport",
+        "HOI4ForegroundMask",
+        "HOI4HeadShouldersCrop",
+        "HOI4JobInput",
+        "HOI4JobSource",
+        "HOI4MaskAndBackgroundGuard",
+        "HOI4PromptInput",
+        "HOI4SourceGuard",
+        "HOI4SubjectSelect",
+        "Krea2EditGroundedEncode",
+        "Krea2EditModelPatch"
+      ],
+      "required_custom_node_packages": [
+        "comfyui-krea2edit",
+        "hoi4_portrait_project_nodes"
+      ],
+      "required_custom_node_revisions": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+      },
+      "required_custom_node_source_checksums": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
+      },
+      "required_models": [
+        "krea2_turbo_fp8_scaled.safetensors",
+        "qwen3vl_4b_fp8_scaled.safetensors",
+        "qwen_image_vae.safetensors",
+        "krea2_identity_edit_v1_2.safetensors",
+        "hoi4_portrait_new_style_lora.safetensors"
+      ],
+      "autoprompter_present": false,
+      "prompt_source": "job_contract",
+      "preview_nodes": [],
+      "final_preview_save_pair": {
+        "preview_node_id": null,
+        "save_node_id": 23,
+        "shared_source_node_id": 22,
+        "shared_source_slot": 0,
+        "policy": "agent_save_only"
+      },
+      "autoprompter_instruction_sha256": null,
+      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "load_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "PASS",
+        "checked_at": "2026-07-28T18:45:44.622547+00:00"
+      },
+      "execution_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "NOT_RUN_CALIBRATION_REQUIRED",
+        "attempted": false,
+        "fixture_present": true,
+        "background_resolved": true,
         "eight_step_turbo_execution": "NOT_RUN",
         "model_loading": "NOT_RUN",
         "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
@@ -306,7 +387,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "7122fd267ff03d5834ccc7aef9deb518c3648b1aa22a5d4f8caaafe989163382"
+        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -330,14 +411,14 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T16:48:49.124432+00:00"
+        "checked_at": "2026-07-28T18:45:44.622547+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
-        "status": "BLOCKED_NO_APPROVED_SOURCE_FIXTURE_OR_BACKGROUND",
+        "status": "NOT_RUN_CALIBRATION_REQUIRED",
         "attempted": false,
         "fixture_present": true,
-        "background_resolved": false,
+        "background_resolved": true,
         "eight_step_turbo_execution": "NOT_RUN",
         "model_loading": "NOT_RUN",
         "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."

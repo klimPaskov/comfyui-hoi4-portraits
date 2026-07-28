@@ -11,8 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .constants import ExitCode, PROFILE_LIMITS, STYLE_LORA_PATH, STYLE_LORA_SHA256
-from .util import atomic_json_write, is_sha256, project_root, relative_safe_path, sha256_file, tree_sha256
+from .constants import CALIBRATED_THRESHOLD_STATUSES, ExitCode, PROFILE_LIMITS, STYLE_LORA_PATH, STYLE_LORA_SHA256
+from .util import atomic_json_write, is_sha256, project_root, relative_safe_path, sanitize_public_paths, sha256_file, tree_sha256
 
 SUPPORTED_MODEL_SUFFIXES = {".safetensors", ".gguf"}
 SUPPORTED_MODEL_RUNTIME_SUFFIXES = {".json", ".txt"}
@@ -26,6 +26,7 @@ PROFILE_RUNTIME_LOCKS = {
     "human_local_mac_16gb": "macos_arm64_cpu",
     "agent_local_mac_16gb": "macos_arm64_cpu",
     "human_full_power_gpu": "linux_amd64_cuda128",
+    "agent_full_power_gpu": "linux_amd64_cuda128",
     "agent_remote_runpod": "linux_amd64_cuda128",
 }
 
@@ -167,6 +168,13 @@ def _repo_snapshot(path: Path) -> dict[str, Any]:
     }
 
 
+def _configured_path(name: str) -> Path | None:
+    value = os.environ.get(name)
+    if not value:
+        return None
+    return Path(value).expanduser().resolve()
+
+
 def _planning_checksum_check(root: Path) -> dict[str, Any]:
     checksum_file = root / "checksums.sha256"
     results: list[dict[str, Any]] = []
@@ -192,6 +200,18 @@ def _env_presence() -> dict[str, bool]:
         "PORTRAIT_GATEWAY_TOKEN",
     )
     return {name: bool(os.environ.get(name)) for name in names}
+
+
+def _owner_scope(root: Path) -> dict[str, Any]:
+    """Read the explicit project-owner scope decision for optional surfaces."""
+
+    path = root / "docs" / "preflight" / "owner_attestation.json"
+    try:
+        attestation = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"status": "MISSING_OR_INVALID", "path": str(path), "scope": {}}
+    scope = attestation.get("scope") if isinstance(attestation, dict) else {}
+    return {"status": "PASS" if isinstance(scope, dict) else "MISSING_OR_INVALID", "path": str(path), "scope": scope if isinstance(scope, dict) else {}}
 
 
 def _profile_applies(entry: dict[str, Any], profile: str | None) -> bool:
@@ -536,7 +556,7 @@ def _autoprompter_preflight(root: Path, profile: str | None) -> dict[str, Any]:
     local_pass = report.get("status") == "PASS_HEALTH_AND_NEGATIVE_VALIDATION" and report.get("negative_validation", {}).get("status") == "PASS" and local_health.get("status") == "PASS"
     full_power = report.get("full_power", {}) if isinstance(report, dict) else {}
     full_format_pass = full_power.get("status") == "PASS_FORMAT_AND_PROCESSOR_SCHEMA"
-    if profile in {"agent_local_mac_16gb", "agent_remote_runpod"}:
+    if profile in {"agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"}:
         status = "NOT_APPLICABLE"
     elif profile == "human_local_mac_16gb":
         status = "PASS" if local_pass and full_format_pass else "BLOCKED"
@@ -690,10 +710,19 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     root_path = project_root(root)
     if profile is not None and profile not in PROFILE_LIMITS:
         raise ValueError(f"unknown execution profile: {profile}")
-    live_chaos = Path("/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux")
+    chaos_candidates = [
+        _configured_path("HOI4_CHAOS_REDUX_PATH"),
+        root_path / "repos" / "Chaos-Redux",
+        Path.home() / "Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
+    ]
+    live_chaos = next((path for path in chaos_candidates if path is not None and path.is_dir()), next(path for path in chaos_candidates if path is not None))
     generic_candidates = [
-        Path("/Users/klimpaskov/Documents/Projects/agentic-hoi4-modding"),
-        Path("/Users/klimpaskov/Documents/Projects/agentic-hoi4"),
+        _configured_path("HOI4_GENERIC_TARGET_PATH"),
+        root_path / "repos" / "Agentic-HOI4-Modding",
+        root_path / "repos" / "agentic-hoi4-modding",
+        Path.home() / "Documents/Projects/Agentic-HOI4-Modding",
+        Path.home() / "Documents/Projects/agentic-hoi4-modding",
+        Path.home() / "Documents/Projects/agentic-hoi4",
         root_path / "integrations" / "agentic-hoi4-modding",
     ]
     style_path = root_path / STYLE_LORA_PATH
@@ -727,7 +756,7 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     runtime_version_info = runtime_probe.get("python_version_info", [])
     python_floor_ok = isinstance(runtime_version_info, list) and len(runtime_version_info) >= 2 and tuple(runtime_version_info[:2]) >= (3, 10)
     local_profile = profile in {"human_local_mac_16gb", "agent_local_mac_16gb"} if profile else True
-    full_gpu_profile = profile == "human_full_power_gpu"
+    full_gpu_profile = profile in {"human_full_power_gpu", "agent_full_power_gpu"}
     comfy_runtime_present = bool(comfy_path) or (root_path / "comfyui" / "main.py").is_file()
     required_accelerator = "MPS" if local_profile else ("CUDA" if full_gpu_profile else "not_local")
     accelerator_ok = bool(torch_probe.get("mps_available")) if local_profile else (bool(torch_cuda) if full_gpu_profile else True)
@@ -794,13 +823,15 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
         blockers.append("The pinned ComfyUI runtime dependency lock still contains unresolved platform versions or artifact checksums.")
 
     env_presence = _env_presence()
+    owner_scope = _owner_scope(root_path)
     remote_required = profile in {None, "agent_remote_runpod"}
-    remote_status = "PASS" if env_presence["RUNPOD_API_KEY"] and env_presence["RUNPOD_ENDPOINT_ID"] else ("BLOCKED" if remote_required else "NOT_APPLICABLE")
-    gates.append({"name": "remote_topology_auth", "status": remote_status, "evidence": {"profile": profile, "credential_presence": env_presence, "raw_comfyui_binding": "not configured", "remote_gateway": "authenticated_only"}})
+    remote_deferred = owner_scope.get("scope", {}).get("runpod_live_deployment") == "DEFERRED_OUT_OF_CURRENT_SCOPE"
+    remote_status = "DEFERRED_OUT_OF_SCOPE" if remote_required and remote_deferred else ("PASS" if env_presence["RUNPOD_API_KEY"] and env_presence["RUNPOD_ENDPOINT_ID"] else ("BLOCKED" if remote_required else "NOT_APPLICABLE"))
+    gates.append({"name": "remote_topology_auth", "status": remote_status, "evidence": {"profile": profile, "credential_presence": env_presence, "raw_comfyui_binding": "not configured", "remote_gateway": "authenticated_only", "owner_scope": owner_scope, "live_execution": "NOT_RUN" if remote_status == "DEFERRED_OUT_OF_SCOPE" else "UNQUALIFIED"}})
     if remote_status == "BLOCKED":
         blockers.append("RunPod endpoint credentials are absent; remote submission/acceptance cannot run.")
 
-    generic_existing = [str(path) for path in generic_candidates if path.is_dir() and path != root_path / "integrations" / "agentic-hoi4-modding"]
+    generic_existing = [str(path) for path in generic_candidates if path is not None and path.is_dir() and path != root_path / "integrations" / "agentic-hoi4-modding"]
     repo_gate = {
         "name": "repository_preflight",
         "status": "PASS" if live_chaos.is_dir() else "BLOCKED",
@@ -814,8 +845,8 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
 
     threshold_path = root_path / "config" / "identity_thresholds.json"
     thresholds = json.loads(threshold_path.read_text(encoding="utf-8")) if threshold_path.is_file() else {}
-    threshold_status = "PASS" if thresholds.get("thresholds_id") not in {None, "UNSET_BLOCK_EXECUTION"} and thresholds.get("approved_by") and thresholds.get("fail_closed") is True else "BLOCKED"
-    gates.append({"name": "calibrated_identity_thresholds", "status": threshold_status, "evidence": {"path": str(threshold_path), "present": threshold_path.is_file(), "thresholds_id": thresholds.get("thresholds_id"), "approved_by": thresholds.get("approved_by")}})
+    threshold_status = "PASS" if thresholds.get("status") in CALIBRATED_THRESHOLD_STATUSES and thresholds.get("thresholds_id") not in {None, "UNSET_BLOCK_EXECUTION"} and thresholds.get("approved_by") and thresholds.get("fail_closed") is True else "BLOCKED"
+    gates.append({"name": "calibrated_identity_thresholds", "status": threshold_status, "evidence": {"path": str(threshold_path), "present": threshold_path.is_file(), "status": thresholds.get("status"), "accepted_statuses": sorted(CALIBRATED_THRESHOLD_STATUSES), "thresholds_id": thresholds.get("thresholds_id"), "approved_by": thresholds.get("approved_by")}})
     if threshold_status != "PASS":
         blockers.append("Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.")
 
@@ -830,11 +861,12 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     except json.JSONDecodeError:
         live_krea = {"status": "INVALID_JSON"}
     live_schema_pass = live_krea.get("status") == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED"
-    krea_status = "PASS" if live_schema_pass and krea_review.get("status") == "BLOCKED_EXECUTION_NOT_MEASURED" else "BLOCKED"
-    gates.append({"name": "krea_live_compatibility", "status": krea_status, "evidence": {"reason": "Live core/node/schema compatibility is verified; source-specific model loading and the eight-step Turbo execution remain a separate qualification gate.", "compatibility_review_path": str(krea_review_path), "compatibility_review_status": krea_review.get("status"), "compatibility_review": krea_review, "live_probe_path": str(live_krea_path), "live_probe_status": live_krea.get("status"), "live_probe": live_krea}})
+    krea_review_statuses = {"BLOCKED_EXECUTION_NOT_MEASURED", "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE"}
+    krea_status = "PASS" if live_schema_pass and krea_review.get("status") in krea_review_statuses else "BLOCKED"
+    gates.append({"name": "krea_live_compatibility", "status": krea_status, "evidence": {"reason": "Live core/node/schema compatibility is verified; source-specific execution remains a separate qualification gate and the detected 16 GB Mac has a measured memory/offload blocker.", "compatibility_review_path": str(krea_review_path), "compatibility_review_status": krea_review.get("status"), "compatibility_review": krea_review, "live_probe_path": str(live_krea_path), "live_probe_status": live_krea.get("status"), "live_probe": live_krea}})
     if krea_status != "PASS":
         blockers.append("Krea 2 Turbo live core/node/schema compatibility is not verified in the pinned runtime.")
-    blockers.append("Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.")
+    blockers.append("Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.")
 
     autoprompter_evidence = _autoprompter_preflight(root_path, profile)
     autoprompter_status = autoprompter_evidence["status"]
@@ -906,8 +938,9 @@ def main(argv: list[str] | None = None) -> int:
     report = collect_preflight(root)
     json_out = args.json_out or root / "docs" / "preflight" / "initial_preflight.json"
     markdown_out = args.markdown_out or root / "docs" / "preflight" / "initial_preflight.md"
-    atomic_json_write(json_out, report)
+    public_report = sanitize_public_paths(report, root)
+    atomic_json_write(json_out, public_report)
     markdown_out.parent.mkdir(parents=True, exist_ok=True)
-    markdown_out.write_text(render_markdown(report), encoding="utf-8")
+    markdown_out.write_text(render_markdown(public_report), encoding="utf-8")
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0 if report["status"] == "PASS" else int(report["recommended_exit_code"])

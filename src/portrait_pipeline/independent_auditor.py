@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from .audit import make_audit_record, write_audit
-from .constants import HARD_AUDIT_GATES
+from .constants import CALIBRATED_THRESHOLD_STATUSES, HARD_AUDIT_GATES
 from .util import is_sha256, project_root, relative_safe_path, sha256_file
 
 
@@ -27,7 +27,7 @@ def _load_thresholds(root: Path) -> tuple[dict[str, Any], list[str]]:
     except (OSError, json.JSONDecodeError) as exc:
         return {}, [f"thresholds are unreadable: {type(exc).__name__}"]
     issues: list[str] = []
-    if thresholds.get("status") != "APPROVED" or str(thresholds.get("thresholds_id", "")).startswith("UNSET"):
+    if thresholds.get("status") not in CALIBRATED_THRESHOLD_STATUSES or str(thresholds.get("thresholds_id", "")).startswith("UNSET"):
         issues.append("thresholds are not approved")
     required_values = (
         ("face_embedding", "minimum_similarity"),

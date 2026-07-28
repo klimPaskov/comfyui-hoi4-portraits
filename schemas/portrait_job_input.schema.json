@@ -36,6 +36,7 @@
         "human_local_mac_16gb",
         "human_full_power_gpu",
         "agent_local_mac_16gb",
+        "agent_full_power_gpu",
         "agent_remote_runpod"
       ]
     },
@@ -352,6 +353,13 @@
           "uniqueItems": true
         },
         "medals_or_insignia": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "organization_or_branch": {
           "type": "array",
           "items": {
             "type": "string"

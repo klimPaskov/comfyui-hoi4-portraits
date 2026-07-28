@@ -47,6 +47,7 @@ class ExecutionProfile(_StringEnum):
     HUMAN_LOCAL_MAC_16GB = "human_local_mac_16gb"
     HUMAN_FULL_POWER_GPU = "human_full_power_gpu"
     AGENT_LOCAL_MAC_16GB = "agent_local_mac_16gb"
+    AGENT_FULL_POWER_GPU = "agent_full_power_gpu"
     AGENT_REMOTE_RUNPOD = "agent_remote_runpod"
 
 
@@ -76,6 +77,15 @@ PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
         "canvas_height": 1120,
         "autoprompter": False,
         "route": "local_mac",
+        "prompt_model": "job_contract",
+    },
+    ExecutionProfile.AGENT_FULL_POWER_GPU: {
+        "candidate_max": 6,
+        "retry_max": 2,
+        "canvas_width": 1196,
+        "canvas_height": 1610,
+        "autoprompter": False,
+        "route": "full_power_gpu",
         "prompt_model": "job_contract",
     },
     ExecutionProfile.AGENT_REMOTE_RUNPOD: {
@@ -144,5 +154,10 @@ DEPENDENCY_LOCK_VERSION = "lock-2026-07-26.1"
 AUTOPROMPTER_PATH = "prompts/autoprompter_instruction.txt"
 STYLE_LORA_PATH = "loras/hoi4_portrait_new_style_lora.safetensors"
 STYLE_LORA_SHA256 = "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
+# Calibration records may use either vocabulary used by the planning package
+# (`APPROVED`) or the registry vocabulary used by the runtime (`RESOLVED`).
+# Call sites still require a non-placeholder id, approver record, and
+# fail-closed numeric values before treating a record as production-ready.
+CALIBRATED_THRESHOLD_STATUSES = frozenset({"APPROVED", "RESOLVED"})
 FINAL_WIDTH = 156
 FINAL_HEIGHT = 210
