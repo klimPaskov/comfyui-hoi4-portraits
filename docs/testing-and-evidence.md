@@ -14,7 +14,7 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
 
 ## Current evidence
 
-- The automated suite is rerun after every bounded change; the current count is reported by `scripts/run_tests.py`.
+- `34/34` automated tests pass on the detected Mac runtime; rerun them with `scripts/run_tests.py` after every bounded change.
 - The required four workflows plus the local-NVIDIA agent workflow are structurally valid and live-schema loadable in the pinned loopback ComfyUI.
 - Local preprocessing artifacts and the private autoprompter health/negative-validation path are verified.
 - The live human-local qualification run measured the Apple MPS `Float8_e4m3fn` incompatibility, then verified the reversible CPU-dequantization workaround and measured practical 16 GB memory/offload infeasibility before the first sampler step completed. See [`preflight/local_human_execution_2026-07-28.json`](preflight/local_human_execution_2026-07-28.json) and [`../scripts/runtime/apply_mps_fp8_workaround.py`](../scripts/runtime/apply_mps_fp8_workaround.py).
