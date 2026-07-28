@@ -270,6 +270,8 @@ def calibrate(root: Path, fixture_dir: Path) -> dict[str, Any]:
         blockers.append("the private calibration fixture manifest does not enumerate exactly the observed fixture set")
     if not measurements:
         blockers.append("no geometry measurement completed")
+    elif accepted < 20 or len(measurements) < 100:
+        blockers.append(f"geometry calibration is currently small-sample evidence ({accepted} accepted fixtures, {len(measurements)} measurements); it is not sufficient for production approval")
     return {
         "schema_version": "1.0.0",
         "calibration_id": "loc-daguerreotype-geometry-2026-07-29",

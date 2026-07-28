@@ -33,5 +33,6 @@ This is preprocessing-invariance evidence. It does not modify the tracked thresh
 - these measurements cover preprocessing invariance only; source-specific generated-candidate acceptance is still required
 - hairline, facial-hair, accessory, foreground-mask, and HOI4-style thresholds require separate labeled evidence
 - the tracked production threshold file remains unchanged and fail-closed
+- geometry calibration is currently small-sample evidence (13 accepted fixtures, 34 measurements); it is not sufficient for production approval
 
 Source images and biometric-derived landmarks remain private under the ignored fixture/job roots.
