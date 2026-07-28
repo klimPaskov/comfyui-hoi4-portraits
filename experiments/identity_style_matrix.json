@@ -108,10 +108,10 @@
     }
   },
   "status": "PLANNED_BLOCKED_UNTIL_APPROVED_FIXTURE_BACKGROUND_THRESHOLDS",
-  "execution_status": "NOT_RUN",
-  "required_eight_step_turbo_status": "NOT_RUN",
+  "execution_status": "NOT_RUN_FAIL_CLOSED",
+  "required_eight_step_turbo_status": "NOT_RUN_PRODUCTION_BLOCKED",
   "required_prerequisites": [
-    "legally usable source fixture with immutable provenance",
+    "production-authorized source fixture with immutable provenance",
     "approved HOI4 background registry entry",
     "approved calibrated identity/style thresholds",
     "live model-loading and source-specific execution evidence"

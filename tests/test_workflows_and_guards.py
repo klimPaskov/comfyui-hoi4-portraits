@@ -212,6 +212,29 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(CALIBRATED_THRESHOLD_STATUSES, frozenset({"APPROVED", "RESOLVED"}))
         self.assertNotIn("BLOCKED_UNTIL_CALIBRATION", CALIBRATED_THRESHOLD_STATUSES)
 
+    def test_identity_calibration_evidence_is_recorded_but_stays_fail_closed(self):
+        evidence_path = self.root / "docs/preflight/identity_calibration_2026-07-29.json"
+        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+        self.assertEqual(evidence["status"], "BLOCKED_FACE_CALIBRATION_INCOMPLETE")
+        self.assertGreaterEqual(evidence["fixture_set"]["accepted_single_face_count"], 1)
+        self.assertGreaterEqual(evidence["positive_same_person"]["score_count"], 1)
+        self.assertEqual(evidence["fixture_manifest"]["status"], "PASS")
+        self.assertEqual(evidence["fixture_manifest"]["declared_count"], evidence["fixture_manifest"]["observed_count"])
+        self.assertFalse(evidence["operating_point"]["approved"])
+        thresholds = json.loads((self.root / "config/identity_thresholds.json").read_text(encoding="utf-8"))
+        self.assertEqual(thresholds["status"], "BLOCKED_UNTIL_CALIBRATION")
+        self.assertTrue(thresholds["fail_closed"])
+
+    def test_identity_style_matrix_execution_is_explicitly_fail_closed(self):
+        from portrait_pipeline.experiments import build_execution_report
+
+        report = build_execution_report(self.root)
+        self.assertEqual(report["status"], "BLOCKED_PREREQUISITES")
+        self.assertEqual(report["execution_status"], "NOT_RUN_FAIL_CLOSED")
+        self.assertEqual(report["queued_jobs"], 0)
+        self.assertEqual(report["candidate_count"], 0)
+        self.assertEqual(report["selection_status"], "NOT_RUN")
+
     def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
         for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"):
             report = collect_preflight(self.root, profile=profile)

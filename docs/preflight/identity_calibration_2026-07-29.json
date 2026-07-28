@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0.0",
+  "calibration_id": "loc-daguerreotype-face-embedding-2026-07-29",
+  "created_at": "2026-07-28T23:17:29.464624+00:00",
+  "status": "BLOCKED_FACE_CALIBRATION_INCOMPLETE",
+  "source_class": "public_domain_primary_archive",
+  "rights_policy": "private_local_calibration_only; no source portrait or biometric vector is written to Git",
+  "models": {
+    "detector": {
+      "name": "YuNet",
+      "revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+      "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
+    },
+    "recognizer": {
+      "name": "SFace",
+      "revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+      "sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79"
+    }
+  },
+  "fixture_set": {
+    "fixture_count": 50,
+    "accepted_single_face_count": 46,
+    "rejected_count": 4,
+    "rejected": [
+      {
+        "fixture_id": "loc_2004664044",
+        "reason": "expected exactly one face",
+        "face_count": 0
+      },
+      {
+        "fixture_id": "loc_2004664164",
+        "reason": "expected exactly one face",
+        "face_count": 0
+      },
+      {
+        "fixture_id": "loc_2004664252",
+        "reason": "decode_or_model_error:OSError"
+      },
+      {
+        "fixture_id": "loc_2004664489",
+        "reason": "decode_or_model_error:OSError"
+      }
+    ],
+    "variant_policy": [
+      "resize_round_trip",
+      "grayscale",
+      "brightness_0.82",
+      "jpeg_quality_62"
+    ]
+  },
+  "fixture_manifest": {
+    "status": "PASS",
+    "path": "fixtures/private/loc_calibration_2026-07-29/manifest.json",
+    "sha256": "01df5e07c47d14b5f22ba48374712c05a498792f7ac439d4f6ff4c7a1a65aeb6",
+    "declared_count": 50,
+    "observed_count": 50,
+    "missing_fixture_ids": [],
+    "extra_fixture_ids": []
+  },
+  "positive_same_person": {
+    "score_count": 183,
+    "minimum": 0.518024990144113,
+    "p05": 0.9274091219101137,
+    "median": 0.9764529401926332,
+    "maximum": 1.0000000319389528
+  },
+  "negative_different_person": {
+    "pair_count": 1035,
+    "required_pair_count": 1000,
+    "maximum": 0.4804377850061883,
+    "p999": 0.4647333824512428,
+    "median": 0.15404127465257034
+  },
+  "operating_point": {
+    "target_false_accept_rate_max": 0.001,
+    "target_false_reject_rate_max": 0.05,
+    "candidate_minimum_similarity": 0.4804377850061883,
+    "observed_positive_p05": 0.9274091219101137,
+    "target_simultaneously_demonstrated": true,
+    "approved": false
+  },
+  "blocked_reasons": [
+    "landmark, pose, expression, hair/accessory, mask, and style thresholds require separate calibrated evidence",
+    "the tracked production threshold file remains unchanged and fail-closed"
+  ],
+  "policy": "This report measures calibration evidence only. It cannot authorize a production threshold, candidate, PNG, DDS, or mod integration output."
+}

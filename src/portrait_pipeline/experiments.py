@@ -5,7 +5,8 @@ from pathlib import Path
 from typing import Any
 
 from .constants import ExecutionProfile
-from .util import atomic_json_write, project_root
+from .preflight import collect_preflight
+from .util import atomic_json_write, canonical_hash, project_root
 
 
 EXPERIMENT_AXES = {
@@ -56,9 +57,59 @@ def build_matrix() -> dict[str, Any]:
     }
 
 
+def build_execution_report(root: str | Path | None = None) -> dict[str, Any]:
+    """Record a fail-closed matrix attempt without queuing generation."""
+
+    root_path = project_root(root)
+    matrix = build_matrix()
+    profile_reports: dict[str, Any] = {}
+    blockers: list[str] = []
+    for profile in matrix["profiles"]:
+        preflight = collect_preflight(root_path, profile=profile)
+        statuses = {str(gate.get("name")): str(gate.get("status")) for gate in preflight.get("gates", [])}
+        blocked_gates = [name for name, status in statuses.items() if status not in {"PASS", "APPROVED", "NOT_APPLICABLE", "DEFERRED_OUT_OF_SCOPE"}]
+        profile_blockers = [str(item) for item in preflight.get("blockers", [])]
+        profile_reports[profile] = {
+            "status": "PASS" if preflight.get("status") == "PASS" else "BLOCKED",
+            "preflight_status": preflight.get("status"),
+            "blocked_gates": blocked_gates,
+            "blockers": profile_blockers,
+        }
+        for item in profile_blockers:
+            if item not in blockers:
+                blockers.append(item)
+    return {
+        "schema_version": "1.0.0",
+        "execution_id": "krea2-identity-style-factorial-v1-2026-07-29",
+        "matrix_id": matrix["matrix_id"],
+        "matrix_design_sha256": canonical_hash(matrix),
+        "status": "PASS_READY_TO_RUN" if not blockers else "BLOCKED_PREREQUISITES",
+        "execution_status": "READY_TO_RUN" if not blockers else "NOT_RUN_FAIL_CLOSED",
+        "required_eight_step_turbo_status": "READY_TO_RUN" if not blockers else "NOT_RUN_PRODUCTION_BLOCKED",
+        "profiles": profile_reports,
+        "queued_jobs": 0,
+        "candidate_count": 0,
+        "selection_status": "NOT_RUN",
+        "blocked_reasons": blockers,
+        "selection_policy": matrix["selection_policy"],
+        "policy": "No matrix candidate is queued until every mandatory preflight and independent-audit prerequisite passes. This report is not a generation result.",
+    }
+
+
+def write_execution_report(root: str | Path | None = None) -> dict[str, Any]:
+    root_path = project_root(root)
+    report = build_execution_report(root_path)
+    atomic_json_write(root_path / "docs" / "preflight" / "identity_style_matrix_execution_2026-07-29.json", report)
+    return report
+
+
 def main(root: str | Path | None = None) -> int:
     root_path = project_root(root)
     output = root_path / "experiments" / "identity_style_matrix.json"
-    atomic_json_write(output, build_matrix())
-    print(json.dumps(build_matrix(), indent=2))
+    matrix = build_matrix()
+    execution = write_execution_report(root_path)
+    matrix["execution_status"] = execution["execution_status"]
+    matrix["required_eight_step_turbo_status"] = execution["required_eight_step_turbo_status"]
+    atomic_json_write(output, matrix)
+    print(json.dumps({"matrix": matrix, "execution": execution}, indent=2))
     return 0

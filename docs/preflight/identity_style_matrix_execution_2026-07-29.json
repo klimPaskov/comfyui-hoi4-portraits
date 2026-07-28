@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0.0",
+  "execution_id": "krea2-identity-style-factorial-v1-2026-07-29",
+  "matrix_id": "krea2_identity_style_factorial_v1",
+  "matrix_design_sha256": "504008b0e722523d2eb19979727929f0ab94d5044b9d5153c8aaa1f66af212e8",
+  "status": "BLOCKED_PREREQUISITES",
+  "execution_status": "NOT_RUN_FAIL_CLOSED",
+  "required_eight_step_turbo_status": "NOT_RUN_PRODUCTION_BLOCKED",
+  "profiles": {
+    "human_local_mac_16gb": {
+      "status": "BLOCKED",
+      "preflight_status": "BLOCKED",
+      "blocked_gates": [
+        "calibrated_identity_thresholds"
+      ],
+      "blockers": [
+        "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+        "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required."
+      ]
+    },
+    "human_full_power_gpu": {
+      "status": "BLOCKED",
+      "preflight_status": "BLOCKED",
+      "blocked_gates": [
+        "local_runtime_capability",
+        "calibrated_identity_thresholds",
+        "autoprompter_runtime"
+      ],
+      "blockers": [
+        "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
+        "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+        "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.",
+        "The required human autoprompter runtime lock or live local sidecar evidence is unavailable."
+      ]
+    },
+    "agent_local_mac_16gb": {
+      "status": "BLOCKED",
+      "preflight_status": "BLOCKED",
+      "blocked_gates": [
+        "calibrated_identity_thresholds"
+      ],
+      "blockers": [
+        "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+        "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required."
+      ]
+    },
+    "agent_remote_runpod": {
+      "status": "BLOCKED",
+      "preflight_status": "BLOCKED",
+      "blocked_gates": [
+        "calibrated_identity_thresholds"
+      ],
+      "blockers": [
+        "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+        "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required."
+      ]
+    }
+  },
+  "queued_jobs": 0,
+  "candidate_count": 0,
+  "selection_status": "NOT_RUN",
+  "blocked_reasons": [
+    "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+    "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.",
+    "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
+    "The required human autoprompter runtime lock or live local sidecar evidence is unavailable."
+  ],
+  "selection_policy": {
+    "identity_first": true,
+    "style_ranking_before_identity": false,
+    "face_swap_permitted": false
+  },
+  "policy": "No matrix candidate is queued until every mandatory preflight and independent-audit prerequisite passes. This report is not a generation result."
+}

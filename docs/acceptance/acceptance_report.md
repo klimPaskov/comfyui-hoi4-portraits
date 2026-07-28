@@ -36,12 +36,12 @@
 
 ## Blockers
 
-- Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
+- Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.
 - Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.
 
 ## Additional blocked or skipped surfaces
 
-- `identity_style_experiments`: The matrix is recorded but execution is fail-closed until an approved source fixture, background, calibrated thresholds, and source-specific runtime evidence exist.
+- `identity_style_experiments`: The matrix execution report is fail-closed: no candidate was queued because mandatory preflight and independent-audit prerequisites remain unresolved.
 - `benchmark_reports`: human_local_mac_16gb=BLOCKED_PRODUCTION_GATES_CPU_FALLBACK, human_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_local_mac_16gb=BLOCKED_PRODUCTION_GATES_CPU_FALLBACK, agent_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_remote_runpod=DEFERRED_OUT_OF_SCOPE
 - `identity_style_comparison`: Diagnostic candidates were observed, but no comparison ranking or production winner is produced until calibrated thresholds and independent all-PASS audits authorize them.
 - `runpod_deployment_surface`: BLOCKED_UNRESOLVED_RUNTIME_LOCK

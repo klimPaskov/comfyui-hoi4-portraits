@@ -846,9 +846,31 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     threshold_path = root_path / "config" / "identity_thresholds.json"
     thresholds = json.loads(threshold_path.read_text(encoding="utf-8")) if threshold_path.is_file() else {}
     threshold_status = "PASS" if thresholds.get("status") in CALIBRATED_THRESHOLD_STATUSES and thresholds.get("thresholds_id") not in {None, "UNSET_BLOCK_EXECUTION"} and thresholds.get("approved_by") and thresholds.get("fail_closed") is True else "BLOCKED"
-    gates.append({"name": "calibrated_identity_thresholds", "status": threshold_status, "evidence": {"path": str(threshold_path), "present": threshold_path.is_file(), "status": thresholds.get("status"), "accepted_statuses": sorted(CALIBRATED_THRESHOLD_STATUSES), "thresholds_id": thresholds.get("thresholds_id"), "approved_by": thresholds.get("approved_by")}})
+    calibration_evidence: dict[str, Any] = {"status": "NOT_RECORDED"}
+    calibration_paths = sorted((root_path / "docs" / "preflight").glob("identity_calibration_*.json"))
+    if calibration_paths:
+        calibration_path = calibration_paths[-1]
+        try:
+            calibration_report = json.loads(calibration_path.read_text(encoding="utf-8"))
+            calibration_evidence = {
+                "path": str(calibration_path.relative_to(root_path)),
+                "status": calibration_report.get("status"),
+                "calibration_id": calibration_report.get("calibration_id"),
+                "fixture_set": calibration_report.get("fixture_set"),
+                "fixture_manifest": calibration_report.get("fixture_manifest"),
+                "positive_same_person": calibration_report.get("positive_same_person"),
+                "negative_different_person": calibration_report.get("negative_different_person"),
+                "operating_point": calibration_report.get("operating_point"),
+                "blocked_reasons": calibration_report.get("blocked_reasons", []),
+            }
+        except (OSError, json.JSONDecodeError):
+            calibration_evidence = {"path": str(calibration_path.relative_to(root_path)), "status": "INVALID_JSON"}
+    gates.append({"name": "calibrated_identity_thresholds", "status": threshold_status, "evidence": {"path": str(threshold_path), "present": threshold_path.is_file(), "status": thresholds.get("status"), "accepted_statuses": sorted(CALIBRATED_THRESHOLD_STATUSES), "thresholds_id": thresholds.get("thresholds_id"), "approved_by": thresholds.get("approved_by"), "calibration_evidence": calibration_evidence}})
     if threshold_status != "PASS":
-        blockers.append("Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.")
+        if calibration_evidence.get("status") not in {None, "NOT_RECORDED"}:
+            blockers.append("Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.")
+        else:
+            blockers.append("Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.")
 
     krea_review_path = root_path / "docs" / "preflight" / "krea_compatibility_review.json"
     try:

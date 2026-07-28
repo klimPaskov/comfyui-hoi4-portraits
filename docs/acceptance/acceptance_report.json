@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-28T22:34:50.529517+00:00",
+  "created_at": "2026-07-28T23:19:35.239595+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 20,
   "gates": {
@@ -472,7 +472,7 @@
               "vm.swapusage"
             ],
             "returncode": 0,
-            "stdout": "vm.swapusage: total = 7168.00M  used = 5707.94M  free = 1460.06M  (encrypted)",
+            "stdout": "vm.swapusage: total = 7168.00M  used = 5603.94M  free = 1564.06M  (encrypted)",
             "stderr": ""
           },
           "vm_stat": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15850.\nPages active:                                 324973.\nPages inactive:                               484962.\nPages speculative:                              6180.\nPages throttled:                                   0.\nPages wired down:                             142094.\nPages purgeable:                                1188.\n\"Translation faults\":                      379343093.\nPages copy-on-write:                        11945585.\nPages zero filled:                         197430896.\nPages reactivated:                          72645416.\nPages purged:                                2529770.\nFile-backed pages:                            556150.\nAnonymous pages:                              259965.\nPages stored in compressor:                   707448.\nPages occupied by compressor:                  32064.\nDecompressions:                            119981087.\nCompressions:                              174449264.\nPageins:                                   709535325.\nPageouts:                                      67790.\nSwapins:                                    22715359.\nSwapouts:                                   28015585.\nPages tagged:                                  80935.\nPages tagged resident:                         66547.\nPages tagged compressed:                       14388.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4307.\nPages tag-storage free:                          134.\nPages tag-storage non-tag pageable:            28246.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    2101952.\nTagged compressions:                         1640560.\nTagged decompressions:                       1497096.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    27235.\nPages active:                                 399255.\nPages inactive:                               395837.\nPages speculative:                              6568.\nPages throttled:                                   0.\nPages wired down:                             140060.\nPages purgeable:                                1255.\n\"Translation faults\":                      389311683.\nPages copy-on-write:                        13105182.\nPages zero filled:                         201709680.\nPages reactivated:                          72702541.\nPages purged:                                2593812.\nFile-backed pages:                            520833.\nAnonymous pages:                              280827.\nPages stored in compressor:                   701175.\nPages occupied by compressor:                  37101.\nDecompressions:                            120020486.\nCompressions:                              174503390.\nPageins:                                   807665783.\nPageouts:                                      70679.\nSwapins:                                    22722289.\nSwapouts:                                   28015585.\nPages tagged:                                  80931.\nPages tagged resident:                         68883.\nPages tagged compressed:                       12048.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4307.\nPages tag-storage free:                          159.\nPages tag-storage non-tag pageable:            28223.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    1750912.\nTagged compressions:                         1644613.\nTagged decompressions:                       1502029.",
             "stderr": ""
           }
         },
@@ -715,6 +715,56 @@
           "fixtures/private/loc_dag_1518_portrait.jpg",
           "fixtures/private/manifest.json",
           "fixtures/private/user_portraits_2026-07-28/fixture_manifest.json",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664261.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664539.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664529.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664514.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664489.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664264.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664362.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664558.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664559.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664363.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664405.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664567.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664576.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664371.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664159.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664549.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664164.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664372.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664545.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664551.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664593.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664550.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664546.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2017648630.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664590.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664221.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664547.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004663943.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664396.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664392.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664557.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664542.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664393.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664378.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/manifest.json",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004663944.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664540.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664554.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664568.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664233.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664541.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004663979.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664409.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664268.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664486.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664044.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664534.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664252.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664537.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664536.jpg",
           "fixtures/private/user_portraits_2026-07-28/portraits/BAY_otto_von_lossow_identity_preserve_trial_02.png",
           "fixtures/private/user_portraits_2026-07-28/portraits/AFX_louis_ruquoy_identity_preserve_trial_01.png",
           "fixtures/private/user_portraits_2026-07-28/portraits/HAW_samuel_wilder_king_identity_preserve.png",
@@ -3755,7 +3805,78 @@
           "RESOLVED"
         ],
         "thresholds_id": "UNSET_BLOCK_EXECUTION",
-        "approved_by": []
+        "approved_by": [],
+        "calibration_evidence": {
+          "path": "docs/preflight/identity_calibration_2026-07-29.json",
+          "status": "BLOCKED_FACE_CALIBRATION_INCOMPLETE",
+          "calibration_id": "loc-daguerreotype-face-embedding-2026-07-29",
+          "fixture_set": {
+            "fixture_count": 50,
+            "accepted_single_face_count": 46,
+            "rejected_count": 4,
+            "rejected": [
+              {
+                "fixture_id": "loc_2004664044",
+                "reason": "expected exactly one face",
+                "face_count": 0
+              },
+              {
+                "fixture_id": "loc_2004664164",
+                "reason": "expected exactly one face",
+                "face_count": 0
+              },
+              {
+                "fixture_id": "loc_2004664252",
+                "reason": "decode_or_model_error:OSError"
+              },
+              {
+                "fixture_id": "loc_2004664489",
+                "reason": "decode_or_model_error:OSError"
+              }
+            ],
+            "variant_policy": [
+              "resize_round_trip",
+              "grayscale",
+              "brightness_0.82",
+              "jpeg_quality_62"
+            ]
+          },
+          "fixture_manifest": {
+            "status": "PASS",
+            "path": "fixtures/private/loc_calibration_2026-07-29/manifest.json",
+            "sha256": "01df5e07c47d14b5f22ba48374712c05a498792f7ac439d4f6ff4c7a1a65aeb6",
+            "declared_count": 50,
+            "observed_count": 50,
+            "missing_fixture_ids": [],
+            "extra_fixture_ids": []
+          },
+          "positive_same_person": {
+            "score_count": 183,
+            "minimum": 0.518024990144113,
+            "p05": 0.9274091219101137,
+            "median": 0.9764529401926332,
+            "maximum": 1.0000000319389528
+          },
+          "negative_different_person": {
+            "pair_count": 1035,
+            "required_pair_count": 1000,
+            "maximum": 0.4804377850061883,
+            "p999": 0.4647333824512428,
+            "median": 0.15404127465257034
+          },
+          "operating_point": {
+            "target_false_accept_rate_max": 0.001,
+            "target_false_reject_rate_max": 0.05,
+            "candidate_minimum_similarity": 0.4804377850061883,
+            "observed_positive_p05": 0.9274091219101137,
+            "target_simultaneously_demonstrated": true,
+            "approved": false
+          },
+          "blocked_reasons": [
+            "landmark, pose, expression, hair/accessory, mask, and style thresholds require separate calibrated evidence",
+            "the tracked production threshold file remains unchanged and fail-closed"
+          ]
+        }
       }
     },
     "repository_preflight": {
@@ -4167,14 +4288,23 @@
       "matrix_id": "krea2_identity_style_factorial_v1",
       "matrix_path": "experiments/identity_style_matrix.json",
       "matrix_written": true,
-      "execution_status": "NOT_RUN",
-      "required_eight_step_turbo_status": "NOT_RUN",
+      "execution_status": "NOT_RUN_FAIL_CLOSED",
+      "required_eight_step_turbo_status": "NOT_RUN_PRODUCTION_BLOCKED",
+      "execution_report_path": "docs/preflight/identity_style_matrix_execution_2026-07-29.json",
+      "queued_jobs": 0,
+      "candidate_count": 0,
+      "blocked_reasons": [
+        "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+        "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.",
+        "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
+        "The required human autoprompter runtime lock or live local sidecar evidence is unavailable."
+      ],
       "selection_policy": {
         "identity_first": true,
         "style_ranking_before_identity": false,
         "face_swap_permitted": false
       },
-      "reason": "The matrix is recorded but execution is fail-closed until an approved source fixture, background, calibrated thresholds, and source-specific runtime evidence exist."
+      "reason": "The matrix execution report is fail-closed: no candidate was queued because mandatory preflight and independent-audit prerequisites remain unresolved."
     },
     "benchmark_reports": {
       "status": "BLOCKED",
@@ -4345,7 +4475,7 @@
     }
   },
   "preflight_blockers": [
-    "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
+    "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
     "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required."
   ],
   "workflow_manifest": {

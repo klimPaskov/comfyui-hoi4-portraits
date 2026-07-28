@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-28T22:33:51.137475+00:00",
+  "created_at": "2026-07-28T23:17:58.502191+00:00",
   "profile": "human_local_mac_16gb",
   "status": "BLOCKED_PRODUCTION_GATES_CPU_FALLBACK",
   "status_reason": "A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates.",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 7168.00M  used = 5707.94M  free = 1460.06M  (encrypted)",
+          "stdout": "vm.swapusage: total = 7168.00M  used = 5603.94M  free = 1564.06M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15308.\nPages active:                                 326490.\nPages inactive:                               482694.\nPages speculative:                              6097.\nPages throttled:                                   0.\nPages wired down:                             142409.\nPages purgeable:                                 183.\n\"Translation faults\":                      379431184.\nPages copy-on-write:                        11955205.\nPages zero filled:                         197468203.\nPages reactivated:                          72645622.\nPages purged:                                2531126.\nFile-backed pages:                            548010.\nAnonymous pages:                              267271.\nPages stored in compressor:                   709954.\nPages occupied by compressor:                  32836.\nDecompressions:                            119983125.\nCompressions:                              174453811.\nPageins:                                   712162259.\nPageouts:                                      67905.\nSwapins:                                    22715501.\nSwapouts:                                   28015585.\nPages tagged:                                  81982.\nPages tagged resident:                         67299.\nPages tagged compressed:                       14683.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4307.\nPages tag-storage free:                          157.\nPages tag-storage non-tag pageable:            28223.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    2162112.\nTagged compressions:                         1641584.\nTagged decompressions:                       1497822.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14812.\nPages active:                                 408312.\nPages inactive:                               401951.\nPages speculative:                              5514.\nPages throttled:                                   0.\nPages wired down:                             138377.\nPages purgeable:                                1572.\n\"Translation faults\":                      389386351.\nPages copy-on-write:                        13114899.\nPages zero filled:                         201745468.\nPages reactivated:                          72702965.\nPages purged:                                2595244.\nFile-backed pages:                            523498.\nAnonymous pages:                              292279.\nPages stored in compressor:                   701009.\nPages occupied by compressor:                  37023.\nDecompressions:                            120020650.\nCompressions:                              174503390.\nPageins:                                   810289913.\nPageouts:                                      70855.\nSwapins:                                    22722293.\nSwapouts:                                   28015585.\nPages tagged:                                  80905.\nPages tagged resident:                         68870.\nPages tagged compressed:                       12035.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4307.\nPages tag-storage free:                          132.\nPages tag-storage non-tag pageable:            28250.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    1750400.\nTagged compressions:                         1644613.\nTagged decompressions:                       1502041.",
           "stderr": ""
         }
       },
@@ -78,7 +78,7 @@
       "license_and_rights_review": "APPROVED"
     },
     "blockers": [
-      "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
+      "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
       "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required."
     ]
   },

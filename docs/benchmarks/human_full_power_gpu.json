@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-28T22:34:07.379486+00:00",
+  "created_at": "2026-07-28T23:18:14.610454+00:00",
   "profile": "human_full_power_gpu",
   "status": "BLOCKED_RUNTIME_UNAVAILABLE",
   "status_reason": "The target local runtime is not installed or its accelerator capability is not verified.",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 7168.00M  used = 5707.94M  free = 1460.06M  (encrypted)",
+          "stdout": "vm.swapusage: total = 7168.00M  used = 5603.94M  free = 1564.06M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15452.\nPages active:                                 329677.\nPages inactive:                               480832.\nPages speculative:                              6954.\nPages throttled:                                   0.\nPages wired down:                             140479.\nPages purgeable:                                 102.\n\"Translation faults\":                      379486432.\nPages copy-on-write:                        11962688.\nPages zero filled:                         197488943.\nPages reactivated:                          72645682.\nPages purged:                                2531315.\nFile-backed pages:                            547569.\nAnonymous pages:                              269894.\nPages stored in compressor:                   709865.\nPages occupied by compressor:                  32820.\nDecompressions:                            119983213.\nCompressions:                              174453811.\nPageins:                                   712927770.\nPageouts:                                      67919.\nSwapins:                                    22715523.\nSwapouts:                                   28015585.\nPages tagged:                                  81853.\nPages tagged resident:                         67185.\nPages tagged compressed:                       14668.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4307.\nPages tag-storage free:                          169.\nPages tag-storage non-tag pageable:            28211.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    2158144.\nTagged compressions:                         1641584.\nTagged decompressions:                       1497837.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15149.\nPages active:                                 406430.\nPages inactive:                               400781.\nPages speculative:                              6367.\nPages throttled:                                   0.\nPages wired down:                             140198.\nPages purgeable:                                 146.\n\"Translation faults\":                      389438371.\nPages copy-on-write:                        13122586.\nPages zero filled:                         201765079.\nPages reactivated:                          72703229.\nPages purged:                                2596698.\nFile-backed pages:                            524955.\nAnonymous pages:                              288623.\nPages stored in compressor:                   701009.\nPages occupied by compressor:                  37023.\nDecompressions:                            120020650.\nCompressions:                              174503390.\nPageins:                                   811054647.\nPageouts:                                      70860.\nSwapins:                                    22722293.\nSwapouts:                                   28015585.\nPages tagged:                                  80881.\nPages tagged resident:                         68846.\nPages tagged compressed:                       12035.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4307.\nPages tag-storage free:                          138.\nPages tag-storage non-tag pageable:            28244.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    1750400.\nTagged compressions:                         1644613.\nTagged decompressions:                       1502041.",
           "stderr": ""
         }
       },
@@ -79,7 +79,7 @@
     },
     "blockers": [
       "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
-      "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
+      "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
       "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.",
       "The required human autoprompter runtime lock or live local sidecar evidence is unavailable."
     ]

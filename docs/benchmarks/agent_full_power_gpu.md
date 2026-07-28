@@ -45,7 +45,7 @@ This report contains no production acceptance claim. Any CPU diagnostic executio
 ## Blockers
 
 - The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.
-- Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
+- Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.
 - Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.
 
 ## Required follow-up

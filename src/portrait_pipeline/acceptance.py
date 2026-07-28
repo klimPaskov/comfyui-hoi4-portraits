@@ -13,7 +13,7 @@ from .benchmarks import write_benchmark_reports
 from .comparisons import write_comparison_report
 from .contracts import build_blocked_output
 from .dds import DdsValidationError, convert_png_to_dds
-from .experiments import build_matrix
+from .experiments import build_matrix, write_execution_report
 from .graph_spec.builder import build_workflow_artifacts
 from .preflight import collect_preflight
 from .prompt import autoprompter_instruction_sha256, validate_prompt
@@ -259,15 +259,20 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
     lora = root_path / "loras" / "hoi4_portrait_new_style_lora.safetensors"
     lora_gate = {"status": "PASS" if lora.is_file() and sha256_file(lora) == "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1" else "FAIL", "sha256": sha256_file(lora) if lora.is_file() else None}
     matrix = build_matrix()
+    matrix_execution = write_execution_report(root_path)
     experiments = {
         "status": matrix["status"],
         "matrix_id": matrix["matrix_id"],
         "matrix_path": "experiments/identity_style_matrix.json",
         "matrix_written": (root_path / "experiments" / "identity_style_matrix.json").is_file(),
-        "execution_status": matrix["execution_status"],
-        "required_eight_step_turbo_status": matrix["required_eight_step_turbo_status"],
+        "execution_status": matrix_execution["execution_status"],
+        "required_eight_step_turbo_status": matrix_execution["required_eight_step_turbo_status"],
+        "execution_report_path": "docs/preflight/identity_style_matrix_execution_2026-07-29.json",
+        "queued_jobs": matrix_execution["queued_jobs"],
+        "candidate_count": matrix_execution["candidate_count"],
+        "blocked_reasons": matrix_execution["blocked_reasons"],
         "selection_policy": matrix["selection_policy"],
-        "reason": "The matrix is recorded but execution is fail-closed until an approved source fixture, background, calibrated thresholds, and source-specific runtime evidence exist.",
+        "reason": "The matrix execution report is fail-closed: no candidate was queued because mandatory preflight and independent-audit prerequisites remain unresolved.",
     }
     chaos_review_path = root_path / "integrations/chaos-redux/live_review.json"
     generic_review_path = root_path / "integrations/agentic-hoi4-modding/live_review.json"
