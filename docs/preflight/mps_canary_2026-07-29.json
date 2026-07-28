@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "observed_at": "2026-07-28T23:50:27Z",
+  "status": "BLOCKED_LOCAL_MEMORY_PRESSURE_BEFORE_FIRST_SAMPLER_STEP",
+  "scope": "private_user_fixture_mps_canary",
+  "execution_profile": "human_local_mac_16gb",
+  "workflow_id": "human_local_mac_16gb",
+  "workflow_ui_sha256": "9ede8697952ae52570117e652c4c7044915d864da3e46eebde78d23c2f1a3914",
+  "workflow_api_sha256": "89f27d8802038e76c7fd1314ccc04ab3cf294ba7282fad49521ef869590c8340",
+  "hardware": {
+    "os": "darwin",
+    "architecture": "arm64",
+    "ram_bytes": 17179869184,
+    "accelerator": "mps",
+    "comfyui_revision": "2a610155821d670a2d8047e654e5fce96b790eb5",
+    "comfyui_version": "0.25.0",
+    "pytorch_version": "2.11.0"
+  },
+  "runtime": {
+    "binding": "http://127.0.0.1:8188",
+    "raw_comfyui_loopback_only": true,
+    "preprocessing_health": "PASS",
+    "preprocessing_endpoints": "subject_and_mask_loopback_configured",
+    "autoprompter_stage": "REACHED_BEFORE_KREA_LOAD",
+    "mps_fp8_workaround": {
+      "status": "CHECK_PASS",
+      "script": "scripts/runtime/apply_mps_fp8_workaround.py",
+      "script_sha256": "bbb56f8b6462c52d42faa769b44364be482056e6ca518277dbae1872d58207d7"
+    }
+  },
+  "model": {
+    "filename": "krea2_turbo_fp8_scaled.safetensors",
+    "official_revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+    "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1",
+    "loader_stage": "Krea2 model load requested",
+    "sampler_steps_requested": 1,
+    "sampler_steps_completed": 0
+  },
+  "attempt": {
+    "prompt_id": "b3623779-b731-4dd7-83fa-e9c276590743",
+    "canvas": "208x280_canary_only",
+    "batch_size": 1,
+    "candidate_produced": false,
+    "failure_stage": "Krea model loading/offload before first sampler step",
+    "observed_ram_free_before_queue_bytes": 6849495040,
+    "observed_ram_free_at_pressure_bytes": 1785561088,
+    "observed_system_free_percent_at_pressure": 10,
+    "swapins_at_pressure": 23177840,
+    "swapouts_at_pressure": 29134309,
+    "recovery_action": "bounded_canary_interrupted_and_comfyui_restarted_once"
+  },
+  "production_authorization": {
+    "status": "BLOCKED",
+    "identity_style_audit": "NOT_RUN",
+    "dds_created": false,
+    "mod_integration_created": false
+  },
+  "conclusion": "The corrected human Mac workflow passed source/preprocessing/autoprompter setup and reached the pinned Krea 2 FP8 model load. Even a one-step 208x280 canary exhausted practical 16 GB unified-memory/offload headroom before the first sampler step. The loopback UI remains usable after the single bounded restart; local production generation remains infeasible and fail-closed on this host. The previously recorded CPU NVFP4 run remains diagnostic-only and is not relabeled as the Mac MPS workflow."
+}
