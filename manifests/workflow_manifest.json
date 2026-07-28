@@ -8,8 +8,8 @@
       "display_name": "human_local_mac_16gb",
       "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
       "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-      "sha256": "7db53fc39bd5485d5f47634d51b8e365fcf7e3fb6d0034fd3cb2539b28914d19",
-      "api_sha256": "44a08bd08c0d7e6ec3b6bd012343f9a51d41dc80b66bba8122317c5b99aeecc9",
+      "sha256": "9ede8697952ae52570117e652c4c7044915d864da3e46eebde78d23c2f1a3914",
+      "api_sha256": "89f27d8802038e76c7fd1314ccc04ab3cf294ba7282fad49521ef869590c8340",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -79,7 +79,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T19:38:44.444729+00:00"
+        "checked_at": "2026-07-28T21:21:14.645103+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -97,8 +97,8 @@
       "display_name": "human_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-      "sha256": "3c57055af0eca53c964dd214020242240952b9a14badb9db99c85f6eaecf34ec",
-      "api_sha256": "114b5aa599ab588fb8c4e7615e5caebd20a4be7648b8008aae2ff8abf52ed5c3",
+      "sha256": "6bf88fd5f7e9ac3a368a2cd62857f9af2ba98c21b0af9e5471af93db3e59e3e3",
+      "api_sha256": "98bae1bf136dcb2f668dd709cf4166a4a7832159c17674e1577fb71d5ff5fd6a",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -168,7 +168,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T19:38:44.444729+00:00"
+        "checked_at": "2026-07-28T21:21:14.645103+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -249,7 +249,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T19:38:44.444729+00:00"
+        "checked_at": "2026-07-28T21:21:14.645103+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -330,7 +330,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T19:38:44.444729+00:00"
+        "checked_at": "2026-07-28T21:21:14.645103+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -411,7 +411,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T19:38:44.444729+00:00"
+        "checked_at": "2026-07-28T21:21:14.645103+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",

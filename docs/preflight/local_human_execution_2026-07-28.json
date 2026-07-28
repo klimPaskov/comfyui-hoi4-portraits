@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "observed_at": "2026-07-28T17:57:45Z",
-  "status": "BLOCKED_LOCAL_16GB_MEMORY_INFEASIBLE",
+  "status": "QUALIFIED_CPU_FALLBACK_PRODUCTION_GATES_BLOCKED",
   "execution_profile": "human_local_mac_16gb",
   "scope": "private_user_fixture_local_qualification",
   "source_fixture": {
@@ -28,9 +28,9 @@
     "human_autoprompter_composited_reference": "BLOCKED_UNVERIFIED_CLAIM",
     "manual_prompt_override_validation": "PASS",
     "krea_model_and_conditioning": "PASS_REACHED_SAMPLER",
-    "krea_sampler": "BLOCKED_LOCAL_MEMORY_PRESSURE_AFTER_FP8_WORKAROUND",
-    "candidate_export": "NOT_REACHED",
-    "independent_audit": "NOT_RUN",
+    "krea_sampler": "PASS_CPU_NVFP4_EIGHT_STEPS; MPS_ROUTES_BLOCKED",
+    "candidate_export": "PASS_CPU_NVFP4_FULL_SIZE",
+    "independent_audit": "UNCERTAIN_THRESHOLDS_NOT_APPROVED",
     "dds_and_mod_integration": "NOT_CREATED"
   },
   "measured_error": {
@@ -107,7 +107,39 @@
       "sampler_progress": "0/8",
       "error": "Undefined type Float8_e4m3fn",
       "result": "official_lower_storage_artifact_loaded_but_not_supported_by_Apple_MPS"
+    },
+    {
+      "prompt_id": "66516887-69a5-46e4-a598-0bfdb31148ec",
+      "status": "PASS_CPU_NVFP4_FULL_HUMAN_WORKFLOW",
+      "node": "HOI4EvidenceExport",
+      "model": "krea2_turbo_nvfp4.safetensors",
+      "canvas": "832x1120",
+      "sampler_steps": 8,
+      "sampler_seconds": 1909,
+      "prompt_execution_seconds": 2076,
+      "prompt_path": "autoprompter_loopback_with_foreground_reference",
+      "candidate_produced": true,
+      "candidate_path": "jobs/local-human-fernand-cpu-full-08-01/candidates/candidate-000.png",
+      "candidate_sha256": "b4587b98dba808892ce4f4bcc81bae25af6b3e9dfa3cdd87ae82f27cc368be24",
+      "candidate_dimensions": "832x1120",
+      "independent_audit": "UNCERTAIN_THRESHOLDS_NOT_APPROVED",
+      "audit_path": "jobs/local-human-fernand-cpu-full-08-01/audit/candidate-000.json",
+      "result": "full_size_cpu_fallback_completed; practical_local_acceptance_not_claimed"
     }
   ],
-  "conclusion": "The local workaround removes the FP8-to-MPS dtype exception without changing the locked model or immutable LoRA, but the full 12B Krea route remains infeasible on this detected 16 GB Mac because model residency and CPU/MPS offload exhaust practical memory before the first sampler step completes. No generated after portrait, final PNG, DDS, or mod integration is claimed."
+  "cpu_fallback": {
+    "status": "PASS_EXECUTION_ONLY",
+    "model": "krea2_turbo_nvfp4.safetensors",
+    "model_sha256": "61527003b2d537055494d01bc8efe51d6e86e64192ba23e3721a5647231fe394",
+    "device": "cpu",
+    "workflow_override": "diagnostic-only model substitution; production human workflow remains FP8-locked",
+    "candidate_path": "jobs/local-human-fernand-cpu-full-08-01/candidates/candidate-000.png",
+    "candidate_dimensions": "832x1120",
+    "sampler_steps": 8,
+    "sampler_seconds": 1909,
+    "prompt_execution_seconds": 2076,
+    "system_swap_observed": true,
+    "production_acceptance": "BLOCKED_UNTIL_TWO_CONSECUTIVE_RUNS_MEMORY_BENCHMARK_THRESHOLDS_AND_INDEPENDENT_AUDIT_PASS"
+  },
+  "conclusion": "The default Apple-MPS FP8 and NVFP4 routes remain blocked by the measured Float8/MPS and memory/offload failures. A diagnostic CPU-only run using the checksum-verified official NVFP4 artifact and the corrected human foreground autoprompt path completed the locked 832x1120 canvas and eight Turbo steps in 34:36, producing a real candidate. This establishes execution capability but not practical local acceptance: only one run was measured, heavy swap was observed, the identity/style thresholds are unapproved, and the independent auditor returned UNCERTAIN. No final PNG, DDS, or mod integration is claimed."
 }

@@ -90,7 +90,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_krea_graph_matches_primary_fit_contract_and_records_schema_blocker(self):
         review = json.loads((self.root / "docs/preflight/krea_compatibility_review.json").read_text(encoding="utf-8"))
-        self.assertEqual(review["status"], "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE")
+        self.assertEqual(review["status"], "QUALIFIED_CPU_FALLBACK_MPS_BLOCKED")
         self.assertEqual(next(item["status"] for item in review["findings"] if item["id"] == "pinned_core_loader_type"), "PASS")
         for path in self.root.joinpath("workflows").glob("**/*.api.json"):
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -99,6 +99,8 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertEqual(patch_inputs["source_image"], ["8", 1])
             self.assertEqual(data["16"]["inputs"]["grounding_px"], 768)
             self.assertEqual(data["17"]["inputs"]["grounding_px"], 768)
+            if data["_meta"]["human_workflow"]:
+                self.assertEqual(data["9"]["inputs"]["image"], ["8", 0])
 
     def test_job_input_validates_public_contract_before_private_runtime_context(self):
         background = json.loads((self.root / "config/background_registry.json").read_text(encoding="utf-8"))["backgrounds"][0]

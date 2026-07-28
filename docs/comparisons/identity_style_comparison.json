@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "comparison_id": "identity-style-comparison-2026-07-26.1",
-  "created_at": "2026-07-28T19:58:13.686491+00:00",
+  "created_at": "2026-07-28T21:21:03.061207+00:00",
   "status": "BLOCKED_NO_REAL_CANDIDATES",
   "reason": "No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.",
   "matrix_id": "krea2_identity_style_factorial_v1",
@@ -58,7 +58,7 @@
     },
     "blockers": [
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
-      "Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required."
+      "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required."
     ]
   },
   "claims": {

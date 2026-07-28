@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "reviewed_at": "2026-07-28",
-  "status": "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE",
+  "status": "QUALIFIED_CPU_FALLBACK_MPS_BLOCKED",
   "policy": "Krea 2 Turbo may be used for private qualification only after the exact ComfyUI core/custom-node schema is verified in the live pinned runtime; production execution remains blocked until source, background, calibration, and independent-audit gates pass.",
   "sources": [
     {
@@ -70,7 +70,12 @@
       "id": "official_nvfp4_mps_qualification",
       "status": "BLOCKED_MPS_NVFP4_DEQUANTIZATION",
       "finding": "The official Comfy-Org Krea 2 NVFP4 artifact was downloaded and checksum-verified. It loaded through the live UNETLoader and reached KSampler, but the Apple-MPS run failed in the NVFP4 dequantization path with `Undefined type Float8_e4m3fn`. The locked artifact policy requires NVIDIA Blackwell SM>=10 for native NVFP4 compute, so this is not an approved Mac fallback."
+    },
+    {
+      "id": "cpu_nvfp4_full_workflow_qualification",
+      "status": "PASS_EXECUTION_ONLY",
+      "finding": "A diagnostic CPU-only run using the checksum-verified official NVFP4 artifact, the exact human autoprompter instruction, the corrected foreground reference input, the immutable style LoRA, and the locked 832x1120 canvas completed all eight Turbo steps and exported a real candidate in 34:36. The run observed heavy swap and is not a production acceptance pass without two consecutive benchmark runs, calibrated thresholds, and an independent auditor PASS."
     }
   ],
-  "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The official lower-storage NVFP4 option is also checksum-verified and live-loader tested, but its dequantization path is unsupported on Apple MPS. The locked route remains infeasible on the detected 16 GB Mac because FP8 offload pressure and NVFP4 capability failure prevent the first sampler step from completing. This does not establish production suitability: the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
+  "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The official lower-storage NVFP4 option is checksum-verified and fails the Apple-MPS capability path, while a separate CPU-only NVFP4 fallback completed the full human workflow and produced a real candidate at the locked canvas. This establishes execution capability but not production suitability: the default MPS route remains blocked, the CPU route is heavily swapping and has only one run, and the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
 }

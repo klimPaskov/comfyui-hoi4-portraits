@@ -45,7 +45,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 ## Blockers
 
 - Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.
-- Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.
+- Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.
 
 ## Required follow-up
 

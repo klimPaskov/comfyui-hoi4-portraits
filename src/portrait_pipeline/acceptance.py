@@ -320,7 +320,7 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
         },
         "preflight_blockers": preflight["blockers"],
         "workflow_manifest": workflow_manifest,
-        "runtime_claims": {"local_mac_execution": "NOT_CLAIMED", "remote_runpod_execution": "NOT_CLAIMED", "final_png": "NOT_CREATED", "final_dds": "NOT_CREATED", "mod_wiring": "PARENT_AGENT_ONLY"},
+        "runtime_claims": {"local_mac_execution": "CPU_FALLBACK_CANDIDATE_PRODUCED_PRODUCTION_GATES_BLOCKED", "remote_runpod_execution": "NOT_CLAIMED", "final_png": "NOT_CREATED", "final_dds": "NOT_CREATED", "mod_wiring": "PARENT_AGENT_ONLY"},
         "source_pins": {"autoprompter_instruction_sha256": autoprompter_instruction_sha256(root_path), "style_lora_sha256": lora_gate["sha256"]},
     }
     return report

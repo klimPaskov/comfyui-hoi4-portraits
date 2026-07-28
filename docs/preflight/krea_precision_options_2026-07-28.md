@@ -8,6 +8,6 @@ The detected machine is an arm64 Mac with 16 GiB unified memory and Apple MPS. B
 - NVFP4 loaded through `UNETLoader` and reached `KSampler`, but the live MPS run failed at NVFP4 dequantization with `Undefined type Float8_e4m3fn`. The official hardware policy for this artifact requires NVIDIA Blackwell SM>=10; it is not a supported Apple-MPS fallback.
 - Preprocessing, approved-background resolution, prompt validation, identity-edit conditioning, and the immutable LoRA checks passed for the private qualification fixture.
 
-The measured result is `BLOCKED_LOCAL_16GB_MPS_KREA_EXECUTION`. No generated after portrait was produced, so no candidate audit, DDS, or mod integration was created.
+The measured result is `QUALIFIED_CPU_NVFP4_MPS_BLOCKED`: the default Apple-MPS paths remain blocked, but a diagnostic CPU-only NVFP4 run completed the locked 832×1120 human workflow with eight Turbo steps in 34:36 and produced a real candidate. The candidate audit is `UNCERTAIN` because calibrated thresholds are not approved. No final PNG, DDS, or mod integration was created.
 
 Machine-readable evidence is in [`krea_precision_options_2026-07-28.json`](krea_precision_options_2026-07-28.json). The official artifacts and compatibility references are the [Comfy-Org Krea 2 repository](https://huggingface.co/Comfy-Org/Krea-2), [Krea 2 model card](https://huggingface.co/krea/Krea-2), and [Krea inference code](https://github.com/krea-ai/krea-2).

@@ -29,7 +29,7 @@ Human workflows show four checkpoints: crop/reference, prepared reference, appro
 
 ## Current qualification status
 
-The pinned graphs are structurally valid and load against the live local ComfyUI node registry. The detected Mac server is healthy and the automated suite is 34/34. The Mac Krea sampler qualification remains blocked: the official FP8 route hit the measured MPS dtype limitation, the reversible workaround removed that exception, and the official lower-storage NVFP4 route failed its MPS dequantization capability check; the full FP8 stack then exhausted practical 16 GB unified-memory headroom before a candidate was produced. No generated “after” portrait, DDS, or mod integration output is claimed. See the [acceptance report](docs/acceptance/acceptance_report.md) and [precision qualification](docs/preflight/krea_precision_options_2026-07-28.md).
+The pinned graphs are structurally valid and load against the live local ComfyUI node registry. The detected Mac server is healthy and the automated suite is 34/34. The default Apple-MPS Krea paths remain blocked: FP8 hits the measured MPS dtype/memory limits and NVFP4 fails its MPS dequantization capability check. A diagnostic CPU-only NVFP4 fallback did complete the exact human/autoprompter route at 832×1120 for eight Turbo steps in 34:36 and produced a private candidate, but heavy swap, missing two-run benchmarks, unapproved thresholds, and an `UNCERTAIN` independent audit keep production acceptance blocked. No final PNG, DDS, or mod integration output is claimed. See the [acceptance report](docs/acceptance/acceptance_report.md) and [precision qualification](docs/preflight/krea_precision_options_2026-07-28.md).
 
 ## Workflow screenshots
 

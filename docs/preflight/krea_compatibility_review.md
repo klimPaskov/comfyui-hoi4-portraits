@@ -1,6 +1,6 @@
 # Krea 2 Compatibility Review
 
-Status: **BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE**.
+Status: **QUALIFIED_CPU_FALLBACK_MPS_BLOCKED**.
 
 The live pinned runtime now verifies the Krea 2 core and node contract. The
 official ComfyUI Krea 2 documentation describes Turbo as an eight-step
@@ -31,5 +31,9 @@ FP8 dtype limitation. The project-owned reversible workaround in
 `scripts/runtime/apply_mps_fp8_workaround.py` passed that exception site, but
 the full-resolution and reduced diagnostic runs exhausted practical unified
 memory/offload headroom on the 16 GB Mac before the first sampler step
-completed. The experiment matrix, calibrated identity thresholds, and
-independent auditor remain blocked, and no PNG/DDS/mod output is permitted.
+completed. A separate CPU-only NVFP4 fallback then completed one full
+832×1120 human run with the exact autoprompter path and eight Turbo steps in
+34:36, producing a real candidate. Heavy swap was observed, so the fallback
+is execution-qualified but not practically accepted. The experiment matrix,
+calibrated identity thresholds, and independent auditor remain blocked, and
+no final PNG/DDS/mod output is permitted.

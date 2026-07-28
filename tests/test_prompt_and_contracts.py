@@ -31,6 +31,7 @@ class PromptAndContractTests(unittest.TestCase):
                 "roles": ["officer"],
                 "medals_or_insignia": ["insignia"],
                 "organization_or_branch": ["uniform", "military"],
+                "jewelry": ["jewelry"],
             },
         )
         self.assertTrue(result.passed, result.as_dict())

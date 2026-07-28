@@ -12,7 +12,7 @@ These UI-only captures were taken from the pinned local `human_local_mac_16gb` g
 
 ![Compact Krea, candidate, preview, and save stages](assets/live_test_2026-07-28/compact_krea_preview_save.png)
 
-The actual source, crop, prepared reference, mask, and background composite from the private qualification run remain under the ignored `jobs/` directory. No generated after portrait was produced: the first run stopped on the MPS FP8 capability error, and the reversible fallback run stopped under the 16 GB memory/offload limit before the first sampler step completed.
+The actual source, crop, prepared reference, mask, background composite, and private CPU-fallback candidate remain under the ignored `jobs/` directory. The default Apple-MPS route remains blocked; a diagnostic CPU-only NVFP4 run produced a real 832×1120 candidate, but it is not a final or production-approved portrait because the independent audit is `UNCERTAIN` and thresholds are not calibrated.
 
 The colored stage board includes four human-only preview checkpoints: crop/reference, prepared reference, approved background, and final candidate. In the current graph, the final preview shares the exact image input used by `SaveImage`.
 

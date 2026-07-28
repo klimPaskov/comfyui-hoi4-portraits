@@ -861,12 +861,12 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     except json.JSONDecodeError:
         live_krea = {"status": "INVALID_JSON"}
     live_schema_pass = live_krea.get("status") == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED"
-    krea_review_statuses = {"BLOCKED_EXECUTION_NOT_MEASURED", "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE"}
+    krea_review_statuses = {"BLOCKED_EXECUTION_NOT_MEASURED", "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE", "QUALIFIED_CPU_FALLBACK_MPS_BLOCKED"}
     krea_status = "PASS" if live_schema_pass and krea_review.get("status") in krea_review_statuses else "BLOCKED"
     gates.append({"name": "krea_live_compatibility", "status": krea_status, "evidence": {"reason": "Live core/node/schema compatibility is verified; source-specific execution remains a separate qualification gate and the detected 16 GB Mac has a measured memory/offload blocker.", "compatibility_review_path": str(krea_review_path), "compatibility_review_status": krea_review.get("status"), "compatibility_review": krea_review, "live_probe_path": str(live_krea_path), "live_probe_status": live_krea.get("status"), "live_probe": live_krea}})
     if krea_status != "PASS":
         blockers.append("Krea 2 Turbo live core/node/schema compatibility is not verified in the pinned runtime.")
-    blockers.append("Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required.")
+    blockers.append("Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.")
 
     autoprompter_evidence = _autoprompter_preflight(root_path, profile)
     autoprompter_status = autoprompter_evidence["status"]

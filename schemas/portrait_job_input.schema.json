@@ -365,6 +365,13 @@
             "type": "string"
           },
           "uniqueItems": true
+        },
+        "jewelry": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
         }
       }
     }

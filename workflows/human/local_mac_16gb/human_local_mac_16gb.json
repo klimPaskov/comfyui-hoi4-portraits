@@ -635,13 +635,14 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "links": null
+          "links": [
+            23
+          ]
         },
         {
           "name": "composite",
           "type": "IMAGE",
           "links": [
-            23,
             27,
             32,
             35,
@@ -1919,7 +1920,7 @@
     [
       23,
       8,
-      1,
+      0,
       9,
       1,
       "IMAGE"

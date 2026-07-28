@@ -182,7 +182,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     if is_human:
         nodes.append(_node(
             9, "HOI4AutopromptClient", group["05 Prompt"], "Human-only exact autoprompter",
-            inputs={"job": Link(job_node_id), "image": Link(8, 1), "background_meta": Link(8, 3), "control_meta": Link(24, 1), "instruction_text": instruction, "instruction_path": AUTOPROMPTER_PATH, "model_id": limits["prompt_model"], "prompt_source": "autoprompter"},
+            inputs={"job": Link(job_node_id), "image": Link(8, 0), "background_meta": Link(8, 3), "control_meta": Link(24, 1), "instruction_text": instruction, "instruction_path": AUTOPROMPTER_PATH, "model_id": limits["prompt_model"], "prompt_source": "autoprompter"},
             input_types={"job": "HOI4_JOB", "image": "IMAGE", "background_meta": "HOI4_META", "control_meta": "HOI4_META", "instruction_text": "STRING", "instruction_path": "STRING", "model_id": "STRING", "prompt_source": "COMBO"},
             outputs=["prompt", "prompt_meta"], output_types=["STRING", "HOI4_META"], pos=(680, 340), widgets=[instruction, AUTOPROMPTER_PATH, limits["prompt_model"], "autoprompter"], locked=["instruction_text", "instruction_path", "model_id", "prompt_source"],
         ))
