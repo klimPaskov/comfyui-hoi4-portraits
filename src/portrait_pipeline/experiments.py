@@ -38,7 +38,20 @@ def build_matrix() -> dict[str, Any]:
             ExecutionProfile.AGENT_LOCAL_MAC_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
             ExecutionProfile.AGENT_REMOTE_RUNPOD.value: {"candidate_budget": 6, "retry_limit": 2, "canvas": [1196, 1610]},
         },
-        "status": "PLANNED_BLOCKED_UNTIL_LIVE_RUNTIME_AND_CALIBRATION_FIXTURES",
+        "status": "PLANNED_BLOCKED_UNTIL_APPROVED_FIXTURE_BACKGROUND_THRESHOLDS",
+        "execution_status": "NOT_RUN",
+        "required_eight_step_turbo_status": "NOT_RUN",
+        "required_prerequisites": [
+            "legally usable source fixture with immutable provenance",
+            "approved HOI4 background registry entry",
+            "approved calibrated identity/style thresholds",
+            "live model-loading and source-specific execution evidence",
+        ],
+        "selection_policy": {
+            "identity_first": True,
+            "style_ranking_before_identity": False,
+            "face_swap_permitted": False,
+        },
         "hard_rule": "eliminate identity failures before style ranking; no face swapping; no final output from an un-audited route",
     }
 
@@ -49,4 +62,3 @@ def main(root: str | Path | None = None) -> int:
     atomic_json_write(output, build_matrix())
     print(json.dumps(build_matrix(), indent=2))
     return 0
-

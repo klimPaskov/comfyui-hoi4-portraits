@@ -6,7 +6,7 @@ import unittest
 from unittest import mock
 from pathlib import Path
 
-from portrait_pipeline.audit import independent_audit_blocked
+from portrait_pipeline.audit import audit_is_promotion_pass, independent_audit_blocked
 from portrait_pipeline.dds import DdsValidationError, convert_png_to_dds
 from portrait_pipeline.graph_spec.builder import build_workflow_artifacts
 from portrait_pipeline.mcp.adapter import AdapterError, PortraitMcpService
@@ -63,8 +63,8 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_krea_graph_matches_primary_fit_contract_and_records_schema_blocker(self):
         review = json.loads((self.root / "docs/preflight/krea_compatibility_review.json").read_text(encoding="utf-8"))
-        self.assertEqual(review["status"], "BLOCKED_PINNED_CORE_SCHEMA_UNVERIFIED")
-        self.assertEqual(next(item["status"] for item in review["findings"] if item["id"] == "pinned_core_loader_type"), "BLOCKED")
+        self.assertEqual(review["status"], "BLOCKED_EXECUTION_NOT_MEASURED")
+        self.assertEqual(next(item["status"] for item in review["findings"] if item["id"] == "pinned_core_loader_type"), "PASS")
         for path in self.root.joinpath("workflows").glob("**/*.api.json"):
             data = json.loads(path.read_text(encoding="utf-8"))
             patch_inputs = data["14"]["inputs"]
@@ -94,16 +94,16 @@ class WorkflowAndGuardTests(unittest.TestCase):
             model_path.rename(model_root / "sample.bin")
             self.assertEqual(_model_artifact_preflight(root, model_root, [unsupported], "agent_local_mac_16gb")["status"], "BLOCKED")
 
-    def test_preprocessing_lock_is_complete_but_uninstalled_artifacts_block(self):
+    def test_preprocessing_lock_is_complete_and_installed_artifacts_pass(self):
         lock = json.loads((self.root / "dependencies/preprocessing_lock.json").read_text(encoding="utf-8"))
         report = _preprocessing_artifact_preflight(self.root, lock)
-        self.assertEqual(report["status"], "BLOCKED")
+        self.assertEqual(report["status"], "PASS")
         self.assertEqual(report["missing_checksums"], [])
         self.assertEqual(report["mandatory_count"], 5)
         self.assertEqual(report["source_artifact_count"], 3)
         self.assertEqual(report["source_verification_status"], "PASS")
         self.assertEqual(report["source_verification_issues"], [])
-        self.assertTrue(all(item["status"] == "BLOCKED_NOT_INSTALLED" for item in report["checks"]), report)
+        self.assertTrue(all(item["status"] == "PASS" for item in report["checks"]), report)
 
     def test_human_face_index_selects_the_indexed_audited_subject(self):
         from types import SimpleNamespace
@@ -254,6 +254,12 @@ class WorkflowAndGuardTests(unittest.TestCase):
             with self.assertRaises(DdsValidationError):
                 convert_png_to_dds(root / "missing.png", root / "final.dds", audit_path, self.root)
 
+    def test_promotion_predicate_rejects_forged_pass_without_production_proof(self):
+        audit = independent_audit_blocked("fixture-guard", "candidate-guard")
+        audit["verdict"] = "PASS"
+        audit["hard_gates"] = {key: "PASS" for key in audit["hard_gates"]}
+        self.assertFalse(audit_is_promotion_pass(audit))
+
     def test_dds_round_trip_uses_locked_header_contract(self):
         from PIL import Image  # type: ignore
 
@@ -263,15 +269,17 @@ class WorkflowAndGuardTests(unittest.TestCase):
             dds_path = root / "candidate.dds"
             Image.new("RGBA", (156, 210), (12, 34, 56, 255)).save(png_path, format="PNG")
             audit = independent_audit_blocked("fixture-002", "candidate-001")
-            audit["thresholds_id"] = "test-calibrated"
+            audit["thresholds_id"] = "synthetic-acceptance-only"
             audit["verdict"] = "PASS"
             audit["hard_gates"] = {key: "PASS" for key in audit["hard_gates"]}
+            audit["metrics"]["audit_mode"] = "synthetic_test"
             audit_path = root / "audit-pass.json"
             audit_path.write_text(json.dumps(audit), encoding="utf-8")
-            report = convert_png_to_dds(png_path, dds_path, audit_path, self.root)
+            report = convert_png_to_dds(png_path, dds_path, audit_path, self.root, allow_synthetic_test=True)
             self.assertEqual(report["size_bytes"], 131168)
             self.assertEqual(report["header"]["fourcc"], "0x00000000")
             self.assertEqual(report["pixel_round_trip"], "PASS")
+            self.assertEqual(report["independent_decoder"], "PASS_PROJECT_SECOND_DECODER")
 
 
 if __name__ == "__main__":

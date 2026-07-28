@@ -107,6 +107,19 @@
       ]
     }
   },
-  "status": "PLANNED_BLOCKED_UNTIL_LIVE_RUNTIME_AND_CALIBRATION_FIXTURES",
+  "status": "PLANNED_BLOCKED_UNTIL_APPROVED_FIXTURE_BACKGROUND_THRESHOLDS",
+  "execution_status": "NOT_RUN",
+  "required_eight_step_turbo_status": "NOT_RUN",
+  "required_prerequisites": [
+    "legally usable source fixture with immutable provenance",
+    "approved HOI4 background registry entry",
+    "approved calibrated identity/style thresholds",
+    "live model-loading and source-specific execution evidence"
+  ],
+  "selection_policy": {
+    "identity_first": true,
+    "style_ranking_before_identity": false,
+    "face_swap_permitted": false
+  },
   "hard_rule": "eliminate identity failures before style ranking; no face swapping; no final output from an un-audited route"
 }

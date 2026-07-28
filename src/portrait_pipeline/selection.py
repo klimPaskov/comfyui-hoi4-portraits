@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from .audit import audit_is_pass
+from .audit import audit_is_promotion_pass
 from .constants import HARD_AUDIT_GATES
 
 
@@ -19,7 +19,7 @@ def select_identity_first(audits: Iterable[dict[str, Any]]) -> tuple[dict[str, A
     rejected: list[dict[str, Any]] = []
     eligible: list[dict[str, Any]] = []
     for audit in records:
-        if audit_is_pass(audit):
+        if audit_is_promotion_pass(audit):
             eligible.append(audit)
         else:
             rejected.append({"candidate_id": audit.get("candidate_id"), "reason": audit.get("rejection_reasons", []), "verdict": audit.get("verdict")})
@@ -48,4 +48,3 @@ def select_identity_first(audits: Iterable[dict[str, Any]]) -> tuple[dict[str, A
         "hard_gates": HARD_AUDIT_GATES,
     }
     return selected, report
-

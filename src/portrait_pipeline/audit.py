@@ -11,12 +11,59 @@ from .contracts import validate_audit
 from .util import atomic_json_write, canonical_hash, sha256_file
 
 
+def audit_is_promotion_pass(audit: dict[str, Any], *, allow_synthetic_test: bool = False) -> bool:
+    """Return true only for an auditor record that can authorize promotion.
+
+    A verdict and a set of PASS labels are not enough: the producer must not be
+    able to self-approve, and the auditor must prove that it independently
+    recomputed every hard gate from verified evidence and calibrated thresholds.
+    The explicit synthetic escape hatch is used only by the in-process DDS
+    round-trip test; the production CLI and controller never enable it.
+    """
+
+    if audit.get("verdict") != "PASS":
+        return False
+    if audit.get("auditor", {}).get("independent_from_producer") is not True:
+        return False
+    if any(audit.get("hard_gates", {}).get(name) != "PASS" for name in HARD_AUDIT_GATES):
+        return False
+    metrics = audit.get("metrics", {})
+    if not isinstance(metrics, dict):
+        return False
+    thresholds_id = str(audit.get("thresholds_id", ""))
+    if allow_synthetic_test and metrics.get("audit_mode") == "synthetic_test" and thresholds_id == "synthetic-acceptance-only":
+        return True
+    required = {
+        "audit_mode": "production",
+        "output_authority": "read_only",
+        "candidate_selection_access": False,
+        "independent_recompute": True,
+        "evidence_verified": True,
+        "thresholds_verified": True,
+        "source_fixture_verified": True,
+        "provenance_verified": True,
+        "gate_recompute_count": len(HARD_AUDIT_GATES),
+    }
+    if any(metrics.get(key) != value for key, value in required.items()):
+        return False
+    if not thresholds_id or thresholds_id.startswith("UNSET") or thresholds_id.startswith("synthetic"):
+        return False
+    auditor = audit.get("auditor", {})
+    auditor_process_id = auditor.get("process_id")
+    producer_process_id = metrics.get("producer_process_id")
+    if not isinstance(auditor_process_id, str) or not auditor_process_id:
+        return False
+    if not isinstance(producer_process_id, str) or not producer_process_id or producer_process_id == auditor_process_id:
+        return False
+    if metrics.get("auditor_process_id") != auditor_process_id:
+        return False
+    return True
+
+
 def audit_is_pass(audit: dict[str, Any]) -> bool:
-    return (
-        audit.get("verdict") == "PASS"
-        and audit.get("auditor", {}).get("independent_from_producer") is True
-        and all(audit.get("hard_gates", {}).get(name) == "PASS" for name in HARD_AUDIT_GATES)
-    )
+    """Compatibility alias for the production promotion predicate."""
+
+    return audit_is_promotion_pass(audit)
 
 
 def audit_is_uncertain_or_failed(audit: dict[str, Any]) -> bool:
@@ -40,18 +87,33 @@ def make_audit_record(
     gate_values = {name: "UNCERTAIN" for name in HARD_AUDIT_GATES}
     if gates:
         gate_values.update(gates)
+    actual_auditor_process_id = auditor_process_id or f"auditor-{os.getpid()}"
+    base_metrics = {
+        "audit_mode": "blocked",
+        "output_authority": "read_only",
+        "candidate_selection_access": False,
+        "independent_recompute": False,
+        "evidence_verified": False,
+        "thresholds_verified": False,
+        "source_fixture_verified": False,
+        "provenance_verified": False,
+        "gate_recompute_count": 0,
+        "producer_process_id": producer_process_id,
+        "auditor_process_id": actual_auditor_process_id,
+    }
+    base_metrics.update(metrics or {})
     audit = {
         "schema_version": "1.0.0",
         "job_id": job_id,
         "candidate_id": candidate_id,
         "auditor": {
             "auditor_id": auditor_id,
-            "process_id": auditor_process_id or f"auditor-{os.getpid()}",
-            "independent_from_producer": (auditor_process_id or f"auditor-{os.getpid()}") != producer_process_id,
+            "process_id": actual_auditor_process_id,
+            "independent_from_producer": actual_auditor_process_id != producer_process_id,
             "reviewed_at": datetime.now(timezone.utc).isoformat(),
         },
         "thresholds_id": thresholds_id,
-        "metrics": metrics or {},
+        "metrics": base_metrics,
         "hard_gates": gate_values,
         "rejection_reasons": reasons or [],
         "verdict": verdict,
@@ -112,4 +174,3 @@ def independent_audit_blocked(job_id: str, candidate_id: str, evidence_root: str
 
 def audit_digest(audit: dict[str, Any]) -> str:
     return canonical_hash(audit)
-

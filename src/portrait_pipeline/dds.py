@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .constants import ExitCode, FINAL_HEIGHT, FINAL_WIDTH
+from .audit import audit_is_promotion_pass
 from .contracts import validate_audit
 from .util import sha256_file
 
@@ -141,18 +142,91 @@ def decode_dds(path: str | Path) -> tuple[DdsHeader, bytes]:
     return header, bgra_to_rgba_bytes(pixel_data, header.width, header.height)
 
 
-def _require_audit_pass(audit_path: str | Path, root: str | Path | None = None) -> dict[str, Any]:
+def decode_dds_independent(path: str | Path) -> tuple[DdsHeader, bytes]:
+    """Decode the locked uncompressed DDS contract through a second code path.
+
+    This intentionally does not call :func:`parse_dds_header` or
+    :func:`bgra_to_rgba_bytes`.  The converter uses it as an independent
+    verification of both the header fields and the BGRA-to-RGBA pixel order;
+    it is kept small because the project contract permits only one exact DDS
+    layout (156x210, opaque 32-bit BGRA, no mipmaps or FourCC).
+    """
+
+    payload = Path(path).read_bytes()
+
+    def dword(index: int) -> int:
+        offset = 4 + index * 4
+        if offset + 4 > len(payload):
+            raise DdsValidationError("DDS header is truncated")
+        return struct.unpack_from("<I", payload, offset)[0]
+
+    if len(payload) < DDS_HEADER_SIZE or payload[:4] != b"DDS ":
+        raise DdsValidationError("DDS magic or header is invalid")
+    if dword(0) != 124 or dword(18) != 32:
+        raise DdsValidationError("unexpected DDS header sizes")
+
+    width = dword(3)
+    height = dword(2)
+    pitch = dword(4)
+    mipmap_count = dword(6)
+    pixel_format_flags = dword(19)
+    fourcc = dword(20)
+    rgb_bit_count = dword(21)
+    red_mask = dword(22)
+    green_mask = dword(23)
+    blue_mask = dword(24)
+    alpha_mask = dword(25)
+    caps = dword(26)
+    if (width, height) != (FINAL_WIDTH, FINAL_HEIGHT):
+        raise DdsValidationError(f"DDS dimensions must be {FINAL_WIDTH}x{FINAL_HEIGHT}")
+    if pitch != FINAL_WIDTH * 4 or mipmap_count != 0 or fourcc != 0:
+        raise DdsValidationError("DDS pitch, mipmap, or FourCC violates the locked project precedent")
+    if pixel_format_flags != DDPF_RGB | DDPF_ALPHAPIXELS or rgb_bit_count != 32:
+        raise DdsValidationError("DDS pixel format flags violate the locked project precedent")
+    if (red_mask, green_mask, blue_mask, alpha_mask) != (0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000):
+        raise DdsValidationError("DDS channel masks violate the locked BGRA contract")
+    if caps != DDSCAPS_TEXTURE:
+        raise DdsValidationError("DDS caps violate the locked texture contract")
+
+    expected = width * height * 4
+    pixel_data = payload[DDS_HEADER_SIZE:]
+    if len(pixel_data) != expected or len(payload) != DDS_FILE_SIZE:
+        raise DdsValidationError(f"DDS file size must be {DDS_FILE_SIZE}, got {len(payload)}")
+    rgba = bytearray(expected)
+    for pixel_offset in range(0, expected, 4):
+        blue = pixel_data[pixel_offset]
+        green = pixel_data[pixel_offset + 1]
+        red = pixel_data[pixel_offset + 2]
+        alpha = pixel_data[pixel_offset + 3]
+        rgba[pixel_offset:pixel_offset + 4] = bytes((red, green, blue, alpha))
+    return DdsHeader(
+        width=width,
+        height=height,
+        pitch=pitch,
+        mipmap_count=mipmap_count,
+        pixel_format_flags=pixel_format_flags,
+        fourcc=fourcc,
+        rgb_bit_count=rgb_bit_count,
+        red_mask=red_mask,
+        green_mask=green_mask,
+        blue_mask=blue_mask,
+        alpha_mask=alpha_mask,
+        caps=caps,
+    ), bytes(rgba)
+
+
+def _require_audit_pass(audit_path: str | Path, root: str | Path | None = None, *, allow_synthetic_test: bool = False) -> dict[str, Any]:
     audit = json.loads(Path(audit_path).read_text(encoding="utf-8"))
     issues = validate_audit(audit, root)
     if issues:
         raise DdsValidationError("audit contract invalid: " + "; ".join(f"{issue.path}: {issue.message}" for issue in issues))
-    if audit.get("verdict") != "PASS" or any(value != "PASS" for value in audit.get("hard_gates", {}).values()):
-        raise DdsValidationError("DDS promotion requires an independent PASS for every hard gate")
+    if not audit_is_promotion_pass(audit, allow_synthetic_test=allow_synthetic_test):
+        raise DdsValidationError("DDS promotion requires an independent production auditor PASS for every hard gate")
     return audit
 
 
-def convert_png_to_dds(input_path: str | Path, output_path: str | Path, audit_path: str | Path, root: str | Path | None = None) -> dict[str, Any]:
-    _require_audit_pass(audit_path, root)
+def convert_png_to_dds(input_path: str | Path, output_path: str | Path, audit_path: str | Path, root: str | Path | None = None, *, allow_synthetic_test: bool = False) -> dict[str, Any]:
+    _require_audit_pass(audit_path, root, allow_synthetic_test=allow_synthetic_test)
     try:
         from PIL import Image, ImageChops  # type: ignore
     except ImportError as exc:
@@ -180,6 +254,11 @@ def convert_png_to_dds(input_path: str | Path, output_path: str | Path, audit_pa
         temporary = Path(tmp.name)
     try:
         decoded_header, decoded_pixels = decode_dds(temporary)
+        independent_header, independent_pixels = decode_dds_independent(temporary)
+        if independent_header.as_dict() != decoded_header.as_dict():
+            raise DdsValidationError("independent DDS decoder disagrees with the primary header decoder")
+        if independent_pixels != decoded_pixels:
+            raise DdsValidationError("independent DDS decoder disagrees with the primary pixel decoder")
         expected_rgba = image.tobytes()
         if decoded_pixels != expected_rgba:
             diff = ImageChops.difference(Image.frombytes("RGBA", image.size, decoded_pixels), image)
@@ -198,6 +277,6 @@ def convert_png_to_dds(input_path: str | Path, output_path: str | Path, audit_pa
         "sha256": sha256_file(destination),
         "header": decoded_header.as_dict(),
         "pixel_round_trip": "PASS",
-        "independent_decoder": "SKIPPED_NO_SECOND_LIBRARY",
+        "independent_decoder": "PASS_PROJECT_SECOND_DECODER",
         "audit_path": str(audit_path),
     }

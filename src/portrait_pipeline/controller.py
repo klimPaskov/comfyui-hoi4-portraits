@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .audit import audit_is_pass, load_audits
+from .audit import audit_is_promotion_pass, load_audits
 from .constants import (
     DEPENDENCY_LOCK_VERSION,
     ExitCode,
@@ -312,7 +312,7 @@ class JobController:
                 audit_blockers.append(f"audit {audit.get('candidate_id')} belongs to a different job")
             if not isinstance(audit.get("candidate_id"), str) or not audit.get("candidate_id", "").startswith("candidate-"):
                 audit_blockers.append("audit candidate id is invalid")
-            if not audit_is_pass(audit):
+            if not audit_is_promotion_pass(audit):
                 continue
             if not thresholds_ready or audit.get("thresholds_id") != threshold_id:
                 audit_blockers.append(f"candidate {audit.get('candidate_id')} uses an unapproved identity-threshold registry")

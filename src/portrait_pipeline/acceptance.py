@@ -11,6 +11,7 @@ from .constants import ExitCode
 from .audit import independent_audit_blocked
 from .benchmarks import write_benchmark_reports
 from .comparisons import write_comparison_report
+from .contracts import build_blocked_output
 from .dds import DdsValidationError, convert_png_to_dds
 from .experiments import build_matrix
 from .graph_spec.builder import build_workflow_artifacts
@@ -85,16 +86,17 @@ def _dds_gate(root: Path) -> dict[str, Any]:
         blocked_audit_path.write_text(json.dumps(blocked), encoding="utf-8")
         negative_passed = False
         try:
-            convert_png_to_dds(png_path, temp_root / "blocked.dds", blocked_audit_path, root)
+            convert_png_to_dds(png_path, temp_root / "blocked.dds", blocked_audit_path, root, allow_synthetic_test=True)
         except DdsValidationError:
             negative_passed = True
         passing = independent_audit_blocked("acceptance", "candidate-000")
         passing["thresholds_id"] = "synthetic-acceptance-only"
         passing["verdict"] = "PASS"
         passing["hard_gates"] = {name: "PASS" for name in passing["hard_gates"]}
+        passing["metrics"].update({"audit_mode": "synthetic_test"})
         pass_audit_path.write_text(json.dumps(passing), encoding="utf-8")
         try:
-            positive = convert_png_to_dds(png_path, dds_path, pass_audit_path, root)
+            positive = convert_png_to_dds(png_path, dds_path, pass_audit_path, root, allow_synthetic_test=True)
             positive_passed = positive.get("pixel_round_trip") == "PASS" and positive.get("size_bytes") == 131168
         except DdsValidationError as exc:
             positive = {"error": type(exc).__name__}
@@ -144,23 +146,72 @@ def _schema_gate(root: Path) -> dict[str, Any]:
         "benchmark": (root / "schemas/portrait_benchmark_report.schema.json", sorted((root / "docs/benchmarks").glob("*.json"))),
         "comparison": (root / "schemas/portrait_comparison_report.schema.json", [root / "docs/comparisons/identity_style_comparison.json"]),
     }
+    schema_fixtures = {
+        "audit": (
+            root / "schemas/portrait_audit.schema.json",
+            [("in-memory:blocked-audit", independent_audit_blocked("schema-fixture", "candidate-000"))],
+        ),
+        "job_input": (
+            root / "schemas/portrait_job_input.schema.json",
+            [
+                (
+                    "in-memory:valid-job-input",
+                    {
+                        "schema_version": "1.0.0",
+                        "job_id": "fixture-001",
+                        "execution_profile": "agent_local_mac_16gb",
+                        "source_image_path": "fixtures/source.png",
+                        "source_provenance": {"source_class": "user_provided", "attribution": "user", "rights_notes": "authorized"},
+                        "subject_identity": {"record_name": "Example", "identity_classification": "approved_fictional_subject", "real_person": False},
+                        "prompt": "hoi4_portrait, a person with a neutral expression",
+                        "intended_hoi4_role": "country_leader",
+                        "final_output_stem": "fixture_portrait",
+                        "approved_background": {"registry_id": "background-1", "path": "backgrounds/bg.png", "sha256": "a" * 64},
+                        "seed_policy": {"mode": "derived"},
+                        "candidate_count": 1,
+                        "retry_limit": 0,
+                        "identity_thresholds_id": "calibrated-1",
+                        "style_thresholds_id": "calibrated-style-1",
+                        "final_png_path": "final/fixture.png",
+                        "final_dds_path": "final/fixture.dds",
+                    },
+                )
+            ],
+        ),
+        "job_output": (
+            root / "schemas/portrait_job_output.schema.json",
+            [
+                (
+                    "in-memory:blocked-job-output",
+                    build_blocked_output(None, ExitCode.BACKGROUND_UNRESOLVED, "schema fixture", root=root),
+                )
+            ],
+        ),
+    }
     try:
         from jsonschema import Draft202012Validator  # type: ignore
     except ImportError as exc:
         return {"status": "BLOCKED", "reason": f"normative JSON Schema validator is unavailable: {type(exc).__name__}", "checked": []}
     checked: list[dict[str, Any]] = []
-    for name, (schema_path, reports) in schema_files.items():
+    all_cases = {
+        **{name: (schema_path, [(str(path.relative_to(root)), None) for path in reports]) for name, (schema_path, reports) in schema_files.items()},
+        **{name: (schema_path, [(label, payload) for label, payload in fixtures]) for name, (schema_path, fixtures) in schema_fixtures.items()},
+    }
+    for name, (schema_path, cases) in all_cases.items():
         try:
             validator = Draft202012Validator(json.loads(schema_path.read_text(encoding="utf-8")))
         except (OSError, json.JSONDecodeError) as exc:
             return {"status": "BLOCKED", "reason": f"{name} schema is unreadable: {type(exc).__name__}", "checked": checked}
-        for report_path in reports:
+        for report_label, inline_payload in cases:
             try:
-                payload = json.loads(report_path.read_text(encoding="utf-8"))
+                if inline_payload is None:
+                    payload = json.loads((root / report_label).read_text(encoding="utf-8"))
+                else:
+                    payload = inline_payload
                 errors = sorted(validator.iter_errors(payload), key=lambda error: list(error.path))
             except (OSError, json.JSONDecodeError) as exc:
                 errors = [f"report unreadable: {type(exc).__name__}"]
-            checked.append({"schema": str(schema_path.relative_to(root)), "report": str(report_path.relative_to(root)), "status": "PASS" if not errors else "FAIL", "error": str(errors[0]) if errors else None})
+            checked.append({"schema": str(schema_path.relative_to(root)), "report": report_label, "status": "PASS" if not errors else "FAIL", "error": str(errors[0]) if errors else None})
     return {"status": "PASS" if checked and all(item["status"] == "PASS" for item in checked) else "BLOCKED", "checked": checked}
 
 
@@ -198,7 +249,17 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
     prompt_gate = _prompt_gate()
     lora = root_path / "loras" / "hoi4_portrait_new_style_lora.safetensors"
     lora_gate = {"status": "PASS" if lora.is_file() and sha256_file(lora) == "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1" else "FAIL", "sha256": sha256_file(lora) if lora.is_file() else None}
-    experiments = {"status": "BLOCKED_UNTIL_RUNTIME", "matrix_id": build_matrix()["matrix_id"], "matrix_written": (root_path / "experiments" / "identity_style_matrix.json").is_file()}
+    matrix = build_matrix()
+    experiments = {
+        "status": matrix["status"],
+        "matrix_id": matrix["matrix_id"],
+        "matrix_path": "experiments/identity_style_matrix.json",
+        "matrix_written": (root_path / "experiments" / "identity_style_matrix.json").is_file(),
+        "execution_status": matrix["execution_status"],
+        "required_eight_step_turbo_status": matrix["required_eight_step_turbo_status"],
+        "selection_policy": matrix["selection_policy"],
+        "reason": "The matrix is recorded but execution is fail-closed until an approved source fixture, background, calibrated thresholds, and source-specific runtime evidence exist.",
+    }
     chaos_review_path = root_path / "integrations/chaos-redux/live_review.json"
     generic_review_path = root_path / "integrations/agentic-hoi4-modding/live_review.json"
     chaos_review = json.loads(chaos_review_path.read_text(encoding="utf-8")) if chaos_review_path.is_file() else {}
@@ -232,6 +293,7 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
             "custom_node_preflight": next((gate for gate in preflight["gates"] if gate["name"] == "custom_node_preflight"), None),
             "runtime_dependency_lock": next((gate for gate in preflight["gates"] if gate["name"] == "comfyui_runtime_dependency_lock"), None),
             "krea_live_compatibility": next((gate for gate in preflight["gates"] if gate["name"] == "krea_live_compatibility"), None),
+            "autoprompter_runtime": next((gate for gate in preflight["gates"] if gate["name"] == "autoprompter_runtime"), None),
             "preprocessing_and_audit_dependencies": next((gate for gate in preflight["gates"] if gate["name"] == "preprocessing_and_audit_dependencies"), None),
             "calibrated_identity_thresholds": next((gate for gate in preflight["gates"] if gate["name"] == "calibrated_identity_thresholds"), None),
             "repository_preflight": next((gate for gate in preflight["gates"] if gate["name"] == "repository_preflight"), None),
@@ -281,7 +343,7 @@ def render_report(report: dict[str, Any]) -> str:
     for name, value in report["gates"].items():
         if not isinstance(value, dict) or value.get("status") in {"PASS", "NOT_APPLICABLE"}:
             continue
-        if name in {"package_checksums", "hardware_detection", "hardware_runtime", "remote_topology_auth", "approved_background", "source_fixture_and_provenance", "dependencies_and_models", "custom_node_preflight", "runtime_dependency_lock", "krea_live_compatibility", "preprocessing_and_audit_dependencies", "calibrated_identity_thresholds", "repository_preflight", "licenses_and_rights"}:
+        if name in {"package_checksums", "hardware_detection", "hardware_runtime", "remote_topology_auth", "approved_background", "source_fixture_and_provenance", "dependencies_and_models", "custom_node_preflight", "runtime_dependency_lock", "krea_live_compatibility", "autoprompter_runtime", "preprocessing_and_audit_dependencies", "calibrated_identity_thresholds", "repository_preflight", "licenses_and_rights"}:
             continue
         if name == "benchmark_reports":
             detail = ", ".join(f"{item['profile']}={item['status']}" for item in value.get("reports", []))

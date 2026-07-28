@@ -116,6 +116,33 @@ def _blocked_status(profile: str, preflight: dict[str, Any]) -> tuple[str, str]:
     return "BLOCKED_RUNTIME_UNAVAILABLE", "No live ComfyUI health, load, and generation measurements were recorded."
 
 
+def _live_schema_measurements(root: Path, profile: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Use the pinned live probe for schema/load evidence without claiming execution."""
+
+    path = root / "docs" / "preflight" / "live_comfy_compatibility.json"
+    try:
+        probe = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        probe = {}
+    live_status = probe.get("status")
+    workflow = next((item for item in probe.get("workflows", []) if item.get("workflow_id") == profile), {})
+    schema_pass = live_status == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED" and workflow.get("status") == "PASS"
+    runtime_health = {
+        "status": "PASS_SCHEMA_ONLY" if schema_pass else "NOT_MEASURED",
+        "binding": probe.get("server", {}).get("base_url", "http://127.0.0.1:8188"),
+        "raw_comfy_binding": probe.get("server", {}).get("raw_comfy_binding", "loopback_only"),
+        "reason": "Live health and /object_info schema evidence exists; no source-specific generation claim is made.",
+        "evidence_path": "docs/preflight/live_comfy_compatibility.json",
+    }
+    workflow_load = {
+        "status": "PASS_SCHEMA_ONLY" if schema_pass else "NOT_MEASURED",
+        "workflow_id": profile,
+        "reason": "Live node-registry/load-shape validation passed; this is not a model-loading or eight-step execution result." if schema_pass else "Live schema evidence is unavailable for this profile.",
+        "evidence_path": "docs/preflight/live_comfy_compatibility.json",
+    }
+    return runtime_health, workflow_load
+
+
 def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, Any]:
     root_path = project_root(root)
     if profile not in PROFILE_LIMITS:
@@ -134,6 +161,15 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
         capacity_assessment = "PHYSICAL_MEMORY_UNAVAILABLE"
     structural = _structural_measurement(root_path, profile)
     gate_statuses = _gate_statuses(preflight)
+    runtime_health, workflow_load = _live_schema_measurements(root_path, profile)
+    if profile in LOCAL_PROFILES and gate_statuses.get("local_runtime_capability") == "PASS":
+        runtime_health["target_profile_accelerator"] = "MPS"
+    elif profile == "human_full_power_gpu":
+        runtime_health["target_profile_accelerator"] = "CUDA"
+        runtime_health["target_profile_accelerator_status"] = gate_statuses.get("local_runtime_capability")
+    elif profile == "agent_remote_runpod":
+        runtime_health["target_profile_accelerator"] = "CUDA"
+        runtime_health["target_profile_accelerator_status"] = gate_statuses.get("remote_topology_auth")
     return {
         "schema_version": BENCHMARK_SCHEMA_VERSION,
         "report_version": BENCHMARK_REPORT_VERSION,
@@ -165,19 +201,19 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
         },
         "measurements": {
             "workflow_structure": structural,
-            "runtime_health": {"status": "NOT_MEASURED", "binding": "http://127.0.0.1:8188", "reason": "No live ComfyUI instance was available during this report."},
-            "workflow_load": {"status": "NOT_MEASURED", "reason": "Structural JSON validation is not a ComfyUI import/load test."},
-            "dry_validation_job": {"status": "NOT_MEASURED", "reason": "No source fixture and no installed runtime were available."},
-            "generation": {"status": "NOT_MEASURED", "candidate_count": 0, "reason": "No portrait generation was attempted while hard blockers remained."},
+            "runtime_health": runtime_health,
+            "workflow_load": workflow_load,
+            "dry_validation_job": {"status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND", "reason": "The live schema probe passed, but no legally usable source fixture and approved background are available."},
+            "generation": {"status": "BLOCKED_NOT_ATTEMPTED", "candidate_count": 0, "reason": "Portrait generation was not attempted while source, background, threshold, and audit gates remained blocked."},
             "thermal": {"status": "NOT_MEASURED", "samples": [], "reason": "No generation session was run."},
             "quality": {"status": "NOT_MEASURED", "candidate_count": 0, "identity_pass_rate": None, "style_pass_rate_among_identity_pass": None},
             "failure_recovery": {"status": "NOT_MEASURED", "cancellation": "NOT_MEASURED", "oom_recovery": "NOT_MEASURED", "restart_repeatability": "NOT_MEASURED"},
         },
         "required_follow_up": [
-            "verify the checksum-locked profile runtime inside the target environment without mutation",
+            "run the target profile inside its target accelerator environment without mutation",
             "resolve image-specific Python and system-package pins before building the RunPod image",
-            "install and import the pinned ComfyUI/custom-node graph",
-            "verify all model revisions, formats, sizes, and SHA-256 values",
+            "complete live source-specific model loading and the eight-step Turbo execution",
+            "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
             "provide an approved source fixture, background, and rights record",
             "run the target profile with independent identity/style/mask/provenance audit",
             "record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence",

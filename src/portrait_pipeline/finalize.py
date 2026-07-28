@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 from typing import Any, Iterable
 
-from .audit import audit_is_pass
+from .audit import audit_is_promotion_pass
 from .constants import FINAL_HEIGHT, FINAL_WIDTH
 from .contracts import validate_audit
 from .util import sha256_file
@@ -27,7 +27,7 @@ def _require_pass(audit: dict[str, Any], root: str | Path | None = None) -> None
     issues = validate_audit(audit, root)
     if issues:
         raise FinalizationError("audit contract invalid: " + "; ".join(f"{issue.path}: {issue.message}" for issue in issues))
-    if not audit_is_pass(audit):
+    if not audit_is_promotion_pass(audit):
         raise FinalizationError("final PNG promotion requires an independent all-PASS audit")
 
 
@@ -89,4 +89,3 @@ def finalize_candidate_png(candidate_path: str | Path, output_path: str | Path, 
             comparisons.append(create_comparison_sheet(source_images, comparison_dir / "native.png", scale=1))
             comparisons.append(create_comparison_sheet(source_images, comparison_dir / "enlarged_4x.png", scale=4))
     return {"status": "PASS", "png_path": str(output_path), "png_sha256": sha256_file(output_path), "width": FINAL_WIDTH, "height": FINAL_HEIGHT, "comparisons": comparisons, "audit_candidate_id": audit.get("candidate_id")}
-

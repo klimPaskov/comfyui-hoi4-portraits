@@ -1,17 +1,17 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-26T18:55:18.526771+00:00",
+  "created_at": "2026-07-28T13:22:07.937699+00:00",
   "profile": "human_local_mac_16gb",
-  "status": "BLOCKED_RUNTIME_UNAVAILABLE",
-  "status_reason": "The target local runtime is not installed or its accelerator capability is not verified.",
+  "status": "BLOCKED_PREFLIGHT",
+  "status_reason": "One or more mandatory preflight gates remain blocked.",
   "hardware": {
-    "platform": "macOS-26.4.1-arm64-arm-64bit",
-    "python": "3.9.6 (default, Apr  7 2026, 02:38:40) \n[Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
     "machine": "arm64",
     "preflight_snapshot": {
-      "platform": "macOS-26.4.1-arm64-arm-64bit",
-      "python": "3.9.6 (default, Apr  7 2026, 02:38:40) \n[Clang 21.0.0 (clang-2100.0.123.102)]",
+      "platform": "macOS-26.5.2-arm64-arm-64bit",
+      "python": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
       "machine": "arm64",
       "processor": "arm",
       "memory": {
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)",
+          "stdout": "vm.swapusage: total = 1024.00M  used = 44.50M  free = 979.50M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                               29775.\nPages active:                            353370.\nPages inactive:                          363546.\nPages speculative:                         3823.\nPages throttled:                              0.\nPages wired down:                        124935.\nPages purgeable:                          15367.\n\"Translation faults\":                  50149227.\nPages copy-on-write:                    4839434.\nPages zero filled:                     29366758.\nPages reactivated:                      1103372.\nPages purged:                            279301.\nFile-backed pages:                       261747.\nAnonymous pages:                         458992.\nPages stored in compressor:              292061.\nPages occupied by compressor:            130312.\nDecompressions:                          349681.\nCompressions:                            768545.\nPageins:                                3061383.\nPageouts:                                 10879.\nSwapins:                                      0.\nSwapouts:                                     0.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14806.\nPages active:                                 284600.\nPages inactive:                               380077.\nPages speculative:                              4693.\nPages throttled:                                   0.\nPages wired down:                             139267.\nPages purgeable:                                 146.\n\"Translation faults\":                       30734465.\nPages copy-on-write:                         2624036.\nPages zero filled:                          16286108.\nPages reactivated:                           1115204.\nPages purged:                                 288221.\nFile-backed pages:                            471091.\nAnonymous pages:                              198279.\nPages stored in compressor:                   441940.\nPages occupied by compressor:                 182191.\nDecompressions:                               323176.\nCompressions:                                 934200.\nPageins:                                   154977069.\nPageouts:                                      16302.\nSwapins:                                           4.\nSwapouts:                                       2848.\nPages tagged:                                 103055.\nPages tagged resident:                         57767.\nPages tagged compressed:                       45288.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 3979.\nPages tag-storage free:                          175.\nPages tag-storage non-tag pageable:            28538.\nPages tag-storage non-tag wired:                  76.\nBytes of compressed tags:                    6022528.\nTagged compressions:                           79240.\nTagged decompressions:                         29555.",
           "stderr": ""
         }
       },
@@ -41,7 +41,7 @@
           "sw_vers"
         ],
         "returncode": 0,
-        "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.4.1\nBuildVersion:\t\t25E253",
+        "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.5.2\nBuildVersion:\t\t25F84",
         "stderr": ""
       },
       "disk": {
@@ -51,7 +51,7 @@
           "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   144Gi   279Gi    34%    1.6M  2.9G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   183Gi   255Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }
@@ -61,31 +61,28 @@
     "recommended_exit_code": 15,
     "gate_statuses": {
       "hardware_detection": "PASS",
-      "local_runtime_capability": "BLOCKED",
+      "local_runtime_capability": "PASS",
       "immutable_style_lora": "PASS",
       "approved_source_background": "BLOCKED",
       "source_fixture_and_provenance": "BLOCKED",
       "planning_package_checksums": "PASS",
-      "model_artifact_preflight": "BLOCKED",
-      "custom_node_preflight": "BLOCKED",
+      "model_artifact_preflight": "PASS",
+      "custom_node_preflight": "PASS",
       "comfyui_runtime_dependency_lock": "PASS",
       "remote_topology_auth": "NOT_APPLICABLE",
       "repository_preflight": "PASS",
       "calibrated_identity_thresholds": "BLOCKED",
-      "krea_live_compatibility": "BLOCKED",
-      "preprocessing_and_audit_dependencies": "BLOCKED",
+      "krea_live_compatibility": "PASS",
+      "autoprompter_runtime": "PASS",
+      "preprocessing_and_audit_dependencies": "PASS",
       "license_and_rights_review": "BLOCKED_PENDING_PROJECT_OWNER_REVIEW"
     },
     "blockers": [
-      "The required MPS runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
       "The approved HOI4 portrait background registry is unresolved; generation and DDS promotion are blocked.",
       "No legally usable source portrait fixture and complete provenance record is present for calibration or route execution.",
-      "Required Krea/Qwen model artifacts are not installed and live ComfyUI compatibility has not been verified.",
-      "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
       "No live generic agentic HOI4 target repository was found; only the planning proposal is available.",
       "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
-      "Krea 2 Turbo compatibility, identity-edit behavior, and the immutable style LoRA matrix have not been measured in the pinned runtime.",
-      "Pinned preprocessing/audit model artifacts are not all installed and checksum-verified; masking, face analysis, and independent audit cannot run.",
+      "Krea 2 source-specific model loading, the eight-step Turbo execution, and the immutable style-LoRA experiment matrix remain unmeasured until an approved fixture, background, and calibrated audit thresholds are available.",
       "License/rights review is not fully approved for Krea redistribution or the unresolved background."
     ]
   },
@@ -172,22 +169,27 @@
       "issues": []
     },
     "runtime_health": {
-      "status": "NOT_MEASURED",
+      "status": "PASS_SCHEMA_ONLY",
       "binding": "http://127.0.0.1:8188",
-      "reason": "No live ComfyUI instance was available during this report."
+      "raw_comfy_binding": "loopback_only",
+      "reason": "Live health and /object_info schema evidence exists; no source-specific generation claim is made.",
+      "evidence_path": "docs/preflight/live_comfy_compatibility.json",
+      "target_profile_accelerator": "MPS"
     },
     "workflow_load": {
-      "status": "NOT_MEASURED",
-      "reason": "Structural JSON validation is not a ComfyUI import/load test."
+      "status": "PASS_SCHEMA_ONLY",
+      "workflow_id": "human_local_mac_16gb",
+      "reason": "Live node-registry/load-shape validation passed; this is not a model-loading or eight-step execution result.",
+      "evidence_path": "docs/preflight/live_comfy_compatibility.json"
     },
     "dry_validation_job": {
-      "status": "NOT_MEASURED",
-      "reason": "No source fixture and no installed runtime were available."
+      "status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND",
+      "reason": "The live schema probe passed, but no legally usable source fixture and approved background are available."
     },
     "generation": {
-      "status": "NOT_MEASURED",
+      "status": "BLOCKED_NOT_ATTEMPTED",
       "candidate_count": 0,
-      "reason": "No portrait generation was attempted while hard blockers remained."
+      "reason": "Portrait generation was not attempted while source, background, threshold, and audit gates remained blocked."
     },
     "thermal": {
       "status": "NOT_MEASURED",
@@ -208,10 +210,10 @@
     }
   },
   "required_follow_up": [
-    "verify the checksum-locked profile runtime inside the target environment without mutation",
+    "run the target profile inside its target accelerator environment without mutation",
     "resolve image-specific Python and system-package pins before building the RunPod image",
-    "install and import the pinned ComfyUI/custom-node graph",
-    "verify all model revisions, formats, sizes, and SHA-256 values",
+    "complete live source-specific model loading and the eight-step Turbo execution",
+    "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
     "provide an approved source fixture, background, and rights record",
     "run the target profile with independent identity/style/mask/provenance audit",
     "record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence"

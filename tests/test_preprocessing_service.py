@@ -19,10 +19,10 @@ class PreprocessingServiceTests(unittest.TestCase):
     def setUpClass(cls):
         cls.root = project_root()
 
-    def test_health_is_blocked_until_exact_artifacts_and_runtime_exist(self):
+    def test_health_passes_after_exact_artifacts_and_runtime_install(self):
         report = PreprocessingService(self.root).health()
-        self.assertEqual(report["status"], "BLOCKED")
-        self.assertTrue(report["blockers"])
+        self.assertEqual(report["status"], "PASS")
+        self.assertFalse(report["blockers"])
 
     def test_endpoint_rejects_invalid_job_before_model_use(self):
         service = PreprocessingService(self.root)
