@@ -28,7 +28,7 @@
 | `dds_gate` | **PASS** |
 | `identity_style_experiments` | **PLANNED_BLOCKED_UNTIL_APPROVED_FIXTURE_BACKGROUND_THRESHOLDS** |
 | `benchmark_reports` | **BLOCKED** |
-| `identity_style_comparison` | **BLOCKED_NO_REAL_CANDIDATES** |
+| `identity_style_comparison` | **BLOCKED_DIAGNOSTIC_CANDIDATES_NOT_PRODUCTION_AUTHORIZED** |
 | `runpod_deployment_surface` | **DEFERRED_OUT_OF_SCOPE** |
 | `schema_validation` | **PASS** |
 | `integration_packages` | **BLOCKED** |
@@ -42,8 +42,8 @@
 ## Additional blocked or skipped surfaces
 
 - `identity_style_experiments`: The matrix is recorded but execution is fail-closed until an approved source fixture, background, calibrated thresholds, and source-specific runtime evidence exist.
-- `benchmark_reports`: human_local_mac_16gb=BLOCKED_PREFLIGHT, human_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_local_mac_16gb=BLOCKED_PREFLIGHT, agent_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_remote_runpod=DEFERRED_OUT_OF_SCOPE
-- `identity_style_comparison`: No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.
+- `benchmark_reports`: human_local_mac_16gb=BLOCKED_PRODUCTION_GATES_CPU_FALLBACK, human_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_local_mac_16gb=BLOCKED_PRODUCTION_GATES_CPU_FALLBACK, agent_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_remote_runpod=DEFERRED_OUT_OF_SCOPE
+- `identity_style_comparison`: Diagnostic candidates were observed, but no comparison ranking or production winner is produced until calibrated thresholds and independent all-PASS audits authorize them.
 - `runpod_deployment_surface`: BLOCKED_UNRESOLVED_RUNTIME_LOCK
 - `integration_packages`: BLOCKED
 

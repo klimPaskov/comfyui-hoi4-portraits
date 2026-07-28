@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0.0",
   "comparison_id": "identity-style-comparison-2026-07-26.1",
-  "created_at": "2026-07-28T21:21:03.061207+00:00",
-  "status": "BLOCKED_NO_REAL_CANDIDATES",
-  "reason": "No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.",
+  "created_at": "2026-07-28T22:34:50.316118+00:00",
+  "status": "BLOCKED_DIAGNOSTIC_CANDIDATES_NOT_PRODUCTION_AUTHORIZED",
+  "reason": "Diagnostic candidates were observed, but no comparison ranking or production winner is produced until calibrated thresholds and independent all-PASS audits authorize them.",
   "matrix_id": "krea2_identity_style_factorial_v1",
   "selection_policy": {
     "identity_first": true,
@@ -20,9 +20,32 @@
     "style_ranking_before_identity": false
   },
   "candidate_counts": {
-    "observed": 0,
+    "observed": 2,
+    "eligible_for_selection": 0,
     "required_for_matrix": "profile_budgeted"
   },
+  "diagnostic_candidates": [
+    {
+      "execution_profile": "agent_local_mac_16gb",
+      "job_id": "local-agent-loc-cpu-full-08-01",
+      "candidate_id": "candidate-000",
+      "path": "jobs/local-agent-loc-cpu-full-08-01/candidates/candidate-000.png",
+      "sha256": "2258467b275a4097a4ff40e53ad4874808e880fe5a3c53fbee5b27ef2b240d42",
+      "dimensions": "832x1120",
+      "audit_verdict": "UNCERTAIN",
+      "production_eligible": false
+    },
+    {
+      "execution_profile": "human_local_mac_16gb",
+      "job_id": null,
+      "candidate_id": "candidate-000",
+      "path": "jobs/local-human-fernand-cpu-full-08-01/candidates/candidate-000.png",
+      "sha256": "b4587b98dba808892ce4f4bcc81bae25af6b3e9dfa3cdd87ae82f27cc368be24",
+      "dimensions": "832x1120",
+      "audit_verdict": "UNCERTAIN",
+      "production_eligible": false
+    }
+  ],
   "comparison_artifacts": [],
   "metrics": {
     "identity_pass_rate": null,

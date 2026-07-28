@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "collected_at": "2026-07-28T21:58:09Z",
+  "status": "BLOCKED_PRODUCTION_MPS_ROUTE",
+  "host": {
+    "platform": "macOS 26.5.2",
+    "architecture": "arm64",
+    "cpu_count": 10,
+    "unified_memory_bytes": 17179869184,
+    "pytorch": "2.11.0",
+    "mps_available": true,
+    "comfyui_revision": "2a610155821d670a2d8047e654e5fce96b790eb5"
+  },
+  "runtime": {
+    "raw_comfyui_binding": "127.0.0.1",
+    "user_facing_port": 8188,
+    "isolated_cpu_port": 8189,
+    "preprocessing_port": 8790,
+    "autoprompter_port": 8099
+  },
+  "gates": {
+    "hardware": "PASS",
+    "mps_capability": "PASS",
+    "models_and_checksums": "PASS",
+    "immutable_lora": "PASS",
+    "approved_background": "PASS",
+    "custom_nodes": "PASS",
+    "krea_live_schema": "PASS",
+    "mps_generation": "BLOCKED",
+    "cpu_execution_fallback": "QUALIFICATION_ONLY",
+    "calibrated_identity_thresholds": "BLOCKED"
+  },
+  "policy": "The MPS route is not claimed production-capable. The checksum-verified official NVFP4 CPU route may be used only for private diagnostic qualification and cannot create final PNG, DDS, or mod integration output without independent all-PASS audit evidence."
+}

@@ -150,7 +150,7 @@ def _preprocessing_entry(root: Path, name: str) -> dict[str, Any]:
     return entry
 
 
-def _post_loopback_json(endpoint: str, payload: dict[str, Any], *, timeout: float = 120.0) -> dict[str, Any]:
+def _post_loopback_json(endpoint: str, payload: dict[str, Any], *, timeout: float = 120.0, service_label: str = "preprocessing service") -> dict[str, Any]:
     if not endpoint:
         _raise(ExitCode.DEPENDENCY_MISSING, "preprocessing service is not configured")
     if not (endpoint.startswith("http://127.0.0.1:") or endpoint.startswith("http://localhost:")):
@@ -159,8 +159,20 @@ def _post_loopback_json(endpoint: str, payload: dict[str, Any], *, timeout: floa
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             body = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        # Keep the failure fail-closed but preserve the service identity and a
+        # bounded structured error for diagnosis.  The old message called all
+        # loopback failures a preprocessing error, which obscured autoprompt
+        # validation failures from users and auditors.
+        try:
+            body = json.loads(exc.read().decode("utf-8"))
+            detail = body.get("error", {}).get("message") if isinstance(body, dict) and isinstance(body.get("error"), dict) else None
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            detail = None
+        suffix = f": {detail}" if isinstance(detail, str) and detail else ""
+        _raise(ExitCode.DEPENDENCY_MISSING, f"loopback {service_label} returned HTTP {exc.code}{suffix}")
     except (OSError, urllib.error.URLError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        _raise(ExitCode.DEPENDENCY_MISSING, f"loopback preprocessing service unavailable: {type(exc).__name__}")
+        _raise(ExitCode.DEPENDENCY_MISSING, f"loopback {service_label} unavailable: {type(exc).__name__}")
     if not isinstance(body, dict):
         _raise(ExitCode.GENERATION_FAILED, "loopback preprocessing service returned a non-object response")
     if body.get("status") == "BLOCKED":
@@ -211,7 +223,7 @@ def _post_autoprompt_staged(root: Path, endpoint: str, payload: dict[str, Any], 
                     time.sleep(0.5)
             else:
                 _raise(ExitCode.DEPENDENCY_MISSING, "staged autoprompter sidecar health timed out")
-        return _post_loopback_json(endpoint, payload, timeout=180.0)
+        return _post_loopback_json(endpoint, payload, timeout=180.0, service_label="autoprompter service")
     finally:
         if owned is not None and owned.poll() is None:
             owned.terminate()
@@ -229,7 +241,7 @@ def _write_subject_inventory(job: dict[str, Any], image: Any) -> dict[str, Any]:
     source = _comfy_to_pil(image).convert("RGB")
     encoded = io.BytesIO()
     source.save(encoded, format="PNG", optimize=False)
-    response = _post_loopback_json(endpoint, {"job_id": job.get("job_id"), "model": {"name": "YuNet", "source_revision": entry.get("source_revision"), "artifact_sha256": entry.get("artifact_sha256")}, "image_png_base64": base64.b64encode(encoded.getvalue()).decode("ascii")})
+    response = _post_loopback_json(endpoint, {"job_id": job.get("job_id"), "model": {"name": "YuNet", "source_revision": entry.get("source_revision"), "artifact_sha256": entry.get("artifact_sha256")}, "image_png_base64": base64.b64encode(encoded.getvalue()).decode("ascii")}, service_label="subject preprocessing service")
     response_model = response.get("model")
     if not isinstance(response_model, dict) or response_model.get("name") != "YuNet" or response_model.get("source_revision") != entry.get("source_revision") or response_model.get("artifact_sha256") != entry.get("artifact_sha256"):
         _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "subject service model identity does not match the preprocessing lock")
@@ -727,7 +739,7 @@ class HOI4ForegroundMask:
         source = _comfy_to_pil(image).convert("RGB")
         image_bytes = io.BytesIO()
         source.save(image_bytes, format="PNG", optimize=False)
-        response = _post_loopback_json(os.environ.get("HOI4_MASK_SERVICE_LOOPBACK", ""), {"job_id": job.get("job_id"), "model": {"name": "BiRefNet", "source_revision": entry.get("source_revision"), "artifact_sha256": entry.get("artifact_sha256")}, "image_png_base64": base64.b64encode(image_bytes.getvalue()).decode("ascii")})
+        response = _post_loopback_json(os.environ.get("HOI4_MASK_SERVICE_LOOPBACK", ""), {"job_id": job.get("job_id"), "model": {"name": "BiRefNet", "source_revision": entry.get("source_revision"), "artifact_sha256": entry.get("artifact_sha256")}, "image_png_base64": base64.b64encode(image_bytes.getvalue()).decode("ascii")}, service_label="mask preprocessing service")
         model = response.get("model")
         if not isinstance(model, dict) or model.get("name") != "BiRefNet" or model.get("source_revision") != entry.get("source_revision") or model.get("artifact_sha256") != entry.get("artifact_sha256"):
             _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "mask service model identity does not match the preprocessing lock")
@@ -863,7 +875,9 @@ class HOI4AutopromptClient:
             result = validate_prompt(prompt_override, record_name=job.get("subject_identity", {}).get("record_name"), allowed_claims=job.get("allowed_autoprompt_claims"))
             if not result.passed:
                 _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
-            return result.normalized_prompt, {"source": "human_manual_override", "instruction_sha256": sha256_file(exact_path), "validator": result.as_dict(), "background_meta": background_meta}
+            attempts = [{"attempt": 1, "status": "PASS", "source": "human_manual_override"}]
+            atomic_json_write(_job_root(job) / "evidence" / "prompt" / "autoprompter_attempts.json", {"schema_version": "1.0.0", "instruction_sha256": sha256_file(exact_path), "attempts": attempts})
+            return result.normalized_prompt, {"source": "human_manual_override", "instruction_sha256": sha256_file(exact_path), "validator": result.as_dict(), "attempts": attempts, "background_meta": background_meta}
         endpoint = os.environ.get("HOI4_AUTOPROMPTER_LOOPBACK", "http://127.0.0.1:8099/v1/chat/completions")
         if not endpoint.startswith("http://127.0.0.1:") and not endpoint.startswith("http://localhost:"):
             _raise(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "autoprompter is not bound to loopback")
@@ -880,7 +894,11 @@ class HOI4AutopromptClient:
         result = validate_prompt(prompt, record_name=job.get("subject_identity", {}).get("record_name"), allowed_claims=job.get("allowed_autoprompt_claims"))
         if not result.passed:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
-        return result.normalized_prompt, {"source": "autoprompter", "instruction_sha256": sha256_file(exact_path), "validator": result.as_dict()}
+        attempts = payload.get("attempts", [])
+        if not isinstance(attempts, list):
+            _raise(ExitCode.DEPENDENCY_MISSING, "autoprompter returned an invalid attempt record")
+        atomic_json_write(_job_root(job) / "evidence" / "prompt" / "autoprompter_attempts.json", {"schema_version": "1.0.0", "instruction_sha256": sha256_file(exact_path), "attempts": attempts})
+        return result.normalized_prompt, {"source": "autoprompter", "instruction_sha256": sha256_file(exact_path), "validator": result.as_dict(), "attempts": attempts}
 
 
 class HOI4EvidenceExport:

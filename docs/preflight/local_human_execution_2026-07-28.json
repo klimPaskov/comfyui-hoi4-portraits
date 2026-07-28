@@ -4,6 +4,17 @@
   "status": "QUALIFIED_CPU_FALLBACK_PRODUCTION_GATES_BLOCKED",
   "execution_profile": "human_local_mac_16gb",
   "scope": "private_user_fixture_local_qualification",
+  "candidate": {
+    "candidate_id": "candidate-000",
+    "path": "jobs/local-human-fernand-cpu-full-08-01/candidates/candidate-000.png",
+    "sha256": "b4587b98dba808892ce4f4bcc81bae25af6b3e9dfa3cdd87ae82f27cc368be24",
+    "dimensions": "832x1120"
+  },
+  "independent_audit": {
+    "verdict": "UNCERTAIN",
+    "face_embedding_similarity": 0.6657422201978989,
+    "promotion_allowed": false
+  },
   "source_fixture": {
     "class": "user_provided_private",
     "archive_sha256": "4aa689b7ff8fa0ae183b93f79f9553fb6388f95573eef00ac68f1d9603c7243e",

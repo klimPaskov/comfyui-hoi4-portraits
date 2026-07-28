@@ -147,6 +147,54 @@ def _live_schema_measurements(root: Path, profile: str) -> tuple[dict[str, Any],
     return runtime_health, workflow_load
 
 
+def _local_execution_evidence(root: Path, profile: str) -> dict[str, Any]:
+    """Read checked-in execution summaries without treating them as passes.
+
+    Runtime portraits and audit data remain private under ``jobs/``.  The
+    small preflight summaries carry only the bounded evidence needed for the
+    public benchmark report: execution timing, candidate checksum, and the
+    independent-audit verdict.
+    """
+
+    if profile not in {"human_local_mac_16gb", "agent_local_mac_16gb"}:
+        return {"status": "NOT_APPLICABLE", "candidate_count": 0}
+    prefix = "local_human_execution_" if profile == "human_local_mac_16gb" else "local_agent_execution_"
+    paths = sorted((root / "docs" / "preflight").glob(prefix + "*.json"))
+    for path in reversed(paths):
+        try:
+            evidence = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(evidence, dict):
+            continue
+        candidate = evidence.get("candidate")
+        audit = evidence.get("independent_audit")
+        if not isinstance(candidate, dict):
+            continue
+        candidate_path = candidate.get("path")
+        candidate_sha = candidate.get("sha256")
+        if not isinstance(candidate_path, str) or not isinstance(candidate_sha, str):
+            continue
+        runtime = evidence.get("runtime") if isinstance(evidence.get("runtime"), dict) else {}
+        return {
+            "status": "PASS_EXECUTION_ONLY",
+            "evidence_path": str(path.relative_to(root)),
+            "job_id": evidence.get("job_id"),
+            "candidate_count": 1,
+            "candidate_path": candidate_path,
+            "candidate_sha256": candidate_sha,
+            "candidate_dimensions": candidate.get("dimensions"),
+            "device": runtime.get("device"),
+            "model": runtime.get("model"),
+            "sampler_seconds": runtime.get("sampler_seconds"),
+            "prompt_execution_seconds": runtime.get("prompt_execution_seconds"),
+            "audit_verdict": audit.get("verdict") if isinstance(audit, dict) else "UNCERTAIN",
+            "face_embedding_similarity": audit.get("face_embedding_similarity") if isinstance(audit, dict) else None,
+            "production_authorized": False,
+        }
+    return {"status": "NOT_RECORDED", "candidate_count": 0}
+
+
 def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, Any]:
     root_path = project_root(root)
     if profile not in PROFILE_LIMITS:
@@ -166,6 +214,12 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
     structural = _structural_measurement(root_path, profile)
     gate_statuses = _gate_statuses(preflight)
     runtime_health, workflow_load = _live_schema_measurements(root_path, profile)
+    execution_evidence = _local_execution_evidence(root_path, profile)
+    if execution_evidence.get("status") == "PASS_EXECUTION_ONLY":
+        status = "BLOCKED_PRODUCTION_GATES_CPU_FALLBACK"
+        status_reason = "A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates."
+        runtime_health["execution_evidence"] = execution_evidence
+        workflow_load["execution_evidence"] = execution_evidence
     if profile in LOCAL_PROFILES and gate_statuses.get("local_runtime_capability") == "PASS":
         runtime_health["target_profile_accelerator"] = "MPS"
     elif profile in {"human_full_power_gpu", "agent_full_power_gpu"}:
@@ -174,6 +228,18 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
     elif profile == "agent_remote_runpod":
         runtime_health["target_profile_accelerator"] = "CUDA"
         runtime_health["target_profile_accelerator_status"] = gate_statuses.get("remote_topology_auth")
+    preprocessing_ready = gate_statuses.get("approved_source_background") == "PASS" and gate_statuses.get("source_fixture_and_provenance") == "PASS"
+    dry_validation_job = ({"status": "PASS_PREPROCESSING_ONLY_PRODUCTION_GATES_BLOCKED", "reason": "The source fixture, approved background, and deterministic preprocessing route are evidenced; calibrated identity/style thresholds and independent audit still block promotion."} if preprocessing_ready else {"status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND", "reason": "The live schema probe and private preprocessing qualification passed, but no production-authorized source fixture and approved background are available."})
+    required_follow_up = [
+        "run the target profile inside its target accelerator environment without mutation",
+        "resolve image-specific Python and system-package pins before building the RunPod image",
+        "complete live source-specific model loading and the eight-step Turbo execution",
+        "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
+        "run the target profile with independent identity/style/mask/provenance audit",
+        "record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence",
+    ]
+    if not preprocessing_ready:
+        required_follow_up.insert(4, "provide an approved source fixture, background, and rights record")
     return {
         "schema_version": BENCHMARK_SCHEMA_VERSION,
         "report_version": BENCHMARK_REPORT_VERSION,
@@ -207,23 +273,15 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
             "workflow_structure": structural,
             "runtime_health": runtime_health,
             "workflow_load": workflow_load,
-            "dry_validation_job": {"status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND", "reason": "The live schema probe and private preprocessing qualification passed, but no production-authorized source fixture and approved background are available."},
-            "generation": {"status": "BLOCKED_NOT_ATTEMPTED", "candidate_count": 0, "reason": "Portrait generation was not attempted while source, background, threshold, and audit gates remained blocked."},
-            "thermal": {"status": "NOT_MEASURED", "samples": [], "reason": "No generation session was run."},
-            "quality": {"status": "NOT_MEASURED", "candidate_count": 0, "identity_pass_rate": None, "style_pass_rate_among_identity_pass": None},
+            "dry_validation_job": dry_validation_job,
+            "generation": ({"status": "PASS_EXECUTION_ONLY_PRODUCTION_BLOCKED", "candidate_count": 1, "candidate_path": execution_evidence.get("candidate_path"), "candidate_sha256": execution_evidence.get("candidate_sha256"), "reason": "A checksum-recorded CPU fallback candidate exists, but it is quarantined from production promotion."} if execution_evidence.get("status") == "PASS_EXECUTION_ONLY" else {"status": "BLOCKED_NOT_ATTEMPTED", "candidate_count": 0, "reason": "Portrait generation was not attempted while source, background, threshold, and audit gates remained blocked."}),
+            "thermal": {"status": "NOT_MEASURED", "samples": [], "swap_observed": execution_evidence.get("status") == "PASS_EXECUTION_ONLY", "reason": "Thermal samples were not captured for this run; CPU fallback evidence records swap behavior separately."},
+            "quality": ({"status": "UNCERTAIN_AUDIT", "candidate_count": 1, "identity_pass_rate": None, "style_pass_rate_among_identity_pass": None, "audit_verdict": execution_evidence.get("audit_verdict"), "face_embedding_similarity": execution_evidence.get("face_embedding_similarity")} if execution_evidence.get("status") == "PASS_EXECUTION_ONLY" else {"status": "NOT_MEASURED", "candidate_count": 0, "identity_pass_rate": None, "style_pass_rate_among_identity_pass": None}),
             "failure_recovery": {"status": "NOT_MEASURED", "cancellation": "NOT_MEASURED", "oom_recovery": "NOT_MEASURED", "restart_repeatability": "NOT_MEASURED"},
         },
-        "required_follow_up": [
-            "run the target profile inside its target accelerator environment without mutation",
-            "resolve image-specific Python and system-package pins before building the RunPod image",
-            "complete live source-specific model loading and the eight-step Turbo execution",
-            "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
-            "provide an approved source fixture, background, and rights record",
-            "run the target profile with independent identity/style/mask/provenance audit",
-            "record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence",
-        ],
+        "required_follow_up": required_follow_up,
         "claims": {
-            "local_generation": "NOT_CLAIMED" if profile in LOCAL_PROFILES else "NOT_APPLICABLE",
+            "local_generation": ("EXECUTION_ONLY_CPU_FALLBACK_PRODUCTION_NOT_CLAIMED" if execution_evidence.get("status") == "PASS_EXECUTION_ONLY" else "NOT_CLAIMED") if profile in LOCAL_PROFILES else "NOT_APPLICABLE",
             "remote_generation": "NOT_CLAIMED" if profile in REMOTE_PROFILES else "NOT_APPLICABLE",
             "local_preprocessing_and_validation": "STRUCTURE_ONLY",
             "final_png": "NOT_CREATED",
@@ -234,6 +292,7 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
             "selection_order": build_matrix()["selection_order"],
             "style_lora_sha256": STYLE_LORA_SHA256,
             "style_lora_observed_sha256": budget["style_lora_sha256"],
+            "execution_evidence": execution_evidence,
         },
     }
 
@@ -250,7 +309,7 @@ def render_benchmark_markdown(report: dict[str, Any]) -> str:
         f"- Physical memory bytes: `{resource['physical_memory_bytes']}`",
         f"- Capacity assessment: **{resource['capacity_assessment']}**",
         "",
-        "This report contains no successful generation claim. File-size arithmetic is a risk indicator, not an infeasibility measurement.",
+        "This report contains no production acceptance claim. Any CPU diagnostic execution evidence is explicitly quarantined from promotion. File-size arithmetic is a risk indicator, not an infeasibility measurement.",
         "",
         "## Gate status",
         "",

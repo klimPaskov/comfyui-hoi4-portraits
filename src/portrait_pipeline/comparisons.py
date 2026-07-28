@@ -13,16 +13,44 @@ from .util import atomic_json_write, project_root
 COMPARISON_SCHEMA_VERSION = "1.0.0"
 
 
+def _diagnostic_candidates(root: Path) -> list[dict[str, Any]]:
+    candidates: list[dict[str, Any]] = []
+    for path in sorted((root / "docs" / "preflight").glob("local_*_execution_*.json")):
+        try:
+            evidence = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(evidence, dict) or not str(evidence.get("status", "")).startswith("QUALIFIED_CPU_FALLBACK"):
+            continue
+        candidate = evidence.get("candidate")
+        if not isinstance(candidate, dict) or not isinstance(candidate.get("sha256"), str):
+            continue
+        audit = evidence.get("independent_audit") if isinstance(evidence.get("independent_audit"), dict) else {}
+        candidates.append({
+            "execution_profile": evidence.get("execution_profile"),
+            "job_id": evidence.get("job_id"),
+            "candidate_id": candidate.get("candidate_id"),
+            "path": candidate.get("path"),
+            "sha256": candidate.get("sha256"),
+            "dimensions": candidate.get("dimensions"),
+            "audit_verdict": audit.get("verdict", "UNCERTAIN"),
+            "production_eligible": False,
+        })
+    return candidates
+
+
 def build_comparison_report(root: str | Path | None = None) -> dict[str, Any]:
     root_path = project_root(root)
     preflight = collect_preflight(root_path)
     gate_statuses = {gate["name"]: gate["status"] for gate in preflight["gates"]}
+    diagnostic_candidates = _diagnostic_candidates(root_path)
+    has_diagnostic_candidates = bool(diagnostic_candidates)
     return {
         "schema_version": COMPARISON_SCHEMA_VERSION,
         "comparison_id": "identity-style-comparison-2026-07-26.1",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "status": "BLOCKED_NO_REAL_CANDIDATES",
-        "reason": "No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.",
+        "status": "BLOCKED_DIAGNOSTIC_CANDIDATES_NOT_PRODUCTION_AUTHORIZED" if has_diagnostic_candidates else "BLOCKED_NO_REAL_CANDIDATES",
+        "reason": "Diagnostic candidates were observed, but no comparison ranking or production winner is produced until calibrated thresholds and independent all-PASS audits authorize them." if has_diagnostic_candidates else "No comparison sheet or candidate ranking is produced without a production-authorized source fixture, live generation runtime, calibrated thresholds, and independent audit evidence.",
         "matrix_id": build_matrix()["matrix_id"],
         "selection_policy": {
             "identity_first": True,
@@ -30,7 +58,8 @@ def build_comparison_report(root: str | Path | None = None) -> dict[str, Any]:
             "face_swap_permitted": False,
             "style_ranking_before_identity": False,
         },
-        "candidate_counts": {"observed": 0, "required_for_matrix": "profile_budgeted"},
+        "candidate_counts": {"observed": len(diagnostic_candidates), "eligible_for_selection": 0, "required_for_matrix": "profile_budgeted"},
+        "diagnostic_candidates": diagnostic_candidates,
         "comparison_artifacts": [],
         "metrics": {
             "identity_pass_rate": None,
@@ -67,7 +96,7 @@ def render_comparison_markdown(report: dict[str, Any]) -> str:
         f"- Reason: {report['reason']}",
         f"- Matrix: `{report['matrix_id']}`",
         "",
-        "No candidate comparison was generated. The absence of a sheet is intentional while the hard gates are blocked.",
+        "No production comparison ranking was generated. Diagnostic candidates, when present, remain quarantined while the hard gates are blocked.",
         "",
         "## Required selection order",
         "",

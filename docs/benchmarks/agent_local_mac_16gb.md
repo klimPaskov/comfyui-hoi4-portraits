@@ -1,12 +1,12 @@
 # Benchmark Report: `agent_local_mac_16gb`
 
-- Status: **BLOCKED_PREFLIGHT**
-- Reason: One or more mandatory preflight gates remain blocked.
+- Status: **BLOCKED_PRODUCTION_GATES_CPU_FALLBACK**
+- Reason: A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates.
 - Expected locked model bytes: `7553118462`
 - Physical memory bytes: `17179869184`
 - Capacity assessment: **MODEL_BYTES_WITHIN_PHYSICAL_MEMORY_NOT_EXECUTION_PROOF**
 
-This report contains no successful generation claim. File-size arithmetic is a risk indicator, not an infeasibility measurement.
+This report contains no production acceptance claim. Any CPU diagnostic execution evidence is explicitly quarantined from promotion. File-size arithmetic is a risk indicator, not an infeasibility measurement.
 
 ## Gate status
 
@@ -36,10 +36,10 @@ This report contains no successful generation claim. File-size arithmetic is a r
 | `workflow_structure` | **PASS** |
 | `runtime_health` | **PASS_SCHEMA_ONLY** |
 | `workflow_load` | **PASS_SCHEMA_ONLY** |
-| `dry_validation_job` | **BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND** |
-| `generation` | **BLOCKED_NOT_ATTEMPTED** |
+| `dry_validation_job` | **PASS_PREPROCESSING_ONLY_PRODUCTION_GATES_BLOCKED** |
+| `generation` | **PASS_EXECUTION_ONLY_PRODUCTION_BLOCKED** |
 | `thermal` | **NOT_MEASURED** |
-| `quality` | **NOT_MEASURED** |
+| `quality` | **UNCERTAIN_AUDIT** |
 | `failure_recovery` | **NOT_MEASURED** |
 
 ## Blockers
@@ -53,6 +53,5 @@ This report contains no successful generation claim. File-size arithmetic is a r
 - resolve image-specific Python and system-package pins before building the RunPod image
 - complete live source-specific model loading and the eight-step Turbo execution
 - verify all model revisions, formats, sizes, and SHA-256 values in the target environment
-- provide an approved source fixture, background, and rights record
 - run the target profile with independent identity/style/mask/provenance audit
 - record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence

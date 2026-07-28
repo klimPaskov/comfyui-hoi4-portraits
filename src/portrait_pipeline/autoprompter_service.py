@@ -25,11 +25,24 @@ from pathlib import Path
 from typing import Any
 
 from .prompt import autoprompter_instruction, validate_prompt
-from .util import project_root, sha256_file
+from .util import atomic_json_write, project_root, relative_safe_path, sha256_file
 
 
 class AutoprompterServiceError(RuntimeError):
-    pass
+    def __init__(self, message: str, *, attempts: list[dict[str, Any]] | None = None):
+        super().__init__(message)
+        self.attempts = attempts or []
+
+
+# The retry ladder changes decoding only.  The exact instruction and the
+# processed image are reused byte-for-byte on every attempt, as required by
+# the autoprompter contract.  Keep this small and deterministic so a failed
+# high-risk claim cannot turn into an unbounded VLM loop.
+AUTOPROMPTER_RETRY_PROFILES: tuple[dict[str, float | int], ...] = (
+    {"temperature": 0.0, "seed": 0},
+    {"temperature": 0.1, "seed": 17},
+    {"temperature": 0.2, "seed": 29},
+)
 
 
 def _read_lock(root: Path) -> dict[str, Any]:
@@ -154,7 +167,11 @@ class _Handler(BaseHTTPRequestHandler):
                 raise AutoprompterServiceError("request body must be an object")
             result = self.service.complete(payload)
         except (AutoprompterServiceError, ValueError, json.JSONDecodeError) as exc:
-            self._send(400, {"error": {"message": str(exc), "type": type(exc).__name__}})
+            error = {"message": str(exc), "type": type(exc).__name__}
+            attempts = getattr(exc, "attempts", None)
+            if isinstance(attempts, list) and attempts:
+                error["attempts"] = attempts
+            self._send(400, {"error": error})
             return
         self._send(200, result)
 
@@ -247,7 +264,25 @@ class AutoprompterService:
             upstream = False
         return {"status": "PASS" if upstream else "BLOCKED", "binding": f"http://{self.host}:{self.port}", "upstream": upstream, "profile": self.profile, "model_id": self.model_id, "instruction_sha256": __import__("hashlib").sha256(self.instruction.encode("utf-8")).hexdigest()}
 
-    def _complete_full_power(self, image_value: str) -> str:
+    def _record_attempts(self, job_id: Any, attempts: list[dict[str, Any]]) -> None:
+        """Persist private retry metadata without storing the model's prompt text."""
+
+        if not isinstance(job_id, str) or not job_id or any(char not in "abcdefghijklmnopqrstuvwxyz0123456789_-" for char in job_id):
+            return
+        try:
+            job_root = relative_safe_path(self.root / "jobs", job_id)
+        except ValueError:
+            return
+        atomic_json_write(
+            job_root / "evidence" / "prompt" / "autoprompter_attempts.json",
+            {
+                "schema_version": "1.0.0",
+                "instruction_sha256": __import__("hashlib").sha256(self.instruction.encode("utf-8")).hexdigest(),
+                "attempts": attempts,
+            },
+        )
+
+    def _complete_full_power(self, image_value: str, *, temperature: float, seed: int) -> str:
         if self._model is None or self._processor is None:
             raise AutoprompterServiceError("full-power Transformers model is not ready")
         try:
@@ -262,8 +297,16 @@ class AutoprompterService:
                 inputs = self._processor.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt", return_dict=True)
             device = next(self._model.parameters()).device
             inputs = {key: value.to(device) if hasattr(value, "to") else value for key, value in inputs.items()}
+            torch.manual_seed(seed)
+            generation_kwargs: dict[str, Any] = {
+                "max_new_tokens": int(self.lock["local_profile"]["max_tokens"]),
+            }
+            if temperature > 0.0:
+                generation_kwargs.update({"do_sample": True, "temperature": temperature})
+            else:
+                generation_kwargs["do_sample"] = False
             with torch.inference_mode():
-                generated = self._model.generate(**inputs, max_new_tokens=int(self.lock["local_profile"]["max_tokens"]))
+                generated = self._model.generate(**inputs, **generation_kwargs)
             input_ids = inputs.get("input_ids")
             if input_ids is not None:
                 generated = [output[len(input_row):] for input_row, output in zip(input_ids, generated)]
@@ -287,33 +330,48 @@ class AutoprompterService:
             raise AutoprompterServiceError("processed image is not valid base64") from exc
         if not decoded.startswith(b"\x89PNG\r\n\x1a\n"):
             raise AutoprompterServiceError("autoprompter accepts PNG input only")
-        if self.profile == "human_full_power_gpu":
-            prompt = self._complete_full_power(image_value)
+        attempts: list[dict[str, Any]] = []
+        for attempt_index, retry_profile in enumerate(AUTOPROMPTER_RETRY_PROFILES, start=1):
+            temperature = float(retry_profile["temperature"])
+            seed = int(retry_profile["seed"])
+            if self.profile == "human_full_power_gpu":
+                prompt = self._complete_full_power(image_value, temperature=temperature, seed=seed)
+            else:
+                upstream_payload = {
+                    "model": self.model_id,
+                    "messages": [{"role": "user", "content": [
+                        {"type": "text", "text": self.instruction},
+                        {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image_value}},
+                    ]}],
+                    "max_tokens": int(self.lock["local_profile"]["max_tokens"]),
+                    "temperature": temperature,
+                    "seed": seed,
+                    "stream": False,
+                }
+                response = _post_json(f"http://127.0.0.1:{self.upstream_port}/v1/chat/completions", upstream_payload, timeout=180)
+                try:
+                    prompt = response["choices"][0]["message"]["content"]
+                except (KeyError, IndexError, TypeError) as exc:
+                    raise AutoprompterServiceError("llama-server response has no assistant content") from exc
+                if not isinstance(prompt, str):
+                    raise AutoprompterServiceError("llama-server assistant content is not text")
             validation = validate_prompt(prompt, allowed_claims=payload.get("allowed_claims"))
-            if not validation.passed:
-                raise AutoprompterServiceError("autoprompt failed validation: " + ",".join(validation.failure_codes))
-            return {"prompt": validation.normalized_prompt, "model": self.model_id, "validator": validation.as_dict()}
-        upstream_payload = {
-            "model": self.model_id,
-            "messages": [{"role": "user", "content": [
-                {"type": "text", "text": self.instruction},
-                {"type": "image_url", "image_url": {"url": "data:image/png;base64," + image_value}},
-            ]}],
-            "max_tokens": int(self.lock["local_profile"]["max_tokens"]),
-            "temperature": float(self.lock["local_profile"]["temperature"]),
-            "stream": False,
-        }
-        response = _post_json(f"http://127.0.0.1:{self.upstream_port}/v1/chat/completions", upstream_payload, timeout=180)
-        try:
-            prompt = response["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as exc:
-            raise AutoprompterServiceError("llama-server response has no assistant content") from exc
-        if not isinstance(prompt, str):
-            raise AutoprompterServiceError("llama-server assistant content is not text")
-        validation = validate_prompt(prompt, allowed_claims=payload.get("allowed_claims"))
-        if not validation.passed:
-            raise AutoprompterServiceError("autoprompt failed validation: " + ",".join(validation.failure_codes))
-        return {"prompt": validation.normalized_prompt, "model": self.model_id, "validator": validation.as_dict()}
+            attempt_record = {
+                "attempt": attempt_index,
+                "temperature": temperature,
+                "seed": seed,
+                "status": "PASS" if validation.passed else "REJECTED",
+                "failure_codes": list(validation.failure_codes),
+                "findings": list(validation.findings),
+                "claims": {key: list(value) for key, value in validation.claims.items()},
+            }
+            attempts.append(attempt_record)
+            if validation.passed:
+                self._record_attempts(payload.get("job_id"), attempts)
+                return {"prompt": validation.normalized_prompt, "model": self.model_id, "validator": validation.as_dict(), "attempts": attempts}
+        final = attempts[-1] if attempts else {"failure_codes": ["AUTOPROMPT_EMPTY"]}
+        self._record_attempts(payload.get("job_id"), attempts)
+        raise AutoprompterServiceError("autoprompt failed validation after bounded retries: " + ",".join(final.get("failure_codes", [])), attempts=attempts)
 
     def stop(self) -> None:
         if self.profile == "human_full_power_gpu":

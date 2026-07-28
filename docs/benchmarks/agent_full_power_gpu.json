@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-28T21:20:36.429565+00:00",
+  "created_at": "2026-07-28T22:34:23.132348+00:00",
   "profile": "agent_full_power_gpu",
   "status": "BLOCKED_RUNTIME_UNAVAILABLE",
   "status_reason": "The target local runtime is not installed or its accelerator capability is not verified.",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 8192.00M  used = 7188.69M  free = 1003.31M  (encrypted)",
+          "stdout": "vm.swapusage: total = 7168.00M  used = 5707.94M  free = 1460.06M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15058.\nPages active:                                 259035.\nPages inactive:                               253327.\nPages speculative:                              6363.\nPages throttled:                                   0.\nPages wired down:                             135407.\nPages purgeable:                                  93.\n\"Translation faults\":                      263001324.\nPages copy-on-write:                        10462735.\nPages zero filled:                         140662909.\nPages reactivated:                          50482805.\nPages purged:                                2194683.\nFile-backed pages:                            314816.\nAnonymous pages:                              203909.\nPages stored in compressor:                  1147001.\nPages occupied by compressor:                 336558.\nDecompressions:                             80702223.\nCompressions:                              115607943.\nPageins:                                   580225233.\nPageouts:                                      51658.\nSwapins:                                    16574578.\nSwapouts:                                   21250848.\nPages tagged:                                  76661.\nPages tagged resident:                         58692.\nPages tagged compressed:                       17969.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4300.\nPages tag-storage free:                          337.\nPages tag-storage non-tag pageable:            28050.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    2803648.\nTagged compressions:                         1205917.\nTagged decompressions:                       1076586.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14932.\nPages active:                                 324820.\nPages inactive:                               485184.\nPages speculative:                              6584.\nPages throttled:                                   0.\nPages wired down:                             141910.\nPages purgeable:                                 162.\n\"Translation faults\":                      379614939.\nPages copy-on-write:                        11979804.\nPages zero filled:                         197540839.\nPages reactivated:                          72645768.\nPages purged:                                2534138.\nFile-backed pages:                            551415.\nAnonymous pages:                              265173.\nPages stored in compressor:                   709147.\nPages occupied by compressor:                  32594.\nDecompressions:                            119983931.\nCompressions:                              174453811.\nPageins:                                   716099279.\nPageouts:                                      67999.\nSwapins:                                    22715539.\nSwapouts:                                   28015585.\nPages tagged:                                  81407.\nPages tagged resident:                         67008.\nPages tagged compressed:                       14399.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4307.\nPages tag-storage free:                          218.\nPages tag-storage non-tag pageable:            28162.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    2103296.\nTagged compressions:                         1641584.\nTagged decompressions:                       1498106.",
           "stderr": ""
         }
       },
@@ -51,7 +51,7 @@
           "<project-root>"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   189Gi   242Gi    44%    1.7M  2.5G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   191Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }
@@ -163,8 +163,8 @@
       "evidence_path": "docs/preflight/live_comfy_compatibility.json"
     },
     "dry_validation_job": {
-      "status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND",
-      "reason": "The live schema probe and private preprocessing qualification passed, but no production-authorized source fixture and approved background are available."
+      "status": "PASS_PREPROCESSING_ONLY_PRODUCTION_GATES_BLOCKED",
+      "reason": "The source fixture, approved background, and deterministic preprocessing route are evidenced; calibrated identity/style thresholds and independent audit still block promotion."
     },
     "generation": {
       "status": "BLOCKED_NOT_ATTEMPTED",
@@ -174,7 +174,8 @@
     "thermal": {
       "status": "NOT_MEASURED",
       "samples": [],
-      "reason": "No generation session was run."
+      "swap_observed": false,
+      "reason": "Thermal samples were not captured for this run; CPU fallback evidence records swap behavior separately."
     },
     "quality": {
       "status": "NOT_MEASURED",
@@ -194,7 +195,6 @@
     "resolve image-specific Python and system-package pins before building the RunPod image",
     "complete live source-specific model loading and the eight-step Turbo execution",
     "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
-    "provide an approved source fixture, background, and rights record",
     "run the target profile with independent identity/style/mask/provenance audit",
     "record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence"
   ],
@@ -217,6 +217,10 @@
       "reproducibility"
     ],
     "style_lora_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
-    "style_lora_observed_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
+    "style_lora_observed_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
+    "execution_evidence": {
+      "status": "NOT_APPLICABLE",
+      "candidate_count": 0
+    }
   }
 }

@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import base64
+import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
 from portrait_pipeline.constants import ExitCode
 from portrait_pipeline.contracts import validate_schema
+from portrait_pipeline.autoprompter_service import AUTOPROMPTER_RETRY_PROFILES, AutoprompterService, AutoprompterServiceError
 from portrait_pipeline.prompt import validate_prompt
 from portrait_pipeline.util import project_root
 
@@ -71,6 +76,63 @@ class PromptAndContractTests(unittest.TestCase):
         invalid = dict(valid)
         invalid["execution_profile"] = "unsupported"
         self.assertTrue(validate_schema(invalid, root / "schemas/portrait_job_input.schema.json"))
+
+    def test_autoprompter_retries_decoding_only_and_records_bounded_attempts(self):
+        instruction = (project_root() / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")
+        service = object.__new__(AutoprompterService)
+        service.root = Path(tempfile.mkdtemp(prefix="hoi4-autoprompt-test-"))
+        service.profile = "human_local_mac_16gb"
+        service.model_id = "Qwen/Qwen3-VL-4B-Instruct-GGUF"
+        service.instruction = instruction
+        service.upstream_port = 1
+        service.lock = {"local_profile": {"max_tokens": 256}}
+        png_value = base64.b64encode(b"\x89PNG\r\n\x1a\nunit-test").decode("ascii")
+        responses = [
+            {"choices": [{"message": {"content": "hoi4_portrait, an American officer with a neutral expression"}}]},
+            {"choices": [{"message": {"content": "hoi4_portrait, a person with short hair and a neutral expression"}}]},
+        ]
+        try:
+            with mock.patch("portrait_pipeline.autoprompter_service._post_json", side_effect=responses) as post:
+                result = service.complete({"job_id": "retry-test-001", "model_id": service.model_id, "instruction": instruction, "image_png_base64": png_value})
+            self.assertEqual(result["prompt"], "hoi4_portrait, a person with short hair and a neutral expression")
+            self.assertEqual(len(result["attempts"]), 2)
+            self.assertEqual(result["attempts"][0]["status"], "REJECTED")
+            self.assertEqual(result["attempts"][1]["status"], "PASS")
+            self.assertEqual([call.kwargs["timeout"] for call in post.call_args_list], [180, 180])
+            payloads = [call.args[1] for call in post.call_args_list]
+            self.assertEqual([payload["messages"] for payload in payloads], [payloads[0]["messages"]] * 2)
+            self.assertEqual([payload["messages"][0]["content"][1]["image_url"]["url"] for payload in payloads], ["data:image/png;base64," + png_value] * 2)
+            self.assertEqual([(payload["temperature"], payload["seed"]) for payload in payloads], [(0.0, 0), (0.1, 17)])
+            attempt_path = service.root / "jobs/retry-test-001/evidence/prompt/autoprompter_attempts.json"
+            self.assertTrue(attempt_path.is_file())
+            self.assertEqual(len(__import__("json").loads(attempt_path.read_text(encoding="utf-8"))["attempts"]), 2)
+        finally:
+            import shutil
+
+            shutil.rmtree(service.root)
+
+    def test_autoprompter_rejects_after_exactly_three_attempts(self):
+        instruction = (project_root() / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")
+        service = object.__new__(AutoprompterService)
+        service.root = Path(tempfile.mkdtemp(prefix="hoi4-autoprompt-test-"))
+        service.profile = "human_local_mac_16gb"
+        service.model_id = "Qwen/Qwen3-VL-4B-Instruct-GGUF"
+        service.instruction = instruction
+        service.upstream_port = 1
+        service.lock = {"local_profile": {"max_tokens": 256}}
+        png_value = base64.b64encode(b"\x89PNG\r\n\x1a\nunit-test").decode("ascii")
+        response = {"choices": [{"message": {"content": "hoi4_portrait, an American officer with a neutral expression"}}]}
+        try:
+            with mock.patch("portrait_pipeline.autoprompter_service._post_json", return_value=response) as post:
+                with self.assertRaises(AutoprompterServiceError) as context:
+                    service.complete({"job_id": "retry-test-002", "model_id": service.model_id, "instruction": instruction, "image_png_base64": png_value})
+            self.assertEqual(len(context.exception.attempts), len(AUTOPROMPTER_RETRY_PROFILES))
+            self.assertEqual(post.call_count, len(AUTOPROMPTER_RETRY_PROFILES))
+            self.assertTrue(all(item["status"] == "REJECTED" for item in context.exception.attempts))
+        finally:
+            import shutil
+
+            shutil.rmtree(service.root)
 
 
 if __name__ == "__main__":

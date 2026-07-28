@@ -6,7 +6,7 @@
 - Physical memory bytes: `17179869184`
 - Capacity assessment: **MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY**
 
-This report contains no successful generation claim. File-size arithmetic is a risk indicator, not an infeasibility measurement.
+This report contains no production acceptance claim. Any CPU diagnostic execution evidence is explicitly quarantined from promotion. File-size arithmetic is a risk indicator, not an infeasibility measurement.
 
 ## Gate status
 
@@ -36,7 +36,7 @@ This report contains no successful generation claim. File-size arithmetic is a r
 | `workflow_structure` | **PASS** |
 | `runtime_health` | **PASS_SCHEMA_ONLY** |
 | `workflow_load` | **PASS_SCHEMA_ONLY** |
-| `dry_validation_job` | **BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND** |
+| `dry_validation_job` | **PASS_PREPROCESSING_ONLY_PRODUCTION_GATES_BLOCKED** |
 | `generation` | **BLOCKED_NOT_ATTEMPTED** |
 | `thermal` | **NOT_MEASURED** |
 | `quality` | **NOT_MEASURED** |
@@ -53,6 +53,5 @@ This report contains no successful generation claim. File-size arithmetic is a r
 - resolve image-specific Python and system-package pins before building the RunPod image
 - complete live source-specific model loading and the eight-step Turbo execution
 - verify all model revisions, formats, sizes, and SHA-256 values in the target environment
-- provide an approved source fixture, background, and rights record
 - run the target profile with independent identity/style/mask/provenance audit
 - record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence

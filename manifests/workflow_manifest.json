@@ -49,7 +49,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
+        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -79,7 +79,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T21:21:14.645103+00:00"
+        "checked_at": "2026-07-28T22:33:23.471573+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -138,7 +138,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
+        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -168,7 +168,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T21:21:14.645103+00:00"
+        "checked_at": "2026-07-28T22:33:23.471573+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -225,7 +225,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
+        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -249,7 +249,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T21:21:14.645103+00:00"
+        "checked_at": "2026-07-28T22:33:23.471573+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -306,7 +306,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
+        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -330,7 +330,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T21:21:14.645103+00:00"
+        "checked_at": "2026-07-28T22:33:23.471573+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -387,7 +387,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9"
+        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -411,7 +411,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T21:21:14.645103+00:00"
+        "checked_at": "2026-07-28T22:33:23.471573+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",

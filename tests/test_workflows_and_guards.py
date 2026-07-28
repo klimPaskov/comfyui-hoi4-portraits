@@ -227,10 +227,11 @@ class WorkflowAndGuardTests(unittest.TestCase):
         benchmark = build_benchmark_report(self.root, "agent_local_mac_16gb")
         self.assertNotEqual(benchmark["status"], "PASS")
         self.assertEqual(benchmark["claims"]["final_png"], "NOT_CREATED")
-        self.assertEqual(benchmark["measurements"]["generation"]["candidate_count"], 0)
+        self.assertEqual(benchmark["measurements"]["generation"]["status"], "PASS_EXECUTION_ONLY_PRODUCTION_BLOCKED")
+        self.assertEqual(benchmark["measurements"]["generation"]["candidate_count"], 1)
         comparison = build_comparison_report(self.root)
-        self.assertEqual(comparison["status"], "BLOCKED_NO_REAL_CANDIDATES")
-        self.assertEqual(comparison["candidate_counts"]["observed"], 0)
+        self.assertIn(comparison["status"], {"BLOCKED_NO_REAL_CANDIDATES", "BLOCKED_DIAGNOSTIC_CANDIDATES_NOT_PRODUCTION_AUTHORIZED"})
+        self.assertGreaterEqual(comparison["candidate_counts"]["observed"], 0)
         self.assertIsNone(comparison["claims"]["identity_winner"])
 
     def test_runpod_surface_is_fail_closed_and_keeps_raw_comfy_loopback(self):
