@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "job_id": "example-fictional-001",
+  "execution_profile": "human_local_mac_16gb",
+  "source_image_path": "jobs/example-fictional-001/source/portrait.png",
+  "source_provenance": {
+    "source_class": "user_provided",
+    "source_url": null,
+    "attribution": "Example owner-provided fixture",
+    "archive_or_collection": null,
+    "source_date": null,
+    "rights_notes": "Fictional documentation example; not a production source.",
+    "license_identifier": null,
+    "user_authorization_record": "docs/examples/example-authorization.txt"
+  },
+  "subject_identity": {
+    "record_name": "Example Subject",
+    "identity_classification": "approved_fictional_subject",
+    "real_person": false,
+    "record_notes": "Synthetic documentation subject only."
+  },
+  "subject_selector": {
+    "mode": "face_index",
+    "face_index": 0
+  },
+  "prompt": "hoi4_portrait, an adult person with short hair, glasses, and a neutral expression",
+  "intended_hoi4_role": "country_leader",
+  "final_output_stem": "example_subject",
+  "approved_background": {
+    "registry_id": "example-background-placeholder",
+    "path": "backgrounds/example-approved-background.png",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "seed_policy": {
+    "mode": "derived",
+    "seed": null,
+    "derivation": "job_id/source_sha256/profile"
+  },
+  "candidate_count": 1,
+  "retry_limit": 0,
+  "identity_thresholds_id": "example-thresholds-placeholder",
+  "style_thresholds_id": "example-style-thresholds-placeholder",
+  "final_png_path": "jobs/example-fictional-001/final/example_subject.png",
+  "final_dds_path": "jobs/example-fictional-001/final/example_subject.dds"
+}

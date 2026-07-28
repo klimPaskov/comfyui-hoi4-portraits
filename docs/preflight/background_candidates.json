@@ -5,7 +5,7 @@
   "candidates": [
     {
       "candidate_id": "chaos-redux-portrait-leader-background-psd",
-      "source_repository": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
+      "source_repository": "<external-repository>",
       "repository_remote": "git@github.com:klimPaskov/Chaos-Redux.git",
       "repository_head": "420cfb326e8ec78ec5641b152f32fce2b2d94db6",
       "repository_remote_head": "276ea88b959c0b1833c414476f3d9c69bf5a41ba",

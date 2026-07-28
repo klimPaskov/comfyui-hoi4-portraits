@@ -7,7 +7,7 @@
   "preflight": {
     "schema_version": "1.0.0",
     "collected_at": "2026-07-28T13:16:18.173583+00:00",
-    "project_root": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits",
+    "project_root": "<project-root>",
     "profile": "agent_local_mac_16gb",
     "hardware": {
       "platform": "macOS-26.5.2-arm64-arm-64bit",
@@ -48,7 +48,7 @@
         "command": [
           "df",
           "-h",
-          "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits"
+          "<project-root>"
         ],
         "returncode": 0,
         "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   183Gi   255Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
@@ -98,7 +98,7 @@
             "command": [
               "df",
               "-h",
-              "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits"
+              "<project-root>"
             ],
             "returncode": 0,
             "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   183Gi   255Gi    42%    1.7M  2.7G    0%   /System/Volumes/Data",
@@ -107,11 +107,11 @@
           "available_tools": {
             "uv": {
               "command": "uv",
-              "path": "/Users/klimpaskov/.local/bin/uv",
+              "path": "<tool-path>/uv",
               "present": true,
               "probe": {
                 "command": [
-                  "/Users/klimpaskov/.local/bin/uv",
+                  "<tool-path>/uv",
                   "--version"
                 ],
                 "returncode": 0,
@@ -156,7 +156,7 @@
         "evidence": {
           "profile": "agent_local_mac_16gb",
           "python_version": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
-          "python_executable": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/.venv/bin/python",
+          "python_executable": "<project-root>/.venv/bin/python",
           "host_python_version": "3.12.13",
           "python_floor": ">=3.10",
           "python_floor_ok": true,
@@ -168,7 +168,7 @@
             "version": "2.11.0"
           },
           "runtime_probe": {
-            "python_executable": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/.venv/bin/python",
+            "python_executable": "<project-root>/.venv/bin/python",
             "returncode": 0,
             "stderr": "",
             "status": "PASS",
@@ -208,7 +208,7 @@
         "name": "immutable_style_lora",
         "status": "PASS",
         "evidence": {
-          "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/loras/hoi4_portrait_new_style_lora.safetensors",
+          "path": "<project-root>/loras/hoi4_portrait_new_style_lora.safetensors",
           "present": true,
           "expected_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
           "actual_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
@@ -220,7 +220,7 @@
         "status": "BLOCKED",
         "evidence": {
           "status": "BLOCKED",
-          "registry_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/config/background_registry.json",
+          "registry_path": "<project-root>/config/background_registry.json",
           "registry_status": "BLOCKED_UNTIL_RESOLVED",
           "entries": [
             {
@@ -233,11 +233,11 @@
               "status_check": "BLOCKED"
             }
           ],
-          "candidate_evidence_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/docs/preflight/background_candidates.json",
+          "candidate_evidence_path": "<project-root>/docs/preflight/background_candidates.json",
           "candidate_evidence": [
             {
               "candidate_id": "chaos-redux-portrait-leader-background-psd",
-              "source_repository": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
+              "source_repository": "<external-repository>",
               "repository_remote": "git@github.com:klimPaskov/Chaos-Redux.git",
               "repository_head": "420cfb326e8ec78ec5641b152f32fce2b2d94db6",
               "repository_remote_head": "276ea88b959c0b1833c414476f3d9c69bf5a41ba",
@@ -294,7 +294,7 @@
         "status": "BLOCKED",
         "evidence": {
           "fixture_files": [],
-          "manifest_template": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/tests/fixture_manifest.template.json"
+          "manifest_template": "<project-root>/tests/fixture_manifest.template.json"
         }
       },
       {
@@ -875,14 +875,14 @@
         "status": "PASS",
         "evidence": {
           "status": "PASS",
-          "lock_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/custom_nodes.lock.json",
+          "lock_path": "<project-root>/dependencies/custom_nodes.lock.json",
           "checks": [
             {
               "name": "comfyui-krea2edit",
               "revision": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
               "actual_revision": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
               "revision_match": true,
-              "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/comfyui/custom_nodes/comfyui-krea2edit",
+              "path": "<project-root>/comfyui/custom_nodes/comfyui-krea2edit",
               "present": true,
               "signature_files": [
                 "__init__.py",
@@ -942,7 +942,7 @@
         "name": "comfyui_runtime_dependency_lock",
         "status": "PASS",
         "evidence": {
-          "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/runtime_requirements_lock.json",
+          "path": "<project-root>/dependencies/runtime_requirements_lock.json",
           "status": "PASS",
           "mode": "profile_locks",
           "lock_status": "RESOLVED_PROFILE_LOCKS_LIVE_COMPATIBILITY_UNVERIFIED",
@@ -988,7 +988,7 @@
         "status": "PASS",
         "evidence": {
           "chaos_redux": {
-            "path": "/Users/klimpaskov/Documents/Paradox Interactive/Hearts of Iron IV/mod/Chaos-Redux",
+            "path": "<external-repository>",
             "exists": true,
             "is_git": true,
             "status": {
@@ -1015,7 +1015,7 @@
         "name": "calibrated_identity_thresholds",
         "status": "BLOCKED",
         "evidence": {
-          "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/config/identity_thresholds.json",
+          "path": "<project-root>/config/identity_thresholds.json",
           "present": true,
           "thresholds_id": "UNSET_BLOCK_EXECUTION",
           "approved_by": []
@@ -1026,7 +1026,7 @@
         "status": "PASS",
         "evidence": {
           "reason": "Live core/node/schema compatibility is verified; source-specific model loading and the eight-step Turbo execution remain a separate qualification gate.",
-          "compatibility_review_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/docs/preflight/krea_compatibility_review.json",
+          "compatibility_review_path": "<project-root>/docs/preflight/krea_compatibility_review.json",
           "compatibility_review_status": "BLOCKED_EXECUTION_NOT_MEASURED",
           "compatibility_review": {
             "schema_version": "1.0.0",
@@ -1089,7 +1089,7 @@
             ],
             "conclusion": "Krea live core/node/schema compatibility is verified in the pinned loopback runtime and all four workflows are live-schema loadable. This does not establish source-specific model execution or production suitability: the required eight-step run, identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked by missing approved source/background and rights evidence."
           },
-          "live_probe_path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/docs/preflight/live_comfy_compatibility.json",
+          "live_probe_path": "<project-root>/docs/preflight/live_comfy_compatibility.json",
           "live_probe_status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
           "live_probe": {
             "schema_version": "1.0.0",
@@ -2973,7 +2973,7 @@
         "name": "preprocessing_and_audit_dependencies",
         "status": "PASS",
         "evidence": {
-          "path": "/Users/klimpaskov/Documents/Projects/comfyui-hoi4-portraits/dependencies/preprocessing_lock.json",
+          "path": "<project-root>/dependencies/preprocessing_lock.json",
           "status": "PASS",
           "lock_status": "PINNED_ARTIFACTS_NOT_INSTALLED",
           "checks": [

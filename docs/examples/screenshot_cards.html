@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HOI4 Portrait Workflow Examples</title>
+  <style>
+    :root { color-scheme: dark; --ink: #eef4ff; --muted: #9eacc4; --panel: #172235; --line: #2b3e5b; --blue: #63b3ed; --green: #68d391; --amber: #f6ad55; --red: #fc8181; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at 20% 0%, #243b5b 0, #101725 48%, #0b101b 100%); font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; color: var(--ink); }
+    .card { width: 1120px; padding: 46px 54px 50px; border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(145deg, rgba(31,47,72,.98), rgba(18,28,45,.98)); box-shadow: 0 28px 80px rgba(0,0,0,.34); }
+    .eyebrow { color: var(--blue); font-size: 15px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 14px 0 10px; font-size: 42px; line-height: 1.08; letter-spacing: -.03em; }
+    .lede { max-width: 850px; margin: 0 0 30px; color: var(--muted); font-size: 19px; line-height: 1.5; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .field { padding: 18px 20px; border: 1px solid var(--line); border-radius: 16px; background: rgba(8,15,27,.42); }
+    .field strong { display: block; margin-bottom: 7px; color: #fff; font-size: 16px; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    code { color: #b9d9ff; }
+    pre { margin: 28px 0 0; padding: 24px; overflow: hidden; border: 1px solid #304a6c; border-radius: 16px; background: #0b1422; color: #cce3ff; font-size: 18px; line-height: 1.58; }
+    .status { display: inline-flex; align-items: center; gap: 12px; padding: 10px 15px; border-radius: 999px; background: rgba(246,173,85,.16); color: var(--amber); font-weight: 900; letter-spacing: .07em; }
+    .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 34px 0 0; }
+    .step { min-height: 146px; padding: 20px; border-radius: 18px; background: rgba(8,15,27,.48); border: 1px solid var(--line); }
+    .step .num { color: var(--green); font-size: 14px; font-weight: 900; letter-spacing: .12em; }
+    .step h2 { margin: 12px 0 8px; font-size: 19px; }
+    .step p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.42; }
+    .blocked { margin-top: 28px; padding: 18px 20px; border-left: 4px solid var(--red); border-radius: 12px; background: rgba(252,129,129,.08); color: #ffd4d4; font-size: 17px; line-height: 1.45; }
+    .meta { margin-top: 24px; color: var(--muted); font-size: 14px; }
+    [data-card="input"] #blocked, [data-card="blocked"] #input { display: none; }
+  </style>
+</head>
+<body>
+  <main class="card" id="input">
+    <div class="eyebrow">Sanitized example · job contract</div>
+    <h1>Human local Mac input</h1>
+    <p class="lede">The workflow starts from a validated, attributed source and an approved background registry entry. This card is fictional and intentionally non-executable.</p>
+    <div class="grid">
+      <div class="field"><strong>Profile</strong><code>human_local_mac_16gb</code></div>
+      <div class="field"><strong>Prompt source</strong><code>exact autoprompter instruction</code></div>
+      <div class="field"><strong>Source</strong><code>jobs/example-fictional-001/source/portrait.png</code></div>
+      <div class="field"><strong>Background</strong><code>example-background-placeholder</code></div>
+    </div>
+    <pre>{
+  "job_id": "example-fictional-001",
+  "candidate_count": 1,
+  "retry_limit": 0,
+  "identity_thresholds_id": "example-thresholds-placeholder",
+  "style_thresholds_id": "example-style-thresholds-placeholder"
+}</pre>
+    <div class="meta">Real jobs must use the normative schema, real checksums, rights records, and calibrated threshold IDs.</div>
+  </main>
+  <main class="card" id="blocked">
+    <div class="eyebrow">Sanitized example · fail-closed result</div>
+    <div style="margin-top:16px"><span class="status">BLOCKED · EXIT 15</span></div>
+    <h1>No production artifact claimed</h1>
+    <p class="lede">A missing approved background is a hard gate. The controller stops before candidate promotion, DDS conversion, or mod integration.</p>
+    <div class="flow">
+      <section class="step"><div class="num">01 · CHECK</div><h2>Background registry</h2><p>Registry is unresolved or the checksum is not approved.</p></section>
+      <section class="step"><div class="num">02 · STOP</div><h2>Generation gate</h2><p>No production candidate is accepted or ranked.</p></section>
+      <section class="step"><div class="num">03 · PROTECT</div><h2>Finalization</h2><p>No DDS, checksum, or mod wiring is produced.</p></section>
+    </div>
+    <div class="blocked"><strong>Truthful output:</strong> <code>candidate_paths: []</code> · <code>final_dds: null</code> · independent audit not run.</div>
+    <div class="meta">This is an example of the documented blocked state, not a generated portrait.</div>
+  </main>
+  <script>
+    const view = new URLSearchParams(location.search).get("view");
+    if (view === "input" || view === "blocked") document.body.dataset.card = view;
+  </script>
+</body>
+</html>

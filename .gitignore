@@ -28,6 +28,8 @@ logs/
 *.bin
 *.onnx
 *.png
+!docs/assets/
+!docs/assets/*.png
 *.jpg
 *.jpeg
 *.webp
