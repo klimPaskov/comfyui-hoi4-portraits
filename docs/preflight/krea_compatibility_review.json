@@ -7,7 +7,7 @@
     {
       "role": "official_comfyui_krea_2_documentation",
       "url": "https://docs.comfy.org/tutorials/image/krea/krea-2",
-      "revision_or_date": "live official documentation reviewed 2026-07-26"
+      "revision_or_date": "live official documentation reviewed 2026-07-28"
     },
     {
       "role": "primary_krea2edit_node_readme",
@@ -34,7 +34,17 @@
     {
       "id": "krea2edit_grounding",
       "status": "PASS",
-      "finding": "The primary node documentation identifies 768 pixels as the grounded-encode default and describes a trained range beginning at 512; the generated graph locks grounding_px to 768."
+      "finding": "The primary node documentation identifies 768 pixels as the grounded-encode default and describes the v1.2 trained range as 384–768; the generated graph locks grounding_px to 768."
+    },
+    {
+      "id": "official_turbo_sampling_and_canvas",
+      "status": "PASS",
+      "finding": "The official ComfyUI Krea 2 documentation identifies Turbo as an eight-step distilled checkpoint and documents a 2 MP upper output range. The generated graph locks 8 steps, CFG 1, and an 832x1120 work canvas (0.93 MP)."
+    },
+    {
+      "id": "krea2edit_fit_and_reference_fidelity",
+      "status": "PASS",
+      "finding": "The primary node documentation identifies v1.2 fit geometry and ref_boost as the reference-fidelity control; the generated graph supplies source_image and VAE to fit mode and locks ref_boost to 1.0."
     },
     {
       "id": "pinned_core_loader_type",
