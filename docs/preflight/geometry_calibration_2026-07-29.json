@@ -1,0 +1,296 @@
+{
+  "schema_version": "1.0.0",
+  "calibration_id": "loc-daguerreotype-geometry-2026-07-29",
+  "created_at": "2026-07-28T23:26:36.583356+00:00",
+  "status": "GEOMETRY_EVIDENCE_MEASURED_PRODUCTION_BLOCKED",
+  "source_class": "public_domain_primary_archive",
+  "rights_policy": "private_local_calibration_only; no source portrait or landmark vector is written to Git",
+  "model": {
+    "name": "MediaPipe Face Landmarker",
+    "revision": "0ad5a71bcdff3d756dc5b07f93765aaeb4152538",
+    "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+  },
+  "fixture_set": {
+    "fixture_count": 50,
+    "accepted_single_face_count": 13,
+    "rejected_count": 43,
+    "rejected": [
+      {
+        "fixture_id": "loc_2004663943",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004663944",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004663979",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664044",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664159",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664164",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664221",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664252",
+        "reason": "OSError:image file is truncated (5 bytes not processed)"
+      },
+      {
+        "fixture_id": "loc_2004664261",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664264",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664268",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664371",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664372",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664378",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664392",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664393",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664396",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664409",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664486",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664489",
+        "reason": "OSError:image file is truncated (15 bytes not processed)"
+      },
+      {
+        "fixture_id": "loc_2004664514",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664529",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664534",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664536",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664539",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664540",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664541",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664542",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664545",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664546",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664547",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664549",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664550",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664551",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664554",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664557",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664558",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664559",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664567",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664568",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664576",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664590",
+        "reason": "ValueError:expected exactly one face, found 0"
+      },
+      {
+        "fixture_id": "loc_2004664593",
+        "reason": "ValueError:expected exactly one face, found 0"
+      }
+    ],
+    "variant_policy": [
+      "resize_round_trip",
+      "grayscale",
+      "brightness_0.82",
+      "jpeg_quality_62"
+    ]
+  },
+  "fixture_manifest": {
+    "status": "PASS",
+    "path": "fixtures/private/loc_calibration_2026-07-29/manifest.json",
+    "sha256": "01df5e07c47d14b5f22ba48374712c05a498792f7ac439d4f6ff4c7a1a65aeb6",
+    "declared_count": 50,
+    "observed_count": 50,
+    "missing_fixture_ids": [],
+    "extra_fixture_ids": []
+  },
+  "measurement_count": 34,
+  "scalar_distributions": {
+    "landmark_normalized_error": {
+      "count": 34,
+      "p95": 0.02334887687695485,
+      "p99": 0.034676413226408215,
+      "maximum": 0.039996115372979126
+    },
+    "pose_delta_yaw_degrees": {
+      "count": 34,
+      "p95": 2.314404382062515,
+      "p99": 2.9399385224419494,
+      "maximum": 3.0149289317116406
+    },
+    "pose_delta_pitch_degrees": {
+      "count": 34,
+      "p95": 3.631389552031094,
+      "p99": 4.760181138345526,
+      "maximum": 5.218004387977796
+    },
+    "pose_delta_roll_degrees": {
+      "count": 34,
+      "p95": 2.541824320864782,
+      "p99": 3.1480254262016647,
+      "maximum": 3.2848581810299056
+    },
+    "expression_distance": {
+      "count": 34,
+      "p95": 0.09762789601295854,
+      "p99": 0.10865511407847038,
+      "maximum": 0.11318815670334849
+    },
+    "asymmetry_change": {
+      "count": 34,
+      "p95": 0.018007726041350283,
+      "p99": 0.0242901952230027,
+      "maximum": 0.027320018000801312
+    }
+  },
+  "region_distributions": {
+    "eyes": {
+      "count": 34,
+      "p95": 0.021252868443774185,
+      "p99": 0.029579011899590103,
+      "maximum": 0.03326843123929121
+    },
+    "nose": {
+      "count": 34,
+      "p95": 0.03150236354041327,
+      "p99": 0.048125108089036,
+      "maximum": 0.05418074262546655
+    },
+    "mouth": {
+      "count": 34,
+      "p95": 0.02885250817340152,
+      "p99": 0.03761443754232472,
+      "maximum": 0.04098756718530098
+    },
+    "jaw": {
+      "count": 34,
+      "p95": 0.022359193442314455,
+      "p99": 0.03469606982635951,
+      "maximum": 0.03721788023545402
+    }
+  },
+  "proposed_operating_point": {
+    "basis": "observed_p99_preprocessing_invariance; not an approval",
+    "landmark_max_normalized_error": 0.034676413226408215,
+    "region_limits": {
+      "eyes": 0.029579011899590103,
+      "nose": 0.048125108089036,
+      "mouth": 0.03761443754232472,
+      "jaw": 0.03469606982635951
+    },
+    "pose_limits": {
+      "yaw": 2.9399385224419494,
+      "pitch": 4.760181138345526,
+      "roll": 3.1480254262016647
+    },
+    "expression_max_distance": 0.10865511407847038,
+    "asymmetry_max_change": 0.0242901952230027,
+    "approved": false
+  },
+  "blocked_reasons": [
+    "these measurements cover preprocessing invariance only; source-specific generated-candidate acceptance is still required",
+    "hairline, facial-hair, accessory, foreground-mask, and HOI4-style thresholds require separate labeled evidence",
+    "the tracked production threshold file remains unchanged and fail-closed"
+  ],
+  "policy": "This report is aggregate calibration evidence only. It cannot authorize a threshold record, candidate, PNG, DDS, or mod integration output."
+}

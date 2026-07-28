@@ -225,6 +225,12 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(thresholds["status"], "BLOCKED_UNTIL_CALIBRATION")
         self.assertTrue(thresholds["fail_closed"])
 
+    def test_geometry_calibration_evidence_is_measured_but_not_approved(self):
+        evidence = json.loads((self.root / "docs/preflight/geometry_calibration_2026-07-29.json").read_text(encoding="utf-8"))
+        self.assertEqual(evidence["status"], "GEOMETRY_EVIDENCE_MEASURED_PRODUCTION_BLOCKED")
+        self.assertGreater(evidence["measurement_count"], 0)
+        self.assertFalse(evidence["proposed_operating_point"]["approved"])
+
     def test_identity_style_matrix_execution_is_explicitly_fail_closed(self):
         from portrait_pipeline.experiments import build_execution_report
 

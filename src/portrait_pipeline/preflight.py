@@ -865,7 +865,26 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
             }
         except (OSError, json.JSONDecodeError):
             calibration_evidence = {"path": str(calibration_path.relative_to(root_path)), "status": "INVALID_JSON"}
-    gates.append({"name": "calibrated_identity_thresholds", "status": threshold_status, "evidence": {"path": str(threshold_path), "present": threshold_path.is_file(), "status": thresholds.get("status"), "accepted_statuses": sorted(CALIBRATED_THRESHOLD_STATUSES), "thresholds_id": thresholds.get("thresholds_id"), "approved_by": thresholds.get("approved_by"), "calibration_evidence": calibration_evidence}})
+    geometry_evidence: dict[str, Any] = {"status": "NOT_RECORDED"}
+    geometry_paths = sorted((root_path / "docs" / "preflight").glob("geometry_calibration_*.json"))
+    if geometry_paths:
+        geometry_path = geometry_paths[-1]
+        try:
+            geometry_report = json.loads(geometry_path.read_text(encoding="utf-8"))
+            geometry_evidence = {
+                "path": str(geometry_path.relative_to(root_path)),
+                "status": geometry_report.get("status"),
+                "calibration_id": geometry_report.get("calibration_id"),
+                "fixture_set": geometry_report.get("fixture_set"),
+                "measurement_count": geometry_report.get("measurement_count"),
+                "scalar_distributions": geometry_report.get("scalar_distributions"),
+                "region_distributions": geometry_report.get("region_distributions"),
+                "proposed_operating_point": geometry_report.get("proposed_operating_point"),
+                "blocked_reasons": geometry_report.get("blocked_reasons", []),
+            }
+        except (OSError, json.JSONDecodeError):
+            geometry_evidence = {"path": str(geometry_path.relative_to(root_path)), "status": "INVALID_JSON"}
+    gates.append({"name": "calibrated_identity_thresholds", "status": threshold_status, "evidence": {"path": str(threshold_path), "present": threshold_path.is_file(), "status": thresholds.get("status"), "accepted_statuses": sorted(CALIBRATED_THRESHOLD_STATUSES), "thresholds_id": thresholds.get("thresholds_id"), "approved_by": thresholds.get("approved_by"), "calibration_evidence": calibration_evidence, "geometry_calibration_evidence": geometry_evidence}})
     if threshold_status != "PASS":
         if calibration_evidence.get("status") not in {None, "NOT_RECORDED"}:
             blockers.append("Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.")
