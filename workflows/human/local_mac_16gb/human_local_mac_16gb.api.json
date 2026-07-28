@@ -381,6 +381,42 @@
       "filename_prefix": "evidence/candidates"
     }
   },
+  "25": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "5",
+        0
+      ]
+    }
+  },
+  "26": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "6",
+        0
+      ]
+    }
+  },
+  "27": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "8",
+        1
+      ]
+    }
+  },
+  "28": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "21",
+        0
+      ]
+    }
+  },
   "_meta": {
     "schema_version": "1.0.0",
     "graph_spec_version": "graph-spec-1.0.0",
@@ -484,11 +520,18 @@
       "EmptySD3LatentImage",
       "KSampler",
       "LoraLoaderModelOnly",
+      "PreviewImage",
       "SaveImage",
       "UNETLoader",
       "VAEDecode",
       "VAEEncode",
       "VAELoader"
+    ],
+    "preview_nodes": [
+      "PREVIEW 1 • crop / identity reference",
+      "PREVIEW 2 • prepared reference",
+      "PREVIEW 3 • approved background",
+      "PREVIEW 4 • final candidate"
     ],
     "required_krea_nodes": [
       "Krea2EditGroundedEncode",

@@ -8,8 +8,8 @@
       "display_name": "human_local_mac_16gb",
       "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
       "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-      "sha256": "85142e85a0e60635e43180c9946fbe283819c729952cd34b60b04985286d29c7",
-      "api_sha256": "ebc2f01ed2c262cf013438eb26821c7575df2967920909b6f026b2cf7ba0bb50",
+      "sha256": "707ecf53add111eae11fed2b9725942d01be57bf0a7851b9948ff7641821955a",
+      "api_sha256": "42839f9485a94d7939424f15d8f8a0d5999b23bc32ea6f6ad9d6e6aa7499b0e8",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -17,6 +17,7 @@
         "EmptySD3LatentImage",
         "KSampler",
         "LoraLoaderModelOnly",
+        "PreviewImage",
         "SaveImage",
         "UNETLoader",
         "VAEDecode",
@@ -60,12 +61,18 @@
       ],
       "autoprompter_present": true,
       "prompt_source": "autoprompter",
+      "preview_nodes": [
+        "PREVIEW 1 • crop / identity reference",
+        "PREVIEW 2 • prepared reference",
+        "PREVIEW 3 • approved background",
+        "PREVIEW 4 • final candidate"
+      ],
       "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
       "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T13:11:38.964901+00:00"
+        "checked_at": "2026-07-28T14:52:31.534434+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -83,8 +90,8 @@
       "display_name": "human_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-      "sha256": "7bd77ba83631cdec783f8bcdb7220acaee04aa27bb5bf5b15a553a06bdd84d7e",
-      "api_sha256": "d8a6c65f97242b0cbce9d0e9bd1b3d35da97b4c26a90e7b5df76a9c3b2024a6e",
+      "sha256": "3e7fb37d30734745364cfb47e695d3e0180ff8a7175ceabae3e36dd33b6f605c",
+      "api_sha256": "0694be10d73743819df35d2fcda3a3fb38120ae703186c5ecf2bc26a48c3a365",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -92,6 +99,7 @@
         "EmptySD3LatentImage",
         "KSampler",
         "LoraLoaderModelOnly",
+        "PreviewImage",
         "SaveImage",
         "UNETLoader",
         "VAEDecode",
@@ -135,12 +143,18 @@
       ],
       "autoprompter_present": true,
       "prompt_source": "autoprompter",
+      "preview_nodes": [
+        "PREVIEW 1 • crop / identity reference",
+        "PREVIEW 2 • prepared reference",
+        "PREVIEW 3 • approved background",
+        "PREVIEW 4 • final candidate"
+      ],
       "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
       "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T13:11:38.964901+00:00"
+        "checked_at": "2026-07-28T14:52:31.534434+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -158,8 +172,8 @@
       "display_name": "agent_local_mac_16gb",
       "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
       "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-      "sha256": "d9b30b5fe2ea4dd643db3b732070279fafdd005de148cb22b9be1d7dc8fb3cc9",
-      "api_sha256": "8142b545b7057be020044d21012baef63705f87dd1a816926f8a287018774d9d",
+      "sha256": "cc3af6c86ffa03bcc74406e90822f0f00be55c416babc8023c212d2dc5dc690a",
+      "api_sha256": "c1672bd5216c4e33c74adeb315a2273296f88f2cc9807ac2d713da18d3107894",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -208,12 +222,13 @@
       ],
       "autoprompter_present": false,
       "prompt_source": "job_contract",
+      "preview_nodes": [],
       "autoprompter_instruction_sha256": null,
       "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T13:11:38.964901+00:00"
+        "checked_at": "2026-07-28T14:52:31.534434+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -231,8 +246,8 @@
       "display_name": "agent_remote_runpod",
       "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
       "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-      "sha256": "aedc1e4b29b2c298a626d4fd38c56808f656cfcc4545bdcc78a2e4d08d0a2075",
-      "api_sha256": "13a610ea4d5dea4b464171599f325975fe511be414e7f83258f99a844264c12f",
+      "sha256": "bd14dfe367c93698aa88ad604800e122088c80190c640e862d6eadccafb855ca",
+      "api_sha256": "17607d5eb6ba11e97372286ba49ee44165f56534bd6adf2f7d97d46036f44a7b",
       "graph_spec_version": "graph-spec-1.0.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -281,12 +296,13 @@
       ],
       "autoprompter_present": false,
       "prompt_source": "job_contract",
+      "preview_nodes": [],
       "autoprompter_instruction_sha256": null,
       "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-28T13:11:38.964901+00:00"
+        "checked_at": "2026-07-28T14:52:31.534434+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",

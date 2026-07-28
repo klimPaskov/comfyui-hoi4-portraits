@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "checked_at": "2026-07-28T13:11:38.964901+00:00",
+  "checked_at": "2026-07-28T14:52:31.534434+00:00",
   "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
   "server": {
     "base_url": "http://127.0.0.1:8188",
@@ -9,7 +9,7 @@
       "system": {
         "os": "darwin",
         "ram_total": 17179869184,
-        "ram_free": 7063027712,
+        "ram_free": 5339365376,
         "comfyui_version": "0.25.0",
         "required_frontend_version": "1.45.19",
         "installed_templates_version": "0.10.0",
@@ -59,9 +59,9 @@
           "type": "mps",
           "index": null,
           "vram_total": 17179869184,
-          "vram_free": 7063060480,
+          "vram_free": 5336809472,
           "torch_vram_total": 17179869184,
-          "torch_vram_free": 7063060480
+          "torch_vram_free": 5336809472
         }
       ]
     }
@@ -80,6 +80,7 @@
     "Krea2EditGroundedEncode": true,
     "Krea2EditModelPatch": true,
     "LoraLoaderModelOnly": true,
+    "PreviewImage": true,
     "SaveImage": true,
     "UNETLoader": true,
     "VAEDecode": true,
@@ -90,6 +91,7 @@
     "loopback_binding": true,
     "pinned_core_revision": true,
     "core_nodes_present": true,
+    "preview_node_present": true,
     "krea_nodes_present": true,
     "cliploader_krea2_choice": true,
     "krea_patch_fit_contract": true,
@@ -565,6 +567,50 @@
             "filename_prefix",
             "images"
           ]
+        },
+        {
+          "node_id": "25",
+          "class_type": "PreviewImage",
+          "status": "PASS",
+          "live_input_names": [
+            "images"
+          ],
+          "workflow_input_names": [
+            "images"
+          ]
+        },
+        {
+          "node_id": "26",
+          "class_type": "PreviewImage",
+          "status": "PASS",
+          "live_input_names": [
+            "images"
+          ],
+          "workflow_input_names": [
+            "images"
+          ]
+        },
+        {
+          "node_id": "27",
+          "class_type": "PreviewImage",
+          "status": "PASS",
+          "live_input_names": [
+            "images"
+          ],
+          "workflow_input_names": [
+            "images"
+          ]
+        },
+        {
+          "node_id": "28",
+          "class_type": "PreviewImage",
+          "status": "PASS",
+          "live_input_names": [
+            "images"
+          ],
+          "workflow_input_names": [
+            "images"
+          ]
         }
       ],
       "prompt_source": "autoprompter",
@@ -1010,6 +1056,50 @@
           ],
           "workflow_input_names": [
             "filename_prefix",
+            "images"
+          ]
+        },
+        {
+          "node_id": "25",
+          "class_type": "PreviewImage",
+          "status": "PASS",
+          "live_input_names": [
+            "images"
+          ],
+          "workflow_input_names": [
+            "images"
+          ]
+        },
+        {
+          "node_id": "26",
+          "class_type": "PreviewImage",
+          "status": "PASS",
+          "live_input_names": [
+            "images"
+          ],
+          "workflow_input_names": [
+            "images"
+          ]
+        },
+        {
+          "node_id": "27",
+          "class_type": "PreviewImage",
+          "status": "PASS",
+          "live_input_names": [
+            "images"
+          ],
+          "workflow_input_names": [
+            "images"
+          ]
+        },
+        {
+          "node_id": "28",
+          "class_type": "PreviewImage",
+          "status": "PASS",
+          "live_input_names": [
+            "images"
+          ],
+          "workflow_input_names": [
             "images"
           ]
         }

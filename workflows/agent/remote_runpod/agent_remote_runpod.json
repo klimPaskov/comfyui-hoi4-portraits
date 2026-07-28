@@ -5,14 +5,17 @@
     {
       "id": 1,
       "type": "HOI4JobInput",
+      "title": "Job contract and profile",
       "pos": [
-        40,
-        80
+        60,
+        100
       ],
       "size": [
         260,
         120
       ],
+      "color": "#1d2f45",
+      "bgcolor": "#294866",
       "flags": {},
       "order": 0,
       "mode": 0,
@@ -81,14 +84,17 @@
     {
       "id": 2,
       "type": "HOI4JobSource",
+      "title": "Load source only from job root",
       "pos": [
-        40,
-        300
+        60,
+        320
       ],
       "size": [
         260,
         120
       ],
+      "color": "#1d2f45",
+      "bgcolor": "#294866",
       "flags": {},
       "order": 1,
       "mode": 0,
@@ -123,14 +129,17 @@
     {
       "id": 3,
       "type": "HOI4SourceGuard",
+      "title": "Provenance and source guard",
       "pos": [
-        40,
-        510
+        370,
+        320
       ],
       "size": [
         260,
         120
       ],
+      "color": "#1d2f45",
+      "bgcolor": "#294866",
       "flags": {},
       "order": 2,
       "mode": 0,
@@ -171,14 +180,17 @@
     {
       "id": 4,
       "type": "HOI4SubjectSelect",
+      "title": "Deterministic subject selection",
       "pos": [
-        360,
-        80
+        720,
+        210
       ],
       "size": [
         260,
         120
       ],
+      "color": "#1f4862",
+      "bgcolor": "#2c6d90",
       "flags": {},
       "order": 3,
       "mode": 0,
@@ -220,14 +232,17 @@
     {
       "id": 5,
       "type": "HOI4HeadShouldersCrop",
+      "title": "Head and shoulders crop",
       "pos": [
-        360,
-        300
+        1060,
+        210
       ],
       "size": [
         260,
         120
       ],
+      "color": "#164f49",
+      "bgcolor": "#217a70",
       "flags": {},
       "order": 4,
       "mode": 0,
@@ -274,14 +289,17 @@
     {
       "id": 6,
       "type": "HOI4ConservativePrep",
+      "title": "Conditional color and conservative restoration",
       "pos": [
-        360,
-        520
+        1400,
+        210
       ],
       "size": [
         260,
         120
       ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
       "order": 5,
       "mode": 0,
@@ -329,14 +347,17 @@
     {
       "id": 7,
       "type": "HOI4ForegroundMask",
+      "title": "Pinned foreground/mask analysis",
       "pos": [
-        680,
-        40
+        1740,
+        150
       ],
       "size": [
         260,
         120
       ],
+      "color": "#294b61",
+      "bgcolor": "#3b6f8d",
       "flags": {},
       "order": 6,
       "mode": 0,
@@ -399,14 +420,17 @@
     {
       "id": 8,
       "type": "HOI4MaskAndBackgroundGuard",
+      "title": "Approved background composite and foreground guard",
       "pos": [
-        680,
-        270
+        1740,
+        360
       ],
       "size": [
         260,
         120
       ],
+      "color": "#294b61",
+      "bgcolor": "#3b6f8d",
       "flags": {},
       "order": 7,
       "mode": 0,
@@ -474,14 +498,17 @@
     {
       "id": 9,
       "type": "HOI4PromptInput",
+      "title": "Agent prompt from job contract",
       "pos": [
-        680,
-        540
+        2400,
+        240
       ],
       "size": [
         260,
         120
       ],
+      "color": "#46375a",
+      "bgcolor": "#654c80",
       "flags": {},
       "order": 8,
       "mode": 0,
@@ -531,14 +558,17 @@
     {
       "id": 10,
       "type": "UNETLoader",
+      "title": "Krea 2 Turbo FP8",
       "pos": [
-        1000,
-        80
+        2740,
+        100
       ],
       "size": [
         260,
         120
       ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
       "flags": {},
       "order": 9,
       "mode": 0,
@@ -579,14 +609,17 @@
     {
       "id": 11,
       "type": "LoraLoaderModelOnly",
+      "title": "Pinned Krea identity adapter",
       "pos": [
-        1000,
-        260
+        2740,
+        300
       ],
       "size": [
         260,
         120
       ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
       "flags": {},
       "order": 10,
       "mode": 0,
@@ -632,14 +665,17 @@
     {
       "id": 12,
       "type": "VAELoader",
+      "title": "Krea VAE",
       "pos": [
-        1000,
-        450
+        2740,
+        500
       ],
       "size": [
         260,
         120
       ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
       "flags": {},
       "order": 11,
       "mode": 0,
@@ -675,14 +711,17 @@
     {
       "id": 13,
       "type": "VAEEncode",
+      "title": "Encode identity reference",
       "pos": [
-        1000,
-        610
+        2740,
+        700
       ],
       "size": [
         260,
         120
       ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
       "flags": {},
       "order": 12,
       "mode": 0,
@@ -717,14 +756,17 @@
     {
       "id": 14,
       "type": "Krea2EditModelPatch",
+      "title": "Krea 2 identity edit patch",
       "pos": [
-        1320,
-        200
+        3050,
+        160
       ],
       "size": [
         260,
         120
       ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
       "flags": {},
       "order": 13,
       "mode": 0,
@@ -785,14 +827,17 @@
     {
       "id": 15,
       "type": "CLIPLoader",
+      "title": "Krea Qwen3-VL encoder",
       "pos": [
-        1320,
-        430
+        3050,
+        360
       ],
       "size": [
         260,
         120
       ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
       "flags": {},
       "order": 14,
       "mode": 0,
@@ -834,14 +879,17 @@
     {
       "id": 16,
       "type": "Krea2EditGroundedEncode",
+      "title": "Grounded positive conditioning",
       "pos": [
-        1640,
-        80
+        3050,
+        560
       ],
       "size": [
         260,
         120
       ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
       "flags": {},
       "order": 15,
       "mode": 0,
@@ -890,14 +938,17 @@
     {
       "id": 17,
       "type": "Krea2EditGroundedEncode",
+      "title": "Grounded empty negative conditioning",
       "pos": [
-        1640,
-        290
+        3050,
+        760
       ],
       "size": [
         260,
         120
       ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
       "flags": {},
       "order": 16,
       "mode": 0,
@@ -948,14 +999,17 @@
     {
       "id": 18,
       "type": "LoraLoaderModelOnly",
+      "title": "Immutable HOI4 style LoRA",
       "pos": [
-        1960,
-        200
+        3400,
+        240
       ],
       "size": [
         260,
         120
       ],
+      "color": "#663442",
+      "bgcolor": "#914b5e",
       "flags": {},
       "order": 17,
       "mode": 0,
@@ -1000,14 +1054,17 @@
     {
       "id": 19,
       "type": "EmptySD3LatentImage",
+      "title": "Profile work canvas",
       "pos": [
-        1960,
-        430
+        3740,
+        150
       ],
       "size": [
         260,
         120
       ],
+      "color": "#66400c",
+      "bgcolor": "#945e12",
       "flags": {},
       "order": 18,
       "mode": 0,
@@ -1055,14 +1112,17 @@
     {
       "id": 20,
       "type": "KSampler",
+      "title": "Krea 2 Turbo candidate",
       "pos": [
-        2280,
-        120
+        3740,
+        360
       ],
       "size": [
         260,
         120
       ],
+      "color": "#66400c",
+      "bgcolor": "#945e12",
       "flags": {},
       "order": 19,
       "mode": 0,
@@ -1150,14 +1210,17 @@
     {
       "id": 21,
       "type": "VAEDecode",
+      "title": "Decode candidate",
       "pos": [
-        2600,
-        120
+        4080,
+        100
       ],
       "size": [
         260,
         120
       ],
+      "color": "#23465b",
+      "bgcolor": "#306985",
       "flags": {},
       "order": 20,
       "mode": 0,
@@ -1192,14 +1255,17 @@
     {
       "id": 22,
       "type": "HOI4EvidenceExport",
+      "title": "Candidate evidence and audit handoff",
       "pos": [
-        2920,
-        120
+        4390,
+        100
       ],
       "size": [
         260,
         120
       ],
+      "color": "#23465b",
+      "bgcolor": "#306985",
       "flags": {},
       "order": 21,
       "mode": 0,
@@ -1273,14 +1339,17 @@
     {
       "id": 23,
       "type": "SaveImage",
+      "title": "Preview PNG only",
       "pos": [
-        3240,
-        120
+        4390,
+        300
       ],
       "size": [
         260,
         120
       ],
+      "color": "#23465b",
+      "bgcolor": "#306985",
       "flags": {},
       "order": 22,
       "mode": 0,
@@ -1691,111 +1760,111 @@
     {
       "title": "00 Job and source",
       "bounding": [
-        20,
-        20,
-        600,
-        440
+        40,
+        40,
+        620,
+        620
       ],
-      "color": "#335",
+      "color": "#355070",
       "font_size": 24
     },
     {
       "title": "01 Subject selection",
       "bounding": [
-        660,
-        20,
-        600,
-        440
+        700,
+        40,
+        300,
+        620
       ],
-      "color": "#335",
+      "color": "#3a7ca5",
       "font_size": 24
     },
     {
       "title": "02 Crop and source preparation",
       "bounding": [
-        1300,
-        20,
-        600,
-        440
+        1040,
+        40,
+        300,
+        620
       ],
-      "color": "#335",
+      "color": "#2a9d8f",
       "font_size": 24
     },
     {
       "title": "03 Color and restoration",
       "bounding": [
-        1940,
-        20,
-        600,
-        440
+        1380,
+        40,
+        300,
+        620
       ],
-      "color": "#335",
+      "color": "#588157",
       "font_size": 24
     },
     {
       "title": "04 Masks and approved background",
       "bounding": [
-        2580,
-        20,
-        600,
-        440
+        1720,
+        40,
+        620,
+        620
       ],
-      "color": "#335",
+      "color": "#527fa3",
       "font_size": 24
     },
     {
       "title": "05 Prompt",
       "bounding": [
-        20,
-        520,
-        600,
-        440
+        2380,
+        40,
+        300,
+        620
       ],
-      "color": "#335",
+      "color": "#8064a2",
       "font_size": 24
     },
     {
       "title": "06 Krea 2 identity edit",
       "bounding": [
-        660,
-        520,
-        600,
-        440
+        2720,
+        40,
+        620,
+        920
       ],
-      "color": "#335",
+      "color": "#6d597a",
       "font_size": 24
     },
     {
       "title": "07 HOI4 style LoRA",
       "bounding": [
-        1300,
-        520,
-        600,
-        440
+        3380,
+        40,
+        300,
+        620
       ],
-      "color": "#335",
+      "color": "#b56576",
       "font_size": 24
     },
     {
       "title": "08 Candidate generation",
       "bounding": [
-        1940,
-        520,
-        600,
-        440
+        3720,
+        40,
+        300,
+        620
       ],
-      "color": "#335",
+      "color": "#c17817",
       "font_size": 24
     },
     {
       "title": "09 Preview and evidence export",
       "bounding": [
-        2580,
-        520,
-        600,
-        440
+        4060,
+        40,
+        780,
+        920
       ],
-      "color": "#335",
+      "color": "#457b9d",
       "font_size": 24
     }
   ],
@@ -1913,6 +1982,7 @@
       "VAEEncode",
       "VAELoader"
     ],
+    "preview_nodes": [],
     "required_krea_nodes": [
       "Krea2EditGroundedEncode",
       "Krea2EditModelPatch"

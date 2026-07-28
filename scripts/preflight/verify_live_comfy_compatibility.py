@@ -43,6 +43,7 @@ REQUIRED_CORE_NODES = {
     "VAEDecode",
     "SaveImage",
 }
+REQUIRED_HUMAN_PREVIEW_NODE = "PreviewImage"
 REQUIRED_KREA_NODES = {"Krea2EditModelPatch", "Krea2EditGroundedEncode"}
 
 
@@ -137,6 +138,8 @@ def _validate_api_workflow(root: Path, workflow_id: str, object_info: dict[str, 
         issues.append("workflow metadata human_workflow does not match profile")
     if expected_human and "HOI4AutopromptClient" not in {item.get("class_type") for item in checked_nodes}:
         issues.append("human workflow is missing the autoprompter node")
+    if expected_human and REQUIRED_HUMAN_PREVIEW_NODE not in {item.get("class_type") for item in checked_nodes}:
+        issues.append("human workflow is missing its PreviewImage inspection nodes")
     if not expected_human and any(item.get("class_type") == "HOI4AutopromptClient" for item in checked_nodes):
         issues.append("agent workflow contains an autoprompter node")
     return {"workflow_id": workflow_id, "path": str(path.relative_to(root)), "status": "PASS" if not issues else "BLOCKED", "issues": issues, "checked_nodes": checked_nodes, "prompt_source": metadata.get("prompt_source"), "human_workflow": metadata.get("human_workflow")}
@@ -150,7 +153,7 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
     revision = _git_revision(root / "comfyui")
     expected_revision = "2a610155821d670a2d8047e654e5fce96b790eb5"
 
-    required_nodes = sorted(REQUIRED_CORE_NODES | REQUIRED_KREA_NODES)
+    required_nodes = sorted(REQUIRED_CORE_NODES | REQUIRED_KREA_NODES | {REQUIRED_HUMAN_PREVIEW_NODE})
     node_presence = {name: name in object_info for name in required_nodes}
     clip_contract = object_info.get("CLIPLoader", {}).get("input", {}).get("required", {}).get("type", [])
     clip_choices = _combo_choices(clip_contract) or []
@@ -165,6 +168,7 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "loopback_binding": loopback_binding,
         "pinned_core_revision": revision == expected_revision,
         "core_nodes_present": all(node_presence[name] for name in sorted(REQUIRED_CORE_NODES)),
+        "preview_node_present": node_presence[REQUIRED_HUMAN_PREVIEW_NODE],
         "krea_nodes_present": all(node_presence[name] for name in sorted(REQUIRED_KREA_NODES)),
         "cliploader_krea2_choice": krea_loader_schema,
         "krea_patch_fit_contract": {"model", "source_latent"} <= set(patch.get("input", {}).get("required", {})) and {"vae", "source_image", "fit_mode"} <= patch_optional,

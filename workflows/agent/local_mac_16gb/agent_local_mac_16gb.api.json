@@ -440,6 +440,7 @@
       "VAEEncode",
       "VAELoader"
     ],
+    "preview_nodes": [],
     "required_krea_nodes": [
       "Krea2EditGroundedEncode",
       "Krea2EditModelPatch"

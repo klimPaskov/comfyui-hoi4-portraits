@@ -28,6 +28,7 @@ CORE_NODES = {
     "VAEDecode",
     "SaveImage",
 }
+PREVIEW_NODE = "PreviewImage"
 KREA_NODES = {"Krea2EditModelPatch", "Krea2EditGroundedEncode"}
 PROJECT_NODES = {
     "HOI4JobInput",
@@ -44,6 +45,48 @@ PROJECT_NODES = {
 }
 HUMAN_ONLY_PROJECT_NODES = {"HOI4HumanControls"}
 FORBIDDEN_CLASS_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
+
+# The UI workflow is deliberately laid out as a readable stage board.  These
+# values are presentation metadata only; they do not change the execution
+# graph or any locked control.  The wider panels hold the multi-node stages.
+GROUP_LAYOUT = {
+    "00 Job and source": (40, 40, 620, 620),
+    "01 Subject selection": (700, 40, 300, 620),
+    "02 Crop and source preparation": (1040, 40, 300, 620),
+    "03 Color and restoration": (1380, 40, 300, 620),
+    "04 Masks and approved background": (1720, 40, 620, 620),
+    "05 Prompt": (2380, 40, 300, 620),
+    "06 Krea 2 identity edit": (2720, 40, 620, 920),
+    "07 HOI4 style LoRA": (3380, 40, 300, 620),
+    "08 Candidate generation": (3720, 40, 300, 620),
+    "09 Preview and evidence export": (4060, 40, 780, 920),
+}
+
+GROUP_COLORS = {
+    "00 Job and source": "#355070",
+    "01 Subject selection": "#3a7ca5",
+    "02 Crop and source preparation": "#2a9d8f",
+    "03 Color and restoration": "#588157",
+    "04 Masks and approved background": "#527fa3",
+    "05 Prompt": "#8064a2",
+    "06 Krea 2 identity edit": "#6d597a",
+    "07 HOI4 style LoRA": "#b56576",
+    "08 Candidate generation": "#c17817",
+    "09 Preview and evidence export": "#457b9d",
+}
+
+NODE_COLORS = {
+    "00 Job and source": ("#1d2f45", "#294866"),
+    "01 Subject selection": ("#1f4862", "#2c6d90"),
+    "02 Crop and source preparation": ("#164f49", "#217a70"),
+    "03 Color and restoration": ("#294a2b", "#3d6b40"),
+    "04 Masks and approved background": ("#294b61", "#3b6f8d"),
+    "05 Prompt": ("#46375a", "#654c80"),
+    "06 Krea 2 identity edit": ("#40344a", "#5b4a69"),
+    "07 HOI4 style LoRA": ("#663442", "#914b5e"),
+    "08 Candidate generation": ("#66400c", "#945e12"),
+    "09 Preview and evidence export": ("#23465b", "#306985"),
+}
 
 
 def _node(
@@ -203,6 +246,31 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         inputs={"images": Link(22, 0), "filename_prefix": "evidence/candidates"}, input_types={"images": "IMAGE", "filename_prefix": "STRING"}, outputs=[], output_types=[], pos=(3240, 120), widgets=["evidence/candidates"], locked=["filename_prefix"],
     ))
 
+    if is_human:
+        # Human workflows expose the key image checkpoints in the UI.  These
+        # nodes are read-only inspection surfaces; the agent graphs remain
+        # unchanged and receive their prompt exclusively from the job contract.
+        nodes.extend([
+            _node(
+                25, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 1 • crop / identity reference",
+                inputs={"images": Link(5, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4080, 300),
+            ),
+            _node(
+                26, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 2 • prepared reference",
+                inputs={"images": Link(6, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4080, 500),
+            ),
+            _node(
+                27, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 3 • approved background",
+                inputs={"images": Link(8, 1)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4390, 500),
+            ),
+            _node(
+                28, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 4 • final candidate",
+                inputs={"images": Link(21, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4390, 700),
+            ),
+        ])
+
+    _apply_visual_layout(nodes)
+
     metadata = {
         "schema_version": "1.0.0",
         "graph_spec_version": WORKFLOW_VERSION,
@@ -220,7 +288,8 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "final_canvas": {"width": 156, "height": 210},
         "required_groups": GROUP_LABELS,
         "locked_controls": {node.title: node.locked for node in nodes if node.locked},
-        "required_core_nodes": sorted(CORE_NODES),
+        "required_core_nodes": sorted(CORE_NODES | ({PREVIEW_NODE} if is_human else set())),
+        "preview_nodes": [node.title for node in nodes if node.class_type == PREVIEW_NODE],
         "required_krea_nodes": sorted(KREA_NODES),
         "required_project_nodes": sorted((PROJECT_NODES | (HUMAN_ONLY_PROJECT_NODES if is_human else set())) & {node.class_type for node in nodes}),
         "candidate_budget": {"max": int(limits["candidate_max"]), "retry_max": int(limits["retry_max"])},
@@ -258,6 +327,8 @@ def validate_graph(graph: GraphSpec) -> None:
     if not graph.metadata["human_workflow"]:
         common_project_nodes -= HUMAN_ONLY_PROJECT_NODES
     required = CORE_NODES | KREA_NODES | common_project_nodes
+    if graph.metadata["human_workflow"]:
+        required.add(PREVIEW_NODE)
     required.add("HOI4AutopromptClient" if graph.metadata["human_workflow"] else "HOI4PromptInput")
     if graph.metadata["human_workflow"]:
         required |= HUMAN_ONLY_PROJECT_NODES
@@ -270,6 +341,24 @@ def _api_value(value: Any) -> Any:
     if isinstance(value, Link):
         return [str(value.node_id), value.slot]
     return value
+
+
+def _apply_visual_layout(nodes: list[NodeSpec]) -> None:
+    """Place nodes inside their numbered stage panels for a readable UI graph."""
+
+    positions = {
+        1: (60, 100), 24: (370, 100), 2: (60, 320), 3: (370, 320),
+        4: (720, 210), 5: (1060, 210), 6: (1400, 210),
+        7: (1740, 150), 8: (1740, 360), 9: (2400, 240),
+        10: (2740, 100), 11: (2740, 300), 12: (2740, 500), 13: (2740, 700),
+        14: (3050, 160), 15: (3050, 360), 16: (3050, 560), 17: (3050, 760),
+        18: (3400, 240), 19: (3740, 150), 20: (3740, 360),
+        21: (4080, 100), 22: (4390, 100), 23: (4390, 300),
+        25: (4080, 300), 26: (4080, 500), 27: (4390, 500), 28: (4390, 700),
+    }
+    for node in nodes:
+        if node.node_id in positions:
+            node.pos = positions[node.node_id]
 
 
 def _api_json(graph: GraphSpec) -> dict[str, Any]:
@@ -300,11 +389,15 @@ def _ui_json(graph: GraphSpec) -> dict[str, Any]:
                 link_id += 1
     ui_nodes: list[dict[str, Any]] = []
     for order, node in enumerate(graph.nodes):
+        node_color, node_bgcolor = NODE_COLORS[node.group]
         ui_nodes.append({
             "id": node.node_id,
             "type": node.class_type,
+            "title": node.title,
             "pos": list(node.pos),
             "size": list(node.size),
+            "color": node_color,
+            "bgcolor": node_bgcolor,
             "flags": {},
             "order": order,
             "mode": 0,
@@ -314,8 +407,9 @@ def _ui_json(graph: GraphSpec) -> dict[str, Any]:
             "widgets_values": node.widgets,
         })
     groups = []
-    for index, label in enumerate(graph.groups):
-        groups.append({"title": label, "bounding": [20 + (index % 5) * 640, 20 + (index // 5) * 500, 600, 440], "color": "#335", "font_size": 24})
+    for label in graph.groups:
+        x, y, width, height = GROUP_LAYOUT[label]
+        groups.append({"title": label, "bounding": [x, y, width, height], "color": GROUP_COLORS[label], "font_size": 24})
     return {
         "last_node_id": max(node.node_id for node in graph.nodes),
         "last_link_id": link_id - 1,
@@ -376,7 +470,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             "api_sha256": sha256_file(api_path),
             "graph_spec_version": WORKFLOW_VERSION,
             "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
-            "required_core_nodes": sorted(CORE_NODES),
+            "required_core_nodes": sorted(CORE_NODES | ({PREVIEW_NODE} if graph.metadata["human_workflow"] else set())),
             "required_custom_nodes": required_custom_nodes,
             "required_custom_node_packages": required_node_packages,
             "required_custom_node_revisions": required_node_revisions,
@@ -384,6 +478,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             "required_models": required_models,
             "autoprompter_present": bool(PROFILE_LIMITS[workflow_id]["autoprompter"]),
             "prompt_source": "autoprompter" if PROFILE_LIMITS[workflow_id]["autoprompter"] else "job_contract",
+            "preview_nodes": graph.metadata.get("preview_nodes", []),
             "autoprompter_instruction_sha256": graph.metadata["autoprompter_instruction_sha256"],
             "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if live_schema_pass else "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
             "load_test_evidence": {"path": str(live_probe_path.relative_to(root_path)), "status": "PASS", "checked_at": live_probe.get("checked_at")} if live_schema_pass else None,
