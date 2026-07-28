@@ -46,20 +46,23 @@ PROJECT_NODES = {
 HUMAN_ONLY_PROJECT_NODES = {"HOI4HumanControls"}
 FORBIDDEN_CLASS_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 
-# The UI workflow is deliberately laid out as a readable stage board.  These
-# values are presentation metadata only; they do not change the execution
-# graph or any locked control.  The wider panels hold the multi-node stages.
+# The UI workflow is deliberately laid out as a compact two-row rectangular
+# stage board.
+# These values are presentation metadata only; they do not change the
+# execution graph or any locked control.  Keeping the first five stages above
+# the last five makes the complete route readable without a panorama-wide
+# canvas and leaves the image checkpoints close to the export stage.
 GROUP_LAYOUT = {
-    "00 Job and source": (40, 40, 620, 620),
-    "01 Subject selection": (700, 40, 300, 620),
-    "02 Crop and source preparation": (1040, 40, 300, 620),
-    "03 Color and restoration": (1380, 40, 300, 620),
-    "04 Masks and approved background": (1720, 40, 620, 620),
-    "05 Prompt": (2380, 40, 300, 620),
-    "06 Krea 2 identity edit": (2720, 40, 620, 920),
-    "07 HOI4 style LoRA": (3380, 40, 300, 620),
-    "08 Candidate generation": (3720, 40, 300, 620),
-    "09 Preview and evidence export": (4060, 40, 980, 920),
+    "00 Job and source": (40, 40, 520, 520),
+    "01 Subject selection": (580, 40, 300, 520),
+    "02 Crop and source preparation": (900, 40, 300, 520),
+    "03 Color and restoration": (1220, 40, 300, 520),
+    "04 Masks and approved background": (1540, 40, 520, 520),
+    "05 Prompt": (40, 660, 300, 520),
+    "06 Krea 2 identity edit": (360, 660, 700, 760),
+    "07 HOI4 style LoRA": (1080, 660, 300, 520),
+    "08 Candidate generation": (1400, 660, 300, 520),
+    "09 Preview and evidence export": (1720, 660, 900, 760),
 }
 
 GROUP_COLORS = {
@@ -351,17 +354,18 @@ def _api_value(value: Any) -> Any:
 
 
 def _apply_visual_layout(nodes: list[NodeSpec]) -> None:
-    """Place nodes inside their numbered stage panels for a readable UI graph."""
+    """Place nodes inside the compact two-row rectangular stage panels."""
 
     positions = {
-        1: (60, 100), 24: (370, 100), 2: (60, 320), 3: (370, 320),
-        4: (720, 210), 5: (1060, 210), 6: (1400, 210),
-        7: (1740, 150), 8: (1740, 360), 9: (2400, 240),
-        10: (2740, 100), 11: (2740, 300), 12: (2740, 500), 13: (2740, 700),
-        14: (3050, 160), 15: (3050, 360), 16: (3050, 560), 17: (3050, 760),
-        18: (3400, 240), 19: (3740, 150), 20: (3740, 360),
-        21: (4080, 100), 22: (4390, 100), 23: (4390, 300),
-        25: (4080, 300), 26: (4080, 500), 27: (4390, 500), 28: (4690, 300),
+        1: (70, 100), 24: (270, 100), 2: (70, 300), 3: (270, 300),
+        4: (610, 160), 5: (930, 160), 6: (1250, 160),
+        7: (1570, 130), 8: (1760, 340),
+        9: (70, 760),
+        10: (390, 760), 11: (390, 920), 12: (390, 1080), 13: (390, 1240),
+        14: (680, 760), 15: (680, 920), 16: (680, 1080), 17: (680, 1240),
+        18: (1110, 840), 19: (1430, 760), 20: (1430, 940),
+        21: (1750, 760), 22: (2030, 760), 23: (2030, 940),
+        25: (1750, 1020), 26: (2030, 1120), 27: (2310, 1120), 28: (2310, 760),
     }
     for node in nodes:
         if node.node_id in positions:

@@ -18,6 +18,7 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
 - The required four workflows plus the local-NVIDIA agent workflow are structurally valid and live-schema loadable in the pinned loopback ComfyUI.
 - Local preprocessing artifacts and the private autoprompter health/negative-validation path are verified.
 - The live human-local qualification run measured the Apple MPS `Float8_e4m3fn` incompatibility, then verified the reversible CPU-dequantization workaround and measured practical 16 GB memory/offload infeasibility before the first sampler step completed. See [`preflight/local_human_execution_2026-07-28.json`](preflight/local_human_execution_2026-07-28.json) and [`../scripts/runtime/apply_mps_fp8_workaround.py`](../scripts/runtime/apply_mps_fp8_workaround.py).
+- The official lower-storage NVFP4 artifact is also checksum-verified and reaches the sampler on the Mac, but its live MPS dequantization path fails with `Undefined type Float8_e4m3fn`; it is reserved for its pinned NVIDIA Blackwell policy. See [`preflight/krea_precision_options_2026-07-28.md`](preflight/krea_precision_options_2026-07-28.md).
 - The private Library of Congress qualification fixture passes YuNet, MediaPipe Face Landmarker, and BiRefNet on MPS. Run it with:
 
   ```bash

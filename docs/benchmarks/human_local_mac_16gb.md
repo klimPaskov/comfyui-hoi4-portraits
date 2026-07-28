@@ -2,9 +2,9 @@
 
 - Status: **BLOCKED_PREFLIGHT**
 - Reason: One or more mandatory preflight gates remain blocked.
-- Expected locked model bytes: `24028311166`
+- Expected locked model bytes: `10886580382`
 - Physical memory bytes: `17179869184`
-- Capacity assessment: **MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY**
+- Capacity assessment: **MODEL_BYTES_WITHIN_PHYSICAL_MEMORY_NOT_EXECUTION_PROOF**
 
 This report contains no successful generation claim. File-size arithmetic is a risk indicator, not an infeasibility measurement.
 

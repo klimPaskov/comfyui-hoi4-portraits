@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-28T18:53:31.237872+00:00",
+  "created_at": "2026-07-28T19:58:13.895615+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 20,
   "gates": {
@@ -9,159 +9,159 @@
       "status": "PASS",
       "results": [
         {
-          "path": "00_executive_brief.md",
+          "path": "docs/planning/00_executive_brief.md",
           "expected": "5a592ac7e0acf735c7fa2fcab06c14b68a45d252dc7f6dedbf26a10d2b236f09",
           "actual": "5a592ac7e0acf735c7fa2fcab06c14b68a45d252dc7f6dedbf26a10d2b236f09",
           "match": true
         },
         {
-          "path": "01_current_capability_and_dependency_audit.md",
+          "path": "docs/planning/01_current_capability_and_dependency_audit.md",
           "expected": "f73d267958523bbb8c5299d30efb2ab951a5c13ce53951255b89543e53cb62b7",
           "actual": "f73d267958523bbb8c5299d30efb2ab951a5c13ce53951255b89543e53cb62b7",
           "match": true
         },
         {
-          "path": "02_system_architecture.md",
+          "path": "docs/planning/02_system_architecture.md",
           "expected": "2ed20971a716a8d50eaa16699fa167b42f8a27d986e4f8db150d11bc075cf35c",
           "actual": "2ed20971a716a8d50eaa16699fa167b42f8a27d986e4f8db150d11bc075cf35c",
           "match": true
         },
         {
-          "path": "03_shared_processing_pipeline.md",
+          "path": "docs/planning/03_shared_processing_pipeline.md",
           "expected": "a88b98b930bbea39b4dd119d1082b45a60e152b55c23f6ee29db81f0b35fcfbc",
           "actual": "a88b98b930bbea39b4dd119d1082b45a60e152b55c23f6ee29db81f0b35fcfbc",
           "match": true
         },
         {
-          "path": "04_four_workflow_specifications.md",
+          "path": "docs/planning/04_four_workflow_specifications.md",
           "expected": "eca0ebe1336ab5488b5eaec8395950a7e4d23826307d28768888d4b90c3b3941",
           "actual": "eca0ebe1336ab5488b5eaec8395950a7e4d23826307d28768888d4b90c3b3941",
           "match": true
         },
         {
-          "path": "05_identity_preservation_and_audit.md",
+          "path": "docs/planning/05_identity_preservation_and_audit.md",
           "expected": "2cab2cafc2b9f9debd03278c1f9feec5c25231d1853dbcfc43d1d2c425b51ea0",
           "actual": "2cab2cafc2b9f9debd03278c1f9feec5c25231d1853dbcfc43d1d2c425b51ea0",
           "match": true
         },
         {
-          "path": "06_autoprompter_specification.md",
+          "path": "docs/planning/06_autoprompter_specification.md",
           "expected": "f7349e65ba3b19639f575d3ac26b3da7bb70c36e7fc0ad4543fbbf582a5b2033",
           "actual": "f7349e65ba3b19639f575d3ac26b3da7bb70c36e7fc0ad4543fbbf582a5b2033",
           "match": true
         },
         {
-          "path": "07_mac_16gb_execution_profile.md",
+          "path": "docs/planning/07_mac_16gb_execution_profile.md",
           "expected": "a3780def2ae07e28a95faf223bc4405ac71fc4ea2bf7887ca9f33fbb857b3164",
           "actual": "a3780def2ae07e28a95faf223bc4405ac71fc4ea2bf7887ca9f33fbb857b3164",
           "match": true
         },
         {
-          "path": "08_full_power_gpu_profile.md",
+          "path": "docs/planning/08_full_power_gpu_profile.md",
           "expected": "8e3aa33d912f27915ce76d5aa9f2d13b634e477c53db13590a61a8c9b5531208",
           "actual": "8e3aa33d912f27915ce76d5aa9f2d13b634e477c53db13590a61a8c9b5531208",
           "match": true
         },
         {
-          "path": "09_runpod_architecture.md",
+          "path": "docs/planning/09_runpod_architecture.md",
           "expected": "7858bbd6682059f8b078c02c548166475cf37968567d8d5eb312d965bffe87fb",
           "actual": "7858bbd6682059f8b078c02c548166475cf37968567d8d5eb312d965bffe87fb",
           "match": true
         },
         {
-          "path": "10_comfyui_mcp_contract.md",
+          "path": "docs/planning/10_comfyui_mcp_contract.md",
           "expected": "5678b06ee237c8e81ca344e1e23b0be4cb83097f8c26e4ffb46ddb825710f482",
           "actual": "5678b06ee237c8e81ca344e1e23b0be4cb83097f8c26e4ffb46ddb825710f482",
           "match": true
         },
         {
-          "path": "11_agent_job_api.md",
+          "path": "docs/planning/11_agent_job_api.md",
           "expected": "61a547f2a5594ebee184c2b63c63fa4b7f01394f3841c864f412126a41fb6719",
           "actual": "61a547f2a5594ebee184c2b63c63fa4b7f01394f3841c864f412126a41fb6719",
           "match": true
         },
         {
-          "path": "12_model_and_custom_node_manifest.md",
+          "path": "docs/planning/12_model_and_custom_node_manifest.md",
           "expected": "e197121970e97e9bcfbb7cfd8b503300da101665ae089bf09f4c3b7a82a757ef",
           "actual": "e197121970e97e9bcfbb7cfd8b503300da101665ae089bf09f4c3b7a82a757ef",
           "match": true
         },
         {
-          "path": "13_bootstrap_and_installation_plan.md",
+          "path": "docs/planning/13_bootstrap_and_installation_plan.md",
           "expected": "d3ebe92937376f0a018945f2a7d473060711c6ad898423efd5342f6935b4a9cb",
           "actual": "d3ebe92937376f0a018945f2a7d473060711c6ad898423efd5342f6935b4a9cb",
           "match": true
         },
         {
-          "path": "14_dds_export_and_validation.md",
+          "path": "docs/planning/14_dds_export_and_validation.md",
           "expected": "dad293518140ca91f54f110a293e5844812b5bc328f665731b9fa707231b3b62",
           "actual": "dad293518140ca91f54f110a293e5844812b5bc328f665731b9fa707231b3b62",
           "match": true
         },
         {
-          "path": "15_test_matrix_and_acceptance_criteria.md",
+          "path": "docs/planning/15_test_matrix_and_acceptance_criteria.md",
           "expected": "0d85dce3d30dab43fc839730fdb74fe4ccec8b7a243b8941631521353a83a8e0",
           "actual": "0d85dce3d30dab43fc839730fdb74fe4ccec8b7a243b8941631521353a83a8e0",
           "match": true
         },
         {
-          "path": "16_security_licensing_and_provenance.md",
+          "path": "docs/planning/16_security_licensing_and_provenance.md",
           "expected": "2fb23496fc6b57fae3daac25cb21494ccca3c4707688bdcd79e7c45911d6b8dc",
           "actual": "2fb23496fc6b57fae3daac25cb21494ccca3c4707688bdcd79e7c45911d6b8dc",
           "match": true
         },
         {
-          "path": "17_chaos_redux_integration.md",
+          "path": "docs/planning/17_chaos_redux_integration.md",
           "expected": "ef292a0d6414088100f8d8180cb10afe6042077b7aa349637689303c747c36ad",
           "actual": "ef292a0d6414088100f8d8180cb10afe6042077b7aa349637689303c747c36ad",
           "match": true
         },
         {
-          "path": "18_agentic_hoi4_modding_integration.md",
+          "path": "docs/planning/18_agentic_hoi4_modding_integration.md",
           "expected": "61439422ae76dad54b03bad910cc87c9e33de424d7e487391963c3b481dd9770",
           "actual": "61439422ae76dad54b03bad910cc87c9e33de424d7e487391963c3b481dd9770",
           "match": true
         },
         {
-          "path": "19_git_branch_commit_and_release_plan.md",
+          "path": "docs/planning/19_git_branch_commit_and_release_plan.md",
           "expected": "e2af1642c79922ff1a9d5d8a39920c76d7f15c5eb54577fad406bc664dc15b28",
           "actual": "e2af1642c79922ff1a9d5d8a39920c76d7f15c5eb54577fad406bc664dc15b28",
           "match": true
         },
         {
-          "path": "20_implementation_order.md",
+          "path": "docs/planning/20_implementation_order.md",
           "expected": "04a80d110355d86d0271e3fcf5d2679040d51554e3628e2a2dd3ed0cfa0d61b0",
           "actual": "04a80d110355d86d0271e3fcf5d2679040d51554e3628e2a2dd3ed0cfa0d61b0",
           "match": true
         },
         {
-          "path": "21_risks_blockers_and_fallbacks.md",
+          "path": "docs/planning/21_risks_blockers_and_fallbacks.md",
           "expected": "961b1479227a7fd481754679e7fe31c0cc8b203bdcf45b47b86608e736fbc206",
           "actual": "961b1479227a7fd481754679e7fe31c0cc8b203bdcf45b47b86608e736fbc206",
           "match": true
         },
         {
-          "path": "22_source_reading_report.md",
+          "path": "docs/planning/22_source_reading_report.md",
           "expected": "7d5824544747df4131d06c6b1c2bd5d3d9d0250635f813d80acd61a23f8a031f",
           "actual": "7d5824544747df4131d06c6b1c2bd5d3d9d0250635f813d80acd61a23f8a031f",
           "match": true
         },
         {
-          "path": "23_primary_source_bibliography.md",
+          "path": "docs/planning/23_primary_source_bibliography.md",
           "expected": "ef519ee8b2babb6a063d37371f94e7b9513e05fe5015b9cab2cbcbe48d32f84e",
           "actual": "ef519ee8b2babb6a063d37371f94e7b9513e05fe5015b9cab2cbcbe48d32f84e",
           "match": true
         },
         {
-          "path": "24_package_validation_report.md",
+          "path": "docs/planning/24_package_validation_report.md",
           "expected": "828d57c4f6df911d9aed0cadfc96d6ba622df406ef6250bb222c0ffd3a184213",
           "actual": "828d57c4f6df911d9aed0cadfc96d6ba622df406ef6250bb222c0ffd3a184213",
           "match": true
         },
         {
           "path": "README.md",
-          "expected": "157433eaa272e1f45d6e7c1907d166da007b67249e602ba827a3bad3ba38843f",
-          "actual": "157433eaa272e1f45d6e7c1907d166da007b67249e602ba827a3bad3ba38843f",
+          "expected": "c8456996adc37e1a880c518c9727fdde0300c550523c9f9dc665f186095eedb8",
+          "actual": "c8456996adc37e1a880c518c9727fdde0300c550523c9f9dc665f186095eedb8",
           "match": true
         },
         {
@@ -184,8 +184,8 @@
         },
         {
           "path": "integrations/agentic-hoi4-modding/README.md",
-          "expected": "614bab97245b5666ca22e9cd1009117fc78b8a03c5b71dbd00535bd63a3cfb7d",
-          "actual": "614bab97245b5666ca22e9cd1009117fc78b8a03c5b71dbd00535bd63a3cfb7d",
+          "expected": "e64b0e9e1151e8cb55f684a2206574874fd2168524853d333c8855a465866586",
+          "actual": "e64b0e9e1151e8cb55f684a2206574874fd2168524853d333c8855a465866586",
           "match": true
         },
         {
@@ -472,7 +472,7 @@
               "vm.swapusage"
             ],
             "returncode": 0,
-            "stdout": "vm.swapusage: total = 8192.00M  used = 6761.56M  free = 1430.44M  (encrypted)",
+            "stdout": "vm.swapusage: total = 6144.00M  used = 5111.31M  free = 1032.69M  (encrypted)",
             "stderr": ""
           },
           "vm_stat": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15271.\nPages active:                                 261853.\nPages inactive:                               519984.\nPages speculative:                              4858.\nPages throttled:                                   0.\nPages wired down:                             142294.\nPages purgeable:                                  83.\n\"Translation faults\":                      121959378.\nPages copy-on-write:                         8443297.\nPages zero filled:                          65590879.\nPages reactivated:                          24444475.\nPages purged:                                1656343.\nFile-backed pages:                            582642.\nAnonymous pages:                              204053.\nPages stored in compressor:                   773212.\nPages occupied by compressor:                  61326.\nDecompressions:                             36715678.\nCompressions:                               49357943.\nPageins:                                   470937128.\nPageouts:                                      40665.\nSwapins:                                     9784914.\nSwapouts:                                   13379550.\nPages tagged:                                  76170.\nPages tagged resident:                         64360.\nPages tagged compressed:                       11810.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4311.\nPages tag-storage free:                          132.\nPages tag-storage non-tag pageable:            28243.\nPages tag-storage non-tag wired:                  82.\nBytes of compressed tags:                    1731968.\nTagged compressions:                          743057.\nTagged decompressions:                        636188.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14594.\nPages active:                                 211570.\nPages inactive:                               464885.\nPages speculative:                              4600.\nPages throttled:                                   0.\nPages wired down:                             135690.\nPages purgeable:                                  30.\n\"Translation faults\":                      134132349.\nPages copy-on-write:                         9335738.\nPages zero filled:                          71586130.\nPages reactivated:                          25741267.\nPages purged:                                1759626.\nFile-backed pages:                            512460.\nAnonymous pages:                              168595.\nPages stored in compressor:                   786496.\nPages occupied by compressor:                 174681.\nDecompressions:                             38556158.\nCompressions:                               52020621.\nPageins:                                   533597009.\nPageouts:                                      43451.\nSwapins:                                    10163623.\nSwapouts:                                   13661036.\nPages tagged:                                  72548.\nPages tagged resident:                         54829.\nPages tagged compressed:                       17719.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4303.\nPages tag-storage free:                          131.\nPages tag-storage non-tag pageable:            28254.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    2799040.\nTagged compressions:                          787894.\nTagged decompressions:                        671612.",
             "stderr": ""
           }
         },
@@ -499,7 +499,7 @@
             "<project-root>"
           ],
           "returncode": 0,
-          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   181Gi   249Gi    43%    1.7M  2.6G    0%   /System/Volumes/Data",
+          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   189Gi   244Gi    44%    1.7M  2.6G    0%   /System/Volumes/Data",
           "stderr": ""
         },
         "available_tools": {
@@ -1040,6 +1040,7 @@
           "models/autoprompter/model-00002-of-00004.safetensors",
           "models/autoprompter/preprocessor_config.json",
           "models/loras/krea2_identity_edit_v1_2.safetensors",
+          "models/diffusion_models/krea2_turbo_nvfp4.safetensors",
           "models/diffusion_models/krea2_turbo_fp8_scaled.safetensors",
           "models/vae/qwen_image_vae.safetensors",
           "models/preprocessing/sface/face_recognition_sface_2021dec.onnx",
@@ -1051,7 +1052,7 @@
           "models/preprocessing/birefnet/birefnet.py",
           "models/preprocessing/birefnet/BiRefNet_config.py"
         ],
-        "locked_models": 7
+        "locked_models": 8
       }
     },
     "custom_node_preflight": {
@@ -1234,15 +1235,20 @@
               "id": "live_runtime_execution",
               "status": "BLOCKED_LOCAL_16GB_MEMORY_INFEASIBLE",
               "finding": "The private user fixture, approved local-copy-only background, model checksums, and preprocessing route passed. The first MPS attempt exposed the FP8 dtype limitation; the documented CPU-dequantization workaround then passed that exception site, but full-resolution and reduced diagnostic runs exhausted practical unified-memory/offload headroom before the first sampler step completed. Production generation remains fail-closed."
+            },
+            {
+              "id": "official_nvfp4_mps_qualification",
+              "status": "BLOCKED_MPS_NVFP4_DEQUANTIZATION",
+              "finding": "The official Comfy-Org Krea 2 NVFP4 artifact was downloaded and checksum-verified. It loaded through the live UNETLoader and reached KSampler, but the Apple-MPS run failed in the NVFP4 dequantization path with `Undefined type Float8_e4m3fn`. The locked artifact policy requires NVIDIA Blackwell SM>=10 for native NVFP4 compute, so this is not an approved Mac fallback."
             }
           ],
-          "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The locked 12B route remains infeasible on the detected 16 GB Mac because practical model residency and offload pressure prevent the first sampler step from completing. This does not establish production suitability: the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
+          "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The official lower-storage NVFP4 option is also checksum-verified and live-loader tested, but its dequantization path is unsupported on Apple MPS. The locked route remains infeasible on the detected 16 GB Mac because FP8 offload pressure and NVFP4 capability failure prevent the first sampler step from completing. This does not establish production suitability: the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
         },
         "live_probe_path": "<project-root>/docs/preflight/live_comfy_compatibility.json",
         "live_probe_status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
         "live_probe": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-28T18:45:44.622547+00:00",
+          "checked_at": "2026-07-28T19:38:44.444729+00:00",
           "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
           "server": {
             "base_url": "http://127.0.0.1:8188",
@@ -1251,7 +1257,7 @@
               "system": {
                 "os": "darwin",
                 "ram_total": 17179869184,
-                "ram_free": 8988327936,
+                "ram_free": 5302714368,
                 "comfyui_version": "0.25.0",
                 "required_frontend_version": "1.45.19",
                 "installed_templates_version": "0.10.0",
@@ -1307,9 +1313,9 @@
                   "type": "mps",
                   "index": null,
                   "vram_total": 17179869184,
-                  "vram_free": 8988393472,
+                  "vram_free": 5303140352,
                   "torch_vram_total": 17179869184,
-                  "torch_vram_free": 8988393472
+                  "torch_vram_free": 5303140352
                 }
               ]
             }
@@ -3890,7 +3896,7 @@
         "workflow_id": "human_local_mac_16gb",
         "ui_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "api_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-        "ui_sha256": "1b9dd3ecd9251063fe034ca2e31ebc819a9c3d39f4d6fb46c77e062bac0b8138",
+        "ui_sha256": "7db53fc39bd5485d5f47634d51b8e365fcf7e3fb6d0034fd3cb2539b28914d19",
         "api_sha256": "44a08bd08c0d7e6ec3b6bd012343f9a51d41dc80b66bba8122317c5b99aeecc9",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
@@ -3903,7 +3909,7 @@
         "workflow_id": "human_full_power_gpu",
         "ui_path": "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "api_path": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-        "ui_sha256": "30de42d8914cd90e20b8a53343d28b806f65a471259459e1e0f924bd9ed2613c",
+        "ui_sha256": "3c57055af0eca53c964dd214020242240952b9a14badb9db99c85f6eaecf34ec",
         "api_sha256": "114b5aa599ab588fb8c4e7615e5caebd20a4be7648b8008aae2ff8abf52ed5c3",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
@@ -3916,7 +3922,7 @@
         "workflow_id": "agent_local_mac_16gb",
         "ui_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "api_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-        "ui_sha256": "cef5ef221ad2981d6dc9458023435c35324fc6c4881125cb0b2de0bd3361429c",
+        "ui_sha256": "72ed7dbc7e90cce272ebaa4e84accb0c47598a6efb1b454245b11edfc65e06f9",
         "api_sha256": "90838f5adb2a3d28401cd822e4f1d3e6cd2909e698f0ecf7d8a4a8074ea7906a",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
@@ -3929,7 +3935,7 @@
         "workflow_id": "agent_full_power_gpu",
         "ui_path": "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
         "api_path": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-        "ui_sha256": "2401f892615094e54139344c4e0304e69e24d559e563a38c5d7f79734d277d7c",
+        "ui_sha256": "34cbdd9597800e69db6a0b60bef2536247274b2ca655c1bc9818a1521d5dc7c0",
         "api_sha256": "ebf8c240c672eb5dbd4db933ff179838e409856392caee1361b68d5ee79a1feb",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
@@ -3942,7 +3948,7 @@
         "workflow_id": "agent_remote_runpod",
         "ui_path": "workflows/agent/remote_runpod/agent_remote_runpod.json",
         "api_path": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-        "ui_sha256": "9c2c5535a9528d40dc4ffbbaa8fec296d6fa862d45cc58bb56038167ba0a0c70",
+        "ui_sha256": "ccd922ef48989d8466b306cf34ddc4ed5dbe8103511955250662aecfdffe5d77",
         "api_sha256": "de06c0bc360c92b82899f36472d5043846f7611e146d05f00e9bb7d17c4d792c",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
@@ -4173,7 +4179,7 @@
           "status": "BLOCKED_PREFLIGHT",
           "json_path": "docs/benchmarks/human_local_mac_16gb.json",
           "markdown_path": "docs/benchmarks/human_local_mac_16gb.md",
-          "expected_model_bytes": 24028311166,
+          "expected_model_bytes": 10886580382,
           "peak_memory_bytes": null,
           "peak_vram_bytes": null
         },
@@ -4191,7 +4197,7 @@
           "status": "BLOCKED_PREFLIGHT",
           "json_path": "docs/benchmarks/agent_local_mac_16gb.json",
           "markdown_path": "docs/benchmarks/agent_local_mac_16gb.md",
-          "expected_model_bytes": 20694849246,
+          "expected_model_bytes": 7553118462,
           "peak_memory_bytes": null,
           "peak_vram_bytes": null
         },
@@ -4347,7 +4353,7 @@
         "display_name": "human_local_mac_16gb",
         "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-        "sha256": "1b9dd3ecd9251063fe034ca2e31ebc819a9c3d39f4d6fb46c77e062bac0b8138",
+        "sha256": "7db53fc39bd5485d5f47634d51b8e365fcf7e3fb6d0034fd3cb2539b28914d19",
         "api_sha256": "44a08bd08c0d7e6ec3b6bd012343f9a51d41dc80b66bba8122317c5b99aeecc9",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
@@ -4418,7 +4424,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T18:45:44.622547+00:00"
+          "checked_at": "2026-07-28T19:38:44.444729+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -4436,7 +4442,7 @@
         "display_name": "human_full_power_gpu",
         "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-        "sha256": "30de42d8914cd90e20b8a53343d28b806f65a471259459e1e0f924bd9ed2613c",
+        "sha256": "3c57055af0eca53c964dd214020242240952b9a14badb9db99c85f6eaecf34ec",
         "api_sha256": "114b5aa599ab588fb8c4e7615e5caebd20a4be7648b8008aae2ff8abf52ed5c3",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
@@ -4507,7 +4513,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T18:45:44.622547+00:00"
+          "checked_at": "2026-07-28T19:38:44.444729+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -4525,7 +4531,7 @@
         "display_name": "agent_local_mac_16gb",
         "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-        "sha256": "cef5ef221ad2981d6dc9458023435c35324fc6c4881125cb0b2de0bd3361429c",
+        "sha256": "72ed7dbc7e90cce272ebaa4e84accb0c47598a6efb1b454245b11edfc65e06f9",
         "api_sha256": "90838f5adb2a3d28401cd822e4f1d3e6cd2909e698f0ecf7d8a4a8074ea7906a",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
@@ -4588,7 +4594,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T18:45:44.622547+00:00"
+          "checked_at": "2026-07-28T19:38:44.444729+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -4606,7 +4612,7 @@
         "display_name": "agent_full_power_gpu",
         "workflow_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
         "api_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-        "sha256": "2401f892615094e54139344c4e0304e69e24d559e563a38c5d7f79734d277d7c",
+        "sha256": "34cbdd9597800e69db6a0b60bef2536247274b2ca655c1bc9818a1521d5dc7c0",
         "api_sha256": "ebf8c240c672eb5dbd4db933ff179838e409856392caee1361b68d5ee79a1feb",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
@@ -4669,7 +4675,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T18:45:44.622547+00:00"
+          "checked_at": "2026-07-28T19:38:44.444729+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -4687,7 +4693,7 @@
         "display_name": "agent_remote_runpod",
         "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
         "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-        "sha256": "9c2c5535a9528d40dc4ffbbaa8fec296d6fa862d45cc58bb56038167ba0a0c70",
+        "sha256": "ccd922ef48989d8466b306cf34ddc4ed5dbe8103511955250662aecfdffe5d77",
         "api_sha256": "de06c0bc360c92b82899f36472d5043846f7611e146d05f00e9bb7d17c4d792c",
         "graph_spec_version": "graph-spec-1.0.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
@@ -4750,7 +4756,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-28T18:45:44.622547+00:00"
+          "checked_at": "2026-07-28T19:38:44.444729+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",

@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0.0",
+  "observed_at": "2026-07-28T20:08:31Z",
+  "status": "BLOCKED_LOCAL_16GB_MPS_KREA_EXECUTION",
+  "scope": "private_user_fixture_local_qualification",
+  "hardware": {
+    "os": "darwin",
+    "architecture": "arm64",
+    "ram_bytes": 17179869184,
+    "accelerator": "mps",
+    "comfyui_revision": "2a610155821d670a2d8047e654e5fce96b790eb5",
+    "pytorch_version": "2.11.0"
+  },
+  "source_policy": {
+    "model_repository": "https://huggingface.co/Comfy-Org/Krea-2",
+    "model_card": "https://huggingface.co/krea/Krea-2-Turbo",
+    "inference_code": "https://github.com/krea-ai/krea-2",
+    "local_source_and_background_private": true,
+    "model_and_lora_mutated": false
+  },
+  "model_options": [
+    {
+      "filename": "krea2_turbo_fp8_scaled.safetensors",
+      "revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+      "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1",
+      "installed": true,
+      "live_unet_loader": "PASS",
+      "native_mps_execution": "BLOCKED_FLOAT8_DTYPE",
+      "measured_error": "Trying to convert Float8_e4m3fn to the MPS backend but it does not have support for that dtype.",
+      "workaround": {
+        "script": "scripts/runtime/apply_mps_fp8_workaround.py",
+        "status": "APPLIED_AND_VERIFIED",
+        "upstream": false
+      },
+      "post_workaround_execution": "BLOCKED_LOCAL_MEMORY_PRESSURE_BEFORE_FIRST_SAMPLER_STEP"
+    },
+    {
+      "filename": "krea2_turbo_nvfp4.safetensors",
+      "revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+      "sha256": "61527003b2d537055494d01bc8efe51d6e86e64192ba23e3721a5647231fe394",
+      "installed": true,
+      "quantization_metadata": "nvfp4",
+      "live_unet_loader": "PASS",
+      "native_mps_capability_probe": "BLOCKED_UNSUPPORTED",
+      "official_hardware_policy": "NVIDIA Blackwell SM>=10 required for ComfyUI native NVFP4 compute",
+      "measured_run": {
+        "prompt_id": "ff20676f-0db4-42cc-a52a-2e2c2dff45b0",
+        "canvas": "832x1120",
+        "prompt_validation": "PASS_WITH_PRIVATE_MANUAL_OVERRIDE",
+        "conditioning_and_preprocessing": "PASS",
+        "sampler_reached": true,
+        "sampler_steps_completed": 0,
+        "status": "BLOCKED_MPS_NVFP4_DEQUANTIZATION",
+        "node": "KSampler",
+        "error": "Undefined type Float8_e4m3fn",
+        "candidate_produced": false
+      }
+    }
+  ],
+  "conclusion": "The official lower-storage NVFP4 artifact is checksum-verified and loadable in the live registry, but its dequantization path fails on Apple MPS. The official FP8 artifact reaches the sampler only after a documented local workaround and then exhausts practical 16 GB unified-memory/offload headroom. The Mac route remains honestly blocked; no after portrait, DDS, or mod integration output is claimed."
+}

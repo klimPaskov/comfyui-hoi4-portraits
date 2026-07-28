@@ -1,26 +1,15 @@
 # Documentation
 
-This folder is the public-facing guide and evidence index.
-
-## User guide
+Start here:
 
 - [Getting started](getting-started.md)
 - [Workflow guide](workflows.md)
+- [Screenshots](screenshots.md)
+- [Mac Krea precision qualification](preflight/krea_precision_options_2026-07-28.md)
 - [Contracts and safety](contracts-and-safety.md)
 - [Testing and evidence](testing-and-evidence.md)
 - [Licensing and public-repository policy](licensing-and-public-repository.md)
-- [Screenshots](screenshots.md)
 
-## Evidence
+The numbered design package is in [`planning/`](planning/). Machine-readable acceptance and preflight evidence remains under [`acceptance/`](acceptance/), [`preflight/`](preflight/), [`capabilities/`](capabilities/), [`benchmarks/`](benchmarks/), and [`comparisons/`](comparisons/). These records are diagnostic evidence; they never override a hard production gate.
 
-Machine-readable evidence is retained alongside its Markdown summary:
-
-- [`preflight/initial_preflight.md`](preflight/initial_preflight.md)
-- [`preflight/live_comfy_compatibility.json`](preflight/live_comfy_compatibility.json)
-- [`preflight/autoprompter_runtime_test.json`](preflight/autoprompter_runtime_test.json)
-- [`preflight/local_human_execution_2026-07-28.json`](preflight/local_human_execution_2026-07-28.json)
-- [`acceptance/acceptance_report.md`](acceptance/acceptance_report.md)
-- [`capabilities/local_mac_16gb.md`](capabilities/local_mac_16gb.md)
-- [`capabilities/full_power_gpu.md`](capabilities/full_power_gpu.md)
-
-Evidence reports are diagnostic records, not user input. They never override a hard production gate. Public screenshots and examples are sanitized; do not add private media or host credentials to issues, pull requests, or documentation.
+Public screenshots and examples are sanitized. Do not add private media, model weights, caches, or host credentials to issues, pull requests, or documentation.

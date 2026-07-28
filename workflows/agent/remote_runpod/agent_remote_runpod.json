@@ -7,7 +7,7 @@
       "type": "HOI4JobInput",
       "title": "Job contract and profile",
       "pos": [
-        60,
+        70,
         100
       ],
       "size": [
@@ -86,8 +86,8 @@
       "type": "HOI4JobSource",
       "title": "Load source only from job root",
       "pos": [
-        60,
-        320
+        70,
+        300
       ],
       "size": [
         260,
@@ -131,8 +131,8 @@
       "type": "HOI4SourceGuard",
       "title": "Provenance and source guard",
       "pos": [
-        370,
-        320
+        270,
+        300
       ],
       "size": [
         260,
@@ -182,8 +182,8 @@
       "type": "HOI4SubjectSelect",
       "title": "Deterministic subject selection",
       "pos": [
-        720,
-        210
+        610,
+        160
       ],
       "size": [
         260,
@@ -234,8 +234,8 @@
       "type": "HOI4HeadShouldersCrop",
       "title": "Head and shoulders crop",
       "pos": [
-        1060,
-        210
+        930,
+        160
       ],
       "size": [
         260,
@@ -291,8 +291,8 @@
       "type": "HOI4ConservativePrep",
       "title": "Conditional color and conservative restoration",
       "pos": [
-        1400,
-        210
+        1250,
+        160
       ],
       "size": [
         260,
@@ -349,8 +349,8 @@
       "type": "HOI4ForegroundMask",
       "title": "Pinned foreground/mask analysis",
       "pos": [
-        1740,
-        150
+        1570,
+        130
       ],
       "size": [
         260,
@@ -422,8 +422,8 @@
       "type": "HOI4MaskAndBackgroundGuard",
       "title": "Approved background composite and foreground guard",
       "pos": [
-        1740,
-        360
+        1760,
+        340
       ],
       "size": [
         260,
@@ -500,8 +500,8 @@
       "type": "HOI4PromptInput",
       "title": "Agent prompt from job contract",
       "pos": [
-        2400,
-        240
+        70,
+        760
       ],
       "size": [
         260,
@@ -560,8 +560,8 @@
       "type": "UNETLoader",
       "title": "Krea 2 Turbo FP8",
       "pos": [
-        2740,
-        100
+        390,
+        760
       ],
       "size": [
         260,
@@ -611,8 +611,8 @@
       "type": "LoraLoaderModelOnly",
       "title": "Pinned Krea identity adapter",
       "pos": [
-        2740,
-        300
+        390,
+        920
       ],
       "size": [
         260,
@@ -667,8 +667,8 @@
       "type": "VAELoader",
       "title": "Krea VAE",
       "pos": [
-        2740,
-        500
+        390,
+        1080
       ],
       "size": [
         260,
@@ -713,8 +713,8 @@
       "type": "VAEEncode",
       "title": "Encode identity reference",
       "pos": [
-        2740,
-        700
+        390,
+        1240
       ],
       "size": [
         260,
@@ -758,8 +758,8 @@
       "type": "Krea2EditModelPatch",
       "title": "Krea 2 identity edit patch",
       "pos": [
-        3050,
-        160
+        680,
+        760
       ],
       "size": [
         260,
@@ -829,8 +829,8 @@
       "type": "CLIPLoader",
       "title": "Krea Qwen3-VL encoder",
       "pos": [
-        3050,
-        360
+        680,
+        920
       ],
       "size": [
         260,
@@ -881,8 +881,8 @@
       "type": "Krea2EditGroundedEncode",
       "title": "Grounded positive conditioning",
       "pos": [
-        3050,
-        560
+        680,
+        1080
       ],
       "size": [
         260,
@@ -940,8 +940,8 @@
       "type": "Krea2EditGroundedEncode",
       "title": "Grounded empty negative conditioning",
       "pos": [
-        3050,
-        760
+        680,
+        1240
       ],
       "size": [
         260,
@@ -1001,8 +1001,8 @@
       "type": "LoraLoaderModelOnly",
       "title": "Immutable HOI4 style LoRA",
       "pos": [
-        3400,
-        240
+        1110,
+        840
       ],
       "size": [
         260,
@@ -1056,8 +1056,8 @@
       "type": "EmptySD3LatentImage",
       "title": "Profile work canvas",
       "pos": [
-        3740,
-        150
+        1430,
+        760
       ],
       "size": [
         260,
@@ -1114,8 +1114,8 @@
       "type": "KSampler",
       "title": "Krea 2 Turbo candidate",
       "pos": [
-        3740,
-        360
+        1430,
+        940
       ],
       "size": [
         260,
@@ -1212,8 +1212,8 @@
       "type": "VAEDecode",
       "title": "Decode candidate",
       "pos": [
-        4080,
-        100
+        1750,
+        760
       ],
       "size": [
         260,
@@ -1257,8 +1257,8 @@
       "type": "HOI4EvidenceExport",
       "title": "Candidate evidence and audit handoff",
       "pos": [
-        4390,
-        100
+        2030,
+        760
       ],
       "size": [
         260,
@@ -1341,8 +1341,8 @@
       "type": "SaveImage",
       "title": "Preview PNG only",
       "pos": [
-        4390,
-        300
+        2030,
+        940
       ],
       "size": [
         260,
@@ -1762,8 +1762,8 @@
       "bounding": [
         40,
         40,
-        620,
-        620
+        520,
+        520
       ],
       "color": "#355070",
       "font_size": 24
@@ -1771,10 +1771,10 @@
     {
       "title": "01 Subject selection",
       "bounding": [
-        700,
+        580,
         40,
         300,
-        620
+        520
       ],
       "color": "#3a7ca5",
       "font_size": 24
@@ -1782,10 +1782,10 @@
     {
       "title": "02 Crop and source preparation",
       "bounding": [
-        1040,
+        900,
         40,
         300,
-        620
+        520
       ],
       "color": "#2a9d8f",
       "font_size": 24
@@ -1793,10 +1793,10 @@
     {
       "title": "03 Color and restoration",
       "bounding": [
-        1380,
+        1220,
         40,
         300,
-        620
+        520
       ],
       "color": "#588157",
       "font_size": 24
@@ -1804,10 +1804,10 @@
     {
       "title": "04 Masks and approved background",
       "bounding": [
-        1720,
+        1540,
         40,
-        620,
-        620
+        520,
+        520
       ],
       "color": "#527fa3",
       "font_size": 24
@@ -1815,10 +1815,10 @@
     {
       "title": "05 Prompt",
       "bounding": [
-        2380,
         40,
+        660,
         300,
-        620
+        520
       ],
       "color": "#8064a2",
       "font_size": 24
@@ -1826,10 +1826,10 @@
     {
       "title": "06 Krea 2 identity edit",
       "bounding": [
-        2720,
-        40,
-        620,
-        920
+        360,
+        660,
+        700,
+        760
       ],
       "color": "#6d597a",
       "font_size": 24
@@ -1837,10 +1837,10 @@
     {
       "title": "07 HOI4 style LoRA",
       "bounding": [
-        3380,
-        40,
+        1080,
+        660,
         300,
-        620
+        520
       ],
       "color": "#b56576",
       "font_size": 24
@@ -1848,10 +1848,10 @@
     {
       "title": "08 Candidate generation",
       "bounding": [
-        3720,
-        40,
+        1400,
+        660,
         300,
-        620
+        520
       ],
       "color": "#c17817",
       "font_size": 24
@@ -1859,10 +1859,10 @@
     {
       "title": "09 Preview and evidence export",
       "bounding": [
-        4060,
-        40,
-        980,
-        920
+        1720,
+        660,
+        900,
+        760
       ],
       "color": "#457b9d",
       "font_size": 24

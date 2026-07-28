@@ -65,7 +65,12 @@
       "id": "live_runtime_execution",
       "status": "BLOCKED_LOCAL_16GB_MEMORY_INFEASIBLE",
       "finding": "The private user fixture, approved local-copy-only background, model checksums, and preprocessing route passed. The first MPS attempt exposed the FP8 dtype limitation; the documented CPU-dequantization workaround then passed that exception site, but full-resolution and reduced diagnostic runs exhausted practical unified-memory/offload headroom before the first sampler step completed. Production generation remains fail-closed."
+    },
+    {
+      "id": "official_nvfp4_mps_qualification",
+      "status": "BLOCKED_MPS_NVFP4_DEQUANTIZATION",
+      "finding": "The official Comfy-Org Krea 2 NVFP4 artifact was downloaded and checksum-verified. It loaded through the live UNETLoader and reached KSampler, but the Apple-MPS run failed in the NVFP4 dequantization path with `Undefined type Float8_e4m3fn`. The locked artifact policy requires NVIDIA Blackwell SM>=10 for native NVFP4 compute, so this is not an approved Mac fallback."
     }
   ],
-  "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The locked 12B route remains infeasible on the detected 16 GB Mac because practical model residency and offload pressure prevent the first sampler step from completing. This does not establish production suitability: the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
+  "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The official lower-storage NVFP4 option is also checksum-verified and live-loader tested, but its dequantization path is unsupported on Apple MPS. The locked route remains infeasible on the detected 16 GB Mac because FP8 offload pressure and NVFP4 capability failure prevent the first sampler step from completing. This does not establish production suitability: the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
 }

@@ -97,6 +97,16 @@
       "canvas": "416x560_diagnostic_only",
       "sampler_progress": "0/8",
       "result": "interrupted_before_first_step_completion"
+    },
+    {
+      "prompt_id": "ff20676f-0db4-42cc-a52a-2e2c2dff45b0",
+      "status": "BLOCKED_MPS_NVFP4_DEQUANTIZATION",
+      "node": "KSampler",
+      "model": "krea2_turbo_nvfp4.safetensors",
+      "canvas": "832x1120",
+      "sampler_progress": "0/8",
+      "error": "Undefined type Float8_e4m3fn",
+      "result": "official_lower_storage_artifact_loaded_but_not_supported_by_Apple_MPS"
     }
   ],
   "conclusion": "The local workaround removes the FP8-to-MPS dtype exception without changing the locked model or immutable LoRA, but the full 12B Krea route remains infeasible on this detected 16 GB Mac because model residency and CPU/MPS offload exhaust practical memory before the first sampler step completes. No generated after portrait, final PNG, DDS, or mod integration is claimed."
