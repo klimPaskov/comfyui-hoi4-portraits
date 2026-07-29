@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -498,7 +499,8 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             "execution_test_evidence": {"path": str(live_probe_path.relative_to(root_path)), **live_probe.get("execution", {})} if live_schema_pass else None,
         })
     manifest_status = "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if manifests and all(item.get("validation_status") == "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" for item in manifests) else "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
-    manifest = {"schema_version": "1.0.0", "generated_at": "2026-07-28", "lock_version": "workflows-2026-07-26.1", "workflows": manifests, "status": manifest_status}
+    generated_at = live_probe.get("checked_at") if isinstance(live_probe.get("checked_at"), str) else datetime.now(timezone.utc).isoformat()
+    manifest = {"schema_version": "1.0.0", "generated_at": generated_at, "lock_version": "workflows-2026-07-26.1", "workflows": manifests, "status": manifest_status}
     atomic_json_write(root_path / "manifests/workflow_manifest.json", manifest)
     return manifest
 

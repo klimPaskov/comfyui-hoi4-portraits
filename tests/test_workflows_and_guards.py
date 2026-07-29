@@ -32,6 +32,11 @@ class WorkflowAndGuardTests(unittest.TestCase):
         for report in reports:
             self.assertEqual(report["structural_status"], "PASS", report)
 
+    def test_workflow_manifest_uses_current_live_probe_timestamp(self):
+        manifest = json.loads((self.root / "manifests/workflow_manifest.json").read_text(encoding="utf-8"))
+        probe = json.loads((self.root / "docs/preflight/live_comfy_compatibility.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["generated_at"], probe["checked_at"])
+
     def test_local_nvidia_agent_is_routable_through_controller_and_adapter(self):
         controller_path = JobController(self.root)._workflow_api_path("agent_full_power_gpu")
         adapter_path = PortraitMcpService(self.root)._workflow_path("agent_full_power_gpu")

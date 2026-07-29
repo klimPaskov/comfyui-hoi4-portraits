@@ -49,7 +49,7 @@ run remains execution-only evidence. These results are recorded as Mac
 infeasibility evidence, not silently relabeled as production success. No final
 PNG, DDS, or mod wiring was created.
 
-The current automated suite is `40/40` passing. The RunPod route remains
+The current automated suite is `41/41` passing. The RunPod route remains
 deferred by the project owner, and the generic/Chaos integration packages remain
 portable and fail-closed until the parent-owned live consumer validation and
 final mod wiring gates are completed. The read-only live-target audit is recorded
