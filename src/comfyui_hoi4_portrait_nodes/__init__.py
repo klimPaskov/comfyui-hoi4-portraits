@@ -36,7 +36,6 @@ from .nodes import (
     HOI4RandomPortraitPrompt,
     HOI4SourceGuard,
     HOI4SubjectSelect,
-    HOI4UseColorWhenNeeded,
 )
 
 NODE_CLASS_MAPPINGS = {
@@ -51,7 +50,6 @@ NODE_CLASS_MAPPINGS = {
     "HOI4ForegroundMask": HOI4ForegroundMask,
     "HOI4MaskAndBackgroundGuard": HOI4MaskAndBackgroundGuard,
     "HOI4PortraitCrop": HOI4PortraitCrop,
-    "HOI4UseColorWhenNeeded": HOI4UseColorWhenNeeded,
     "HOI4FinishPreparedPortrait": HOI4FinishPreparedPortrait,
     "HOI4KreaModelLoadBarrier": HOI4KreaModelLoadBarrier,
     "HOI4PromptInput": HOI4PromptInput,
@@ -74,7 +72,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
         "HOI4ForegroundMask": "Separate person from background",
         "HOI4MaskAndBackgroundGuard": "Add approved background",
         "HOI4PortraitCrop": "Crop to head and shoulders",
-        "HOI4UseColorWhenNeeded": "Choose color treatment",
         "HOI4FinishPreparedPortrait": "Finish prepared portrait",
         "HOI4KreaModelLoadBarrier": "Prepare generation",
         "HOI4PromptInput": "Use portrait description",

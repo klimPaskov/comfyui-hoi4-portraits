@@ -27,8 +27,6 @@
       "crop_override_top": 0,
       "crop_override_right": 0,
       "crop_override_bottom": 0,
-      "monochrome_mode": "automatic",
-      "restoration_level": "conservative",
       "approved_background_registry_id": "<from_job_contract>",
       "background_choice": "Keep current background",
       "seed_mode": "derived",
@@ -94,14 +92,22 @@
     }
   },
   "36": {
-    "class_type": "DDColor_Colorize",
+    "class_type": "UpscaleModelLoader",
     "inputs": {
+      "model_name": "RealESRGAN_x2plus.pth"
+    }
+  },
+  "39": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": {
+      "upscale_model": [
+        "36",
+        0
+      ],
       "image": [
         "5",
         0
-      ],
-      "model_input_size": 512,
-      "checkpoint": "ddcolor_modelscope.pth"
+      ]
     }
   },
   "6": {
@@ -119,8 +125,8 @@
         "5",
         1
       ],
-      "colorized_image": [
-        "36",
+      "enhanced_image": [
+        "39",
         0
       ],
       "control_meta": [
@@ -514,7 +520,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.6.0",
+    "graph_spec_version": "graph-spec-1.7.0",
     "workflow_id": "hoi4_portraits_local_nvidia_16gb",
     "execution_profile": "hoi4_portraits_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -555,8 +561,8 @@
         "retry_limit",
         "seed_policy"
       ],
-      "Colorize when needed": [
-        "checkpoint"
+      "Load AI portrait enhancer": [
+        "model_name"
       ],
       "Separate person from background": [
         "mask_model"
@@ -626,19 +632,24 @@
     "required_core_nodes": [
       "CLIPLoader",
       "EmptySD3LatentImage",
+      "ImageUpscaleWithModel",
       "KSampler",
       "LoraLoaderModelOnly",
       "PreviewImage",
       "SaveImage",
       "UNETLoader",
+      "UpscaleModelLoader",
       "VAEDecode",
       "VAEEncode",
       "VAELoader"
     ],
     "required_preparation_nodes": [
-      "DDColor_Colorize",
+      "UpscaleModelLoader",
+      "ImageUpscaleWithModel",
       "HOI4ConservativePrep"
     ],
+    "preparation_model": "RealESRGAN_x2plus.pth",
+    "colorization": false,
     "preview_nodes": [
       "Cropped portrait",
       "Prepared portrait",

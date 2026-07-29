@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.metadata
 import json
 import os
 import shutil
@@ -73,51 +72,6 @@ def _checkout_krea_nodes(comfy_root: Path, actions: list[dict[str, Any]]) -> Non
     if actual != entry["revision"]:
         raise InstallError(ExitCode.NODE_MISSING, "Krea Edit node revision does not match the lock")
     actions.append({"action": "krea_edit_nodes_verified", "path": str(destination), "revision": actual})
-
-
-def _checkout_ddcolor_nodes(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
-    lock = json.loads((ROOT / "dependencies" / "custom_nodes.lock.json").read_text(encoding="utf-8"))
-    entry = next(item for item in lock["custom_nodes"] if item["name"] == "ComfyUI-DDColor")
-    destination = comfy_root / "custom_nodes" / "ComfyUI-DDColor"
-    if destination.exists() and not (destination / ".git").is_dir():
-        raise InstallError(ExitCode.NODE_MISSING, f"refusing to replace non-Git node directory: {destination}")
-    if not destination.exists():
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        actions.append(_run(["git", "clone", entry["repository"], str(destination)], comfy_root))
-    actions.append(_run(["git", "fetch", "--tags", "--force", "origin", entry["revision"]], destination))
-    actions.append(_run(["git", "checkout", "--detach", entry["revision"]], destination))
-    actual = _run(["git", "rev-parse", "HEAD"], destination)["stdout"]
-    if actual != entry["revision"]:
-        raise InstallError(ExitCode.NODE_MISSING, "DDColor node revision does not match")
-
-    requirements = entry.get("requirements", {})
-    missing_or_different = []
-    for package, expected in requirements.items():
-        try:
-            actual_version = importlib.metadata.version(package)
-        except importlib.metadata.PackageNotFoundError:
-            actual_version = None
-        if actual_version != expected:
-            missing_or_different.append(f"{package}=={expected}")
-    if missing_or_different:
-        actions.append(_run([sys.executable, "-m", "pip", "install", *missing_or_different], comfy_root))
-    for package, expected in requirements.items():
-        try:
-            actual_version = importlib.metadata.version(package)
-        except importlib.metadata.PackageNotFoundError as exc:
-            raise InstallError(ExitCode.DEPENDENCY_MISSING, f"DDColor requires {package} {expected}") from exc
-        if actual_version != expected:
-            raise InstallError(ExitCode.DEPENDENCY_MISSING, f"DDColor requires {package} {expected}, found {actual_version}")
-
-    checkpoint = entry["checkpoint"]
-    _download_verified(
-        checkpoint["url"],
-        destination / "checkpoints" / checkpoint["filename"],
-        checkpoint["size_bytes"],
-        checkpoint["sha256"],
-        actions,
-    )
-    actions.append({"action": "ddcolor_nodes_verified", "path": str(destination), "revision": actual})
 
 
 def _hoi4_install_candidates(explicit_root: Path | None) -> list[Path]:
@@ -279,6 +233,7 @@ def _extra_model_block() -> str:
         "  unet: models/diffusion_models\n"
         "  text_encoders: models/text_encoders\n"
         "  vae: models/vae\n"
+        "  upscale_models: models/upscale_models\n"
         "  loras: |\n"
         "    models/loras\n"
         "    loras\n"
@@ -431,8 +386,6 @@ def install(
     }
     if workflow_ids is None or workflow_ids.intersection(identity_workflows):
         _checkout_krea_nodes(comfy_root, actions)
-    if workflow_ids is None or workflow_ids.intersection(identity_workflows | {"hoi4_portraits_prepare_portrait_for_hoi4"}):
-        _checkout_ddcolor_nodes(comfy_root, actions)
     _copy_project_nodes(comfy_root, actions)
     model_lock = json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8"))
     generation_workflows = identity_workflows | {
@@ -450,7 +403,7 @@ def install(
     _install_autoprompter_runtime(profile, actions, workflow_ids)
     _merge_extra_model_paths(comfy_root, actions)
     _install_hoi4_backgrounds(hoi4_root, actions)
-    if workflow_ids is None or "hoi4_portraits_prepare_portrait_for_hoi4" in workflow_ids:
+    if workflow_ids is None or workflow_ids.intersection({"hoi4_portraits_prepare_portrait_for_hoi4", "hoi4_portraits_prepare_portrait_basic"}):
         _copy_example_input(comfy_root, actions)
     _copy_workflows(comfy_root, actions, workflow_ids)
     return actions
@@ -478,6 +431,7 @@ def main(argv: list[str] | None = None) -> int:
             "hoi4_portraits_agent_no_input_local_nvidia_16gb",
             "hoi4_portraits_agent_no_input_full_power_gpu",
             "hoi4_portraits_prepare_portrait_for_hoi4",
+            "hoi4_portraits_prepare_portrait_basic",
         ],
         help="copy only the named UI workflow; repeat to install more than one",
     )

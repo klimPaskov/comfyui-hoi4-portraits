@@ -881,7 +881,7 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.6.0",
+    "graph_spec_version": "graph-spec-1.7.0",
     "workflow_id": "hoi4_portraits_agent_no_input_full_power_gpu",
     "profile": "hoi4_portraits_agent_no_input_full_power_gpu",
     "execution_profile": "hoi4_portraits_agent_no_input_full_power_gpu",

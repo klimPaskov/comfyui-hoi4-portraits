@@ -32,6 +32,8 @@ CORE_NODES = {
     "EmptySD3LatentImage",
     "KSampler",
     "VAEDecode",
+    "UpscaleModelLoader",
+    "ImageUpscaleWithModel",
     "SaveImage",
 }
 RANDOM_PROMPT_CORE_NODES = {
@@ -99,10 +101,12 @@ RANDOM_PROMPT_GROUPS = [
     "05 Preview and save",
 ]
 PREP_WORKFLOW_ID = "hoi4_portraits_prepare_portrait_for_hoi4"
+PREP_BASIC_WORKFLOW_ID = "hoi4_portraits_prepare_portrait_basic"
+PREP_WORKFLOW_IDS = {PREP_WORKFLOW_ID, PREP_BASIC_WORKFLOW_ID}
 PREP_GROUPS = [
     "01 Choose image",
     "02 Crop portrait",
-    "03 Color and enhance",
+    "03 Enhance portrait",
     "04 Preview and save",
 ]
 LOW_MEMORY_PROFILE_IDS = {
@@ -119,7 +123,7 @@ GROUP_LAYOUT = {
     "00 Portrait setup": (40, 40, 870, 900),
     "01 Choose subject": (940, 40, 500, 900),
     "02 Crop portrait": (1470, 40, 440, 900),
-    "03 Prepare portrait": (1940, 40, 440, 900),
+    "03 Prepare portrait": (1940, 40, 440, 980),
     "04 Choose background": (2410, 40, 1550, 900),
     "05 Portrait description": (300, 1020, 500, 720),
     "06 Krea 2 portrait edit": (840, 1020, 900, 780),
@@ -178,19 +182,19 @@ RANDOM_PROMPT_NODE_COLORS = {
 PREP_GROUP_LAYOUT = {
     "01 Choose image": (40, 40, 760, 520),
     "02 Crop portrait": (840, 40, 760, 520),
-    "03 Color and enhance": (40, 600, 1080, 600),
+    "03 Enhance portrait": (40, 600, 1080, 600),
     "04 Preview and save": (1160, 600, 900, 600),
 }
 PREP_GROUP_COLORS = {
     "01 Choose image": "#355070",
     "02 Crop portrait": "#2a9d8f",
-    "03 Color and enhance": "#8064a2",
+    "03 Enhance portrait": "#8064a2",
     "04 Preview and save": "#457b9d",
 }
 PREP_NODE_COLORS = {
     "01 Choose image": ("#1d2f45", "#294866"),
     "02 Crop portrait": ("#164f49", "#217a70"),
-    "03 Color and enhance": ("#46375a", "#654c80"),
+    "03 Enhance portrait": ("#46375a", "#654c80"),
     "04 Preview and save": ("#23465b", "#306985"),
 }
 
@@ -248,10 +252,10 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     if is_human:
         nodes.append(_node(
             24, "HOI4HumanControls", group["00 Portrait setup"], "Choose input portrait and options",
-            inputs={"job": Link(1), "source_image_path": "<from_job_contract>", "subject_selector_mode": "automatic", "face_index": 0, "bbox_left": 0, "bbox_top": 0, "bbox_right": 0, "bbox_bottom": 0, "crop_override_left": 0, "crop_override_top": 0, "crop_override_right": 0, "crop_override_bottom": 0, "monochrome_mode": "automatic", "restoration_level": "conservative", "approved_background_registry_id": "<from_job_contract>", "background_choice": "Keep current background", "seed_mode": "derived", "fixed_seed": 0, "candidate_count": int(limits["candidate_max"]), "output_job_id": "<job_id_from_contract>"},
-            input_types={"job": "HOI4_JOB", "source_image_path": "STRING", "subject_selector_mode": "COMBO", "face_index": "INT", "bbox_left": "INT", "bbox_top": "INT", "bbox_right": "INT", "bbox_bottom": "INT", "crop_override_left": "INT", "crop_override_top": "INT", "crop_override_right": "INT", "crop_override_bottom": "INT", "monochrome_mode": "COMBO", "restoration_level": "COMBO", "approved_background_registry_id": "STRING", "background_choice": "COMBO", "seed_mode": "COMBO", "fixed_seed": "INT", "candidate_count": "INT", "output_job_id": "STRING"},
+            inputs={"job": Link(1), "source_image_path": "<from_job_contract>", "subject_selector_mode": "automatic", "face_index": 0, "bbox_left": 0, "bbox_top": 0, "bbox_right": 0, "bbox_bottom": 0, "crop_override_left": 0, "crop_override_top": 0, "crop_override_right": 0, "crop_override_bottom": 0, "approved_background_registry_id": "<from_job_contract>", "background_choice": "Keep current background", "seed_mode": "derived", "fixed_seed": 0, "candidate_count": int(limits["candidate_max"]), "output_job_id": "<job_id_from_contract>"},
+            input_types={"job": "HOI4_JOB", "source_image_path": "STRING", "subject_selector_mode": "COMBO", "face_index": "INT", "bbox_left": "INT", "bbox_top": "INT", "bbox_right": "INT", "bbox_bottom": "INT", "crop_override_left": "INT", "crop_override_top": "INT", "crop_override_right": "INT", "crop_override_bottom": "INT", "approved_background_registry_id": "STRING", "background_choice": "COMBO", "seed_mode": "COMBO", "fixed_seed": "INT", "candidate_count": "INT", "output_job_id": "STRING"},
             outputs=["job", "control_meta"], output_types=["HOI4_JOB", "HOI4_META"], pos=(360, 80),
-            widgets=["<from_job_contract>", "automatic", 0, 0, 0, 0, 0, 0, 0, 0, "automatic", "conservative", "<from_job_contract>", "Keep current background", "derived", 0, int(limits["candidate_max"]), "<job_id_from_contract>"],
+            widgets=["<from_job_contract>", "automatic", 0, 0, 0, 0, 0, 0, 0, 0, "<from_job_contract>", "Keep current background", "derived", 0, int(limits["candidate_max"]), "<job_id_from_contract>"],
         ))
     control_inputs = {"control_meta": Link(24, 1)} if is_human else {}
     control_input_types = {"control_meta": "HOI4_META"} if is_human else {}
@@ -272,11 +276,17 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         inputs={"job": Link(job_node_id), "image": Link(4, 0), "selection_meta": Link(4, 1), **control_inputs}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "selection_meta": "HOI4_META", **control_input_types}, outputs=["image", "crop_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 300),
     ))
     nodes.append(_node(
-        36, "DDColor_Colorize", group["03 Prepare portrait"], "Colorize when needed",
-        inputs={"image": Link(5, 0), "model_input_size": 512, "checkpoint": "ddcolor_modelscope.pth"},
-        input_types={"image": "IMAGE", "model_input_size": "INT", "checkpoint": "COMBO"},
-        outputs=["colorized_image"], output_types=["IMAGE"],
-        widgets=[512, "ddcolor_modelscope.pth"], locked=["checkpoint"],
+        36, "UpscaleModelLoader", group["03 Prepare portrait"], "Load AI portrait enhancer",
+        inputs={"model_name": "RealESRGAN_x2plus.pth"},
+        input_types={"model_name": "COMBO"},
+        outputs=["upscale_model"], output_types=["UPSCALE_MODEL"],
+        widgets=["RealESRGAN_x2plus.pth"], locked=["model_name"],
+    ))
+    nodes.append(_node(
+        39, "ImageUpscaleWithModel", group["03 Prepare portrait"], "Enhance portrait with AI",
+        inputs={"upscale_model": Link(36, 0), "image": Link(5, 0)},
+        input_types={"upscale_model": "UPSCALE_MODEL", "image": "IMAGE"},
+        outputs=["enhanced_image"], output_types=["IMAGE"],
     ))
     nodes.append(_node(
         6, "HOI4ConservativePrep", group["03 Prepare portrait"], "Prepare the portrait",
@@ -284,14 +294,14 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
             "job": Link(job_node_id),
             "image": Link(5, 0),
             "crop_meta": Link(5, 1),
-            "colorized_image": Link(36, 0),
+            "enhanced_image": Link(39, 0),
             **control_inputs,
         },
         input_types={
             "job": "HOI4_JOB",
             "image": "IMAGE",
             "crop_meta": "HOI4_META",
-            "colorized_image": "IMAGE",
+            "enhanced_image": "IMAGE",
             **control_input_types,
         },
         outputs=["image", "reference_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 520),
@@ -494,7 +504,9 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "required_groups": GROUP_LABELS,
         "locked_controls": {node.title: node.locked for node in nodes if node.locked},
         "required_core_nodes": sorted(CORE_NODES | ({PREVIEW_NODE} if is_human else set())),
-        "required_preparation_nodes": ["DDColor_Colorize", "HOI4ConservativePrep"],
+        "required_preparation_nodes": ["UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4ConservativePrep"],
+        "preparation_model": "RealESRGAN_x2plus.pth",
+        "colorization": False,
         "preview_nodes": [node.title for node in nodes if node.class_type == PREVIEW_NODE],
         "final_preview_save_pair": {
             "preview_node_id": 28 if is_human else None,
@@ -720,12 +732,18 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
     return graph
 
 
-def build_preparation_graph(root: str | Path | None = None) -> GraphSpec:
-    """Build the standalone input-photo preparation workflow."""
+def build_preparation_graph(
+    root: str | Path | None = None,
+    workflow_id: str = PREP_WORKFLOW_ID,
+) -> GraphSpec:
+    """Build one of the standalone input-photo preparation workflows."""
 
     project_root(root)
+    if workflow_id not in PREP_WORKFLOW_IDS:
+        raise ValueError(f"unknown portrait preparation workflow: {workflow_id}")
+    ai_enhanced = workflow_id == PREP_WORKFLOW_ID
     groups = PREP_GROUPS
-    nodes = [
+    nodes: list[NodeSpec] = [
         _node(
             1, "LoadImage", groups[0], "Choose portrait photo",
             inputs={"image": "hoi4_preparation_example.jpg"}, input_types={"image": "COMBO"},
@@ -752,58 +770,93 @@ def build_preparation_graph(root: str | Path | None = None) -> GraphSpec:
             outputs=["images"], output_types=["IMAGE"],
             pos=(1220, 80), size=(340, 420),
         ),
-        _node(
-            5, "DDColor_Colorize", groups[2], "Colorize black-and-white portrait",
-            inputs={"image": Link(3, 0), "model_input_size": 512, "checkpoint": "ddcolor_modelscope.pth"},
-            input_types={"image": "IMAGE", "model_input_size": "INT", "checkpoint": "COMBO"},
-            outputs=["colorized_image"], output_types=["IMAGE"],
-            pos=(80, 660), size=(300, 160),
-            widgets=[512, "ddcolor_modelscope.pth"],
-            locked=["checkpoint"],
-        ),
-        _node(
-            6, "HOI4UseColorWhenNeeded", groups[2], "Choose color treatment",
-            inputs={"original": Link(3, 0), "colorized": Link(5, 0), "color_choice": "Automatic"},
-            input_types={"original": "IMAGE", "colorized": "IMAGE", "color_choice": "COMBO"},
-            outputs=["portrait", "color_details"], output_types=["IMAGE", "HOI4_META"],
-            pos=(410, 660), size=(300, 160),
-            widgets=["Automatic"],
-        ),
-        _node(
-            7, "HOI4FinishPreparedPortrait", groups[2], "Finish prepared portrait",
-            inputs={"image": Link(6, 0), "contrast": 1.04, "sharpness": 1.08},
-            input_types={"image": "IMAGE", "contrast": "FLOAT", "sharpness": "FLOAT"},
-            outputs=["prepared_portrait"], output_types=["IMAGE"],
-            pos=(740, 660), size=(300, 160),
-            widgets=[1.04, 1.08],
-        ),
-        _node(
-            8, PREVIEW_NODE, groups[2], "Colorized preview",
-            inputs={"images": Link(5, 0)}, input_types={"images": "IMAGE"},
-            outputs=["images"], output_types=["IMAGE"],
-            pos=(80, 840), size=(420, 340),
-        ),
-        _node(
-            9, PREVIEW_NODE, groups[3], "Prepared portrait preview",
-            inputs={"images": Link(7, 0)}, input_types={"images": "IMAGE"},
-            outputs=["images"], output_types=["IMAGE"],
-            pos=(1200, 640), size=(430, 500),
-        ),
-        _node(
-            10, "SaveImage", groups[3], "Save prepared portrait",
-            inputs={"images": Link(7, 0), "filename_prefix": "hoi4_portraits/prepared"},
-            input_types={"images": "IMAGE", "filename_prefix": "STRING"},
-            pos=(1660, 640), size=(340, 180),
-            widgets=["hoi4_portraits/prepared"], locked=["filename_prefix"],
-        ),
     ]
+    if ai_enhanced:
+        nodes.extend([
+            _node(
+                5, "UpscaleModelLoader", groups[2], "Load AI portrait enhancer",
+                inputs={"model_name": "RealESRGAN_x2plus.pth"},
+                input_types={"model_name": "COMBO"},
+                outputs=["upscale_model"], output_types=["UPSCALE_MODEL"],
+                pos=(80, 660), size=(300, 150),
+                widgets=["RealESRGAN_x2plus.pth"], locked=["model_name"],
+            ),
+            _node(
+                6, "ImageUpscaleWithModel", groups[2], "Enhance and enlarge portrait",
+                inputs={"upscale_model": Link(5, 0), "image": Link(3, 0)},
+                input_types={"upscale_model": "UPSCALE_MODEL", "image": "IMAGE"},
+                outputs=["enhanced_image"], output_types=["IMAGE"],
+                pos=(410, 660), size=(300, 150),
+            ),
+            _node(
+                7, "HOI4FinishPreparedPortrait", groups[2], "Fit enhanced portrait for HOI4",
+                inputs={"image": Link(6, 0), "contrast": 1.0, "sharpness": 1.0},
+                input_types={"image": "IMAGE", "contrast": "FLOAT", "sharpness": "FLOAT"},
+                outputs=["prepared_portrait"], output_types=["IMAGE"],
+                pos=(740, 660), size=(300, 150),
+                widgets=[1.0, 1.0],
+            ),
+            _node(
+                8, PREVIEW_NODE, groups[2], "AI-enhanced preview",
+                inputs={"images": Link(6, 0)}, input_types={"images": "IMAGE"},
+                outputs=["images"], output_types=["IMAGE"],
+                pos=(80, 840), size=(420, 340),
+            ),
+            _node(
+                9, PREVIEW_NODE, groups[3], "Prepared portrait preview",
+                inputs={"images": Link(7, 0)}, input_types={"images": "IMAGE"},
+                outputs=["images"], output_types=["IMAGE"],
+                pos=(1200, 640), size=(430, 500),
+            ),
+            _node(
+                10, "SaveImage", groups[3], "Save prepared portrait",
+                inputs={"images": Link(7, 0), "filename_prefix": "hoi4_portraits/prepared_ai"},
+                input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+                pos=(1660, 640), size=(340, 180),
+                widgets=["hoi4_portraits/prepared_ai"], locked=["filename_prefix"],
+            ),
+        ])
+        preview_nodes = ["Input image preview", "Head-and-shoulders preview", "AI-enhanced preview", "Prepared portrait preview"]
+        required_core_nodes = ["LoadImage", "PreviewImage", "UpscaleModelLoader", "ImageUpscaleWithModel", "SaveImage"]
+        final_preview_id, save_id, final_source_id = 9, 10, 7
+    else:
+        nodes.extend([
+            _node(
+                5, "HOI4FinishPreparedPortrait", groups[2], "Apply basic image adjustments",
+                inputs={"image": Link(3, 0), "contrast": 1.04, "sharpness": 1.08},
+                input_types={"image": "IMAGE", "contrast": "FLOAT", "sharpness": "FLOAT"},
+                outputs=["prepared_portrait"], output_types=["IMAGE"],
+                pos=(160, 680), size=(340, 160),
+                widgets=[1.04, 1.08],
+            ),
+            _node(
+                6, PREVIEW_NODE, groups[3], "Prepared portrait preview",
+                inputs={"images": Link(5, 0)}, input_types={"images": "IMAGE"},
+                outputs=["images"], output_types=["IMAGE"],
+                pos=(1200, 640), size=(430, 500),
+            ),
+            _node(
+                7, "SaveImage", groups[3], "Save prepared portrait",
+                inputs={"images": Link(5, 0), "filename_prefix": "hoi4_portraits/prepared_basic"},
+                input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+                pos=(1660, 640), size=(340, 180),
+                widgets=["hoi4_portraits/prepared_basic"], locked=["filename_prefix"],
+            ),
+        ])
+        preview_nodes = ["Input image preview", "Head-and-shoulders preview", "Prepared portrait preview"]
+        required_core_nodes = ["LoadImage", "PreviewImage", "SaveImage"]
+        final_preview_id, save_id, final_source_id = 6, 7, 5
     metadata = {
         "schema_version": "1.0.0",
         "graph_spec_version": WORKFLOW_VERSION,
-        "workflow_id": PREP_WORKFLOW_ID,
-        "profile": PREP_WORKFLOW_ID,
-        "execution_profile": PREP_WORKFLOW_ID,
+        "workflow_id": workflow_id,
+        "profile": workflow_id,
+        "execution_profile": workflow_id,
         "workflow_kind": "portrait_preparation",
+        "enhancement_mode": "ai_model" if ai_enhanced else "basic",
+        "default_preparation_workflow": ai_enhanced,
+        "upscale_model": "RealESRGAN_x2plus.pth" if ai_enhanced else None,
+        "colorization": False,
         "route": "local_or_runpod",
         "human_workflow": True,
         "autoprompter": False,
@@ -814,24 +867,23 @@ def build_preparation_graph(root: str | Path | None = None) -> GraphSpec:
         "source_image_required": True,
         "vision_model_required": False,
         "required_groups": groups,
-        "required_core_nodes": ["LoadImage", "PreviewImage", "SaveImage"],
+        "required_core_nodes": required_core_nodes,
         "required_krea_nodes": [],
         "required_project_nodes": [
             "HOI4FinishPreparedPortrait",
             "HOI4PortraitCrop",
-            "HOI4UseColorWhenNeeded",
         ],
-        "preview_nodes": ["Input image preview", "Head-and-shoulders preview", "Colorized preview", "Prepared portrait preview"],
+        "preview_nodes": preview_nodes,
         "final_preview_save_pair": {
-            "preview_node_id": 9,
-            "save_node_id": 10,
-            "shared_source_node_id": 7,
+            "preview_node_id": final_preview_id,
+            "save_node_id": save_id,
+            "shared_source_node_id": final_source_id,
             "shared_source_slot": 0,
             "policy": "preview_and_save_use_the_same_prepared_portrait",
         },
         "low_memory_placeholder_nodes": [],
     }
-    graph = GraphSpec(PREP_WORKFLOW_ID, PREP_WORKFLOW_ID, nodes, groups, metadata)
+    graph = GraphSpec(workflow_id, workflow_id, nodes, groups, metadata)
     validate_graph(graph)
     return graph
 
@@ -867,11 +919,16 @@ def validate_graph(graph: GraphSpec) -> None:
             "LoadImage",
             "PreviewImage",
             "SaveImage",
-            "DDColor_Colorize",
             "HOI4PortraitCrop",
-            "HOI4UseColorWhenNeeded",
             "HOI4FinishPreparedPortrait",
         }
+        if graph.metadata.get("enhancement_mode") == "ai_model":
+            required |= {"UpscaleModelLoader", "ImageUpscaleWithModel"}
+        elif graph.metadata.get("enhancement_mode") == "basic":
+            if {"UpscaleModelLoader", "ImageUpscaleWithModel"} & class_names:
+                raise ValueError("basic portrait preparation workflow may not load an enhancement model")
+        else:
+            raise ValueError("portrait preparation workflow has an unknown enhancement mode")
         missing = sorted(required - class_names)
         if missing:
             raise ValueError(f"portrait preparation workflow is missing required node classes: {missing}")
@@ -928,7 +985,7 @@ def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool) -> None:
         1: (80, 100), 24: (460, 100), 2: (80, 340), 3: (80, 560),
         4: (980, 100), 30: (980, 320),
         5: (1510, 100), 25: (1510, 320),
-        36: (1980, 100), 6: (1980, 300), 26: (1980, 500),
+        36: (1980, 100), 39: (1980, 260), 6: (1980, 420), 26: (1980, 600),
         7: (2450, 100), 8: (2450, 320), 27: (2810, 300),
         34: (3170, 100), 35: (3170, 320), 37: (3530, 100), 38: (3530, 320),
         9: (340, 1080),
@@ -943,7 +1000,7 @@ def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool) -> None:
         1: (350, 190), 24: (400, 720), 2: (350, 150), 3: (350, 150),
         4: (360, 160), 30: (400, 500),
         5: (360, 160), 25: (400, 500),
-        36: (360, 160), 6: (360, 160), 26: (400, 400),
+        36: (360, 140), 39: (360, 140), 6: (360, 160), 26: (400, 400),
         7: (320, 160), 8: (320, 260), 27: (340, 500),
         34: (340, 160), 35: (340, 500), 37: (340, 160), 38: (340, 500),
         9: (440, 600 if is_human else 230),
@@ -1083,6 +1140,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         "hoi4_portraits_agent_no_input_local_nvidia_16gb": root_path / "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json",
         "hoi4_portraits_agent_no_input_full_power_gpu": root_path / "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json",
         PREP_WORKFLOW_ID: root_path / "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json",
+        PREP_BASIC_WORKFLOW_ID: root_path / "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.json",
     }
     manifests: list[dict[str, Any]] = []
     live_probe_path = root_path / ".runtime" / "reports" / "live_comfy_compatibility.json"
@@ -1092,18 +1150,12 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         live_probe = {}
     live_workflows = {item.get("workflow_id"): item for item in live_probe.get("workflows", []) if isinstance(item, dict)}
     for workflow_id, ui_path in paths.items():
-        graph = build_preparation_graph(root_path) if workflow_id == PREP_WORKFLOW_ID else build_random_prompt_graph(workflow_id, root_path) if workflow_id in RANDOM_PROMPT_WORKFLOWS else build_graph(workflow_id, root_path)
-        if workflow_id == PREP_WORKFLOW_ID:
-            required_custom_nodes = [
-                "DDColor_Colorize",
-                "HOI4FinishPreparedPortrait",
-                "HOI4PortraitCrop",
-                "HOI4UseColorWhenNeeded",
-            ]
-            required_models = [
-                "ddcolor_modelscope.pth",
-                "face_detection_yunet_2023mar.onnx",
-            ]
+        graph = build_preparation_graph(root_path, workflow_id) if workflow_id in PREP_WORKFLOW_IDS else build_random_prompt_graph(workflow_id, root_path) if workflow_id in RANDOM_PROMPT_WORKFLOWS else build_graph(workflow_id, root_path)
+        if workflow_id in PREP_WORKFLOW_IDS:
+            required_custom_nodes = ["HOI4FinishPreparedPortrait", "HOI4PortraitCrop"]
+            required_models = ["face_detection_yunet_2023mar.onnx"]
+            if workflow_id == PREP_WORKFLOW_ID:
+                required_models.append("RealESRGAN_x2plus.pth")
         elif workflow_id in RANDOM_PROMPT_WORKFLOWS:
             required_custom_nodes = [
                 "HOI4KreaModelLoadBarrier",
@@ -1120,7 +1172,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             required_custom_nodes = sorted(
                 KREA_NODES
                 | (PROJECT_NODES - {"HOI4PromptInput", "HOI4AutopromptClient"} - (set() if graph.metadata["human_workflow"] else HUMAN_ONLY_PROJECT_NODES))
-                | {"DDColor_Colorize", required_prompt_node}
+                | {required_prompt_node}
                 | (HUMAN_ONLY_PROJECT_NODES if graph.metadata["human_workflow"] else set())
             )
             required_models = [
@@ -1129,9 +1181,9 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
                 "qwen_image_vae.safetensors",
                 "krea2_identity_edit_v1_2.safetensors",
                 "hoi4_portrait_new_style_lora.safetensors",
-                "ddcolor_modelscope.pth",
+                "RealESRGAN_x2plus.pth",
             ]
-        if graph.metadata["human_workflow"] and workflow_id not in RANDOM_PROMPT_WORKFLOWS and workflow_id != PREP_WORKFLOW_ID:
+        if graph.metadata["human_workflow"] and workflow_id not in RANDOM_PROMPT_WORKFLOWS and workflow_id not in PREP_WORKFLOW_IDS:
             required_models.append("Qwen3VL-4B-Instruct-Q4_K_M.gguf" if "local" in workflow_id else "Qwen3-VL-8B-Instruct-BF16-shards")
         api_path = ui_path.with_suffix(".api.json")
         atomic_json_write(ui_path, _ui_json(graph))

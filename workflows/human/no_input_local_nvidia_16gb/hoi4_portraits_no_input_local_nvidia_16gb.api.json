@@ -158,7 +158,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.6.0",
+    "graph_spec_version": "graph-spec-1.7.0",
     "workflow_id": "hoi4_portraits_no_input_local_nvidia_16gb",
     "profile": "hoi4_portraits_no_input_local_nvidia_16gb",
     "execution_profile": "hoi4_portraits_no_input_local_nvidia_16gb",

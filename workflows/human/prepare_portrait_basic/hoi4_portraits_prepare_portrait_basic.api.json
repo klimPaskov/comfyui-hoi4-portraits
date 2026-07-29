@@ -35,73 +35,45 @@
     }
   },
   "5": {
-    "class_type": "UpscaleModelLoader",
+    "class_type": "HOI4FinishPreparedPortrait",
     "inputs": {
-      "model_name": "RealESRGAN_x2plus.pth"
+      "image": [
+        "3",
+        0
+      ],
+      "contrast": 1.04,
+      "sharpness": 1.08
     }
   },
   "6": {
-    "class_type": "ImageUpscaleWithModel",
+    "class_type": "PreviewImage",
     "inputs": {
-      "upscale_model": [
+      "images": [
         "5",
-        0
-      ],
-      "image": [
-        "3",
         0
       ]
     }
   },
   "7": {
-    "class_type": "HOI4FinishPreparedPortrait",
-    "inputs": {
-      "image": [
-        "6",
-        0
-      ],
-      "contrast": 1.0,
-      "sharpness": 1.0
-    }
-  },
-  "8": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "6",
-        0
-      ]
-    }
-  },
-  "9": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "7",
-        0
-      ]
-    }
-  },
-  "10": {
     "class_type": "SaveImage",
     "inputs": {
       "images": [
-        "7",
+        "5",
         0
       ],
-      "filename_prefix": "hoi4_portraits/prepared_ai"
+      "filename_prefix": "hoi4_portraits/prepared_basic"
     }
   },
   "_meta": {
     "schema_version": "1.0.0",
     "graph_spec_version": "graph-spec-1.7.0",
-    "workflow_id": "hoi4_portraits_prepare_portrait_for_hoi4",
-    "profile": "hoi4_portraits_prepare_portrait_for_hoi4",
-    "execution_profile": "hoi4_portraits_prepare_portrait_for_hoi4",
+    "workflow_id": "hoi4_portraits_prepare_portrait_basic",
+    "profile": "hoi4_portraits_prepare_portrait_basic",
+    "execution_profile": "hoi4_portraits_prepare_portrait_basic",
     "workflow_kind": "portrait_preparation",
-    "enhancement_mode": "ai_model",
-    "default_preparation_workflow": true,
-    "upscale_model": "RealESRGAN_x2plus.pth",
+    "enhancement_mode": "basic",
+    "default_preparation_workflow": false,
+    "upscale_model": null,
     "colorization": false,
     "route": "local_or_runpod",
     "human_workflow": true,
@@ -121,8 +93,6 @@
     "required_core_nodes": [
       "LoadImage",
       "PreviewImage",
-      "UpscaleModelLoader",
-      "ImageUpscaleWithModel",
       "SaveImage"
     ],
     "required_krea_nodes": [],
@@ -133,13 +103,12 @@
     "preview_nodes": [
       "Input image preview",
       "Head-and-shoulders preview",
-      "AI-enhanced preview",
       "Prepared portrait preview"
     ],
     "final_preview_save_pair": {
-      "preview_node_id": 9,
-      "save_node_id": 10,
-      "shared_source_node_id": 7,
+      "preview_node_id": 6,
+      "save_node_id": 7,
+      "shared_source_node_id": 5,
       "shared_source_slot": 0,
       "policy": "preview_and_save_use_the_same_prepared_portrait"
     },

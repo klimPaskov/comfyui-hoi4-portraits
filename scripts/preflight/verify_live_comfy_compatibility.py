@@ -35,6 +35,7 @@ WORKFLOW_PATHS = {
     "hoi4_portraits_agent_no_input_local_nvidia_16gb": "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.api.json",
     "hoi4_portraits_agent_no_input_full_power_gpu": "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.api.json",
     "hoi4_portraits_prepare_portrait_for_hoi4": "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json",
+    "hoi4_portraits_prepare_portrait_basic": "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.api.json",
 }
 FORBIDDEN_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 REQUIRED_CORE_NODES = {
@@ -167,6 +168,7 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "hoi4_portraits_agent_no_input_local_nvidia_16gb",
         "hoi4_portraits_agent_no_input_full_power_gpu",
         "hoi4_portraits_prepare_portrait_for_hoi4",
+        "hoi4_portraits_prepare_portrait_basic",
     } for workflow_id in workflow_ids)
     required_nodes = sorted(REQUIRED_CORE_NODES | ({*REQUIRED_KREA_NODES} if identity_graph_required else set()) | {REQUIRED_HUMAN_PREVIEW_NODE})
     node_presence = {name: name in object_info for name in required_nodes}

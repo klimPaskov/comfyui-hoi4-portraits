@@ -19,7 +19,7 @@ Turn portrait photos into Hearts of Iron IV-style leader portraits with Krea 2 T
 | [`hoi4_portraits_agent_no_input_local_nvidia_16gb`](workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Job file |
 | [`hoi4_portraits_agent_no_input_full_power_gpu`](workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json) | RunPod GPU, no input image | Job file |
 
-Every source-image workflow automatically crops, colorizes black-and-white photos when needed, and lightly enhances the portrait before generation. Human workflows include large previews for the source image, prepared portrait, background, and saved result. Their portrait-description node can switch between automatic and manual prompting. Agent workflows receive their prompt from the job JSON.
+Every source-image workflow automatically crops tightly around the face and shoulders, then restores and enlarges the reference with Real-ESRGAN before generation. Black-and-white sources stay black-and-white during preparation; Krea 2 and the HOI4 LoRA create the final styled portrait. Human workflows include large previews for the source image, prepared portrait, background, and saved result. Their portrait-description node can switch between automatic and manual prompting. Agent workflows receive their prompt from the job JSON.
 
 > Agent workflows are included for future automation. They are not currently practical through ComfyUI Cloud because Cloud does not yet provide a dependable way to install and run the required custom nodes.
 
@@ -85,9 +85,9 @@ Agents can use the matching `hoi4_portraits_agent_no_input_*` workflow with the 
 
 ### Portrait preparation utility
 
-The same preparation is already part of every source-image workflow. [`hoi4_portraits_prepare_portrait_for_hoi4`](workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json) is also available when you only want a clean 832 × 1120 head-and-shoulders PNG without generating a new portrait.
+The same AI enhancement is already part of every source-image workflow. [`hoi4_portraits_prepare_portrait_for_hoi4`](workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json) is the recommended standalone option when you only want a restored 832 × 1120 head-and-shoulders PNG. [`hoi4_portraits_prepare_portrait_basic`](workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.json) performs only cropping, resizing, contrast, and sharpness adjustments.
 
-The workflow screenshot below was captured after a completed run, with the input, crop, colorized image, final preview, and saved result visible.
+The workflow screenshot below was captured after a completed run, with the input, tight crop, AI-enhanced image, final preview, and saved result visible.
 
 ![Completed portrait preparation workflow](docs/assets/workflow_hoi4_portraits_prepare_portrait_for_hoi4.png)
 

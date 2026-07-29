@@ -54,11 +54,11 @@
       "material_conditions": ["the pinned GitHub source and Hugging Face snapshot expose different license metadata; local use is approved, but redistribution remains prohibited until the metadata discrepancy is resolved"]
     },
     {
-      "name": "DDColor preprocessing artifact",
-      "source_url": "https://github.com/piddnad/DDColor/blob/2adb63f2656ac41cbdf7b894cddd94121a3faf13/LICENSE",
-      "artifact_source_url": "https://huggingface.co/piddnad/ddcolor_modelscope",
-      "license_identifier": "Apache-2.0",
-      "status": "PRIMARY_SOURCE_REVIEWED"
+      "name": "Real-ESRGAN portrait enhancement model",
+      "source_url": "https://github.com/xinntao/Real-ESRGAN/blob/64ad194ddaf9c4d8c4b0d1b98cac6d89d3ea0d11/LICENSE",
+      "artifact_source_url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
+      "license_identifier": "BSD-3-Clause",
+      "status": "PINNED_PRIMARY_SOURCE_REVIEWED"
     },
     {
       "name": "OpenCV Zoo YuNet and SFace artifacts",

@@ -5,8 +5,8 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 COMFY_ROOT="${1:-${COMFYUI_ROOT:-/workspace/ComfyUI}}"
 WORKFLOW="${2:-hoi4_portraits_full_power_gpu}"
 
-if [[ "${WORKFLOW}" != "hoi4_portraits_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_agent_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_no_input_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_agent_no_input_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_prepare_portrait_for_hoi4" ]]; then
-  echo "Choose hoi4_portraits_full_power_gpu, hoi4_portraits_agent_full_power_gpu, hoi4_portraits_no_input_full_power_gpu, hoi4_portraits_agent_no_input_full_power_gpu, or hoi4_portraits_prepare_portrait_for_hoi4." >&2
+if [[ "${WORKFLOW}" != "hoi4_portraits_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_agent_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_no_input_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_agent_no_input_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_prepare_portrait_for_hoi4" && "${WORKFLOW}" != "hoi4_portraits_prepare_portrait_basic" ]]; then
+  echo "Choose an installed full-power or portrait-preparation workflow." >&2
   exit 10
 fi
 

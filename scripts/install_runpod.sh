@@ -55,7 +55,8 @@ PYTHONPATH="${PROJECT_ROOT}/src:${PROJECT_ROOT}" \
   --workflow hoi4_portraits_no_input_full_power_gpu \
   --workflow hoi4_portraits_agent_no_input_local_nvidia_16gb \
   --workflow hoi4_portraits_agent_no_input_full_power_gpu \
-  --workflow hoi4_portraits_prepare_portrait_for_hoi4
+  --workflow hoi4_portraits_prepare_portrait_for_hoi4 \
+  --workflow hoi4_portraits_prepare_portrait_basic
 
 echo
 echo "Setup complete."

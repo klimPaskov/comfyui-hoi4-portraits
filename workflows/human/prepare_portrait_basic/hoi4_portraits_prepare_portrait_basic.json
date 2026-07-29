@@ -1,6 +1,6 @@
 {
-  "last_node_id": 10,
-  "last_link_id": 9,
+  "last_node_id": 7,
+  "last_link_id": 6,
   "nodes": [
     {
       "id": 1,
@@ -142,7 +142,7 @@
           "type": "IMAGE",
           "links": [
             3,
-            5
+            4
           ]
         },
         {
@@ -201,15 +201,15 @@
     },
     {
       "id": 5,
-      "type": "UpscaleModelLoader",
-      "title": "Load AI portrait enhancer",
+      "type": "HOI4FinishPreparedPortrait",
+      "title": "Apply basic image adjustments",
       "pos": [
-        80,
-        660
+        160,
+        680
       ],
       "size": [
-        300,
-        150
+        340,
+        160
       ],
       "color": "#46375a",
       "bgcolor": "#654c80",
@@ -218,99 +218,9 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "model_name",
-          "type": "COMBO",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "upscale_model",
-          "type": "UPSCALE_MODEL",
-          "links": [
-            4
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Load AI portrait enhancer",
-        "hoi4_group": "03 Enhance portrait",
-        "hoi4_locked_controls": [
-          "model_name"
-        ]
-      },
-      "widgets_values": [
-        "RealESRGAN_x2plus.pth"
-      ]
-    },
-    {
-      "id": 6,
-      "type": "ImageUpscaleWithModel",
-      "title": "Enhance and enlarge portrait",
-      "pos": [
-        410,
-        660
-      ],
-      "size": [
-        300,
-        150
-      ],
-      "color": "#46375a",
-      "bgcolor": "#654c80",
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "upscale_model",
-          "type": "UPSCALE_MODEL",
+          "name": "image",
+          "type": "IMAGE",
           "link": 4
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 5
-        }
-      ],
-      "outputs": [
-        {
-          "name": "enhanced_image",
-          "type": "IMAGE",
-          "links": [
-            6,
-            7
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Enhance and enlarge portrait",
-        "hoi4_group": "03 Enhance portrait",
-        "hoi4_locked_controls": []
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 7,
-      "type": "HOI4FinishPreparedPortrait",
-      "title": "Fit enhanced portrait for HOI4",
-      "pos": [
-        740,
-        660
-      ],
-      "size": [
-        300,
-        150
-      ],
-      "color": "#46375a",
-      "bgcolor": "#654c80",
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 6
         },
         {
           "name": "contrast",
@@ -328,61 +238,23 @@
           "name": "prepared_portrait",
           "type": "IMAGE",
           "links": [
-            8,
-            9
+            5,
+            6
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Fit enhanced portrait for HOI4",
+        "Node name for S&R": "Apply basic image adjustments",
         "hoi4_group": "03 Enhance portrait",
         "hoi4_locked_controls": []
       },
       "widgets_values": [
-        1.0,
-        1.0
+        1.04,
+        1.08
       ]
     },
     {
-      "id": 8,
-      "type": "PreviewImage",
-      "title": "AI-enhanced preview",
-      "pos": [
-        80,
-        840
-      ],
-      "size": [
-        420,
-        340
-      ],
-      "color": "#46375a",
-      "bgcolor": "#654c80",
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 7
-        }
-      ],
-      "outputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "AI-enhanced preview",
-        "hoi4_group": "03 Enhance portrait",
-        "hoi4_locked_controls": []
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 9,
+      "id": 6,
       "type": "PreviewImage",
       "title": "Prepared portrait preview",
       "pos": [
@@ -396,13 +268,13 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 8,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 8
+          "link": 5
         }
       ],
       "outputs": [
@@ -420,7 +292,7 @@
       "widgets_values": []
     },
     {
-      "id": 10,
+      "id": 7,
       "type": "SaveImage",
       "title": "Save prepared portrait",
       "pos": [
@@ -434,13 +306,13 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 9,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 9
+          "link": 6
         },
         {
           "name": "filename_prefix",
@@ -457,7 +329,7 @@
         ]
       },
       "widgets_values": [
-        "hoi4_portraits/prepared_ai"
+        "hoi4_portraits/prepared_basic"
       ]
     }
   ],
@@ -488,49 +360,25 @@
     ],
     [
       4,
-      5,
-      0,
-      6,
-      0,
-      "UPSCALE_MODEL"
-    ],
-    [
-      5,
       3,
       0,
-      6,
-      1,
-      "IMAGE"
-    ],
-    [
-      6,
-      6,
-      0,
-      7,
+      5,
       0,
       "IMAGE"
     ],
     [
-      7,
+      5,
+      5,
+      0,
       6,
       0,
-      8,
-      0,
       "IMAGE"
     ],
     [
-      8,
+      6,
+      5,
+      0,
       7,
-      0,
-      9,
-      0,
-      "IMAGE"
-    ],
-    [
-      9,
-      7,
-      0,
-      10,
       0,
       "IMAGE"
     ]
@@ -592,13 +440,13 @@
     },
     "schema_version": "1.0.0",
     "graph_spec_version": "graph-spec-1.7.0",
-    "workflow_id": "hoi4_portraits_prepare_portrait_for_hoi4",
-    "profile": "hoi4_portraits_prepare_portrait_for_hoi4",
-    "execution_profile": "hoi4_portraits_prepare_portrait_for_hoi4",
+    "workflow_id": "hoi4_portraits_prepare_portrait_basic",
+    "profile": "hoi4_portraits_prepare_portrait_basic",
+    "execution_profile": "hoi4_portraits_prepare_portrait_basic",
     "workflow_kind": "portrait_preparation",
-    "enhancement_mode": "ai_model",
-    "default_preparation_workflow": true,
-    "upscale_model": "RealESRGAN_x2plus.pth",
+    "enhancement_mode": "basic",
+    "default_preparation_workflow": false,
+    "upscale_model": null,
     "colorization": false,
     "route": "local_or_runpod",
     "human_workflow": true,
@@ -618,8 +466,6 @@
     "required_core_nodes": [
       "LoadImage",
       "PreviewImage",
-      "UpscaleModelLoader",
-      "ImageUpscaleWithModel",
       "SaveImage"
     ],
     "required_krea_nodes": [],
@@ -630,13 +476,12 @@
     "preview_nodes": [
       "Input image preview",
       "Head-and-shoulders preview",
-      "AI-enhanced preview",
       "Prepared portrait preview"
     ],
     "final_preview_save_pair": {
-      "preview_node_id": 9,
-      "save_node_id": 10,
-      "shared_source_node_id": 7,
+      "preview_node_id": 6,
+      "save_node_id": 7,
+      "shared_source_node_id": 5,
       "shared_source_slot": 0,
       "policy": "preview_and_save_use_the_same_prepared_portrait"
     },

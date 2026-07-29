@@ -438,8 +438,6 @@ class HOI4HumanControls:
             "crop_override_top": ("INT", {"default": 0, "min": 0}),
             "crop_override_right": ("INT", {"default": 0, "min": 0}),
             "crop_override_bottom": ("INT", {"default": 0, "min": 0}),
-            "monochrome_mode": (["automatic", "force_skip", "force_run_with_review"], {"default": "automatic"}),
-            "restoration_level": (["none", "conservative", "qualified_enhanced"], {"default": "conservative"}),
             "approved_background_registry_id": ("STRING", {"default": "<from_job_contract>"}),
             "background_choice": (["Keep current background", "Scientist laboratory", "Operative background"], {"default": "Keep current background"}),
             "seed_mode": (["fixed", "derived", "random_recorded"], {"default": "derived"}),
@@ -453,7 +451,7 @@ class HOI4HumanControls:
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/00 Portrait setup"
 
-    def run(self, job: dict[str, Any], source_image_path: str, subject_selector_mode: str, face_index: int, bbox_left: int, bbox_top: int, bbox_right: int, bbox_bottom: int, crop_override_left: int, crop_override_top: int, crop_override_right: int, crop_override_bottom: int, monochrome_mode: str, restoration_level: str, approved_background_registry_id: str, background_choice: str, seed_mode: str, fixed_seed: int, candidate_count: int, output_job_id: str):
+    def run(self, job: dict[str, Any], source_image_path: str, subject_selector_mode: str, face_index: int, bbox_left: int, bbox_top: int, bbox_right: int, bbox_bottom: int, crop_override_left: int, crop_override_top: int, crop_override_right: int, crop_override_bottom: int, approved_background_registry_id: str, background_choice: str, seed_mode: str, fixed_seed: int, candidate_count: int, output_job_id: str):
         root = _project_from_job(job)
         if output_job_id not in {"", "<job_id_from_contract>", str(job.get("job_id"))}:
             _raise(ExitCode.WORKFLOW_INVALID, "human control output_job_id cannot change the validated job root")
@@ -518,7 +516,7 @@ class HOI4HumanControls:
         if not (crop_override[0] == crop_override[1] == crop_override[2] == crop_override[3] == 0):
             if crop_override[2] <= crop_override[0] or crop_override[3] <= crop_override[1] or crop_override[2] - crop_override[0] <= 0:
                 _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "human crop override is empty")
-        control_meta = {"source": resolved_source, "subject_selector_mode": subject_selector_mode, "crop_override_xyxy": crop_override if any(crop_override) else None, "monochrome_mode": monochrome_mode, "restoration_level": restoration_level, "approved_background_registry_id": updated.get("approved_background", {}).get("registry_id"), "background_choice": background_choice, "seed_mode": seed_mode, "candidate_count": int(candidate_count), "output_job_id": updated.get("job_id")}
+        control_meta = {"source": resolved_source, "subject_selector_mode": subject_selector_mode, "crop_override_xyxy": crop_override if any(crop_override) else None, "approved_background_registry_id": updated.get("approved_background", {}).get("registry_id"), "background_choice": background_choice, "seed_mode": seed_mode, "candidate_count": int(candidate_count), "output_job_id": updated.get("job_id")}
         return updated, control_meta
 
 
@@ -719,7 +717,7 @@ class HOI4HeadShouldersCrop:
     CATEGORY = "HOI4 Portrait/02 Crop portrait"
 
     def run(self, job: dict[str, Any], image: Any, selection_meta: dict[str, Any], control_meta: dict[str, Any] | None = None):
-        if Image is None:
+        if Image is None or ImageOps is None:
             _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required for exact crop generation")
         source = _comfy_to_pil(image)
         bbox = selection_meta.get("bbox_xyxy") if isinstance(selection_meta, dict) else None
@@ -731,19 +729,23 @@ class HOI4HeadShouldersCrop:
         explicit = control_meta.get("crop_override_xyxy") if isinstance(control_meta, dict) and control_meta.get("crop_override_xyxy") else selection_meta.get("crop_xyxy") if isinstance(selection_meta, dict) else None
         if isinstance(explicit, list) and len(explicit) == 4:
             crop_left, crop_top, crop_right, crop_bottom = [int(value) for value in explicit]
+            derived_crop = False
         else:
             face_width = right - left
             face_height = bottom - top
-            target_height = max(210, int(round(face_height * 4.2)))
-            target_width = max(156, int(round(target_height * 26 / 35)))
-            # Keep the crop ratio exact and bias the vertical placement toward
-            # the face's upper third so visible shoulders remain when present.
+            target_height = max(96, int(round(face_height * 2.35)))
+            maximum_height = min(source.height, int(source.width * 35 / 26))
+            target_height = min(target_height, maximum_height)
+            target_width = int(round(target_height * 26 / 35))
             center_x = (left + right) / 2.0
-            center_y = top + face_height * 0.42
+            center_y = (top + bottom) / 2.0
             crop_left = int(round(center_x - target_width / 2.0))
             crop_top = int(round(center_y - target_height * 0.30))
+            crop_left = min(max(0, crop_left), source.width - target_width)
+            crop_top = min(max(0, crop_top), source.height - target_height)
             crop_right = crop_left + target_width
             crop_bottom = crop_top + target_height
+            derived_crop = True
         if crop_right <= crop_left or crop_bottom <= crop_top:
             _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "calculated crop is empty")
         crop_width = crop_right - crop_left
@@ -753,17 +755,27 @@ class HOI4HeadShouldersCrop:
             # silently alter the selected face or invent a new pose.
             crop_height = int(round(crop_width * 35 / 26))
             crop_bottom = crop_top + crop_height
-        fill = (0, 0, 0)
-        canvas = Image.new("RGB", (crop_width, crop_height), fill)
         source_left = max(0, crop_left)
         source_top = max(0, crop_top)
         source_right = min(source.width, crop_right)
         source_bottom = min(source.height, crop_bottom)
         if source_right <= source_left or source_bottom <= source_top:
             _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "crop does not intersect the source")
-        patch = source.crop((source_left, source_top, source_right, source_bottom))
-        canvas.paste(patch, (source_left - crop_left, source_top - crop_top))
-        meta = {"job_id": job.get("job_id"), "crop_xyxy": [crop_left, crop_top, crop_right, crop_bottom], "source_intersection_xyxy": [source_left, source_top, source_right, source_bottom], "padding": {"left": max(0, -crop_left), "top": max(0, -crop_top), "right": max(0, crop_right - source.width), "bottom": max(0, crop_bottom - source.height)}, "aspect_ratio": "26:35", "selected_bbox_xyxy": [left, top, right, bottom], "pixel_sha256": _pixel_digest(canvas), "source_pixel_preserved_inside_intersection": True}
+        if derived_crop:
+            canvas = source.crop((crop_left, crop_top, crop_right, crop_bottom)).convert("RGB")
+            padding = {"left": 0, "top": 0, "right": 0, "bottom": 0}
+        else:
+            canvas = Image.new("RGB", (crop_width, crop_height), (0, 0, 0))
+            patch = source.crop((source_left, source_top, source_right, source_bottom))
+            canvas.paste(patch, (source_left - crop_left, source_top - crop_top))
+            padding = {"left": max(0, -crop_left), "top": max(0, -crop_top), "right": max(0, crop_right - source.width), "bottom": max(0, crop_bottom - source.height)}
+        profile = str(job.get("execution_profile", ""))
+        limits = PROFILE_LIMITS.get(profile)
+        if limits:
+            maximum_output = (int(limits["canvas_width"]), int(limits["canvas_height"]))
+            if canvas.width > maximum_output[0] or canvas.height > maximum_output[1]:
+                canvas = ImageOps.fit(canvas, maximum_output, method=Image.Resampling.LANCZOS)
+        meta = {"job_id": job.get("job_id"), "crop_xyxy": [crop_left, crop_top, crop_right, crop_bottom], "source_intersection_xyxy": [source_left, source_top, source_right, source_bottom], "padding": padding, "aspect_ratio": "26:35", "selected_bbox_xyxy": [left, top, right, bottom], "output_size": [canvas.width, canvas.height], "pixel_sha256": _pixel_digest(canvas), "source_pixel_preserved_inside_intersection": True}
         decoded = _pil_to_comfy(canvas)
         job_root = _job_root(job)
         meta["evidence_path"] = str((job_root / "evidence" / "reference" / "crop.png").relative_to(job_root))
@@ -780,7 +792,7 @@ class HOI4ConservativePrep:
                 "job": ("HOI4_JOB",),
                 "image": ("IMAGE",),
                 "crop_meta": ("HOI4_META",),
-                "colorized_image": ("IMAGE",),
+                "enhanced_image": ("IMAGE",),
             },
             "optional": {"control_meta": ("HOI4_META",)},
         }
@@ -795,48 +807,13 @@ class HOI4ConservativePrep:
         job: dict[str, Any],
         image: Any,
         crop_meta: dict[str, Any],
-        colorized_image: Any,
+        enhanced_image: Any,
         control_meta: dict[str, Any] | None = None,
     ):
-        if Image is None or ImageEnhance is None:
-            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required for conservative source preparation")
+        if Image is None:
+            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required for source preparation")
         source = _comfy_to_pil(image).convert("RGB")
-        colorized = _comfy_to_pil(colorized_image).convert("RGB")
-        if colorized.size != source.size:
-            colorized = colorized.resize(source.size, Image.Resampling.LANCZOS)
-        pixels = list(source.getdata())
-        if not pixels:
-            _raise(ExitCode.SOURCE_INVALID, "cropped source contains no pixels")
-        chroma = [max(pixel) - min(pixel) for pixel in pixels]
-        sorted_chroma = sorted(chroma)
-        median_chroma = sorted_chroma[len(sorted_chroma) // 2]
-        neutral_fraction = sum(1 for value in chroma if value <= 5) / len(chroma)
-        if median_chroma <= 5 and neutral_fraction >= 0.92:
-            mono_status = "MONOCHROME"
-        elif median_chroma >= 12 or neutral_fraction < 0.65:
-            mono_status = "COLOR"
-        else:
-            mono_status = "UNCERTAIN"
-        requested_mono_mode = control_meta.get("monochrome_mode", "automatic") if isinstance(control_meta, dict) else "automatic"
-        requested_restore = control_meta.get("restoration_level", "conservative") if isinstance(control_meta, dict) else "conservative"
-        if requested_restore == "qualified_enhanced":
-            _raise(ExitCode.DEPENDENCY_MISSING, "qualified enhanced restoration requires a pinned, A/B-qualified restoration model")
-        if requested_mono_mode == "force_skip":
-            mono_status = "FORCED_SKIP"
-        use_colorized = requested_mono_mode == "force_run_with_review" or (
-            requested_mono_mode == "automatic" and mono_status == "MONOCHROME"
-        )
-        selected = colorized if use_colorized else source
-        colorization_status = "APPLIED_DDCOLOR" if use_colorized else "BYPASSED_COLOR_INPUT"
-        operations = ["EXIF_oriented_decode", colorization_status]
-        if requested_restore == "none":
-            enhanced = selected
-            restoration_status = "NONE"
-        else:
-            enhanced = ImageEnhance.Contrast(selected).enhance(1.04)
-            enhanced = ImageEnhance.Sharpness(enhanced).enhance(1.08)
-            restoration_status = "CONSERVATIVE_DETERMINISTIC"
-            operations.extend(["contrast_1.04", "sharpness_1.08"])
+        enhanced = _comfy_to_pil(enhanced_image).convert("RGB")
         profile = str(job.get("execution_profile", ""))
         limits = PROFILE_LIMITS.get(profile)
         if not limits:
@@ -844,28 +821,19 @@ class HOI4ConservativePrep:
         target = (int(limits["canvas_width"]), int(limits["canvas_height"]))
         if enhanced.size != target:
             prepared = enhanced.resize(target, Image.Resampling.LANCZOS)
-            operations.append("LANCZOS_TO_PROFILE_CANVAS")
+            resize_operation = "LANCZOS_TO_PROFILE_CANVAS"
         else:
             prepared = enhanced
-            operations.append("IDENTITY_SIZE")
+            resize_operation = "IDENTITY_SIZE"
         meta = {
             "crop_meta": crop_meta,
-            "monochrome": {
-                "verdict": mono_status,
-                "requested_mode": requested_mono_mode,
-                "median_channel_chroma": median_chroma,
-                "neutral_fraction": neutral_fraction,
-            },
-            "colorization": {
-                "status": colorization_status,
-                "model": "DDColor/ddcolor_modelscope.pth",
-                "identity_master_preserved": True,
-            },
             "restoration": {
-                "requested_level": requested_restore,
-                "status": restoration_status,
-                "operations": operations,
+                "status": "AI_UPSCALE_APPLIED",
+                "model": "RealESRGAN_x2plus.pth",
+                "operations": ["Real-ESRGAN_x2plus", resize_operation],
             },
+            "colorization": {"status": "NOT_USED", "source_color_preserved": True},
+            "source_size": {"width": source.width, "height": source.height},
             "work_canvas": {"width": prepared.width, "height": prepared.height},
             "pixel_sha256": _pixel_digest(prepared),
         }
@@ -924,78 +892,37 @@ class HOI4PortraitCrop:
             _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, f"face {face_index} was not found; detected {len(faces)} face(s)")
         x, y, face_width, face_height = [float(value) for value in faces[face_index][:4]]
         height_multiplier = {
-            "Tighter portrait": 2.9,
-            "Normal head and shoulders": 3.4,
-            "Wider shoulders": 4.2,
+            "Tighter portrait": 2.0,
+            "Normal head and shoulders": 2.35,
+            "Wider shoulders": 3.0,
         }.get(framing)
         if height_multiplier is None:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "portrait framing choice is invalid")
-        crop_height = max(350, int(round(face_height * height_multiplier)))
+        crop_height = max(96, int(round(face_height * height_multiplier)))
+        maximum_height = min(source.height, int(source.width * 35 / 26))
+        crop_height = min(crop_height, maximum_height)
         crop_width = int(round(crop_height * 26 / 35))
         center_x = x + face_width / 2.0
         face_center_y = y + face_height / 2.0
         crop_left = int(round(center_x - crop_width / 2.0))
         crop_top = int(round(face_center_y - crop_height * 0.28))
+        crop_left = min(max(0, crop_left), source.width - crop_width)
+        crop_top = min(max(0, crop_top), source.height - crop_height)
         crop_right = crop_left + crop_width
         crop_bottom = crop_top + crop_height
-        canvas = Image.new("RGB", (crop_width, crop_height), (28, 28, 28))
-        source_box = (
-            max(0, crop_left),
-            max(0, crop_top),
-            min(source.width, crop_right),
-            min(source.height, crop_bottom),
-        )
-        if source_box[2] <= source_box[0] or source_box[3] <= source_box[1]:
-            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "the portrait crop falls outside the image")
-        patch = source.crop(source_box)
-        canvas.paste(patch, (source_box[0] - crop_left, source_box[1] - crop_top))
-        prepared = ImageOps.fit(canvas, (832, 1120), method=Image.Resampling.LANCZOS)
+        prepared = source.crop((crop_left, crop_top, crop_right, crop_bottom))
+        if prepared.width > 832 or prepared.height > 1120:
+            prepared = ImageOps.fit(prepared, (832, 1120), method=Image.Resampling.LANCZOS)
         details = {
             "detected_faces": len(faces),
             "selected_face": int(face_index),
             "framing": framing,
             "face_box_xywh": [round(x), round(y), round(face_width), round(face_height)],
             "crop_box_xyxy": [crop_left, crop_top, crop_right, crop_bottom],
-            "output_size": [832, 1120],
+            "output_size": [prepared.width, prepared.height],
+            "padding": {"left": 0, "top": 0, "right": 0, "bottom": 0},
         }
         return _pil_to_comfy(prepared), details
-
-
-class HOI4UseColorWhenNeeded:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "original": ("IMAGE",),
-                "colorized": ("IMAGE",),
-                "color_choice": (["Automatic", "Use colorized image", "Keep original"],),
-            }
-        }
-
-    RETURN_TYPES = ("IMAGE", "HOI4_META")
-    RETURN_NAMES = ("portrait", "color_details")
-    FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/03 Color and enhance"
-
-    def run(self, original: Any, colorized: Any, color_choice: str):
-        source = _comfy_to_pil(original).convert("RGB")
-        pixels = list(source.getdata())
-        chroma = [max(pixel) - min(pixel) for pixel in pixels]
-        median_chroma = sorted(chroma)[len(chroma) // 2] if chroma else 0
-        neutral_fraction = sum(1 for value in chroma if value <= 5) / len(chroma) if chroma else 1.0
-        monochrome = median_chroma <= 5 and neutral_fraction >= 0.92
-        use_colorized = color_choice == "Use colorized image" or (color_choice == "Automatic" and monochrome)
-        if color_choice not in {"Automatic", "Use colorized image", "Keep original"}:
-            _raise(ExitCode.INPUT_SCHEMA_INVALID, "color choice is invalid")
-        selected = colorized if use_colorized else original
-        details = {
-            "choice": color_choice,
-            "detected_black_and_white": monochrome,
-            "used_colorized_image": use_colorized,
-            "median_channel_difference": median_chroma,
-            "mostly_neutral_pixels": neutral_fraction,
-        }
-        return selected, details
 
 
 class HOI4FinishPreparedPortrait:
@@ -1012,7 +939,7 @@ class HOI4FinishPreparedPortrait:
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("prepared_portrait",)
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/03 Color and enhance"
+    CATEGORY = "HOI4 Portrait/03 Enhance portrait"
 
     def run(self, image: Any, contrast: float, sharpness: float):
         if ImageEnhance is None or ImageOps is None:

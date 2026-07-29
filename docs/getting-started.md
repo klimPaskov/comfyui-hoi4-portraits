@@ -43,13 +43,15 @@ Open `hoi4_portraits_no_input_local_nvidia_16gb` to create a leader without an i
 
 ## Prepare an old photo
 
-Source-image workflows prepare full-body, group, faded, and black-and-white photos automatically. Open `hoi4_portraits_prepare_portrait_for_hoi4` only when you want the prepared PNG without running portrait generation.
+Source-image workflows prepare full-body, group, faded, and black-and-white photos automatically. Open `hoi4_portraits_prepare_portrait_for_hoi4` when you want the Real-ESRGAN-enhanced PNG without running portrait generation. Use `hoi4_portraits_prepare_portrait_basic` for cropping and simple adjustments without the enhancement model.
 
 1. Choose the image.
 2. Set the face number to `0` for the largest detected face, or try `1`, `2`, and so on for another person.
 3. Choose normal, wide, or tight framing.
-4. Leave color treatment on **Automatic** to colorize black-and-white photos and keep existing color photos unchanged.
-5. Review the prepared portrait beside the Save node.
+4. Review the tighter crop before continuing.
+5. Review the enhanced portrait beside the Save node.
+
+Preparation preserves the source colors. Black-and-white inputs remain black-and-white until the final Krea 2 portrait generation.
 
 ## Memory presets
 

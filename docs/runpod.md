@@ -23,7 +23,7 @@ If your template stores ComfyUI elsewhere, replace `/workspace/ComfyUI` with the
 | HOI4 style LoRA | `loras/` |
 | Full-power human autoprompter | `models/autoprompter/` |
 | Face, mask, and restoration models | `models/preprocessing/` |
-| Black-and-white color model | `custom_nodes/ComfyUI-DDColor/checkpoints/` |
+| Real-ESRGAN portrait enhancer | `models/upscale_models/` |
 | Project custom nodes | `<ComfyUI>/custom_nodes/hoi4_portrait_nodes/` |
 | Krea Edit custom nodes | `<ComfyUI>/custom_nodes/comfyui-krea2edit/` |
 | All included workflows | `<ComfyUI>/user/default/workflows/hoi4_portraits/` |
@@ -67,4 +67,5 @@ Then open `http://127.0.0.1:8188` in your browser and choose a workflow from the
 - `hoi4_portraits_agent_full_power_gpu` converts an input portrait from a job file.
 - `hoi4_portraits_no_input_full_power_gpu` creates a new fictional leader from text controls.
 - `hoi4_portraits_agent_no_input_full_power_gpu` creates a new leader from a no-input job file.
-- `hoi4_portraits_prepare_portrait_for_hoi4` crops, colorizes, and prepares an old photo.
+- `hoi4_portraits_prepare_portrait_for_hoi4` tightly crops and restores an old photo with Real-ESRGAN.
+- `hoi4_portraits_prepare_portrait_basic` crops and adjusts a photo without loading the enhancement model.

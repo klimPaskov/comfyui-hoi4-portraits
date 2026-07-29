@@ -62,18 +62,24 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
         required_preparation_nodes = {
             "LoadImage",
             "HOI4PortraitCrop",
-            "DDColor_Colorize",
-            "HOI4UseColorWhenNeeded",
             "HOI4FinishPreparedPortrait",
             "PreviewImage",
             "SaveImage",
         }
+        enhancement_mode = metadata.get("enhancement_mode")
+        if enhancement_mode == "ai_model":
+            required_preparation_nodes |= {"UpscaleModelLoader", "ImageUpscaleWithModel"}
+        elif enhancement_mode == "basic":
+            if any(node.get("type") in {"UpscaleModelLoader", "ImageUpscaleWithModel"} for node in ui_nodes):
+                issues.append("basic portrait preparation workflow unexpectedly loads an enhancement model")
+        else:
+            issues.append("portrait preparation workflow has an unknown enhancement mode")
         present_types = {node.get("type") for node in ui_nodes}
         missing_preparation = sorted(required_preparation_nodes - present_types)
         if missing_preparation:
             issues.append(f"portrait preparation nodes are missing: {missing_preparation}")
-        if any(node.get("type") in {"HOI4AutopromptClient", "Krea2EditModelPatch", "KSampler"} for node in ui_nodes):
-            issues.append("portrait preparation workflow continues into portrait generation")
+        if any(node.get("type") in {"HOI4AutopromptClient", "Krea2EditModelPatch", "KSampler", "DDColor_Colorize"} for node in ui_nodes):
+            issues.append("portrait preparation workflow contains an unrelated generation or colorization node")
     elif metadata.get("human_workflow"):
         autoprompt_nodes = [node for node in ui_nodes if node.get("type") == "HOI4AutopromptClient"]
         if len(autoprompt_nodes) != 1:
@@ -94,7 +100,7 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
             issues.append("agent workflow contains an autoprompter model reference")
     if workflow_kind not in {"random_text_to_image", "portrait_preparation"}:
         present_types = {node.get("type") for node in ui_nodes}
-        if not {"DDColor_Colorize", "HOI4ConservativePrep"} <= present_types:
+        if not {"UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4ConservativePrep"} <= present_types:
             issues.append("source workflow does not include automatic portrait preparation")
     if any(_contains_value(ui, token) for token in ("faceswap", "face_swap", "subject_replacement")):
         issues.append("workflow contains a prohibited identity-replacement route")
@@ -134,5 +140,6 @@ def validate_all_workflows(root: str | Path | None = None) -> list[dict[str, Any
         "hoi4_portraits_agent_no_input_local_nvidia_16gb": ("workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json", "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.api.json"),
         "hoi4_portraits_agent_no_input_full_power_gpu": ("workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json", "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.api.json"),
         "hoi4_portraits_prepare_portrait_for_hoi4": ("workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json", "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json"),
+        "hoi4_portraits_prepare_portrait_basic": ("workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.json", "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.api.json"),
     }
     return [validate_workflow_file(workflow_id, root_path / ui, root_path / api, root_path) for workflow_id, (ui, api) in specs.items()]

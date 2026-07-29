@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ComfyUIRoot,
 
-    [ValidateSet("hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_agent_local_nvidia_16gb", "hoi4_portraits_no_input_local_nvidia_16gb", "hoi4_portraits_agent_no_input_local_nvidia_16gb", "hoi4_portraits_prepare_portrait_for_hoi4")]
+    [ValidateSet("hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_agent_local_nvidia_16gb", "hoi4_portraits_no_input_local_nvidia_16gb", "hoi4_portraits_agent_no_input_local_nvidia_16gb", "hoi4_portraits_prepare_portrait_for_hoi4", "hoi4_portraits_prepare_portrait_basic")]
     [string]$Workflow = "hoi4_portraits_local_nvidia_16gb"
 )
 

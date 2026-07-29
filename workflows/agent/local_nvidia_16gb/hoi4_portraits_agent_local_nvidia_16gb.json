@@ -1,6 +1,6 @@
 {
-  "last_node_id": 36,
-  "last_link_id": 52,
+  "last_node_id": 39,
+  "last_link_id": 53,
   "nodes": [
     {
       "id": 1,
@@ -55,11 +55,11 @@
             2,
             4,
             6,
-            10,
-            14,
-            17,
-            21,
-            45
+            11,
+            15,
+            18,
+            22,
+            46
           ]
         }
       ],
@@ -161,7 +161,7 @@
           "type": "IMAGE",
           "links": [
             5,
-            46
+            47
           ]
         },
         {
@@ -268,15 +268,15 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            9,
-            11
+            10,
+            12
           ]
         },
         {
           "name": "crop_meta",
           "type": "HOI4_META",
           "links": [
-            12
+            13
           ]
         }
       ],
@@ -289,15 +289,15 @@
     },
     {
       "id": 36,
-      "type": "DDColor_Colorize",
-      "title": "Colorize when needed",
+      "type": "UpscaleModelLoader",
+      "title": "Load AI portrait enhancer",
       "pos": [
         1980,
         100
       ],
       "size": [
         360,
-        160
+        140
       ],
       "color": "#294a2b",
       "bgcolor": "#3d6b40",
@@ -306,53 +306,42 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 9
-        },
-        {
-          "name": "model_input_size",
-          "type": "INT",
-          "link": null
-        },
-        {
-          "name": "checkpoint",
+          "name": "model_name",
           "type": "COMBO",
           "link": null
         }
       ],
       "outputs": [
         {
-          "name": "colorized_image",
-          "type": "IMAGE",
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
           "links": [
-            13
+            9
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Colorize when needed",
+        "Node name for S&R": "Load AI portrait enhancer",
         "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": [
-          "checkpoint"
+          "model_name"
         ]
       },
       "widgets_values": [
-        512,
-        "ddcolor_modelscope.pth"
+        "RealESRGAN_x2plus.pth"
       ]
     },
     {
-      "id": 6,
-      "type": "HOI4ConservativePrep",
-      "title": "Prepare the portrait",
+      "id": 39,
+      "type": "ImageUpscaleWithModel",
+      "title": "Enhance portrait with AI",
       "pos": [
         1980,
-        300
+        260
       ],
       "size": [
         360,
-        160
+        140
       ],
       "color": "#294a2b",
       "bgcolor": "#3d6b40",
@@ -361,24 +350,69 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "job",
-          "type": "HOI4_JOB",
-          "link": 10
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 9
         },
         {
           "name": "image",
           "type": "IMAGE",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "enhanced_image",
+          "type": "IMAGE",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Enhance portrait with AI",
+        "hoi4_group": "03 Prepare portrait",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "HOI4ConservativePrep",
+      "title": "Prepare the portrait",
+      "pos": [
+        1980,
+        420
+      ],
+      "size": [
+        360,
+        160
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
           "link": 11
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 12
         },
         {
           "name": "crop_meta",
           "type": "HOI4_META",
-          "link": 12
+          "link": 13
         },
         {
-          "name": "colorized_image",
+          "name": "enhanced_image",
           "type": "IMAGE",
-          "link": 13
+          "link": 14
         }
       ],
       "outputs": [
@@ -386,15 +420,15 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            15,
-            47
+            16,
+            48
           ]
         },
         {
           "name": "reference_meta",
           "type": "HOI4_META",
           "links": [
-            16
+            17
           ]
         }
       ],
@@ -420,23 +454,23 @@
       "color": "#294b61",
       "bgcolor": "#3b6f8d",
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 14
+          "link": 15
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 15
+          "link": 16
         },
         {
           "name": "reference_meta",
           "type": "HOI4_META",
-          "link": 16
+          "link": 17
         },
         {
           "name": "mask_model",
@@ -449,21 +483,21 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            18
+            19
           ]
         },
         {
           "name": "mask",
           "type": "MASK",
           "links": [
-            19
+            20
           ]
         },
         {
           "name": "mask_meta",
           "type": "HOI4_META",
           "links": [
-            20
+            21
           ]
         }
       ],
@@ -493,28 +527,28 @@
       "color": "#294b61",
       "bgcolor": "#3b6f8d",
       "flags": {},
-      "order": 8,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 17
+          "link": 18
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 18
+          "link": 19
         },
         {
           "name": "mask",
           "type": "MASK",
-          "link": 19
+          "link": 20
         },
         {
           "name": "mask_meta",
           "type": "HOI4_META",
-          "link": 20
+          "link": 21
         }
       ],
       "outputs": [
@@ -527,25 +561,25 @@
           "name": "composite",
           "type": "IMAGE",
           "links": [
-            24,
-            29,
-            32,
-            34,
-            48
+            25,
+            30,
+            33,
+            35,
+            49
           ]
         },
         {
           "name": "mask",
           "type": "MASK",
           "links": [
-            50
+            51
           ]
         },
         {
           "name": "background_meta",
           "type": "HOI4_META",
           "links": [
-            22
+            23
           ]
         }
       ],
@@ -571,18 +605,18 @@
       "color": "#46375a",
       "bgcolor": "#654c80",
       "flags": {},
-      "order": 9,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 21
+          "link": 22
         },
         {
           "name": "background_meta",
           "type": "HOI4_META",
-          "link": 22
+          "link": 23
         },
         {
           "name": "prompt_source",
@@ -595,8 +629,8 @@
           "name": "prompt",
           "type": "STRING",
           "links": [
-            31,
-            51
+            32,
+            52
           ]
         },
         {
@@ -631,7 +665,7 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -650,7 +684,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            23
+            24
           ]
         }
       ],
@@ -682,13 +716,13 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 23
+          "link": 24
         },
         {
           "name": "lora_name",
@@ -706,7 +740,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            26
+            27
           ]
         }
       ],
@@ -738,7 +772,7 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -752,9 +786,9 @@
           "name": "vae",
           "type": "VAE",
           "links": [
-            25,
-            28,
-            44
+            26,
+            29,
+            45
           ]
         }
       ],
@@ -784,18 +818,18 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 24
+          "link": 25
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 25
+          "link": 26
         }
       ],
       "outputs": [
@@ -803,7 +837,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            27
+            28
           ]
         }
       ],
@@ -829,28 +863,28 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 26
+          "link": 27
         },
         {
           "name": "source_latent",
           "type": "LATENT",
-          "link": 27
+          "link": 28
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 28
+          "link": 29
         },
         {
           "name": "source_image",
           "type": "IMAGE",
-          "link": 29
+          "link": 30
         },
         {
           "name": "fit_mode",
@@ -868,7 +902,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            35
+            36
           ]
         }
       ],
@@ -900,7 +934,7 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -919,8 +953,8 @@
           "name": "clip",
           "type": "CLIP",
           "links": [
-            30,
-            33
+            31,
+            34
           ]
         }
       ],
@@ -952,23 +986,23 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 30
+          "link": 31
         },
         {
           "name": "prompt",
           "type": "STRING",
-          "link": 31
+          "link": 32
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 32
+          "link": 33
         },
         {
           "name": "grounding_px",
@@ -981,7 +1015,7 @@
           "name": "conditioning",
           "type": "CONDITIONING",
           "links": [
-            37
+            38
           ]
         }
       ],
@@ -1011,13 +1045,13 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 33
+          "link": 34
         },
         {
           "name": "prompt",
@@ -1027,7 +1061,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 34
+          "link": 35
         },
         {
           "name": "grounding_px",
@@ -1040,7 +1074,7 @@
           "name": "conditioning",
           "type": "CONDITIONING",
           "links": [
-            38
+            39
           ]
         }
       ],
@@ -1072,13 +1106,13 @@
       "color": "#663442",
       "bgcolor": "#914b5e",
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 35
+          "link": 36
         },
         {
           "name": "lora_name",
@@ -1096,7 +1130,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            36
+            37
           ]
         }
       ],
@@ -1127,23 +1161,23 @@
       "color": "#66400c",
       "bgcolor": "#945e12",
       "flags": {},
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 36
+          "link": 37
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 37
+          "link": 38
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 38
+          "link": 39
         }
       ],
       "outputs": [
@@ -1151,21 +1185,21 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            39
+            40
           ]
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            40
+            41
           ]
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            41
+            42
           ]
         }
       ],
@@ -1191,7 +1225,7 @@
       "color": "#66400c",
       "bgcolor": "#945e12",
       "flags": {},
-      "order": 20,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
@@ -1215,7 +1249,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            42
+            43
           ]
         }
       ],
@@ -1249,28 +1283,28 @@
       "color": "#66400c",
       "bgcolor": "#945e12",
       "flags": {},
-      "order": 21,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 39
+          "link": 40
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 40
+          "link": 41
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 41
+          "link": 42
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 42
+          "link": 43
         },
         {
           "name": "seed",
@@ -1308,7 +1342,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            43
+            44
           ]
         }
       ],
@@ -1347,18 +1381,18 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 22,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 43
+          "link": 44
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 44
+          "link": 45
         }
       ],
       "outputs": [
@@ -1366,7 +1400,7 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            49
+            50
           ]
         }
       ],
@@ -1392,43 +1426,43 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 23,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 45
+          "link": 46
         },
         {
           "name": "source_master",
           "type": "IMAGE",
-          "link": 46
+          "link": 47
         },
         {
           "name": "processed_reference",
           "type": "IMAGE",
-          "link": 47
+          "link": 48
         },
         {
           "name": "approved_background",
           "type": "IMAGE",
-          "link": 48
+          "link": 49
         },
         {
           "name": "candidate",
           "type": "IMAGE",
-          "link": 49
+          "link": 50
         },
         {
           "name": "mask",
           "type": "MASK",
-          "link": 50
+          "link": 51
         },
         {
           "name": "prompt",
           "type": "STRING",
-          "link": 51
+          "link": 52
         },
         {
           "name": "candidate_index",
@@ -1441,7 +1475,7 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            52
+            53
           ]
         },
         {
@@ -1476,13 +1510,13 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 24,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 52
+          "link": 53
         },
         {
           "name": "filename_prefix",
@@ -1517,7 +1551,7 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 25,
+      "order": 26,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1545,7 +1579,7 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 26,
+      "order": 27,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1573,7 +1607,7 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 27,
+      "order": 28,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1654,14 +1688,22 @@
     ],
     [
       9,
-      5,
-      0,
       36,
       0,
-      "IMAGE"
+      39,
+      0,
+      "UPSCALE_MODEL"
     ],
     [
       10,
+      5,
+      0,
+      39,
+      1,
+      "IMAGE"
+    ],
+    [
+      11,
       1,
       0,
       6,
@@ -1669,7 +1711,7 @@
       "HOI4_JOB"
     ],
     [
-      11,
+      12,
       5,
       0,
       6,
@@ -1677,7 +1719,7 @@
       "IMAGE"
     ],
     [
-      12,
+      13,
       5,
       1,
       6,
@@ -1685,15 +1727,15 @@
       "HOI4_META"
     ],
     [
-      13,
-      36,
+      14,
+      39,
       0,
       6,
       3,
       "IMAGE"
     ],
     [
-      14,
+      15,
       1,
       0,
       7,
@@ -1701,7 +1743,7 @@
       "HOI4_JOB"
     ],
     [
-      15,
+      16,
       6,
       0,
       7,
@@ -1709,7 +1751,7 @@
       "IMAGE"
     ],
     [
-      16,
+      17,
       6,
       1,
       7,
@@ -1717,7 +1759,7 @@
       "HOI4_META"
     ],
     [
-      17,
+      18,
       1,
       0,
       8,
@@ -1725,7 +1767,7 @@
       "HOI4_JOB"
     ],
     [
-      18,
+      19,
       7,
       0,
       8,
@@ -1733,7 +1775,7 @@
       "IMAGE"
     ],
     [
-      19,
+      20,
       7,
       1,
       8,
@@ -1741,7 +1783,7 @@
       "MASK"
     ],
     [
-      20,
+      21,
       7,
       2,
       8,
@@ -1749,7 +1791,7 @@
       "HOI4_META"
     ],
     [
-      21,
+      22,
       1,
       0,
       9,
@@ -1757,7 +1799,7 @@
       "HOI4_JOB"
     ],
     [
-      22,
+      23,
       8,
       3,
       9,
@@ -1765,7 +1807,7 @@
       "HOI4_META"
     ],
     [
-      23,
+      24,
       10,
       0,
       11,
@@ -1773,7 +1815,7 @@
       "MODEL"
     ],
     [
-      24,
+      25,
       8,
       1,
       13,
@@ -1781,7 +1823,7 @@
       "IMAGE"
     ],
     [
-      25,
+      26,
       12,
       0,
       13,
@@ -1789,7 +1831,7 @@
       "VAE"
     ],
     [
-      26,
+      27,
       11,
       0,
       14,
@@ -1797,7 +1839,7 @@
       "MODEL"
     ],
     [
-      27,
+      28,
       13,
       0,
       14,
@@ -1805,7 +1847,7 @@
       "LATENT"
     ],
     [
-      28,
+      29,
       12,
       0,
       14,
@@ -1813,7 +1855,7 @@
       "VAE"
     ],
     [
-      29,
+      30,
       8,
       1,
       14,
@@ -1821,7 +1863,7 @@
       "IMAGE"
     ],
     [
-      30,
+      31,
       15,
       0,
       16,
@@ -1829,7 +1871,7 @@
       "CLIP"
     ],
     [
-      31,
+      32,
       9,
       0,
       16,
@@ -1837,7 +1879,7 @@
       "STRING"
     ],
     [
-      32,
+      33,
       8,
       1,
       16,
@@ -1845,7 +1887,7 @@
       "IMAGE"
     ],
     [
-      33,
+      34,
       15,
       0,
       17,
@@ -1853,7 +1895,7 @@
       "CLIP"
     ],
     [
-      34,
+      35,
       8,
       1,
       17,
@@ -1861,7 +1903,7 @@
       "IMAGE"
     ],
     [
-      35,
+      36,
       14,
       0,
       18,
@@ -1869,7 +1911,7 @@
       "MODEL"
     ],
     [
-      36,
+      37,
       18,
       0,
       29,
@@ -1877,7 +1919,7 @@
       "MODEL"
     ],
     [
-      37,
+      38,
       16,
       0,
       29,
@@ -1885,7 +1927,7 @@
       "CONDITIONING"
     ],
     [
-      38,
+      39,
       17,
       0,
       29,
@@ -1893,7 +1935,7 @@
       "CONDITIONING"
     ],
     [
-      39,
+      40,
       29,
       0,
       20,
@@ -1901,23 +1943,23 @@
       "MODEL"
     ],
     [
-      40,
-      29,
-      1,
-      20,
-      1,
-      "CONDITIONING"
-    ],
-    [
       41,
       29,
-      2,
+      1,
       20,
-      2,
+      1,
       "CONDITIONING"
     ],
     [
       42,
+      29,
+      2,
+      20,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      43,
       19,
       0,
       20,
@@ -1925,7 +1967,7 @@
       "LATENT"
     ],
     [
-      43,
+      44,
       20,
       0,
       21,
@@ -1933,7 +1975,7 @@
       "LATENT"
     ],
     [
-      44,
+      45,
       12,
       0,
       21,
@@ -1941,7 +1983,7 @@
       "VAE"
     ],
     [
-      45,
+      46,
       1,
       0,
       22,
@@ -1949,7 +1991,7 @@
       "HOI4_JOB"
     ],
     [
-      46,
+      47,
       3,
       0,
       22,
@@ -1957,7 +1999,7 @@
       "IMAGE"
     ],
     [
-      47,
+      48,
       6,
       0,
       22,
@@ -1965,7 +2007,7 @@
       "IMAGE"
     ],
     [
-      48,
+      49,
       8,
       1,
       22,
@@ -1973,7 +2015,7 @@
       "IMAGE"
     ],
     [
-      49,
+      50,
       21,
       0,
       22,
@@ -1981,7 +2023,7 @@
       "IMAGE"
     ],
     [
-      50,
+      51,
       8,
       2,
       22,
@@ -1989,7 +2031,7 @@
       "MASK"
     ],
     [
-      51,
+      52,
       9,
       0,
       22,
@@ -1997,7 +2039,7 @@
       "STRING"
     ],
     [
-      52,
+      53,
       22,
       0,
       23,
@@ -2045,7 +2087,7 @@
         1940,
         40,
         440,
-        900
+        980
       ],
       "color": "#588157",
       "font_size": 24
@@ -2127,7 +2169,7 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.6.0",
+    "graph_spec_version": "graph-spec-1.7.0",
     "workflow_id": "hoi4_portraits_agent_local_nvidia_16gb",
     "execution_profile": "hoi4_portraits_agent_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -2168,8 +2210,8 @@
         "retry_limit",
         "seed_policy"
       ],
-      "Colorize when needed": [
-        "checkpoint"
+      "Load AI portrait enhancer": [
+        "model_name"
       ],
       "Separate person from background": [
         "mask_model"
@@ -2228,18 +2270,23 @@
     "required_core_nodes": [
       "CLIPLoader",
       "EmptySD3LatentImage",
+      "ImageUpscaleWithModel",
       "KSampler",
       "LoraLoaderModelOnly",
       "SaveImage",
       "UNETLoader",
+      "UpscaleModelLoader",
       "VAEDecode",
       "VAEEncode",
       "VAELoader"
     ],
     "required_preparation_nodes": [
-      "DDColor_Colorize",
+      "UpscaleModelLoader",
+      "ImageUpscaleWithModel",
       "HOI4ConservativePrep"
     ],
+    "preparation_model": "RealESRGAN_x2plus.pth",
+    "colorization": false,
     "preview_nodes": [],
     "final_preview_save_pair": {
       "preview_node_id": null,

@@ -28,7 +28,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_required_and_local_nvidia_workflows_are_structurally_valid(self):
         reports = validate_all_workflows(self.root)
-        self.assertEqual(len(reports), 9)
+        self.assertEqual(len(reports), 10)
         for report in reports:
             self.assertEqual(report["structural_status"], "PASS", report)
 
@@ -39,7 +39,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
             manifest["runtime_status"],
             {"STRUCTURAL_ONLY_RUNTIME_BLOCKED", "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED"},
         )
-        self.assertEqual(len(manifest["workflows"]), 9)
+        self.assertEqual(len(manifest["workflows"]), 10)
         self.assertTrue(all(item["validation_status"] == "UNVALIDATED" for item in manifest["workflows"]))
 
     def test_local_nvidia_agent_is_routable_through_controller_and_adapter(self):
@@ -134,11 +134,11 @@ class WorkflowAndGuardTests(unittest.TestCase):
             data = json.loads(path.read_text(encoding="utf-8"))
             pair = data["_meta"]["final_preview_save_pair"]
             if data["_meta"].get("workflow_kind") == "portrait_preparation":
-                self.assertEqual(data["9"]["inputs"]["images"], ["7", 0])
-                self.assertEqual(data["10"]["inputs"]["images"], ["7", 0])
-                self.assertEqual(pair["preview_node_id"], 9)
-                self.assertEqual(pair["save_node_id"], 10)
-                self.assertEqual(pair["shared_source_node_id"], 7)
+                preview_id = str(pair["preview_node_id"])
+                save_id = str(pair["save_node_id"])
+                source = [str(pair["shared_source_node_id"]), 0]
+                self.assertEqual(data[preview_id]["inputs"]["images"], source)
+                self.assertEqual(data[save_id]["inputs"]["images"], source)
             elif data["_meta"].get("workflow_kind") == "random_text_to_image":
                 self.assertEqual(data["12"]["inputs"]["images"], ["11", 0])
                 self.assertEqual(data["13"]["inputs"]["images"], ["11", 0])
@@ -171,7 +171,8 @@ class WorkflowAndGuardTests(unittest.TestCase):
             api = json.loads(path.with_suffix(".api.json").read_text(encoding="utf-8"))
             previews = {node["id"]: node for node in data["nodes"] if node.get("type") == "PreviewImage"}
             if api["_meta"].get("workflow_kind") == "portrait_preparation":
-                self.assertEqual(set(previews), {2, 4, 8, 9})
+                expected = {2, 4, 8, 9} if api["_meta"]["enhancement_mode"] == "ai_model" else {2, 4, 6}
+                self.assertEqual(set(previews), expected)
                 self.assertTrue(all(node["size"][0] >= 340 and node["size"][1] >= 340 for node in previews.values()))
                 continue
             if api["_meta"].get("workflow_kind") == "random_text_to_image":
@@ -216,7 +217,10 @@ class WorkflowAndGuardTests(unittest.TestCase):
             data = json.loads(path.read_text(encoding="utf-8"))
             if data["_meta"].get("workflow_kind") == "portrait_preparation":
                 self.assertIn("HOI4PortraitCrop", json.dumps(data))
-                self.assertIn("DDColor_Colorize", json.dumps(data))
+                self.assertNotIn("DDColor_Colorize", json.dumps(data))
+                if data["_meta"]["enhancement_mode"] == "ai_model":
+                    self.assertIn("UpscaleModelLoader", json.dumps(data))
+                    self.assertIn("ImageUpscaleWithModel", json.dumps(data))
                 self.assertNotIn("HOI4HumanControls", json.dumps(data))
                 continue
             if data["_meta"].get("workflow_kind") == "random_text_to_image":
@@ -289,14 +293,17 @@ class WorkflowAndGuardTests(unittest.TestCase):
         )
         for path in paths:
             data = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(data["36"]["class_type"], "DDColor_Colorize")
-            self.assertEqual(data["36"]["inputs"]["image"], ["5", 0])
-            self.assertEqual(data["36"]["inputs"]["checkpoint"], "ddcolor_modelscope.pth")
-            self.assertEqual(data["6"]["inputs"]["colorized_image"], ["36", 0])
+            self.assertEqual(data["36"]["class_type"], "UpscaleModelLoader")
+            self.assertEqual(data["36"]["inputs"]["model_name"], "RealESRGAN_x2plus.pth")
+            self.assertEqual(data["39"]["class_type"], "ImageUpscaleWithModel")
+            self.assertEqual(data["39"]["inputs"]["image"], ["5", 0])
+            self.assertEqual(data["39"]["inputs"]["upscale_model"], ["36", 0])
+            self.assertEqual(data["6"]["inputs"]["enhanced_image"], ["39", 0])
             self.assertEqual(
                 data["_meta"]["required_preparation_nodes"],
-                ["DDColor_Colorize", "HOI4ConservativePrep"],
+                ["UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4ConservativePrep"],
             )
+            self.assertFalse(data["_meta"]["colorization"])
 
     def test_random_prompt_builder_is_text_only_and_repeatable(self):
         from comfyui_hoi4_portrait_nodes import NODE_CLASS_MAPPINGS
@@ -379,12 +386,35 @@ class WorkflowAndGuardTests(unittest.TestCase):
         path = self.root / "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json"
         data = json.loads(path.read_text(encoding="utf-8"))
         classes = {node["class_type"] for key, node in data.items() if not key.startswith("_")}
-        self.assertTrue({"LoadImage", "HOI4PortraitCrop", "DDColor_Colorize", "HOI4UseColorWhenNeeded", "HOI4FinishPreparedPortrait", "PreviewImage", "SaveImage"} <= classes)
+        self.assertTrue({"LoadImage", "HOI4PortraitCrop", "UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4FinishPreparedPortrait", "PreviewImage", "SaveImage"} <= classes)
         self.assertFalse({"KSampler", "UNETLoader", "HOI4AutopromptClient", "Krea2EditModelPatch"} & classes)
-        self.assertEqual(data["5"]["inputs"]["checkpoint"], "ddcolor_modelscope.pth")
-        self.assertEqual(data["6"]["inputs"]["color_choice"], "Automatic")
+        self.assertEqual(data["5"]["inputs"]["model_name"], "RealESRGAN_x2plus.pth")
+        self.assertEqual(data["6"]["inputs"]["image"], ["3", 0])
         self.assertEqual(data["9"]["inputs"]["images"], ["7", 0])
         self.assertEqual(data["10"]["inputs"]["images"], ["7", 0])
+        self.assertFalse(data["_meta"]["colorization"])
+
+        basic_path = self.root / "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.api.json"
+        basic = json.loads(basic_path.read_text(encoding="utf-8"))
+        basic_classes = {node["class_type"] for key, node in basic.items() if not key.startswith("_")}
+        self.assertTrue({"LoadImage", "HOI4PortraitCrop", "HOI4FinishPreparedPortrait", "PreviewImage", "SaveImage"} <= basic_classes)
+        self.assertFalse({"UpscaleModelLoader", "ImageUpscaleWithModel", "DDColor_Colorize"} & basic_classes)
+        self.assertEqual(basic["_meta"]["enhancement_mode"], "basic")
+
+    def test_portrait_crop_is_tight_and_never_boxes_the_default_examples(self):
+        import numpy as np
+        import torch
+        from PIL import Image
+
+        crop_node = NODE_CLASS_MAPPINGS["HOI4PortraitCrop"]()
+        for path in sorted((self.root / "docs/assets/examples").glob("preparation_*_before.*")):
+            image = Image.open(path).convert("RGB")
+            tensor = torch.from_numpy(np.asarray(image).astype(np.float32) / 255.0).unsqueeze(0)
+            _cropped, details = crop_node.run(tensor, 0, "Normal head and shoulders")
+            self.assertEqual(details["padding"], {"left": 0, "top": 0, "right": 0, "bottom": 0}, path)
+            face_height = details["face_box_xywh"][3]
+            crop_height = details["crop_box_xyxy"][3] - details["crop_box_xyxy"][1]
+            self.assertGreaterEqual(face_height / crop_height, 0.40, path)
 
     def test_krea_graph_matches_primary_fit_contract(self):
         for path in self.root.joinpath("workflows").glob("**/*.api.json"):
@@ -743,6 +773,12 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertTrue(fp8["mandatory"])
         for profile in ("hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu", "hoi4_portraits_agent_local_nvidia_16gb", "hoi4_portraits_agent_full_power_gpu"):
             self.assertIn(profile, fp8["profiles"], profile)
+        enhancer = next(model for model in lock["models"] if model["name"] == "RealESRGAN_x2plus.pth")
+        self.assertTrue(enhancer["mandatory"])
+        self.assertEqual(enhancer["revision"], "64ad194ddaf9c4d8c4b0d1b98cac6d89d3ea0d11")
+        self.assertEqual(enhancer["size_bytes"], 67061725)
+        self.assertEqual(enhancer["sha256"], "49fafd45f8fd7aa8d31ab2a22d14d91b536c34494a5cfe31eb5d89c2fa266abb")
+        self.assertEqual(enhancer["destination_folder"], "models/upscale_models")
         style = next(item for item in lock["project_owned_immutable_files"] if item["name"] == "hoi4_portrait_new_style_lora.safetensors")
         self.assertEqual(style["repository"], "Hoops-McCann/hoi4-portrait-new-style-lora")
         self.assertEqual(style["revision"], "2eb855d3176908af4329640c8d966a1b26fc3d6b")
@@ -766,7 +802,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertTrue((installed_nodes / "__init__.py").is_file())
             self.assertTrue((installed_nodes / "portrait_pipeline" / "constants.py").is_file())
             installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
-            self.assertEqual(len(installed_workflows), 9)
+            self.assertEqual(len(installed_workflows), 10)
             _copy_example_input(comfy_root, actions)
             self.assertTrue((comfy_root / "input/hoi4_preparation_example.jpg").is_file())
             _copy_workflows(comfy_root, actions, {"hoi4_portraits_full_power_gpu"})
@@ -811,6 +847,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertIn("workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json", relative)
         self.assertIn("docs/schemas/portrait_prompt_job_input.schema.json", relative)
         self.assertIn("workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json", relative)
+        self.assertIn("workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.json", relative)
         self.assertTrue(any(path.startswith("docs/assets/") for path in relative))
         self.assertFalse(
             any(

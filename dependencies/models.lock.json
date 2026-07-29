@@ -26,6 +26,30 @@
       "live_compatibility": "LIVE_SCHEMA_VERIFIED_EXECUTION_UNVERIFIED"
     },
     {
+      "name": "RealESRGAN_x2plus.pth",
+      "purpose": "AI portrait restoration and 2x upscaling before Krea 2 portrait generation",
+      "repository": "xinntao/Real-ESRGAN",
+      "revision": "64ad194ddaf9c4d8c4b0d1b98cac6d89d3ea0d11",
+      "filename": "RealESRGAN_x2plus.pth",
+      "source_url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
+      "license": "BSD-3-Clause",
+      "redistribution_permission": "allowed_with_license_notice",
+      "size_bytes": 67061725,
+      "sha256": "49fafd45f8fd7aa8d31ab2a22d14d91b536c34494a5cfe31eb5d89c2fa266abb",
+      "destination_folder": "models/upscale_models",
+      "profiles": [
+        "hoi4_portraits_local_nvidia_16gb",
+        "hoi4_portraits_full_power_gpu",
+        "hoi4_portraits_agent_local_nvidia_16gb",
+        "hoi4_portraits_agent_full_power_gpu",
+        "hoi4_portraits_prepare_portrait_for_hoi4"
+      ],
+      "quantization_or_dtype": "PyTorch RRDBNet weights",
+      "loader_node": "UpscaleModelLoader",
+      "mandatory": true,
+      "live_compatibility": "OFFICIAL_COMFYUI_UPSCALE_NODES_SCHEMA_VERIFIED"
+    },
+    {
       "name": "krea2_turbo_nvfp4.safetensors",
       "purpose": "Official ComfyUI Krea 2 Turbo lower-storage diffusion model for qualified NVIDIA Blackwell runs",
       "repository": "Comfy-Org/Krea-2",

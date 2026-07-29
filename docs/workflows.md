@@ -7,7 +7,7 @@ The source-portrait workflows use these visible stages:
 1. Job and source
 2. Subject selection
 3. Crop and source preparation
-4. Color, restoration, mask, and background
+4. AI restoration, mask, and background
 5. Automatic description, manual description, or agent job-file prompt
 6. Krea 2 identity edit
 7. HOI4 style LoRA
@@ -24,9 +24,11 @@ The local graph includes visible 12 GB and 8 GB GGUF placeholders for users who 
 
 ## Prepare a portrait
 
-Every source-image workflow automatically crops to head and shoulders, uses DDColor for black-and-white photos, and applies light contrast and sharpness before generation.
+Every source-image workflow automatically crops tightly around the face and shoulders, then uses the official Real-ESRGAN 2× model to restore and enlarge the reference before generation. It does not colorize the source.
 
-`hoi4_portraits_prepare_portrait_for_hoi4` offers that preparation as a separate utility and stops before Krea and the HOI4 style LoRA.
+`hoi4_portraits_prepare_portrait_for_hoi4` offers the same model-enhanced preparation as a separate utility and stops before Krea and the HOI4 style LoRA. It is the recommended preparation workflow.
+
+`hoi4_portraits_prepare_portrait_basic` is the lightweight alternative. It crops, resizes, and applies small contrast and sharpness adjustments without loading an enhancement model.
 
 The default choice keeps the source background. The optional scientist and operative choices use `tools/art/scientists_BG.png` and `tools/art/portrait_operative_background.png` from your installed copy of Hearts of Iron IV. The installer copies them locally when the game is found; the game assets are not included in the download.
 
@@ -34,10 +36,10 @@ The workflow has four stages:
 
 1. Choose and preview the photo.
 2. Find a face and crop to head and shoulders.
-3. Colorize black-and-white images and apply light enhancement.
+3. Restore and enlarge the crop with Real-ESRGAN.
 4. Preview and save the prepared portrait.
 
-Color treatment defaults to **Automatic**. Existing color photos keep their original color. Because historical colors are estimated, review uniforms, ribbons, and skin tones before using the image.
+Black-and-white photos remain black-and-white in both preparation workflows. The final Krea 2 and HOI4 LoRA generation handles the styled color portrait.
 
 The examples in the main README use a severely faded full-body portrait, a crowded group photograph, and a small newspaper image. Very damaged sources can still retain grain, printing patterns, or uncertain colors after preparation.
 
