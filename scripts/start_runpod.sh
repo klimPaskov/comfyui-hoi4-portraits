@@ -3,10 +3,10 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 COMFY_ROOT="${1:-${COMFYUI_ROOT:-/workspace/ComfyUI}}"
-WORKFLOW="${2:-full_power_gpu}"
+WORKFLOW="${2:-hoi4_portraits_full_power_gpu}"
 
-if [[ "${WORKFLOW}" != "full_power_gpu" && "${WORKFLOW}" != "agent_full_power_gpu" && "${WORKFLOW}" != "prompt_full_power_gpu" && "${WORKFLOW}" != "agent_prompt_full_power_gpu" && "${WORKFLOW}" != "prepare_portrait_for_hoi4" ]]; then
-  echo "Choose full_power_gpu, agent_full_power_gpu, prompt_full_power_gpu, agent_prompt_full_power_gpu, or prepare_portrait_for_hoi4." >&2
+if [[ "${WORKFLOW}" != "hoi4_portraits_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_agent_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_no_input_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_agent_no_input_full_power_gpu" && "${WORKFLOW}" != "hoi4_portraits_prepare_portrait_for_hoi4" ]]; then
+  echo "Choose hoi4_portraits_full_power_gpu, hoi4_portraits_agent_full_power_gpu, hoi4_portraits_no_input_full_power_gpu, hoi4_portraits_agent_no_input_full_power_gpu, or hoi4_portraits_prepare_portrait_for_hoi4." >&2
   exit 10
 fi
 
@@ -43,15 +43,15 @@ mkdir -p "${LOG_ROOT}"
 
 PREPROCESSING_PID=""
 AUTOPROMPTER_PID=""
-if [[ "${WORKFLOW}" == "full_power_gpu" || "${WORKFLOW}" == "agent_full_power_gpu" ]]; then
+if [[ "${WORKFLOW}" == "hoi4_portraits_full_power_gpu" || "${WORKFLOW}" == "hoi4_portraits_agent_full_power_gpu" ]]; then
   "${PYTHON_BIN}" -m portrait_pipeline.preprocessing_service \
     --root "${PROJECT_ROOT}" --host 127.0.0.1 --port 8790 --device cuda \
     >"${LOG_ROOT}/preprocessing.log" 2>&1 &
   PREPROCESSING_PID=$!
 
-  if [[ "${WORKFLOW}" == "full_power_gpu" ]]; then
+  if [[ "${WORKFLOW}" == "hoi4_portraits_full_power_gpu" ]]; then
     "${PYTHON_BIN}" -m portrait_pipeline.autoprompter_service \
-      --root "${PROJECT_ROOT}" --profile full_power_gpu \
+      --root "${PROJECT_ROOT}" --profile hoi4_portraits_full_power_gpu \
       --host 127.0.0.1 --port 8099 \
       >"${LOG_ROOT}/autoprompter.log" 2>&1 &
     AUTOPROMPTER_PID=$!

@@ -28,7 +28,7 @@ def _full_power_format_probe(root: Path) -> dict:
     try:
         from transformers import AutoProcessor, Qwen3VLConfig  # type: ignore
 
-        service = AutoprompterService(root, profile="full_power_gpu")
+        service = AutoprompterService(root, profile="hoi4_portraits_full_power_gpu")
         processor = AutoProcessor.from_pretrained(str(service.model_root), local_files_only=True)
         config = Qwen3VLConfig.from_pretrained(str(service.model_root), local_files_only=True)
         try:
@@ -67,13 +67,13 @@ def main(argv: list[str] | None = None) -> int:
         "schema_version": "1.0.0",
         "checked_at": checked_at,
         "status": "BLOCKED_SIDECAR_NOT_RUNNING",
-        "profile": "local_nvidia_16gb",
+        "profile": "hoi4_portraits_local_nvidia_16gb",
         "full_power": _full_power_format_probe(root),
         "negative_validation": {"status": "NOT_RUN"},
         "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A production-authorized source fixture is required for positive generation qualification.",
     }
     try:
-        service = AutoprompterService(root, profile="local_nvidia_16gb")
+        service = AutoprompterService(root, profile="hoi4_portraits_local_nvidia_16gb")
         health = _get(args.base_url + "/health")
         models = _get(args.base_url + "/v1/models")
         buffer = BytesIO()

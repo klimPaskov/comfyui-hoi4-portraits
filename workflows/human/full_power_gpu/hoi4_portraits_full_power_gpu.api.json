@@ -1,0 +1,683 @@
+{
+  "1": {
+    "class_type": "HOI4JobInput",
+    "inputs": {
+      "execution_profile": "hoi4_portraits_full_power_gpu",
+      "job_contract_path": "jobs/<job_id>/input.json",
+      "candidate_count": 6,
+      "retry_limit": 2,
+      "seed_policy": "derived"
+    }
+  },
+  "24": {
+    "class_type": "HOI4HumanControls",
+    "inputs": {
+      "job": [
+        "1",
+        0
+      ],
+      "source_image_path": "<from_job_contract>",
+      "subject_selector_mode": "automatic",
+      "face_index": 0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 0,
+      "bbox_bottom": 0,
+      "crop_override_left": 0,
+      "crop_override_top": 0,
+      "crop_override_right": 0,
+      "crop_override_bottom": 0,
+      "monochrome_mode": "automatic",
+      "restoration_level": "conservative",
+      "approved_background_registry_id": "<from_job_contract>",
+      "background_choice": "Keep current background",
+      "prompt_override": "",
+      "seed_mode": "derived",
+      "fixed_seed": 0,
+      "candidate_count": 6,
+      "output_job_id": "<job_id_from_contract>"
+    }
+  },
+  "2": {
+    "class_type": "HOI4JobSource",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ]
+    }
+  },
+  "3": {
+    "class_type": "HOI4SourceGuard",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ],
+      "image": [
+        "2",
+        0
+      ]
+    }
+  },
+  "4": {
+    "class_type": "HOI4SubjectSelect",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ],
+      "image": [
+        "3",
+        0
+      ]
+    }
+  },
+  "5": {
+    "class_type": "HOI4HeadShouldersCrop",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "selection_meta": [
+        "4",
+        1
+      ],
+      "control_meta": [
+        "24",
+        1
+      ]
+    }
+  },
+  "36": {
+    "class_type": "DDColor_Colorize",
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ],
+      "model_input_size": 512,
+      "checkpoint": "ddcolor_modelscope.pth"
+    }
+  },
+  "6": {
+    "class_type": "HOI4ConservativePrep",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ],
+      "image": [
+        "5",
+        0
+      ],
+      "crop_meta": [
+        "5",
+        1
+      ],
+      "colorized_image": [
+        "36",
+        0
+      ],
+      "control_meta": [
+        "24",
+        1
+      ]
+    }
+  },
+  "7": {
+    "class_type": "HOI4ForegroundMask",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ],
+      "image": [
+        "6",
+        0
+      ],
+      "reference_meta": [
+        "6",
+        1
+      ],
+      "mask_model": "BiRefNet"
+    }
+  },
+  "34": {
+    "class_type": "HOI4BundledBackground",
+    "inputs": {
+      "asset_path": "backgrounds/local/hoi4_scientists_BG.png",
+      "asset_sha256": "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e"
+    }
+  },
+  "37": {
+    "class_type": "HOI4BundledBackground",
+    "inputs": {
+      "asset_path": "backgrounds/local/hoi4_operative_background.png",
+      "asset_sha256": "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d"
+    }
+  },
+  "8": {
+    "class_type": "HOI4MaskAndBackgroundGuard",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ],
+      "image": [
+        "7",
+        0
+      ],
+      "mask": [
+        "7",
+        1
+      ],
+      "mask_meta": [
+        "7",
+        2
+      ],
+      "control_meta": [
+        "24",
+        1
+      ],
+      "scientist_background": [
+        "34",
+        0
+      ],
+      "scientist_background_meta": [
+        "34",
+        1
+      ],
+      "operative_background": [
+        "37",
+        0
+      ],
+      "operative_background_meta": [
+        "37",
+        1
+      ]
+    }
+  },
+  "9": {
+    "class_type": "HOI4AutopromptClient",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ],
+      "image": [
+        "8",
+        0
+      ],
+      "background_meta": [
+        "8",
+        3
+      ],
+      "control_meta": [
+        "24",
+        1
+      ],
+      "instruction_text": "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nDescribe only:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, and jewelry\n\nDo not describe the background, lighting, art style, brushwork, color palette, image quality, or composition.\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent unclear details.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
+      "instruction_path": "prompts/autoprompter_instruction.txt",
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "prompt_source": "autoprompter"
+    }
+  },
+  "10": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_turbo_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "11": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "10",
+        0
+      ],
+      "lora_name": "krea2_identity_edit_v1_2.safetensors",
+      "strength_model": 1.0
+    }
+  },
+  "12": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "13": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "8",
+        1
+      ],
+      "vae": [
+        "12",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "Krea2EditModelPatch",
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "source_latent": [
+        "13",
+        0
+      ],
+      "vae": [
+        "12",
+        0
+      ],
+      "source_image": [
+        "8",
+        1
+      ],
+      "fit_mode": "fit",
+      "ref_boost": 1.0
+    }
+  },
+  "15": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
+      "type": "krea2"
+    }
+  },
+  "16": {
+    "class_type": "Krea2EditGroundedEncode",
+    "inputs": {
+      "clip": [
+        "15",
+        0
+      ],
+      "prompt": [
+        "9",
+        0
+      ],
+      "image": [
+        "8",
+        1
+      ],
+      "grounding_px": 768
+    }
+  },
+  "17": {
+    "class_type": "Krea2EditGroundedEncode",
+    "inputs": {
+      "clip": [
+        "15",
+        0
+      ],
+      "prompt": "",
+      "image": [
+        "8",
+        1
+      ],
+      "grounding_px": 768
+    }
+  },
+  "18": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "14",
+        0
+      ],
+      "lora_name": "hoi4_portrait_new_style_lora.safetensors",
+      "strength_model": 0.8
+    }
+  },
+  "29": {
+    "class_type": "HOI4KreaModelLoadBarrier",
+    "inputs": {
+      "model": [
+        "18",
+        0
+      ],
+      "positive": [
+        "16",
+        0
+      ],
+      "negative": [
+        "17",
+        0
+      ]
+    }
+  },
+  "19": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 1196,
+      "height": 1610,
+      "batch_size": 1
+    }
+  },
+  "20": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "29",
+        0
+      ],
+      "positive": [
+        "29",
+        1
+      ],
+      "negative": [
+        "29",
+        2
+      ],
+      "latent_image": [
+        "19",
+        0
+      ],
+      "seed": 0,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "21": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "20",
+        0
+      ],
+      "vae": [
+        "12",
+        0
+      ]
+    }
+  },
+  "22": {
+    "class_type": "HOI4EvidenceExport",
+    "inputs": {
+      "job": [
+        "24",
+        0
+      ],
+      "source_master": [
+        "3",
+        0
+      ],
+      "processed_reference": [
+        "6",
+        0
+      ],
+      "approved_background": [
+        "8",
+        1
+      ],
+      "candidate": [
+        "21",
+        0
+      ],
+      "mask": [
+        "8",
+        2
+      ],
+      "prompt": [
+        "9",
+        0
+      ],
+      "candidate_index": 0
+    }
+  },
+  "23": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "22",
+        0
+      ],
+      "filename_prefix": "evidence/candidates"
+    }
+  },
+  "25": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "5",
+        0
+      ]
+    }
+  },
+  "26": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "6",
+        0
+      ]
+    }
+  },
+  "27": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "8",
+        1
+      ]
+    }
+  },
+  "28": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "22",
+        0
+      ]
+    }
+  },
+  "30": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "3",
+        0
+      ]
+    }
+  },
+  "35": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "34",
+        0
+      ]
+    }
+  },
+  "38": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "37",
+        0
+      ]
+    }
+  },
+  "_meta": {
+    "schema_version": "1.0.0",
+    "graph_spec_version": "graph-spec-1.5.0",
+    "workflow_id": "hoi4_portraits_full_power_gpu",
+    "execution_profile": "hoi4_portraits_full_power_gpu",
+    "route": "runpod",
+    "human_workflow": true,
+    "autoprompter": true,
+    "autoprompter_instruction_path": "prompts/autoprompter_instruction.txt",
+    "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+    "prompt_source": "autoprompter",
+    "prompt_model": "Qwen/Qwen3-VL-8B-Instruct",
+    "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
+    "remote_authentication": "authenticated_runpod_gateway",
+    "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
+    "work_canvas": {
+      "width": 1196,
+      "height": 1610,
+      "pixels": 1925560
+    },
+    "final_canvas": {
+      "width": 156,
+      "height": 210
+    },
+    "required_groups": [
+      "00 Portrait setup",
+      "01 Choose subject",
+      "02 Crop portrait",
+      "03 Prepare portrait",
+      "04 Choose background",
+      "05 Portrait description",
+      "06 Krea 2 portrait edit",
+      "07 HOI4 portrait style",
+      "08 Generate portrait",
+      "09 Preview and save"
+    ],
+    "locked_controls": {
+      "Choose portrait settings": [
+        "execution_profile",
+        "candidate_count",
+        "retry_limit",
+        "seed_policy"
+      ],
+      "Colorize when needed": [
+        "checkpoint"
+      ],
+      "Separate person from background": [
+        "mask_model"
+      ],
+      "HOI4 scientist portrait background": [
+        "asset_path",
+        "asset_sha256"
+      ],
+      "HOI4 operative portrait background": [
+        "asset_path",
+        "asset_sha256"
+      ],
+      "Create portrait description": [
+        "instruction_text",
+        "instruction_path",
+        "model_id",
+        "prompt_source"
+      ],
+      "Load Krea 2 Turbo": [
+        "unet_name",
+        "weight_dtype"
+      ],
+      "Preserve identity": [
+        "lora_name",
+        "strength_model"
+      ],
+      "Prepare image decoder": [
+        "vae_name"
+      ],
+      "Apply identity reference": [
+        "fit_mode",
+        "ref_boost"
+      ],
+      "Read portrait description": [
+        "clip_name",
+        "type"
+      ],
+      "Connect portrait description": [
+        "grounding_px"
+      ],
+      "Keep background empty": [
+        "prompt",
+        "grounding_px"
+      ],
+      "Apply HOI4 portrait style": [
+        "lora_name"
+      ],
+      "Set portrait size": [
+        "width",
+        "height",
+        "batch_size"
+      ],
+      "Generate portrait": [
+        "steps",
+        "cfg",
+        "sampler_name",
+        "scheduler",
+        "denoise"
+      ],
+      "Prepare portrait for saving": [
+        "candidate_index"
+      ],
+      "Save portrait PNG": [
+        "filename_prefix"
+      ]
+    },
+    "required_core_nodes": [
+      "CLIPLoader",
+      "EmptySD3LatentImage",
+      "KSampler",
+      "LoraLoaderModelOnly",
+      "PreviewImage",
+      "SaveImage",
+      "UNETLoader",
+      "VAEDecode",
+      "VAEEncode",
+      "VAELoader"
+    ],
+    "required_preparation_nodes": [
+      "DDColor_Colorize",
+      "HOI4ConservativePrep"
+    ],
+    "preview_nodes": [
+      "Cropped portrait",
+      "Prepared portrait",
+      "Background preview",
+      "Saved portrait preview",
+      "Input portrait preview",
+      "Scientist background preview",
+      "Operative background preview"
+    ],
+    "final_preview_save_pair": {
+      "preview_node_id": 28,
+      "save_node_id": 23,
+      "shared_source_node_id": 22,
+      "shared_source_slot": 0,
+      "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
+    },
+    "required_krea_nodes": [
+      "Krea2EditGroundedEncode",
+      "Krea2EditModelPatch"
+    ],
+    "required_project_nodes": [
+      "HOI4AutopromptClient",
+      "HOI4BundledBackground",
+      "HOI4ConservativePrep",
+      "HOI4EvidenceExport",
+      "HOI4ForegroundMask",
+      "HOI4HeadShouldersCrop",
+      "HOI4HumanControls",
+      "HOI4JobInput",
+      "HOI4JobSource",
+      "HOI4KreaModelLoadBarrier",
+      "HOI4MaskAndBackgroundGuard",
+      "HOI4SourceGuard",
+      "HOI4SubjectSelect"
+    ],
+    "candidate_budget": {
+      "max": 6,
+      "retry_max": 2
+    },
+    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow",
+    "low_memory_placeholder_nodes": []
+  }
+}

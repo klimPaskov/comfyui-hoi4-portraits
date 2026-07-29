@@ -66,25 +66,25 @@ HUMAN_ONLY_PROJECT_NODES = {"HOI4HumanControls", "HOI4BundledBackground"}
 FORBIDDEN_CLASS_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 UI_ONLY_NODE_CLASSES = {"Note"}
 RANDOM_PROMPT_WORKFLOWS = {
-    "prompt_local_nvidia_16gb": {
+    "hoi4_portraits_no_input_local_nvidia_16gb": {
         "route": "local_nvidia",
         "canvas_width": 832,
         "canvas_height": 1120,
         "human_workflow": True,
     },
-    "prompt_full_power_gpu": {
+    "hoi4_portraits_no_input_full_power_gpu": {
         "route": "runpod",
         "canvas_width": 1196,
         "canvas_height": 1610,
         "human_workflow": True,
     },
-    "agent_prompt_local_nvidia_16gb": {
+    "hoi4_portraits_agent_no_input_local_nvidia_16gb": {
         "route": "local_nvidia",
         "canvas_width": 832,
         "canvas_height": 1120,
         "human_workflow": False,
     },
-    "agent_prompt_full_power_gpu": {
+    "hoi4_portraits_agent_no_input_full_power_gpu": {
         "route": "runpod",
         "canvas_width": 1196,
         "canvas_height": 1610,
@@ -98,7 +98,7 @@ RANDOM_PROMPT_GROUPS = [
     "04 Generate portrait",
     "05 Preview and save",
 ]
-PREP_WORKFLOW_ID = "prepare_portrait_for_hoi4"
+PREP_WORKFLOW_ID = "hoi4_portraits_prepare_portrait_for_hoi4"
 PREP_GROUPS = [
     "01 Choose image",
     "02 Crop portrait",
@@ -106,8 +106,8 @@ PREP_GROUPS = [
     "04 Preview and save",
 ]
 LOW_MEMORY_PROFILE_IDS = {
-    "local_nvidia_16gb",
-    "agent_local_nvidia_16gb",
+    "hoi4_portraits_local_nvidia_16gb",
+    "hoi4_portraits_agent_local_nvidia_16gb",
 }
 
 # The UI workflow is deliberately laid out as a compact two-row rectangular
@@ -116,16 +116,16 @@ LOW_MEMORY_PROFILE_IDS = {
 # hunting across the canvas.  These values are presentation metadata only;
 # they do not change the execution graph or any locked control.
 GROUP_LAYOUT = {
-    "00 Portrait setup": (40, 40, 760, 900),
-    "01 Choose subject": (840, 40, 500, 900),
-    "02 Crop portrait": (1380, 40, 440, 900),
-    "03 Prepare portrait": (1860, 40, 440, 900),
-    "04 Choose background": (2340, 40, 1480, 900),
-    "05 Portrait description": (40, 980, 500, 640),
-    "06 Krea 2 portrait edit": (580, 980, 900, 800),
-    "07 HOI4 portrait style": (1520, 980, 340, 640),
-    "08 Generate portrait": (1900, 980, 340, 640),
-    "09 Preview and save": (2280, 980, 1080, 760),
+    "00 Portrait setup": (40, 40, 870, 900),
+    "01 Choose subject": (940, 40, 500, 900),
+    "02 Crop portrait": (1470, 40, 440, 900),
+    "03 Prepare portrait": (1940, 40, 440, 900),
+    "04 Choose background": (2410, 40, 1550, 900),
+    "05 Portrait description": (300, 1020, 500, 720),
+    "06 Krea 2 portrait edit": (840, 1020, 900, 780),
+    "07 HOI4 portrait style": (1780, 1020, 340, 720),
+    "08 Generate portrait": (2160, 1020, 340, 720),
+    "09 Preview and save": (2540, 1020, 1080, 720),
 }
 
 GROUP_COLORS = {
@@ -726,7 +726,7 @@ def build_preparation_graph(root: str | Path | None = None) -> GraphSpec:
             1, "LoadImage", groups[0], "Choose portrait photo",
             inputs={"image": "hoi4_preparation_example.png"}, input_types={"image": "COMBO"},
             outputs=["image", "mask"], output_types=["IMAGE", "MASK"],
-            pos=(80, 100), size=(300, 180), widgets=["example.png", "image"],
+            pos=(80, 100), size=(300, 180), widgets=["hoi4_preparation_example.png", "image"],
         ),
         _node(
             2, PREVIEW_NODE, groups[0], "Input image preview",
@@ -921,32 +921,32 @@ def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool) -> None:
     """Place nodes and image checkpoints on the compact two-row stage board."""
 
     positions = {
-        1: (70, 100), 24: (440, 100), 2: (70, 300), 3: (70, 500),
-        4: (870, 100), 30: (870, 280),
-        5: (1420, 100), 25: (1420, 280),
-        36: (1900, 100), 6: (1900, 280), 26: (1900, 460),
-        7: (2380, 100), 8: (2380, 300), 27: (2700, 230),
-        34: (3060, 100), 35: (3060, 280), 37: (3440, 100), 38: (3440, 280),
-        9: (70, 1080),
-        10: (620, 1080), 11: (620, 1230), 12: (620, 1380), 13: (620, 1530),
-        14: (900, 1080), 15: (900, 1230), 16: (900, 1380), 17: (900, 1530),
-        18: (1560, 1180),
-        19: (1940, 1080), 20: (1940, 1260), 29: (1940, 1480),
-        21: (2320, 1080), 22: (2640, 1080), 23: (2640, 1270), 28: (2940, 1080),
-        31: (1200, 1080), 32: (1200, 1230), 33: (1200, 1390),
+        1: (80, 100), 24: (460, 100), 2: (80, 340), 3: (80, 560),
+        4: (980, 100), 30: (980, 320),
+        5: (1510, 100), 25: (1510, 320),
+        36: (1980, 100), 6: (1980, 300), 26: (1980, 500),
+        7: (2450, 100), 8: (2450, 320), 27: (2810, 300),
+        34: (3170, 100), 35: (3170, 320), 37: (3530, 100), 38: (3530, 320),
+        9: (340, 1080),
+        10: (880, 1080), 11: (880, 1240), 12: (880, 1400), 13: (880, 1560),
+        14: (1160, 1080), 15: (1160, 1240), 16: (1160, 1400), 17: (1160, 1560),
+        18: (1820, 1220),
+        19: (2200, 1080), 20: (2200, 1260), 29: (2200, 1490),
+        21: (2580, 1080), 22: (2900, 1080), 23: (2900, 1290), 28: (3220, 1080),
+        31: (1460, 1080), 32: (1460, 1240), 33: (1460, 1410),
     }
     sizes = {
-        1: (350, 170), 24: (350, 580), 2: (350, 140), 3: (350, 140),
-        4: (300, 150), 30: (340, 420),
-        5: (320, 150), 25: (340, 420),
-        36: (320, 150), 6: (320, 150), 26: (340, 420),
-        7: (320, 150), 8: (320, 240), 27: (340, 420),
-        34: (340, 150), 35: (340, 420), 37: (340, 150), 38: (340, 420),
-        9: (440, 520 if is_human else 230),
+        1: (350, 190), 24: (400, 720), 2: (350, 150), 3: (350, 150),
+        4: (360, 160), 30: (400, 500),
+        5: (360, 160), 25: (400, 500),
+        36: (360, 160), 6: (360, 160), 26: (400, 400),
+        7: (320, 160), 8: (320, 260), 27: (340, 500),
+        34: (340, 160), 35: (340, 500), 37: (340, 160), 38: (340, 500),
+        9: (440, 600 if is_human else 230),
         10: (260, 130), 11: (260, 130), 12: (260, 130), 13: (260, 130),
         14: (260, 130), 15: (260, 130), 16: (260, 130), 17: (260, 130),
         18: (260, 170), 19: (260, 150), 20: (260, 180), 29: (260, 130),
-        21: (300, 140), 22: (300, 170), 23: (300, 140), 28: (400, 480),
+        21: (300, 140), 22: (300, 170), 23: (300, 140), 28: (400, 540),
         31: (250, 120), 32: (250, 140), 33: (250, 140),
     }
     for node in nodes:
@@ -1070,15 +1070,15 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         for class_name in entry.get("classes", [])
     }
     paths = {
-        "local_nvidia_16gb": root_path / "workflows/human/local_nvidia_16gb/local_nvidia_16gb.json",
-        "full_power_gpu": root_path / "workflows/human/full_power_gpu/full_power_gpu.json",
-        "agent_local_nvidia_16gb": root_path / "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json",
-        "agent_full_power_gpu": root_path / "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
-        "prompt_local_nvidia_16gb": root_path / "workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.json",
-        "prompt_full_power_gpu": root_path / "workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.json",
-        "agent_prompt_local_nvidia_16gb": root_path / "workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.json",
-        "agent_prompt_full_power_gpu": root_path / "workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.json",
-        PREP_WORKFLOW_ID: root_path / "workflows/human/prepare_portrait/prepare_portrait_for_hoi4.json",
+        "hoi4_portraits_local_nvidia_16gb": root_path / "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json",
+        "hoi4_portraits_full_power_gpu": root_path / "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json",
+        "hoi4_portraits_agent_local_nvidia_16gb": root_path / "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.json",
+        "hoi4_portraits_agent_full_power_gpu": root_path / "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.json",
+        "hoi4_portraits_no_input_local_nvidia_16gb": root_path / "workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json",
+        "hoi4_portraits_no_input_full_power_gpu": root_path / "workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json",
+        "hoi4_portraits_agent_no_input_local_nvidia_16gb": root_path / "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json",
+        "hoi4_portraits_agent_no_input_full_power_gpu": root_path / "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json",
+        PREP_WORKFLOW_ID: root_path / "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json",
     }
     manifests: list[dict[str, Any]] = []
     live_probe_path = root_path / ".runtime" / "reports" / "live_comfy_compatibility.json"
@@ -1172,7 +1172,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
     runtime_status = "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if manifests and all(item.get("runtime_status") == "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" for item in manifests) else "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
     generated_at = live_probe.get("checked_at") if isinstance(live_probe.get("checked_at"), str) else datetime.now(timezone.utc).isoformat()
     manifest = {"schema_version": "1.0.0", "generated_at": generated_at, "lock_version": "workflows-2026-07-26.1", "workflows": manifests, "status": manifest_status, "runtime_status": runtime_status}
-    atomic_json_write(root_path / "manifests/workflow_manifest.json", manifest)
+    atomic_json_write(root_path / "docs/reference/workflow_manifest.json", manifest)
     return manifest
 
 

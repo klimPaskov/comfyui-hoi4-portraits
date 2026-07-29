@@ -30,8 +30,8 @@ from .workflow_validation import validate_workflow_file
 
 
 LOCAL_PROFILE_IDS = frozenset({
-    "local_nvidia_16gb",
-    "agent_local_nvidia_16gb",
+    "hoi4_portraits_local_nvidia_16gb",
+    "hoi4_portraits_agent_local_nvidia_16gb",
 })
 LOCAL_GENERATION_UNAVAILABLE = "LOCAL_GENERATION_UNAVAILABLE"
 
@@ -163,16 +163,16 @@ class JobController:
             return None
         if any("background" in item.casefold() for item in blockers):
             return ExitCode.BACKGROUND_UNRESOLVED, blockers
-        if job.get("execution_profile") in {"full_power_gpu", "agent_full_power_gpu"} and any("RunPod" in item or "remote" in item.casefold() for item in blockers):
+        if job.get("execution_profile") in {"hoi4_portraits_full_power_gpu", "hoi4_portraits_agent_full_power_gpu"} and any("RunPod" in item or "remote" in item.casefold() for item in blockers):
             return ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, blockers
         return ExitCode.DEPENDENCY_MISSING, blockers
 
     def _workflow_api_path(self, workflow_id: str) -> Path:
         paths = {
-            "local_nvidia_16gb": self.root / "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json",
-            "full_power_gpu": self.root / "workflows/human/full_power_gpu/full_power_gpu.api.json",
-            "agent_local_nvidia_16gb": self.root / "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
-            "agent_full_power_gpu": self.root / "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
+            "hoi4_portraits_local_nvidia_16gb": self.root / "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.api.json",
+            "hoi4_portraits_full_power_gpu": self.root / "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.api.json",
+            "hoi4_portraits_agent_local_nvidia_16gb": self.root / "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.api.json",
+            "hoi4_portraits_agent_full_power_gpu": self.root / "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.api.json",
         }
         try:
             return paths[workflow_id]

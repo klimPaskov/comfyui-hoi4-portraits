@@ -250,8 +250,8 @@ class PortraitGateway:
             raise AdapterError(ExitCode.INPUT_SCHEMA_INVALID, "job object is required", stage="JOB_ACCEPTED")
         job = dict(job)
         job_id = self._safe_job_id(job.get("job_id"))
-        if job.get("execution_profile") != "agent_full_power_gpu":
-            raise AdapterError(ExitCode.INPUT_SCHEMA_INVALID, "remote gateway accepts only agent_full_power_gpu jobs")
+        if job.get("execution_profile") != "hoi4_portraits_agent_full_power_gpu":
+            raise AdapterError(ExitCode.INPUT_SCHEMA_INVALID, "remote gateway accepts only hoi4_portraits_agent_full_power_gpu jobs")
         upload_id = self._safe_upload_id(body.get("source_upload_id"))
         upload = self._read_upload(job_id, upload_id)
         if upload.get("state") != "UPLOADED":

@@ -177,10 +177,10 @@ class _Handler(BaseHTTPRequestHandler):
 
 
 class AutoprompterService:
-    def __init__(self, root: str | Path | None = None, *, profile: str = "local_nvidia_16gb", host: str = "127.0.0.1", port: int = 8099, upstream_port: int = 8100):
+    def __init__(self, root: str | Path | None = None, *, profile: str = "hoi4_portraits_local_nvidia_16gb", host: str = "127.0.0.1", port: int = 8099, upstream_port: int = 8100):
         if host not in {"127.0.0.1", "localhost"}:
             raise AutoprompterServiceError("autoprompter may bind only to loopback")
-        if profile not in {"local_nvidia_16gb", "full_power_gpu"}:
+        if profile not in {"hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu"}:
             raise AutoprompterServiceError("autoprompter profile is not a human workflow profile")
         self.root = project_root(root)
         self.profile = profile
@@ -190,7 +190,7 @@ class AutoprompterService:
         self.child: subprocess.Popen[bytes] | None = None
         self._model: Any = None
         self._processor: Any = None
-        if profile == "local_nvidia_16gb":
+        if profile == "hoi4_portraits_local_nvidia_16gb":
             self.lock, self.binary, self.model, self.mmproj = _resolve_local_runtime(self.root)
             self.model_id = "Qwen/Qwen3-VL-4B-Instruct-GGUF"
         else:
@@ -202,14 +202,14 @@ class AutoprompterService:
         self.instruction = autoprompter_instruction(self.root)
 
     def start_upstream(self) -> None:
-        if self.profile == "full_power_gpu":
+        if self.profile == "hoi4_portraits_full_power_gpu":
             try:
                 import torch  # type: ignore
                 from transformers import AutoProcessor, Qwen3VLForConditionalGeneration  # type: ignore
             except Exception as exc:
                 raise AutoprompterServiceError(f"full-power Transformers runtime is unavailable: {type(exc).__name__}") from exc
             if not torch.cuda.is_available():
-                raise AutoprompterServiceError("full_power_gpu autoprompter requires CUDA; the current host has no CUDA device")
+                raise AutoprompterServiceError("hoi4_portraits_full_power_gpu autoprompter requires CUDA; the current host has no CUDA device")
             try:
                 self._processor = AutoProcessor.from_pretrained(str(self.model_root), local_files_only=True)
                 self._model = Qwen3VLForConditionalGeneration.from_pretrained(
@@ -253,7 +253,7 @@ class AutoprompterService:
         raise AutoprompterServiceError("llama-server health readiness timed out")
 
     def health(self) -> dict[str, Any]:
-        if self.profile == "full_power_gpu":
+        if self.profile == "hoi4_portraits_full_power_gpu":
             ready = self._model is not None and self._processor is not None
             return {"status": "PASS", "binding": f"http://{self.host}:{self.port}", "upstream": "transformers_loaded" if ready else "transformers_staged_idle", "profile": self.profile, "model_id": self.model_id, "instruction_sha256": __import__("hashlib").sha256(self.instruction.encode("utf-8")).hexdigest()}
         upstream = False
@@ -317,7 +317,7 @@ class AutoprompterService:
             raise AutoprompterServiceError(f"full-power Qwen3-VL generation failed: {type(exc).__name__}") from exc
 
     def _release_full_power(self) -> None:
-        if self.profile != "full_power_gpu":
+        if self.profile != "hoi4_portraits_full_power_gpu":
             return
         self._model = None
         self._processor = None
@@ -343,13 +343,13 @@ class AutoprompterService:
             raise AutoprompterServiceError("processed image is not valid base64") from exc
         if not decoded.startswith(b"\x89PNG\r\n\x1a\n"):
             raise AutoprompterServiceError("autoprompter accepts PNG input only")
-        if self.profile == "full_power_gpu" and (self._model is None or self._processor is None):
+        if self.profile == "hoi4_portraits_full_power_gpu" and (self._model is None or self._processor is None):
             self.start_upstream()
         attempts: list[dict[str, Any]] = []
         for attempt_index, retry_profile in enumerate(AUTOPROMPTER_RETRY_PROFILES, start=1):
             temperature = float(retry_profile["temperature"])
             seed = int(retry_profile["seed"])
-            if self.profile == "full_power_gpu":
+            if self.profile == "hoi4_portraits_full_power_gpu":
                 try:
                     prompt = self._complete_full_power(image_value, temperature=temperature, seed=seed)
                 except Exception:
@@ -395,7 +395,7 @@ class AutoprompterService:
         raise AutoprompterServiceError("autoprompt failed validation after bounded retries: " + ",".join(final.get("failure_codes", [])), attempts=attempts)
 
     def stop(self) -> None:
-        if self.profile == "full_power_gpu":
+        if self.profile == "hoi4_portraits_full_power_gpu":
             self._release_full_power()
             return
         if self.child is None or self.child.poll() is not None:
@@ -411,7 +411,7 @@ class AutoprompterService:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run the loopback-only staged Qwen3-VL autoprompter.")
     parser.add_argument("--root", type=Path, default=None)
-    parser.add_argument("--profile", default="local_nvidia_16gb")
+    parser.add_argument("--profile", default="hoi4_portraits_local_nvidia_16gb")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8099)
     parser.add_argument("--upstream-port", type=int, default=8100)
@@ -425,13 +425,13 @@ def main(argv: list[str] | None = None) -> int:
         # The full-power VLM shares the GPU with portrait generation. Keep it
         # staged on disk until a workflow request actually needs an automatic
         # prompt, then release it immediately after the bounded prompt pass.
-        if service.profile != "full_power_gpu":
+        if service.profile != "hoi4_portraits_full_power_gpu":
             service.start_upstream()
         server = ThreadingHTTPServer((args.host, args.port), _Handler)
         _Handler.service = service
         for signal_name in (signal.SIGINT, signal.SIGTERM):
             signal.signal(signal_name, lambda _signum, _frame: threading.Thread(target=server.shutdown, daemon=True).start())
-        upstream = "transformers_staged_idle" if service.profile == "full_power_gpu" else f"http://127.0.0.1:{args.upstream_port}"
+        upstream = "transformers_staged_idle" if service.profile == "hoi4_portraits_full_power_gpu" else f"http://127.0.0.1:{args.upstream_port}"
         print(json.dumps({"status": "PASS", "binding": f"http://{args.host}:{args.port}", "upstream": upstream}), flush=True)
         try:
             server.serve_forever()

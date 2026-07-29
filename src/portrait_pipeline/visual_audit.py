@@ -56,7 +56,7 @@ def evaluate_visual_audit(
         reasons.append(f"private visual audit evidence is unreadable: {type(exc).__name__}")
         return metrics, gates, reasons
 
-    issues = validate_schema(record, Path(__file__).resolve().parents[2] / "schemas/visual_audit_evidence.schema.json")
+    issues = validate_schema(record, Path(__file__).resolve().parents[2] / "docs/schemas/visual_audit_evidence.schema.json")
     if issues:
         reasons.append("private visual audit evidence does not satisfy its schema")
         metrics["visual_audit_schema_issues"] = json.dumps([issue.as_dict() for issue in issues], sort_keys=True, separators=(",", ":"))

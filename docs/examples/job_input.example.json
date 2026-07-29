@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "job_id": "example-fictional-001",
-  "execution_profile": "local_nvidia_16gb",
+  "execution_profile": "hoi4_portraits_local_nvidia_16gb",
   "source_image_path": "jobs/example-fictional-001/source/portrait.png",
   "source_provenance": {
     "source_class": "user_provided",

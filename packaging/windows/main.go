@@ -92,9 +92,9 @@ func main() {
 		fail("cannot resolve destination: %v", err)
 	}
 	extract(absolute)
-	instructions := filepath.Join(absolute, "SETUP_WITH_CODING_AGENT.md")
+	instructions := filepath.Join(absolute, "docs", "setup-with-coding-agent.md")
 	fmt.Printf("HOI4 portrait workflow package %s extracted to:\n%s\n\n", version, absolute)
-	fmt.Println("ComfyUI and model weights were not bundled or downloaded.")
-	fmt.Println("Open SETUP_WITH_CODING_AGENT.md and give the included prompt to your coding agent.")
+	fmt.Println("ComfyUI is not included. The package setup scripts install the required models, nodes, and workflows into an existing ComfyUI installation.")
+	fmt.Println("Open docs/setup-with-coding-agent.md and give the included prompt to your coding agent.")
 	_ = exec.Command("cmd", "/C", "start", "", instructions).Start()
 }

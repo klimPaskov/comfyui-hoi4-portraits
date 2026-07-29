@@ -44,10 +44,10 @@ class JobStatus(_StringEnum):
 
 
 class ExecutionProfile(_StringEnum):
-    HUMAN_LOCAL_NVIDIA_16GB = "local_nvidia_16gb"
-    HUMAN_FULL_POWER_GPU = "full_power_gpu"
-    AGENT_LOCAL_NVIDIA_16GB = "agent_local_nvidia_16gb"
-    AGENT_FULL_POWER_GPU = "agent_full_power_gpu"
+    HUMAN_LOCAL_NVIDIA_16GB = "hoi4_portraits_local_nvidia_16gb"
+    HUMAN_FULL_POWER_GPU = "hoi4_portraits_full_power_gpu"
+    AGENT_LOCAL_NVIDIA_16GB = "hoi4_portraits_agent_local_nvidia_16gb"
+    AGENT_FULL_POWER_GPU = "hoi4_portraits_agent_full_power_gpu"
 
 
 PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
@@ -139,7 +139,7 @@ STAGES = [
     "COMPLETED",
 ]
 
-WORKFLOW_VERSION = "graph-spec-1.4.1"
+WORKFLOW_VERSION = "graph-spec-1.5.0"
 DEPENDENCY_LOCK_VERSION = "lock-2026-07-26.1"
 AUTOPROMPTER_PATH = "prompts/autoprompter_instruction.txt"
 RANDOM_PORTRAIT_PROMPT_PATH = "prompts/random_portrait_instruction.txt"

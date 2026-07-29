@@ -109,7 +109,7 @@ def _runpod_gate(root: Path) -> dict[str, Any]:
 
     base_url = os.environ.get("RUNPOD_ENDPOINT_URL", "")
     key_present = bool(os.environ.get("RUNPOD_API_KEY"))
-    workflows = ["full_power_gpu", "agent_full_power_gpu"]
+    workflows = ["hoi4_portraits_full_power_gpu", "hoi4_portraits_agent_full_power_gpu"]
     probe_paths = sorted((root / "docs" / "preflight").glob("runpod_ui_probe_*.json"))
     probe_path = probe_paths[-1] if probe_paths else None
     probe: dict[str, Any] = {}
@@ -145,23 +145,23 @@ def _runpod_gate(root: Path) -> dict[str, Any]:
 
 def _schema_gate(root: Path) -> dict[str, Any]:
     schema_files = {
-        "benchmark": (root / "schemas/portrait_benchmark_report.schema.json", sorted((root / ".runtime/reports/benchmarks").glob("*.json"))),
-        "comparison": (root / "schemas/portrait_comparison_report.schema.json", sorted((root / ".runtime/reports/comparisons").glob("*.json"))),
+        "benchmark": (root / "docs/schemas/portrait_benchmark_report.schema.json", sorted((root / ".runtime/reports/benchmarks").glob("*.json"))),
+        "comparison": (root / "docs/schemas/portrait_comparison_report.schema.json", sorted((root / ".runtime/reports/comparisons").glob("*.json"))),
     }
     schema_fixtures = {
         "audit": (
-            root / "schemas/portrait_audit.schema.json",
+            root / "docs/schemas/portrait_audit.schema.json",
             [("in-memory:blocked-audit", independent_audit_blocked("schema-fixture", "candidate-000"))],
         ),
         "job_input": (
-            root / "schemas/portrait_job_input.schema.json",
+            root / "docs/schemas/portrait_job_input.schema.json",
             [
                 (
                     "in-memory:valid-job-input",
                     {
                         "schema_version": "1.0.0",
                         "job_id": "fixture-001",
-                        "execution_profile": "agent_local_nvidia_16gb",
+                        "execution_profile": "hoi4_portraits_agent_local_nvidia_16gb",
                         "source_image_path": "fixtures/source.png",
                         "source_provenance": {"source_class": "user_provided", "attribution": "user", "rights_notes": "authorized"},
                         "subject_identity": {"record_name": "Example", "identity_classification": "approved_fictional_subject", "real_person": False},
@@ -181,14 +181,14 @@ def _schema_gate(root: Path) -> dict[str, Any]:
             ],
         ),
         "prompt_job_input": (
-            root / "schemas/portrait_prompt_job_input.schema.json",
+            root / "docs/schemas/portrait_prompt_job_input.schema.json",
             [
                 (
                     "in-memory:valid-prompt-job-input",
                     {
                         "schema_version": "1.0.0",
                         "job_id": "prompt-fixture-001",
-                        "execution_profile": "agent_prompt_local_nvidia_16gb",
+                        "execution_profile": "hoi4_portraits_agent_no_input_local_nvidia_16gb",
                         "prompt": "hoi4_portrait, a fictional leader with short hair and a neutral expression",
                         "seed_policy": {"mode": "derived"},
                         "candidate_count": 1,
@@ -199,7 +199,7 @@ def _schema_gate(root: Path) -> dict[str, Any]:
             ],
         ),
         "job_output": (
-            root / "schemas/portrait_job_output.schema.json",
+            root / "docs/schemas/portrait_job_output.schema.json",
             [
                 (
                     "in-memory:blocked-job-output",
@@ -208,7 +208,7 @@ def _schema_gate(root: Path) -> dict[str, Any]:
             ],
         ),
         "visual_audit_evidence": (
-            root / "schemas/visual_audit_evidence.schema.json",
+            root / "docs/schemas/visual_audit_evidence.schema.json",
             [
                 (
                     "in-memory:valid-visual-audit-evidence",
@@ -250,7 +250,7 @@ def _schema_gate(root: Path) -> dict[str, Any]:
             ],
         ),
         "visual_reference_set": (
-            root / "schemas/visual_reference_set.schema.json",
+            root / "docs/schemas/visual_reference_set.schema.json",
             [
                 (
                     "in-memory:valid-visual-reference-set",
@@ -342,8 +342,8 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
     experiments = {
         "status": matrix["status"],
         "matrix_id": matrix["matrix_id"],
-        "matrix_path": "experiments/identity_style_matrix.json",
-        "matrix_written": (root_path / "experiments" / "identity_style_matrix.json").is_file(),
+        "matrix_path": "docs/reference/identity_style_matrix.json",
+        "matrix_written": (root_path / "docs" / "reference" / "identity_style_matrix.json").is_file(),
         "execution_status": matrix_execution["execution_status"],
         "required_eight_step_turbo_status": matrix_execution["required_eight_step_turbo_status"],
         "execution_report_path": ".runtime/reports/identity_style_matrix_execution.json",

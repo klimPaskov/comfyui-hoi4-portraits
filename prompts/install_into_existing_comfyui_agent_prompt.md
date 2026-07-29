@@ -5,12 +5,12 @@ Install this repository into the existing ComfyUI checkout supplied by the user.
 Do not replace or reinstall ComfyUI.
 
 1. Find the existing ComfyUI folder and its Python environment.
-2. Use `local_nvidia_16gb` for a Windows PC with a 12–16 GB NVIDIA GPU.
-3. Use `full_power_gpu` for RunPod.
+2. Use `hoi4_portraits_local_nvidia_16gb` for a Windows PC with a 12–16 GB NVIDIA GPU.
+3. Use `hoi4_portraits_full_power_gpu` for RunPod.
 4. On Windows, run:
 
    ```text
-   powershell -ExecutionPolicy Bypass -File scripts/install_windows.ps1 -ComfyUIRoot "<COMFYUI_ROOT>" -Profile local_nvidia_16gb
+   powershell -ExecutionPolicy Bypass -File scripts/install_windows.ps1 -ComfyUIRoot "<COMFYUI_ROOT>" -Profile hoi4_portraits_local_nvidia_16gb
    ```
 
 5. On RunPod, run:

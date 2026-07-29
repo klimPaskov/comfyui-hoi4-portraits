@@ -343,7 +343,7 @@ def _copy_workflows(
 
 
 def _copy_example_input(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
-    source = ROOT / "docs" / "assets" / "examples" / "preparation_before.png"
+    source = ROOT / "docs" / "assets" / "examples" / "nora_before.png"
     destination = comfy_root / "input" / "hoi4_preparation_example.png"
     if not source.is_file():
         raise InstallError(ExitCode.SOURCE_INVALID, "the portrait preparation example image is missing")
@@ -361,9 +361,9 @@ def _install_autoprompter_runtime(
     workflow_ids: set[str] | None = None,
 ) -> None:
     if (
-        profile != "local_nvidia_16gb"
+        profile != "hoi4_portraits_local_nvidia_16gb"
         or os.name != "nt"
-        or (workflow_ids is not None and "local_nvidia_16gb" not in workflow_ids)
+        or (workflow_ids is not None and "hoi4_portraits_local_nvidia_16gb" not in workflow_ids)
     ):
         return
     lock = json.loads((ROOT / "dependencies" / "autoprompter_runtime.lock.json").read_text(encoding="utf-8"))
@@ -415,7 +415,7 @@ def install(
 ) -> list[dict[str, Any]]:
     if not comfy_root.is_dir() or not (comfy_root / "main.py").is_file():
         raise InstallError(ExitCode.WORKFLOW_INVALID, "existing ComfyUI root must contain main.py")
-    if profile not in {"local_nvidia_16gb", "full_power_gpu"}:
+    if profile not in {"hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu"}:
         raise InstallError(ExitCode.INPUT_SCHEMA_INVALID, "existing-runtime install supports local NVIDIA or full-power GPU profiles")
     actions: list[dict[str, Any]] = [{
         "action": "existing_comfyui_verified",
@@ -424,22 +424,22 @@ def install(
         "comfyui_downloaded": False,
     }]
     identity_workflows = {
-        "local_nvidia_16gb",
-        "full_power_gpu",
-        "agent_local_nvidia_16gb",
-        "agent_full_power_gpu",
+        "hoi4_portraits_local_nvidia_16gb",
+        "hoi4_portraits_full_power_gpu",
+        "hoi4_portraits_agent_local_nvidia_16gb",
+        "hoi4_portraits_agent_full_power_gpu",
     }
     if workflow_ids is None or workflow_ids.intersection(identity_workflows):
         _checkout_krea_nodes(comfy_root, actions)
-    if workflow_ids is None or workflow_ids.intersection(identity_workflows | {"prepare_portrait_for_hoi4"}):
+    if workflow_ids is None or workflow_ids.intersection(identity_workflows | {"hoi4_portraits_prepare_portrait_for_hoi4"}):
         _checkout_ddcolor_nodes(comfy_root, actions)
     _copy_project_nodes(comfy_root, actions)
     model_lock = json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8"))
     generation_workflows = identity_workflows | {
-        "prompt_local_nvidia_16gb",
-        "prompt_full_power_gpu",
-        "agent_prompt_local_nvidia_16gb",
-        "agent_prompt_full_power_gpu",
+        "hoi4_portraits_no_input_local_nvidia_16gb",
+        "hoi4_portraits_no_input_full_power_gpu",
+        "hoi4_portraits_agent_no_input_local_nvidia_16gb",
+        "hoi4_portraits_agent_no_input_full_power_gpu",
     }
     if workflow_ids is None or workflow_ids.intersection(generation_workflows):
         _restore_project_owned_files(model_lock, actions)
@@ -450,7 +450,7 @@ def install(
     _install_autoprompter_runtime(profile, actions, workflow_ids)
     _merge_extra_model_paths(comfy_root, actions)
     _install_hoi4_backgrounds(hoi4_root, actions)
-    if workflow_ids is None or "prepare_portrait_for_hoi4" in workflow_ids:
+    if workflow_ids is None or "hoi4_portraits_prepare_portrait_for_hoi4" in workflow_ids:
         _copy_example_input(comfy_root, actions)
     _copy_workflows(comfy_root, actions, workflow_ids)
     return actions
@@ -459,7 +459,7 @@ def install(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Install HOI4 portrait workflows into an existing ComfyUI checkout.")
     parser.add_argument("--comfyui-root", required=True, type=Path)
-    parser.add_argument("--profile", required=True, choices=["local_nvidia_16gb", "full_power_gpu"])
+    parser.add_argument("--profile", required=True, choices=["hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu"])
     parser.add_argument(
         "--hoi4-root",
         type=Path,
@@ -469,15 +469,15 @@ def main(argv: list[str] | None = None) -> int:
         "--workflow",
         action="append",
         choices=[
-            "local_nvidia_16gb",
-            "full_power_gpu",
-            "agent_local_nvidia_16gb",
-            "agent_full_power_gpu",
-            "prompt_local_nvidia_16gb",
-            "prompt_full_power_gpu",
-            "agent_prompt_local_nvidia_16gb",
-            "agent_prompt_full_power_gpu",
-            "prepare_portrait_for_hoi4",
+            "hoi4_portraits_local_nvidia_16gb",
+            "hoi4_portraits_full_power_gpu",
+            "hoi4_portraits_agent_local_nvidia_16gb",
+            "hoi4_portraits_agent_full_power_gpu",
+            "hoi4_portraits_no_input_local_nvidia_16gb",
+            "hoi4_portraits_no_input_full_power_gpu",
+            "hoi4_portraits_agent_no_input_local_nvidia_16gb",
+            "hoi4_portraits_agent_no_input_full_power_gpu",
+            "hoi4_portraits_prepare_portrait_for_hoi4",
         ],
         help="copy only the named UI workflow; repeat to install more than one",
     )

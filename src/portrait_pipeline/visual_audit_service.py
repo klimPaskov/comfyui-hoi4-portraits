@@ -28,8 +28,8 @@ from .util import atomic_json_write, canonical_hash, project_root, relative_safe
 
 
 VISUAL_AUDIT_LOCK_PATH = "dependencies/visual_audit_runtime.lock.json"
-VISUAL_REFERENCE_SCHEMA_PATH = "schemas/visual_reference_set.schema.json"
-VISUAL_EVIDENCE_SCHEMA_PATH = "schemas/visual_audit_evidence.schema.json"
+VISUAL_REFERENCE_SCHEMA_PATH = "docs/schemas/visual_reference_set.schema.json"
+VISUAL_EVIDENCE_SCHEMA_PATH = "docs/schemas/visual_audit_evidence.schema.json"
 
 
 class VisualAuditServiceError(RuntimeError):
@@ -236,9 +236,9 @@ def _parse_model_response(response: dict[str, Any]) -> dict[str, Any]:
 class VisualAuditProducer:
     """One-shot local producer for a separate visual-audit process."""
 
-    def __init__(self, root: str | Path | None = None, *, runtime_profile: str = "local_nvidia_16gb", port: int | None = None, auditor_process_id: str | None = None):
+    def __init__(self, root: str | Path | None = None, *, runtime_profile: str = "hoi4_portraits_local_nvidia_16gb", port: int | None = None, auditor_process_id: str | None = None):
         self.root = project_root(root)
-        if runtime_profile not in {"local_nvidia_16gb", "full_power_gpu"}:
+        if runtime_profile not in {"hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu"}:
             raise VisualAuditServiceError("unsupported visual-audit runtime profile")
         self.runtime_profile = runtime_profile
         self.binary_path: Path | None = None
@@ -246,7 +246,7 @@ class VisualAuditProducer:
         self.model_path: Path | None = None
         self._hf_model: Any = None
         self._hf_processor: Any = None
-        if runtime_profile == "local_nvidia_16gb":
+        if runtime_profile == "hoi4_portraits_local_nvidia_16gb":
             self.lock, self.rubric_path, self.binary_path, self.model_path, self.mmproj_path_text = _load_runtime_lock(self.root)
             self.model = self.lock["model"]
             self.runtime = self.lock["runtime"]
@@ -266,7 +266,7 @@ class VisualAuditProducer:
         return self.mmproj_path_text
 
     def start(self) -> None:
-        if self.runtime_profile == "full_power_gpu":
+        if self.runtime_profile == "hoi4_portraits_full_power_gpu":
             try:
                 import torch  # type: ignore
                 from transformers import AutoProcessor, Qwen3VLForConditionalGeneration  # type: ignore
@@ -317,7 +317,7 @@ class VisualAuditProducer:
         raise VisualAuditServiceError("visual-audit llama-server health readiness timed out")
 
     def stop(self) -> None:
-        if self.runtime_profile == "full_power_gpu":
+        if self.runtime_profile == "hoi4_portraits_full_power_gpu":
             self._hf_model = None
             self._hf_processor = None
             try:
@@ -395,7 +395,7 @@ class VisualAuditProducer:
         input_paths = [source, candidate, *reference["images"]]
         self.start()
         try:
-            if self.runtime_profile == "full_power_gpu":
+            if self.runtime_profile == "hoi4_portraits_full_power_gpu":
                 model_response = _parse_model_response(self._complete_full_power(rubric, input_paths))
             else:
                 content = [{"type": "text", "text": rubric}, {"type": "image_url", "image_url": {"url": _image_data_url(source)}}]
@@ -456,7 +456,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--auditor-process-id", default=None)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--port", type=int, default=None)
-    parser.add_argument("--runtime-profile", choices=("local_nvidia_16gb", "full_power_gpu"), default="local_nvidia_16gb")
+    parser.add_argument("--runtime-profile", choices=("hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu"), default="hoi4_portraits_local_nvidia_16gb")
     args = parser.parse_args(argv)
     try:
         producer = VisualAuditProducer(runtime_profile=args.runtime_profile, port=args.port, auditor_process_id=args.auditor_process_id)

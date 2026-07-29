@@ -23,10 +23,10 @@ SUPPORTED_PREPROCESSING_SUFFIXES = {
     ".task": "mediapipe_task",
 }
 PROFILE_RUNTIME_LOCKS = {
-    "local_nvidia_16gb": "windows_amd64_cuda",
-    "agent_local_nvidia_16gb": "windows_amd64_cuda",
-    "full_power_gpu": "linux_amd64_cuda",
-    "agent_full_power_gpu": "linux_amd64_cuda",
+    "hoi4_portraits_local_nvidia_16gb": "windows_amd64_cuda",
+    "hoi4_portraits_agent_local_nvidia_16gb": "windows_amd64_cuda",
+    "hoi4_portraits_full_power_gpu": "linux_amd64_cuda",
+    "hoi4_portraits_agent_full_power_gpu": "linux_amd64_cuda",
 }
 
 
@@ -553,11 +553,11 @@ def _autoprompter_preflight(root: Path, profile: str | None) -> dict[str, Any]:
     local_pass = report.get("status") == "PASS_HEALTH_AND_NEGATIVE_VALIDATION" and report.get("negative_validation", {}).get("status") == "PASS" and local_health.get("status") == "PASS"
     full_power = report.get("full_power", {}) if isinstance(report, dict) else {}
     full_format_pass = full_power.get("status") == "PASS_FORMAT_AND_PROCESSOR_SCHEMA"
-    if profile in {"agent_local_nvidia_16gb", "agent_full_power_gpu"}:
+    if profile in {"hoi4_portraits_agent_local_nvidia_16gb", "hoi4_portraits_agent_full_power_gpu"}:
         status = "NOT_APPLICABLE"
-    elif profile == "local_nvidia_16gb":
+    elif profile == "hoi4_portraits_local_nvidia_16gb":
         status = "PASS" if local_pass and full_format_pass else "BLOCKED"
-    elif profile == "full_power_gpu":
+    elif profile == "hoi4_portraits_full_power_gpu":
         status = "PASS_FORMAT_ONLY_REMOTE_EXECUTION_UNVERIFIED" if full_format_pass else "BLOCKED"
     else:
         status = "PASS_LOCAL_AND_FULL_POWER_FORMAT_ONLY" if local_pass and full_format_pass else "BLOCKED"
@@ -790,8 +790,8 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     })
     runtime_version_info = runtime_probe.get("python_version_info", [])
     python_floor_ok = isinstance(runtime_version_info, list) and len(runtime_version_info) >= 2 and tuple(runtime_version_info[:2]) >= (3, 10)
-    nvidia_local_profile = profile in {"local_nvidia_16gb", "agent_local_nvidia_16gb"}
-    runpod_profile = profile in {"full_power_gpu", "agent_full_power_gpu"}
+    nvidia_local_profile = profile in {"hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_agent_local_nvidia_16gb"}
+    runpod_profile = profile in {"hoi4_portraits_full_power_gpu", "hoi4_portraits_agent_full_power_gpu"}
     local_profile = nvidia_local_profile
     comfy_runtime_present = bool(comfy_path) or (root_path / "comfyui" / "main.py").is_file()
     required_accelerator = "CUDA" if (nvidia_local_profile or runpod_profile) else "not_selected"
@@ -852,7 +852,7 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
 
     model_entries = model_lock.get("models", [])
     local_model_files = [str(path.relative_to(root_path)) for path in model_root.rglob("*") if path.is_file()] if model_root.is_dir() else []
-    model_profile = {"agent_local_nvidia_16gb": "local_nvidia_16gb"}.get(profile, profile)
+    model_profile = {"hoi4_portraits_agent_local_nvidia_16gb": "hoi4_portraits_local_nvidia_16gb"}.get(profile, profile)
     model_evidence = _model_artifact_preflight(root_path, model_root, model_entries, model_profile)
     model_evidence["requested_profile"] = profile
     model_status = model_evidence["status"]

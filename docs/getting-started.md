@@ -13,16 +13,16 @@
 ```powershell
 git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
 cd comfyui-hoi4-portraits
-.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Profile local_nvidia_16gb
+.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Profile hoi4_portraits_local_nvidia_16gb
 ```
 
 Start ComfyUI:
 
 ```powershell
-.\scripts\start_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Workflow local_nvidia_16gb
+.\scripts\start_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Workflow hoi4_portraits_local_nvidia_16gb
 ```
 
-Open `Workflows > hoi4_portraits`, then select `local_nvidia_16gb`.
+Open `Workflows > hoi4_portraits`, then select `hoi4_portraits_local_nvidia_16gb`.
 
 ## Human workflow
 
@@ -35,15 +35,15 @@ Open `Workflows > hoi4_portraits`, then select `local_nvidia_16gb`.
 
 ## Agent workflow
 
-Agent workflows read their portrait description from the job file. Use `agent_prompt_local_nvidia_16gb` with [`prompt_job_input.example.json`](examples/prompt_job_input.example.json) to generate a portrait without an input image.
+Agent workflows read their portrait description from the job file. Use `hoi4_portraits_agent_no_input_local_nvidia_16gb` with [`prompt_job_input.example.json`](examples/prompt_job_input.example.json) to generate a portrait without an input image.
 
 ## Prompt workflow
 
-Open `prompt_local_nvidia_16gb` to create a fictional leader without an input image. Choose the portrait controls, add an optional character brief, and queue the workflow. Change the seed to create another portrait.
+Open `hoi4_portraits_no_input_local_nvidia_16gb` to create a fictional leader without an input image. Choose the portrait controls, add an optional character brief, and queue the workflow. Change the seed to create another portrait.
 
 ## Prepare an old photo
 
-Source-image workflows prepare full-body, group, faded, and black-and-white photos automatically. Open `prepare_portrait_for_hoi4` only when you want the prepared PNG without running portrait generation.
+Source-image workflows prepare full-body, group, faded, and black-and-white photos automatically. Open `hoi4_portraits_prepare_portrait_for_hoi4` only when you want the prepared PNG without running portrait generation.
 
 1. Choose the image.
 2. Set the face number to `0` for the largest detected face, or try `1`, `2`, and so on for another person.

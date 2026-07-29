@@ -16,15 +16,15 @@ The source-portrait workflows use these visible stages:
 
 The background selector defaults to **Keep current background**. Choose **Scientist laboratory** or **Operative background** to use either local game background. Each option has its own preview.
 
-Local workflows target 12–16 GB NVIDIA GPUs. The RunPod setup includes the source-photo, prompt-only, and portrait-preparation workflows. The agent full-power workflow remains available in the repository for automated jobs.
+Local workflows target 12–16 GB NVIDIA GPUs. The RunPod setup installs the source-photo, no-input, agent, and portrait-preparation workflows.
 
 The local graph includes visible 12 GB and 8 GB GGUF placeholders for users who want to add smaller compatible models.
 
-## Prepare a difficult source photo
+## Prepare a portrait
 
 Every source-image workflow automatically crops to head and shoulders, uses DDColor for black-and-white photos, and applies light contrast and sharpness before generation.
 
-`prepare_portrait_for_hoi4` offers that preparation as a separate utility and stops before Krea and the HOI4 style LoRA.
+`hoi4_portraits_prepare_portrait_for_hoi4` offers that preparation as a separate utility and stops before Krea and the HOI4 style LoRA.
 
 The default choice keeps the source background. The optional scientist and operative choices use `tools/art/scientists_BG.png` and `tools/art/portrait_operative_background.png` from your installed copy of Hearts of Iron IV. The installer copies them locally when the game is found; the game assets are not included in the download.
 
@@ -39,7 +39,7 @@ Color treatment defaults to **Automatic**. Existing color photos keep their orig
 
 ## Generate a fictional leader
 
-The prompt workflows do not need an input image. Choose the character controls, enter an optional brief, and change the seed for a new leader.
+The no-input workflows do not need an input image. Choose the character controls, enter an optional brief, and change the seed for a new leader.
 
 1. Create a fictional portrait idea
 2. Load Krea 2 Turbo
@@ -49,7 +49,7 @@ The prompt workflows do not need an input image. Choose the character controls, 
 
 The prompt builder is text-only and runs without a separate language or vision model.
 
-The matching `agent_prompt_local_nvidia_16gb` and `agent_prompt_full_power_gpu` workflows receive the complete prompt from a job file and contain no prompt builder. Start with [`prompt_job_input.example.json`](examples/prompt_job_input.example.json).
+The matching `hoi4_portraits_agent_no_input_local_nvidia_16gb` and `hoi4_portraits_agent_no_input_full_power_gpu` workflows receive the complete prompt from a job file and contain no prompt builder. Start with [`prompt_job_input.example.json`](examples/prompt_job_input.example.json).
 
 ## Agent workflows
 

@@ -37,12 +37,12 @@ from portrait_pipeline.workflow_validation import validate_all_workflows  # noqa
 
 def _capability_report(profile: str, preflight: dict[str, Any], actions: list[dict[str, Any]]) -> dict[str, Any]:
     required_workflows = (
-        "workflows/human/local_nvidia_16gb/local_nvidia_16gb.json",
-        "workflows/human/full_power_gpu/full_power_gpu.json",
-        "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json",
-        "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
-        "workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.json",
-        "workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.json",
+        "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json",
+        "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json",
+        "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.json",
+        "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.json",
+        "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json",
+        "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json",
     )
     return {"schema_version": "1.0.0", "profile": profile, "created_at": datetime.now(timezone.utc).isoformat(), "status": preflight["status"], "installation_permitted": preflight["installation_permitted"], "preflight": preflight, "actions": actions, "workflow_validation": validate_all_workflows(ROOT) if all((ROOT / path).is_file() for path in required_workflows) else []}
 
@@ -160,8 +160,8 @@ def _install_python_environment(lock: dict[str, Any], runtime_lock: dict[str, An
         actions.append(_run_checked([uv, "venv", str(venv), "--python", os.environ.get("PORTRAIT_PYTHON", "3.12")], ROOT))
     python = _python_executable(venv)
     profile_for_lock = {
-        "local_nvidia_16gb": "agent_local_nvidia_16gb",
-        "full_power_gpu": "full_power_gpu",
+        "hoi4_portraits_local_nvidia_16gb": "hoi4_portraits_agent_local_nvidia_16gb",
+        "hoi4_portraits_full_power_gpu": "hoi4_portraits_full_power_gpu",
     }.get(profile, profile)
     profile_lock_id = PROFILE_RUNTIME_LOCKS.get(profile_for_lock)
     profile_lock = runtime_lock.get("profile_locks", {}).get(profile_lock_id, {}) if profile_lock_id else {}
@@ -289,17 +289,17 @@ def _restore_models(
     workflow_ids: set[str] | None = None,
 ) -> None:
     workflow_profiles = workflow_ids or {
-        "local_nvidia_16gb": {
-            "local_nvidia_16gb",
-            "agent_local_nvidia_16gb",
-            "prompt_local_nvidia_16gb",
-            "agent_prompt_local_nvidia_16gb",
+        "hoi4_portraits_local_nvidia_16gb": {
+            "hoi4_portraits_local_nvidia_16gb",
+            "hoi4_portraits_agent_local_nvidia_16gb",
+            "hoi4_portraits_no_input_local_nvidia_16gb",
+            "hoi4_portraits_agent_no_input_local_nvidia_16gb",
         },
-        "full_power_gpu": {
-            "full_power_gpu",
-            "agent_full_power_gpu",
-            "prompt_full_power_gpu",
-            "agent_prompt_full_power_gpu",
+        "hoi4_portraits_full_power_gpu": {
+            "hoi4_portraits_full_power_gpu",
+            "hoi4_portraits_agent_full_power_gpu",
+            "hoi4_portraits_no_input_full_power_gpu",
+            "hoi4_portraits_agent_no_input_full_power_gpu",
         },
     }[profile]
     for entry in model_lock.get("models", []):
@@ -473,8 +473,8 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
     if not lora_path.is_file() or sha256_file(lora_path) != "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1":
         raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "immutable style LoRA is missing or changed")
     actions.append({"action": "immutable_style_lora_verified", "path": str(lora_path.relative_to(ROOT)), "sha256": sha256_file(lora_path)})
-    if profile == "local_nvidia_16gb":
-        sidecar_profile = "local_nvidia_16gb"
+    if profile == "hoi4_portraits_local_nvidia_16gb":
+        sidecar_profile = "hoi4_portraits_local_nvidia_16gb"
         sidecar_check = _run_checked([str(python), "-m", "portrait_pipeline.autoprompter_service", "--root", str(ROOT), "--profile", sidecar_profile, "--check-only"], ROOT)
         actions.append({"action": "autoprompter_runtime_lock_verified", "status": "PASS", "result": sidecar_check})
     _write_extra_model_paths(comfy_root, actions)
@@ -517,7 +517,7 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Fail-closed HOI4 portrait bootstrap.")
-    parser.add_argument("--profile", required=True, choices=["local_nvidia_16gb", "full_power_gpu"])
+    parser.add_argument("--profile", required=True, choices=["hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu"])
     parser.add_argument("--restore-from-lock", action="store_true")
     parser.add_argument(
         "--private-qualification-install",
@@ -535,12 +535,12 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     run_id = f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:8]}"
     profile_name = args.profile
-    if profile_name == "full_power_gpu":
-        preflight_profile = "full_power_gpu"
-    elif profile_name == "local_nvidia_16gb":
-        preflight_profile = "agent_local_nvidia_16gb"
+    if profile_name == "hoi4_portraits_full_power_gpu":
+        preflight_profile = "hoi4_portraits_full_power_gpu"
+    elif profile_name == "hoi4_portraits_local_nvidia_16gb":
+        preflight_profile = "hoi4_portraits_agent_local_nvidia_16gb"
     else:
-        preflight_profile = "agent_local_nvidia_16gb"
+        preflight_profile = "hoi4_portraits_agent_local_nvidia_16gb"
     preflight = collect_preflight(ROOT, profile=preflight_profile)
     actions: list[dict[str, Any]] = []
     qualification_allowed, qualification_refusals = _qualification_install_decision(
@@ -566,7 +566,7 @@ def main(argv: list[str] | None = None) -> int:
         print("preflight passed but --restore-from-lock is required; no install performed", file=sys.stderr)
         _write_bootstrap_log(run_id, args.profile, [{"action": "installation", "status": "SKIPPED_RESTORE_FLAG_REQUIRED"}], "BLOCKED")
         return int(ExitCode.DEPENDENCY_MISSING)
-    if profile_name == "full_power_gpu":
+    if profile_name == "hoi4_portraits_full_power_gpu":
         actions.append({"action": "runpod_bootstrap", "status": "BLOCKED_NOT_CONNECTED", "reason": "Full-power profiles execute in RunPod; local bootstrap does not download remote model weights or expose a remote runtime."})
         report = _capability_report(args.profile, preflight, actions)
         output_dir = ROOT / ".runtime" / "reports"

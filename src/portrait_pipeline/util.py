@@ -14,9 +14,9 @@ def project_root(start: str | Path | None = None) -> Path:
         start = Path.cwd()
     path = Path(start).resolve()
     for candidate in (path, *path.parents):
-        if (candidate / "schemas" / "portrait_job_input.schema.json").is_file():
+        if (candidate / "docs" / "schemas" / "portrait_job_input.schema.json").is_file():
             return candidate
-    raise FileNotFoundError("project root with schemas/ was not found")
+    raise FileNotFoundError("project root with docs/schemas/ was not found")
 
 
 def sha256_file(path: str | Path, chunk_size: int = 1024 * 1024) -> str:

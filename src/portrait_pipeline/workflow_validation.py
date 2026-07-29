@@ -125,14 +125,14 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
 def validate_all_workflows(root: str | Path | None = None) -> list[dict[str, Any]]:
     root_path = project_root(root)
     specs = {
-        "local_nvidia_16gb": ("workflows/human/local_nvidia_16gb/local_nvidia_16gb.json", "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json"),
-        "full_power_gpu": ("workflows/human/full_power_gpu/full_power_gpu.json", "workflows/human/full_power_gpu/full_power_gpu.api.json"),
-        "agent_local_nvidia_16gb": ("workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json", "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json"),
-        "agent_full_power_gpu": ("workflows/agent/full_power_gpu/agent_full_power_gpu.json", "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json"),
-        "prompt_local_nvidia_16gb": ("workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.json", "workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.api.json"),
-        "prompt_full_power_gpu": ("workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.json", "workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.api.json"),
-        "agent_prompt_local_nvidia_16gb": ("workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.json", "workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.api.json"),
-        "agent_prompt_full_power_gpu": ("workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.json", "workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.api.json"),
-        "prepare_portrait_for_hoi4": ("workflows/human/prepare_portrait/prepare_portrait_for_hoi4.json", "workflows/human/prepare_portrait/prepare_portrait_for_hoi4.api.json"),
+        "hoi4_portraits_local_nvidia_16gb": ("workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json", "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.api.json"),
+        "hoi4_portraits_full_power_gpu": ("workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json", "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.api.json"),
+        "hoi4_portraits_agent_local_nvidia_16gb": ("workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.json", "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.api.json"),
+        "hoi4_portraits_agent_full_power_gpu": ("workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.json", "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.api.json"),
+        "hoi4_portraits_no_input_local_nvidia_16gb": ("workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json", "workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.api.json"),
+        "hoi4_portraits_no_input_full_power_gpu": ("workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json", "workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.api.json"),
+        "hoi4_portraits_agent_no_input_local_nvidia_16gb": ("workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json", "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.api.json"),
+        "hoi4_portraits_agent_no_input_full_power_gpu": ("workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json", "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.api.json"),
+        "hoi4_portraits_prepare_portrait_for_hoi4": ("workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json", "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json"),
     }
     return [validate_workflow_file(workflow_id, root_path / ui, root_path / api, root_path) for workflow_id, (ui, api) in specs.items()]

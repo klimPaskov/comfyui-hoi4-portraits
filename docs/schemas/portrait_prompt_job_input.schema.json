@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/portrait_prompt_job_input.schema.json",
+  "title": "HOI4 Prompt-Only Portrait Job Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_id",
+    "execution_profile",
+    "prompt",
+    "seed_policy",
+    "candidate_count",
+    "retry_limit",
+    "final_output_stem"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{2,63}$"
+    },
+    "execution_profile": {
+      "enum": [
+        "hoi4_portraits_agent_no_input_local_nvidia_16gb",
+        "hoi4_portraits_agent_no_input_full_power_gpu"
+      ]
+    },
+    "prompt": {
+      "type": "string",
+      "pattern": "^hoi4_portrait,",
+      "maxLength": 1200
+    },
+    "seed_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "fixed",
+            "derived",
+            "random_recorded"
+          ]
+        },
+        "seed": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        }
+      }
+    },
+    "candidate_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12
+    },
+    "retry_limit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "final_output_stem": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_]{1,95}$"
+    },
+    "subject_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_name"
+      ],
+      "properties": {
+        "record_name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "allowed_autoprompt_claims": {
+      "type": "object"
+    }
+  }
+}

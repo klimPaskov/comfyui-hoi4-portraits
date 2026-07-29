@@ -216,7 +216,7 @@ def validate_job_policy(job: dict[str, Any], root: str | Path | None = None) -> 
 
 def validate_job(job: dict[str, Any], root: str | Path | None = None) -> list[ValidationIssue]:
     root_path = project_root(root)
-    issues = validate_schema(job, root_path / "schemas" / "portrait_job_input.schema.json")
+    issues = validate_schema(job, root_path / "docs" / "schemas" / "portrait_job_input.schema.json")
     if not issues:
         issues.extend(validate_job_policy(job, root_path))
     return issues
@@ -224,7 +224,7 @@ def validate_job(job: dict[str, Any], root: str | Path | None = None) -> list[Va
 
 def validate_audit(audit: dict[str, Any], root: str | Path | None = None) -> list[ValidationIssue]:
     root_path = project_root(root)
-    issues = validate_schema(audit, root_path / "schemas" / "portrait_audit.schema.json")
+    issues = validate_schema(audit, root_path / "docs" / "schemas" / "portrait_audit.schema.json")
     if audit.get("auditor", {}).get("independent_from_producer") is not True:
         issues.append(ValidationIssue("auditor.independent_from_producer", "must be true"))
     gates = audit.get("hard_gates", {})

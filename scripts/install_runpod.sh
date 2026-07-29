@@ -46,12 +46,16 @@ echo "Installing nodes, models, LoRA, and workflows..."
 PYTHONPATH="${PROJECT_ROOT}/src:${PROJECT_ROOT}" \
   "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_into_existing_comfyui.py" \
   --comfyui-root "${COMFY_ROOT}" \
-  --profile full_power_gpu \
-  --workflow full_power_gpu \
-  --workflow agent_full_power_gpu \
-  --workflow prompt_full_power_gpu \
-  --workflow agent_prompt_full_power_gpu \
-  --workflow prepare_portrait_for_hoi4
+  --profile hoi4_portraits_full_power_gpu \
+  --workflow hoi4_portraits_local_nvidia_16gb \
+  --workflow hoi4_portraits_full_power_gpu \
+  --workflow hoi4_portraits_agent_local_nvidia_16gb \
+  --workflow hoi4_portraits_agent_full_power_gpu \
+  --workflow hoi4_portraits_no_input_local_nvidia_16gb \
+  --workflow hoi4_portraits_no_input_full_power_gpu \
+  --workflow hoi4_portraits_agent_no_input_local_nvidia_16gb \
+  --workflow hoi4_portraits_agent_no_input_full_power_gpu \
+  --workflow hoi4_portraits_prepare_portrait_for_hoi4
 
 echo
 echo "Setup complete."
@@ -59,5 +63,5 @@ echo "Models: ${PROJECT_ROOT}/models"
 echo "LoRA: ${PROJECT_ROOT}/loras/hoi4_portrait_new_style_lora.safetensors"
 echo "Workflows: ${COMFY_ROOT}/user/default/workflows/hoi4_portraits"
 echo
-echo "Start the human full-power workflow with:"
+echo "Start ComfyUI with:"
 echo "  ${PROJECT_ROOT}/scripts/start_runpod.sh \"${COMFY_ROOT}\""

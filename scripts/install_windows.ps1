@@ -2,8 +2,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ComfyUIRoot,
 
-    [ValidateSet("local_nvidia_16gb", "full_power_gpu")]
-    [string]$Profile = "local_nvidia_16gb",
+    [ValidateSet("hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu")]
+    [string]$Profile = "hoi4_portraits_local_nvidia_16gb",
 
     [string]$HOI4Root = ""
 )

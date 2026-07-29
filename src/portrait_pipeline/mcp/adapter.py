@@ -114,10 +114,10 @@ class PortraitMcpService:
 
     def _workflow_path(self, workflow_id: str, api: bool = True) -> Path:
         paths = {
-            "local_nvidia_16gb": "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json",
-            "full_power_gpu": "workflows/human/full_power_gpu/full_power_gpu.api.json",
-            "agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
-            "agent_full_power_gpu": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
+            "hoi4_portraits_local_nvidia_16gb": "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.api.json",
+            "hoi4_portraits_full_power_gpu": "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.api.json",
+            "hoi4_portraits_agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.api.json",
+            "hoi4_portraits_agent_full_power_gpu": "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.api.json",
         }
         if workflow_id not in paths:
             raise AdapterError(ExitCode.WORKFLOW_INVALID, f"unknown workflow id: {workflow_id}")

@@ -1,0 +1,149 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "hoi4_preparation_example.png"
+    }
+  },
+  "2": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "1",
+        0
+      ]
+    }
+  },
+  "3": {
+    "class_type": "HOI4PortraitCrop",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "face_index": 0,
+      "framing": "Normal head and shoulders"
+    }
+  },
+  "4": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "3",
+        0
+      ]
+    }
+  },
+  "5": {
+    "class_type": "DDColor_Colorize",
+    "inputs": {
+      "image": [
+        "3",
+        0
+      ],
+      "model_input_size": 512,
+      "checkpoint": "ddcolor_modelscope.pth"
+    }
+  },
+  "6": {
+    "class_type": "HOI4UseColorWhenNeeded",
+    "inputs": {
+      "original": [
+        "3",
+        0
+      ],
+      "colorized": [
+        "5",
+        0
+      ],
+      "color_choice": "Automatic"
+    }
+  },
+  "7": {
+    "class_type": "HOI4FinishPreparedPortrait",
+    "inputs": {
+      "image": [
+        "6",
+        0
+      ],
+      "contrast": 1.04,
+      "sharpness": 1.08
+    }
+  },
+  "8": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "5",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "7",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "7",
+        0
+      ],
+      "filename_prefix": "hoi4_portraits/prepared"
+    }
+  },
+  "_meta": {
+    "schema_version": "1.0.0",
+    "graph_spec_version": "graph-spec-1.5.0",
+    "workflow_id": "hoi4_portraits_prepare_portrait_for_hoi4",
+    "profile": "hoi4_portraits_prepare_portrait_for_hoi4",
+    "execution_profile": "hoi4_portraits_prepare_portrait_for_hoi4",
+    "workflow_kind": "portrait_preparation",
+    "route": "local_or_runpod",
+    "human_workflow": true,
+    "autoprompter": false,
+    "autoprompter_instruction_path": null,
+    "autoprompter_instruction_sha256": null,
+    "prompt_source": "none",
+    "prompt_model": null,
+    "source_image_required": true,
+    "vision_model_required": false,
+    "required_groups": [
+      "01 Choose image",
+      "02 Crop portrait",
+      "03 Color and enhance",
+      "04 Preview and save"
+    ],
+    "required_core_nodes": [
+      "LoadImage",
+      "PreviewImage",
+      "SaveImage"
+    ],
+    "required_krea_nodes": [],
+    "required_project_nodes": [
+      "HOI4FinishPreparedPortrait",
+      "HOI4PortraitCrop",
+      "HOI4UseColorWhenNeeded"
+    ],
+    "preview_nodes": [
+      "Input image preview",
+      "Head-and-shoulders preview",
+      "Colorized preview",
+      "Prepared portrait preview"
+    ],
+    "final_preview_save_pair": {
+      "preview_node_id": 9,
+      "save_node_id": 10,
+      "shared_source_node_id": 7,
+      "shared_source_slot": 0,
+      "policy": "preview_and_save_use_the_same_prepared_portrait"
+    },
+    "low_memory_placeholder_nodes": []
+  }
+}

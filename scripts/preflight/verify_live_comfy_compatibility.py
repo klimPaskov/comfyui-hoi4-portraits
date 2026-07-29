@@ -26,15 +26,15 @@ from portrait_pipeline.util import atomic_json_write, project_root  # noqa: E402
 
 
 WORKFLOW_PATHS = {
-    "local_nvidia_16gb": "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json",
-    "full_power_gpu": "workflows/human/full_power_gpu/full_power_gpu.api.json",
-    "agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
-    "agent_full_power_gpu": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-    "prompt_local_nvidia_16gb": "workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.api.json",
-    "prompt_full_power_gpu": "workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.api.json",
-    "agent_prompt_local_nvidia_16gb": "workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.api.json",
-    "agent_prompt_full_power_gpu": "workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.api.json",
-    "prepare_portrait_for_hoi4": "workflows/human/prepare_portrait/prepare_portrait_for_hoi4.api.json",
+    "hoi4_portraits_local_nvidia_16gb": "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.api.json",
+    "hoi4_portraits_full_power_gpu": "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.api.json",
+    "hoi4_portraits_agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.api.json",
+    "hoi4_portraits_agent_full_power_gpu": "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.api.json",
+    "hoi4_portraits_no_input_local_nvidia_16gb": "workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.api.json",
+    "hoi4_portraits_no_input_full_power_gpu": "workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.api.json",
+    "hoi4_portraits_agent_no_input_local_nvidia_16gb": "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.api.json",
+    "hoi4_portraits_agent_no_input_full_power_gpu": "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.api.json",
+    "hoi4_portraits_prepare_portrait_for_hoi4": "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json",
 }
 FORBIDDEN_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 REQUIRED_CORE_NODES = {
@@ -162,11 +162,11 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
 
     workflow_ids = [profile] if profile else list(WORKFLOW_PATHS)
     identity_graph_required = any(workflow_id not in {
-        "prompt_local_nvidia_16gb",
-        "prompt_full_power_gpu",
-        "agent_prompt_local_nvidia_16gb",
-        "agent_prompt_full_power_gpu",
-        "prepare_portrait_for_hoi4",
+        "hoi4_portraits_no_input_local_nvidia_16gb",
+        "hoi4_portraits_no_input_full_power_gpu",
+        "hoi4_portraits_agent_no_input_local_nvidia_16gb",
+        "hoi4_portraits_agent_no_input_full_power_gpu",
+        "hoi4_portraits_prepare_portrait_for_hoi4",
     } for workflow_id in workflow_ids)
     required_nodes = sorted(REQUIRED_CORE_NODES | ({*REQUIRED_KREA_NODES} if identity_graph_required else set()) | {REQUIRED_HUMAN_PREVIEW_NODE})
     node_presence = {name: name in object_info for name in required_nodes}
