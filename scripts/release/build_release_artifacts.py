@@ -162,7 +162,10 @@ def main(argv: list[str] | None = None) -> int:
     windows_path = _build_windows(zip_path, version)
     artifacts = [zip_path, windows_path]
     sums_path = DIST / "SHA256SUMS.txt"
-    sums_path.write_text("".join(f"{_sha256(path)}  {path.name}\n" for path in artifacts), encoding="utf-8")
+    sums_payload = "".join(f"{_sha256(path)}  {path.name}\n" for path in artifacts).encode("utf-8")
+    sums_path.write_bytes(sums_payload)
+    if b"\r" in sums_path.read_bytes():
+        raise RuntimeError("release checksum file must use portable LF line endings")
     print(json.dumps({
         "status": "PASS",
         "version": version,
