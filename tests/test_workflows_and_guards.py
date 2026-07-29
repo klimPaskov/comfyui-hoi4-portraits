@@ -261,7 +261,11 @@ class WorkflowAndGuardTests(unittest.TestCase):
     def test_geometry_calibration_evidence_is_measured_but_not_approved(self):
         evidence = json.loads((self.root / "docs/preflight/geometry_calibration_2026-07-29.json").read_text(encoding="utf-8"))
         self.assertEqual(evidence["status"], "GEOMETRY_EVIDENCE_MEASURED_PRODUCTION_BLOCKED")
+        self.assertGreaterEqual(evidence["fixture_set"]["accepted_single_face_count"], 20)
         self.assertGreater(evidence["measurement_count"], 0)
+        self.assertGreaterEqual(evidence["measurement_count"], 100)
+        self.assertEqual(evidence["model"]["face_crop_detector"]["name"], "YuNet")
+        self.assertIn("landmarker_input_policy", evidence["fixture_set"])
         self.assertFalse(evidence["proposed_operating_point"]["approved"])
 
     def test_identity_style_matrix_execution_is_explicitly_fail_closed(self):

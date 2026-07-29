@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Measure pinned geometry, pose, expression, and asymmetry evidence.
 
-This command measures invariance of the pinned MediaPipe Face Landmarker on
-private, rights-cleared fixture images and deterministic preprocessing
-variants.  It is evidence only: it never edits ``config/identity_thresholds``
-and cannot authorize a production candidate.
+This command measures invariance of the pinned YuNet face crop plus MediaPipe
+Face Landmarker on private, rights-cleared fixture images and deterministic
+preprocessing variants.  It is evidence only: it never edits
+``config/identity_thresholds`` and cannot authorize a production candidate.
 """
 
 from __future__ import annotations
@@ -127,6 +127,56 @@ def _landmarker(root: Path) -> tuple[Any, dict[str, Any]]:
     }
 
 
+def _face_crop_detector(root: Path) -> tuple[Any, dict[str, Any]]:
+    import cv2  # type: ignore
+
+    lock = json.loads((root / "dependencies" / "preprocessing_lock.json").read_text(encoding="utf-8"))
+    entries = {item.get("name"): item for item in lock.get("dependencies", []) if isinstance(item, dict)}
+    entry = entries["YuNet"]
+    model_path = root / str(entry["destination_path"])
+    if not model_path.is_file():
+        raise FileNotFoundError("pinned YuNet face detector is missing")
+    return cv2.FaceDetectorYN.create(str(model_path), "", (320, 320), 0.6, 0.3, 5000), {
+        "name": "YuNet",
+        "revision": entry.get("source_revision"),
+        "sha256": entry.get("artifact_sha256"),
+    }
+
+
+def _single_face_crop(detector: Any, image: Any) -> Any:
+    """Make the landmarker input deterministic for portrait-scale fixtures.
+
+    MediaPipe is intentionally run on a YuNet-selected crop for every source
+    and variant.  This preserves the exactly-one-face rule while avoiding a
+    full-canvas detector failure on small or low-contrast archive scans.  The
+    crop policy is fixed and recorded in the aggregate report; no bbox is
+    emitted.
+    """
+    import cv2  # type: ignore
+    import numpy as np  # type: ignore
+
+    rgb = np.ascontiguousarray(image, dtype=np.uint8)
+    if rgb.ndim != 3 or rgb.shape[2] != 3:
+        raise ValueError("expected an RGB image")
+    bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    height, width = bgr.shape[:2]
+    detector.setInputSize((int(width), int(height)))
+    _, faces = detector.detect(bgr)
+    count = 0 if faces is None else len(faces)
+    if count != 1:
+        raise ValueError(f"YuNet expected exactly one face, found {count}")
+    x, y, face_width, face_height = [float(value) for value in faces[0][:4]]
+    margin = 0.65 * max(face_width, face_height)
+    left = max(0, int(math.floor(x - margin)))
+    top = max(0, int(math.floor(y - margin)))
+    right = min(width, int(math.ceil(x + face_width + margin)))
+    bottom = min(height, int(math.ceil(y + face_height + margin)))
+    crop = rgb[top:bottom, left:right]
+    if crop.size == 0 or crop.shape[0] < 32 or crop.shape[1] < 32:
+        raise ValueError("YuNet face crop is too small")
+    return np.ascontiguousarray(crop, dtype=np.uint8)
+
+
 def _detect(landmarker: Any, image: Any) -> tuple[Any, dict[str, float], Any]:
     import mediapipe as mp  # type: ignore
     import numpy as np  # type: ignore
@@ -221,7 +271,8 @@ def calibrate(root: Path, fixture_dir: Path) -> dict[str, Any]:
 
     paths = _fixture_paths(root, fixture_dir)
     manifest = _manifest_summary(root, fixture_dir, paths)
-    landmarker, model = _landmarker(root)
+    landmarker, landmarker_model = _landmarker(root)
+    detector, detector_model = _face_crop_detector(root)
     accepted = 0
     rejected: list[dict[str, Any]] = []
     measurements: list[dict[str, Any]] = []
@@ -231,12 +282,13 @@ def calibrate(root: Path, fixture_dir: Path) -> dict[str, Any]:
                 with Image.open(path) as opened:
                     image = opened.convert("RGB")
                 source = np.asarray(image, dtype=np.uint8)
-                source_features = _detect(landmarker, source)
+                source_features = _detect(landmarker, _single_face_crop(detector, source))
                 accepted += 1
                 bgr = cv2.cvtColor(source, cv2.COLOR_RGB2BGR)
                 for variant_index, variant in enumerate(_variants(bgr)):
                     variant_rgb = cv2.cvtColor(variant, cv2.COLOR_BGR2RGB)
-                    measured = _signals(source_features, _detect(landmarker, variant_rgb))
+                    variant_crop = _single_face_crop(detector, variant_rgb)
+                    measured = _signals(source_features, _detect(landmarker, variant_crop))
                     measured["fixture_id"] = path.stem
                     measured["variant_index"] = variant_index
                     measurements.append(measured)
@@ -279,13 +331,17 @@ def calibrate(root: Path, fixture_dir: Path) -> dict[str, Any]:
         "status": "GEOMETRY_EVIDENCE_MEASURED_PRODUCTION_BLOCKED" if measurements and manifest["status"] == "PASS" else "BLOCKED_GEOMETRY_CALIBRATION_INCOMPLETE",
         "source_class": "public_domain_primary_archive",
         "rights_policy": "private_local_calibration_only; no source portrait or landmark vector is written to Git",
-        "model": model,
+        "model": {
+            "landmarker": landmarker_model,
+            "face_crop_detector": detector_model,
+        },
         "fixture_set": {
             "fixture_count": len(paths),
             "accepted_single_face_count": accepted,
             "rejected_count": len(rejected),
             "rejected": rejected,
             "variant_policy": ["resize_round_trip", "grayscale", "brightness_0.82", "jpeg_quality_62"],
+            "landmarker_input_policy": "pinned_yunet_single_face_crop; bbox margin is 0.65x the larger face dimension; no bbox is emitted",
         },
         "fixture_manifest": manifest,
         "measurement_count": len(measurements),
@@ -315,7 +371,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Calibration ID: `{report['calibration_id']}`",
         "- Source collection: [Library of Congress Daguerreotypes Collection](https://www.loc.gov/collections/daguerreotypes/about-this-collection/)",
         "",
-        "This is preprocessing-invariance evidence. It does not modify the tracked threshold file and cannot authorize a portrait, PNG, DDS, or mod integration output.",
+        "This is preprocessing-invariance evidence using a pinned YuNet-selected face crop before MediaPipe landmarking. It does not modify the tracked threshold file and cannot authorize a portrait, PNG, DDS, or mod integration output.",
         "",
         f"- Fixtures: `{report['fixture_set']['fixture_count']}`; exactly-one-face: `{report['fixture_set']['accepted_single_face_count']}`",
         f"- Measurements: `{report['measurement_count']}`; private manifest: `{report['fixture_manifest']['status']}`",
