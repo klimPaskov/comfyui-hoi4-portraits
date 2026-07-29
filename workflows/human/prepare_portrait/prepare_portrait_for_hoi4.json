@@ -623,7 +623,7 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.2.0",
+    "graph_spec_version": "graph-spec-1.4.1",
     "workflow_id": "prepare_portrait_for_hoi4",
     "profile": "prepare_portrait_for_hoi4",
     "execution_profile": "prepare_portrait_for_hoi4",

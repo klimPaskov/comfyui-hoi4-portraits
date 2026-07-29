@@ -27,7 +27,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from portrait_pipeline.constants import ExitCode  # noqa: E402
+from portrait_pipeline.constants import (  # noqa: E402
+    HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH,
+    HOI4_OPERATIVE_BACKGROUND_SHA256,
+    HOI4_OPERATIVE_BACKGROUND_SOURCE_PATH,
+    HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH,
+    HOI4_SCIENTIST_BACKGROUND_SHA256,
+    HOI4_SCIENTIST_BACKGROUND_SOURCE_PATH,
+    ExitCode,
+)
 from portrait_pipeline.util import atomic_json_write, sha256_file  # noqa: E402
 from scripts.install_support import (  # noqa: E402
     InstallError,
@@ -110,6 +118,100 @@ def _checkout_ddcolor_nodes(comfy_root: Path, actions: list[dict[str, Any]]) -> 
         actions,
     )
     actions.append({"action": "ddcolor_nodes_verified", "path": str(destination), "revision": actual})
+
+
+def _hoi4_install_candidates(explicit_root: Path | None) -> list[Path]:
+    candidates: list[Path] = []
+    if explicit_root is not None:
+        candidates.append(explicit_root.expanduser())
+    environment_root = os.environ.get("HOI4_GAME_ROOT")
+    if environment_root:
+        candidates.append(Path(environment_root).expanduser())
+    if os.name == "nt":
+        for variable in ("ProgramFiles(x86)", "ProgramFiles"):
+            base = os.environ.get(variable)
+            if base:
+                candidates.append(Path(base) / "Steam" / "steamapps" / "common" / "Hearts of Iron IV")
+    else:
+        candidates.extend([
+            Path.home() / ".steam" / "steam" / "steamapps" / "common" / "Hearts of Iron IV",
+            Path.home() / "Library" / "Application Support" / "Steam" / "steamapps" / "common" / "Hearts of Iron IV",
+            Path("/workspace/Hearts of Iron IV"),
+        ])
+    unique: list[Path] = []
+    for candidate in candidates:
+        if candidate not in unique:
+            unique.append(candidate)
+    return unique
+
+
+def _install_hoi4_backgrounds(
+    explicit_root: Path | None,
+    actions: list[dict[str, Any]],
+) -> None:
+    assets = (
+        (
+            "scientist",
+            HOI4_SCIENTIST_BACKGROUND_SOURCE_PATH,
+            HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH,
+            HOI4_SCIENTIST_BACKGROUND_SHA256,
+        ),
+        (
+            "operative",
+            HOI4_OPERATIVE_BACKGROUND_SOURCE_PATH,
+            HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH,
+            HOI4_OPERATIVE_BACKGROUND_SHA256,
+        ),
+    )
+    game_roots = _hoi4_install_candidates(explicit_root)
+    for name, source_path, runtime_path, expected_sha256 in assets:
+        destination = ROOT / runtime_path
+        if destination.is_file():
+            actual = sha256_file(destination)
+            if actual != expected_sha256:
+                raise InstallError(ExitCode.MODEL_CHECKSUM_MISMATCH, f"local HOI4 {name} background checksum mismatch")
+            actions.append({
+                "action": f"hoi4_{name}_background_verified",
+                "path": str(destination),
+                "sha256": actual,
+            })
+            continue
+        copied = False
+        for game_root in game_roots:
+            source = game_root / source_path
+            if not source.is_file():
+                continue
+            actual = sha256_file(source)
+            if actual != expected_sha256:
+                raise InstallError(
+                    ExitCode.MODEL_CHECKSUM_MISMATCH,
+                    f"installed HOI4 {name} background does not match the supported game asset",
+                )
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+            if sha256_file(destination) != expected_sha256:
+                raise InstallError(ExitCode.MODEL_CHECKSUM_MISMATCH, f"copied HOI4 {name} background checksum mismatch")
+            actions.append({
+                "action": f"hoi4_{name}_background_copied",
+                "source": str(source),
+                "path": str(destination),
+                "sha256": actual,
+            })
+            copied = True
+            break
+        if copied:
+            continue
+        if explicit_root is not None:
+            raise InstallError(
+                ExitCode.BACKGROUND_UNRESOLVED,
+                f"HOI4 {name} background was not found at {explicit_root / source_path}",
+            )
+        actions.append({
+            "action": f"hoi4_{name}_background_optional",
+            "status": "NOT_FOUND",
+            "expected_game_path": source_path,
+            "default_background_choice": "Keep current background",
+        })
 
 
 def _source_files() -> list[tuple[Path, Path]]:
@@ -261,7 +363,7 @@ def _install_autoprompter_runtime(
     if (
         profile != "local_nvidia_16gb"
         or os.name != "nt"
-        or (workflow_ids is not None and "human_local_nvidia_16gb" not in workflow_ids)
+        or (workflow_ids is not None and "local_nvidia_16gb" not in workflow_ids)
     ):
         return
     lock = json.loads((ROOT / "dependencies" / "autoprompter_runtime.lock.json").read_text(encoding="utf-8"))
@@ -309,6 +411,7 @@ def install(
     comfy_root: Path,
     profile: str,
     workflow_ids: set[str] | None = None,
+    hoi4_root: Path | None = None,
 ) -> list[dict[str, Any]]:
     if not comfy_root.is_dir() or not (comfy_root / "main.py").is_file():
         raise InstallError(ExitCode.WORKFLOW_INVALID, "existing ComfyUI root must contain main.py")
@@ -321,20 +424,22 @@ def install(
         "comfyui_downloaded": False,
     }]
     identity_workflows = {
-        "human_local_nvidia_16gb",
-        "human_full_power_gpu",
+        "local_nvidia_16gb",
+        "full_power_gpu",
         "agent_local_nvidia_16gb",
         "agent_full_power_gpu",
     }
     if workflow_ids is None or workflow_ids.intersection(identity_workflows):
         _checkout_krea_nodes(comfy_root, actions)
-    if workflow_ids is None or "prepare_portrait_for_hoi4" in workflow_ids:
+    if workflow_ids is None or workflow_ids.intersection(identity_workflows | {"prepare_portrait_for_hoi4"}):
         _checkout_ddcolor_nodes(comfy_root, actions)
     _copy_project_nodes(comfy_root, actions)
     model_lock = json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8"))
     generation_workflows = identity_workflows | {
-        "human_prompt_local_nvidia_16gb",
-        "human_prompt_full_power_gpu",
+        "prompt_local_nvidia_16gb",
+        "prompt_full_power_gpu",
+        "agent_prompt_local_nvidia_16gb",
+        "agent_prompt_full_power_gpu",
     }
     if workflow_ids is None or workflow_ids.intersection(generation_workflows):
         _restore_project_owned_files(model_lock, actions)
@@ -344,6 +449,7 @@ def install(
     _restore_preprocessing_source_artifacts(preprocessing_lock, actions)
     _install_autoprompter_runtime(profile, actions, workflow_ids)
     _merge_extra_model_paths(comfy_root, actions)
+    _install_hoi4_backgrounds(hoi4_root, actions)
     if workflow_ids is None or "prepare_portrait_for_hoi4" in workflow_ids:
         _copy_example_input(comfy_root, actions)
     _copy_workflows(comfy_root, actions, workflow_ids)
@@ -355,15 +461,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--comfyui-root", required=True, type=Path)
     parser.add_argument("--profile", required=True, choices=["local_nvidia_16gb", "full_power_gpu"])
     parser.add_argument(
+        "--hoi4-root",
+        type=Path,
+        help="optional Hearts of Iron IV directory used to copy the scientist and operative portrait backgrounds",
+    )
+    parser.add_argument(
         "--workflow",
         action="append",
         choices=[
-            "human_local_nvidia_16gb",
-            "human_full_power_gpu",
+            "local_nvidia_16gb",
+            "full_power_gpu",
             "agent_local_nvidia_16gb",
             "agent_full_power_gpu",
-            "human_prompt_local_nvidia_16gb",
-            "human_prompt_full_power_gpu",
+            "prompt_local_nvidia_16gb",
+            "prompt_full_power_gpu",
+            "agent_prompt_local_nvidia_16gb",
+            "agent_prompt_full_power_gpu",
             "prepare_portrait_for_hoi4",
         ],
         help="copy only the named UI workflow; repeat to install more than one",
@@ -374,6 +487,7 @@ def main(argv: list[str] | None = None) -> int:
             args.comfyui_root.expanduser().resolve(),
             args.profile,
             set(args.workflow) if args.workflow else None,
+            args.hoi4_root,
         )
     except InstallError as exc:
         print(json.dumps({"status": "BLOCKED", "exit_code": int(exc.code), "error": str(exc)}, indent=2), file=sys.stderr)

@@ -19,10 +19,10 @@ cd comfyui-hoi4-portraits
 Start ComfyUI:
 
 ```powershell
-.\scripts\start_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Workflow human_local_nvidia_16gb
+.\scripts\start_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Workflow local_nvidia_16gb
 ```
 
-Open `Workflows > hoi4_portraits`, then select `human_local_nvidia_16gb`.
+Open `Workflows > hoi4_portraits`, then select `local_nvidia_16gb`.
 
 ## Human workflow
 
@@ -35,15 +35,15 @@ Open `Workflows > hoi4_portraits`, then select `human_local_nvidia_16gb`.
 
 ## Agent workflow
 
-The agent workflow reads its portrait description from the job file.
+Agent workflows read their portrait description from the job file. Use `agent_prompt_local_nvidia_16gb` with [`prompt_job_input.example.json`](examples/prompt_job_input.example.json) to generate a portrait without an input image.
 
 ## Prompt workflow
 
-Open `human_prompt_local_nvidia_16gb` to create a fictional leader without an input image. Choose the portrait controls, add an optional character brief, and queue the workflow. Change the seed to create another portrait.
+Open `prompt_local_nvidia_16gb` to create a fictional leader without an input image. Choose the portrait controls, add an optional character brief, and queue the workflow. Change the seed to create another portrait.
 
 ## Prepare an old photo
 
-Open `prepare_portrait_for_hoi4` when the source is a full-body, group, faded, or black-and-white photo.
+Source-image workflows prepare full-body, group, faded, and black-and-white photos automatically. Open `prepare_portrait_for_hoi4` only when you want the prepared PNG without running portrait generation.
 
 1. Choose the image.
 2. Set the face number to `0` for the largest detected face, or try `1`, `2`, and so on for another person.

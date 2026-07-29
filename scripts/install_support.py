@@ -108,14 +108,16 @@ def _restore_models(
 ) -> None:
     workflow_profiles = workflow_ids or {
         "local_nvidia_16gb": {
-            "human_local_nvidia_16gb",
+            "local_nvidia_16gb",
             "agent_local_nvidia_16gb",
-            "human_prompt_local_nvidia_16gb",
+            "prompt_local_nvidia_16gb",
+            "agent_prompt_local_nvidia_16gb",
         },
         "full_power_gpu": {
-            "human_full_power_gpu",
+            "full_power_gpu",
             "agent_full_power_gpu",
-            "human_prompt_full_power_gpu",
+            "prompt_full_power_gpu",
+            "agent_prompt_full_power_gpu",
         },
     }[profile]
     for entry in model_lock.get("models", []):

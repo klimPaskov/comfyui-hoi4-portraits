@@ -26,12 +26,14 @@ from portrait_pipeline.util import atomic_json_write, project_root  # noqa: E402
 
 
 WORKFLOW_PATHS = {
-    "human_local_nvidia_16gb": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
-    "human_full_power_gpu": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
+    "local_nvidia_16gb": "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json",
+    "full_power_gpu": "workflows/human/full_power_gpu/full_power_gpu.api.json",
     "agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
     "agent_full_power_gpu": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-    "human_prompt_local_nvidia_16gb": "workflows/human/prompt_local_nvidia_16gb/human_prompt_local_nvidia_16gb.api.json",
-    "human_prompt_full_power_gpu": "workflows/human/prompt_full_power_gpu/human_prompt_full_power_gpu.api.json",
+    "prompt_local_nvidia_16gb": "workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.api.json",
+    "prompt_full_power_gpu": "workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.api.json",
+    "agent_prompt_local_nvidia_16gb": "workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.api.json",
+    "agent_prompt_full_power_gpu": "workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.api.json",
     "prepare_portrait_for_hoi4": "workflows/human/prepare_portrait/prepare_portrait_for_hoi4.api.json",
 }
 FORBIDDEN_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
@@ -159,7 +161,13 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
     expected_revision = "2a610155821d670a2d8047e654e5fce96b790eb5"
 
     workflow_ids = [profile] if profile else list(WORKFLOW_PATHS)
-    identity_graph_required = any(workflow_id not in {"human_prompt_local_nvidia_16gb", "human_prompt_full_power_gpu", "prepare_portrait_for_hoi4"} for workflow_id in workflow_ids)
+    identity_graph_required = any(workflow_id not in {
+        "prompt_local_nvidia_16gb",
+        "prompt_full_power_gpu",
+        "agent_prompt_local_nvidia_16gb",
+        "agent_prompt_full_power_gpu",
+        "prepare_portrait_for_hoi4",
+    } for workflow_id in workflow_ids)
     required_nodes = sorted(REQUIRED_CORE_NODES | ({*REQUIRED_KREA_NODES} if identity_graph_required else set()) | {REQUIRED_HUMAN_PREVIEW_NODE})
     node_presence = {name: name in object_info for name in required_nodes}
     clip_contract = object_info.get("CLIPLoader", {}).get("input", {}).get("required", {}).get("type", [])
@@ -190,7 +198,13 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
     if background_registry.is_file():
         try:
             registry = json.loads(background_registry.read_text(encoding="utf-8"))
-            background_resolved = registry.get("registry_status") == "RESOLVED" and any(item.get("status") == "APPROVED" for item in registry.get("backgrounds", []))
+            background_resolved = registry.get("registry_status") in {
+                "RESOLVED",
+                "RESOLVED_LOCAL_GAME_COPY",
+            } and any(
+                item.get("status") in {"APPROVED", "APPROVED_LOCAL_COPY_REQUIRED"}
+                for item in registry.get("backgrounds", [])
+            )
         except json.JSONDecodeError:
             background_resolved = False
     execution = {

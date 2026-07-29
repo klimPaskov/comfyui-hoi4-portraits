@@ -1,6 +1,6 @@
 {
   "last_node_id": 13,
-  "last_link_id": 15,
+  "last_link_id": 16,
   "nodes": [
     {
       "id": 1,
@@ -78,6 +78,13 @@
           "name": "prompt_details",
           "type": "HOI4_META",
           "links": null
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "links": [
+            12
+          ]
         }
       ],
       "properties": {
@@ -232,7 +239,7 @@
           "name": "vae",
           "type": "VAE",
           "links": [
-            13
+            14
           ]
         }
       ],
@@ -559,7 +566,7 @@
         {
           "name": "seed",
           "type": "INT",
-          "link": null
+          "link": 12
         },
         {
           "name": "steps",
@@ -592,7 +599,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            12
+            13
           ]
         }
       ],
@@ -608,7 +615,6 @@
         ]
       },
       "widgets_values": [
-        0,
         8,
         1.0,
         "euler",
@@ -637,12 +643,12 @@
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 12
+          "link": 13
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 13
+          "link": 14
         }
       ],
       "outputs": [
@@ -650,8 +656,8 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            14,
-            15
+            15,
+            16
           ]
         }
       ],
@@ -683,7 +689,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 14
+          "link": 15
         }
       ],
       "outputs": [
@@ -721,7 +727,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 15
+          "link": 16
         },
         {
           "name": "filename_prefix",
@@ -833,6 +839,14 @@
     ],
     [
       12,
+      1,
+      2,
+      10,
+      4,
+      "INT"
+    ],
+    [
+      13,
       10,
       0,
       11,
@@ -840,7 +854,7 @@
       "LATENT"
     ],
     [
-      13,
+      14,
       4,
       0,
       11,
@@ -848,7 +862,7 @@
       "VAE"
     ],
     [
-      14,
+      15,
       11,
       0,
       12,
@@ -856,7 +870,7 @@
       "IMAGE"
     ],
     [
-      15,
+      16,
       11,
       0,
       13,
@@ -931,10 +945,10 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.2.0",
-    "workflow_id": "human_prompt_full_power_gpu",
-    "profile": "human_prompt_full_power_gpu",
-    "execution_profile": "human_prompt_full_power_gpu",
+    "graph_spec_version": "graph-spec-1.4.1",
+    "workflow_id": "prompt_full_power_gpu",
+    "profile": "prompt_full_power_gpu",
+    "execution_profile": "prompt_full_power_gpu",
     "workflow_kind": "random_text_to_image",
     "route": "runpod",
     "human_workflow": true,

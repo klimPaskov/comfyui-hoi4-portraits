@@ -14,7 +14,7 @@ The source-portrait workflows use these visible stages:
 8. Portrait generation
 9. Large previews and save
 
-The background selector defaults to **Keep current background**. Choose **Scientist laboratory** to use the included laboratory image, which is shown in its own preview.
+The background selector defaults to **Keep current background**. Choose **Scientist laboratory** or **Operative background** to use either local game background. Each option has its own preview.
 
 Local workflows target 12–16 GB NVIDIA GPUs. The RunPod setup includes the source-photo, prompt-only, and portrait-preparation workflows. The agent full-power workflow remains available in the repository for automated jobs.
 
@@ -22,7 +22,11 @@ The local graph includes visible 12 GB and 8 GB GGUF placeholders for users who 
 
 ## Prepare a difficult source photo
 
-`prepare_portrait_for_hoi4` stops before Krea and the HOI4 style LoRA. Use it to turn a full-body, group, faded, or black-and-white photo into a clean 832 × 1120 head-and-shoulders PNG.
+Every source-image workflow automatically crops to head and shoulders, uses DDColor for black-and-white photos, and applies light contrast and sharpness before generation.
+
+`prepare_portrait_for_hoi4` offers that preparation as a separate utility and stops before Krea and the HOI4 style LoRA.
+
+The default choice keeps the source background. The optional scientist and operative choices use `tools/art/scientists_BG.png` and `tools/art/portrait_operative_background.png` from your installed copy of Hearts of Iron IV. The installer copies them locally when the game is found; the game assets are not included in the download.
 
 The workflow has four stages:
 
@@ -44,6 +48,8 @@ The prompt workflows do not need an input image. Choose the character controls, 
 5. Preview and save
 
 The prompt builder is text-only and runs without a separate language or vision model.
+
+The matching `agent_prompt_local_nvidia_16gb` and `agent_prompt_full_power_gpu` workflows receive the complete prompt from a job file and contain no prompt builder. Start with [`prompt_job_input.example.json`](examples/prompt_job_input.example.json).
 
 ## Agent workflows
 

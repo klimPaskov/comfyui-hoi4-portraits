@@ -31,6 +31,7 @@ EXPLICIT_FILES = {
     "LICENSE",
     "README.md",
     "SETUP_WITH_CODING_AGENT.md",
+    "backgrounds/README.md",
     "config/background_registry.json",
     "config/background_registry.template.json",
     "docs/runpod.md",
@@ -48,6 +49,7 @@ EXPLICIT_FILES = {
     "prompts/install_into_existing_comfyui_agent_prompt.md",
     "prompts/random_portrait_instruction.txt",
     "schemas/portrait_job_input.schema.json",
+    "schemas/portrait_prompt_job_input.schema.json",
     "scripts/__init__.py",
     "scripts/install_support.py",
     "scripts/install_into_existing_comfyui.py",
@@ -66,7 +68,6 @@ EXPLICIT_FILES = {
     "src/portrait_pipeline/util.py",
 }
 INCLUDED_TREES = {
-    "backgrounds/bundled",
     "docs/assets",
     "docs/examples",
     "workflows",
@@ -87,9 +88,8 @@ def _selected_files() -> list[Path]:
         if any(part in FORBIDDEN_PARTS for part in relative.parts):
             continue
         if path.suffix.casefold() in FORBIDDEN_SUFFIXES:
-            bundled_background = relative.parts[:2] == ("backgrounds", "bundled") and path.suffix.casefold() in {".png", ".jpg", ".jpeg"}
             documentation_image = relative.parts[:2] == ("docs", "assets") and path.suffix.casefold() in {".png", ".jpg", ".jpeg"}
-            if not bundled_background and not documentation_image:
+            if not documentation_image:
                 raise RuntimeError(f"forbidden release artifact selected: {relative}")
         if path.suffix == ".pyc" or ".DS_Store" in relative.parts:
             continue

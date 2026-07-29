@@ -47,8 +47,10 @@ PYTHONPATH="${PROJECT_ROOT}/src:${PROJECT_ROOT}" \
   "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_into_existing_comfyui.py" \
   --comfyui-root "${COMFY_ROOT}" \
   --profile full_power_gpu \
-  --workflow human_full_power_gpu \
-  --workflow human_prompt_full_power_gpu \
+  --workflow full_power_gpu \
+  --workflow agent_full_power_gpu \
+  --workflow prompt_full_power_gpu \
+  --workflow agent_prompt_full_power_gpu \
   --workflow prepare_portrait_for_hoi4
 
 echo

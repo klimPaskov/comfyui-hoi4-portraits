@@ -16,8 +16,8 @@ from .workflow_validation import validate_all_workflows
 
 BENCHMARK_SCHEMA_VERSION = "1.0.0"
 BENCHMARK_REPORT_VERSION = "runtime-capability-2026-07-26.1"
-LOCAL_PROFILES = {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}
-REMOTE_PROFILES = {"human_full_power_gpu", "agent_full_power_gpu"}
+LOCAL_PROFILES = {"local_nvidia_16gb", "agent_local_nvidia_16gb"}
+REMOTE_PROFILES = {"full_power_gpu", "agent_full_power_gpu"}
 
 
 def _profile_applies(entry: dict[str, Any], profile: str) -> bool:
@@ -179,7 +179,7 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
         status_reason = "A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates."
         runtime_health["execution_evidence"] = execution_evidence
         workflow_load["execution_evidence"] = execution_evidence
-    if profile in {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}:
+    if profile in {"local_nvidia_16gb", "agent_local_nvidia_16gb"}:
         runtime_health["target_profile_accelerator"] = "CUDA"
         runtime_health["target_profile_accelerator_status"] = gate_statuses.get("local_runtime_capability")
     elif profile in REMOTE_PROFILES:

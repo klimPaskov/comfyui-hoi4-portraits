@@ -74,7 +74,7 @@
     ]
   },
   "profiles": {
-    "human_local_nvidia_16gb": {
+    "local_nvidia_16gb": {
       "candidate_budget": 2,
       "retry_limit": 2,
       "canvas": [
@@ -82,7 +82,7 @@
         1120
       ]
     },
-    "human_full_power_gpu": {
+    "full_power_gpu": {
       "candidate_budget": 6,
       "retry_limit": 2,
       "canvas": [

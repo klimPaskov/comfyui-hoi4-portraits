@@ -44,8 +44,8 @@ class JobStatus(_StringEnum):
 
 
 class ExecutionProfile(_StringEnum):
-    HUMAN_LOCAL_NVIDIA_16GB = "human_local_nvidia_16gb"
-    HUMAN_FULL_POWER_GPU = "human_full_power_gpu"
+    HUMAN_LOCAL_NVIDIA_16GB = "local_nvidia_16gb"
+    HUMAN_FULL_POWER_GPU = "full_power_gpu"
     AGENT_LOCAL_NVIDIA_16GB = "agent_local_nvidia_16gb"
     AGENT_FULL_POWER_GPU = "agent_full_power_gpu"
 
@@ -139,7 +139,7 @@ STAGES = [
     "COMPLETED",
 ]
 
-WORKFLOW_VERSION = "graph-spec-1.2.0"
+WORKFLOW_VERSION = "graph-spec-1.4.1"
 DEPENDENCY_LOCK_VERSION = "lock-2026-07-26.1"
 AUTOPROMPTER_PATH = "prompts/autoprompter_instruction.txt"
 RANDOM_PORTRAIT_PROMPT_PATH = "prompts/random_portrait_instruction.txt"
@@ -147,6 +147,14 @@ STYLE_LORA_PATH = "loras/hoi4_portrait_new_style_lora.safetensors"
 STYLE_LORA_SHA256 = "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
 STYLE_LORA_REPOSITORY = "Hoops-McCann/hoi4-portrait-new-style-lora"
 STYLE_LORA_REVISION = "2eb855d3176908af4329640c8d966a1b26fc3d6b"
+HOI4_SCIENTIST_BACKGROUND_REGISTRY_ID = "hoi4_scientist_portrait_background"
+HOI4_SCIENTIST_BACKGROUND_SOURCE_PATH = "tools/art/scientists_BG.png"
+HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH = "backgrounds/local/hoi4_scientists_BG.png"
+HOI4_SCIENTIST_BACKGROUND_SHA256 = "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e"
+HOI4_OPERATIVE_BACKGROUND_REGISTRY_ID = "hoi4_operative_portrait_background"
+HOI4_OPERATIVE_BACKGROUND_SOURCE_PATH = "tools/art/portrait_operative_background.png"
+HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH = "backgrounds/local/hoi4_operative_background.png"
+HOI4_OPERATIVE_BACKGROUND_SHA256 = "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d"
 # Calibration records may use either vocabulary used by the planning package
 # (`APPROVED`) or the registry vocabulary used by the runtime (`RESOLVED`).
 # Call sites still require a non-placeholder id, approver record, and

@@ -4,15 +4,15 @@
   "nodes": [
     {
       "id": 1,
-      "type": "HOI4RandomPortraitPrompt",
-      "title": "Create a fictional portrait idea",
+      "type": "HOI4PromptJobInput",
+      "title": "Load portrait description",
       "pos": [
         80,
         100
       ],
       "size": [
         460,
-        600
+        300
       ],
       "color": "#46375a",
       "bgcolor": "#654c80",
@@ -21,52 +21,37 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "character_brief",
+          "name": "execution_profile",
           "type": "STRING",
           "link": null
         },
         {
-          "name": "country_influence",
-          "type": "COMBO",
+          "name": "job_contract_path",
+          "type": "STRING",
           "link": null
         },
         {
-          "name": "role",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "presentation",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "age",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "expression",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "seed",
+          "name": "candidate_count",
           "type": "INT",
           "link": null
         },
         {
-          "name": "instruction_text",
-          "type": "STRING",
+          "name": "retry_limit",
+          "type": "INT",
           "link": null
         },
         {
-          "name": "instruction_path",
-          "type": "STRING",
+          "name": "seed_policy",
+          "type": "COMBO",
           "link": null
         }
       ],
       "outputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "links": null
+        },
         {
           "name": "prompt",
           "type": "STRING",
@@ -78,26 +63,31 @@
           "name": "prompt_details",
           "type": "HOI4_META",
           "links": null
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "links": [
+            12
+          ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Create a fictional portrait idea",
+        "Node name for S&R": "Load portrait description",
         "hoi4_group": "01 Portrait idea",
         "hoi4_locked_controls": [
-          "instruction_text",
-          "instruction_path"
+          "execution_profile",
+          "candidate_count",
+          "retry_limit",
+          "seed_policy"
         ]
       },
       "widgets_values": [
-        "",
-        "random",
-        "random",
-        "random",
-        "random",
-        "random",
-        0,
-        "Create one fictional Hearts of Iron IV leader portrait prompt from the user controls. There is no source image: do not describe, inspect, preserve, or infer the identity of any real person. Invent a coherent adult character and vary age, presentation, role, clothing, expression, and national visual influence from the selected controls and seed. Keep the character original, historically plausible for 1936–1948, shown from the chest up in a formal painted game portrait. Do not use a real person's name, copyrighted character, political symbol, extremist insignia, text, flag, watermark, or signature. Output exactly one English line beginning with \"hoi4_portrait,\" and no commentary.\n",
-        "prompts/random_portrait_instruction.txt"
+        "agent_prompt_local_nvidia_16gb",
+        "jobs/<job_id>/input.json",
+        2,
+        2,
+        "derived"
       ]
     },
     {
@@ -232,7 +222,7 @@
           "name": "vae",
           "type": "VAE",
           "links": [
-            13
+            14
           ]
         }
       ],
@@ -559,7 +549,7 @@
         {
           "name": "seed",
           "type": "INT",
-          "link": null
+          "link": 12
         },
         {
           "name": "steps",
@@ -592,7 +582,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            12
+            13
           ]
         }
       ],
@@ -608,7 +598,6 @@
         ]
       },
       "widgets_values": [
-        0,
         8,
         1.0,
         "euler",
@@ -637,12 +626,12 @@
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 12
+          "link": 13
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 13
+          "link": 14
         }
       ],
       "outputs": [
@@ -650,51 +639,12 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            14,
             15
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Build portrait image",
-        "hoi4_group": "05 Preview and save",
-        "hoi4_locked_controls": []
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 12,
-      "type": "PreviewImage",
-      "title": "Portrait preview",
-      "pos": [
-        1390,
-        850
-      ],
-      "size": [
-        380,
-        500
-      ],
-      "color": "#23465b",
-      "bgcolor": "#306985",
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 14
-        }
-      ],
-      "outputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Portrait preview",
         "hoi4_group": "05 Preview and save",
         "hoi4_locked_controls": []
       },
@@ -715,7 +665,7 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 12,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -754,7 +704,7 @@
     [
       2,
       1,
-      0,
+      1,
       6,
       0,
       "STRING"
@@ -833,6 +783,14 @@
     ],
     [
       12,
+      1,
+      3,
+      10,
+      4,
+      "INT"
+    ],
+    [
+      13,
       10,
       0,
       11,
@@ -840,20 +798,12 @@
       "LATENT"
     ],
     [
-      13,
+      14,
       4,
       0,
       11,
       1,
       "VAE"
-    ],
-    [
-      14,
-      11,
-      0,
-      12,
-      0,
-      "IMAGE"
     ],
     [
       15,
@@ -931,18 +881,18 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.2.0",
-    "workflow_id": "human_prompt_local_nvidia_16gb",
-    "profile": "human_prompt_local_nvidia_16gb",
-    "execution_profile": "human_prompt_local_nvidia_16gb",
+    "graph_spec_version": "graph-spec-1.4.1",
+    "workflow_id": "agent_prompt_local_nvidia_16gb",
+    "profile": "agent_prompt_local_nvidia_16gb",
+    "execution_profile": "agent_prompt_local_nvidia_16gb",
     "workflow_kind": "random_text_to_image",
     "route": "local_nvidia",
-    "human_workflow": true,
-    "autoprompter": true,
-    "autoprompter_kind": "deterministic_text_only",
-    "autoprompter_instruction_path": "prompts/random_portrait_instruction.txt",
-    "autoprompter_instruction_sha256": "4347ea1e11368eadf39c0e55b805b62e65c0bf6998b5fc8ad6560d7fbc832f7d",
-    "prompt_source": "text_only_autoprompter",
+    "human_workflow": false,
+    "autoprompter": false,
+    "autoprompter_kind": null,
+    "autoprompter_instruction_path": null,
+    "autoprompter_instruction_sha256": null,
+    "prompt_source": "job_contract",
     "prompt_model": null,
     "source_image_required": false,
     "vision_model_required": false,
@@ -966,9 +916,11 @@
       "05 Preview and save"
     ],
     "locked_controls": {
-      "Create a fictional portrait idea": [
-        "instruction_text",
-        "instruction_path"
+      "Load portrait description": [
+        "execution_profile",
+        "candidate_count",
+        "retry_limit",
+        "seed_policy"
       ],
       "Load Krea 2 Turbo": [
         "unet_name",
@@ -1009,7 +961,6 @@
       "EmptySD3LatentImage",
       "KSampler",
       "LoraLoaderModelOnly",
-      "PreviewImage",
       "SaveImage",
       "UNETLoader",
       "VAEDecode",
@@ -1018,17 +969,15 @@
     "required_krea_nodes": [],
     "required_project_nodes": [
       "HOI4KreaModelLoadBarrier",
-      "HOI4RandomPortraitPrompt"
+      "HOI4PromptJobInput"
     ],
-    "preview_nodes": [
-      "Portrait preview"
-    ],
+    "preview_nodes": [],
     "final_preview_save_pair": {
-      "preview_node_id": 12,
+      "preview_node_id": null,
       "save_node_id": 13,
       "shared_source_node_id": 11,
       "shared_source_slot": 0,
-      "policy": "preview_and_save_consume_the_same_decoded_image"
+      "policy": "agent_save_only"
     },
     "low_memory_placeholder_nodes": []
   },

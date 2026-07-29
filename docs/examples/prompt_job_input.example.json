@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "job_id": "fictional-leader-001",
+  "execution_profile": "agent_prompt_local_nvidia_16gb",
+  "prompt": "hoi4_portrait, a middle-aged civilian leader with short dark hair, a reserved expression, and a tailored 1940s suit",
+  "seed_policy": {
+    "mode": "derived"
+  },
+  "candidate_count": 1,
+  "retry_limit": 0,
+  "final_output_stem": "fictional_leader_001",
+  "subject_identity": {
+    "record_name": "Fictional Leader 001"
+  }
+}

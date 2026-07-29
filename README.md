@@ -10,19 +10,18 @@ Turn portrait photos into Hearts of Iron IV-style leader portraits with Krea 2 T
 
 | Workflow | Use | Prompt source |
 | --- | --- | --- |
-| [`human_local_nvidia_16gb`](workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Built-in portrait autoprompter |
+| [`local_nvidia_16gb`](workflows/human/local_nvidia_16gb/local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Built-in portrait autoprompter |
 | [`agent_local_nvidia_16gb`](workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Job file |
-| [`human_full_power_gpu`](workflows/human/full_power_gpu/human_full_power_gpu.json) | RunPod GPU | Built-in portrait autoprompter |
+| [`full_power_gpu`](workflows/human/full_power_gpu/full_power_gpu.json) | RunPod GPU | Built-in portrait autoprompter |
 | [`agent_full_power_gpu`](workflows/agent/full_power_gpu/agent_full_power_gpu.json) | RunPod GPU | Job file |
-| [`human_prompt_local_nvidia_16gb`](workflows/human/prompt_local_nvidia_16gb/human_prompt_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Text-only random portrait builder |
-| [`human_prompt_full_power_gpu`](workflows/human/prompt_full_power_gpu/human_prompt_full_power_gpu.json) | RunPod GPU, no input image | Text-only random portrait builder |
-| [`prepare_portrait_for_hoi4`](workflows/human/prepare_portrait/prepare_portrait_for_hoi4.json) | Prepare photos before portrait generation | Automatic crop, color, and enhancement |
+| [`prompt_local_nvidia_16gb`](workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Text-only random portrait builder |
+| [`prompt_full_power_gpu`](workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.json) | RunPod GPU, no input image | Text-only random portrait builder |
+| [`agent_prompt_local_nvidia_16gb`](workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Job file |
+| [`agent_prompt_full_power_gpu`](workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.json) | RunPod GPU, no input image | Job file |
 
-Human workflows include large previews for the source image, prepared portrait, background, and saved result. Agent workflows receive their prompt from the job JSON.
+Every source-image workflow automatically crops, colorizes black-and-white photos when needed, and lightly enhances the portrait before generation. Human workflows include large previews for the source image, prepared portrait, background, and saved result. Agent workflows receive their prompt from the job JSON.
 
 > Agent workflows are included for future automation. They are not currently practical through ComfyUI Cloud because Cloud does not yet provide a dependable way to install and run the required custom nodes.
-
-In the source-portrait workflow, **Keep current background** is the default. Choose **Scientist laboratory** to use the included CC0 laboratory background.
 
 ## Windows setup
 
@@ -41,7 +40,7 @@ Start the workflow:
 ```powershell
 .\scripts\start_windows.ps1 `
   -ComfyUIRoot "C:\path\to\ComfyUI" `
-  -Workflow human_local_nvidia_16gb
+  -Workflow local_nvidia_16gb
 ```
 
 The setup script installs the nodes and models in their correct folders and adds the workflows to ComfyUI.
@@ -63,24 +62,34 @@ Then start ComfyUI:
 To use the prompt-only workflow:
 
 ```bash
-/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh /workspace/ComfyUI human_prompt_full_power_gpu
+/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh /workspace/ComfyUI prompt_full_power_gpu
 ```
 
 See the [RunPod guide](docs/runpod.md) for folder locations and SSH access.
 
 ## Workflow overview
 
-![Complete human workflow](docs/assets/workflow_human_local_nvidia_16gb.png)
+![Complete human workflow](docs/assets/workflow_local_nvidia_16gb.png)
+
+The first row loads the source, selects the person, crops the portrait, and prepares it automatically:
+
+![Input, crop, and preparation steps](docs/assets/workflow_input_and_preparation.png)
+
+The final row applies the Krea identity reference and HOI4 LoRA, generates the portrait, then shows the same image that will be saved:
+
+![Generation, preview, and save steps](docs/assets/workflow_generation_and_save.png)
 
 ### Generate a new leader from a prompt
 
 Choose a country influence, role, age, presentation, expression, and seed. No input image or separate vision autoprompter is used.
 
-![Random portrait workflow](docs/assets/workflow_human_prompt_local_nvidia_16gb.png)
+Agents can use the matching `agent_prompt_*` workflow with the [prompt-only job example](docs/examples/prompt_job_input.example.json).
 
-### Prepare an old photo
+![Random portrait workflow](docs/assets/workflow_prompt_local_nvidia_16gb.png)
 
-Use `prepare_portrait_for_hoi4` for full-body, group, faded, or black-and-white photos. It finds the selected face, makes a head-and-shoulders crop, colorizes black-and-white images, applies light enhancement, and saves an 832 × 1120 PNG.
+### Portrait preparation utility
+
+The same preparation is already part of every source-image workflow. [`prepare_portrait_for_hoi4`](workflows/human/prepare_portrait/prepare_portrait_for_hoi4.json) is also available when you only want a clean 832 × 1120 head-and-shoulders PNG without generating a new portrait.
 
 ![Portrait preparation workflow](docs/assets/workflow_prepare_portrait_for_hoi4.png)
 
@@ -88,13 +97,11 @@ Use `prepare_portrait_for_hoi4` for full-body, group, faded, or black-and-white 
 | --- | --- |
 | ![Small black-and-white source](docs/assets/examples/preparation_before.png) | ![Cropped and colorized portrait](docs/assets/examples/preparation_after.png) |
 
-## Examples
+## Example
 
 | Before | After |
 | --- | --- |
-| ![Example 1 source](docs/assets/examples/01_before.jpg) | ![Example 1 output](docs/assets/examples/01_after.png) |
-| ![Example 2 source](docs/assets/examples/02_before.jpg) | ![Example 2 output](docs/assets/examples/02_after.png) |
-| ![Example 3 source](docs/assets/examples/03_before.jpg) | ![Example 3 output](docs/assets/examples/03_after.png) |
+| ![Nora Connolly-O'Brien source portrait](docs/assets/examples/nora_before.png) | ![Nora Connolly-O'Brien workflow output](docs/assets/examples/nora_after.png) |
 
 ## Guides
 

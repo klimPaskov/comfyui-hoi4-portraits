@@ -193,7 +193,7 @@ def validate_job_policy(job: dict[str, Any], root: str | Path | None = None) -> 
                 entries = [item for item in registry.get("backgrounds", []) if item.get("registry_id") == background.get("registry_id")]
                 if not entries or entries[0].get("sha256") != background.get("sha256"):
                     issues.append(ValidationIssue("approved_background", "does not match the approved registry", ExitCode.BACKGROUND_UNRESOLVED))
-                elif entries[0].get("status") != "APPROVED":
+                elif entries[0].get("status") not in {"APPROVED", "APPROVED_LOCAL_COPY_REQUIRED"}:
                     issues.append(ValidationIssue("approved_background", "registry entry is not approved", ExitCode.BACKGROUND_UNRESOLVED))
                 else:
                     expected_path = entries[0].get("runtime_path") or entries[0].get("path")

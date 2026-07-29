@@ -28,7 +28,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_required_and_local_nvidia_workflows_are_structurally_valid(self):
         reports = validate_all_workflows(self.root)
-        self.assertEqual(len(reports), 7)
+        self.assertEqual(len(reports), 9)
         for report in reports:
             self.assertEqual(report["structural_status"], "PASS", report)
 
@@ -39,7 +39,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
             manifest["runtime_status"],
             {"STRUCTURAL_ONLY_RUNTIME_BLOCKED", "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED"},
         )
-        self.assertEqual(len(manifest["workflows"]), 7)
+        self.assertEqual(len(manifest["workflows"]), 9)
         self.assertTrue(all(item["validation_status"] == "UNVALIDATED" for item in manifest["workflows"]))
 
     def test_local_nvidia_agent_is_routable_through_controller_and_adapter(self):
@@ -50,7 +50,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_local_generation_unavailable_is_explicit_and_never_remote(self):
         controller = JobController(self.root)
-        job = {"job_id": "local-unavailable-001", "execution_profile": "human_local_nvidia_16gb"}
+        job = {"job_id": "local-unavailable-001", "execution_profile": "local_nvidia_16gb"}
         output = build_blocked_output(job, ExitCode.DEPENDENCY_MISSING, "measured local memory blocker", blockers=["local runtime canary blocked"], root=self.root)
         with tempfile.TemporaryDirectory() as directory:
             job_root = Path(directory) / "job"
@@ -139,10 +139,10 @@ class WorkflowAndGuardTests(unittest.TestCase):
                 self.assertGreaterEqual(previews[12]["size"][0], 300)
                 self.assertGreaterEqual(previews[12]["size"][1], 300)
                 continue
-            self.assertEqual(set(previews), {25, 26, 27, 28, 30, 35})
+            self.assertEqual(set(previews), {25, 26, 27, 28, 30, 35, 38})
             self.assertTrue(all(node["size"][0] >= 300 and node["size"][1] >= 300 for node in previews.values()))
             self.assertEqual(api["30"]["inputs"]["images"], ["3", 0])
-            self.assertEqual({tuple(previews[node_id]["size"]) for node_id in (25, 26, 27, 30, 35)}, {(340, 420)})
+            self.assertEqual({tuple(previews[node_id]["size"]) for node_id in (25, 26, 27, 30, 35, 38)}, {(340, 420)})
             self.assertEqual(tuple(previews[28]["size"]), (400, 480))
 
     def test_workflow_layout_uses_aligned_symmetric_columns(self):
@@ -194,29 +194,66 @@ class WorkflowAndGuardTests(unittest.TestCase):
                     declared.update(input_types.get(section, {}))
                 self.assertTrue(set(node.get("inputs", {})) <= declared, (path, class_type, node.get("inputs"), declared))
 
-    def test_human_source_workflows_offer_the_bundled_scientist_background(self):
-        from portrait_pipeline.util import sha256_file
-
-        asset = self.root / "backgrounds/bundled/scientist_laboratory_cc0.jpg"
-        expected_sha = "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa"
-        self.assertTrue(asset.is_file())
-        self.assertEqual(sha256_file(asset), expected_sha)
+    def test_human_source_workflows_offer_the_local_hoi4_backgrounds(self):
+        expected_scientist_sha = "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e"
+        expected_operative_sha = "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d"
+        self.assertFalse((self.root / "backgrounds/bundled/scientist_laboratory_cc0.jpg").exists())
         registry = json.loads((self.root / "config/background_registry.json").read_text(encoding="utf-8"))
-        scientist = next(item for item in registry["backgrounds"] if item["registry_id"] == "scientist_laboratory_cc0")
-        self.assertEqual(scientist["sha256"], expected_sha)
-        self.assertEqual(scientist["license_or_rights"], "CC0 1.0 Universal")
+        scientist = next(
+            item
+            for item in registry["backgrounds"]
+            if item["registry_id"] == "hoi4_scientist_portrait_background"
+        )
+        self.assertEqual(scientist["sha256"], expected_scientist_sha)
+        self.assertEqual(scientist["source_path"], "tools/art/scientists_BG.png")
+        self.assertEqual(scientist["runtime_path"], "backgrounds/local/hoi4_scientists_BG.png")
+        self.assertEqual(scientist["redistribution_rule"], "local_copy_only")
+        self.assertEqual(scientist["status"], "APPROVED_LOCAL_COPY_REQUIRED")
+        operative = next(
+            item
+            for item in registry["backgrounds"]
+            if item["registry_id"] == "hoi4_operative_portrait_background"
+        )
+        self.assertEqual(operative["sha256"], expected_operative_sha)
+        self.assertEqual(operative["source_path"], "tools/art/portrait_operative_background.png")
+        self.assertEqual(operative["runtime_path"], "backgrounds/local/hoi4_operative_background.png")
+        self.assertEqual(operative["redistribution_rule"], "local_copy_only")
+        self.assertEqual(operative["status"], "APPROVED_LOCAL_COPY_REQUIRED")
 
         for path in (
-            self.root / "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
-            self.root / "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
+            self.root / "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json",
+            self.root / "workflows/human/full_power_gpu/full_power_gpu.api.json",
         ):
             data = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(data["24"]["inputs"]["background_choice"], "Keep current background")
             self.assertEqual(data["34"]["class_type"], "HOI4BundledBackground")
-            self.assertEqual(data["34"]["inputs"]["asset_sha256"], expected_sha)
+            self.assertEqual(data["34"]["inputs"]["asset_sha256"], expected_scientist_sha)
+            self.assertEqual(data["37"]["class_type"], "HOI4BundledBackground")
+            self.assertEqual(data["37"]["inputs"]["asset_sha256"], expected_operative_sha)
             self.assertEqual(data["8"]["inputs"]["scientist_background"], ["34", 0])
             self.assertEqual(data["8"]["inputs"]["scientist_background_meta"], ["34", 1])
+            self.assertEqual(data["8"]["inputs"]["operative_background"], ["37", 0])
+            self.assertEqual(data["8"]["inputs"]["operative_background_meta"], ["37", 1])
             self.assertEqual(data["35"]["inputs"]["images"], ["34", 0])
+            self.assertEqual(data["38"]["inputs"]["images"], ["37", 0])
+
+    def test_every_source_workflow_includes_automatic_portrait_preparation(self):
+        paths = (
+            self.root / "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json",
+            self.root / "workflows/human/full_power_gpu/full_power_gpu.api.json",
+            self.root / "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
+            self.root / "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
+        )
+        for path in paths:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(data["36"]["class_type"], "DDColor_Colorize")
+            self.assertEqual(data["36"]["inputs"]["image"], ["5", 0])
+            self.assertEqual(data["36"]["inputs"]["checkpoint"], "ddcolor_modelscope.pth")
+            self.assertEqual(data["6"]["inputs"]["colorized_image"], ["36", 0])
+            self.assertEqual(
+                data["_meta"]["required_preparation_nodes"],
+                ["DDColor_Colorize", "HOI4ConservativePrep"],
+            )
 
     def test_random_prompt_builder_is_text_only_and_repeatable(self):
         from comfyui_hoi4_portrait_nodes import NODE_CLASS_MAPPINGS
@@ -242,6 +279,38 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertIn("round glasses", first[0])
         self.assertFalse(first[1]["used_image"])
         self.assertFalse(first[1]["used_language_model"])
+
+    def test_agent_prompt_workflow_loads_a_job_contract_without_a_source_image(self):
+        job_id = "agent-prompt-test-001"
+        contract_dir = self.root / "jobs" / job_id
+        contract_dir.mkdir(parents=True, exist_ok=True)
+        contract_path = contract_dir / "input.json"
+        contract_path.write_text(json.dumps({
+            "schema_version": "1.0.0",
+            "job_id": job_id,
+            "execution_profile": "agent_prompt_local_nvidia_16gb",
+            "prompt": "hoi4_portrait, a fictional civilian with short hair and a neutral expression",
+            "seed_policy": {"mode": "derived"},
+            "candidate_count": 1,
+            "retry_limit": 0,
+            "final_output_stem": "agent_prompt_test_001",
+        }), encoding="utf-8")
+        try:
+            with mock.patch.dict(os.environ, {"HOI4_PORTRAIT_PROJECT_ROOT": str(self.root)}):
+                job, prompt, details, seed = NODE_CLASS_MAPPINGS["HOI4PromptJobInput"]().run(
+                    "agent_prompt_local_nvidia_16gb",
+                    f"jobs/{job_id}/input.json",
+                    2,
+                    2,
+                    "derived",
+                )
+            self.assertEqual(job["job_id"], job_id)
+            self.assertTrue(prompt.startswith("hoi4_portrait,"))
+            self.assertFalse(details["source_image_required"])
+            self.assertIsInstance(seed, int)
+        finally:
+            contract_path.unlink(missing_ok=True)
+            contract_dir.rmdir()
 
     def test_portrait_preparation_workflow_stops_before_generation(self):
         path = self.root / "workflows/human/prepare_portrait/prepare_portrait_for_hoi4.api.json"
@@ -295,7 +364,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
         job = {
             "schema_version": "1.0.0",
             "job_id": "input-context-001",
-            "execution_profile": "human_local_nvidia_16gb",
+            "execution_profile": "local_nvidia_16gb",
             "source_image_path": "README.md",
             "source_provenance": {"source_class": "user_provided", "attribution": "unit-test", "rights_notes": "unit-test"},
             "subject_identity": {"record_name": "unit_test_subject", "identity_classification": "approved_fictional_subject", "real_person": False},
@@ -319,14 +388,14 @@ class WorkflowAndGuardTests(unittest.TestCase):
         try:
             with mock.patch.dict(os.environ, {"HOI4_PORTRAIT_PROJECT_ROOT": str(self.root)}):
                 (validated,) = NODE_CLASS_MAPPINGS["HOI4JobInput"]().run(
-                    "human_local_nvidia_16gb",
+                    "local_nvidia_16gb",
                     "jobs/input-context-001/input.json",
                     1,
                     0,
                     "derived",
                 )
             self.assertEqual(validated["job_id"], "input-context-001")
-            self.assertEqual(validated["_workflow_execution_profile"], "human_local_nvidia_16gb")
+            self.assertEqual(validated["_workflow_execution_profile"], "local_nvidia_16gb")
             self.assertEqual(validated["_project_root"], str(self.root))
         finally:
             contract_path.unlink(missing_ok=True)
@@ -609,7 +678,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
         lock = json.loads((self.root / "dependencies/models.lock.json").read_text(encoding="utf-8"))
         fp8 = next(model for model in lock["models"] if model["name"] == "krea2_turbo_fp8_scaled.safetensors")
         self.assertTrue(fp8["mandatory"])
-        for profile in ("human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
+        for profile in ("local_nvidia_16gb", "full_power_gpu", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
             self.assertIn(profile, fp8["profiles"], profile)
         style = next(item for item in lock["project_owned_immutable_files"] if item["name"] == "hoi4_portrait_new_style_lora.safetensors")
         self.assertEqual(style["repository"], "Hoops-McCann/hoi4-portrait-new-style-lora")
@@ -634,12 +703,12 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertTrue((installed_nodes / "__init__.py").is_file())
             self.assertTrue((installed_nodes / "portrait_pipeline" / "constants.py").is_file())
             installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
-            self.assertEqual(len(installed_workflows), 7)
+            self.assertEqual(len(installed_workflows), 9)
             _copy_example_input(comfy_root, actions)
             self.assertTrue((comfy_root / "input/hoi4_preparation_example.png").is_file())
-            _copy_workflows(comfy_root, actions, {"human_full_power_gpu"})
+            _copy_workflows(comfy_root, actions, {"full_power_gpu"})
             installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
-            self.assertEqual([path.stem for path in installed_workflows], ["human_full_power_gpu"])
+            self.assertEqual([path.stem for path in installed_workflows], ["full_power_gpu"])
             config = (comfy_root / "extra_model_paths.yaml").read_text(encoding="utf-8")
             self.assertEqual(config.count("# BEGIN HOI4 PORTRAIT WORKFLOWS"), 1)
             _merge_extra_model_paths(comfy_root, actions)
@@ -661,24 +730,27 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertNotIn("scripts/preflight/verify_live_comfy_compatibility.py", relative)
         self.assertNotIn("src/portrait_pipeline/acceptance.py", relative)
         self.assertNotIn("src/portrait_pipeline/audit.py", relative)
-        self.assertIn("workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json", relative)
+        self.assertIn("workflows/human/local_nvidia_16gb/local_nvidia_16gb.json", relative)
         self.assertIn("workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json", relative)
-        self.assertIn("workflows/human/prompt_local_nvidia_16gb/human_prompt_local_nvidia_16gb.json", relative)
+        self.assertIn("workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.json", relative)
+        self.assertIn("workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.json", relative)
+        self.assertIn("schemas/portrait_prompt_job_input.schema.json", relative)
         self.assertIn("workflows/human/prepare_portrait/prepare_portrait_for_hoi4.json", relative)
         self.assertTrue(any(path.startswith("docs/assets/") for path in relative))
         self.assertFalse(
             any(
                 Path(path).suffix.casefold() in FORBIDDEN_SUFFIXES
                 and not path.startswith("docs/assets/")
-                and not path.startswith("backgrounds/bundled/")
                 for path in relative
             )
         )
+        self.assertFalse(any(path.startswith("backgrounds/local/") for path in relative))
+        self.assertFalse(any(path.startswith("backgrounds/bundled/") for path in relative))
         self.assertFalse(any(".egg-info/" in path for path in relative))
         self.assertNotIn("prompts/implementation_goal_prompt.md", relative)
 
     def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
-        for profile in ("human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
+        for profile in ("local_nvidia_16gb", "full_power_gpu", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
             report = collect_preflight(self.root, profile=profile)
             gate = next(gate for gate in report["gates"] if gate["name"] == "comfyui_runtime_dependency_lock")
             self.assertEqual(gate["status"], "PASS", gate)
@@ -719,7 +791,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
                 continue
             data = json.loads(path.read_text(encoding="utf-8"))
             profile = data.get("extra", {}).get("hoi4_portrait", {}).get("profile")
-            if profile not in {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}:
+            if profile not in {"local_nvidia_16gb", "agent_local_nvidia_16gb"}:
                 continue
             notes = {node["id"]: node for node in data["nodes"] if node.get("type") in UI_ONLY_NODE_CLASSES}
             self.assertEqual(set(notes), {31, 32, 33}, path)
@@ -734,7 +806,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
         for path in self.root.joinpath("workflows").glob("**/*.json"):
             data = json.loads(path.read_text(encoding="utf-8"))
             meta = data.get("extra", {}).get("hoi4_portrait", {})
-            if meta.get("profile") in {"human_full_power_gpu", "agent_full_power_gpu"}:
+            if meta.get("profile") in {"full_power_gpu", "agent_full_power_gpu"}:
                 self.assertEqual(meta["route"], "runpod")
                 self.assertEqual(meta["remote_authentication"], "x_api_key_runpod")
             for node in data.get("nodes", []):

@@ -40,11 +40,12 @@
     {
       "name": "hoi4_portrait_project_nodes",
       "repository": "local-project-source",
-      "revision": "graph-spec-1.2.0",
+      "revision": "graph-spec-1.4.1",
       "license": "MIT",
-      "source_tree_checksum": "d8c1b204c54f9617435dd56b1669f552ca8fd52e833ace9a9cc45a7579d31e3f",
+      "source_tree_checksum": "34d1c47b5216b6766938e03381fd831f1c3a416979fd89bc0a17753e92fbfd93",
       "classes": [
         "HOI4JobInput",
+        "HOI4PromptJobInput",
         "HOI4HumanControls",
         "HOI4JobSource",
         "HOI4SourceGuard",

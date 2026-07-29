@@ -33,8 +33,8 @@
     },
     "execution_profile": {
       "enum": [
-        "human_local_nvidia_16gb",
-        "human_full_power_gpu",
+        "local_nvidia_16gb",
+        "full_power_gpu",
         "agent_local_nvidia_16gb",
         "agent_full_power_gpu"
       ]

@@ -42,11 +42,7 @@ git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git \
   /workspace/ComfyUI
 ```
 
-An `HF_TOKEN` is optional for the public model sources, but may help with Hugging Face rate limits:
-
-```bash
-export HF_TOKEN="hf_..."
-```
+An `HF_TOKEN` is optional for the public model sources, but may help with Hugging Face rate limits. Add it through the Pod's environment-variable settings before running the installer.
 
 ## Start ComfyUI
 
@@ -61,7 +57,14 @@ For the prompt-only workflow:
 
 ```bash
 /workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh \
-  /workspace/ComfyUI human_prompt_full_power_gpu
+  /workspace/ComfyUI prompt_full_power_gpu
+```
+
+For an agent prompt-only job:
+
+```bash
+/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh \
+  /workspace/ComfyUI agent_prompt_full_power_gpu
 ```
 
 For the portrait preparation workflow:
@@ -81,6 +84,8 @@ ssh -L 8188:127.0.0.1:8188 -p <SSH_PORT> root@<POD_HOST>
 
 Then open `http://127.0.0.1:8188` in your browser and choose a workflow from the installed `hoi4_portraits` folder:
 
-- `human_full_power_gpu` converts an input portrait.
-- `human_prompt_full_power_gpu` creates a new fictional leader from text controls.
+- `full_power_gpu` converts an input portrait.
+- `agent_full_power_gpu` converts an input portrait from a job file.
+- `prompt_full_power_gpu` creates a new fictional leader from text controls.
+- `agent_prompt_full_power_gpu` creates a new leader from a prompt-only job file.
 - `prepare_portrait_for_hoi4` crops, colorizes, and prepares an old photo.

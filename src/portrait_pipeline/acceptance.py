@@ -109,7 +109,7 @@ def _runpod_gate(root: Path) -> dict[str, Any]:
 
     base_url = os.environ.get("RUNPOD_ENDPOINT_URL", "")
     key_present = bool(os.environ.get("RUNPOD_API_KEY"))
-    workflows = ["human_full_power_gpu", "agent_full_power_gpu"]
+    workflows = ["full_power_gpu", "agent_full_power_gpu"]
     probe_paths = sorted((root / "docs" / "preflight").glob("runpod_ui_probe_*.json"))
     probe_path = probe_paths[-1] if probe_paths else None
     probe: dict[str, Any] = {}
@@ -176,6 +176,24 @@ def _schema_gate(root: Path) -> dict[str, Any]:
                         "style_thresholds_id": "calibrated-style-1",
                         "final_png_path": "final/fixture.png",
                         "final_dds_path": "final/fixture.dds",
+                    },
+                )
+            ],
+        ),
+        "prompt_job_input": (
+            root / "schemas/portrait_prompt_job_input.schema.json",
+            [
+                (
+                    "in-memory:valid-prompt-job-input",
+                    {
+                        "schema_version": "1.0.0",
+                        "job_id": "prompt-fixture-001",
+                        "execution_profile": "agent_prompt_local_nvidia_16gb",
+                        "prompt": "hoi4_portrait, a fictional leader with short hair and a neutral expression",
+                        "seed_policy": {"mode": "derived"},
+                        "candidate_count": 1,
+                        "retry_limit": 0,
+                        "final_output_stem": "prompt_fixture_001",
                     },
                 )
             ],

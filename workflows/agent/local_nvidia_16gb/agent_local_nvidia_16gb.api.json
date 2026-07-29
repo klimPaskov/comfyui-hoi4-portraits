@@ -61,6 +61,17 @@
       ]
     }
   },
+  "36": {
+    "class_type": "DDColor_Colorize",
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ],
+      "model_input_size": 512,
+      "checkpoint": "ddcolor_modelscope.pth"
+    }
+  },
   "6": {
     "class_type": "HOI4ConservativePrep",
     "inputs": {
@@ -75,6 +86,10 @@
       "crop_meta": [
         "5",
         1
+      ],
+      "colorized_image": [
+        "36",
+        0
       ]
     }
   },
@@ -353,7 +368,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.2.0",
+    "graph_spec_version": "graph-spec-1.4.1",
     "workflow_id": "agent_local_nvidia_16gb",
     "execution_profile": "agent_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -393,6 +408,9 @@
         "candidate_count",
         "retry_limit",
         "seed_policy"
+      ],
+      "Colorize when needed": [
+        "checkpoint"
       ],
       "Separate person from background": [
         "mask_model"
@@ -458,6 +476,10 @@
       "VAEDecode",
       "VAEEncode",
       "VAELoader"
+    ],
+    "required_preparation_nodes": [
+      "DDColor_Colorize",
+      "HOI4ConservativePrep"
     ],
     "preview_nodes": [],
     "final_preview_save_pair": {

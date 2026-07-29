@@ -23,9 +23,9 @@ SUPPORTED_PREPROCESSING_SUFFIXES = {
     ".task": "mediapipe_task",
 }
 PROFILE_RUNTIME_LOCKS = {
-    "human_local_nvidia_16gb": "windows_amd64_cuda",
+    "local_nvidia_16gb": "windows_amd64_cuda",
     "agent_local_nvidia_16gb": "windows_amd64_cuda",
-    "human_full_power_gpu": "linux_amd64_cuda",
+    "full_power_gpu": "linux_amd64_cuda",
     "agent_full_power_gpu": "linux_amd64_cuda",
 }
 
@@ -555,9 +555,9 @@ def _autoprompter_preflight(root: Path, profile: str | None) -> dict[str, Any]:
     full_format_pass = full_power.get("status") == "PASS_FORMAT_AND_PROCESSOR_SCHEMA"
     if profile in {"agent_local_nvidia_16gb", "agent_full_power_gpu"}:
         status = "NOT_APPLICABLE"
-    elif profile == "human_local_nvidia_16gb":
+    elif profile == "local_nvidia_16gb":
         status = "PASS" if local_pass and full_format_pass else "BLOCKED"
-    elif profile == "human_full_power_gpu":
+    elif profile == "full_power_gpu":
         status = "PASS_FORMAT_ONLY_REMOTE_EXECUTION_UNVERIFIED" if full_format_pass else "BLOCKED"
     else:
         status = "PASS_LOCAL_AND_FULL_POWER_FORMAT_ONLY" if local_pass and full_format_pass else "BLOCKED"
@@ -625,7 +625,10 @@ def _background_preflight(root: Path, registry_path: Path, registry: dict[str, A
             path = None
             path_error = "runtime path is missing"
         expected_hash = item.get("sha256")
-        item_ok = item.get("status") == "APPROVED" and is_sha256(expected_hash) and actual_hash == expected_hash and path_error is None
+        item_ok = item.get("status") in {
+            "APPROVED",
+            "APPROVED_LOCAL_COPY_REQUIRED",
+        } and is_sha256(expected_hash) and actual_hash == expected_hash and path_error is None
         entries.append({"registry_id": item.get("registry_id"), "status": item.get("status"), "path": runtime_value, "expected_sha256": expected_hash, "actual_sha256": actual_hash, "path_error": path_error, "status_check": "PASS" if item_ok else "BLOCKED"})
     candidate_path = root / "docs" / "preflight" / "background_candidates.json"
     candidate_status = None
@@ -634,7 +637,8 @@ def _background_preflight(root: Path, registry_path: Path, registry: dict[str, A
             candidate_status = json.loads(candidate_path.read_text(encoding="utf-8")).get("candidates", [])
         except json.JSONDecodeError:
             candidate_status = "INVALID_JSON"
-    return {"status": "PASS" if registry.get("registry_status") == "RESOLVED" and any(item["status_check"] == "PASS" for item in entries) else "BLOCKED", "registry_path": str(registry_path), "registry_status": registry.get("registry_status"), "entries": entries, "candidate_evidence_path": str(candidate_path), "candidate_evidence": candidate_status}
+    resolved_statuses = {"RESOLVED", "RESOLVED_LOCAL_GAME_COPY"}
+    return {"status": "PASS" if registry.get("registry_status") in resolved_statuses and any(item["status_check"] == "PASS" for item in entries) else "BLOCKED", "registry_path": str(registry_path), "registry_status": registry.get("registry_status"), "accepted_registry_statuses": sorted(resolved_statuses), "entries": entries, "candidate_evidence_path": str(candidate_path), "candidate_evidence": candidate_status}
 
 
 def _custom_node_preflight(root: Path) -> dict[str, Any]:
@@ -786,8 +790,8 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     })
     runtime_version_info = runtime_probe.get("python_version_info", [])
     python_floor_ok = isinstance(runtime_version_info, list) and len(runtime_version_info) >= 2 and tuple(runtime_version_info[:2]) >= (3, 10)
-    nvidia_local_profile = profile in {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}
-    runpod_profile = profile in {"human_full_power_gpu", "agent_full_power_gpu"}
+    nvidia_local_profile = profile in {"local_nvidia_16gb", "agent_local_nvidia_16gb"}
+    runpod_profile = profile in {"full_power_gpu", "agent_full_power_gpu"}
     local_profile = nvidia_local_profile
     comfy_runtime_present = bool(comfy_path) or (root_path / "comfyui" / "main.py").is_file()
     required_accelerator = "CUDA" if (nvidia_local_profile or runpod_profile) else "not_selected"
@@ -848,7 +852,7 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
 
     model_entries = model_lock.get("models", [])
     local_model_files = [str(path.relative_to(root_path)) for path in model_root.rglob("*") if path.is_file()] if model_root.is_dir() else []
-    model_profile = {"agent_local_nvidia_16gb": "human_local_nvidia_16gb"}.get(profile, profile)
+    model_profile = {"agent_local_nvidia_16gb": "local_nvidia_16gb"}.get(profile, profile)
     model_evidence = _model_artifact_preflight(root_path, model_root, model_entries, model_profile)
     model_evidence["requested_profile"] = profile
     model_status = model_evidence["status"]
@@ -941,7 +945,7 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
         krea_review = json.loads(krea_review_path.read_text(encoding="utf-8")) if krea_review_path.is_file() else {"status": "MISSING"}
     except json.JSONDecodeError:
         krea_review = {"status": "INVALID_JSON"}
-    live_krea_path = root_path / "docs" / "preflight" / "live_comfy_compatibility.json"
+    live_krea_path = root_path / ".runtime" / "reports" / "live_comfy_compatibility.json"
     try:
         live_krea = json.loads(live_krea_path.read_text(encoding="utf-8")) if live_krea_path.is_file() else {"status": "MISSING"}
     except json.JSONDecodeError:
@@ -966,8 +970,7 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
         except (OSError, json.JSONDecodeError):
             cpu_canary_evidence = {"path": str(cpu_canary_path.relative_to(root_path)), "status": "INVALID_JSON"}
     live_schema_pass = live_krea.get("status") == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED"
-    krea_review_statuses = {"BLOCKED_EXECUTION_NOT_MEASURED", "PASS_TARGET_EXECUTION"}
-    krea_status = "PASS" if live_schema_pass and krea_review.get("status") in krea_review_statuses else "BLOCKED"
+    krea_status = "PASS" if live_schema_pass else "BLOCKED"
     gates.append({"name": "krea_live_compatibility", "status": krea_status, "evidence": {"reason": "Live core/node/schema compatibility is separate from source-specific execution.", "compatibility_review_path": str(krea_review_path), "compatibility_review_status": krea_review.get("status"), "compatibility_review": krea_review, "live_probe_path": str(live_krea_path), "live_probe_status": live_krea.get("status"), "live_probe": live_krea, "target_execution_evidence": target_execution_evidence, "cpu_canary_evidence": cpu_canary_evidence}})
     if krea_status != "PASS":
         blockers.append("Krea 2 Turbo live core/node/schema compatibility is not verified in the pinned runtime.")

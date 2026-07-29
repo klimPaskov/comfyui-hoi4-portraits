@@ -9,6 +9,10 @@ from typing import Any
 from ..constants import (
     AUTOPROMPTER_PATH,
     GROUP_LABELS,
+    HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH,
+    HOI4_OPERATIVE_BACKGROUND_SHA256,
+    HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH,
+    HOI4_SCIENTIST_BACKGROUND_SHA256,
     PROFILE_LIMITS,
     RANDOM_PORTRAIT_PROMPT_PATH,
     WORKFLOW_VERSION,
@@ -62,15 +66,29 @@ HUMAN_ONLY_PROJECT_NODES = {"HOI4HumanControls", "HOI4BundledBackground"}
 FORBIDDEN_CLASS_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 UI_ONLY_NODE_CLASSES = {"Note"}
 RANDOM_PROMPT_WORKFLOWS = {
-    "human_prompt_local_nvidia_16gb": {
+    "prompt_local_nvidia_16gb": {
         "route": "local_nvidia",
         "canvas_width": 832,
         "canvas_height": 1120,
+        "human_workflow": True,
     },
-    "human_prompt_full_power_gpu": {
+    "prompt_full_power_gpu": {
         "route": "runpod",
         "canvas_width": 1196,
         "canvas_height": 1610,
+        "human_workflow": True,
+    },
+    "agent_prompt_local_nvidia_16gb": {
+        "route": "local_nvidia",
+        "canvas_width": 832,
+        "canvas_height": 1120,
+        "human_workflow": False,
+    },
+    "agent_prompt_full_power_gpu": {
+        "route": "runpod",
+        "canvas_width": 1196,
+        "canvas_height": 1610,
+        "human_workflow": False,
     },
 }
 RANDOM_PROMPT_GROUPS = [
@@ -88,7 +106,7 @@ PREP_GROUPS = [
     "04 Preview and save",
 ]
 LOW_MEMORY_PROFILE_IDS = {
-    "human_local_nvidia_16gb",
+    "local_nvidia_16gb",
     "agent_local_nvidia_16gb",
 }
 
@@ -98,16 +116,16 @@ LOW_MEMORY_PROFILE_IDS = {
 # hunting across the canvas.  These values are presentation metadata only;
 # they do not change the execution graph or any locked control.
 GROUP_LAYOUT = {
-    "00 Portrait setup": (40, 40, 760, 700),
-    "01 Choose subject": (840, 40, 500, 700),
-    "02 Crop portrait": (1380, 40, 440, 700),
-    "03 Prepare portrait": (1860, 40, 440, 700),
-    "04 Choose background": (2340, 40, 1100, 700),
-    "05 Portrait description": (40, 800, 500, 640),
-    "06 Krea 2 portrait edit": (580, 800, 900, 800),
-    "07 HOI4 portrait style": (1520, 800, 340, 640),
-    "08 Generate portrait": (1900, 800, 340, 640),
-    "09 Preview and save": (2280, 800, 1080, 760),
+    "00 Portrait setup": (40, 40, 760, 900),
+    "01 Choose subject": (840, 40, 500, 900),
+    "02 Crop portrait": (1380, 40, 440, 900),
+    "03 Prepare portrait": (1860, 40, 440, 900),
+    "04 Choose background": (2340, 40, 1480, 900),
+    "05 Portrait description": (40, 980, 500, 640),
+    "06 Krea 2 portrait edit": (580, 980, 900, 800),
+    "07 HOI4 portrait style": (1520, 980, 340, 640),
+    "08 Generate portrait": (1900, 980, 340, 640),
+    "09 Preview and save": (2280, 980, 1080, 760),
 }
 
 GROUP_COLORS = {
@@ -254,8 +272,29 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         inputs={"job": Link(job_node_id), "image": Link(4, 0), "selection_meta": Link(4, 1), **control_inputs}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "selection_meta": "HOI4_META", **control_input_types}, outputs=["image", "crop_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 300),
     ))
     nodes.append(_node(
+        36, "DDColor_Colorize", group["03 Prepare portrait"], "Colorize when needed",
+        inputs={"image": Link(5, 0), "model_input_size": 512, "checkpoint": "ddcolor_modelscope.pth"},
+        input_types={"image": "IMAGE", "model_input_size": "INT", "checkpoint": "COMBO"},
+        outputs=["colorized_image"], output_types=["IMAGE"],
+        widgets=[512, "ddcolor_modelscope.pth"], locked=["checkpoint"],
+    ))
+    nodes.append(_node(
         6, "HOI4ConservativePrep", group["03 Prepare portrait"], "Prepare the portrait",
-        inputs={"job": Link(job_node_id), "image": Link(5, 0), "crop_meta": Link(5, 1), **control_inputs}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "crop_meta": "HOI4_META", **control_input_types}, outputs=["image", "reference_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 520),
+        inputs={
+            "job": Link(job_node_id),
+            "image": Link(5, 0),
+            "crop_meta": Link(5, 1),
+            "colorized_image": Link(36, 0),
+            **control_inputs,
+        },
+        input_types={
+            "job": "HOI4_JOB",
+            "image": "IMAGE",
+            "crop_meta": "HOI4_META",
+            "colorized_image": "IMAGE",
+            **control_input_types,
+        },
+        outputs=["image", "reference_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 520),
     ))
     nodes.append(_node(
         7, "HOI4ForegroundMask", group["04 Choose background"], "Separate person from background",
@@ -263,25 +302,40 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     ))
     if is_human:
         nodes.append(_node(
-            34, "HOI4BundledBackground", group["04 Choose background"], "Optional scientist laboratory background",
+            34, "HOI4BundledBackground", group["04 Choose background"], "HOI4 scientist portrait background",
             inputs={
-                "asset_path": "backgrounds/bundled/scientist_laboratory_cc0.jpg",
-                "asset_sha256": "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa",
+                "asset_path": HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH,
+                "asset_sha256": HOI4_SCIENTIST_BACKGROUND_SHA256,
             },
             input_types={"asset_path": "STRING", "asset_sha256": "STRING"},
             outputs=["image", "background_details"], output_types=["IMAGE", "HOI4_META"],
-            widgets=["backgrounds/bundled/scientist_laboratory_cc0.jpg", "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa"],
+            widgets=[HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH, HOI4_SCIENTIST_BACKGROUND_SHA256],
+            locked=["asset_path", "asset_sha256"],
+        ))
+        nodes.append(_node(
+            37, "HOI4BundledBackground", group["04 Choose background"], "HOI4 operative portrait background",
+            inputs={
+                "asset_path": HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH,
+                "asset_sha256": HOI4_OPERATIVE_BACKGROUND_SHA256,
+            },
+            input_types={"asset_path": "STRING", "asset_sha256": "STRING"},
+            outputs=["image", "background_details"], output_types=["IMAGE", "HOI4_META"],
+            widgets=[HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH, HOI4_OPERATIVE_BACKGROUND_SHA256],
             locked=["asset_path", "asset_sha256"],
         ))
     background_choice_inputs = {
         "control_meta": Link(24, 1),
         "scientist_background": Link(34, 0),
         "scientist_background_meta": Link(34, 1),
+        "operative_background": Link(37, 0),
+        "operative_background_meta": Link(37, 1),
     } if is_human else {}
     background_choice_input_types = {
         "control_meta": "HOI4_META",
         "scientist_background": "IMAGE",
         "scientist_background_meta": "HOI4_META",
+        "operative_background": "IMAGE",
+        "operative_background_meta": "HOI4_META",
     } if is_human else {}
     nodes.append(_node(
         8, "HOI4MaskAndBackgroundGuard", group["04 Choose background"], "Choose portrait background",
@@ -393,6 +447,10 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
                 35, PREVIEW_NODE, group["04 Choose background"], "Scientist background preview",
                 inputs={"images": Link(34, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"],
             ),
+            _node(
+                38, PREVIEW_NODE, group["04 Choose background"], "Operative background preview",
+                inputs={"images": Link(37, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"],
+            ),
         ])
 
     if profile in LOW_MEMORY_PROFILE_IDS:
@@ -436,6 +494,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "required_groups": GROUP_LABELS,
         "locked_controls": {node.title: node.locked for node in nodes if node.locked},
         "required_core_nodes": sorted(CORE_NODES | ({PREVIEW_NODE} if is_human else set())),
+        "required_preparation_nodes": ["DDColor_Colorize", "HOI4ConservativePrep"],
         "preview_nodes": [node.title for node in nodes if node.class_type == PREVIEW_NODE],
         "final_preview_save_pair": {
             "preview_node_id": 28 if is_human else None,
@@ -465,12 +524,13 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
     if workflow_id not in RANDOM_PROMPT_WORKFLOWS:
         raise ValueError(f"unknown random prompt workflow: {workflow_id}")
     settings = RANDOM_PROMPT_WORKFLOWS[workflow_id]
+    is_human = bool(settings["human_workflow"])
     width = int(settings["canvas_width"])
     height = int(settings["canvas_height"])
     instruction_path = root_path / RANDOM_PORTRAIT_PROMPT_PATH
     instruction = instruction_path.read_text(encoding="utf-8")
     groups = RANDOM_PROMPT_GROUPS
-    nodes = [
+    prompt_node = (
         _node(
             1, "HOI4RandomPortraitPrompt", groups[0], "Create a fictional portrait idea",
             inputs={
@@ -495,11 +555,37 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
                 "instruction_text": "STRING",
                 "instruction_path": "STRING",
             },
-            outputs=["prompt", "prompt_details"], output_types=["STRING", "HOI4_META"],
+            outputs=["prompt", "prompt_details", "seed"], output_types=["STRING", "HOI4_META", "INT"],
             pos=(80, 100), size=(460, 600),
             widgets=["", "random", "random", "random", "random", "random", 0, instruction, RANDOM_PORTRAIT_PROMPT_PATH],
             locked=["instruction_text", "instruction_path"],
-        ),
+        )
+        if is_human
+        else _node(
+            1, "HOI4PromptJobInput", groups[0], "Load portrait description",
+            inputs={
+                "execution_profile": workflow_id,
+                "job_contract_path": "jobs/<job_id>/input.json",
+                "candidate_count": 2 if "local" in workflow_id else 6,
+                "retry_limit": 2,
+                "seed_policy": "derived",
+            },
+            input_types={
+                "execution_profile": "STRING",
+                "job_contract_path": "STRING",
+                "candidate_count": "INT",
+                "retry_limit": "INT",
+                "seed_policy": "COMBO",
+            },
+            outputs=["job", "prompt", "prompt_details", "seed"],
+            output_types=["HOI4_JOB", "STRING", "HOI4_META", "INT"],
+            pos=(80, 100), size=(460, 300),
+            widgets=[workflow_id, "jobs/<job_id>/input.json", 2 if "local" in workflow_id else 6, 2, "derived"],
+            locked=["execution_profile", "candidate_count", "retry_limit", "seed_policy"],
+        )
+    )
+    nodes = [
+        prompt_node,
         _node(
             2, "UNETLoader", groups[1], "Load Krea 2 Turbo",
             inputs={"unet_name": "krea2_turbo_fp8_scaled.safetensors", "weight_dtype": "default"},
@@ -529,7 +615,7 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
         ),
         _node(
             6, "CLIPTextEncode", groups[1], "Turn the portrait idea into conditioning",
-            inputs={"text": Link(1, 0), "clip": Link(3)}, input_types={"text": "STRING", "clip": "CLIP"},
+            inputs={"text": Link(1, 0 if is_human else 1), "clip": Link(3)}, input_types={"text": "STRING", "clip": "CLIP"},
             outputs=["conditioning"], output_types=["CONDITIONING"], pos=(960, 100), size=(260, 180),
         ),
         _node(
@@ -556,14 +642,14 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
             10, "KSampler", groups[3], "Generate a new portrait",
             inputs={
                 "model": Link(9, 0), "positive": Link(9, 1), "negative": Link(9, 2), "latent_image": Link(8),
-                "seed": 0, "steps": 8, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0,
+                "seed": Link(1, 2 if is_human else 3), "steps": 8, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0,
             },
             input_types={
                 "model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "latent_image": "LATENT",
                 "seed": "INT", "steps": "INT", "cfg": "FLOAT", "sampler_name": "COMBO", "scheduler": "COMBO", "denoise": "FLOAT",
             },
             outputs=["latent"], output_types=["LATENT"], pos=(700, 850), size=(280, 220),
-            widgets=[0, 8, 1.0, "euler", "simple", 1.0],
+            widgets=[8, 1.0, "euler", "simple", 1.0],
             locked=["steps", "cfg", "sampler_name", "scheduler", "denoise"],
         ),
         _node(
@@ -583,6 +669,8 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
             pos=(1800, 850), size=(260, 180), widgets=["hoi4_portraits/random"], locked=["filename_prefix"],
         ),
     ]
+    if not is_human:
+        nodes = [node for node in nodes if node.class_type != PREVIEW_NODE]
     metadata = {
         "schema_version": "1.0.0",
         "graph_spec_version": WORKFLOW_VERSION,
@@ -591,12 +679,12 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
         "execution_profile": workflow_id,
         "workflow_kind": "random_text_to_image",
         "route": settings["route"],
-        "human_workflow": True,
-        "autoprompter": True,
-        "autoprompter_kind": "deterministic_text_only",
-        "autoprompter_instruction_path": RANDOM_PORTRAIT_PROMPT_PATH,
-        "autoprompter_instruction_sha256": sha256_file(instruction_path),
-        "prompt_source": "text_only_autoprompter",
+        "human_workflow": is_human,
+        "autoprompter": is_human,
+        "autoprompter_kind": "deterministic_text_only" if is_human else None,
+        "autoprompter_instruction_path": RANDOM_PORTRAIT_PROMPT_PATH if is_human else None,
+        "autoprompter_instruction_sha256": sha256_file(instruction_path) if is_human else None,
+        "prompt_source": "text_only_autoprompter" if is_human else "job_contract",
         "prompt_model": None,
         "source_image_required": False,
         "vision_model_required": False,
@@ -607,16 +695,19 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
         "final_canvas": {"width": 156, "height": 210},
         "required_groups": groups,
         "locked_controls": {node.title: node.locked for node in nodes if node.locked},
-        "required_core_nodes": sorted(RANDOM_PROMPT_CORE_NODES),
+        "required_core_nodes": sorted(RANDOM_PROMPT_CORE_NODES if is_human else RANDOM_PROMPT_CORE_NODES - {PREVIEW_NODE}),
         "required_krea_nodes": [],
-        "required_project_nodes": ["HOI4KreaModelLoadBarrier", "HOI4RandomPortraitPrompt"],
-        "preview_nodes": ["Portrait preview"],
+        "required_project_nodes": [
+            "HOI4KreaModelLoadBarrier",
+            "HOI4RandomPortraitPrompt" if is_human else "HOI4PromptJobInput",
+        ],
+        "preview_nodes": ["Portrait preview"] if is_human else [],
         "final_preview_save_pair": {
-            "preview_node_id": 12,
+            "preview_node_id": 12 if is_human else None,
             "save_node_id": 13,
             "shared_source_node_id": 11,
             "shared_source_slot": 0,
-            "policy": "preview_and_save_consume_the_same_decoded_image",
+            "policy": "preview_and_save_consume_the_same_decoded_image" if is_human else "agent_save_only",
         },
         "low_memory_placeholder_nodes": [],
     }
@@ -752,12 +843,18 @@ def validate_graph(graph: GraphSpec) -> None:
         raise ValueError("workflow contains a forbidden face-swap/replacement class")
     if graph.metadata.get("workflow_kind") == "random_text_to_image":
         random_prompt_nodes = [node for node in graph.nodes if node.class_type == "HOI4RandomPortraitPrompt"]
-        if len(random_prompt_nodes) != 1:
-            raise ValueError("random portrait workflow must contain exactly one text-only autoprompter")
+        agent_prompt_nodes = [node for node in graph.nodes if node.class_type == "HOI4PromptJobInput"]
+        if graph.metadata["human_workflow"]:
+            if len(random_prompt_nodes) != 1 or agent_prompt_nodes:
+                raise ValueError("human random portrait workflow must contain exactly one text-only prompt builder")
+        elif len(agent_prompt_nodes) != 1 or random_prompt_nodes:
+            raise ValueError("agent random portrait workflow must contain exactly one job-contract prompt input")
         prohibited = KREA_NODES | {"LoadImage", "HOI4JobSource", "HOI4AutopromptClient"}
         if any(node.class_type in prohibited for node in graph.nodes):
             raise ValueError("random portrait workflow contains an image-input or identity-edit route")
-        required = RANDOM_PROMPT_CORE_NODES | {"HOI4KreaModelLoadBarrier", "HOI4RandomPortraitPrompt"}
+        prompt_class = "HOI4RandomPortraitPrompt" if graph.metadata["human_workflow"] else "HOI4PromptJobInput"
+        required_core = RANDOM_PROMPT_CORE_NODES if graph.metadata["human_workflow"] else RANDOM_PROMPT_CORE_NODES - {PREVIEW_NODE}
+        required = required_core | {"HOI4KreaModelLoadBarrier", prompt_class}
         missing = sorted(required - class_names)
         if missing:
             raise ValueError(f"random portrait workflow is missing required node classes: {missing}")
@@ -827,22 +924,24 @@ def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool) -> None:
         1: (70, 100), 24: (440, 100), 2: (70, 300), 3: (70, 500),
         4: (870, 100), 30: (870, 280),
         5: (1420, 100), 25: (1420, 280),
-        6: (1900, 100), 26: (1900, 280),
-        7: (2380, 100), 8: (2380, 300), 27: (2700, 230), 34: (3060, 100), 35: (3060, 280),
-        9: (70, 900),
-        10: (620, 900), 11: (620, 1050), 12: (620, 1200), 13: (620, 1350),
-        14: (900, 900), 15: (900, 1050), 16: (900, 1200), 17: (900, 1350),
-        18: (1560, 1000),
-        19: (1940, 900), 20: (1940, 1080), 29: (1940, 1300),
-        21: (2320, 900), 22: (2640, 900), 23: (2640, 1090), 28: (2940, 900),
-        31: (1200, 900), 32: (1200, 1050), 33: (1200, 1210),
+        36: (1900, 100), 6: (1900, 280), 26: (1900, 460),
+        7: (2380, 100), 8: (2380, 300), 27: (2700, 230),
+        34: (3060, 100), 35: (3060, 280), 37: (3440, 100), 38: (3440, 280),
+        9: (70, 1080),
+        10: (620, 1080), 11: (620, 1230), 12: (620, 1380), 13: (620, 1530),
+        14: (900, 1080), 15: (900, 1230), 16: (900, 1380), 17: (900, 1530),
+        18: (1560, 1180),
+        19: (1940, 1080), 20: (1940, 1260), 29: (1940, 1480),
+        21: (2320, 1080), 22: (2640, 1080), 23: (2640, 1270), 28: (2940, 1080),
+        31: (1200, 1080), 32: (1200, 1230), 33: (1200, 1390),
     }
     sizes = {
         1: (350, 170), 24: (350, 580), 2: (350, 140), 3: (350, 140),
         4: (300, 150), 30: (340, 420),
         5: (320, 150), 25: (340, 420),
-        6: (320, 150), 26: (340, 420),
-        7: (320, 150), 8: (320, 240), 27: (340, 420), 34: (340, 150), 35: (340, 420),
+        36: (320, 150), 6: (320, 150), 26: (340, 420),
+        7: (320, 150), 8: (320, 240), 27: (340, 420),
+        34: (340, 150), 35: (340, 420), 37: (340, 150), 38: (340, 420),
         9: (440, 520 if is_human else 230),
         10: (260, 130), 11: (260, 130), 12: (260, 130), 13: (260, 130),
         14: (260, 130), 15: (260, 130), 16: (260, 130), 17: (260, 130),
@@ -971,12 +1070,14 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         for class_name in entry.get("classes", [])
     }
     paths = {
-        "human_local_nvidia_16gb": root_path / "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json",
-        "human_full_power_gpu": root_path / "workflows/human/full_power_gpu/human_full_power_gpu.json",
+        "local_nvidia_16gb": root_path / "workflows/human/local_nvidia_16gb/local_nvidia_16gb.json",
+        "full_power_gpu": root_path / "workflows/human/full_power_gpu/full_power_gpu.json",
         "agent_local_nvidia_16gb": root_path / "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json",
         "agent_full_power_gpu": root_path / "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
-        "human_prompt_local_nvidia_16gb": root_path / "workflows/human/prompt_local_nvidia_16gb/human_prompt_local_nvidia_16gb.json",
-        "human_prompt_full_power_gpu": root_path / "workflows/human/prompt_full_power_gpu/human_prompt_full_power_gpu.json",
+        "prompt_local_nvidia_16gb": root_path / "workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.json",
+        "prompt_full_power_gpu": root_path / "workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.json",
+        "agent_prompt_local_nvidia_16gb": root_path / "workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.json",
+        "agent_prompt_full_power_gpu": root_path / "workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.json",
         PREP_WORKFLOW_ID: root_path / "workflows/human/prepare_portrait/prepare_portrait_for_hoi4.json",
     }
     manifests: list[dict[str, Any]] = []
@@ -1000,7 +1101,10 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
                 "face_detection_yunet_2023mar.onnx",
             ]
         elif workflow_id in RANDOM_PROMPT_WORKFLOWS:
-            required_custom_nodes = ["HOI4KreaModelLoadBarrier", "HOI4RandomPortraitPrompt"]
+            required_custom_nodes = [
+                "HOI4KreaModelLoadBarrier",
+                "HOI4RandomPortraitPrompt" if graph.metadata["human_workflow"] else "HOI4PromptJobInput",
+            ]
             required_models = [
                 "krea2_turbo_fp8_scaled.safetensors",
                 "qwen3vl_4b_fp8_scaled.safetensors",
@@ -1009,8 +1113,20 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             ]
         else:
             required_prompt_node = "HOI4AutopromptClient" if graph.metadata["human_workflow"] else "HOI4PromptInput"
-            required_custom_nodes = sorted(KREA_NODES | (PROJECT_NODES - {"HOI4PromptInput", "HOI4AutopromptClient"} - (set() if graph.metadata["human_workflow"] else HUMAN_ONLY_PROJECT_NODES)) | {required_prompt_node} | (HUMAN_ONLY_PROJECT_NODES if graph.metadata["human_workflow"] else set()))
-            required_models = ["krea2_turbo_fp8_scaled.safetensors", "qwen3vl_4b_fp8_scaled.safetensors", "qwen_image_vae.safetensors", "krea2_identity_edit_v1_2.safetensors", "hoi4_portrait_new_style_lora.safetensors"]
+            required_custom_nodes = sorted(
+                KREA_NODES
+                | (PROJECT_NODES - {"HOI4PromptInput", "HOI4AutopromptClient"} - (set() if graph.metadata["human_workflow"] else HUMAN_ONLY_PROJECT_NODES))
+                | {"DDColor_Colorize", required_prompt_node}
+                | (HUMAN_ONLY_PROJECT_NODES if graph.metadata["human_workflow"] else set())
+            )
+            required_models = [
+                "krea2_turbo_fp8_scaled.safetensors",
+                "qwen3vl_4b_fp8_scaled.safetensors",
+                "qwen_image_vae.safetensors",
+                "krea2_identity_edit_v1_2.safetensors",
+                "hoi4_portrait_new_style_lora.safetensors",
+                "ddcolor_modelscope.pth",
+            ]
         if graph.metadata["human_workflow"] and workflow_id not in RANDOM_PROMPT_WORKFLOWS and workflow_id != PREP_WORKFLOW_ID:
             required_models.append("Qwen3VL-4B-Instruct-Q4_K_M.gguf" if "local" in workflow_id else "Qwen3-VL-8B-Instruct-BF16-shards")
         api_path = ui_path.with_suffix(".api.json")

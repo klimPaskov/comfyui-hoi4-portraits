@@ -39,9 +39,13 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
     workflow_kind = metadata.get("workflow_kind")
     if workflow_kind == "random_text_to_image":
         autoprompt_nodes = [node for node in ui_nodes if node.get("type") == "HOI4RandomPortraitPrompt"]
-        if len(autoprompt_nodes) != 1:
-            issues.append("random portrait workflow must contain one text-only prompt builder")
-        else:
+        agent_prompt_nodes = [node for node in ui_nodes if node.get("type") == "HOI4PromptJobInput"]
+        if metadata.get("human_workflow"):
+            if len(autoprompt_nodes) != 1 or agent_prompt_nodes:
+                issues.append("human random portrait workflow must contain one text-only prompt builder")
+        elif len(agent_prompt_nodes) != 1 or autoprompt_nodes:
+            issues.append("agent random portrait workflow must contain one job-contract prompt input")
+        if autoprompt_nodes:
             instruction_path = root_path / RANDOM_PORTRAIT_PROMPT_PATH
             instruction = instruction_path.read_text(encoding="utf-8")
             values = autoprompt_nodes[0].get("widgets_values", [])
@@ -70,7 +74,7 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
             issues.append(f"portrait preparation nodes are missing: {missing_preparation}")
         if any(node.get("type") in {"HOI4AutopromptClient", "Krea2EditModelPatch", "KSampler"} for node in ui_nodes):
             issues.append("portrait preparation workflow continues into portrait generation")
-    elif workflow_id.startswith("human_"):
+    elif metadata.get("human_workflow"):
         autoprompt_nodes = [node for node in ui_nodes if node.get("type") == "HOI4AutopromptClient"]
         if len(autoprompt_nodes) != 1:
             issues.append("human workflow must contain exactly one autoprompter node")
@@ -88,6 +92,10 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
             issues.append("agent workflow prompt source is not job_contract")
         if any(_contains_value(node, "Qwen3-VL-4B-Instruct-GGUF") or _contains_value(node, "Qwen3-VL-8B-Instruct") for node in ui_nodes):
             issues.append("agent workflow contains an autoprompter model reference")
+    if workflow_kind not in {"random_text_to_image", "portrait_preparation"}:
+        present_types = {node.get("type") for node in ui_nodes}
+        if not {"DDColor_Colorize", "HOI4ConservativePrep"} <= present_types:
+            issues.append("source workflow does not include automatic portrait preparation")
     if any(_contains_value(ui, token) for token in ("faceswap", "face_swap", "subject_replacement")):
         issues.append("workflow contains a prohibited identity-replacement route")
     if metadata.get("workflow_kind") != "controlnet_composition" and any(_contains_value(node, token) for node in ui_nodes for token in ("ControlNet", "controlnet")):
@@ -117,12 +125,14 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
 def validate_all_workflows(root: str | Path | None = None) -> list[dict[str, Any]]:
     root_path = project_root(root)
     specs = {
-        "human_local_nvidia_16gb": ("workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json", "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json"),
-        "human_full_power_gpu": ("workflows/human/full_power_gpu/human_full_power_gpu.json", "workflows/human/full_power_gpu/human_full_power_gpu.api.json"),
+        "local_nvidia_16gb": ("workflows/human/local_nvidia_16gb/local_nvidia_16gb.json", "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json"),
+        "full_power_gpu": ("workflows/human/full_power_gpu/full_power_gpu.json", "workflows/human/full_power_gpu/full_power_gpu.api.json"),
         "agent_local_nvidia_16gb": ("workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json", "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json"),
         "agent_full_power_gpu": ("workflows/agent/full_power_gpu/agent_full_power_gpu.json", "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json"),
-        "human_prompt_local_nvidia_16gb": ("workflows/human/prompt_local_nvidia_16gb/human_prompt_local_nvidia_16gb.json", "workflows/human/prompt_local_nvidia_16gb/human_prompt_local_nvidia_16gb.api.json"),
-        "human_prompt_full_power_gpu": ("workflows/human/prompt_full_power_gpu/human_prompt_full_power_gpu.json", "workflows/human/prompt_full_power_gpu/human_prompt_full_power_gpu.api.json"),
+        "prompt_local_nvidia_16gb": ("workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.json", "workflows/human/prompt_local_nvidia_16gb/prompt_local_nvidia_16gb.api.json"),
+        "prompt_full_power_gpu": ("workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.json", "workflows/human/prompt_full_power_gpu/prompt_full_power_gpu.api.json"),
+        "agent_prompt_local_nvidia_16gb": ("workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.json", "workflows/agent/prompt_local_nvidia_16gb/agent_prompt_local_nvidia_16gb.api.json"),
+        "agent_prompt_full_power_gpu": ("workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.json", "workflows/agent/prompt_full_power_gpu/agent_prompt_full_power_gpu.api.json"),
         "prepare_portrait_for_hoi4": ("workflows/human/prepare_portrait/prepare_portrait_for_hoi4.json", "workflows/human/prepare_portrait/prepare_portrait_for_hoi4.api.json"),
     }
     return [validate_workflow_file(workflow_id, root_path / ui, root_path / api, root_path) for workflow_id, (ui, api) in specs.items()]

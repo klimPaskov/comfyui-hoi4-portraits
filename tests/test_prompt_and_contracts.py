@@ -77,11 +77,29 @@ class PromptAndContractTests(unittest.TestCase):
         invalid["execution_profile"] = "unsupported"
         self.assertTrue(validate_schema(invalid, root / "schemas/portrait_job_input.schema.json"))
 
+    def test_prompt_job_schema_requires_an_agent_prompt_profile_without_a_source_image(self):
+        root = project_root()
+        valid = {
+            "schema_version": "1.0.0",
+            "job_id": "prompt-job-001",
+            "execution_profile": "agent_prompt_local_nvidia_16gb",
+            "prompt": "hoi4_portrait, a fictional civilian leader with short hair and a neutral expression",
+            "seed_policy": {"mode": "derived"},
+            "candidate_count": 1,
+            "retry_limit": 0,
+            "final_output_stem": "fictional_leader_001",
+        }
+        schema = root / "schemas/portrait_prompt_job_input.schema.json"
+        self.assertEqual(validate_schema(valid, schema), [])
+        invalid = dict(valid)
+        invalid["execution_profile"] = "prompt_local_nvidia_16gb"
+        self.assertTrue(validate_schema(invalid, schema))
+
     def test_autoprompter_retries_decoding_only_and_records_bounded_attempts(self):
         instruction = (project_root() / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")
         service = object.__new__(AutoprompterService)
         service.root = Path(tempfile.mkdtemp(prefix="hoi4-autoprompt-test-"))
-        service.profile = "human_local_nvidia_16gb"
+        service.profile = "local_nvidia_16gb"
         service.model_id = "Qwen/Qwen3-VL-4B-Instruct-GGUF"
         service.instruction = instruction
         service.upstream_port = 1
@@ -115,7 +133,7 @@ class PromptAndContractTests(unittest.TestCase):
         instruction = (project_root() / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")
         service = object.__new__(AutoprompterService)
         service.root = Path(tempfile.mkdtemp(prefix="hoi4-autoprompt-test-"))
-        service.profile = "human_local_nvidia_16gb"
+        service.profile = "local_nvidia_16gb"
         service.model_id = "Qwen/Qwen3-VL-4B-Instruct-GGUF"
         service.instruction = instruction
         service.upstream_port = 1

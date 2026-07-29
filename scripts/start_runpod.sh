@@ -3,10 +3,10 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 COMFY_ROOT="${1:-${COMFYUI_ROOT:-/workspace/ComfyUI}}"
-WORKFLOW="${2:-human_full_power_gpu}"
+WORKFLOW="${2:-full_power_gpu}"
 
-if [[ "${WORKFLOW}" != "human_full_power_gpu" && "${WORKFLOW}" != "human_prompt_full_power_gpu" && "${WORKFLOW}" != "prepare_portrait_for_hoi4" ]]; then
-  echo "Choose human_full_power_gpu, human_prompt_full_power_gpu, or prepare_portrait_for_hoi4." >&2
+if [[ "${WORKFLOW}" != "full_power_gpu" && "${WORKFLOW}" != "agent_full_power_gpu" && "${WORKFLOW}" != "prompt_full_power_gpu" && "${WORKFLOW}" != "agent_prompt_full_power_gpu" && "${WORKFLOW}" != "prepare_portrait_for_hoi4" ]]; then
+  echo "Choose full_power_gpu, agent_full_power_gpu, prompt_full_power_gpu, agent_prompt_full_power_gpu, or prepare_portrait_for_hoi4." >&2
   exit 10
 fi
 
@@ -43,17 +43,19 @@ mkdir -p "${LOG_ROOT}"
 
 PREPROCESSING_PID=""
 AUTOPROMPTER_PID=""
-if [[ "${WORKFLOW}" == "human_full_power_gpu" ]]; then
+if [[ "${WORKFLOW}" == "full_power_gpu" || "${WORKFLOW}" == "agent_full_power_gpu" ]]; then
   "${PYTHON_BIN}" -m portrait_pipeline.preprocessing_service \
     --root "${PROJECT_ROOT}" --host 127.0.0.1 --port 8790 --device cuda \
     >"${LOG_ROOT}/preprocessing.log" 2>&1 &
   PREPROCESSING_PID=$!
 
-  "${PYTHON_BIN}" -m portrait_pipeline.autoprompter_service \
-    --root "${PROJECT_ROOT}" --profile human_full_power_gpu \
-    --host 127.0.0.1 --port 8099 \
-    >"${LOG_ROOT}/autoprompter.log" 2>&1 &
-  AUTOPROMPTER_PID=$!
+  if [[ "${WORKFLOW}" == "full_power_gpu" ]]; then
+    "${PYTHON_BIN}" -m portrait_pipeline.autoprompter_service \
+      --root "${PROJECT_ROOT}" --profile full_power_gpu \
+      --host 127.0.0.1 --port 8099 \
+      >"${LOG_ROOT}/autoprompter.log" 2>&1 &
+    AUTOPROMPTER_PID=$!
+  fi
 fi
 
 cleanup() {

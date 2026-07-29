@@ -3,7 +3,9 @@ param(
     [string]$ComfyUIRoot,
 
     [ValidateSet("local_nvidia_16gb", "full_power_gpu")]
-    [string]$Profile = "local_nvidia_16gb"
+    [string]$Profile = "local_nvidia_16gb",
+
+    [string]$HOI4Root = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -19,9 +21,16 @@ if (-not $Python) {
     $Python = (Get-Command python -ErrorAction Stop).Source
 }
 
-& $Python (Join-Path $ProjectRoot "scripts\install_into_existing_comfyui.py") `
-    --comfyui-root $ComfyUIRoot `
-    --profile $Profile
+$InstallArguments = @(
+    (Join-Path $ProjectRoot "scripts\install_into_existing_comfyui.py"),
+    "--comfyui-root", $ComfyUIRoot,
+    "--profile", $Profile
+)
+if ($HOI4Root) {
+    $InstallArguments += @("--hoi4-root", $HOI4Root)
+}
+
+& $Python @InstallArguments
 
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE

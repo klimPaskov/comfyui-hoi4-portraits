@@ -2,8 +2,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ComfyUIRoot,
 
-    [ValidateSet("human_local_nvidia_16gb", "agent_local_nvidia_16gb", "human_prompt_local_nvidia_16gb", "prepare_portrait_for_hoi4")]
-    [string]$Workflow = "human_local_nvidia_16gb"
+    [ValidateSet("local_nvidia_16gb", "agent_local_nvidia_16gb", "prompt_local_nvidia_16gb", "agent_prompt_local_nvidia_16gb", "prepare_portrait_for_hoi4")]
+    [string]$Workflow = "local_nvidia_16gb"
 )
 
 $ErrorActionPreference = "Stop"
@@ -28,7 +28,7 @@ $RuntimeLog = Join-Path $ProjectRoot ".runtime\logs"
 New-Item -ItemType Directory -Path $RuntimeLog -Force | Out-Null
 
 $Preprocessing = $null
-if ($Workflow -in @("human_local_nvidia_16gb", "agent_local_nvidia_16gb")) {
+if ($Workflow -in @("local_nvidia_16gb", "agent_local_nvidia_16gb")) {
     $Preprocessing = Start-Process -FilePath $Python -PassThru -WindowStyle Hidden `
         -RedirectStandardOutput (Join-Path $RuntimeLog "preprocessing.out.log") `
         -RedirectStandardError (Join-Path $RuntimeLog "preprocessing.err.log") `
@@ -42,14 +42,14 @@ if ($Workflow -in @("human_local_nvidia_16gb", "agent_local_nvidia_16gb")) {
 }
 
 $Autoprompter = $null
-if ($Workflow -eq "human_local_nvidia_16gb") {
+if ($Workflow -eq "local_nvidia_16gb") {
     $Autoprompter = Start-Process -FilePath $Python -PassThru -WindowStyle Hidden `
         -RedirectStandardOutput (Join-Path $RuntimeLog "autoprompter.out.log") `
         -RedirectStandardError (Join-Path $RuntimeLog "autoprompter.err.log") `
         -ArgumentList @(
             "-m", "portrait_pipeline.autoprompter_service",
             "--root", "`"$ProjectRoot`"",
-            "--profile", "human_local_nvidia_16gb",
+            "--profile", "local_nvidia_16gb",
             "--host", "127.0.0.1",
             "--port", "8099",
             "--upstream-port", "8100"

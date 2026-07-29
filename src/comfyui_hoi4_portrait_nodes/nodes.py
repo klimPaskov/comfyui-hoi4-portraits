@@ -18,8 +18,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from portrait_pipeline.constants import ExitCode, RANDOM_PORTRAIT_PROMPT_PATH
-from portrait_pipeline.contracts import validate_job
+from portrait_pipeline.constants import (
+    ExitCode,
+    HOI4_OPERATIVE_BACKGROUND_REGISTRY_ID,
+    HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH,
+    HOI4_OPERATIVE_BACKGROUND_SHA256,
+    HOI4_SCIENTIST_BACKGROUND_REGISTRY_ID,
+    HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH,
+    HOI4_SCIENTIST_BACKGROUND_SHA256,
+    RANDOM_PORTRAIT_PROMPT_PATH,
+)
+from portrait_pipeline.contracts import validate_job, validate_schema
 from portrait_pipeline.prompt import validate_prompt
 from portrait_pipeline.constants import PROFILE_LIMITS
 from portrait_pipeline.util import atomic_json_write, project_root, relative_safe_path, sha256_file
@@ -337,6 +346,73 @@ class HOI4JobInput:
         return (job,)
 
 
+class HOI4PromptJobInput:
+    """Load an agent prompt-only job without requiring a source portrait."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "execution_profile": ("STRING", {"default": "agent_prompt_local_nvidia_16gb"}),
+            "job_contract_path": ("STRING", {"default": "jobs/<job_id>/input.json"}),
+            "candidate_count": ("INT", {"default": 1, "min": 1, "max": 12}),
+            "retry_limit": ("INT", {"default": 0, "min": 0, "max": 4}),
+            "seed_policy": (["fixed", "derived", "random_recorded"], {"default": "derived"}),
+        }}
+
+    RETURN_TYPES = ("HOI4_JOB", "STRING", "HOI4_META", "INT")
+    RETURN_NAMES = ("job", "prompt", "prompt_meta", "seed")
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/01 Portrait idea"
+
+    def run(self, execution_profile: str, job_contract_path: str, candidate_count: int, retry_limit: int, seed_policy: str):
+        root = project_root(os.environ.get("HOI4_PORTRAIT_PROJECT_ROOT", Path.cwd()))
+        path = _job_path(job_contract_path, root)
+        try:
+            job = json.loads(path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            _raise(ExitCode.SOURCE_INVALID, f"job contract missing: {job_contract_path}")
+        except json.JSONDecodeError as exc:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, f"job contract is not valid JSON: {exc}")
+        issues = validate_schema(job, root / "schemas" / "portrait_prompt_job_input.schema.json")
+        if issues:
+            first = issues[0]
+            _raise(first.code, f"{first.path}: {first.message}")
+        if job.get("execution_profile") != execution_profile:
+            _raise(ExitCode.WORKFLOW_INVALID, "job profile does not match the loaded workflow")
+        if int(job.get("candidate_count", 0)) > candidate_count:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "job candidate count exceeds the loaded workflow limit")
+        if int(job.get("retry_limit", 0)) > retry_limit:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "job retry limit exceeds the loaded workflow limit")
+        configured_seed_mode = job.get("seed_policy", {}).get("mode")
+        if configured_seed_mode != seed_policy:
+            _raise(ExitCode.WORKFLOW_INVALID, "job seed policy does not match the loaded workflow")
+        configured_seed = job.get("seed_policy", {}).get("seed")
+        if configured_seed_mode in {"fixed", "random_recorded"}:
+            if not isinstance(configured_seed, int) or isinstance(configured_seed, bool) or configured_seed < 0:
+                _raise(ExitCode.INPUT_SCHEMA_INVALID, f"{configured_seed_mode} seed policy requires a recorded non-negative seed")
+            resolved_seed = configured_seed
+        else:
+            material = f"{job.get('job_id')}:{job.get('prompt')}".encode("utf-8")
+            resolved_seed = int.from_bytes(hashlib.sha256(material).digest()[:8], "big")
+        subject = job.get("subject_identity")
+        record_name = subject.get("record_name") if isinstance(subject, dict) else None
+        result = validate_prompt(
+            prompt=str(job.get("prompt", "")),
+            record_name=record_name,
+            allowed_claims=job.get("allowed_autoprompt_claims"),
+        )
+        if not result.passed:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
+        job["_project_root"] = str(root)
+        job["_workflow_execution_profile"] = execution_profile
+        return job, result.normalized_prompt, {
+            "source": "job_contract",
+            "validator": result.as_dict(),
+            "source_image_required": False,
+            "seed": resolved_seed,
+        }, resolved_seed
+
+
 class HOI4HumanControls:
     @classmethod
     def INPUT_TYPES(cls):
@@ -356,7 +432,7 @@ class HOI4HumanControls:
             "monochrome_mode": (["automatic", "force_skip", "force_run_with_review"], {"default": "automatic"}),
             "restoration_level": (["none", "conservative", "qualified_enhanced"], {"default": "conservative"}),
             "approved_background_registry_id": ("STRING", {"default": "<from_job_contract>"}),
-            "background_choice": (["Keep current background", "Scientist laboratory"], {"default": "Keep current background"}),
+            "background_choice": (["Keep current background", "Scientist laboratory", "Operative background"], {"default": "Keep current background"}),
             "prompt_override": ("STRING", {"default": "", "multiline": True}),
             "seed_mode": (["fixed", "derived", "random_recorded"], {"default": "derived"}),
             "fixed_seed": ("INT", {"default": 0, "min": 0}),
@@ -406,12 +482,17 @@ class HOI4HumanControls:
             updated["seed_policy"] = {"mode": seed_mode}
         else:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown human seed mode")
-        if background_choice not in {"Keep current background", "Scientist laboratory"}:
+        if background_choice not in {"Keep current background", "Scientist laboratory", "Operative background"}:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown portrait background choice")
         if approved_background_registry_id not in {"", "<from_job_contract>"}:
             registry_path = root / "config" / "background_registry.json"
             registry = json.loads(registry_path.read_text(encoding="utf-8")) if registry_path.is_file() else {}
-            matches = [item for item in registry.get("backgrounds", []) if item.get("registry_id") == approved_background_registry_id and item.get("status") == "APPROVED"]
+            matches = [
+                item
+                for item in registry.get("backgrounds", [])
+                if item.get("registry_id") == approved_background_registry_id
+                and item.get("status") in {"APPROVED", "APPROVED_LOCAL_COPY_REQUIRED"}
+            ]
             if not matches:
                 _raise(ExitCode.BACKGROUND_UNRESOLVED, "human background control does not identify an approved registry entry")
             entry = matches[0]
@@ -691,17 +772,35 @@ class HOI4HeadShouldersCrop:
 class HOI4ConservativePrep:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "crop_meta": ("HOI4_META",)}, "optional": {"control_meta": ("HOI4_META",)}}
+        return {
+            "required": {
+                "job": ("HOI4_JOB",),
+                "image": ("IMAGE",),
+                "crop_meta": ("HOI4_META",),
+                "colorized_image": ("IMAGE",),
+            },
+            "optional": {"control_meta": ("HOI4_META",)},
+        }
 
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "reference_meta")
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/03 Prepare portrait"
 
-    def run(self, job: dict[str, Any], image: Any, crop_meta: dict[str, Any], control_meta: dict[str, Any] | None = None):
-        if Image is None:
+    def run(
+        self,
+        job: dict[str, Any],
+        image: Any,
+        crop_meta: dict[str, Any],
+        colorized_image: Any,
+        control_meta: dict[str, Any] | None = None,
+    ):
+        if Image is None or ImageEnhance is None:
             _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required for conservative source preparation")
         source = _comfy_to_pil(image).convert("RGB")
+        colorized = _comfy_to_pil(colorized_image).convert("RGB")
+        if colorized.size != source.size:
+            colorized = colorized.resize(source.size, Image.Resampling.LANCZOS)
         pixels = list(source.getdata())
         if not pixels:
             _raise(ExitCode.SOURCE_INVALID, "cropped source contains no pixels")
@@ -715,32 +814,58 @@ class HOI4ConservativePrep:
             mono_status = "COLOR"
         else:
             mono_status = "UNCERTAIN"
-        profile = str(job.get("execution_profile", ""))
-        limits = PROFILE_LIMITS.get(profile)
-        if not limits:
-            _raise(ExitCode.WORKFLOW_INVALID, "job execution profile is unknown")
-        target = (int(limits["canvas_width"]), int(limits["canvas_height"]))
-        if source.size != target:
-            prepared = source.resize(target, Image.Resampling.LANCZOS)
-            resize_status = "LANCZOS_TO_PROFILE_CANVAS"
-        else:
-            prepared = source
-            resize_status = "IDENTITY_SIZE"
-        # Colorization remains conditional and is intentionally not faked by a
-        # color filter.  A monochrome master is retained when DDColor is not
-        # installed and qualified; the model preflight controls that branch.
         requested_mono_mode = control_meta.get("monochrome_mode", "automatic") if isinstance(control_meta, dict) else "automatic"
         requested_restore = control_meta.get("restoration_level", "conservative") if isinstance(control_meta, dict) else "conservative"
         if requested_restore == "qualified_enhanced":
             _raise(ExitCode.DEPENDENCY_MISSING, "qualified enhanced restoration requires a pinned, A/B-qualified restoration model")
         if requested_mono_mode == "force_skip":
             mono_status = "FORCED_SKIP"
-        if requested_mono_mode == "force_run_with_review" and mono_status == "MONOCHROME":
-            _raise(ExitCode.DEPENDENCY_MISSING, "force-run colorization requested but DDColor is not installed and qualified")
-        colorization_status = "BYPASSED_COLOR_INPUT" if mono_status in {"COLOR", "FORCED_SKIP"} else "SKIPPED_NO_APPROVED_COLORIZER" if mono_status == "MONOCHROME" else "SKIPPED_UNCERTAIN"
+        use_colorized = requested_mono_mode == "force_run_with_review" or (
+            requested_mono_mode == "automatic" and mono_status == "MONOCHROME"
+        )
+        selected = colorized if use_colorized else source
+        colorization_status = "APPLIED_DDCOLOR" if use_colorized else "BYPASSED_COLOR_INPUT"
+        operations = ["EXIF_oriented_decode", colorization_status]
         if requested_restore == "none":
-            resize_status = "PROFILE_RESIZE_ONLY"
-        meta = {"crop_meta": crop_meta, "monochrome": {"verdict": mono_status, "requested_mode": requested_mono_mode, "median_channel_chroma": median_chroma, "neutral_fraction": neutral_fraction}, "colorization": {"status": colorization_status, "model": "DDColor", "identity_master_preserved": True}, "restoration": {"requested_level": requested_restore, "status": "CONSERVATIVE_DETERMINISTIC", "operations": ["EXIF_oriented_decode", resize_status]}, "work_canvas": {"width": prepared.width, "height": prepared.height}, "pixel_sha256": _pixel_digest(prepared)}
+            enhanced = selected
+            restoration_status = "NONE"
+        else:
+            enhanced = ImageEnhance.Contrast(selected).enhance(1.04)
+            enhanced = ImageEnhance.Sharpness(enhanced).enhance(1.08)
+            restoration_status = "CONSERVATIVE_DETERMINISTIC"
+            operations.extend(["contrast_1.04", "sharpness_1.08"])
+        profile = str(job.get("execution_profile", ""))
+        limits = PROFILE_LIMITS.get(profile)
+        if not limits:
+            _raise(ExitCode.WORKFLOW_INVALID, "job execution profile is unknown")
+        target = (int(limits["canvas_width"]), int(limits["canvas_height"]))
+        if enhanced.size != target:
+            prepared = enhanced.resize(target, Image.Resampling.LANCZOS)
+            operations.append("LANCZOS_TO_PROFILE_CANVAS")
+        else:
+            prepared = enhanced
+            operations.append("IDENTITY_SIZE")
+        meta = {
+            "crop_meta": crop_meta,
+            "monochrome": {
+                "verdict": mono_status,
+                "requested_mode": requested_mono_mode,
+                "median_channel_chroma": median_chroma,
+                "neutral_fraction": neutral_fraction,
+            },
+            "colorization": {
+                "status": colorization_status,
+                "model": "DDColor/ddcolor_modelscope.pth",
+                "identity_master_preserved": True,
+            },
+            "restoration": {
+                "requested_level": requested_restore,
+                "status": restoration_status,
+                "operations": operations,
+            },
+            "work_canvas": {"width": prepared.width, "height": prepared.height},
+            "pixel_sha256": _pixel_digest(prepared),
+        }
         job_root = _job_root(job)
         _write_image(job_root / "evidence" / "reference" / "processed.png", prepared)
         atomic_json_write(job_root / "evidence" / "reference" / "processed.json", meta)
@@ -966,8 +1091,8 @@ class HOI4BundledBackground:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-            "asset_path": ("STRING", {"default": "backgrounds/bundled/scientist_laboratory_cc0.jpg"}),
-            "asset_sha256": ("STRING", {"default": "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa"}),
+            "asset_path": ("STRING", {"default": HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH}),
+            "asset_sha256": ("STRING", {"default": HOI4_SCIENTIST_BACKGROUND_SHA256}),
         }}
 
     RETURN_TYPES = ("IMAGE", "HOI4_META")
@@ -976,23 +1101,46 @@ class HOI4BundledBackground:
     CATEGORY = "HOI4 Portrait/04 Background"
 
     def run(self, asset_path: str, asset_sha256: str):
-        if asset_path != "backgrounds/bundled/scientist_laboratory_cc0.jpg":
-            _raise(ExitCode.BACKGROUND_UNRESOLVED, "unsupported bundled background")
-        if asset_sha256 != "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa":
-            _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "scientist background checksum setting is incorrect")
+        supported_assets = {
+            HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH: {
+                "registry_id": HOI4_SCIENTIST_BACKGROUND_REGISTRY_ID,
+                "sha256": HOI4_SCIENTIST_BACKGROUND_SHA256,
+                "name": "scientist",
+            },
+            HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH: {
+                "registry_id": HOI4_OPERATIVE_BACKGROUND_REGISTRY_ID,
+                "sha256": HOI4_OPERATIVE_BACKGROUND_SHA256,
+                "name": "operative",
+            },
+        }
+        selected = supported_assets.get(asset_path)
+        if selected is None:
+            _raise(ExitCode.BACKGROUND_UNRESOLVED, "unsupported HOI4 portrait background path")
+        if asset_sha256 != selected["sha256"]:
+            _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, f"{selected['name']} background checksum setting is incorrect")
         root = project_root(os.environ.get("HOI4_PORTRAIT_PROJECT_ROOT", Path.cwd()))
         path = relative_safe_path(root, asset_path)
-        if not path.is_file() or sha256_file(path) != asset_sha256:
-            _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "scientist background is missing or changed")
         if Image is None:
-            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required to load the scientist background")
+            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required to load an HOI4 portrait background")
+        if not path.is_file():
+            placeholder = Image.new("RGB", (312, 420), (12, 18, 24))
+            return _pil_to_comfy(placeholder), {
+                "registry_id": selected["registry_id"],
+                "asset_path": asset_path,
+                "asset_sha256": asset_sha256,
+                "available": False,
+                "pixel_sha256": _pixel_digest(placeholder),
+            }
+        if sha256_file(path) != asset_sha256:
+            _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, f"the copied HOI4 {selected['name']} background has changed")
         with Image.open(path) as opened:
             image = opened.convert("RGB")
             image.load()
         return _pil_to_comfy(image), {
-            "registry_id": "scientist_laboratory_cc0",
+            "registry_id": selected["registry_id"],
             "asset_path": asset_path,
             "asset_sha256": asset_sha256,
+            "available": True,
             "pixel_sha256": _pixel_digest(image),
         }
 
@@ -1006,6 +1154,8 @@ class HOI4MaskAndBackgroundGuard:
                 "control_meta": ("HOI4_META",),
                 "scientist_background": ("IMAGE",),
                 "scientist_background_meta": ("HOI4_META",),
+                "operative_background": ("IMAGE",),
+                "operative_background_meta": ("HOI4_META",),
             },
         }
 
@@ -1014,7 +1164,18 @@ class HOI4MaskAndBackgroundGuard:
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/04 Choose background"
 
-    def run(self, job: dict[str, Any], image: Any, mask: Any, mask_meta: dict[str, Any], control_meta: dict[str, Any] | None = None, scientist_background: Any = None, scientist_background_meta: dict[str, Any] | None = None):
+    def run(
+        self,
+        job: dict[str, Any],
+        image: Any,
+        mask: Any,
+        mask_meta: dict[str, Any],
+        control_meta: dict[str, Any] | None = None,
+        scientist_background: Any = None,
+        scientist_background_meta: dict[str, Any] | None = None,
+        operative_background: Any = None,
+        operative_background_meta: dict[str, Any] | None = None,
+    ):
         root = _project_from_job(job)
         required_components = {"person_alpha", "hard_interior", "face", "hair_hat_boundary", "accessory_attention", "background", "boundary_ring"}
         component_records = mask_meta.get("component_masks") if isinstance(mask_meta, dict) else None
@@ -1046,21 +1207,32 @@ class HOI4MaskAndBackgroundGuard:
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "background registry is missing")
         registry = json.loads(registry_path.read_text(encoding="utf-8"))
         requested = job.get("approved_background", {})
-        if background_choice == "Scientist laboratory":
-            scientist_matches = [
+        selected_local_background: tuple[str, Any, dict[str, Any] | None] | None = None
+        if background_choice in {"Scientist laboratory", "Operative background"}:
+            selected_registry_id = (
+                HOI4_SCIENTIST_BACKGROUND_REGISTRY_ID
+                if background_choice == "Scientist laboratory"
+                else HOI4_OPERATIVE_BACKGROUND_REGISTRY_ID
+            )
+            local_matches = [
                 item for item in registry.get("backgrounds", [])
-                if item.get("registry_id") == "scientist_laboratory_cc0"
+                if item.get("registry_id") == selected_registry_id
             ]
-            if not scientist_matches:
-                _raise(ExitCode.BACKGROUND_UNRESOLVED, "scientist background is not registered")
-            entry = scientist_matches[0]
+            if not local_matches:
+                _raise(ExitCode.BACKGROUND_UNRESOLVED, f"{background_choice.casefold()} is not registered")
+            entry = local_matches[0]
             requested = {
                 "registry_id": entry.get("registry_id"),
                 "path": entry.get("runtime_path"),
                 "sha256": entry.get("sha256"),
             }
+            selected_local_background = (
+                "scientist" if background_choice == "Scientist laboratory" else "operative",
+                scientist_background if background_choice == "Scientist laboratory" else operative_background,
+                scientist_background_meta if background_choice == "Scientist laboratory" else operative_background_meta,
+            )
         matches = [item for item in registry.get("backgrounds", []) if item.get("registry_id") == requested.get("registry_id")]
-        if not matches or matches[0].get("status") != "APPROVED" or matches[0].get("sha256") != requested.get("sha256"):
+        if not matches or matches[0].get("status") != "APPROVED_LOCAL_COPY_REQUIRED" or matches[0].get("sha256") != requested.get("sha256"):
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "requested background does not match an approved registry entry")
         if torch is None or Image is None:
             _raise(ExitCode.DEPENDENCY_MISSING, "PyTorch and Pillow are required for the background composite")
@@ -1075,15 +1247,17 @@ class HOI4MaskAndBackgroundGuard:
         with Image.open(background_path) as background_image:
             original_background = background_image.convert("RGB")
             original_background.load()
-        if background_choice == "Scientist laboratory":
-            if scientist_background is None or not isinstance(scientist_background_meta, dict):
-                _raise(ExitCode.BACKGROUND_UNRESOLVED, "scientist background node is not connected")
+        if selected_local_background is not None:
+            background_name, node_background, node_background_meta = selected_local_background
+            if node_background is None or not isinstance(node_background_meta, dict):
+                _raise(ExitCode.BACKGROUND_UNRESOLVED, f"{background_name} background node is not connected")
             if (
-                scientist_background_meta.get("registry_id") != requested["registry_id"]
-                or scientist_background_meta.get("asset_sha256") != requested["sha256"]
-                or _pixel_digest(_comfy_to_pil(scientist_background).convert("RGB")) != scientist_background_meta.get("pixel_sha256")
+                node_background_meta.get("available") is not True
+                or node_background_meta.get("registry_id") != requested["registry_id"]
+                or node_background_meta.get("asset_sha256") != requested["sha256"]
+                or _pixel_digest(_comfy_to_pil(node_background).convert("RGB")) != node_background_meta.get("pixel_sha256")
             ):
-                _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "scientist background node does not match the bundled asset")
+                _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, f"the HOI4 {background_name} background is unavailable or changed")
         background_image = original_background.resize((image.shape[2], image.shape[1]))
         background = _pil_to_comfy(background_image).to(device=image.device, dtype=image.dtype)
         working_mask = mask
@@ -1186,8 +1360,8 @@ class HOI4RandomPortraitPrompt:
             "instruction_path": ("STRING", {"default": RANDOM_PORTRAIT_PROMPT_PATH}),
         }}
 
-    RETURN_TYPES = ("STRING", "HOI4_META")
-    RETURN_NAMES = ("prompt", "prompt_details")
+    RETURN_TYPES = ("STRING", "HOI4_META", "INT")
+    RETURN_NAMES = ("prompt", "prompt_details", "seed")
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/01 Portrait idea"
 
@@ -1262,7 +1436,7 @@ class HOI4RandomPortraitPrompt:
             "selected": selected,
             "used_image": False,
             "used_language_model": False,
-        }
+        }, int(seed)
 
 
 class HOI4AutopromptClient:
@@ -1287,7 +1461,7 @@ class HOI4AutopromptClient:
     def run(self, job: dict[str, Any], image: Any, background_meta: dict[str, Any], control_meta: dict[str, Any], instruction_text: str, instruction_path: str, model_id: str, prompt_source: str):
         if prompt_source != "autoprompter":
             _raise(ExitCode.WORKFLOW_INVALID, "human autoprompter source is locked")
-        expected_model = "Qwen/Qwen3-VL-4B-Instruct-GGUF" if job.get("execution_profile") == "human_local_nvidia_16gb" else "Qwen/Qwen3-VL-8B-Instruct"
+        expected_model = "Qwen/Qwen3-VL-4B-Instruct-GGUF" if job.get("execution_profile") == "local_nvidia_16gb" else "Qwen/Qwen3-VL-8B-Instruct"
         if model_id != expected_model:
             _raise(ExitCode.WORKFLOW_INVALID, f"autoprompter model does not match profile; expected {expected_model}")
         root = _project_from_job(job)

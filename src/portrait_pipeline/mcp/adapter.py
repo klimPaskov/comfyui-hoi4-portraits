@@ -114,8 +114,8 @@ class PortraitMcpService:
 
     def _workflow_path(self, workflow_id: str, api: bool = True) -> Path:
         paths = {
-            "human_local_nvidia_16gb": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
-            "human_full_power_gpu": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
+            "local_nvidia_16gb": "workflows/human/local_nvidia_16gb/local_nvidia_16gb.api.json",
+            "full_power_gpu": "workflows/human/full_power_gpu/full_power_gpu.api.json",
             "agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
             "agent_full_power_gpu": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
         }

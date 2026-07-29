@@ -26,6 +26,7 @@ from .nodes import (
     HOI4HumanControls,
     HOI4HeadShouldersCrop,
     HOI4JobInput,
+    HOI4PromptJobInput,
     HOI4JobSource,
     HOI4MaskAndBackgroundGuard,
     HOI4FinishPreparedPortrait,
@@ -40,6 +41,7 @@ from .nodes import (
 
 NODE_CLASS_MAPPINGS = {
     "HOI4JobInput": HOI4JobInput,
+    "HOI4PromptJobInput": HOI4PromptJobInput,
     "HOI4HumanControls": HOI4HumanControls,
     "HOI4JobSource": HOI4JobSource,
     "HOI4SourceGuard": HOI4SourceGuard,
@@ -62,6 +64,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     key: value.replace("HOI4", "HOI4 ").replace("Input", "Input") for key, value in {
         "HOI4JobInput": "Portrait workflow settings",
+        "HOI4PromptJobInput": "Load portrait description",
         "HOI4HumanControls": "Input portrait & portrait options",
         "HOI4JobSource": "Load input portrait",
         "HOI4SourceGuard": "Check input portrait",
@@ -77,7 +80,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
         "HOI4PromptInput": "Use portrait description",
         "HOI4RandomPortraitPrompt": "Create a fictional portrait idea",
         "HOI4AutopromptClient": "Create portrait description",
-        "HOI4BundledBackground": "Optional scientist laboratory background",
+        "HOI4BundledBackground": "HOI4 portrait background",
         "HOI4EvidenceExport": "Prepare portrait for saving",
     }.items()
 }

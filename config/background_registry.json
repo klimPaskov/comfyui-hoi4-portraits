@@ -1,28 +1,54 @@
 {
   "schema_version": "1.0.0",
-  "registry_status": "RESOLVED",
+  "registry_status": "RESOLVED_LOCAL_GAME_COPY",
   "backgrounds": [
     {
-      "registry_id": "scientist_laboratory_cc0",
+      "registry_id": "hoi4_scientist_portrait_background",
       "role_scope": [
         "country_leader",
         "commander",
         "operative"
       ],
-      "source_class": "redistributable_public_domain",
-      "source_path": "https://commons.wikimedia.org/wiki/File:Interior_of_a_laboratory(GN04185).jpg",
-      "runtime_path": "backgrounds/bundled/scientist_laboratory_cc0.jpg",
-      "source_definition": "Interior of a laboratory, circa 1905",
-      "attribution": "State Government Photographer; History Trust of South Australia",
-      "license_or_rights": "CC0 1.0 Universal",
-      "redistribution_rule": "bundle_allowed",
-      "width": 3264,
-      "height": 2448,
-      "sha256": "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa",
+      "source_class": "installed_game_private_copy",
+      "source_path": "tools/art/scientists_BG.png",
+      "runtime_path": "backgrounds/local/hoi4_scientists_BG.png",
+      "source_definition": "Hearts of Iron IV scientist portrait background",
+      "attribution": "Paradox Interactive / Hearts of Iron IV",
+      "license_or_rights": "Proprietary game asset; a local Hearts of Iron IV installation is required",
+      "redistribution_rule": "local_copy_only",
+      "width": 312,
+      "height": 420,
+      "sha256": "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e",
+      "verified_game_version": "Case Green v1.18.0.0.858d (3bae)",
+      "verified_steam_build_id": "22891821",
       "approved_by": [
         "project maintainer"
       ],
-      "status": "APPROVED"
+      "status": "APPROVED_LOCAL_COPY_REQUIRED"
+    },
+    {
+      "registry_id": "hoi4_operative_portrait_background",
+      "role_scope": [
+        "country_leader",
+        "commander",
+        "operative"
+      ],
+      "source_class": "installed_game_private_copy",
+      "source_path": "tools/art/portrait_operative_background.png",
+      "runtime_path": "backgrounds/local/hoi4_operative_background.png",
+      "source_definition": "Hearts of Iron IV operative portrait background",
+      "attribution": "Paradox Interactive / Hearts of Iron IV",
+      "license_or_rights": "Proprietary game asset; a local Hearts of Iron IV installation is required",
+      "redistribution_rule": "local_copy_only",
+      "width": 312,
+      "height": 420,
+      "sha256": "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d",
+      "verified_game_version": "Case Green v1.18.0.0.858d (3bae)",
+      "verified_steam_build_id": "22891821",
+      "approved_by": [
+        "project maintainer"
+      ],
+      "status": "APPROVED_LOCAL_COPY_REQUIRED"
     }
   ]
 }
