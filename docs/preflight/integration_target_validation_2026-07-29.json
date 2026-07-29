@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "observed_at": "2026-07-29T00:35:32.703087+00:00",
+  "observed_at": "2026-07-29T02:42:52.373365+00:00",
   "scope": "read_only_live_integration_target_validation",
   "overall_status": "PORTABLE_VALIDATION_PASS_LIVE_APPLY_BLOCKED",
   "source_project": "comfyui-hoi4-portraits",
