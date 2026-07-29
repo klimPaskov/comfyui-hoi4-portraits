@@ -39,6 +39,8 @@ The agent profiles contain no autoprompter. The prompt must be present in the va
 
 When an approved private role-specific visual reference manifest is available, run the separate auditor with `--visual-reference-manifest <private-job-root>/references/manifest.json`. The auditor starts the pinned loopback Qwen rubric runtime, verifies every reference checksum, terminates that model process, and then recomputes the full audit. Missing or unapproved reference sets leave the visual gates `UNCERTAIN`; they never authorize thresholds or promotion.
 
+For a verified CUDA host, add `--visual-runtime-profile full_power_gpu`; that route uses the pinned Qwen3-VL-8B Transformers/BF16 lock and fails closed when CUDA is unavailable.
+
 ```text
 .venv/bin/python scripts/audit_candidate.py \
   --job-root <private-job-root> \

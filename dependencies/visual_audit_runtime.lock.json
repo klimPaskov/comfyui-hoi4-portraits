@@ -30,6 +30,20 @@
     "mmproj_path": "models/autoprompter/mmproj-Qwen3VL-4B-Instruct-F16.gguf",
     "mmproj_sha256": "256f3a43bd4205ffef48d6b92715e1e70b5b0e9aef06522584967513a9985331"
   },
+  "full_power": {
+    "source": "Qwen/Qwen3-VL-8B-Instruct",
+    "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "model_lock_entry": "Qwen3-VL-8B-Instruct-BF16-shards",
+    "model_root": "models/autoprompter",
+    "artifact_manifest_sha256": "f98da5ae00f1c07b5dffafbb0b7f78340271ab5f7abc3504a326dafb3199b564",
+    "loader": "transformers.Qwen3VLForConditionalGeneration",
+    "processor": "transformers.AutoProcessor",
+    "transformers_version": "5.14.1",
+    "torch_dtype": "bfloat16",
+    "device_requirement": "CUDA",
+    "max_tokens": 512,
+    "temperature": 0.0
+  },
   "response_contract": {
     "format": "json_object",
     "required_fields": [

@@ -27,9 +27,10 @@ def main() -> int:
     parser.add_argument("--visual-reference-manifest", type=Path, default=None, help="private approved role-specific reference-set manifest")
     parser.add_argument("--visual-auditor-process-id", default=None)
     parser.add_argument("--visual-port", type=int, default=None)
+    parser.add_argument("--visual-runtime-profile", choices=("local_mac_16gb", "full_power_gpu"), default="local_mac_16gb")
     args = parser.parse_args()
     if args.visual_reference_manifest is not None:
-        VisualAuditProducer(port=args.visual_port, auditor_process_id=args.visual_auditor_process_id).produce(
+        VisualAuditProducer(runtime_profile=args.visual_runtime_profile, port=args.visual_port, auditor_process_id=args.visual_auditor_process_id).produce(
             private_root=args.job_root,
             source_path=args.source_master,
             candidate_path=args.candidate,

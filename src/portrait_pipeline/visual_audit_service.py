@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from .contracts import validate_schema
-from .util import atomic_json_write, project_root, relative_safe_path, sha256_file
+from .util import atomic_json_write, canonical_hash, project_root, relative_safe_path, sha256_file
 
 
 VISUAL_AUDIT_LOCK_PATH = "dependencies/visual_audit_runtime.lock.json"
@@ -78,6 +78,45 @@ def _load_runtime_lock(root: Path) -> tuple[dict[str, Any], Path, Path, Path, Pa
     if model_entry.get("revision") != model.get("revision") or model_entry.get("sha256") != model.get("sha256") or model_entry.get("size_bytes") != model_path.stat().st_size:
         raise VisualAuditServiceError("visual-audit model does not match its pinned model-lock entry")
     return lock, rubric_path, binary_path, model_path, mmproj_path
+
+
+def _load_full_power_runtime_lock(root: Path) -> tuple[dict[str, Any], Path, Path, dict[str, Any]]:
+    """Verify the pinned Transformers/CUDA model and return its descriptor."""
+
+    lock = _read_json(root / VISUAL_AUDIT_LOCK_PATH, "visual-audit runtime lock")
+    if lock.get("status") != "PINNED_LOCAL_LOOPBACK_PRODUCER_EXECUTION_UNVERIFIED":
+        raise VisualAuditServiceError("visual-audit runtime lock is not in the pinned state")
+    rubric = lock.get("rubric")
+    full_power = lock.get("full_power")
+    if not isinstance(rubric, dict) or not isinstance(full_power, dict):
+        raise VisualAuditServiceError("full-power visual-audit lock sections are incomplete")
+    rubric_path = _verify_locked_file(root, str(rubric["path"]), str(rubric["sha256"]), int(rubric["size_bytes"]), "visual rubric")
+    models_lock = _read_json(root / "dependencies/models.lock.json", "model lock")
+    entry = next((item for item in models_lock.get("models", []) if isinstance(item, dict) and item.get("name") == full_power.get("model_lock_entry")), None)
+    if not isinstance(entry, dict):
+        raise VisualAuditServiceError("full-power visual-audit model is absent from the model lock")
+    if entry.get("revision") != full_power.get("revision"):
+        raise VisualAuditServiceError("full-power visual-audit model revision does not match the lock")
+    model_root = relative_safe_path(root, str(full_power["model_root"]))
+    for filename, expected_sha256 in sorted((entry.get("shard_sha256") or {}).items()):
+        _verify_locked_file(root, f"{full_power['model_root']}/{filename}", str(expected_sha256), int(entry.get("shard_size_bytes", {}).get(filename, -1)), "full-power visual-audit model shard")
+    for runtime_file in entry.get("runtime_files", []):
+        _verify_locked_file(root, f"{full_power['model_root']}/{runtime_file['filename']}", str(runtime_file["sha256"]), int(runtime_file["size_bytes"]), "full-power visual-audit runtime file")
+    manifest_value = {"revision": entry["revision"], "shard_sha256": entry["shard_sha256"], "runtime_files": entry["runtime_files"]}
+    manifest_sha256 = canonical_hash(manifest_value)
+    if manifest_sha256 != full_power.get("artifact_manifest_sha256"):
+        raise VisualAuditServiceError("full-power visual-audit model manifest checksum does not match the lock")
+    model = {
+        "name": entry["name"],
+        "revision": entry["revision"],
+        "artifact_sha256": manifest_sha256,
+        "root": model_root,
+        "loader": full_power["loader"],
+        "processor": full_power["processor"],
+        "torch_dtype": full_power["torch_dtype"],
+        "device_requirement": full_power["device_requirement"],
+    }
+    return lock, rubric_path, model_root, model
 
 
 def load_reference_set(private_root: str | Path, manifest_path: str | Path, *, schema_root: str | Path | None = None) -> dict[str, Any]:
@@ -197,20 +236,59 @@ def _parse_model_response(response: dict[str, Any]) -> dict[str, Any]:
 class VisualAuditProducer:
     """One-shot local producer for a separate visual-audit process."""
 
-    def __init__(self, root: str | Path | None = None, *, port: int | None = None, auditor_process_id: str | None = None):
+    def __init__(self, root: str | Path | None = None, *, runtime_profile: str = "local_mac_16gb", port: int | None = None, auditor_process_id: str | None = None):
         self.root = project_root(root)
-        self.lock, self.rubric_path, self.binary_path, self.model_path, self.mmproj_path_text = _load_runtime_lock(self.root)
-        self.model = self.lock["model"]
-        self.runtime = self.lock["runtime"]
-        self.port = int(port if port is not None else self.runtime["port"])
+        if runtime_profile not in {"local_mac_16gb", "full_power_gpu"}:
+            raise VisualAuditServiceError("unsupported visual-audit runtime profile")
+        self.runtime_profile = runtime_profile
+        self.binary_path: Path | None = None
+        self.mmproj_path_text: Path | None = None
+        self.model_path: Path | None = None
+        self._hf_model: Any = None
+        self._hf_processor: Any = None
+        if runtime_profile == "local_mac_16gb":
+            self.lock, self.rubric_path, self.binary_path, self.model_path, self.mmproj_path_text = _load_runtime_lock(self.root)
+            self.model = self.lock["model"]
+            self.runtime = self.lock["runtime"]
+            default_port = self.runtime["port"]
+        else:
+            self.lock, self.rubric_path, self.model_path, self.model = _load_full_power_runtime_lock(self.root)
+            self.runtime = self.lock["full_power"]
+            default_port = None
+        self.port = int(port if port is not None else default_port or 0)
         self.auditor_process_id = auditor_process_id or f"visual-auditor-{os.getpid()}"
         self.child: subprocess.Popen[bytes] | None = None
 
     @property
     def mmproj_path(self) -> Path:
-        return Path(self.mmproj_path_text)
+        if self.mmproj_path_text is None:
+            raise VisualAuditServiceError("full-power visual-audit runtime has no GGUF projector")
+        return self.mmproj_path_text
 
     def start(self) -> None:
+        if self.runtime_profile == "full_power_gpu":
+            try:
+                import torch  # type: ignore
+                from transformers import AutoProcessor, Qwen3VLForConditionalGeneration  # type: ignore
+            except Exception as exc:
+                raise VisualAuditServiceError(f"full-power visual-audit Transformers runtime is unavailable: {type(exc).__name__}") from exc
+            if not torch.cuda.is_available():
+                raise VisualAuditServiceError("full-power visual-audit requires CUDA; the current host has no CUDA device")
+            if getattr(__import__("transformers"), "__version__", None) != self.runtime["transformers_version"]:
+                raise VisualAuditServiceError("full-power visual-audit Transformers version does not match the lock")
+            try:
+                self._hf_processor = AutoProcessor.from_pretrained(str(self.model_path), local_files_only=True)
+                self._hf_model = Qwen3VLForConditionalGeneration.from_pretrained(
+                    str(self.model_path),
+                    local_files_only=True,
+                    torch_dtype=torch.bfloat16,
+                    device_map="auto",
+                )
+            except Exception as exc:
+                self._hf_model = None
+                self._hf_processor = None
+                raise VisualAuditServiceError(f"full-power visual-audit model load failed: {type(exc).__name__}") from exc
+            return
         command = [
             str(self.binary_path),
             "--model", str(self.model_path),
@@ -239,6 +317,17 @@ class VisualAuditProducer:
         raise VisualAuditServiceError("visual-audit llama-server health readiness timed out")
 
     def stop(self) -> None:
+        if self.runtime_profile == "full_power_gpu":
+            self._hf_model = None
+            self._hf_processor = None
+            try:
+                import torch  # type: ignore
+
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            except Exception:
+                pass
+            return
         if self.child is None or self.child.poll() is not None:
             return
         self.child.terminate()
@@ -247,6 +336,40 @@ class VisualAuditProducer:
         except subprocess.TimeoutExpired:
             self.child.kill()
             self.child.wait(timeout=20)
+
+    def _complete_full_power(self, rubric: str, image_paths: list[Path]) -> dict[str, Any]:
+        if self._hf_model is None or self._hf_processor is None:
+            raise VisualAuditServiceError("full-power visual-audit model is not ready")
+        try:
+            import torch  # type: ignore
+            from PIL import Image  # type: ignore
+
+            images = []
+            for path in image_paths:
+                with Image.open(path) as source:
+                    image = source.convert("RGB")
+                    image.thumbnail((768, 768), Image.Resampling.LANCZOS)
+                    images.append(image.copy())
+            content: list[dict[str, Any]] = [{"type": "text", "text": rubric}]
+            content.extend({"type": "image", "image": image} for image in images)
+            messages = [{"role": "user", "content": content}]
+            try:
+                inputs = self._hf_processor.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt", return_dict=True, enable_thinking=False)
+            except TypeError:
+                inputs = self._hf_processor.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt", return_dict=True)
+            device = next(self._hf_model.parameters()).device
+            inputs = {key: value.to(device) if hasattr(value, "to") else value for key, value in inputs.items()}
+            with torch.inference_mode():
+                generated = self._hf_model.generate(**inputs, max_new_tokens=int(self.runtime["max_tokens"]), do_sample=False)
+            input_ids = inputs.get("input_ids")
+            if input_ids is not None:
+                generated = [output[len(input_row):] for input_row, output in zip(input_ids, generated)]
+            content_text = self._hf_processor.batch_decode(generated, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+            return {"choices": [{"message": {"content": content_text}}]}
+        except VisualAuditServiceError:
+            raise
+        except Exception as exc:
+            raise VisualAuditServiceError(f"full-power visual-audit generation failed: {type(exc).__name__}") from exc
 
     def produce(
         self,
@@ -268,21 +391,26 @@ class VisualAuditProducer:
         reference = load_reference_set(job_root, reference_manifest, schema_root=self.root)
         source_sha256 = sha256_file(source)
         candidate_sha256 = sha256_file(candidate)
-        content = [{"type": "text", "text": self.rubric_path.read_text(encoding="utf-8")}, {"type": "image_url", "image_url": {"url": _image_data_url(source)}}]
-        content.append({"type": "image_url", "image_url": {"url": _image_data_url(candidate)}})
-        content.extend({"type": "image_url", "image_url": {"url": _image_data_url(path)}} for path in reference["images"])
-        payload = {
-            "model": self.model["name"],
-            "messages": [{"role": "user", "content": content}],
-            "max_tokens": int(self.runtime["max_tokens"]),
-            "temperature": float(self.runtime["temperature"]),
-            "seed": 0,
-            "stream": False,
-            "response_format": {"type": "json_object"},
-        }
+        rubric = self.rubric_path.read_text(encoding="utf-8")
+        input_paths = [source, candidate, *reference["images"]]
         self.start()
         try:
-            model_response = _parse_model_response(_post_json(f"http://127.0.0.1:{self.port}/v1/chat/completions", payload))
+            if self.runtime_profile == "full_power_gpu":
+                model_response = _parse_model_response(self._complete_full_power(rubric, input_paths))
+            else:
+                content = [{"type": "text", "text": rubric}, {"type": "image_url", "image_url": {"url": _image_data_url(source)}}]
+                content.append({"type": "image_url", "image_url": {"url": _image_data_url(candidate)}})
+                content.extend({"type": "image_url", "image_url": {"url": _image_data_url(path)}} for path in reference["images"])
+                payload = {
+                    "model": self.model["name"],
+                    "messages": [{"role": "user", "content": content}],
+                    "max_tokens": int(self.runtime["max_tokens"]),
+                    "temperature": float(self.runtime["temperature"]),
+                    "seed": 0,
+                    "stream": False,
+                    "response_format": {"type": "json_object"},
+                }
+                model_response = _parse_model_response(_post_json(f"http://127.0.0.1:{self.port}/v1/chat/completions", payload))
         finally:
             self.stop()
         record = {
@@ -296,7 +424,7 @@ class VisualAuditProducer:
             "model": {
                 "name": self.model["name"],
                 "revision": self.model["revision"],
-                "artifact_sha256": self.model["sha256"],
+                "artifact_sha256": self.model.get("sha256", self.model.get("artifact_sha256")),
             },
             "reference_set": {
                 "id": reference["id"],
@@ -308,7 +436,7 @@ class VisualAuditProducer:
             "candidate_sha256": candidate_sha256,
             "scores": model_response["scores"],
             "human_readable_evidence": model_response["human_readable_evidence"],
-            "notes": f"fixed_rubric_sha256={sha256_file(self.rubric_path)}; reference_set_revision={reference['revision']}",
+            "notes": f"fixed_rubric_sha256={sha256_file(self.rubric_path)}; reference_set_revision={reference['revision']}; runtime_profile={self.runtime_profile}",
         }
         issues = validate_schema(record, self.root / VISUAL_EVIDENCE_SCHEMA_PATH)
         if issues:
@@ -328,9 +456,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--auditor-process-id", default=None)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--port", type=int, default=None)
+    parser.add_argument("--runtime-profile", choices=("local_mac_16gb", "full_power_gpu"), default="local_mac_16gb")
     args = parser.parse_args(argv)
     try:
-        producer = VisualAuditProducer(port=args.port, auditor_process_id=args.auditor_process_id)
+        producer = VisualAuditProducer(runtime_profile=args.runtime_profile, port=args.port, auditor_process_id=args.auditor_process_id)
         record = producer.produce(private_root=args.private_root, source_path=args.source, candidate_path=args.candidate, reference_manifest=args.reference_manifest, producer_process_id=args.producer_process_id, output_path=args.output)
     except VisualAuditServiceError as exc:
         print(json.dumps({"status": "BLOCKED", "error": str(exc)}), file=sys.stderr)

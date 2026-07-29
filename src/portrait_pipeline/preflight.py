@@ -577,9 +577,10 @@ def _visual_audit_runtime_preflight(root: Path) -> dict[str, Any]:
     lock_path = root / "dependencies" / "visual_audit_runtime.lock.json"
     evidence: dict[str, Any] = {"lock_path": str(lock_path.relative_to(root)), "execution_status": "NOT_RUN", "production_claim": "NOT_CLAIMED"}
     try:
-        from .visual_audit_service import _load_runtime_lock
+        from .visual_audit_service import _load_full_power_runtime_lock, _load_runtime_lock
 
         lock, rubric, binary, model, mmproj = _load_runtime_lock(root)
+        full_lock, full_rubric, full_model_root, full_model = _load_full_power_runtime_lock(root)
     except Exception as exc:
         return {"status": "BLOCKED", **evidence, "error_type": type(exc).__name__, "reason": str(exc)}
     evidence.update({
@@ -594,6 +595,16 @@ def _visual_audit_runtime_preflight(root: Path) -> dict[str, Any]:
         "mmproj_sha256": sha256_file(mmproj),
         "model_revision": lock.get("model", {}).get("revision"),
         "rubric_contract": lock.get("response_contract"),
+        "full_power": {
+            "lock_status": full_lock.get("status"),
+            "rubric_path": str(full_rubric.relative_to(root)),
+            "model_root": str(full_model_root.relative_to(root)),
+            "model_revision": full_model["revision"],
+            "artifact_manifest_sha256": full_model["artifact_sha256"],
+            "loader": full_model["loader"],
+            "device_requirement": full_model["device_requirement"],
+            "execution_status": "NOT_RUN_CUDA_UNAVAILABLE_OR_UNVERIFIED",
+        },
     })
     return {"status": "PASS_FORMAT_ONLY_EXECUTION_UNVERIFIED", **evidence}
 

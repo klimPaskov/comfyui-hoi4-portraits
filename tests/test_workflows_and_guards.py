@@ -397,6 +397,28 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertEqual(len(content), 4)
             self.assertIn("SOURCE", content[0]["text"])
 
+    def test_full_power_visual_audit_route_fails_closed_without_cuda(self):
+        from portrait_pipeline.visual_audit_service import VisualAuditProducer, VisualAuditServiceError
+
+        lock = {
+            "status": "PINNED_LOCAL_LOOPBACK_PRODUCER_EXECUTION_UNVERIFIED",
+            "full_power": {"transformers_version": "5.14.1", "max_tokens": 512},
+        }
+        descriptor = {
+            "name": "Qwen3-VL-8B-Instruct-BF16-shards",
+            "revision": "test-revision",
+            "artifact_sha256": "a" * 64,
+            "root": self.root / "models/autoprompter",
+            "loader": "transformers.Qwen3VLForConditionalGeneration",
+            "processor": "transformers.AutoProcessor",
+            "torch_dtype": "bfloat16",
+            "device_requirement": "CUDA",
+        }
+        with mock.patch("portrait_pipeline.visual_audit_service._load_full_power_runtime_lock", return_value=(lock, self.root / "prompts/visual_audit_rubric.txt", self.root / "models/autoprompter", descriptor)), mock.patch("torch.cuda.is_available", return_value=False):
+            producer = VisualAuditProducer(root=self.root, runtime_profile="full_power_gpu", auditor_process_id="visual-auditor-2")
+            with self.assertRaises(VisualAuditServiceError):
+                producer.start()
+
     def test_acceptance_schema_gate_includes_visual_audit_contracts(self):
         from portrait_pipeline.acceptance import _schema_gate
 
