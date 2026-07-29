@@ -1,6 +1,6 @@
 # RunPod setup
 
-Use a private Pod with persistent storage and an existing current ComfyUI installation. The scripts never download or replace ComfyUI.
+Use a private Pod with persistent storage and a ComfyUI template.
 
 ## Fast path
 
@@ -23,11 +23,12 @@ If your template stores ComfyUI elsewhere, replace `/workspace/ComfyUI` with the
 | HOI4 style LoRA | `loras/` |
 | Full-power human autoprompter | `models/autoprompter/` |
 | Face, mask, and restoration models | `models/preprocessing/` |
+| Black-and-white color model | `custom_nodes/ComfyUI-DDColor/checkpoints/` |
 | Project custom nodes | `<ComfyUI>/custom_nodes/hoi4_portrait_nodes/` |
 | Krea Edit custom nodes | `<ComfyUI>/custom_nodes/comfyui-krea2edit/` |
-| Human full-power workflow | `<ComfyUI>/user/default/workflows/hoi4_portraits/human_full_power_gpu.json` |
+| Full-power workflows | `<ComfyUI>/user/default/workflows/hoi4_portraits/` |
 
-Every external artifact is revision-pinned and checksum-verified. `extra_model_paths.yaml` is updated with a marked HOI4 block, so no manual file movement or model-folder navigation is needed.
+The installer registers these folders automatically, so no manual model movement is needed.
 
 ## Expanded commands
 
@@ -47,14 +48,28 @@ An `HF_TOKEN` is optional for the public model sources, but may help with Huggin
 export HF_TOKEN="hf_..."
 ```
 
-## Start ComfyUI and the sidecars
+## Start ComfyUI
 
 ```bash
 /workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh \
   /workspace/ComfyUI
 ```
 
-The start script launches preprocessing and the full-power human autoprompter, then binds ComfyUI to `127.0.0.1:8188`. The RunPod installer copies no agent or local workflow into the RunPod workflow menu.
+The start script launches ComfyUI and the services used by the source-portrait workflow.
+
+For the prompt-only workflow:
+
+```bash
+/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh \
+  /workspace/ComfyUI human_prompt_full_power_gpu
+```
+
+For the portrait preparation workflow:
+
+```bash
+/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh \
+  /workspace/ComfyUI prepare_portrait_for_hoi4
+```
 
 ## Open the interface securely
 
@@ -64,8 +79,8 @@ Use RunPod SSH credentials to create an authenticated tunnel:
 ssh -L 8188:127.0.0.1:8188 -p <SSH_PORT> root@<POD_HOST>
 ```
 
-Then open `http://127.0.0.1:8188` in your browser and choose `human_full_power_gpu` from the installed `hoi4_portraits` folder. Do not expose port 8188 directly to the internet.
+Then open `http://127.0.0.1:8188` in your browser and choose a workflow from the installed `hoi4_portraits` folder:
 
-## Re-running setup
-
-Re-running the installer is safe when installed files match their locks. It stops instead of overwriting a different custom-node tree, workflow, model, LoRA, or marked model-path block.
+- `human_full_power_gpu` converts an input portrait.
+- `human_prompt_full_power_gpu` creates a new fictional leader from text controls.
+- `prepare_portrait_for_hoi4` crops, colorizes, and prepares an old photo.

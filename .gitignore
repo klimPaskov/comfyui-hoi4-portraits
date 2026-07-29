@@ -33,6 +33,8 @@ repos/
 !docs/assets/**/*.png
 *.jpg
 *.jpeg
+!backgrounds/bundled/
+!backgrounds/bundled/*.jpg
 !docs/assets/**/*.jpg
 !docs/assets/**/*.jpeg
 *.webp

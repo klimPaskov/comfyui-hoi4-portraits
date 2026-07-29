@@ -1,16 +1,9 @@
 # Setup with a coding agent
 
-Give your coding agent [`prompts/install_into_existing_comfyui_agent_prompt.md`](prompts/install_into_existing_comfyui_agent_prompt.md), the repository path, and the path to an existing ComfyUI checkout.
+Give your coding agent:
 
-The agent must:
+- [`prompts/install_into_existing_comfyui_agent_prompt.md`](prompts/install_into_existing_comfyui_agent_prompt.md)
+- the path to this repository
+- the path to your existing ComfyUI installation
 
-- run all preflights before installing;
-- use only pinned revisions and verify every checksum;
-- install into the existing ComfyUI checkout without replacing it;
-- keep raw ComfyUI on loopback;
-- on Windows, copy the four supplied workflows;
-- on RunPod, install only `human_full_power_gpu`;
-- start the preprocessing and human-autoprompter sidecars when needed;
-- stop and report any missing capability or unsupported format;
-- run structural and live node/model compatibility checks;
-- never claim final acceptance from generation alone.
+The agent prompt installs the required nodes and models, adds the workflows, and starts ComfyUI.

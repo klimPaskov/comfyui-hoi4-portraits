@@ -1,24 +1,34 @@
 # HOI4 Portrait Workflows for ComfyUI
 
-Identity-preserving Krea 2 Turbo workflows for turning historical portraits into Hearts of Iron IV-style leader art. The repository supplies the workflows, custom nodes, pinned dependency manifests, automated installer, audit guards, and examples. ComfyUI and model weights are installed separately.
+Turn portrait photos into Hearts of Iron IV-style leader portraits with Krea 2 Turbo. The project includes ready-to-use ComfyUI workflows, automatic setup scripts, custom nodes, previews, and the HOI4 style LoRA.
+
+> 🎥 **YouTube tutorial: coming soon.** The video link will be added here.
+
+[Download the latest package](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases)
 
 ## Workflows
 
 | Workflow | Use | Prompt source |
 | --- | --- | --- |
 | [`human_local_nvidia_16gb`](workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Built-in portrait autoprompter |
-| [`agent_local_nvidia_16gb`](workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Job contract |
+| [`agent_local_nvidia_16gb`](workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Job file |
 | [`human_full_power_gpu`](workflows/human/full_power_gpu/human_full_power_gpu.json) | RunPod GPU | Built-in portrait autoprompter |
-| [`agent_full_power_gpu`](workflows/agent/full_power_gpu/agent_full_power_gpu.json) | RunPod GPU | Job contract |
+| [`agent_full_power_gpu`](workflows/agent/full_power_gpu/agent_full_power_gpu.json) | RunPod GPU | Job file |
+| [`human_prompt_local_nvidia_16gb`](workflows/human/prompt_local_nvidia_16gb/human_prompt_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Text-only random portrait builder |
+| [`human_prompt_full_power_gpu`](workflows/human/prompt_full_power_gpu/human_prompt_full_power_gpu.json) | RunPod GPU, no input image | Text-only random portrait builder |
+| [`prepare_portrait_for_hoi4`](workflows/human/prepare_portrait/prepare_portrait_for_hoi4.json) | Prepare photos before portrait generation | Automatic crop, color, and enhancement |
 
-Human workflows include large previews for the source, crop, prepared reference, approved background, and final saved image. Agent workflows contain no autoprompter.
+Human workflows include large previews for the source image, prepared portrait, background, and saved result. Agent workflows receive their prompt from the job JSON.
 
-## Install
+> Agent workflows are included for future automation. They are not currently practical through ComfyUI Cloud because Cloud does not yet provide a dependable way to install and run the required custom nodes.
 
-1. Install current ComfyUI with an NVIDIA-supported PyTorch build.
+In the source-portrait workflow, **Keep current background** is the default. Choose **Scientist laboratory** to use the included CC0 laboratory background.
+
+## Windows setup
+
+1. Install ComfyUI with NVIDIA support.
 2. Clone this repository.
-3. Optionally set `HF_TOKEN` to avoid anonymous Hugging Face rate limits.
-4. Run the installer from PowerShell:
+3. Run the installer from PowerShell:
 
 ```powershell
 .\scripts\install_windows.ps1 `
@@ -26,9 +36,7 @@ Human workflows include large previews for the source, crop, prepared reference,
   -Profile local_nvidia_16gb
 ```
 
-The installer does not replace ComfyUI. It verifies pinned revisions and checksums, installs the Krea Edit and project node packs, restores the required models, registers model paths, and copies all four workflows.
-
-Start the required loopback services and ComfyUI:
+Start the workflow:
 
 ```powershell
 .\scripts\start_windows.ps1 `
@@ -36,39 +44,51 @@ Start the required loopback services and ComfyUI:
   -Workflow human_local_nvidia_16gb
 ```
 
-If the local profile is not feasible, use the [RunPod setup](docs/runpod.md) with `full_power_gpu`.
+The setup script installs the nodes and models in their correct folders and adds the workflows to ComfyUI.
 
-## One-command RunPod setup
+## RunPod setup
 
-Create a private RunPod Pod with ComfyUI already installed, open its terminal, and paste:
+Open a terminal in a RunPod ComfyUI template and paste:
 
 ```bash
 bash -lc 'set -e; P=/workspace/comfyui-hoi4-portraits; test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"; "$P/scripts/install_runpod.sh" /workspace/ComfyUI'
 ```
 
-That command installs the checksum-locked sidecar dependencies, pinned Krea Edit nodes, Krea model, encoder, VAE, identity adapter, style LoRA, preprocessing models, and full-power autoprompter model. It registers the model folders and installs only `human_full_power_gpu` in RunPod.
-
-Then start the human full-power profile:
+Then start ComfyUI:
 
 ```bash
 /workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh /workspace/ComfyUI
 ```
 
-ComfyUI stays on loopback. Access it through an authenticated SSH tunnel. See the [full RunPod walkthrough](docs/runpod.md), including folder mappings and troubleshooting.
+To use the prompt-only workflow:
 
-## Workflow
+```bash
+/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh /workspace/ComfyUI human_prompt_full_power_gpu
+```
+
+See the [RunPod guide](docs/runpod.md) for folder locations and SSH access.
+
+## Workflow overview
 
 ![Complete human workflow](docs/assets/workflow_human_local_nvidia_16gb.png)
 
-![Input and preparation stages](docs/assets/workflow_human_local_nvidia_16gb_steps_1_4.png)
+### Generate a new leader from a prompt
 
-![Krea, LoRA, generation, previews, and save stages](docs/assets/workflow_human_local_nvidia_16gb_steps_5_9.png)
+Choose a country influence, role, age, presentation, expression, and seed. No input image or separate vision autoprompter is used.
 
-![Human workflow submitted for a bounded live run](docs/assets/workflow_human_local_nvidia_16gb_running.png)
+![Random portrait workflow](docs/assets/workflow_human_prompt_local_nvidia_16gb.png)
 
-## Before and after
+### Prepare an old photo
 
-These are real 256×352, two-step smoke-test outputs from the human workflow. They prove the route executes; they are not quality benchmarks or auditor-approved production portraits.
+Use `prepare_portrait_for_hoi4` for full-body, group, faded, or black-and-white photos. It finds the selected face, makes a head-and-shoulders crop, colorizes black-and-white images, applies light enhancement, and saves an 832 × 1120 PNG.
+
+![Portrait preparation workflow](docs/assets/workflow_prepare_portrait_for_hoi4.png)
+
+| Difficult source | Prepared portrait |
+| --- | --- |
+| ![Small black-and-white source](docs/assets/examples/preparation_before.png) | ![Cropped and colorized portrait](docs/assets/examples/preparation_after.png) |
+
+## Examples
 
 | Before | After |
 | --- | --- |
@@ -76,10 +96,13 @@ These are real 256×352, two-step smoke-test outputs from the human workflow. Th
 | ![Example 2 source](docs/assets/examples/02_before.jpg) | ![Example 2 output](docs/assets/examples/02_after.png) |
 | ![Example 3 source](docs/assets/examples/03_before.jpg) | ![Example 3 output](docs/assets/examples/03_after.png) |
 
-## Safety and acceptance
+## Guides
 
-The graph uses Krea identity editing, not face swapping. ControlNet is intentionally omitted because no approved experiment showed an identity or geometry benefit over the existing identity-reference, mask, and background controls.
+- [Getting started](docs/getting-started.md)
+- [RunPod setup](docs/runpod.md)
+- [Workflow guide](docs/workflows.md)
+- [Install with a coding agent](SETUP_WITH_CODING_AGENT.md)
 
-Generation is not final acceptance. The project blocks final PNG/DDS and mod wiring until the separate auditor passes identity, geometry, expression, accessories, masks, style, and provenance.
+## License
 
-See [Getting started](docs/getting-started.md), [Workflow guide](docs/workflows.md), and [Testing status](docs/testing-and-evidence.md).
+Project code is MIT licensed. ComfyUI, Krea, Qwen, and model files keep their own licenses. The style LoRA is downloaded from its [Hugging Face page](https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora).

@@ -11,25 +11,17 @@ Project-owned style adapter used by the
 [`comfyui-hoi4-portraits`](https://github.com/klimPaskov/comfyui-hoi4-portraits)
 workflows.
 
-## Immutable artifact
+## File
 
 - File: `hoi4_portrait_new_style_lora.safetensors`
-- Size: `228587816` bytes
-- SHA-256: `2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1`
 
-The file is an immutable input. Consumers must verify both size and SHA-256
-before loading it and must stop on a mismatch.
+The project installer downloads this file and places it in the correct ComfyUI
+model folder automatically.
 
-## Access and use
+## Use
 
-This public repository provides a revision-pinned source for local setup and
-RunPod model import.
-No open-source or third-party license is inferred or granted by this model
-card. Public access does not grant rights to redistribute the weights, source
-portraits, HOI4 assets, backgrounds, or generated outputs.
+The adapter is designed for Krea 2 Turbo portrait workflows and loads with
+`LoraLoaderModelOnly` after the Krea identity adapter.
 
-The adapter is loaded with `LoraLoaderModelOnly` after the Krea 2 identity-edit
-adapter. It is not a face-swap model. The workflow must not promote a generated
-candidate to final DDS or mod integration unless the separate auditor returns
-PASS for identity, geometry, expression, accessories, masks, style, and
-provenance.
+This model card does not grant rights to redistribute third-party portraits,
+HOI4 assets, backgrounds, or other model files.

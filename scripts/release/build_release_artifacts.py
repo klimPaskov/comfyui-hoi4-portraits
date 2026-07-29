@@ -28,39 +28,47 @@ EXCLUDED_FILES = {
     "prompts/implementation_goal_prompt.md",
 }
 EXPLICIT_FILES = {
-    ".gitignore",
     "LICENSE",
     "README.md",
     "SETUP_WITH_CODING_AGENT.md",
-    "pyproject.toml",
+    "config/background_registry.json",
     "config/background_registry.template.json",
-    "config/identity_thresholds.template.json",
     "docs/runpod.md",
-    "docs/contracts-and-safety.md",
     "docs/getting-started.md",
-    "docs/licensing-and-public-repository.md",
-    "docs/testing-and-evidence.md",
     "docs/workflows.md",
+    "dependencies/autoprompter_runtime.lock.json",
+    "dependencies/custom_nodes.lock.json",
+    "dependencies/models.lock.json",
+    "dependencies/preprocessing_lock.json",
+    "dependencies/runpod_sidecar_requirements.lock.txt",
+    "dependencies/licenses/krea2-community-license.source.md",
     "loras/HUGGINGFACE_MODEL_CARD.md",
     "loras/README.md",
+    "prompts/autoprompter_instruction.txt",
+    "prompts/install_into_existing_comfyui_agent_prompt.md",
+    "prompts/random_portrait_instruction.txt",
+    "schemas/portrait_job_input.schema.json",
     "scripts/__init__.py",
-    "scripts/audit_candidate.py",
-    "scripts/bootstrap/__init__.py",
-    "scripts/bootstrap/bootstrap.py",
+    "scripts/install_support.py",
     "scripts/install_into_existing_comfyui.py",
     "scripts/install_runpod.sh",
     "scripts/install_windows.ps1",
     "scripts/start_runpod.sh",
     "scripts/start_windows.ps1",
-    "scripts/produce_visual_audit.py",
+    "src/comfyui_hoi4_portrait_nodes/__init__.py",
+    "src/comfyui_hoi4_portrait_nodes/nodes.py",
+    "src/portrait_pipeline/__init__.py",
+    "src/portrait_pipeline/autoprompter_service.py",
+    "src/portrait_pipeline/constants.py",
+    "src/portrait_pipeline/contracts.py",
+    "src/portrait_pipeline/preprocessing_service.py",
+    "src/portrait_pipeline/prompt.py",
+    "src/portrait_pipeline/util.py",
 }
 INCLUDED_TREES = {
-    "dependencies",
+    "backgrounds/bundled",
+    "docs/assets",
     "docs/examples",
-    "prompts",
-    "schemas",
-    "scripts/preflight",
-    "src",
     "workflows",
 }
 
@@ -79,7 +87,9 @@ def _selected_files() -> list[Path]:
         if any(part in FORBIDDEN_PARTS for part in relative.parts):
             continue
         if path.suffix.casefold() in FORBIDDEN_SUFFIXES:
-            if not (relative.parts[:2] == ("docs", "assets") and path.suffix.casefold() in {".png", ".jpg", ".jpeg"}):
+            bundled_background = relative.parts[:2] == ("backgrounds", "bundled") and path.suffix.casefold() in {".png", ".jpg", ".jpeg"}
+            documentation_image = relative.parts[:2] == ("docs", "assets") and path.suffix.casefold() in {".png", ".jpg", ".jpeg"}
+            if not bundled_background and not documentation_image:
                 raise RuntimeError(f"forbidden release artifact selected: {relative}")
         if path.suffix == ".pyc" or ".DS_Store" in relative.parts:
             continue
@@ -156,16 +166,17 @@ def main(argv: list[str] | None = None) -> int:
     if not version or any(character not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-" for character in version):
         raise SystemExit("version contains unsupported characters")
     DIST.mkdir(parents=True, exist_ok=True)
+    for stale in DIST.iterdir():
+        if stale.is_file() and (
+            stale.name.startswith("HOI4-Portrait-Workflows-")
+            or stale.name == "SHA256SUMS.txt"
+        ):
+            stale.unlink()
     files = _selected_files()
     zip_path = DIST / f"HOI4-Portrait-Workflows-{version}.zip"
     _write_zip(zip_path, files, version)
     windows_path = _build_windows(zip_path, version)
     artifacts = [zip_path, windows_path]
-    sums_path = DIST / "SHA256SUMS.txt"
-    sums_payload = "".join(f"{_sha256(path)}  {path.name}\n" for path in artifacts).encode("utf-8")
-    sums_path.write_bytes(sums_payload)
-    if b"\r" in sums_path.read_bytes():
-        raise RuntimeError("release checksum file must use portable LF line endings")
     print(json.dumps({
         "status": "PASS",
         "version": version,
@@ -173,7 +184,6 @@ def main(argv: list[str] | None = None) -> int:
         "models_bundled": False,
         "file_count": len(files),
         "artifacts": [{"path": str(path), "size_bytes": path.stat().st_size, "sha256": _sha256(path)} for path in artifacts],
-        "checksums": str(sums_path),
     }, indent=2))
     return 0
 

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hoi4-portrait-pipeline"
 version = "0.1.0"
-description = "Fail-closed ComfyUI orchestration and evidence pipeline for auditable HOI4 portraits."
+description = "ComfyUI workflows for converting or generating Hearts of Iron IV-style leader portraits."
 requires-python = ">=3.10,<3.14"
 dependencies = [
   "jsonschema==4.25.1",
