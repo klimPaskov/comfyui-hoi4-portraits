@@ -8,8 +8,8 @@
       "display_name": "human_local_mac_16gb",
       "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
       "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-      "sha256": "aac57f39a8c149588c7734793e3ce9c668b884b28d95f403070244ebcc17340f",
-      "api_sha256": "c0266104531fb6358cf1429e2e1db68a5c210b54309bff1380be0657c98552d8",
+      "sha256": "f47f9e19ee666c39f51d41c1af0b0db54f2a28c925fc043c08ba02339ddd4293",
+      "api_sha256": "f912a58531e926ab877949b6e61ada96c4afb96608127ecc620f9facd852c5bd",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -63,10 +63,11 @@
       "autoprompter_present": true,
       "prompt_source": "autoprompter",
       "preview_nodes": [
-        "PREVIEW 1 • crop / identity reference",
-        "PREVIEW 2 • prepared reference",
-        "PREVIEW 3 • approved background",
-        "PREVIEW 4 • same image as SaveImage"
+        "Cropped portrait",
+        "Prepared portrait",
+        "Background preview",
+        "Saved portrait preview",
+        "Input portrait preview"
       ],
       "final_preview_save_pair": {
         "preview_node_id": 28,
@@ -99,8 +100,8 @@
       "display_name": "human_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-      "sha256": "2ca6e74816616b5a38a46133190855e78082e7c6d90f84be1c4abc9105494a20",
-      "api_sha256": "4a63cf67444fe649aa9e7904389d7c64afbaef3e4e1cdc0af8c50e43fb86767c",
+      "sha256": "d536a0f393c18dbc4c8e67b4370b84e2b94f0f6688d774f52ed93ef348ca8a93",
+      "api_sha256": "37f11d6ba2ec7bbcc38895a8fd47455bd24f059aae0a893fb2226ea293cbeb94",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -154,10 +155,11 @@
       "autoprompter_present": true,
       "prompt_source": "autoprompter",
       "preview_nodes": [
-        "PREVIEW 1 • crop / identity reference",
-        "PREVIEW 2 • prepared reference",
-        "PREVIEW 3 • approved background",
-        "PREVIEW 4 • same image as SaveImage"
+        "Cropped portrait",
+        "Prepared portrait",
+        "Background preview",
+        "Saved portrait preview",
+        "Input portrait preview"
       ],
       "final_preview_save_pair": {
         "preview_node_id": 28,
@@ -190,8 +192,8 @@
       "display_name": "agent_local_mac_16gb",
       "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
       "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-      "sha256": "4d379b3115a18036455d41e3a96c8e500f2fe6112156ff20c624de5f156722e7",
-      "api_sha256": "fd8fb8eea68158dd367b5b84eb0236690139651a168bdf7ab9619a1298d98467",
+      "sha256": "db0535e82ace13520689e03d21e380b4eba5ab24a81db35b354eb58c554c7201",
+      "api_sha256": "90ed0d374ee62974cf16459a164b102894128ecaf44be088cc95aa99a597469e",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -273,8 +275,8 @@
       "display_name": "agent_full_power_gpu",
       "workflow_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
       "api_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-      "sha256": "0966d3f3a94c1a95c943f4bf55918f8050115cd274407f7e8dd404f48359bb9a",
-      "api_sha256": "5d0f69541c3c4bcf9d414f3d6f4d8ce7573689943787d9618f7b7d80adfe9c27",
+      "sha256": "6999a30fe2b481e3157a87457505c75bfc0baa6a9b2300fae2e6302d0342a964",
+      "api_sha256": "280b96c131fda9817d0aa61dd0e0550772506f25b1bae605a275eee2fe29a5f4",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -356,8 +358,8 @@
       "display_name": "agent_remote_runpod",
       "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
       "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-      "sha256": "a63d2449ae3583d0e6a8630f11cb13a00da8f1fd2db1206e02a48ae294472c21",
-      "api_sha256": "e3d9aef0c39ace59fbe4776f42997c9f718bc3050985228805b0169435dc5bc4",
+      "sha256": "0c09491c6d047480c7026783712e3ab7af84afe79276fd9da9f0aa81094f5369",
+      "api_sha256": "da71d586e84e07d638f9544e5e9b253618f7f3d08ab14d39238e92ba6331f8c2",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [

@@ -386,63 +386,63 @@
       "09 Preview and evidence export"
     ],
     "locked_controls": {
-      "Job contract and profile": [
+      "Portrait workflow settings": [
         "execution_profile",
         "candidate_count",
         "retry_limit",
         "seed_policy"
       ],
-      "Pinned foreground/mask analysis": [
+      "Separate person from background": [
         "mask_model"
       ],
-      "Agent prompt from job contract": [
+      "Use portrait description": [
         "prompt_source"
       ],
-      "Krea 2 Turbo FP8": [
+      "Load Krea 2 Turbo": [
         "unet_name",
         "weight_dtype"
       ],
-      "Pinned Krea identity adapter": [
+      "Preserve identity": [
         "lora_name",
         "strength_model"
       ],
-      "Krea VAE": [
+      "Prepare image decoder": [
         "vae_name"
       ],
-      "Krea 2 identity edit patch": [
+      "Apply identity reference": [
         "fit_mode",
         "ref_boost"
       ],
-      "Krea Qwen3-VL encoder": [
+      "Read portrait description": [
         "clip_name",
         "type"
       ],
-      "Grounded positive conditioning": [
+      "Connect portrait description": [
         "grounding_px"
       ],
-      "Grounded empty negative conditioning": [
+      "Keep background empty": [
         "prompt",
         "grounding_px"
       ],
-      "Immutable HOI4 style LoRA": [
+      "Apply HOI4 portrait style": [
         "lora_name"
       ],
-      "Profile work canvas": [
+      "Set portrait size": [
         "width",
         "height",
         "batch_size"
       ],
-      "Krea 2 Turbo candidate": [
+      "Generate portrait": [
         "steps",
         "cfg",
         "sampler_name",
         "scheduler",
         "denoise"
       ],
-      "Candidate evidence and audit handoff": [
+      "Save portrait evidence": [
         "candidate_index"
       ],
-      "Preview PNG only": [
+      "Save portrait PNG": [
         "filename_prefix"
       ]
     },

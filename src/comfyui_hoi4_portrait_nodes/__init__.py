@@ -49,19 +49,19 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     key: value.replace("HOI4", "HOI4 ").replace("Input", "Input") for key, value in {
-        "HOI4JobInput": "Job contract and profile",
-        "HOI4HumanControls": "Human review controls",
-        "HOI4JobSource": "Job source loader",
-        "HOI4SourceGuard": "Source provenance guard",
-        "HOI4SubjectSelect": "Subject selector",
-        "HOI4HeadShouldersCrop": "Head and shoulders crop",
-        "HOI4ConservativePrep": "Conservative source preparation",
-        "HOI4ForegroundMask": "Pinned foreground mask analysis",
-        "HOI4MaskAndBackgroundGuard": "Mask and approved background guard",
-        "HOI4KreaModelLoadBarrier": "Release completed models before Krea sampling",
-        "HOI4PromptInput": "Agent job-contract prompt",
-        "HOI4AutopromptClient": "Human exact autoprompter client",
-        "HOI4EvidenceExport": "Evidence export",
+        "HOI4JobInput": "Portrait workflow settings",
+        "HOI4HumanControls": "Input portrait & portrait options",
+        "HOI4JobSource": "Load input portrait",
+        "HOI4SourceGuard": "Check input portrait",
+        "HOI4SubjectSelect": "Select the subject",
+        "HOI4HeadShouldersCrop": "Crop the portrait",
+        "HOI4ConservativePrep": "Prepare the portrait",
+        "HOI4ForegroundMask": "Separate person from background",
+        "HOI4MaskAndBackgroundGuard": "Add approved background",
+        "HOI4KreaModelLoadBarrier": "Prepare generation",
+        "HOI4PromptInput": "Use portrait description",
+        "HOI4AutopromptClient": "Create portrait description",
+        "HOI4EvidenceExport": "Save portrait evidence",
     }.items()
 }
 

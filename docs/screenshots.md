@@ -10,11 +10,11 @@ These UI-only captures were taken from the pinned local `human_local_mac_16gb` g
 
 ![Compact input, preprocessing, prompt, and Krea stages](assets/live_test_2026-07-28/compact_input_prompt.png)
 
-![Compact Krea, candidate, preview, and save stages](assets/live_test_2026-07-28/compact_krea_preview_save.png)
+![Compact Krea, portrait preview, and save stages](assets/live_test_2026-07-28/compact_krea_preview_save.png)
 
 The actual source, crop, prepared reference, mask, background composite, and private CPU-fallback candidate remain under the ignored `jobs/` directory. The default Apple-MPS route remains blocked; a diagnostic CPU-only NVFP4 run produced a real 832×1120 candidate, but it is not a final or production-approved portrait because the independent audit is `UNCERTAIN` and thresholds are not calibrated.
 
-The colored stage board includes four human-only preview checkpoints: crop/reference, prepared reference, approved background, and final candidate. In the current graph, the final preview shares the exact image input used by `SaveImage`.
+The colored stage board includes five human preview checkpoints: input portrait, cropped portrait, prepared portrait, background preview, and saved portrait preview. The saved portrait preview shares the same image input used by `SaveImage`.
 
 ![Example job input contract](assets/input_contract_example.png)
 

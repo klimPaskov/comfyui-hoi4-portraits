@@ -1,18 +1,18 @@
 {
-  "last_node_id": 29,
-  "last_link_id": 59,
+  "last_node_id": 30,
+  "last_link_id": 60,
   "nodes": [
     {
       "id": 1,
       "type": "HOI4JobInput",
-      "title": "Job contract and profile",
+      "title": "Portrait workflow settings",
       "pos": [
         70,
         100
       ],
       "size": [
-        260,
-        120
+        350,
+        170
       ],
       "color": "#1d2f45",
       "bgcolor": "#294866",
@@ -56,7 +56,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Job contract and profile",
+        "Node name for S&R": "Portrait workflow settings",
         "hoi4_group": "00 Job and source",
         "hoi4_locked_controls": [
           "execution_profile",
@@ -76,14 +76,14 @@
     {
       "id": 24,
       "type": "HOI4HumanControls",
-      "title": "Human review controls",
+      "title": "Input portrait & portrait options",
       "pos": [
-        270,
+        440,
         100
       ],
       "size": [
-        260,
-        120
+        350,
+        580
       ],
       "color": "#1d2f45",
       "bgcolor": "#294866",
@@ -219,7 +219,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Human review controls",
+        "Node name for S&R": "Input portrait & portrait options",
         "hoi4_group": "00 Job and source",
         "hoi4_locked_controls": []
       },
@@ -247,14 +247,14 @@
     {
       "id": 2,
       "type": "HOI4JobSource",
-      "title": "Load source only from job root",
+      "title": "Load input portrait",
       "pos": [
         70,
         300
       ],
       "size": [
-        260,
-        120
+        350,
+        140
       ],
       "color": "#1d2f45",
       "bgcolor": "#294866",
@@ -283,7 +283,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Load source only from job root",
+        "Node name for S&R": "Load input portrait",
         "hoi4_group": "00 Job and source",
         "hoi4_locked_controls": []
       },
@@ -292,14 +292,14 @@
     {
       "id": 3,
       "type": "HOI4SourceGuard",
-      "title": "Provenance and source guard",
+      "title": "Check input portrait",
       "pos": [
-        270,
-        300
+        70,
+        500
       ],
       "size": [
-        260,
-        120
+        350,
+        140
       ],
       "color": "#1d2f45",
       "bgcolor": "#294866",
@@ -324,7 +324,8 @@
           "type": "IMAGE",
           "links": [
             6,
-            49
+            49,
+            60
           ]
         },
         {
@@ -334,7 +335,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Provenance and source guard",
+        "Node name for S&R": "Check input portrait",
         "hoi4_group": "00 Job and source",
         "hoi4_locked_controls": []
       },
@@ -343,14 +344,14 @@
     {
       "id": 4,
       "type": "HOI4SubjectSelect",
-      "title": "Deterministic subject selection",
+      "title": "Select the subject",
       "pos": [
-        610,
-        160
+        870,
+        100
       ],
       "size": [
-        260,
-        120
+        300,
+        150
       ],
       "color": "#1f4862",
       "bgcolor": "#2c6d90",
@@ -386,7 +387,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Deterministic subject selection",
+        "Node name for S&R": "Select the subject",
         "hoi4_group": "01 Subject selection",
         "hoi4_locked_controls": []
       },
@@ -395,14 +396,14 @@
     {
       "id": 5,
       "type": "HOI4HeadShouldersCrop",
-      "title": "Head and shoulders crop",
+      "title": "Crop the portrait",
       "pos": [
-        930,
-        160
+        1420,
+        100
       ],
       "size": [
-        260,
-        120
+        320,
+        150
       ],
       "color": "#164f49",
       "bgcolor": "#217a70",
@@ -449,7 +450,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Head and shoulders crop",
+        "Node name for S&R": "Crop the portrait",
         "hoi4_group": "02 Crop and source preparation",
         "hoi4_locked_controls": []
       },
@@ -458,14 +459,14 @@
     {
       "id": 6,
       "type": "HOI4ConservativePrep",
-      "title": "Conditional color and conservative restoration",
+      "title": "Prepare the portrait",
       "pos": [
-        1250,
-        160
+        1900,
+        100
       ],
       "size": [
-        260,
-        120
+        320,
+        150
       ],
       "color": "#294a2b",
       "bgcolor": "#3d6b40",
@@ -513,7 +514,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Conditional color and conservative restoration",
+        "Node name for S&R": "Prepare the portrait",
         "hoi4_group": "03 Color and restoration",
         "hoi4_locked_controls": []
       },
@@ -522,14 +523,14 @@
     {
       "id": 7,
       "type": "HOI4ForegroundMask",
-      "title": "Pinned foreground/mask analysis",
+      "title": "Separate person from background",
       "pos": [
-        1570,
-        130
+        2380,
+        100
       ],
       "size": [
-        260,
-        120
+        320,
+        150
       ],
       "color": "#294b61",
       "bgcolor": "#3b6f8d",
@@ -582,7 +583,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Pinned foreground/mask analysis",
+        "Node name for S&R": "Separate person from background",
         "hoi4_group": "04 Masks and approved background",
         "hoi4_locked_controls": [
           "mask_model"
@@ -595,14 +596,14 @@
     {
       "id": 8,
       "type": "HOI4MaskAndBackgroundGuard",
-      "title": "Approved background composite and foreground guard",
+      "title": "Add approved background",
       "pos": [
-        1760,
-        340
+        2380,
+        300
       ],
       "size": [
-        260,
-        120
+        320,
+        180
       ],
       "color": "#294b61",
       "bgcolor": "#3b6f8d",
@@ -667,7 +668,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Approved background composite and foreground guard",
+        "Node name for S&R": "Add approved background",
         "hoi4_group": "04 Masks and approved background",
         "hoi4_locked_controls": []
       },
@@ -676,14 +677,14 @@
     {
       "id": 9,
       "type": "HOI4AutopromptClient",
-      "title": "Human-only exact autoprompter",
+      "title": "Create portrait description",
       "pos": [
         70,
-        760
+        900
       ],
       "size": [
-        260,
-        120
+        440,
+        520
       ],
       "color": "#46375a",
       "bgcolor": "#654c80",
@@ -748,7 +749,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Human-only exact autoprompter",
+        "Node name for S&R": "Create portrait description",
         "hoi4_group": "05 Prompt",
         "hoi4_locked_controls": [
           "instruction_text",
@@ -767,14 +768,14 @@
     {
       "id": 10,
       "type": "UNETLoader",
-      "title": "Krea 2 Turbo FP8",
+      "title": "Load Krea 2 Turbo",
       "pos": [
-        390,
-        760
+        620,
+        900
       ],
       "size": [
         260,
-        120
+        130
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -803,7 +804,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Krea 2 Turbo FP8",
+        "Node name for S&R": "Load Krea 2 Turbo",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": [
           "unet_name",
@@ -818,14 +819,14 @@
     {
       "id": 11,
       "type": "LoraLoaderModelOnly",
-      "title": "Pinned Krea identity adapter",
+      "title": "Preserve identity",
       "pos": [
-        390,
-        920
+        620,
+        1050
       ],
       "size": [
         260,
-        120
+        130
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -859,7 +860,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Pinned Krea identity adapter",
+        "Node name for S&R": "Preserve identity",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": [
           "lora_name",
@@ -874,14 +875,14 @@
     {
       "id": 12,
       "type": "VAELoader",
-      "title": "Krea VAE",
+      "title": "Prepare image decoder",
       "pos": [
-        390,
-        1080
+        620,
+        1200
       ],
       "size": [
         260,
-        120
+        130
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -907,7 +908,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Krea VAE",
+        "Node name for S&R": "Prepare image decoder",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": [
           "vae_name"
@@ -920,14 +921,14 @@
     {
       "id": 13,
       "type": "VAEEncode",
-      "title": "Encode identity reference",
+      "title": "Encode reference image",
       "pos": [
-        390,
-        1240
+        620,
+        1350
       ],
       "size": [
         260,
-        120
+        130
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -956,7 +957,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Encode identity reference",
+        "Node name for S&R": "Encode reference image",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": []
       },
@@ -965,14 +966,14 @@
     {
       "id": 14,
       "type": "Krea2EditModelPatch",
-      "title": "Krea 2 identity edit patch",
+      "title": "Apply identity reference",
       "pos": [
-        680,
-        760
+        900,
+        900
       ],
       "size": [
         260,
-        120
+        130
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -1021,7 +1022,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Krea 2 identity edit patch",
+        "Node name for S&R": "Apply identity reference",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": [
           "fit_mode",
@@ -1036,14 +1037,14 @@
     {
       "id": 15,
       "type": "CLIPLoader",
-      "title": "Krea Qwen3-VL encoder",
+      "title": "Read portrait description",
       "pos": [
-        680,
-        920
+        900,
+        1050
       ],
       "size": [
         260,
-        120
+        130
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -1073,7 +1074,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Krea Qwen3-VL encoder",
+        "Node name for S&R": "Read portrait description",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": [
           "clip_name",
@@ -1088,14 +1089,14 @@
     {
       "id": 16,
       "type": "Krea2EditGroundedEncode",
-      "title": "Grounded positive conditioning",
+      "title": "Connect portrait description",
       "pos": [
-        680,
-        1080
+        900,
+        1200
       ],
       "size": [
         260,
-        120
+        130
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -1134,7 +1135,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Grounded positive conditioning",
+        "Node name for S&R": "Connect portrait description",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": [
           "grounding_px"
@@ -1147,14 +1148,14 @@
     {
       "id": 17,
       "type": "Krea2EditGroundedEncode",
-      "title": "Grounded empty negative conditioning",
+      "title": "Keep background empty",
       "pos": [
-        680,
-        1240
+        900,
+        1350
       ],
       "size": [
         260,
-        120
+        130
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -1193,7 +1194,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Grounded empty negative conditioning",
+        "Node name for S&R": "Keep background empty",
         "hoi4_group": "06 Krea 2 identity edit",
         "hoi4_locked_controls": [
           "prompt",
@@ -1208,14 +1209,14 @@
     {
       "id": 18,
       "type": "LoraLoaderModelOnly",
-      "title": "Immutable HOI4 style LoRA",
+      "title": "Apply HOI4 portrait style",
       "pos": [
-        1110,
-        840
+        1560,
+        1000
       ],
       "size": [
         260,
-        120
+        170
       ],
       "color": "#663442",
       "bgcolor": "#914b5e",
@@ -1249,7 +1250,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Immutable HOI4 style LoRA",
+        "Node name for S&R": "Apply HOI4 portrait style",
         "hoi4_group": "07 HOI4 style LoRA",
         "hoi4_locked_controls": [
           "lora_name"
@@ -1263,17 +1264,17 @@
     {
       "id": 29,
       "type": "HOI4KreaModelLoadBarrier",
-      "title": "Release text encoder before Krea sampling",
+      "title": "Prepare generation",
       "pos": [
-        1320,
-        1120
+        1940,
+        1300
       ],
       "size": [
         260,
-        120
+        130
       ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
+      "color": "#66400c",
+      "bgcolor": "#945e12",
       "flags": {},
       "order": 19,
       "mode": 0,
@@ -1318,8 +1319,8 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Release text encoder before Krea sampling",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "Node name for S&R": "Prepare generation",
+        "hoi4_group": "08 Candidate generation",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -1327,14 +1328,14 @@
     {
       "id": 19,
       "type": "EmptySD3LatentImage",
-      "title": "Profile work canvas",
+      "title": "Set portrait size",
       "pos": [
-        1430,
-        760
+        1940,
+        900
       ],
       "size": [
         260,
-        120
+        150
       ],
       "color": "#66400c",
       "bgcolor": "#945e12",
@@ -1368,7 +1369,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Profile work canvas",
+        "Node name for S&R": "Set portrait size",
         "hoi4_group": "08 Candidate generation",
         "hoi4_locked_controls": [
           "width",
@@ -1385,14 +1386,14 @@
     {
       "id": 20,
       "type": "KSampler",
-      "title": "Krea 2 Turbo candidate",
+      "title": "Generate portrait",
       "pos": [
-        1430,
-        940
+        1940,
+        1080
       ],
       "size": [
         260,
-        120
+        180
       ],
       "color": "#66400c",
       "bgcolor": "#945e12",
@@ -1461,7 +1462,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Krea 2 Turbo candidate",
+        "Node name for S&R": "Generate portrait",
         "hoi4_group": "08 Candidate generation",
         "hoi4_locked_controls": [
           "steps",
@@ -1483,14 +1484,14 @@
     {
       "id": 21,
       "type": "VAEDecode",
-      "title": "Decode candidate",
+      "title": "Build portrait image",
       "pos": [
-        1750,
-        760
+        2320,
+        900
       ],
       "size": [
-        260,
-        120
+        300,
+        140
       ],
       "color": "#23465b",
       "bgcolor": "#306985",
@@ -1519,7 +1520,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Decode candidate",
+        "Node name for S&R": "Build portrait image",
         "hoi4_group": "09 Preview and evidence export",
         "hoi4_locked_controls": []
       },
@@ -1528,14 +1529,14 @@
     {
       "id": 22,
       "type": "HOI4EvidenceExport",
-      "title": "Candidate evidence and audit handoff",
+      "title": "Save portrait evidence",
       "pos": [
-        2030,
-        760
+        2640,
+        900
       ],
       "size": [
-        260,
-        120
+        300,
+        170
       ],
       "color": "#23465b",
       "bgcolor": "#306985",
@@ -1600,7 +1601,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Candidate evidence and audit handoff",
+        "Node name for S&R": "Save portrait evidence",
         "hoi4_group": "09 Preview and evidence export",
         "hoi4_locked_controls": [
           "candidate_index"
@@ -1613,14 +1614,14 @@
     {
       "id": 23,
       "type": "SaveImage",
-      "title": "Preview PNG only",
+      "title": "Save portrait PNG",
       "pos": [
-        2030,
-        940
+        2640,
+        1090
       ],
       "size": [
-        260,
-        120
+        300,
+        140
       ],
       "color": "#23465b",
       "bgcolor": "#306985",
@@ -1641,7 +1642,7 @@
       ],
       "outputs": [],
       "properties": {
-        "Node name for S&R": "Preview PNG only",
+        "Node name for S&R": "Save portrait PNG",
         "hoi4_group": "09 Preview and evidence export",
         "hoi4_locked_controls": [
           "filename_prefix"
@@ -1654,17 +1655,17 @@
     {
       "id": 25,
       "type": "PreviewImage",
-      "title": "PREVIEW 1 • crop / identity reference",
+      "title": "Cropped portrait",
       "pos": [
-        1750,
-        1020
+        1420,
+        280
       ],
       "size": [
-        260,
-        120
+        340,
+        420
       ],
-      "color": "#23465b",
-      "bgcolor": "#306985",
+      "color": "#164f49",
+      "bgcolor": "#217a70",
       "flags": {},
       "order": 25,
       "mode": 0,
@@ -1683,8 +1684,8 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "PREVIEW 1 • crop / identity reference",
-        "hoi4_group": "09 Preview and evidence export",
+        "Node name for S&R": "Cropped portrait",
+        "hoi4_group": "02 Crop and source preparation",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -1692,17 +1693,17 @@
     {
       "id": 26,
       "type": "PreviewImage",
-      "title": "PREVIEW 2 • prepared reference",
+      "title": "Prepared portrait",
       "pos": [
-        2030,
-        1120
+        1900,
+        280
       ],
       "size": [
-        260,
-        120
+        340,
+        420
       ],
-      "color": "#23465b",
-      "bgcolor": "#306985",
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
       "order": 26,
       "mode": 0,
@@ -1721,8 +1722,8 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "PREVIEW 2 • prepared reference",
-        "hoi4_group": "09 Preview and evidence export",
+        "Node name for S&R": "Prepared portrait",
+        "hoi4_group": "03 Color and restoration",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -1730,17 +1731,17 @@
     {
       "id": 27,
       "type": "PreviewImage",
-      "title": "PREVIEW 3 • approved background",
+      "title": "Background preview",
       "pos": [
-        2310,
-        1120
+        2700,
+        230
       ],
       "size": [
-        260,
-        120
+        340,
+        420
       ],
-      "color": "#23465b",
-      "bgcolor": "#306985",
+      "color": "#294b61",
+      "bgcolor": "#3b6f8d",
       "flags": {},
       "order": 27,
       "mode": 0,
@@ -1759,8 +1760,8 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "PREVIEW 3 • approved background",
-        "hoi4_group": "09 Preview and evidence export",
+        "Node name for S&R": "Background preview",
+        "hoi4_group": "04 Masks and approved background",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -1768,14 +1769,14 @@
     {
       "id": 28,
       "type": "PreviewImage",
-      "title": "PREVIEW 4 • same image as SaveImage",
+      "title": "Saved portrait preview",
       "pos": [
-        2310,
-        760
+        2940,
+        900
       ],
       "size": [
-        260,
-        120
+        400,
+        480
       ],
       "color": "#23465b",
       "bgcolor": "#306985",
@@ -1797,8 +1798,46 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "PREVIEW 4 • same image as SaveImage",
+        "Node name for S&R": "Saved portrait preview",
         "hoi4_group": "09 Preview and evidence export",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 30,
+      "type": "PreviewImage",
+      "title": "Input portrait preview",
+      "pos": [
+        870,
+        280
+      ],
+      "size": [
+        340,
+        420
+      ],
+      "color": "#1f4862",
+      "bgcolor": "#2c6d90",
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 60
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Input portrait preview",
+        "hoi4_group": "01 Subject selection",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -2276,6 +2315,14 @@
       28,
       0,
       "IMAGE"
+    ],
+    [
+      60,
+      3,
+      0,
+      30,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [
@@ -2284,8 +2331,8 @@
       "bounding": [
         40,
         40,
-        520,
-        520
+        760,
+        700
       ],
       "color": "#355070",
       "font_size": 24
@@ -2293,10 +2340,10 @@
     {
       "title": "01 Subject selection",
       "bounding": [
-        580,
+        840,
         40,
-        300,
-        520
+        500,
+        700
       ],
       "color": "#3a7ca5",
       "font_size": 24
@@ -2304,10 +2351,10 @@
     {
       "title": "02 Crop and source preparation",
       "bounding": [
-        900,
+        1380,
         40,
-        300,
-        520
+        440,
+        700
       ],
       "color": "#2a9d8f",
       "font_size": 24
@@ -2315,10 +2362,10 @@
     {
       "title": "03 Color and restoration",
       "bounding": [
-        1220,
+        1860,
         40,
-        300,
-        520
+        440,
+        700
       ],
       "color": "#588157",
       "font_size": 24
@@ -2326,10 +2373,10 @@
     {
       "title": "04 Masks and approved background",
       "bounding": [
-        1540,
+        2340,
         40,
-        520,
-        520
+        700,
+        700
       ],
       "color": "#527fa3",
       "font_size": 24
@@ -2338,9 +2385,9 @@
       "title": "05 Prompt",
       "bounding": [
         40,
-        660,
-        300,
-        520
+        800,
+        500,
+        640
       ],
       "color": "#8064a2",
       "font_size": 24
@@ -2348,10 +2395,10 @@
     {
       "title": "06 Krea 2 identity edit",
       "bounding": [
-        360,
-        660,
-        700,
-        760
+        580,
+        800,
+        900,
+        800
       ],
       "color": "#6d597a",
       "font_size": 24
@@ -2359,10 +2406,10 @@
     {
       "title": "07 HOI4 style LoRA",
       "bounding": [
-        1080,
-        660,
-        300,
-        520
+        1520,
+        800,
+        340,
+        640
       ],
       "color": "#b56576",
       "font_size": 24
@@ -2370,10 +2417,10 @@
     {
       "title": "08 Candidate generation",
       "bounding": [
-        1400,
-        660,
-        300,
-        520
+        1900,
+        800,
+        340,
+        640
       ],
       "color": "#c17817",
       "font_size": 24
@@ -2381,9 +2428,9 @@
     {
       "title": "09 Preview and evidence export",
       "bounding": [
-        1720,
-        660,
-        900,
+        2280,
+        800,
+        1080,
         760
       ],
       "color": "#457b9d",
@@ -2433,66 +2480,66 @@
       "09 Preview and evidence export"
     ],
     "locked_controls": {
-      "Job contract and profile": [
+      "Portrait workflow settings": [
         "execution_profile",
         "candidate_count",
         "retry_limit",
         "seed_policy"
       ],
-      "Pinned foreground/mask analysis": [
+      "Separate person from background": [
         "mask_model"
       ],
-      "Human-only exact autoprompter": [
+      "Create portrait description": [
         "instruction_text",
         "instruction_path",
         "model_id",
         "prompt_source"
       ],
-      "Krea 2 Turbo FP8": [
+      "Load Krea 2 Turbo": [
         "unet_name",
         "weight_dtype"
       ],
-      "Pinned Krea identity adapter": [
+      "Preserve identity": [
         "lora_name",
         "strength_model"
       ],
-      "Krea VAE": [
+      "Prepare image decoder": [
         "vae_name"
       ],
-      "Krea 2 identity edit patch": [
+      "Apply identity reference": [
         "fit_mode",
         "ref_boost"
       ],
-      "Krea Qwen3-VL encoder": [
+      "Read portrait description": [
         "clip_name",
         "type"
       ],
-      "Grounded positive conditioning": [
+      "Connect portrait description": [
         "grounding_px"
       ],
-      "Grounded empty negative conditioning": [
+      "Keep background empty": [
         "prompt",
         "grounding_px"
       ],
-      "Immutable HOI4 style LoRA": [
+      "Apply HOI4 portrait style": [
         "lora_name"
       ],
-      "Profile work canvas": [
+      "Set portrait size": [
         "width",
         "height",
         "batch_size"
       ],
-      "Krea 2 Turbo candidate": [
+      "Generate portrait": [
         "steps",
         "cfg",
         "sampler_name",
         "scheduler",
         "denoise"
       ],
-      "Candidate evidence and audit handoff": [
+      "Save portrait evidence": [
         "candidate_index"
       ],
-      "Preview PNG only": [
+      "Save portrait PNG": [
         "filename_prefix"
       ]
     },
@@ -2509,10 +2556,11 @@
       "VAELoader"
     ],
     "preview_nodes": [
-      "PREVIEW 1 • crop / identity reference",
-      "PREVIEW 2 • prepared reference",
-      "PREVIEW 3 • approved background",
-      "PREVIEW 4 • same image as SaveImage"
+      "Cropped portrait",
+      "Prepared portrait",
+      "Background preview",
+      "Saved portrait preview",
+      "Input portrait preview"
     ],
     "final_preview_save_pair": {
       "preview_node_id": 28,

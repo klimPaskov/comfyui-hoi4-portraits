@@ -20,7 +20,7 @@ The required four graphs plus the local-NVIDIA agent convenience graph are stand
 4. Approved-background and provenance guard.
 5. Prompt validation.
 6. Krea 2 identity edit and HOI4 style-LoRA route.
-7. Bounded candidate generation.
+7. Bounded portrait generation.
 8. Evidence export for independent auditing.
 
 The workflow graph does not silently substitute a missing background, invent provenance, rewrite a rejected prompt, or approve its own output. On the detected 16 GB Mac, the live qualification run measured the locked FP8 checkpoint's MPS dtype failure, then measured the remaining memory/offload infeasibility after the reversible CPU-dequantization workaround. The Mac profile remains blocked for practical generation; the NVIDIA profiles require a CUDA host.
@@ -29,7 +29,7 @@ The workflow graph does not silently substitute a missing background, invent pro
 
 The human profiles call the project autoprompter with the exact instruction in [`prompts/autoprompter_instruction.txt`](../prompts/autoprompter_instruction.txt). The local Mac uses the pinned 4B GGUF sidecar; the full-power route uses the pinned Qwen3-VL 8B BF16 Transformers format and requires CUDA.
 
-Both human graphs now include four read-only `PreviewImage` checkpoints in the final stage panel: crop/reference, prepared reference, approved background, and final candidate. The final checkpoint is wired to the same evidence-export image as `SaveImage`, so the visible preview is exactly the image being saved. They do not bypass provenance, audit, DDS, or integration gates.
+Both human graphs now include five read-only `PreviewImage` checkpoints placed beside the stages that produce them: input portrait, cropped portrait, prepared portrait, background preview, and saved portrait preview. The saved portrait preview is wired to the same evidence-export image as `SaveImage`, so the visible preview is exactly the image being saved. They do not bypass provenance, audit, DDS, or integration gates.
 
 ## Agent workflows
 

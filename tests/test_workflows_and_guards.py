@@ -98,6 +98,43 @@ class WorkflowAndGuardTests(unittest.TestCase):
             data = json.loads(path.read_text(encoding="utf-8"))
             self.assertIsNone(data["_meta"]["final_preview_save_pair"]["preview_node_id"])
 
+    def test_workflow_titles_are_user_facing_and_human_previews_are_large(self):
+        forbidden_title_terms = ("human-only", "exact", "candidate")
+        for path in self.root.joinpath("workflows").glob("**/*.json"):
+            if path.name.endswith(".api.json"):
+                continue
+            data = json.loads(path.read_text(encoding="utf-8"))
+            titles = [str(node.get("title", "")) for node in data.get("nodes", [])]
+            for title in titles:
+                self.assertFalse(any(term in title.casefold() for term in forbidden_title_terms), (path, title))
+        for path in self.root.joinpath("workflows/human").glob("**/*.json"):
+            if path.name.endswith(".api.json"):
+                continue
+            data = json.loads(path.read_text(encoding="utf-8"))
+            api = json.loads(path.with_suffix(".api.json").read_text(encoding="utf-8"))
+            previews = {node["id"]: node for node in data["nodes"] if node.get("type") == "PreviewImage"}
+            self.assertEqual(set(previews), {25, 26, 27, 28, 30})
+            self.assertTrue(all(node["size"][0] >= 300 and node["size"][1] >= 300 for node in previews.values()))
+            self.assertEqual(api["30"]["inputs"]["images"], ["3", 0])
+            self.assertEqual({tuple(previews[node_id]["size"]) for node_id in (25, 26, 27, 30)}, {(340, 420)})
+            self.assertEqual(tuple(previews[28]["size"]), (400, 480))
+
+    def test_workflow_layout_uses_aligned_symmetric_columns(self):
+        for path in self.root.joinpath("workflows").glob("**/*.json"):
+            if path.name.endswith(".api.json"):
+                continue
+            data = json.loads(path.read_text(encoding="utf-8"))
+            nodes = {node["id"]: node for node in data["nodes"]}
+            self.assertEqual(nodes[5]["size"], nodes[6]["size"], path)
+            self.assertEqual(nodes[10]["size"], nodes[14]["size"], path)
+            self.assertEqual(nodes[11]["size"], nodes[15]["size"], path)
+            self.assertEqual(nodes[12]["size"], nodes[16]["size"], path)
+            self.assertEqual(nodes[13]["size"], nodes[17]["size"], path)
+            self.assertEqual(nodes[10]["pos"][1], nodes[14]["pos"][1], path)
+            self.assertEqual(nodes[11]["pos"][1], nodes[15]["pos"][1], path)
+            self.assertEqual(nodes[12]["pos"][1], nodes[16]["pos"][1], path)
+            self.assertEqual(nodes[13]["pos"][1], nodes[17]["pos"][1], path)
+
     def test_public_evidence_redacts_host_local_paths(self):
         sanitized = sanitize_public_paths({"root": str(self.root), "external": "/Users/example/private/source.png"}, self.root)
         self.assertEqual(sanitized["root"], "<project-root>")

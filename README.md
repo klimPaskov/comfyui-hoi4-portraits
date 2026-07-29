@@ -25,7 +25,7 @@ cd comfyui-hoi4-portraits
 
 Read [`docs/getting-started.md`](docs/getting-started.md), install the pinned private runtime, start the loopback services, and drag one workflow JSON onto the ComfyUI canvas at `http://127.0.0.1:8188/`.
 
-Human workflows show four checkpoints: crop/reference, prepared reference, approved background, and the exact image shared by the final preview and `SaveImage`.
+Human workflows show five checkpoints beside the stages that produce them: input portrait, cropped portrait, prepared portrait, background preview, and saved portrait preview. The last preview and `SaveImage` consume the same image.
 
 ## Current qualification status
 

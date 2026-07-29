@@ -49,22 +49,21 @@ HUMAN_ONLY_PROJECT_NODES = {"HOI4HumanControls"}
 FORBIDDEN_CLASS_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 
 # The UI workflow is deliberately laid out as a compact two-row rectangular
-# stage board.
-# These values are presentation metadata only; they do not change the
-# execution graph or any locked control.  Keeping the first five stages above
-# the last five makes the complete route readable without a panorama-wide
-# canvas and leaves the image checkpoints close to the export stage.
+# stage board.  The larger input and preview panels are placed beside the
+# stage that produces each image, so a human can follow the portrait without
+# hunting across the canvas.  These values are presentation metadata only;
+# they do not change the execution graph or any locked control.
 GROUP_LAYOUT = {
-    "00 Job and source": (40, 40, 520, 520),
-    "01 Subject selection": (580, 40, 300, 520),
-    "02 Crop and source preparation": (900, 40, 300, 520),
-    "03 Color and restoration": (1220, 40, 300, 520),
-    "04 Masks and approved background": (1540, 40, 520, 520),
-    "05 Prompt": (40, 660, 300, 520),
-    "06 Krea 2 identity edit": (360, 660, 700, 760),
-    "07 HOI4 style LoRA": (1080, 660, 300, 520),
-    "08 Candidate generation": (1400, 660, 300, 520),
-    "09 Preview and evidence export": (1720, 660, 900, 760),
+    "00 Job and source": (40, 40, 760, 700),
+    "01 Subject selection": (840, 40, 500, 700),
+    "02 Crop and source preparation": (1380, 40, 440, 700),
+    "03 Color and restoration": (1860, 40, 440, 700),
+    "04 Masks and approved background": (2340, 40, 700, 700),
+    "05 Prompt": (40, 800, 500, 640),
+    "06 Krea 2 identity edit": (580, 800, 900, 800),
+    "07 HOI4 style LoRA": (1520, 800, 340, 640),
+    "08 Candidate generation": (1900, 800, 340, 640),
+    "09 Preview and evidence export": (2280, 800, 1080, 760),
 }
 
 GROUP_COLORS = {
@@ -136,7 +135,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     nodes: list[NodeSpec] = []
 
     nodes.append(_node(
-        1, "HOI4JobInput", group["00 Job and source"], "Job contract and profile",
+        1, "HOI4JobInput", group["00 Job and source"], "Portrait workflow settings",
         inputs={"execution_profile": profile, "job_contract_path": "jobs/<job_id>/input.json", "candidate_count": int(limits["candidate_max"]), "retry_limit": int(limits["retry_max"]), "seed_policy": "derived"},
         input_types={"execution_profile": "STRING", "job_contract_path": "STRING", "candidate_count": "INT", "retry_limit": "INT", "seed_policy": "COMBO"},
         outputs=["job"], output_types=["HOI4_JOB"], pos=(40, 80), widgets=[profile, "jobs/<job_id>/input.json", int(limits["candidate_max"]), int(limits["retry_max"]), "derived"], locked=["execution_profile", "candidate_count", "retry_limit", "seed_policy"],
@@ -144,7 +143,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     job_node_id = 24 if is_human else 1
     if is_human:
         nodes.append(_node(
-            24, "HOI4HumanControls", group["00 Job and source"], "Human review controls",
+            24, "HOI4HumanControls", group["00 Job and source"], "Input portrait & portrait options",
             inputs={"job": Link(1), "source_image_path": "<from_job_contract>", "subject_selector_mode": "automatic", "face_index": 0, "bbox_left": 0, "bbox_top": 0, "bbox_right": 0, "bbox_bottom": 0, "crop_override_left": 0, "crop_override_top": 0, "crop_override_right": 0, "crop_override_bottom": 0, "monochrome_mode": "automatic", "restoration_level": "conservative", "approved_background_registry_id": "<from_job_contract>", "prompt_override": "", "seed_mode": "derived", "fixed_seed": 0, "candidate_count": int(limits["candidate_max"]), "output_job_id": "<job_id_from_contract>"},
             input_types={"job": "HOI4_JOB", "source_image_path": "STRING", "subject_selector_mode": "COMBO", "face_index": "INT", "bbox_left": "INT", "bbox_top": "INT", "bbox_right": "INT", "bbox_bottom": "INT", "crop_override_left": "INT", "crop_override_top": "INT", "crop_override_right": "INT", "crop_override_bottom": "INT", "monochrome_mode": "COMBO", "restoration_level": "COMBO", "approved_background_registry_id": "STRING", "prompt_override": "STRING", "seed_mode": "COMBO", "fixed_seed": "INT", "candidate_count": "INT", "output_job_id": "STRING"},
             outputs=["job", "control_meta"], output_types=["HOI4_JOB", "HOI4_META"], pos=(360, 80),
@@ -153,105 +152,105 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     control_inputs = {"control_meta": Link(24, 1)} if is_human else {}
     control_input_types = {"control_meta": "HOI4_META"} if is_human else {}
     nodes.append(_node(
-        2, "HOI4JobSource", group["00 Job and source"], "Load source only from job root",
+        2, "HOI4JobSource", group["00 Job and source"], "Load input portrait",
         inputs={"job": Link(job_node_id)}, input_types={"job": "HOI4_JOB"}, outputs=["image", "source_meta"], output_types=["IMAGE", "HOI4_META"], pos=(40, 300),
     ))
     nodes.append(_node(
-        3, "HOI4SourceGuard", group["00 Job and source"], "Provenance and source guard",
+        3, "HOI4SourceGuard", group["00 Job and source"], "Check input portrait",
         inputs={"job": Link(job_node_id), "image": Link(2, 0)}, input_types={"job": "HOI4_JOB", "image": "IMAGE"}, outputs=["image", "source_meta"], output_types=["IMAGE", "HOI4_META"], pos=(40, 510),
     ))
     nodes.append(_node(
-        4, "HOI4SubjectSelect", group["01 Subject selection"], "Deterministic subject selection",
+        4, "HOI4SubjectSelect", group["01 Subject selection"], "Select the subject",
         inputs={"job": Link(job_node_id), "image": Link(3, 0)}, input_types={"job": "HOI4_JOB", "image": "IMAGE"}, outputs=["image", "selection_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 80),
     ))
     nodes.append(_node(
-        5, "HOI4HeadShouldersCrop", group["02 Crop and source preparation"], "Head and shoulders crop",
+        5, "HOI4HeadShouldersCrop", group["02 Crop and source preparation"], "Crop the portrait",
         inputs={"job": Link(job_node_id), "image": Link(4, 0), "selection_meta": Link(4, 1), **control_inputs}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "selection_meta": "HOI4_META", **control_input_types}, outputs=["image", "crop_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 300),
     ))
     nodes.append(_node(
-        6, "HOI4ConservativePrep", group["03 Color and restoration"], "Conditional color and conservative restoration",
+        6, "HOI4ConservativePrep", group["03 Color and restoration"], "Prepare the portrait",
         inputs={"job": Link(job_node_id), "image": Link(5, 0), "crop_meta": Link(5, 1), **control_inputs}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "crop_meta": "HOI4_META", **control_input_types}, outputs=["image", "reference_meta"], output_types=["IMAGE", "HOI4_META"], pos=(360, 520),
     ))
     nodes.append(_node(
-        7, "HOI4ForegroundMask", group["04 Masks and approved background"], "Pinned foreground/mask analysis",
+        7, "HOI4ForegroundMask", group["04 Masks and approved background"], "Separate person from background",
         inputs={"job": Link(job_node_id), "image": Link(6, 0), "reference_meta": Link(6, 1), "mask_model": "BiRefNet"}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "reference_meta": "HOI4_META", "mask_model": "STRING"}, outputs=["image", "mask", "mask_meta"], output_types=["IMAGE", "MASK", "HOI4_META"], pos=(680, 40), widgets=["BiRefNet"], locked=["mask_model"],
     ))
     nodes.append(_node(
-        8, "HOI4MaskAndBackgroundGuard", group["04 Masks and approved background"], "Approved background composite and foreground guard",
+        8, "HOI4MaskAndBackgroundGuard", group["04 Masks and approved background"], "Add approved background",
         inputs={"job": Link(job_node_id), "image": Link(7, 0), "mask": Link(7, 1), "mask_meta": Link(7, 2)}, input_types={"job": "HOI4_JOB", "image": "IMAGE", "mask": "MASK", "mask_meta": "HOI4_META"}, outputs=["image", "composite", "mask", "background_meta"], output_types=["IMAGE", "IMAGE", "MASK", "HOI4_META"], pos=(680, 270),
     ))
 
     if is_human:
         nodes.append(_node(
-            9, "HOI4AutopromptClient", group["05 Prompt"], "Human-only exact autoprompter",
+            9, "HOI4AutopromptClient", group["05 Prompt"], "Create portrait description",
             inputs={"job": Link(job_node_id), "image": Link(8, 0), "background_meta": Link(8, 3), "control_meta": Link(24, 1), "instruction_text": instruction, "instruction_path": AUTOPROMPTER_PATH, "model_id": limits["prompt_model"], "prompt_source": "autoprompter"},
             input_types={"job": "HOI4_JOB", "image": "IMAGE", "background_meta": "HOI4_META", "control_meta": "HOI4_META", "instruction_text": "STRING", "instruction_path": "STRING", "model_id": "STRING", "prompt_source": "COMBO"},
             outputs=["prompt", "prompt_meta"], output_types=["STRING", "HOI4_META"], pos=(680, 340), widgets=[instruction, AUTOPROMPTER_PATH, limits["prompt_model"], "autoprompter"], locked=["instruction_text", "instruction_path", "model_id", "prompt_source"],
         ))
     else:
         nodes.append(_node(
-            9, "HOI4PromptInput", group["05 Prompt"], "Agent prompt from job contract",
+            9, "HOI4PromptInput", group["05 Prompt"], "Use portrait description",
             inputs={"job": Link(job_node_id), "background_meta": Link(8, 3), "prompt_source": "job_contract"}, input_types={"job": "HOI4_JOB", "background_meta": "HOI4_META", "prompt_source": "COMBO"}, outputs=["prompt", "prompt_meta"], output_types=["STRING", "HOI4_META"], pos=(680, 540), widgets=["job_contract"], locked=["prompt_source"],
         ))
 
     nodes.append(_node(
-        10, "UNETLoader", group["06 Krea 2 identity edit"], "Krea 2 Turbo FP8",
+        10, "UNETLoader", group["06 Krea 2 identity edit"], "Load Krea 2 Turbo",
         inputs={"unet_name": "krea2_turbo_fp8_scaled.safetensors", "weight_dtype": "default"}, input_types={"unet_name": "COMBO", "weight_dtype": "COMBO"}, outputs=["model"], output_types=["MODEL"], pos=(1000, 80), widgets=["krea2_turbo_fp8_scaled.safetensors", "default"], locked=["unet_name", "weight_dtype"],
     ))
     nodes.append(_node(
-        11, "LoraLoaderModelOnly", group["06 Krea 2 identity edit"], "Pinned Krea identity adapter",
+        11, "LoraLoaderModelOnly", group["06 Krea 2 identity edit"], "Preserve identity",
         inputs={"model": Link(10), "lora_name": "krea2_identity_edit_v1_2.safetensors", "strength_model": 1.0}, input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"}, outputs=["model"], output_types=["MODEL"], pos=(1000, 260), widgets=["krea2_identity_edit_v1_2.safetensors", 1.0], locked=["lora_name", "strength_model"],
     ))
     nodes.append(_node(
-        12, "VAELoader", group["06 Krea 2 identity edit"], "Krea VAE",
+        12, "VAELoader", group["06 Krea 2 identity edit"], "Prepare image decoder",
         inputs={"vae_name": "qwen_image_vae.safetensors"}, input_types={"vae_name": "COMBO"}, outputs=["vae"], output_types=["VAE"], pos=(1000, 450), widgets=["qwen_image_vae.safetensors"], locked=["vae_name"],
     ))
     nodes.append(_node(
-        13, "VAEEncode", group["06 Krea 2 identity edit"], "Encode identity reference",
+        13, "VAEEncode", group["06 Krea 2 identity edit"], "Encode reference image",
         inputs={"pixels": Link(8, 1), "vae": Link(12)}, input_types={"pixels": "IMAGE", "vae": "VAE"}, outputs=["latent"], output_types=["LATENT"], pos=(1000, 610),
     ))
     nodes.append(_node(
-        14, "Krea2EditModelPatch", group["06 Krea 2 identity edit"], "Krea 2 identity edit patch",
+        14, "Krea2EditModelPatch", group["06 Krea 2 identity edit"], "Apply identity reference",
         inputs={"model": Link(11), "source_latent": Link(13), "vae": Link(12), "source_image": Link(8, 1), "fit_mode": "fit", "ref_boost": 1.0}, input_types={"model": "MODEL", "source_latent": "LATENT", "vae": "VAE", "source_image": "IMAGE", "fit_mode": "COMBO", "ref_boost": "FLOAT"}, outputs=["model"], output_types=["MODEL"], pos=(1320, 200), widgets=["fit", 1.0], locked=["fit_mode", "ref_boost"],
     ))
     nodes.append(_node(
-        15, "CLIPLoader", group["06 Krea 2 identity edit"], "Krea Qwen3-VL encoder",
+        15, "CLIPLoader", group["06 Krea 2 identity edit"], "Read portrait description",
         inputs={"clip_name": "qwen3vl_4b_fp8_scaled.safetensors", "type": "krea2"}, input_types={"clip_name": "COMBO", "type": "COMBO"}, outputs=["clip"], output_types=["CLIP"], pos=(1320, 430), widgets=["qwen3vl_4b_fp8_scaled.safetensors", "krea2"], locked=["clip_name", "type"],
     ))
     nodes.append(_node(
-        16, "Krea2EditGroundedEncode", group["06 Krea 2 identity edit"], "Grounded positive conditioning",
+        16, "Krea2EditGroundedEncode", group["06 Krea 2 identity edit"], "Connect portrait description",
         inputs={"clip": Link(15), "prompt": Link(9, 0), "image": Link(8, 1), "grounding_px": 768}, input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"}, outputs=["conditioning"], output_types=["CONDITIONING"], pos=(1640, 80), widgets=[768], locked=["grounding_px"],
     ))
     nodes.append(_node(
-        17, "Krea2EditGroundedEncode", group["06 Krea 2 identity edit"], "Grounded empty negative conditioning",
+        17, "Krea2EditGroundedEncode", group["06 Krea 2 identity edit"], "Keep background empty",
         inputs={"clip": Link(15), "prompt": "", "image": Link(8, 1), "grounding_px": 768}, input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"}, outputs=["conditioning"], output_types=["CONDITIONING"], pos=(1640, 290), widgets=["", 768], locked=["prompt", "grounding_px"],
     ))
     nodes.append(_node(
-        18, "LoraLoaderModelOnly", group["07 HOI4 style LoRA"], "Immutable HOI4 style LoRA",
+        18, "LoraLoaderModelOnly", group["07 HOI4 style LoRA"], "Apply HOI4 portrait style",
         inputs={"model": Link(14), "lora_name": "hoi4_portrait_new_style_lora.safetensors", "strength_model": 0.80}, input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"}, outputs=["model"], output_types=["MODEL"], pos=(1960, 200), widgets=["hoi4_portrait_new_style_lora.safetensors", 0.80], locked=["lora_name"],
     ))
     nodes.append(_node(
-        29, "HOI4KreaModelLoadBarrier", group["06 Krea 2 identity edit"], "Release text encoder before Krea sampling",
+        29, "HOI4KreaModelLoadBarrier", group["08 Candidate generation"], "Prepare generation",
         inputs={"model": Link(18), "positive": Link(16), "negative": Link(17)}, input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING"}, outputs=["model", "positive", "negative"], output_types=["MODEL", "CONDITIONING", "CONDITIONING"], pos=(1320, 620),
     ))
     nodes.append(_node(
-        19, "EmptySD3LatentImage", group["08 Candidate generation"], "Profile work canvas",
+        19, "EmptySD3LatentImage", group["08 Candidate generation"], "Set portrait size",
         inputs={"width": width, "height": height, "batch_size": 1}, input_types={"width": "INT", "height": "INT", "batch_size": "INT"}, outputs=["latent"], output_types=["LATENT"], pos=(1960, 430), widgets=[width, height, 1], locked=["width", "height", "batch_size"],
     ))
     nodes.append(_node(
-        20, "KSampler", group["08 Candidate generation"], "Krea 2 Turbo candidate",
+        20, "KSampler", group["08 Candidate generation"], "Generate portrait",
         inputs={"model": Link(29, 0), "positive": Link(29, 1), "negative": Link(29, 2), "latent_image": Link(19), "seed": 0, "steps": 8, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0}, input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "latent_image": "LATENT", "seed": "INT", "steps": "INT", "cfg": "FLOAT", "sampler_name": "COMBO", "scheduler": "COMBO", "denoise": "FLOAT"}, outputs=["latent"], output_types=["LATENT"], pos=(2280, 120), widgets=[0, 8, 1.0, "euler", "simple", 1.0], locked=["steps", "cfg", "sampler_name", "scheduler", "denoise"],
     ))
     nodes.append(_node(
-        21, "VAEDecode", group["09 Preview and evidence export"], "Decode candidate",
+        21, "VAEDecode", group["09 Preview and evidence export"], "Build portrait image",
         inputs={"samples": Link(20), "vae": Link(12)}, input_types={"samples": "LATENT", "vae": "VAE"}, outputs=["image"], output_types=["IMAGE"], pos=(2600, 120),
     ))
     nodes.append(_node(
-        22, "HOI4EvidenceExport", group["09 Preview and evidence export"], "Candidate evidence and audit handoff",
+        22, "HOI4EvidenceExport", group["09 Preview and evidence export"], "Save portrait evidence",
         inputs={"job": Link(job_node_id), "source_master": Link(3, 0), "processed_reference": Link(6, 0), "approved_background": Link(8, 1), "candidate": Link(21), "mask": Link(8, 2), "prompt": Link(9, 0), "candidate_index": 0}, input_types={"job": "HOI4_JOB", "source_master": "IMAGE", "processed_reference": "IMAGE", "approved_background": "IMAGE", "candidate": "IMAGE", "mask": "MASK", "prompt": "STRING", "candidate_index": "INT"}, outputs=["image", "evidence_meta"], output_types=["IMAGE", "HOI4_META"], pos=(2920, 120), widgets=[0], locked=["candidate_index"],
     ))
     nodes.append(_node(
-        23, "SaveImage", group["09 Preview and evidence export"], "Preview PNG only",
+        23, "SaveImage", group["09 Preview and evidence export"], "Save portrait PNG",
         inputs={"images": Link(22, 0), "filename_prefix": "evidence/candidates"}, input_types={"images": "IMAGE", "filename_prefix": "STRING"}, outputs=[], output_types=[], pos=(3240, 120), widgets=["evidence/candidates"], locked=["filename_prefix"],
     ))
 
@@ -261,24 +260,28 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         # unchanged and receive their prompt exclusively from the job contract.
         nodes.extend([
             _node(
-                25, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 1 • crop / identity reference",
+                25, PREVIEW_NODE, group["02 Crop and source preparation"], "Cropped portrait",
                 inputs={"images": Link(5, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4080, 300),
             ),
             _node(
-                26, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 2 • prepared reference",
+                26, PREVIEW_NODE, group["03 Color and restoration"], "Prepared portrait",
                 inputs={"images": Link(6, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4080, 500),
             ),
             _node(
-                27, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 3 • approved background",
+                27, PREVIEW_NODE, group["04 Masks and approved background"], "Background preview",
                 inputs={"images": Link(8, 1)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4390, 500),
             ),
             _node(
-                28, PREVIEW_NODE, group["09 Preview and evidence export"], "PREVIEW 4 • same image as SaveImage",
+                28, PREVIEW_NODE, group["09 Preview and evidence export"], "Saved portrait preview",
                 inputs={"images": Link(22, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(4690, 300),
+            ),
+            _node(
+                30, PREVIEW_NODE, group["01 Subject selection"], "Input portrait preview",
+                inputs={"images": Link(3, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"], pos=(870, 280),
             ),
         ])
 
-    _apply_visual_layout(nodes)
+    _apply_visual_layout(nodes, is_human=is_human)
 
     metadata = {
         "schema_version": "1.0.0",
@@ -351,6 +354,15 @@ def validate_graph(graph: GraphSpec) -> None:
     missing = sorted(required - class_names)
     if missing:
         raise ValueError(f"workflow is missing required node classes: {missing}")
+    for index, left in enumerate(graph.nodes):
+        left_right = left.pos[0] + left.size[0]
+        left_bottom = left.pos[1] + left.size[1]
+        for right in graph.nodes[index + 1:]:
+            if left_right <= right.pos[0] or right.pos[0] + right.size[0] <= left.pos[0]:
+                continue
+            if left_bottom <= right.pos[1] or right.pos[1] + right.size[1] <= left.pos[1]:
+                continue
+            raise ValueError(f"workflow nodes overlap: {left.node_id} ({left.title}) and {right.node_id} ({right.title})")
 
 
 def _api_value(value: Any) -> Any:
@@ -359,23 +371,39 @@ def _api_value(value: Any) -> Any:
     return value
 
 
-def _apply_visual_layout(nodes: list[NodeSpec]) -> None:
-    """Place nodes inside the compact two-row rectangular stage panels."""
+def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool) -> None:
+    """Place nodes and image checkpoints on the compact two-row stage board."""
 
     positions = {
-        1: (70, 100), 24: (270, 100), 2: (70, 300), 3: (270, 300),
-        4: (610, 160), 5: (930, 160), 6: (1250, 160),
-        7: (1570, 130), 8: (1760, 340),
-        9: (70, 760),
-        10: (390, 760), 11: (390, 920), 12: (390, 1080), 13: (390, 1240),
-        14: (680, 760), 15: (680, 920), 16: (680, 1080), 17: (680, 1240),
-        18: (1110, 840), 29: (1320, 1120), 19: (1430, 760), 20: (1430, 940),
-        21: (1750, 760), 22: (2030, 760), 23: (2030, 940),
-        25: (1750, 1020), 26: (2030, 1120), 27: (2310, 1120), 28: (2310, 760),
+        1: (70, 100), 24: (440, 100), 2: (70, 300), 3: (70, 500),
+        4: (870, 100), 30: (870, 280),
+        5: (1420, 100), 25: (1420, 280),
+        6: (1900, 100), 26: (1900, 280),
+        7: (2380, 100), 8: (2380, 300), 27: (2700, 230),
+        9: (70, 900),
+        10: (620, 900), 11: (620, 1050), 12: (620, 1200), 13: (620, 1350),
+        14: (900, 900), 15: (900, 1050), 16: (900, 1200), 17: (900, 1350),
+        18: (1560, 1000),
+        19: (1940, 900), 20: (1940, 1080), 29: (1940, 1300),
+        21: (2320, 900), 22: (2640, 900), 23: (2640, 1090), 28: (2940, 900),
+    }
+    sizes = {
+        1: (350, 170), 24: (350, 580), 2: (350, 140), 3: (350, 140),
+        4: (300, 150), 30: (340, 420),
+        5: (320, 150), 25: (340, 420),
+        6: (320, 150), 26: (340, 420),
+        7: (320, 150), 8: (320, 180), 27: (340, 420),
+        9: (440, 520 if is_human else 230),
+        10: (260, 130), 11: (260, 130), 12: (260, 130), 13: (260, 130),
+        14: (260, 130), 15: (260, 130), 16: (260, 130), 17: (260, 130),
+        18: (260, 170), 19: (260, 150), 20: (260, 180), 29: (260, 130),
+        21: (300, 140), 22: (300, 170), 23: (300, 140), 28: (400, 480),
     }
     for node in nodes:
         if node.node_id in positions:
             node.pos = positions[node.node_id]
+        if node.node_id in sizes:
+            node.size = sizes[node.node_id]
 
 
 def _api_json(graph: GraphSpec) -> dict[str, Any]:
