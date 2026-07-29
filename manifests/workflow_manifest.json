@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-29T02:34:11.108514+00:00",
+  "generated_at": "2026-07-29T02:56:33.328026+00:00",
   "lock_version": "workflows-2026-07-26.1",
   "workflows": [
     {
@@ -80,7 +80,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:34:11.108514+00:00"
+        "checked_at": "2026-07-29T02:56:33.328026+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -170,7 +170,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:34:11.108514+00:00"
+        "checked_at": "2026-07-29T02:56:33.328026+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -252,7 +252,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:34:11.108514+00:00"
+        "checked_at": "2026-07-29T02:56:33.328026+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -334,7 +334,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:34:11.108514+00:00"
+        "checked_at": "2026-07-29T02:56:33.328026+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -416,7 +416,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:34:11.108514+00:00"
+        "checked_at": "2026-07-29T02:56:33.328026+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
