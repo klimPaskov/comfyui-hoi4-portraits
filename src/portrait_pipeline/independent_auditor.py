@@ -62,6 +62,33 @@ def _read_image(path: Path) -> Any:
         return image.convert("RGBA")
 
 
+def _single_face_crop(detector: Any, image: Any) -> Any:
+    """Apply the same locked face-crop policy used during geometry calibration."""
+    import cv2  # type: ignore
+    import numpy as np  # type: ignore
+
+    rgb = np.ascontiguousarray(image, dtype=np.uint8)
+    if rgb.ndim != 3 or rgb.shape[2] != 3:
+        raise ValueError("expected an RGB image")
+    bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    height, width = bgr.shape[:2]
+    detector.setInputSize((int(width), int(height)))
+    _, faces = detector.detect(bgr)
+    count = 0 if faces is None else len(faces)
+    if count != 1:
+        raise ValueError(f"YuNet expected exactly one face, found {count}")
+    x, y, face_width, face_height = [float(value) for value in faces[0][:4]]
+    margin = 0.65 * max(face_width, face_height)
+    left = max(0, int(math.floor(x - margin)))
+    top = max(0, int(math.floor(y - margin)))
+    right = min(width, int(math.ceil(x + face_width + margin)))
+    bottom = min(height, int(math.ceil(y + face_height + margin)))
+    crop = rgb[top:bottom, left:right]
+    if crop.size == 0 or crop.shape[0] < 32 or crop.shape[1] < 32:
+        raise ValueError("YuNet face crop is too small")
+    return np.ascontiguousarray(crop, dtype=np.uint8)
+
+
 def _face_signals(root: Path, source: Path, candidate: Path) -> tuple[dict[str, Any], str | None]:
     """Compute SFace/YuNet signals when the pinned OpenCV models are usable."""
 
@@ -78,6 +105,10 @@ def _face_signals(root: Path, source: Path, candidate: Path) -> tuple[dict[str, 
         sface = root / str(entries["SFace"]["destination_path"])
         if not yunet.is_file() or not sface.is_file():
             raise FileNotFoundError("pinned YuNet or SFace model is missing")
+        yunet_entry = entries["YuNet"]
+        sface_entry = entries["SFace"]
+        if sha256_file(yunet) != yunet_entry.get("artifact_sha256") or sha256_file(sface) != sface_entry.get("artifact_sha256"):
+            raise ValueError("pinned YuNet or SFace checksum mismatch")
         source_image = cv2.cvtColor(np.asarray(_read_image(source)), cv2.COLOR_RGBA2BGR)
         candidate_image = cv2.cvtColor(np.asarray(_read_image(candidate)), cv2.COLOR_RGBA2BGR)
         detector = cv2.FaceDetectorYN.create(str(yunet), "", (320, 320), 0.6, 0.3, 5000)
@@ -89,7 +120,15 @@ def _face_signals(root: Path, source: Path, candidate: Path) -> tuple[dict[str, 
 
         source_faces = detect(source_image)
         candidate_faces = detect(candidate_image)
-        metrics: dict[str, Any] = {"backend": "opencv_yunet_sface", "source_face_count": int(len(source_faces)), "candidate_face_count": int(len(candidate_faces))}
+        metrics: dict[str, Any] = {
+            "backend": "opencv_yunet_sface",
+            "source_face_count": int(len(source_faces)),
+            "candidate_face_count": int(len(candidate_faces)),
+            "face_detector_revision": yunet_entry.get("source_revision"),
+            "face_detector_sha256": yunet_entry.get("artifact_sha256"),
+            "face_recognizer_revision": sface_entry.get("source_revision"),
+            "face_recognizer_sha256": sface_entry.get("artifact_sha256"),
+        }
         if len(source_faces) != 1 or len(candidate_faces) != 1:
             return metrics, "independent face association requires exactly one source and one candidate face"
         recognizer = cv2.FaceRecognizerSF.create(str(sface), "")
@@ -116,9 +155,16 @@ def _landmark_signals(root: Path, source: Path, candidate: Path) -> tuple[dict[s
         lock = json.loads((root / "dependencies" / "preprocessing_lock.json").read_text(encoding="utf-8"))
         entries = {item.get("name"): item for item in lock.get("dependencies", [])}
         entry = entries["MediaPipe Face Landmarker"]
+        detector_entry = entries["YuNet"]
         model_path = root / str(entry["destination_path"])
-        if not model_path.is_file():
-            raise FileNotFoundError("pinned MediaPipe Face Landmarker is missing")
+        detector_path = root / str(detector_entry["destination_path"])
+        if not model_path.is_file() or not detector_path.is_file():
+            raise FileNotFoundError("pinned MediaPipe Face Landmarker or YuNet is missing")
+        if sha256_file(model_path) != entry.get("artifact_sha256") or sha256_file(detector_path) != detector_entry.get("artifact_sha256"):
+            raise ValueError("pinned MediaPipe Face Landmarker or YuNet checksum mismatch")
+        import cv2  # type: ignore
+
+        detector = cv2.FaceDetectorYN.create(str(detector_path), "", (320, 320), 0.6, 0.3, 5000)
         options = mp.tasks.vision.FaceLandmarkerOptions(
             base_options=mp.tasks.BaseOptions(model_asset_path=str(model_path)),
             running_mode=mp.tasks.vision.RunningMode.IMAGE,
@@ -129,7 +175,7 @@ def _landmark_signals(root: Path, source: Path, candidate: Path) -> tuple[dict[s
         with mp.tasks.vision.FaceLandmarker.create_from_options(options) as landmarker:
             def detect(path: Path) -> tuple[Any, dict[str, float], Any]:
                 image = _read_image(path).convert("RGB")
-                array = np.ascontiguousarray(np.asarray(image, dtype=np.uint8))
+                array = _single_face_crop(detector, np.asarray(image, dtype=np.uint8))
                 result = landmarker.detect(mp.Image(image_format=mp.ImageFormat.SRGB, data=array))
                 faces = getattr(result, "face_landmarks", None) or []
                 blendshape_sets = getattr(result, "face_blendshapes", None) or []
@@ -214,6 +260,9 @@ def _landmark_signals(root: Path, source: Path, candidate: Path) -> tuple[dict[s
             "expression_feature_count": len(common_expression_names),
             "landmark_model_revision": entry.get("source_revision"),
             "landmark_model_sha256": entry.get("artifact_sha256"),
+            "landmark_input_policy": "pinned_yunet_single_face_crop; bbox margin is 0.65x the larger face dimension; no bbox is emitted",
+            "landmark_face_detector_revision": detector_entry.get("source_revision"),
+            "landmark_face_detector_sha256": detector_entry.get("artifact_sha256"),
         }, None
     except Exception as exc:
         return {"landmark_backend": "mediapipe_face_landmarker", "landmark_status": "UNCERTAIN", "error_type": type(exc).__name__}, f"landmark/pose/expression audit failed closed: {type(exc).__name__}"

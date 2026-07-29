@@ -268,6 +268,20 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertIn("landmarker_input_policy", evidence["fixture_set"])
         self.assertFalse(evidence["proposed_operating_point"]["approved"])
 
+    def test_independent_auditor_uses_the_calibrated_face_crop_policy(self):
+        from portrait_pipeline.independent_auditor import _landmark_signals
+
+        candidate = self.root / "jobs/local-agent-loc-cpu-full-08-01/candidates/candidate-000.png"
+        source = self.root / "jobs/local-agent-loc-cpu-full-08-01/evidence/source/master.png"
+        if not source.is_file() or not candidate.is_file():
+            self.skipTest("private diagnostic candidate evidence is unavailable")
+        metrics, issue = _landmark_signals(self.root, source, candidate)
+        self.assertIsNone(issue, metrics)
+        self.assertEqual(metrics["landmark_status"], "PASS")
+        self.assertIn("pinned_yunet_single_face_crop", metrics["landmark_input_policy"])
+        self.assertEqual(len(metrics["landmark_model_sha256"]), 64)
+        self.assertEqual(len(metrics["landmark_face_detector_sha256"]), 64)
+
     def test_identity_style_matrix_execution_is_explicitly_fail_closed(self):
         from portrait_pipeline.constants import PROFILE_LIMITS
         from portrait_pipeline.experiments import build_execution_report, build_matrix
