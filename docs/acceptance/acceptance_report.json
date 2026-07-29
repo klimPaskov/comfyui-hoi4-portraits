@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-29T05:26:08.413484+00:00",
+  "created_at": "2026-07-29T05:30:55.611490+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 20,
   "gates": {
@@ -472,7 +472,7 @@
               "vm.swapusage"
             ],
             "returncode": 0,
-            "stdout": "vm.swapusage: total = 6144.00M  used = 4835.25M  free = 1308.75M  (encrypted)",
+            "stdout": "vm.swapusage: total = 6144.00M  used = 4795.25M  free = 1348.75M  (encrypted)",
             "stderr": ""
           },
           "vm_stat": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    16101.\nPages active:                                 233512.\nPages inactive:                               505908.\nPages speculative:                              8754.\nPages throttled:                                   0.\nPages wired down:                             136457.\nPages purgeable:                                 191.\n\"Translation faults\":                      555204284.\nPages copy-on-write:                        26960985.\nPages zero filled:                         260115105.\nPages reactivated:                         169659029.\nPages purged:                                3624386.\nFile-backed pages:                            566126.\nAnonymous pages:                              182048.\nPages stored in compressor:                   718627.\nPages occupied by compressor:                 104440.\nDecompressions:                            174250023.\nCompressions:                              245294808.\nPageins:                                  2013666863.\nPageouts:                                     115716.\nSwapins:                                    28363709.\nSwapouts:                                   39008023.\nPages tagged:                                  75721.\nPages tagged resident:                         60909.\nPages tagged compressed:                       14812.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          496.\nPages tag-storage non-tag pageable:            27897.\nPages tag-storage non-tag wired:                  78.\nBytes of compressed tags:                    2180544.\nTagged compressions:                         2483979.\nTagged decompressions:                       2288371.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15709.\nPages active:                                 239722.\nPages inactive:                               502539.\nPages speculative:                              5994.\nPages throttled:                                   0.\nPages wired down:                             138207.\nPages purgeable:                                 498.\n\"Translation faults\":                      556228771.\nPages copy-on-write:                        27090616.\nPages zero filled:                         260539175.\nPages reactivated:                         173068776.\nPages purged:                                3643163.\nFile-backed pages:                            559008.\nAnonymous pages:                              189247.\nPages stored in compressor:                   714023.\nPages occupied by compressor:                 104007.\nDecompressions:                            174259087.\nCompressions:                              245299819.\nPageins:                                  2048876375.\nPageouts:                                     116577.\nSwapins:                                    28365715.\nSwapouts:                                   39008023.\nPages tagged:                                  76235.\nPages tagged resident:                         61924.\nPages tagged compressed:                       14311.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          210.\nPages tag-storage non-tag pageable:            28182.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    2103424.\nTagged compressions:                         2483983.\nTagged decompressions:                       2288866.",
             "stderr": ""
           }
         },
@@ -1128,8 +1128,8 @@
               "Krea2EditModelPatch"
             ],
             "class_matches": {
-              "Krea2EditGroundedEncode": true,
-              "Krea2EditModelPatch": true
+              "Krea2EditModelPatch": true,
+              "Krea2EditGroundedEncode": true
             },
             "signature_match": true,
             "status": "PASS"
@@ -1322,7 +1322,7 @@
         "live_probe_status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
         "live_probe": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-29T03:38:53.963914+00:00",
+          "checked_at": "2026-07-29T05:26:34.999131+00:00",
           "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
           "server": {
             "base_url": "http://127.0.0.1:8188",
@@ -1331,7 +1331,7 @@
               "system": {
                 "os": "darwin",
                 "ram_total": 17179869184,
-                "ram_free": 6105743360,
+                "ram_free": 8642215936,
                 "comfyui_version": "0.25.0",
                 "required_frontend_version": "1.45.19",
                 "installed_templates_version": "0.10.0",
@@ -1387,9 +1387,9 @@
                   "type": "mps",
                   "index": null,
                   "vram_total": 17179869184,
-                  "vram_free": 6105841664,
+                  "vram_free": 8638545920,
                   "torch_vram_total": 17179869184,
-                  "torch_vram_free": 6105841664
+                  "torch_vram_free": 8638545920
                 }
               ]
             }
@@ -4920,7 +4920,7 @@
   ],
   "workflow_manifest": {
     "schema_version": "1.0.0",
-    "generated_at": "2026-07-29T03:38:53.963914+00:00",
+    "generated_at": "2026-07-29T05:26:34.999131+00:00",
     "lock_version": "workflows-2026-07-26.1",
     "workflows": [
       {
@@ -5001,7 +5001,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T03:38:53.963914+00:00"
+          "checked_at": "2026-07-29T05:26:34.999131+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -5092,7 +5092,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T03:38:53.963914+00:00"
+          "checked_at": "2026-07-29T05:26:34.999131+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -5175,7 +5175,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T03:38:53.963914+00:00"
+          "checked_at": "2026-07-29T05:26:34.999131+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -5258,7 +5258,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T03:38:53.963914+00:00"
+          "checked_at": "2026-07-29T05:26:34.999131+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -5341,7 +5341,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T03:38:53.963914+00:00"
+          "checked_at": "2026-07-29T05:26:34.999131+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
