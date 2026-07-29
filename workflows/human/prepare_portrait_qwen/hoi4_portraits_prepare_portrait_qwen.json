@@ -1,6 +1,6 @@
 {
-  "last_node_id": 20,
-  "last_link_id": 25,
+  "last_node_id": 23,
+  "last_link_id": 28,
   "nodes": [
     {
       "id": 1,
@@ -142,10 +142,7 @@
           "type": "IMAGE",
           "links": [
             3,
-            5,
-            10,
-            13,
-            15
+            4
           ]
         },
         {
@@ -236,7 +233,7 @@
           "name": "restoration_instructions",
           "type": "STRING",
           "links": [
-            12
+            6
           ]
         }
       ],
@@ -252,10 +249,52 @@
     },
     {
       "id": 6,
-      "type": "UNETLoader",
-      "title": "Load Krea 2 Turbo",
+      "type": "FluxKontextImageScale",
+      "title": "Scale portrait for Qwen",
       "pos": [
         80,
+        700
+      ],
+      "size": [
+        320,
+        140
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "scaled_portrait",
+          "type": "IMAGE",
+          "links": [
+            8,
+            11,
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Scale portrait for Qwen",
+        "hoi4_group": "04 Restore with Qwen",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "UNETLoader",
+      "title": "Load Qwen portrait restorer",
+      "pos": [
+        440,
         700
       ],
       "size": [
@@ -265,7 +304,7 @@
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 5,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -284,86 +323,30 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            4
+            14
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Load Krea 2 Turbo",
-        "hoi4_group": "04 Restore with Krea",
+        "Node name for S&R": "Load Qwen portrait restorer",
+        "hoi4_group": "04 Restore with Qwen",
         "hoi4_locked_controls": [
           "unet_name",
           "weight_dtype"
         ]
       },
       "widgets_values": [
-        "krea2_turbo_fp8_scaled.safetensors",
+        "qwen_image_edit_2511_fp8mixed.safetensors",
         "default"
       ]
     },
     {
-      "id": 7,
-      "type": "LoraLoaderModelOnly",
-      "title": "Preserve identity",
-      "pos": [
-        420,
-        700
-      ],
-      "size": [
-        300,
-        140
-      ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 4
-        },
-        {
-          "name": "lora_name",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "strength_model",
-          "type": "FLOAT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "links": [
-            7
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Preserve identity",
-        "hoi4_group": "04 Restore with Krea",
-        "hoi4_locked_controls": [
-          "lora_name",
-          "strength_model"
-        ]
-      },
-      "widgets_values": [
-        "krea2_identity_edit_v1_2.safetensors",
-        1.0
-      ]
-    },
-    {
       "id": 8,
-      "type": "VAELoader",
-      "title": "Load image decoder",
+      "type": "CLIPLoader",
+      "title": "Load Qwen image understanding",
       "pos": [
-        420,
-        880
+        440,
+        870
       ],
       "size": [
         300,
@@ -373,6 +356,65 @@
       "bgcolor": "#5b4a69",
       "flags": {},
       "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "type",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "device",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            5,
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Load Qwen image understanding",
+        "hoi4_group": "04 Restore with Qwen",
+        "hoi4_locked_controls": [
+          "clip_name",
+          "type",
+          "device"
+        ]
+      },
+      "widgets_values": [
+        "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "qwen_image",
+        "default"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "VAELoader",
+      "title": "Load Qwen image decoder",
+      "pos": [
+        440,
+        1040
+      ],
+      "size": [
+        300,
+        140
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -386,15 +428,16 @@
           "name": "vae",
           "type": "VAE",
           "links": [
-            6,
-            9,
+            7,
+            10,
+            13,
             21
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Load image decoder",
-        "hoi4_group": "04 Restore with Krea",
+        "Node name for S&R": "Load Qwen image decoder",
+        "hoi4_group": "04 Restore with Qwen",
         "hoi4_locked_controls": [
           "vae_name"
         ]
@@ -404,61 +447,16 @@
       ]
     },
     {
-      "id": 9,
-      "type": "VAEEncode",
-      "title": "Encode portrait reference",
-      "pos": [
-        760,
-        700
-      ],
-      "size": [
-        320,
-        140
-      ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "pixels",
-          "type": "IMAGE",
-          "link": 5
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 6
-        }
-      ],
-      "outputs": [
-        {
-          "name": "latent",
-          "type": "LATENT",
-          "links": [
-            8
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Encode portrait reference",
-        "hoi4_group": "04 Restore with Krea",
-        "hoi4_locked_controls": []
-      },
-      "widgets_values": []
-    },
-    {
       "id": 10,
-      "type": "Krea2EditModelPatch",
-      "title": "Apply restoration reference",
+      "type": "TextEncodeQwenImageEditPlus",
+      "title": "Describe the restoration",
       "pos": [
-        1120,
+        780,
         700
       ],
       "size": [
-        340,
-        180
+        360,
+        220
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -467,147 +465,24 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "model",
-          "type": "MODEL",
-          "link": 7
-        },
-        {
-          "name": "source_latent",
-          "type": "LATENT",
-          "link": 8
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 9
-        },
-        {
-          "name": "source_image",
-          "type": "IMAGE",
-          "link": 10
-        },
-        {
-          "name": "fit_mode",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "ref_boost",
-          "type": "FLOAT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "links": [
-            16
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Apply restoration reference",
-        "hoi4_group": "04 Restore with Krea",
-        "hoi4_locked_controls": [
-          "fit_mode",
-          "ref_boost"
-        ]
-      },
-      "widgets_values": [
-        "fit",
-        1.0
-      ]
-    },
-    {
-      "id": 11,
-      "type": "CLIPLoader",
-      "title": "Load Krea image understanding",
-      "pos": [
-        760,
-        880
-      ],
-      "size": [
-        320,
-        140
-      ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip_name",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "type",
-          "type": "COMBO",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
           "name": "clip",
           "type": "CLIP",
-          "links": [
-            11,
-            14
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Load Krea image understanding",
-        "hoi4_group": "04 Restore with Krea",
-        "hoi4_locked_controls": [
-          "clip_name",
-          "type"
-        ]
-      },
-      "widgets_values": [
-        "qwen3vl_4b_fp8_scaled.safetensors",
-        "krea2"
-      ]
-    },
-    {
-      "id": 12,
-      "type": "Krea2EditGroundedEncode",
-      "title": "Describe the restoration",
-      "pos": [
-        1120,
-        920
-      ],
-      "size": [
-        340,
-        180
-      ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 11
+          "link": 5
         },
         {
           "name": "prompt",
           "type": "STRING",
-          "link": 12
+          "link": 6
         },
         {
-          "name": "image",
+          "name": "vae",
+          "type": "VAE",
+          "link": 7
+        },
+        {
+          "name": "image1",
           "type": "IMAGE",
-          "link": 13
-        },
-        {
-          "name": "grounding_px",
-          "type": "INT",
-          "link": null
+          "link": 8
         }
       ],
       "outputs": [
@@ -621,37 +496,33 @@
       ],
       "properties": {
         "Node name for S&R": "Describe the restoration",
-        "hoi4_group": "04 Restore with Krea",
-        "hoi4_locked_controls": [
-          "grounding_px"
-        ]
+        "hoi4_group": "04 Restore with Qwen",
+        "hoi4_locked_controls": []
       },
-      "widgets_values": [
-        768
-      ]
+      "widgets_values": []
     },
     {
-      "id": 13,
-      "type": "Krea2EditGroundedEncode",
+      "id": 11,
+      "type": "TextEncodeQwenImageEditPlus",
       "title": "Use a neutral negative prompt",
       "pos": [
-        1120,
-        1140
+        780,
+        960
       ],
       "size": [
-        340,
-        180
+        360,
+        200
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 12,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 14
+          "link": 9
         },
         {
           "name": "prompt",
@@ -659,14 +530,14 @@
           "link": null
         },
         {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 15
+          "name": "vae",
+          "type": "VAE",
+          "link": 10
         },
         {
-          "name": "grounding_px",
-          "type": "INT",
-          "link": null
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 11
         }
       ],
       "outputs": [
@@ -680,49 +551,42 @@
       ],
       "properties": {
         "Node name for S&R": "Use a neutral negative prompt",
-        "hoi4_group": "04 Restore with Krea",
+        "hoi4_group": "04 Restore with Qwen",
         "hoi4_locked_controls": [
-          "prompt",
-          "grounding_px"
+          "prompt"
         ]
       },
       "widgets_values": [
-        "",
-        768
+        ""
       ]
     },
     {
-      "id": 14,
-      "type": "EmptySD3LatentImage",
-      "title": "Set prepared portrait size",
+      "id": 12,
+      "type": "VAEEncode",
+      "title": "Encode portrait for restoration",
       "pos": [
-        1500,
-        700
+        780,
+        1200
       ],
       "size": [
-        320,
-        150
+        360,
+        140
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
       "flags": {},
-      "order": 13,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
-          "name": "width",
-          "type": "INT",
-          "link": null
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 12
         },
         {
-          "name": "height",
-          "type": "INT",
-          "link": null
-        },
-        {
-          "name": "batch_size",
-          "type": "INT",
-          "link": null
+          "name": "vae",
+          "type": "VAE",
+          "link": 13
         }
       ],
       "outputs": [
@@ -735,27 +599,124 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Set prepared portrait size",
-        "hoi4_group": "04 Restore with Krea",
+        "Node name for S&R": "Encode portrait for restoration",
+        "hoi4_group": "04 Restore with Qwen",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "ModelSamplingAuraFlow",
+      "title": "Set Qwen image sampling",
+      "pos": [
+        1180,
+        700
+      ],
+      "size": [
+        340,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 14
+        },
+        {
+          "name": "shift",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Set Qwen image sampling",
+        "hoi4_group": "04 Restore with Qwen",
         "hoi4_locked_controls": [
-          "width",
-          "height",
-          "batch_size"
+          "shift"
         ]
       },
       "widgets_values": [
-        832,
-        1120,
-        1
+        3.1
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CFGNorm",
+      "title": "Keep restoration balanced",
+      "pos": [
+        1180,
+        870
+      ],
+      "size": [
+        340,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 15
+        },
+        {
+          "name": "strength",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "pre_cfg",
+          "type": "BOOLEAN",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Keep restoration balanced",
+        "hoi4_group": "04 Restore with Qwen",
+        "hoi4_locked_controls": [
+          "strength",
+          "pre_cfg"
+        ]
+      },
+      "widgets_values": [
+        1.0,
+        false
       ]
     },
     {
       "id": 15,
       "type": "KSampler",
-      "title": "Restore portrait with Krea",
+      "title": "Restore portrait with Qwen",
       "pos": [
-        1500,
-        900
+        1180,
+        1040
       ],
       "size": [
         340,
@@ -828,8 +789,8 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Restore portrait with Krea",
-        "hoi4_group": "04 Restore with Krea",
+        "Node name for S&R": "Restore portrait with Qwen",
+        "hoi4_group": "04 Restore with Qwen",
         "hoi4_locked_controls": [
           "steps",
           "cfg",
@@ -840,8 +801,8 @@
       },
       "widgets_values": [
         0,
-        8,
-        1.0,
+        40,
+        4.0,
         "euler",
         "simple",
         1.0
@@ -852,11 +813,11 @@
       "type": "VAEDecode",
       "title": "Build restored portrait",
       "pos": [
-        1880,
+        1560,
         700
       ],
       "size": [
-        320,
+        440,
         140
       ],
       "color": "#40344a",
@@ -881,28 +842,29 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            22
+            22,
+            24
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Build restored portrait",
-        "hoi4_group": "04 Restore with Krea",
+        "hoi4_group": "04 Restore with Qwen",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
     },
     {
       "id": 17,
-      "type": "HOI4FinishPreparedPortrait",
-      "title": "Fit restored portrait for HOI4",
+      "type": "PreviewImage",
+      "title": "Qwen restoration preview",
       "pos": [
-        1880,
+        1560,
         880
       ],
       "size": [
-        320,
-        150
+        440,
+        620
       ],
       "color": "#40344a",
       "bgcolor": "#5b4a69",
@@ -911,9 +873,137 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "image",
+          "name": "images",
           "type": "IMAGE",
           "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Qwen restoration preview",
+        "hoi4_group": "04 Restore with Qwen",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 18,
+      "type": "UpscaleModelLoader",
+      "title": "Load final portrait refiner",
+      "pos": [
+        2120,
+        700
+      ],
+      "size": [
+        320,
+        140
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_name",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Load final portrait refiner",
+        "hoi4_group": "05 Refine portrait",
+        "hoi4_locked_controls": [
+          "model_name"
+        ]
+      },
+      "widgets_values": [
+        "RealESRGAN_x2plus.pth"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "ImageUpscaleWithModel",
+      "title": "Refine and enlarge portrait",
+      "pos": [
+        2120,
+        880
+      ],
+      "size": [
+        320,
+        140
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 23
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "enhanced_image",
+          "type": "IMAGE",
+          "links": [
+            25,
+            26
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Refine and enlarge portrait",
+        "hoi4_group": "05 Refine portrait",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 20,
+      "type": "HOI4FinishPreparedPortrait",
+      "title": "Fit restored portrait for HOI4",
+      "pos": [
+        2120,
+        1060
+      ],
+      "size": [
+        320,
+        140
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 25
         },
         {
           "name": "contrast",
@@ -931,15 +1021,14 @@
           "name": "prepared_portrait",
           "type": "IMAGE",
           "links": [
-            23,
-            24,
-            25
+            27,
+            28
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Fit restored portrait for HOI4",
-        "hoi4_group": "04 Restore with Krea",
+        "hoi4_group": "05 Refine portrait",
         "hoi4_locked_controls": []
       },
       "widgets_values": [
@@ -948,27 +1037,27 @@
       ]
     },
     {
-      "id": 18,
+      "id": 21,
       "type": "PreviewImage",
-      "title": "Krea restoration preview",
+      "title": "Refined portrait preview",
       "pos": [
-        2240,
-        700
+        2120,
+        1240
       ],
       "size": [
-        440,
-        820
+        680,
+        340
       ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
-      "order": 17,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 23
+          "link": 26
         }
       ],
       "outputs": [
@@ -979,18 +1068,18 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Krea restoration preview",
-        "hoi4_group": "04 Restore with Krea",
+        "Node name for S&R": "Refined portrait preview",
+        "hoi4_group": "05 Refine portrait",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
     },
     {
-      "id": 19,
+      "id": 22,
       "type": "PreviewImage",
       "title": "Prepared portrait preview",
       "pos": [
-        2800,
+        2920,
         700
       ],
       "size": [
@@ -1000,13 +1089,13 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 18,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 24
+          "link": 27
         }
       ],
       "outputs": [
@@ -1018,17 +1107,17 @@
       ],
       "properties": {
         "Node name for S&R": "Prepared portrait preview",
-        "hoi4_group": "05 Preview and save",
+        "hoi4_group": "06 Preview and save",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
     },
     {
-      "id": 20,
+      "id": 23,
       "type": "SaveImage",
       "title": "Save prepared portrait",
       "pos": [
-        3340,
+        3460,
         700
       ],
       "size": [
@@ -1038,13 +1127,13 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 19,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 25
+          "link": 28
         },
         {
           "name": "filename_prefix",
@@ -1055,13 +1144,13 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Save prepared portrait",
-        "hoi4_group": "05 Preview and save",
+        "hoi4_group": "06 Preview and save",
         "hoi4_locked_controls": [
           "filename_prefix"
         ]
       },
       "widgets_values": [
-        "hoi4_portraits/prepared_krea"
+        "hoi4_portraits/prepared_qwen"
       ]
     }
   ],
@@ -1092,103 +1181,103 @@
     ],
     [
       4,
+      3,
+      0,
       6,
       0,
-      7,
-      0,
-      "MODEL"
+      "IMAGE"
     ],
     [
       5,
-      3,
-      0,
-      9,
-      0,
-      "IMAGE"
-    ],
-    [
-      6,
-      8,
-      0,
-      9,
-      1,
-      "VAE"
-    ],
-    [
-      7,
-      7,
-      0,
-      10,
-      0,
-      "MODEL"
-    ],
-    [
-      8,
-      9,
-      0,
-      10,
-      1,
-      "LATENT"
-    ],
-    [
-      9,
       8,
       0,
       10,
-      2,
-      "VAE"
-    ],
-    [
-      10,
-      3,
-      0,
-      10,
-      3,
-      "IMAGE"
-    ],
-    [
-      11,
-      11,
-      0,
-      12,
       0,
       "CLIP"
     ],
     [
-      12,
+      6,
       5,
       0,
-      12,
+      10,
       1,
       "STRING"
     ],
     [
-      13,
-      3,
+      7,
+      9,
       0,
-      12,
+      10,
       2,
+      "VAE"
+    ],
+    [
+      8,
+      6,
+      0,
+      10,
+      3,
       "IMAGE"
     ],
     [
-      14,
-      11,
+      9,
+      8,
       0,
-      13,
+      11,
       0,
       "CLIP"
     ],
     [
-      15,
-      3,
+      10,
+      9,
       0,
-      13,
+      11,
       2,
+      "VAE"
+    ],
+    [
+      11,
+      6,
+      0,
+      11,
+      3,
       "IMAGE"
     ],
     [
+      12,
+      6,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      9,
+      0,
+      12,
+      1,
+      "VAE"
+    ],
+    [
+      14,
+      7,
+      0,
+      13,
+      0,
+      "MODEL"
+    ],
+    [
+      15,
+      13,
+      0,
+      14,
+      0,
+      "MODEL"
+    ],
+    [
       16,
-      10,
+      14,
       0,
       15,
       0,
@@ -1196,7 +1285,7 @@
     ],
     [
       17,
-      12,
+      10,
       0,
       15,
       1,
@@ -1204,7 +1293,7 @@
     ],
     [
       18,
-      13,
+      11,
       0,
       15,
       2,
@@ -1212,7 +1301,7 @@
     ],
     [
       19,
-      14,
+      12,
       0,
       15,
       3,
@@ -1228,7 +1317,7 @@
     ],
     [
       21,
-      8,
+      9,
       0,
       16,
       1,
@@ -1244,25 +1333,49 @@
     ],
     [
       23,
-      17,
-      0,
       18,
-      0,
-      "IMAGE"
-    ],
-    [
-      24,
-      17,
       0,
       19,
       0,
+      "UPSCALE_MODEL"
+    ],
+    [
+      24,
+      16,
+      0,
+      19,
+      1,
       "IMAGE"
     ],
     [
       25,
-      17,
+      19,
       0,
       20,
+      0,
+      "IMAGE"
+    ],
+    [
+      26,
+      19,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      27,
+      20,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ],
+    [
+      28,
+      20,
+      0,
+      23,
       0,
       "IMAGE"
     ]
@@ -1302,20 +1415,31 @@
       "font_size": 24
     },
     {
-      "title": "04 Restore with Krea",
+      "title": "04 Restore with Qwen",
       "bounding": [
         40,
         640,
-        2680,
+        2000,
         940
       ],
       "color": "#6d597a",
       "font_size": 24
     },
     {
-      "title": "05 Preview and save",
+      "title": "05 Refine portrait",
       "bounding": [
-        2760,
+        2080,
+        640,
+        760,
+        940
+      ],
+      "color": "#588157",
+      "font_size": 24
+    },
+    {
+      "title": "06 Preview and save",
+      "bounding": [
+        2880,
         640,
         1040,
         940
@@ -1327,7 +1451,7 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.36,
+      "scale": 0.34,
       "offset": [
         160,
         170
@@ -1335,15 +1459,15 @@
     },
     "schema_version": "1.0.0",
     "graph_spec_version": "graph-spec-1.8.0",
-    "workflow_id": "hoi4_portraits_prepare_portrait_for_hoi4",
-    "profile": "hoi4_portraits_prepare_portrait_for_hoi4",
-    "execution_profile": "hoi4_portraits_prepare_portrait_for_hoi4",
+    "workflow_id": "hoi4_portraits_prepare_portrait_qwen",
+    "profile": "hoi4_portraits_prepare_portrait_qwen",
+    "execution_profile": "hoi4_portraits_prepare_portrait_qwen",
     "workflow_kind": "portrait_preparation",
-    "enhancement_mode": "krea2_edit",
-    "default_preparation_workflow": true,
-    "upscale_model": null,
-    "restoration_model": "krea2_turbo_fp8_scaled.safetensors",
-    "restoration_text_encoder": "qwen3vl_4b_fp8_scaled.safetensors",
+    "enhancement_mode": "qwen_image_edit",
+    "default_preparation_workflow": false,
+    "upscale_model": "RealESRGAN_x2plus.pth",
+    "restoration_model": "qwen_image_edit_2511_fp8mixed.safetensors",
+    "restoration_text_encoder": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
     "colorization": true,
     "route": "full_power_gpu",
     "human_workflow": true,
@@ -1358,18 +1482,23 @@
       "01 Choose image",
       "02 Crop portrait",
       "03 Restoration settings",
-      "04 Restore with Krea",
-      "05 Preview and save"
+      "04 Restore with Qwen",
+      "05 Refine portrait",
+      "06 Preview and save"
     ],
     "required_core_nodes": [
+      "CFGNorm",
       "CLIPLoader",
-      "EmptySD3LatentImage",
+      "FluxKontextImageScale",
+      "ImageUpscaleWithModel",
       "KSampler",
       "LoadImage",
-      "LoraLoaderModelOnly",
+      "ModelSamplingAuraFlow",
       "PreviewImage",
       "SaveImage",
+      "TextEncodeQwenImageEditPlus",
       "UNETLoader",
+      "UpscaleModelLoader",
       "VAEDecode",
       "VAEEncode",
       "VAELoader"
@@ -1379,20 +1508,18 @@
       "HOI4PortraitCrop",
       "HOI4RestorationPrompt"
     ],
-    "required_krea_nodes": [
-      "Krea2EditGroundedEncode",
-      "Krea2EditModelPatch"
-    ],
+    "required_krea_nodes": [],
     "preview_nodes": [
       "Input image preview",
       "Head-and-shoulders preview",
-      "Krea restoration preview",
+      "Qwen restoration preview",
+      "Refined portrait preview",
       "Prepared portrait preview"
     ],
     "final_preview_save_pair": {
-      "preview_node_id": 19,
-      "save_node_id": 20,
-      "shared_source_node_id": 17,
+      "preview_node_id": 22,
+      "save_node_id": 23,
+      "shared_source_node_id": 20,
       "shared_source_slot": 0,
       "policy": "preview_and_save_use_the_same_prepared_portrait"
     },

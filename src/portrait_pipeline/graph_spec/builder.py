@@ -108,8 +108,16 @@ RANDOM_PROMPT_GROUPS = [
     "05 Preview and save",
 ]
 PREP_WORKFLOW_ID = "hoi4_portraits_prepare_portrait_for_hoi4"
+PREP_QWEN_WORKFLOW_ID = "hoi4_portraits_prepare_portrait_qwen"
 PREP_BASIC_WORKFLOW_ID = "hoi4_portraits_prepare_portrait_basic"
-PREP_WORKFLOW_IDS = {PREP_WORKFLOW_ID, PREP_BASIC_WORKFLOW_ID}
+PREP_WORKFLOW_IDS = {PREP_WORKFLOW_ID, PREP_QWEN_WORKFLOW_ID, PREP_BASIC_WORKFLOW_ID}
+PREP_KREA_GROUPS = [
+    "01 Choose image",
+    "02 Crop portrait",
+    "03 Restoration settings",
+    "04 Restore with Krea",
+    "05 Preview and save",
+]
 PREP_QWEN_GROUPS = [
     "01 Choose image",
     "02 Crop portrait",
@@ -216,6 +224,13 @@ PREP_GROUP_LAYOUT = {
     "03 Enhance portrait": (40, 600, 1080, 600),
     "04 Preview and save": (1160, 600, 900, 600),
 }
+PREP_KREA_GROUP_LAYOUT = {
+    "01 Choose image": (40, 40, 760, 560),
+    "02 Crop portrait": (840, 40, 760, 560),
+    "03 Restoration settings": (1640, 40, 760, 560),
+    "04 Restore with Krea": (40, 640, 2680, 940),
+    "05 Preview and save": (2760, 640, 1040, 940),
+}
 PREP_QWEN_GROUP_LAYOUT = {
     "01 Choose image": (40, 40, 760, 560),
     "02 Crop portrait": (840, 40, 760, 560),
@@ -230,6 +245,13 @@ PREP_GROUP_COLORS = {
     "03 Enhance portrait": "#8064a2",
     "04 Preview and save": "#457b9d",
 }
+PREP_KREA_GROUP_COLORS = {
+    "01 Choose image": "#355070",
+    "02 Crop portrait": "#2a9d8f",
+    "03 Restoration settings": "#8064a2",
+    "04 Restore with Krea": "#6d597a",
+    "05 Preview and save": "#457b9d",
+}
 PREP_QWEN_GROUP_COLORS = {
     "01 Choose image": "#355070",
     "02 Crop portrait": "#2a9d8f",
@@ -243,6 +265,13 @@ PREP_NODE_COLORS = {
     "02 Crop portrait": ("#164f49", "#217a70"),
     "03 Enhance portrait": ("#46375a", "#654c80"),
     "04 Preview and save": ("#23465b", "#306985"),
+}
+PREP_KREA_NODE_COLORS = {
+    "01 Choose image": ("#1d2f45", "#294866"),
+    "02 Crop portrait": ("#164f49", "#217a70"),
+    "03 Restoration settings": ("#46375a", "#654c80"),
+    "04 Restore with Krea": ("#40344a", "#5b4a69"),
+    "05 Preview and save": ("#23465b", "#306985"),
 }
 PREP_QWEN_NODE_COLORS = {
     "01 Choose image": ("#1d2f45", "#294866"),
@@ -334,12 +363,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     if full_power:
         nodes.extend([
             _node(
-                40, "FluxKontextImageScale", group["03 Prepare portrait"], "Scale portrait for restoration",
-                inputs={"image": Link(5, 0)}, input_types={"image": "IMAGE"},
-                outputs=["scaled_portrait"], output_types=["IMAGE"],
-            ),
-            _node(
-                41, "HOI4RestorationPrompt", group["03 Prepare portrait"], "Choose portrait restoration",
+                40, "HOI4RestorationPrompt", group["03 Prepare portrait"], "Choose portrait restoration",
                 inputs={
                     "restoration_mode": "Restore and colorize when needed",
                     "custom_instructions": "",
@@ -349,88 +373,66 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
                 widgets=["Restore and colorize when needed", ""],
             ),
             _node(
-                42, "UNETLoader", group["03 Prepare portrait"], "Load Qwen portrait restorer",
+                41, "VAEEncode", group["03 Prepare portrait"], "Encode portrait for restoration",
                 inputs={
-                    "unet_name": "qwen_image_edit_2511_fp8mixed.safetensors",
-                    "weight_dtype": "default",
+                    "pixels": Link(5, 0),
+                    "vae": Link(12),
                 },
-                input_types={"unet_name": "COMBO", "weight_dtype": "COMBO"},
-                outputs=["model"], output_types=["MODEL"],
-                widgets=["qwen_image_edit_2511_fp8mixed.safetensors", "default"],
-                locked=["unet_name", "weight_dtype"],
-            ),
-            _node(
-                43, "CLIPLoader", group["03 Prepare portrait"], "Load Qwen image understanding",
-                inputs={
-                    "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
-                    "type": "qwen_image",
-                    "device": "default",
-                },
-                input_types={"clip_name": "COMBO", "type": "COMBO", "device": "COMBO"},
-                outputs=["clip"], output_types=["CLIP"],
-                widgets=["qwen_2.5_vl_7b_fp8_scaled.safetensors", "qwen_image", "default"],
-                locked=["clip_name", "type", "device"],
-            ),
-            _node(
-                44, "VAELoader", group["03 Prepare portrait"], "Load Qwen image decoder",
-                inputs={"vae_name": "qwen_image_vae.safetensors"},
-                input_types={"vae_name": "COMBO"},
-                outputs=["vae"], output_types=["VAE"],
-                widgets=["qwen_image_vae.safetensors"], locked=["vae_name"],
-            ),
-            _node(
-                45, "TextEncodeQwenImageEditPlus", group["03 Prepare portrait"], "Describe the restoration",
-                inputs={
-                    "clip": Link(43),
-                    "prompt": Link(41),
-                    "vae": Link(44),
-                    "image1": Link(40),
-                },
-                input_types={"clip": "CLIP", "prompt": "STRING", "vae": "VAE", "image1": "IMAGE"},
-                outputs=["conditioning"], output_types=["CONDITIONING"],
-            ),
-            _node(
-                46, "TextEncodeQwenImageEditPlus", group["03 Prepare portrait"], "Use a neutral negative prompt",
-                inputs={
-                    "clip": Link(43),
-                    "prompt": "",
-                    "vae": Link(44),
-                    "image1": Link(40),
-                },
-                input_types={"clip": "CLIP", "prompt": "STRING", "vae": "VAE", "image1": "IMAGE"},
-                outputs=["conditioning"], output_types=["CONDITIONING"],
-                widgets=[""], locked=["prompt"],
-            ),
-            _node(
-                47, "VAEEncode", group["03 Prepare portrait"], "Encode portrait for restoration",
-                inputs={"pixels": Link(40), "vae": Link(44)},
                 input_types={"pixels": "IMAGE", "vae": "VAE"},
                 outputs=["latent"], output_types=["LATENT"],
             ),
             _node(
-                48, "ModelSamplingAuraFlow", group["03 Prepare portrait"], "Set Qwen image sampling",
-                inputs={"model": Link(42), "shift": 3.1},
-                input_types={"model": "MODEL", "shift": "FLOAT"},
-                outputs=["model"], output_types=["MODEL"],
-                widgets=[3.1], locked=["shift"],
-            ),
-            _node(
-                49, "CFGNorm", group["03 Prepare portrait"], "Keep restoration balanced",
-                inputs={"model": Link(48), "strength": 1.0, "pre_cfg": False},
-                input_types={"model": "MODEL", "strength": "FLOAT", "pre_cfg": "BOOLEAN"},
-                outputs=["model"], output_types=["MODEL"],
-                widgets=[1.0, False], locked=["strength", "pre_cfg"],
-            ),
-            _node(
-                50, "KSampler", group["03 Prepare portrait"], "Restore portrait with Qwen",
+                42, "Krea2EditModelPatch", group["03 Prepare portrait"], "Apply restoration reference",
                 inputs={
-                    "model": Link(49),
-                    "positive": Link(45),
-                    "negative": Link(46),
-                    "latent_image": Link(47),
+                    "model": Link(11),
+                    "source_latent": Link(41),
+                    "vae": Link(12),
+                    "source_image": Link(5, 0),
+                    "fit_mode": "fit",
+                    "ref_boost": 1.0,
+                },
+                input_types={
+                    "model": "MODEL",
+                    "source_latent": "LATENT",
+                    "vae": "VAE",
+                    "source_image": "IMAGE",
+                    "fit_mode": "COMBO",
+                    "ref_boost": "FLOAT",
+                },
+                outputs=["model"], output_types=["MODEL"],
+                widgets=["fit", 1.0], locked=["fit_mode", "ref_boost"],
+            ),
+            _node(
+                43, "Krea2EditGroundedEncode", group["03 Prepare portrait"], "Describe the restoration",
+                inputs={"clip": Link(15), "prompt": Link(40), "image": Link(5, 0), "grounding_px": 768},
+                input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"},
+                outputs=["conditioning"], output_types=["CONDITIONING"],
+                widgets=[768], locked=["grounding_px"],
+            ),
+            _node(
+                44, "Krea2EditGroundedEncode", group["03 Prepare portrait"], "Use a neutral restoration negative",
+                inputs={"clip": Link(15), "prompt": "", "image": Link(5, 0), "grounding_px": 768},
+                input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"},
+                outputs=["conditioning"], output_types=["CONDITIONING"],
+                widgets=["", 768], locked=["prompt", "grounding_px"],
+            ),
+            _node(
+                45, "EmptySD3LatentImage", group["03 Prepare portrait"], "Set restored portrait size",
+                inputs={"width": width, "height": height, "batch_size": 1},
+                input_types={"width": "INT", "height": "INT", "batch_size": "INT"},
+                outputs=["latent"], output_types=["LATENT"],
+                widgets=[width, height, 1], locked=["width", "height", "batch_size"],
+            ),
+            _node(
+                46, "KSampler", group["03 Prepare portrait"], "Restore portrait with Krea",
+                inputs={
+                    "model": Link(42),
+                    "positive": Link(43),
+                    "negative": Link(44),
+                    "latent_image": Link(45),
                     "seed": 0,
-                    "steps": 40,
-                    "cfg": 4.0,
+                    "steps": 8,
+                    "cfg": 1.0,
                     "sampler_name": "euler",
                     "scheduler": "simple",
                     "denoise": 1.0,
@@ -448,31 +450,18 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
                     "denoise": "FLOAT",
                 },
                 outputs=["latent"], output_types=["LATENT"],
-                widgets=[0, 40, 4.0, "euler", "simple", 1.0],
+                widgets=[0, 8, 1.0, "euler", "simple", 1.0],
                 locked=["steps", "cfg", "sampler_name", "scheduler", "denoise"],
             ),
             _node(
-                51, "VAEDecode", group["03 Prepare portrait"], "Build restored portrait",
-                inputs={"samples": Link(50), "vae": Link(44)},
+                47, "VAEDecode", group["03 Prepare portrait"], "Build restored portrait",
+                inputs={"samples": Link(46), "vae": Link(12)},
                 input_types={"samples": "LATENT", "vae": "VAE"},
                 outputs=["image"], output_types=["IMAGE"],
             ),
-            _node(
-                52, "UpscaleModelLoader", group["03 Prepare portrait"], "Load final portrait refiner",
-                inputs={"model_name": "RealESRGAN_x2plus.pth"},
-                input_types={"model_name": "COMBO"},
-                outputs=["upscale_model"], output_types=["UPSCALE_MODEL"],
-                widgets=["RealESRGAN_x2plus.pth"], locked=["model_name"],
-            ),
-            _node(
-                53, "ImageUpscaleWithModel", group["03 Prepare portrait"], "Refine restored portrait",
-                inputs={"upscale_model": Link(52), "image": Link(51)},
-                input_types={"upscale_model": "UPSCALE_MODEL", "image": "IMAGE"},
-                outputs=["enhanced_image"], output_types=["IMAGE"],
-            ),
         ])
-        enhanced_image_link = Link(53)
-        preparation_engine = "Qwen Image Edit 2511 and RealESRGAN x2"
+        enhanced_image_link = Link(47)
+        preparation_engine = "Krea 2 Turbo restoration"
     else:
         nodes.extend([
             _node(
@@ -670,8 +659,8 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         ])
         if full_power:
             nodes.append(_node(
-                54, PREVIEW_NODE, group["03 Prepare portrait"], "Qwen restoration preview",
-                inputs={"images": Link(51, 0)}, input_types={"images": "IMAGE"},
+                54, PREVIEW_NODE, group["03 Prepare portrait"], "Krea restoration preview",
+                inputs={"images": Link(47, 0)}, input_types={"images": "IMAGE"},
                 outputs=["images"], output_types=["IMAGE"],
             ))
 
@@ -716,21 +705,20 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "required_groups": GROUP_LABELS,
         "locked_controls": {node.title: node.locked for node in nodes if node.locked},
         "required_core_nodes": sorted(
-            CORE_NODES
-            | (QWEN_PREPARATION_CORE_NODES if full_power else set())
+            (CORE_NODES - {"UpscaleModelLoader", "ImageUpscaleWithModel"} if full_power else CORE_NODES)
             | ({PREVIEW_NODE} if is_human else set())
         ),
         "required_preparation_nodes": (
-            sorted(QWEN_PREPARATION_CORE_NODES | {"UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4ConservativePrep", "HOI4RestorationPrompt"})
+            sorted({"EmptySD3LatentImage", "KSampler", "Krea2EditGroundedEncode", "Krea2EditModelPatch", "VAEDecode", "VAEEncode", "HOI4ConservativePrep", "HOI4RestorationPrompt"})
             if full_power
             else ["UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4ConservativePrep"]
         ),
         "preparation_model": (
-            "qwen_image_edit_2511_fp8mixed.safetensors + RealESRGAN_x2plus.pth"
+            "krea2_turbo_fp8_scaled.safetensors"
             if full_power
             else "RealESRGAN_x2plus.pth"
         ),
-        "preparation_engine": "qwen_image_edit_2511" if full_power else "realesrgan_x2",
+        "preparation_engine": "krea2_edit_restoration" if full_power else "realesrgan_x2",
         "colorization": full_power,
         "preview_nodes": [node.title for node in nodes if node.class_type == PREVIEW_NODE],
         "final_preview_save_pair": {
@@ -973,8 +961,10 @@ def build_preparation_graph(
     project_root(root)
     if workflow_id not in PREP_WORKFLOW_IDS:
         raise ValueError(f"unknown portrait preparation workflow: {workflow_id}")
-    ai_enhanced = workflow_id == PREP_WORKFLOW_ID
-    groups = PREP_QWEN_GROUPS if ai_enhanced else PREP_BASIC_GROUPS
+    krea_enhanced = workflow_id == PREP_WORKFLOW_ID
+    qwen_enhanced = workflow_id == PREP_QWEN_WORKFLOW_ID
+    ai_enhanced = krea_enhanced or qwen_enhanced
+    groups = PREP_KREA_GROUPS if krea_enhanced else PREP_QWEN_GROUPS if qwen_enhanced else PREP_BASIC_GROUPS
     nodes: list[NodeSpec] = [
         _node(
             1, "LoadImage", groups[0], "Choose portrait photo",
@@ -1003,7 +993,194 @@ def build_preparation_graph(
             pos=(1220, 80), size=(340, 420),
         ),
     ]
-    if ai_enhanced:
+    if krea_enhanced:
+        nodes.extend([
+            _node(
+                5, "HOI4RestorationPrompt", groups[2], "Choose portrait restoration",
+                inputs={
+                    "restoration_mode": "Restore and colorize when needed",
+                    "custom_instructions": "",
+                },
+                input_types={"restoration_mode": "COMBO", "custom_instructions": "STRING"},
+                outputs=["restoration_instructions"], output_types=["STRING"],
+                pos=(1680, 100), size=(680, 460),
+                widgets=["Restore and colorize when needed", ""],
+            ),
+            _node(
+                6, "UNETLoader", groups[3], "Load Krea 2 Turbo",
+                inputs={"unet_name": "krea2_turbo_fp8_scaled.safetensors", "weight_dtype": "default"},
+                input_types={"unet_name": "COMBO", "weight_dtype": "COMBO"},
+                outputs=["model"], output_types=["MODEL"],
+                pos=(80, 700), size=(300, 140),
+                widgets=["krea2_turbo_fp8_scaled.safetensors", "default"],
+                locked=["unet_name", "weight_dtype"],
+            ),
+            _node(
+                7, "LoraLoaderModelOnly", groups[3], "Preserve identity",
+                inputs={"model": Link(6), "lora_name": "krea2_identity_edit_v1_2.safetensors", "strength_model": 1.0},
+                input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
+                outputs=["model"], output_types=["MODEL"],
+                pos=(420, 700), size=(300, 140),
+                widgets=["krea2_identity_edit_v1_2.safetensors", 1.0],
+                locked=["lora_name", "strength_model"],
+            ),
+            _node(
+                8, "VAELoader", groups[3], "Load image decoder",
+                inputs={"vae_name": "qwen_image_vae.safetensors"},
+                input_types={"vae_name": "COMBO"},
+                outputs=["vae"], output_types=["VAE"],
+                pos=(420, 880), size=(300, 140),
+                widgets=["qwen_image_vae.safetensors"], locked=["vae_name"],
+            ),
+            _node(
+                9, "VAEEncode", groups[3], "Encode portrait reference",
+                inputs={"pixels": Link(3), "vae": Link(8)},
+                input_types={"pixels": "IMAGE", "vae": "VAE"},
+                outputs=["latent"], output_types=["LATENT"],
+                pos=(760, 700), size=(320, 140),
+            ),
+            _node(
+                10, "Krea2EditModelPatch", groups[3], "Apply restoration reference",
+                inputs={
+                    "model": Link(7),
+                    "source_latent": Link(9),
+                    "vae": Link(8),
+                    "source_image": Link(3),
+                    "fit_mode": "fit",
+                    "ref_boost": 1.0,
+                },
+                input_types={
+                    "model": "MODEL",
+                    "source_latent": "LATENT",
+                    "vae": "VAE",
+                    "source_image": "IMAGE",
+                    "fit_mode": "COMBO",
+                    "ref_boost": "FLOAT",
+                },
+                outputs=["model"], output_types=["MODEL"],
+                pos=(1120, 700), size=(340, 180),
+                widgets=["fit", 1.0], locked=["fit_mode", "ref_boost"],
+            ),
+            _node(
+                11, "CLIPLoader", groups[3], "Load Krea image understanding",
+                inputs={"clip_name": "qwen3vl_4b_fp8_scaled.safetensors", "type": "krea2"},
+                input_types={"clip_name": "COMBO", "type": "COMBO"},
+                outputs=["clip"], output_types=["CLIP"],
+                pos=(760, 880), size=(320, 140),
+                widgets=["qwen3vl_4b_fp8_scaled.safetensors", "krea2"],
+                locked=["clip_name", "type"],
+            ),
+            _node(
+                12, "Krea2EditGroundedEncode", groups[3], "Describe the restoration",
+                inputs={"clip": Link(11), "prompt": Link(5), "image": Link(3), "grounding_px": 768},
+                input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"},
+                outputs=["conditioning"], output_types=["CONDITIONING"],
+                pos=(1120, 920), size=(340, 180),
+                widgets=[768], locked=["grounding_px"],
+            ),
+            _node(
+                13, "Krea2EditGroundedEncode", groups[3], "Use a neutral negative prompt",
+                inputs={"clip": Link(11), "prompt": "", "image": Link(3), "grounding_px": 768},
+                input_types={"clip": "CLIP", "prompt": "STRING", "image": "IMAGE", "grounding_px": "INT"},
+                outputs=["conditioning"], output_types=["CONDITIONING"],
+                pos=(1120, 1140), size=(340, 180),
+                widgets=["", 768], locked=["prompt", "grounding_px"],
+            ),
+            _node(
+                14, "EmptySD3LatentImage", groups[3], "Set prepared portrait size",
+                inputs={"width": 832, "height": 1120, "batch_size": 1},
+                input_types={"width": "INT", "height": "INT", "batch_size": "INT"},
+                outputs=["latent"], output_types=["LATENT"],
+                pos=(1500, 700), size=(320, 150),
+                widgets=[832, 1120, 1], locked=["width", "height", "batch_size"],
+            ),
+            _node(
+                15, "KSampler", groups[3], "Restore portrait with Krea",
+                inputs={
+                    "model": Link(10),
+                    "positive": Link(12),
+                    "negative": Link(13),
+                    "latent_image": Link(14),
+                    "seed": 0,
+                    "steps": 8,
+                    "cfg": 1.0,
+                    "sampler_name": "euler",
+                    "scheduler": "simple",
+                    "denoise": 1.0,
+                },
+                input_types={
+                    "model": "MODEL",
+                    "positive": "CONDITIONING",
+                    "negative": "CONDITIONING",
+                    "latent_image": "LATENT",
+                    "seed": "INT",
+                    "steps": "INT",
+                    "cfg": "FLOAT",
+                    "sampler_name": "COMBO",
+                    "scheduler": "COMBO",
+                    "denoise": "FLOAT",
+                },
+                outputs=["latent"], output_types=["LATENT"],
+                pos=(1500, 900), size=(340, 220),
+                widgets=[0, 8, 1.0, "euler", "simple", 1.0],
+                locked=["steps", "cfg", "sampler_name", "scheduler", "denoise"],
+            ),
+            _node(
+                16, "VAEDecode", groups[3], "Build restored portrait",
+                inputs={"samples": Link(15), "vae": Link(8)},
+                input_types={"samples": "LATENT", "vae": "VAE"},
+                outputs=["image"], output_types=["IMAGE"],
+                pos=(1880, 700), size=(320, 140),
+            ),
+            _node(
+                17, "HOI4FinishPreparedPortrait", groups[3], "Fit restored portrait for HOI4",
+                inputs={"image": Link(16), "contrast": 1.0, "sharpness": 1.0},
+                input_types={"image": "IMAGE", "contrast": "FLOAT", "sharpness": "FLOAT"},
+                outputs=["prepared_portrait"], output_types=["IMAGE"],
+                pos=(1880, 880), size=(320, 150),
+                widgets=[1.0, 1.0],
+            ),
+            _node(
+                18, PREVIEW_NODE, groups[3], "Krea restoration preview",
+                inputs={"images": Link(17)}, input_types={"images": "IMAGE"},
+                outputs=["images"], output_types=["IMAGE"],
+                pos=(2240, 700), size=(440, 820),
+            ),
+            _node(
+                19, PREVIEW_NODE, groups[4], "Prepared portrait preview",
+                inputs={"images": Link(17)}, input_types={"images": "IMAGE"},
+                outputs=["images"], output_types=["IMAGE"],
+                pos=(2800, 700), size=(500, 650),
+            ),
+            _node(
+                20, "SaveImage", groups[4], "Save prepared portrait",
+                inputs={"images": Link(17), "filename_prefix": "hoi4_portraits/prepared_krea"},
+                input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+                pos=(3340, 700), size=(400, 180),
+                widgets=["hoi4_portraits/prepared_krea"], locked=["filename_prefix"],
+            ),
+        ])
+        preview_nodes = [
+            "Input image preview",
+            "Head-and-shoulders preview",
+            "Krea restoration preview",
+            "Prepared portrait preview",
+        ]
+        required_core_nodes = sorted({
+            "CLIPLoader",
+            "EmptySD3LatentImage",
+            "KSampler",
+            "LoadImage",
+            "LoraLoaderModelOnly",
+            "PreviewImage",
+            "SaveImage",
+            "UNETLoader",
+            "VAEDecode",
+            "VAEEncode",
+            "VAELoader",
+        })
+        final_preview_id, save_id, final_source_id = 19, 20, 17
+    elif qwen_enhanced:
         nodes.extend([
             _node(
                 5, "HOI4RestorationPrompt", groups[2], "Choose portrait restoration",
@@ -1249,11 +1426,23 @@ def build_preparation_graph(
         "profile": workflow_id,
         "execution_profile": workflow_id,
         "workflow_kind": "portrait_preparation",
-        "enhancement_mode": "qwen_image_edit" if ai_enhanced else "basic",
-        "default_preparation_workflow": ai_enhanced,
-        "upscale_model": "RealESRGAN_x2plus.pth" if ai_enhanced else None,
-        "restoration_model": "qwen_image_edit_2511_fp8mixed.safetensors" if ai_enhanced else None,
-        "restoration_text_encoder": "qwen_2.5_vl_7b_fp8_scaled.safetensors" if ai_enhanced else None,
+        "enhancement_mode": "krea2_edit" if krea_enhanced else "qwen_image_edit" if qwen_enhanced else "basic",
+        "default_preparation_workflow": krea_enhanced,
+        "upscale_model": "RealESRGAN_x2plus.pth" if qwen_enhanced else None,
+        "restoration_model": (
+            "krea2_turbo_fp8_scaled.safetensors"
+            if krea_enhanced
+            else "qwen_image_edit_2511_fp8mixed.safetensors"
+            if qwen_enhanced
+            else None
+        ),
+        "restoration_text_encoder": (
+            "qwen3vl_4b_fp8_scaled.safetensors"
+            if krea_enhanced
+            else "qwen_2.5_vl_7b_fp8_scaled.safetensors"
+            if qwen_enhanced
+            else None
+        ),
         "colorization": ai_enhanced,
         "route": "full_power_gpu" if ai_enhanced else "local_or_runpod",
         "human_workflow": True,
@@ -1266,12 +1455,12 @@ def build_preparation_graph(
         "vision_model_required": ai_enhanced,
         "required_groups": groups,
         "required_core_nodes": required_core_nodes,
-        "required_krea_nodes": [],
         "required_project_nodes": [
             "HOI4FinishPreparedPortrait",
             "HOI4PortraitCrop",
             *(["HOI4RestorationPrompt"] if ai_enhanced else []),
         ],
+        "required_krea_nodes": sorted(KREA_NODES) if krea_enhanced else [],
         "preview_nodes": preview_nodes,
         "final_preview_save_pair": {
             "preview_node_id": final_preview_id,
@@ -1321,7 +1510,22 @@ def validate_graph(graph: GraphSpec) -> None:
             "HOI4PortraitCrop",
             "HOI4FinishPreparedPortrait",
         }
-        if graph.metadata.get("enhancement_mode") == "qwen_image_edit":
+        if graph.metadata.get("enhancement_mode") == "krea2_edit":
+            required |= (
+                KREA_NODES
+                | {
+                    "CLIPLoader",
+                    "EmptySD3LatentImage",
+                    "KSampler",
+                    "LoraLoaderModelOnly",
+                    "UNETLoader",
+                    "VAEDecode",
+                    "VAEEncode",
+                    "VAELoader",
+                    "HOI4RestorationPrompt",
+                }
+            )
+        elif graph.metadata.get("enhancement_mode") == "qwen_image_edit":
             required |= (
                 QWEN_PREPARATION_CORE_NODES
                 | {
@@ -1347,8 +1551,10 @@ def validate_graph(graph: GraphSpec) -> None:
         missing = sorted(required - class_names)
         if missing:
             raise ValueError(f"portrait preparation workflow is missing required node classes: {missing}")
-        if any(node.class_type in KREA_NODES or node.class_type == "HOI4AutopromptClient" for node in graph.nodes):
-            raise ValueError("portrait preparation workflow must stop before prompting and generation")
+        if any(node.class_type == "HOI4AutopromptClient" for node in graph.nodes):
+            raise ValueError("portrait preparation workflow may not contain the portrait autoprompter")
+        if graph.metadata.get("enhancement_mode") != "krea2_edit" and any(node.class_type in KREA_NODES for node in graph.nodes):
+            raise ValueError("non-Krea portrait preparation workflow contains Krea Edit nodes")
     elif graph.metadata["human_workflow"]:
         autoprompter_nodes = [node for node in graph.nodes if node.class_type == "HOI4AutopromptClient"]
         if len(autoprompter_nodes) != 1:
@@ -1365,11 +1571,16 @@ def validate_graph(graph: GraphSpec) -> None:
             raise ValueError("agent workflow prompt source must be the job contract")
     if graph.metadata.get("workflow_kind") not in {"random_text_to_image", "portrait_preparation"}:
         common_project_nodes = PROJECT_NODES - {"HOI4PromptInput", "HOI4AutopromptClient"}
-        if graph.metadata.get("preparation_engine") == "qwen_image_edit_2511":
+        if graph.metadata.get("preparation_engine") in {"qwen_image_edit_2511", "krea2_edit_restoration"}:
             common_project_nodes |= QWEN_PREPARATION_PROJECT_NODES
         if not graph.metadata["human_workflow"]:
             common_project_nodes -= HUMAN_ONLY_PROJECT_NODES
-        required = CORE_NODES | KREA_NODES | common_project_nodes
+        required_core = (
+            CORE_NODES - {"UpscaleModelLoader", "ImageUpscaleWithModel"}
+            if graph.metadata.get("preparation_engine") == "krea2_edit_restoration"
+            else CORE_NODES
+        )
+        required = required_core | KREA_NODES | common_project_nodes
         if graph.metadata.get("preparation_engine") == "qwen_image_edit_2511":
             required |= QWEN_PREPARATION_CORE_NODES
         if graph.metadata["human_workflow"]:
@@ -1523,11 +1734,12 @@ def _ui_json(graph: GraphSpec) -> dict[str, Any]:
                 link_id += 1
     ui_nodes: list[dict[str, Any]] = []
     workflow_kind = graph.metadata.get("workflow_kind")
+    krea_preparation = workflow_kind == "portrait_preparation" and graph.metadata.get("enhancement_mode") == "krea2_edit"
     qwen_preparation = workflow_kind == "portrait_preparation" and graph.metadata.get("enhancement_mode") == "qwen_image_edit"
-    qwen_source_workflow = graph.metadata.get("preparation_engine") == "qwen_image_edit_2511"
-    initial_scale = 0.34 if qwen_preparation else 0.46 if workflow_kind == "portrait_preparation" else 0.44 if workflow_kind == "random_text_to_image" else 0.28 if qwen_source_workflow else 0.32
+    full_power_source_workflow = graph.profile in FULL_POWER_PROFILE_IDS
+    initial_scale = 0.34 if qwen_preparation else 0.36 if krea_preparation else 0.46 if workflow_kind == "portrait_preparation" else 0.44 if workflow_kind == "random_text_to_image" else 0.28 if full_power_source_workflow else 0.32
     initial_offset = [160, 170] if workflow_kind == "portrait_preparation" else [160, 180] if workflow_kind == "random_text_to_image" else [160, 260]
-    palette = PREP_QWEN_NODE_COLORS if qwen_preparation else PREP_NODE_COLORS if workflow_kind == "portrait_preparation" else RANDOM_PROMPT_NODE_COLORS if workflow_kind == "random_text_to_image" else NODE_COLORS
+    palette = PREP_KREA_NODE_COLORS if krea_preparation else PREP_QWEN_NODE_COLORS if qwen_preparation else PREP_NODE_COLORS if workflow_kind == "portrait_preparation" else RANDOM_PROMPT_NODE_COLORS if workflow_kind == "random_text_to_image" else NODE_COLORS
     for order, node in enumerate(graph.nodes):
         node_color, node_bgcolor = palette[node.group]
         if node.class_type == "LoadImage":
@@ -1554,8 +1766,8 @@ def _ui_json(graph: GraphSpec) -> dict[str, Any]:
             "widgets_values": node.widgets,
         })
     groups = []
-    layout = PREP_QWEN_GROUP_LAYOUT if qwen_preparation else PREP_GROUP_LAYOUT if workflow_kind == "portrait_preparation" else RANDOM_PROMPT_GROUP_LAYOUT if workflow_kind == "random_text_to_image" else FULL_POWER_GROUP_LAYOUT if qwen_source_workflow else GROUP_LAYOUT
-    colors = PREP_QWEN_GROUP_COLORS if qwen_preparation else PREP_GROUP_COLORS if workflow_kind == "portrait_preparation" else RANDOM_PROMPT_GROUP_COLORS if workflow_kind == "random_text_to_image" else GROUP_COLORS
+    layout = PREP_KREA_GROUP_LAYOUT if krea_preparation else PREP_QWEN_GROUP_LAYOUT if qwen_preparation else PREP_GROUP_LAYOUT if workflow_kind == "portrait_preparation" else RANDOM_PROMPT_GROUP_LAYOUT if workflow_kind == "random_text_to_image" else FULL_POWER_GROUP_LAYOUT if full_power_source_workflow else GROUP_LAYOUT
+    colors = PREP_KREA_GROUP_COLORS if krea_preparation else PREP_QWEN_GROUP_COLORS if qwen_preparation else PREP_GROUP_COLORS if workflow_kind == "portrait_preparation" else RANDOM_PROMPT_GROUP_COLORS if workflow_kind == "random_text_to_image" else GROUP_COLORS
     for label in graph.groups:
         x, y, width, height = layout[label]
         groups.append({"title": label, "bounding": [x, y, width, height], "color": colors[label], "font_size": 24})
@@ -1591,6 +1803,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         "hoi4_portraits_agent_no_input_local_nvidia_16gb": root_path / "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json",
         "hoi4_portraits_agent_no_input_full_power_gpu": root_path / "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json",
         PREP_WORKFLOW_ID: root_path / "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json",
+        PREP_QWEN_WORKFLOW_ID: root_path / "workflows/human/prepare_portrait_qwen/hoi4_portraits_prepare_portrait_qwen.json",
         PREP_BASIC_WORKFLOW_ID: root_path / "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.json",
     }
     manifests: list[dict[str, Any]] = []
@@ -1606,6 +1819,14 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             required_custom_nodes = ["HOI4FinishPreparedPortrait", "HOI4PortraitCrop"]
             required_models = ["face_detection_yunet_2023mar.onnx"]
             if workflow_id == PREP_WORKFLOW_ID:
+                required_custom_nodes.extend(["HOI4RestorationPrompt", *sorted(KREA_NODES)])
+                required_models.extend([
+                    "krea2_turbo_fp8_scaled.safetensors",
+                    "qwen3vl_4b_fp8_scaled.safetensors",
+                    "qwen_image_vae.safetensors",
+                    "krea2_identity_edit_v1_2.safetensors",
+                ])
+            elif workflow_id == PREP_QWEN_WORKFLOW_ID:
                 required_custom_nodes.append("HOI4RestorationPrompt")
                 required_models.extend([
                     "qwen_image_edit_2511_fp8mixed.safetensors",
@@ -1629,7 +1850,7 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             required_custom_nodes = sorted(
                 KREA_NODES
                 | (PROJECT_NODES - {"HOI4PromptInput", "HOI4AutopromptClient"} - (set() if graph.metadata["human_workflow"] else HUMAN_ONLY_PROJECT_NODES))
-                | (QWEN_PREPARATION_PROJECT_NODES if graph.metadata.get("preparation_engine") == "qwen_image_edit_2511" else set())
+                | (QWEN_PREPARATION_PROJECT_NODES if graph.metadata.get("preparation_engine") in {"qwen_image_edit_2511", "krea2_edit_restoration"} else set())
                 | {required_prompt_node}
                 | (HUMAN_ONLY_PROJECT_NODES if graph.metadata["human_workflow"] else set())
             )

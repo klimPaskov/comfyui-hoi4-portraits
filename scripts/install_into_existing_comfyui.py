@@ -277,16 +277,9 @@ def _copy_workflows(
     for source in sorted((ROOT / "workflows").glob("**/*.json")):
         if source.name.endswith(".api.json"):
             continue
+        if workflow_ids is None and source.stem == "hoi4_portraits_prepare_portrait_qwen":
+            continue
         if workflow_ids is not None and source.stem not in workflow_ids:
-            target = destination / source.name
-            if target.is_file():
-                if sha256_file(target) != sha256_file(source):
-                    raise InstallError(
-                        ExitCode.WORKFLOW_INVALID,
-                        f"unselected installed workflow has local changes and was not removed: {target}",
-                    )
-                target.unlink()
-                actions.append({"action": "ui_workflow_removed", "path": str(target)})
             continue
         target = destination / source.name
         if target.is_file() and sha256_file(target) != sha256_file(source):
@@ -384,7 +377,8 @@ def install(
         "hoi4_portraits_agent_local_nvidia_16gb",
         "hoi4_portraits_agent_full_power_gpu",
     }
-    if workflow_ids is None or workflow_ids.intersection(identity_workflows):
+    krea_edit_workflows = identity_workflows | {"hoi4_portraits_prepare_portrait_for_hoi4"}
+    if workflow_ids is None or workflow_ids.intersection(krea_edit_workflows):
         _checkout_krea_nodes(comfy_root, actions)
     _copy_project_nodes(comfy_root, actions)
     model_lock = json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8"))
@@ -403,7 +397,7 @@ def install(
     _install_autoprompter_runtime(profile, actions, workflow_ids)
     _merge_extra_model_paths(comfy_root, actions)
     _install_hoi4_backgrounds(hoi4_root, actions)
-    if workflow_ids is None or workflow_ids.intersection({"hoi4_portraits_prepare_portrait_for_hoi4", "hoi4_portraits_prepare_portrait_basic"}):
+    if workflow_ids is None or workflow_ids.intersection({"hoi4_portraits_prepare_portrait_for_hoi4", "hoi4_portraits_prepare_portrait_qwen", "hoi4_portraits_prepare_portrait_basic"}):
         _copy_example_input(comfy_root, actions)
     _copy_workflows(comfy_root, actions, workflow_ids)
     return actions
@@ -431,6 +425,7 @@ def main(argv: list[str] | None = None) -> int:
             "hoi4_portraits_agent_no_input_local_nvidia_16gb",
             "hoi4_portraits_agent_no_input_full_power_gpu",
             "hoi4_portraits_prepare_portrait_for_hoi4",
+            "hoi4_portraits_prepare_portrait_qwen",
             "hoi4_portraits_prepare_portrait_basic",
         ],
         help="copy only the named UI workflow; repeat to install more than one",

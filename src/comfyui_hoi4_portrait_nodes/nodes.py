@@ -118,6 +118,41 @@ def _comfy_to_pil(image: Any) -> Any:
     return image
 
 
+def _automatic_portrait_crop_box(
+    source_width: int,
+    source_height: int,
+    face_box_xyxy: tuple[float, float, float, float],
+    height_multiplier: float,
+) -> tuple[int, int, int, int]:
+    """Create a close 26:35 crop without cutting hair or the detected face."""
+
+    left, top, right, bottom = face_box_xyxy
+    face_width = right - left
+    face_height = bottom - top
+    if source_width <= 0 or source_height <= 0 or face_width <= 0 or face_height <= 0:
+        _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "face or source dimensions are invalid")
+
+    # YuNet encloses the face rather than the complete hairstyle or headwear.
+    # Reserve half a face-height above its box so those features remain visible.
+    headroom = face_height * 0.50
+    horizontal_room = face_width * 1.30
+    target_height = max(
+        96,
+        int(round(face_height * height_multiplier)),
+        int(round(horizontal_room * 35 / 26)),
+    )
+    maximum_height = min(source_height, int(source_width * 35 / 26))
+    target_height = min(target_height, maximum_height)
+    target_width = int(round(target_height * 26 / 35))
+
+    center_x = (left + right) / 2.0
+    crop_left = int(round(center_x - target_width / 2.0))
+    crop_top = int(round(top - headroom))
+    crop_left = min(max(0, crop_left), source_width - target_width)
+    crop_top = min(max(0, crop_top), source_height - target_height)
+    return crop_left, crop_top, crop_left + target_width, crop_top + target_height
+
+
 def _job_root(job: dict[str, Any]) -> Path:
     root = _project_from_job(job)
     job_id = str(job.get("job_id", ""))
@@ -731,20 +766,12 @@ class HOI4HeadShouldersCrop:
             crop_left, crop_top, crop_right, crop_bottom = [int(value) for value in explicit]
             derived_crop = False
         else:
-            face_width = right - left
-            face_height = bottom - top
-            target_height = max(96, int(round(face_height * 2.35)))
-            maximum_height = min(source.height, int(source.width * 35 / 26))
-            target_height = min(target_height, maximum_height)
-            target_width = int(round(target_height * 26 / 35))
-            center_x = (left + right) / 2.0
-            center_y = (top + bottom) / 2.0
-            crop_left = int(round(center_x - target_width / 2.0))
-            crop_top = int(round(center_y - target_height * 0.30))
-            crop_left = min(max(0, crop_left), source.width - target_width)
-            crop_top = min(max(0, crop_top), source.height - target_height)
-            crop_right = crop_left + target_width
-            crop_bottom = crop_top + target_height
+            crop_left, crop_top, crop_right, crop_bottom = _automatic_portrait_crop_box(
+                source.width,
+                source.height,
+                (left, top, right, bottom),
+                2.35,
+            )
             derived_crop = True
         if crop_right <= crop_left or crop_bottom <= crop_top:
             _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "calculated crop is empty")
@@ -799,6 +826,7 @@ class HOI4ConservativePrep:
                 "preparation_engine": (
                     [
                         "RealESRGAN x2",
+                        "Krea 2 Turbo restoration",
                         "Qwen Image Edit 2511 and RealESRGAN x2",
                     ],
                 ),
@@ -829,6 +857,7 @@ class HOI4ConservativePrep:
             _raise(ExitCode.WORKFLOW_INVALID, "job execution profile is unknown")
         supported_engines = {
             "RealESRGAN x2",
+            "Krea 2 Turbo restoration",
             "Qwen Image Edit 2511 and RealESRGAN x2",
         }
         if preparation_engine not in supported_engines:
@@ -841,20 +870,24 @@ class HOI4ConservativePrep:
             prepared = enhanced
             resize_operation = "IDENTITY_SIZE"
         qwen_restoration = preparation_engine.startswith("Qwen Image Edit 2511")
+        krea_restoration = preparation_engine == "Krea 2 Turbo restoration"
+        generative_restoration = qwen_restoration or krea_restoration
+        if qwen_restoration:
+            operations = ["Qwen-Image-Edit-2511 FP8 mixed", "Real-ESRGAN_x2plus", resize_operation]
+        elif krea_restoration:
+            operations = ["Krea 2 Turbo identity-preserving edit", resize_operation]
+        else:
+            operations = ["Real-ESRGAN_x2plus", resize_operation]
         meta = {
             "crop_meta": crop_meta,
             "restoration": {
-                "status": "AI_RESTORATION_AND_UPSCALE_APPLIED" if qwen_restoration else "AI_UPSCALE_APPLIED",
+                "status": "AI_RESTORATION_AND_UPSCALE_APPLIED" if generative_restoration else "AI_UPSCALE_APPLIED",
                 "model": preparation_engine,
-                "operations": (
-                    ["Qwen-Image-Edit-2511 FP8 mixed", "Real-ESRGAN_x2plus", resize_operation]
-                    if qwen_restoration
-                    else ["Real-ESRGAN_x2plus", resize_operation]
-                ),
+                "operations": operations,
             },
             "colorization": {
-                "status": "AI_RESTORATION_ENABLED" if qwen_restoration else "NOT_USED",
-                "source_color_preserved": not qwen_restoration,
+                "status": "AI_RESTORATION_ENABLED" if generative_restoration else "NOT_USED",
+                "source_color_preserved": not generative_restoration,
             },
             "source_size": {"width": source.width, "height": source.height},
             "work_canvas": {"width": prepared.width, "height": prepared.height},
@@ -982,18 +1015,12 @@ class HOI4PortraitCrop:
         }.get(framing)
         if height_multiplier is None:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "portrait framing choice is invalid")
-        crop_height = max(96, int(round(face_height * height_multiplier)))
-        maximum_height = min(source.height, int(source.width * 35 / 26))
-        crop_height = min(crop_height, maximum_height)
-        crop_width = int(round(crop_height * 26 / 35))
-        center_x = x + face_width / 2.0
-        face_center_y = y + face_height / 2.0
-        crop_left = int(round(center_x - crop_width / 2.0))
-        crop_top = int(round(face_center_y - crop_height * 0.28))
-        crop_left = min(max(0, crop_left), source.width - crop_width)
-        crop_top = min(max(0, crop_top), source.height - crop_height)
-        crop_right = crop_left + crop_width
-        crop_bottom = crop_top + crop_height
+        crop_left, crop_top, crop_right, crop_bottom = _automatic_portrait_crop_box(
+            source.width,
+            source.height,
+            (x, y, x + face_width, y + face_height),
+            height_multiplier,
+        )
         prepared = source.crop((crop_left, crop_top, crop_right, crop_bottom))
         if prepared.width > 832 or prepared.height > 1120:
             prepared = ImageOps.fit(prepared, (832, 1120), method=Image.Resampling.LANCZOS)
@@ -1003,6 +1030,7 @@ class HOI4PortraitCrop:
             "framing": framing,
             "face_box_xywh": [round(x), round(y), round(face_width), round(face_height)],
             "crop_box_xyxy": [crop_left, crop_top, crop_right, crop_bottom],
+            "headroom_pixels": round(y) - crop_top,
             "output_size": [prepared.width, prepared.height],
             "padding": {"left": 0, "top": 0, "right": 0, "bottom": 0},
         }

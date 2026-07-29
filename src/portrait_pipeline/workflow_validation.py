@@ -67,7 +67,21 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
             "SaveImage",
         }
         enhancement_mode = metadata.get("enhancement_mode")
-        if enhancement_mode == "qwen_image_edit":
+        if enhancement_mode == "krea2_edit":
+            required_preparation_nodes |= {
+                "CLIPLoader",
+                "EmptySD3LatentImage",
+                "HOI4RestorationPrompt",
+                "Krea2EditGroundedEncode",
+                "Krea2EditModelPatch",
+                "KSampler",
+                "LoraLoaderModelOnly",
+                "UNETLoader",
+                "VAEDecode",
+                "VAEEncode",
+                "VAELoader",
+            }
+        elif enhancement_mode == "qwen_image_edit":
             required_preparation_nodes |= {
                 "CFGNorm",
                 "CLIPLoader",
@@ -99,7 +113,10 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
         missing_preparation = sorted(required_preparation_nodes - present_types)
         if missing_preparation:
             issues.append(f"portrait preparation nodes are missing: {missing_preparation}")
-        if any(node.get("type") in {"HOI4AutopromptClient", "Krea2EditModelPatch", "DDColor_Colorize"} for node in ui_nodes):
+        prohibited = {"HOI4AutopromptClient", "DDColor_Colorize"}
+        if enhancement_mode != "krea2_edit":
+            prohibited.add("Krea2EditModelPatch")
+        if any(node.get("type") in prohibited for node in ui_nodes):
             issues.append("portrait preparation workflow contains an unrelated generation or colorization node")
     elif metadata.get("human_workflow"):
         autoprompt_nodes = [node for node in ui_nodes if node.get("type") == "HOI4AutopromptClient"]
@@ -121,7 +138,13 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
             issues.append("agent workflow contains an autoprompter model reference")
     if workflow_kind not in {"random_text_to_image", "portrait_preparation"}:
         present_types = {node.get("type") for node in ui_nodes}
-        if not {"UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4ConservativePrep"} <= present_types:
+        preparation_engine = metadata.get("preparation_engine")
+        required_source_preparation = (
+            {"HOI4RestorationPrompt", "Krea2EditModelPatch", "Krea2EditGroundedEncode", "HOI4ConservativePrep"}
+            if preparation_engine == "krea2_edit_restoration"
+            else {"UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4ConservativePrep"}
+        )
+        if not required_source_preparation <= present_types:
             issues.append("source workflow does not include automatic portrait preparation")
     if any(_contains_value(ui, token) for token in ("faceswap", "face_swap", "subject_replacement")):
         issues.append("workflow contains a prohibited identity-replacement route")
@@ -161,6 +184,7 @@ def validate_all_workflows(root: str | Path | None = None) -> list[dict[str, Any
         "hoi4_portraits_agent_no_input_local_nvidia_16gb": ("workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json", "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.api.json"),
         "hoi4_portraits_agent_no_input_full_power_gpu": ("workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json", "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.api.json"),
         "hoi4_portraits_prepare_portrait_for_hoi4": ("workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json", "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json"),
+        "hoi4_portraits_prepare_portrait_qwen": ("workflows/human/prepare_portrait_qwen/hoi4_portraits_prepare_portrait_qwen.json", "workflows/human/prepare_portrait_qwen/hoi4_portraits_prepare_portrait_qwen.api.json"),
         "hoi4_portraits_prepare_portrait_basic": ("workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.json", "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.api.json"),
     }
     return [validate_workflow_file(workflow_id, root_path / ui, root_path / api, root_path) for workflow_id, (ui, api) in specs.items()]

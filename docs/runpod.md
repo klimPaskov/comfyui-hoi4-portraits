@@ -16,8 +16,6 @@ If your template stores ComfyUI elsewhere, replace `/workspace/ComfyUI` with the
 
 | Asset | Installed folder |
 | --- | --- |
-| Qwen Image Edit 2511 FP8-mixed model | `models/diffusion_models/` |
-| Qwen 2.5-VL image encoder | `models/text_encoders/` |
 | Krea 2 Turbo diffusion model | `models/diffusion_models/` |
 | Krea text/vision encoder | `models/text_encoders/` |
 | Krea VAE | `models/vae/` |
@@ -30,7 +28,14 @@ If your template stores ComfyUI elsewhere, replace `/workspace/ComfyUI` with the
 | Krea Edit custom nodes | `<ComfyUI>/custom_nodes/comfyui-krea2edit/` |
 | All included workflows | `<ComfyUI>/user/default/workflows/hoi4_portraits/` |
 
-The installer downloads the Qwen restoration and Krea portrait-generation model sets, then registers their folders automatically. No manual model movement is needed. Allow roughly 75 GB of free persistent storage for the complete setup.
+The installer downloads the Krea model set and registers every model folder automatically. No manual model movement is needed. Allow roughly 45 GB of free persistent storage for the complete setup.
+
+Qwen Image Edit is available as an optional separate preparation workflow. It is not downloaded during the standard setup:
+
+```bash
+/workspace/comfyui-hoi4-portraits/scripts/install_runpod_qwen.sh \
+  /workspace/ComfyUI
+```
 
 ## Expanded commands
 
@@ -65,9 +70,11 @@ ssh -L 8188:127.0.0.1:8188 -p <SSH_PORT> root@<POD_HOST>
 
 Then open `http://127.0.0.1:8188` in your browser and choose a workflow from the installed `hoi4_portraits` folder:
 
-- `hoi4_portraits_full_power_gpu` restores an input with Qwen, then converts it into an HOI4 portrait.
-- `hoi4_portraits_agent_full_power_gpu` runs the same source-image route from a job file.
+- `hoi4_portraits_full_power_gpu` restores an input with Krea Edit, then reuses Krea to convert it into an HOI4 portrait.
 - `hoi4_portraits_no_input_full_power_gpu` creates a new fictional leader from text controls.
-- `hoi4_portraits_agent_no_input_full_power_gpu` creates a new leader from a no-input job file.
-- `hoi4_portraits_prepare_portrait_for_hoi4` crops, restores, colorizes when needed, and refines a photo with Qwen and Real-ESRGAN.
+- `hoi4_portraits_prepare_portrait_for_hoi4` crops, restores, and colorizes when needed with Krea Edit.
 - `hoi4_portraits_prepare_portrait_basic` crops and adjusts a photo without loading the enhancement model.
+
+After installing the optional Qwen package, `hoi4_portraits_prepare_portrait_qwen` provides the larger Qwen restoration route.
+
+Matching agent workflows are included for future automation, but they currently have no practical use because ComfyUI does not yet provide a reliable MCP connection for running them.

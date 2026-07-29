@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the pinned ComfyUI Qwen/Krea graph contract against a live loopback server.
+"""Verify selected pinned workflow contracts against a live loopback server.
 
 This probe intentionally stops at registry/schema validation.  It does not submit
 an identity-edit job: a production execution requires an approved source fixture,
@@ -35,8 +35,10 @@ WORKFLOW_PATHS = {
     "hoi4_portraits_agent_no_input_local_nvidia_16gb": "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.api.json",
     "hoi4_portraits_agent_no_input_full_power_gpu": "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.api.json",
     "hoi4_portraits_prepare_portrait_for_hoi4": "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json",
+    "hoi4_portraits_prepare_portrait_qwen": "workflows/human/prepare_portrait_qwen/hoi4_portraits_prepare_portrait_qwen.api.json",
     "hoi4_portraits_prepare_portrait_basic": "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.api.json",
 }
+OPTIONAL_WORKFLOWS = {"hoi4_portraits_prepare_portrait_qwen"}
 FORBIDDEN_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 REQUIRED_CORE_NODES = {
     "UNETLoader",
@@ -173,14 +175,10 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "hoi4_portraits_no_input_full_power_gpu",
         "hoi4_portraits_agent_no_input_local_nvidia_16gb",
         "hoi4_portraits_agent_no_input_full_power_gpu",
-        "hoi4_portraits_prepare_portrait_for_hoi4",
+        "hoi4_portraits_prepare_portrait_qwen",
         "hoi4_portraits_prepare_portrait_basic",
     } for workflow_id in workflow_ids)
-    qwen_graph_required = any(workflow_id in {
-        "hoi4_portraits_full_power_gpu",
-        "hoi4_portraits_agent_full_power_gpu",
-        "hoi4_portraits_prepare_portrait_for_hoi4",
-    } for workflow_id in workflow_ids)
+    qwen_graph_required = any(workflow_id in OPTIONAL_WORKFLOWS for workflow_id in workflow_ids)
     required_nodes = sorted(
         REQUIRED_CORE_NODES
         | (REQUIRED_KREA_NODES if identity_graph_required else set())
@@ -210,7 +208,16 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "krea_grounded_encode_contract": ({"clip", "prompt"} <= set(grounded.get("input", {}).get("required", {})) and {"image", "grounding_px"} <= grounded_optional) if identity_graph_required else True,
     }
     workflow_checks = [_validate_api_workflow(root, workflow_id, object_info) for workflow_id in workflow_ids]
-    schema_pass = all(schema_checks.values()) and all(item["status"] == "PASS" for item in workflow_checks)
+    explicitly_checking_optional = profile in OPTIONAL_WORKFLOWS
+    if not explicitly_checking_optional:
+        for item in workflow_checks:
+            if item["workflow_id"] in OPTIONAL_WORKFLOWS and item["status"] != "PASS":
+                item["status"] = "OPTIONAL_MODELS_NOT_INSTALLED"
+    required_workflow_checks = [
+        item for item in workflow_checks
+        if item["workflow_id"] not in OPTIONAL_WORKFLOWS or explicitly_checking_optional
+    ]
+    schema_pass = all(schema_checks.values()) and all(item["status"] == "PASS" for item in required_workflow_checks)
 
     fixture_present = any((root / "fixtures").rglob("*") if (root / "fixtures").is_dir() else [])
     background_registry = root / "config" / "background_registry.json"
@@ -247,12 +254,12 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "cliploader_type_choices": clip_choices,
         "workflows": workflow_checks,
         "execution": execution,
-        "policy": "Live registry/schema PASS confirms that the pinned Qwen and Krea graph inputs match the active ComfyUI server. Model execution and final portrait approval remain separate checks.",
+        "policy": "Live registry/schema PASS confirms that the selected workflow inputs match the active ComfyUI server. Model execution and final portrait approval remain separate checks.",
     }
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Verify live pinned ComfyUI Qwen/Krea schema compatibility on loopback.")
+    parser = argparse.ArgumentParser(description="Verify live pinned ComfyUI workflow compatibility on loopback.")
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--base-url", default="http://127.0.0.1:8188")
     parser.add_argument("--profile", choices=tuple(WORKFLOW_PATHS), action="append")

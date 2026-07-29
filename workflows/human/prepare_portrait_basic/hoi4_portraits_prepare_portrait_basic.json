@@ -470,11 +470,11 @@
       "PreviewImage",
       "SaveImage"
     ],
-    "required_krea_nodes": [],
     "required_project_nodes": [
       "HOI4FinishPreparedPortrait",
       "HOI4PortraitCrop"
     ],
+    "required_krea_nodes": [],
     "preview_nodes": [
       "Input image preview",
       "Head-and-shoulders preview",

@@ -55,6 +55,7 @@ EXPLICIT_FILES = {
     "scripts/install_support.py",
     "scripts/install_into_existing_comfyui.py",
     "scripts/install_runpod.sh",
+    "scripts/install_runpod_qwen.sh",
     "scripts/install_windows.ps1",
     "scripts/start_runpod.sh",
     "scripts/start_windows.ps1",

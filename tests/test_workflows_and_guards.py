@@ -28,7 +28,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_required_and_local_nvidia_workflows_are_structurally_valid(self):
         reports = validate_all_workflows(self.root)
-        self.assertEqual(len(reports), 10)
+        self.assertEqual(len(reports), 11)
         for report in reports:
             self.assertEqual(report["structural_status"], "PASS", report)
 
@@ -39,7 +39,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
             manifest["runtime_status"],
             {"STRUCTURAL_ONLY_RUNTIME_BLOCKED", "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED"},
         )
-        self.assertEqual(len(manifest["workflows"]), 10)
+        self.assertEqual(len(manifest["workflows"]), 11)
         self.assertTrue(all(item["validation_status"] == "UNVALIDATED" for item in manifest["workflows"]))
 
     def test_local_nvidia_agent_is_routable_through_controller_and_adapter(self):
@@ -171,7 +171,13 @@ class WorkflowAndGuardTests(unittest.TestCase):
             api = json.loads(path.with_suffix(".api.json").read_text(encoding="utf-8"))
             previews = {node["id"]: node for node in data["nodes"] if node.get("type") == "PreviewImage"}
             if api["_meta"].get("workflow_kind") == "portrait_preparation":
-                expected = {2, 4, 17, 21, 22} if api["_meta"]["enhancement_mode"] == "qwen_image_edit" else {2, 4, 6}
+                expected = (
+                    {2, 4, 18, 19}
+                    if api["_meta"]["enhancement_mode"] == "krea2_edit"
+                    else {2, 4, 17, 21, 22}
+                    if api["_meta"]["enhancement_mode"] == "qwen_image_edit"
+                    else {2, 4, 6}
+                )
                 self.assertEqual(set(previews), expected)
                 self.assertTrue(all(node["size"][0] >= 340 and node["size"][1] >= 340 for node in previews.values()))
                 continue
@@ -181,7 +187,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
                 self.assertGreaterEqual(previews[12]["size"][1], 300)
                 continue
             expected = {25, 26, 27, 28, 30, 35, 38}
-            if api["_meta"].get("preparation_engine") == "qwen_image_edit_2511":
+            if api["_meta"].get("preparation_engine") == "krea2_edit_restoration":
                 expected.add(54)
             self.assertEqual(set(previews), expected)
             self.assertTrue(all(node["size"][0] >= 300 and node["size"][1] >= 300 for node in previews.values()))
@@ -225,6 +231,9 @@ class WorkflowAndGuardTests(unittest.TestCase):
                     self.assertIn("UpscaleModelLoader", json.dumps(data))
                     self.assertIn("ImageUpscaleWithModel", json.dumps(data))
                     self.assertIn("TextEncodeQwenImageEditPlus", json.dumps(data))
+                elif data["_meta"]["enhancement_mode"] == "krea2_edit":
+                    self.assertIn("Krea2EditModelPatch", json.dumps(data))
+                    self.assertIn("Krea2EditGroundedEncode", json.dumps(data))
                 self.assertNotIn("HOI4HumanControls", json.dumps(data))
                 continue
             if data["_meta"].get("workflow_kind") == "random_text_to_image":
@@ -297,14 +306,15 @@ class WorkflowAndGuardTests(unittest.TestCase):
         )
         for path in paths:
             data = json.loads(path.read_text(encoding="utf-8"))
-            if data["_meta"]["preparation_engine"] == "qwen_image_edit_2511":
-                self.assertEqual(data["42"]["class_type"], "UNETLoader")
-                self.assertEqual(data["42"]["inputs"]["unet_name"], "qwen_image_edit_2511_fp8mixed.safetensors")
-                self.assertEqual(data["43"]["inputs"]["type"], "qwen_image")
-                self.assertEqual(data["50"]["class_type"], "KSampler")
-                self.assertEqual(data["53"]["inputs"]["image"], ["51", 0])
-                self.assertEqual(data["6"]["inputs"]["enhanced_image"], ["53", 0])
+            if data["_meta"]["preparation_engine"] == "krea2_edit_restoration":
+                self.assertEqual(data["42"]["class_type"], "Krea2EditModelPatch")
+                self.assertEqual(data["42"]["inputs"]["source_image"], ["5", 0])
+                self.assertEqual(data["43"]["class_type"], "Krea2EditGroundedEncode")
+                self.assertEqual(data["46"]["class_type"], "KSampler")
+                self.assertEqual(data["47"]["class_type"], "VAEDecode")
+                self.assertEqual(data["6"]["inputs"]["enhanced_image"], ["47", 0])
                 self.assertTrue(data["_meta"]["colorization"])
+                self.assertNotIn("qwen_image_edit_2511_fp8mixed.safetensors", json.dumps(data))
             else:
                 self.assertEqual(data["36"]["class_type"], "UpscaleModelLoader")
                 self.assertEqual(data["36"]["inputs"]["model_name"], "RealESRGAN_x2plus.pth")
@@ -408,17 +418,27 @@ class WorkflowAndGuardTests(unittest.TestCase):
         data = json.loads(path.read_text(encoding="utf-8"))
         classes = {node["class_type"] for key, node in data.items() if not key.startswith("_")}
         self.assertTrue({
-            "LoadImage", "HOI4PortraitCrop", "HOI4RestorationPrompt", "TextEncodeQwenImageEditPlus",
-            "UpscaleModelLoader", "ImageUpscaleWithModel", "HOI4FinishPreparedPortrait",
+            "LoadImage", "HOI4PortraitCrop", "HOI4RestorationPrompt", "Krea2EditModelPatch",
+            "Krea2EditGroundedEncode", "HOI4FinishPreparedPortrait",
             "PreviewImage", "SaveImage",
         } <= classes)
-        self.assertFalse({"HOI4AutopromptClient", "Krea2EditModelPatch"} & classes)
-        self.assertEqual(data["7"]["inputs"]["unet_name"], "qwen_image_edit_2511_fp8mixed.safetensors")
-        self.assertEqual(data["18"]["inputs"]["model_name"], "RealESRGAN_x2plus.pth")
-        self.assertEqual(data["19"]["inputs"]["image"], ["16", 0])
-        self.assertEqual(data["22"]["inputs"]["images"], ["20", 0])
-        self.assertEqual(data["23"]["inputs"]["images"], ["20", 0])
+        self.assertNotIn("HOI4AutopromptClient", classes)
+        self.assertEqual(data["6"]["inputs"]["unet_name"], "krea2_turbo_fp8_scaled.safetensors")
+        self.assertEqual(data["10"]["inputs"]["source_image"], ["3", 0])
+        self.assertEqual(data["19"]["inputs"]["images"], ["17", 0])
+        self.assertEqual(data["20"]["inputs"]["images"], ["17", 0])
         self.assertTrue(data["_meta"]["colorization"])
+        self.assertEqual(data["_meta"]["enhancement_mode"], "krea2_edit")
+
+        qwen_path = self.root / "workflows/human/prepare_portrait_qwen/hoi4_portraits_prepare_portrait_qwen.api.json"
+        qwen = json.loads(qwen_path.read_text(encoding="utf-8"))
+        qwen_classes = {node["class_type"] for key, node in qwen.items() if not key.startswith("_")}
+        self.assertTrue({
+            "TextEncodeQwenImageEditPlus", "UpscaleModelLoader", "ImageUpscaleWithModel",
+        } <= qwen_classes)
+        self.assertEqual(qwen["7"]["inputs"]["unet_name"], "qwen_image_edit_2511_fp8mixed.safetensors")
+        self.assertEqual(qwen["_meta"]["enhancement_mode"], "qwen_image_edit")
+        self.assertFalse(qwen["_meta"]["default_preparation_workflow"])
 
         basic_path = self.root / "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.api.json"
         basic = json.loads(basic_path.read_text(encoding="utf-8"))
@@ -438,19 +458,33 @@ class WorkflowAndGuardTests(unittest.TestCase):
             tensor = torch.from_numpy(np.asarray(image).astype(np.float32) / 255.0).unsqueeze(0)
             _cropped, details = crop_node.run(tensor, 0, "Normal head and shoulders")
             self.assertEqual(details["padding"], {"left": 0, "top": 0, "right": 0, "bottom": 0}, path)
-            face_height = details["face_box_xywh"][3]
-            crop_height = details["crop_box_xyxy"][3] - details["crop_box_xyxy"][1]
+            face_left, face_top, face_width, face_height = details["face_box_xywh"]
+            crop_left, crop_top, crop_right, crop_bottom = details["crop_box_xyxy"]
+            crop_height = crop_bottom - crop_top
             self.assertGreaterEqual(face_height / crop_height, 0.40, path)
+            self.assertLessEqual(crop_left, face_left, path)
+            self.assertLessEqual(crop_top, face_top, path)
+            self.assertGreaterEqual(crop_right, face_left + face_width, path)
+            self.assertGreaterEqual(crop_bottom, face_top + face_height, path)
+            expected_headroom = min(face_top, round(face_height * 0.50))
+            self.assertGreaterEqual(details["headroom_pixels"], expected_headroom - 1, path)
 
     def test_krea_graph_matches_primary_fit_contract(self):
         for path in self.root.joinpath("workflows").glob("**/*.api.json"):
             data = json.loads(path.read_text(encoding="utf-8"))
             if data["_meta"].get("workflow_kind") == "portrait_preparation":
-                self.assertNotIn("Krea2EditModelPatch", json.dumps(data))
-                if data["_meta"].get("enhancement_mode") == "qwen_image_edit":
+                if data["_meta"].get("enhancement_mode") == "krea2_edit":
+                    self.assertIn("Krea2EditModelPatch", json.dumps(data))
+                    patch = data["10"]["inputs"]
+                    self.assertEqual(patch["fit_mode"], "fit")
+                    self.assertEqual(patch["vae"], ["8", 0])
+                    self.assertEqual(patch["source_image"], ["3", 0])
+                elif data["_meta"].get("enhancement_mode") == "qwen_image_edit":
+                    self.assertNotIn("Krea2EditModelPatch", json.dumps(data))
                     self.assertIn("TextEncodeQwenImageEditPlus", json.dumps(data))
                     self.assertIn("KSampler", json.dumps(data))
                 else:
+                    self.assertNotIn("Krea2EditModelPatch", json.dumps(data))
                     self.assertNotIn("KSampler", json.dumps(data))
                 continue
             if data["_meta"].get("workflow_kind") == "random_text_to_image":
@@ -818,9 +852,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(
             set(qwen_edit["profiles"]),
             {
-                "hoi4_portraits_full_power_gpu",
-                "hoi4_portraits_agent_full_power_gpu",
-                "hoi4_portraits_prepare_portrait_for_hoi4",
+                "hoi4_portraits_prepare_portrait_qwen",
             },
         )
         qwen_encoder = next(model for model in lock["models"] if model["name"] == "qwen_2.5_vl_7b_fp8_scaled.safetensors")
@@ -835,7 +867,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(style["size_bytes"], 228587816)
         self.assertEqual(style["sha256"], "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1")
 
-    def test_installer_selects_qwen_only_for_full_power_restoration_routes(self):
+    def test_installer_selects_qwen_only_for_the_optional_restoration_workflow(self):
         from scripts.install_support import _restore_models
 
         lock = json.loads((self.root / "dependencies/models.lock.json").read_text(encoding="utf-8"))
@@ -854,6 +886,18 @@ class WorkflowAndGuardTests(unittest.TestCase):
                     "hoi4_portraits_agent_full_power_gpu",
                     "hoi4_portraits_prepare_portrait_for_hoi4",
                 },
+            )
+        self.assertNotIn("qwen_image_edit_2511_fp8mixed.safetensors", selected)
+        self.assertNotIn("qwen_2.5_vl_7b_fp8_scaled.safetensors", selected)
+        self.assertIn("krea2_turbo_fp8_scaled.safetensors", selected)
+
+        selected.clear()
+        with mock.patch("scripts.install_support._download_verified", side_effect=record):
+            _restore_models(
+                lock,
+                "hoi4_portraits_full_power_gpu",
+                [],
+                {"hoi4_portraits_prepare_portrait_qwen"},
             )
         self.assertIn("qwen_image_edit_2511_fp8mixed.safetensors", selected)
         self.assertIn("qwen_2.5_vl_7b_fp8_scaled.safetensors", selected)
@@ -892,7 +936,8 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertTrue((comfy_root / "input/hoi4_preparation_example.jpg").is_file())
             _copy_workflows(comfy_root, actions, {"hoi4_portraits_full_power_gpu"})
             installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
-            self.assertEqual([path.stem for path in installed_workflows], ["hoi4_portraits_full_power_gpu"])
+            self.assertEqual(len(installed_workflows), 10)
+            self.assertIn("hoi4_portraits_full_power_gpu", {path.stem for path in installed_workflows})
             config = (comfy_root / "extra_model_paths.yaml").read_text(encoding="utf-8")
             self.assertEqual(config.count("# BEGIN HOI4 PORTRAIT WORKFLOWS"), 1)
             _merge_extra_model_paths(comfy_root, actions)
@@ -908,10 +953,13 @@ class WorkflowAndGuardTests(unittest.TestCase):
         workflow_ids = {
             path.stem
             for path in (self.root / "workflows").glob("**/*.json")
-            if not path.name.endswith(".api.json")
+            if not path.name.endswith(".api.json") and path.stem != "hoi4_portraits_prepare_portrait_qwen"
         }
         for workflow_id in workflow_ids:
             self.assertIn(f"--workflow {workflow_id}", installer)
+        optional = (self.root / "scripts/install_runpod_qwen.sh").read_text(encoding="utf-8")
+        self.assertIn("--workflow hoi4_portraits_prepare_portrait_qwen", optional)
+        self.assertNotIn("--workflow hoi4_portraits_prepare_portrait_qwen", installer)
         self.assertIn("existing ComfyUI", (self.root / "README.md").read_text(encoding="utf-8"))
         self.assertNotIn("install or replace ComfyUI", installer)
 

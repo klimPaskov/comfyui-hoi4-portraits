@@ -1,6 +1,6 @@
 # HOI4 Portrait Workflows for ComfyUI
 
-Turn portrait photos into Hearts of Iron IV-style leader portraits with ComfyUI. Full-power source workflows restore and colorize difficult photos with Qwen Image Edit 2511 before Krea 2 Turbo applies the HOI4 style. The 16 GB workflows use Real-ESRGAN preparation to keep memory use lower.
+Turn portrait photos into Hearts of Iron IV-style leader portraits with ComfyUI. Full-power source workflows use Krea 2 Turbo for both portrait restoration and HOI4 styling. The 16 GB workflows use Real-ESRGAN preparation to keep memory use lower.
 
 > 🎥 **YouTube tutorial: coming soon.** The video link will be added here.
 
@@ -11,11 +11,11 @@ Turn portrait photos into Hearts of Iron IV-style leader portraits with ComfyUI.
 | Workflow | Use | Prompt source |
 | --- | --- | --- |
 | [`hoi4_portraits_local_nvidia_16gb`](workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, Real-ESRGAN preparation | Automatic or manual |
-| [`hoi4_portraits_full_power_gpu`](workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json) | RunPod GPU, Qwen restoration | Automatic or manual |
+| [`hoi4_portraits_full_power_gpu`](workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json) | RunPod GPU, Krea restoration | Automatic or manual |
 | [`hoi4_portraits_no_input_local_nvidia_16gb`](workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Random builder or manual |
 | [`hoi4_portraits_no_input_full_power_gpu`](workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json) | RunPod GPU, no input image | Random builder or manual |
 
-Every source-image workflow automatically finds the subject and crops to a head-and-shoulders portrait. Full-power workflows then use Qwen Image Edit 2511 to repair damage, recover detail, and colorize monochrome or sepia sources when needed; Real-ESRGAN performs the final refinement. The 16 GB workflows use Real-ESRGAN alone. Human workflows include large previews and can switch between automatic and manual descriptions.
+Every source-image workflow automatically finds the subject and crops to a head-and-shoulders portrait without cutting off the top of the head. Full-power workflows use a first Krea Edit pass to repair damage, recover detail, and colorize monochrome or sepia sources when needed, then reuse the same loaded Krea model for HOI4 styling. The 16 GB workflows use Real-ESRGAN preparation. Human workflows include large previews and can switch between automatic and manual descriptions.
 
 Matching agent workflows are included for every workflow type, but they currently have no practical use because ComfyUI does not yet provide a reliable MCP connection for running them.
 
@@ -43,10 +43,16 @@ The setup script installs the nodes and models in their correct folders and adds
 
 ## RunPod setup
 
-Open a terminal in a RunPod ComfyUI template and paste the command below. It installs all included workflows and downloads Qwen Image Edit 2511, Krea 2 Turbo, the encoders, the style LoRA, and the other required files. It does not install or replace ComfyUI.
+Open a terminal in a RunPod ComfyUI template and paste the command below. It installs the workflows and downloads Krea 2 Turbo, its encoders, the style LoRA, Real-ESRGAN, and the other required files. It does not install or replace ComfyUI.
 
 ```bash
 bash -lc 'set -e; P=/workspace/comfyui-hoi4-portraits; test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"; "$P/scripts/install_runpod.sh" /workspace/ComfyUI'
+```
+
+Qwen Image Edit is optional and is not downloaded by the command above. To add its separate preparation workflow:
+
+```bash
+/workspace/comfyui-hoi4-portraits/scripts/install_runpod_qwen.sh /workspace/ComfyUI
 ```
 
 Then start ComfyUI:
@@ -79,13 +85,13 @@ Enter an optional brief and let the workflow vary the remaining details, or swit
 
 ### Prepare a portrait
 
-[`hoi4_portraits_prepare_portrait_for_hoi4`](workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json) is the full-power preparation workflow. It tightly crops the subject, restores and optionally colorizes the photo with Qwen Image Edit 2511, refines it with Real-ESRGAN, and saves an 832 × 1120 PNG. Its first purple node lets you preserve the original color treatment or write custom restoration instructions.
+[`hoi4_portraits_prepare_portrait_for_hoi4`](workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json) is the full-power preparation workflow. It tightly crops the subject, restores and optionally colorizes the photo with Krea Edit, and saves an 832 × 1120 PNG. Its restoration setting lets you preserve the original color treatment or write custom instructions.
 
 [`hoi4_portraits_prepare_portrait_basic`](workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.json) is the model-free alternative for cropping, resizing, contrast, and sharpness adjustments.
 
 The examples below show the lighter Real-ESRGAN preparation used in the 16 GB source workflow:
 
-| Difficult source | Prepared portrait |
+| Source | Prepared portrait |
 | --- | --- |
 | ![Severely faded seated portrait](docs/assets/examples/preparation_01_before.jpg) | ![Prepared faded portrait](docs/assets/examples/preparation_01_after.png) |
 | ![Crowded historical group photograph](docs/assets/examples/preparation_02_before.jpg) | ![Prepared subject from group photograph](docs/assets/examples/preparation_02_after.png) |
