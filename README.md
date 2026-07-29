@@ -11,17 +11,13 @@ Turn portrait photos into Hearts of Iron IV-style leader portraits with ComfyUI.
 | Workflow | Use | Prompt source |
 | --- | --- | --- |
 | [`hoi4_portraits_local_nvidia_16gb`](workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, Real-ESRGAN preparation | Automatic or manual |
-| [`hoi4_portraits_agent_local_nvidia_16gb`](workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, Real-ESRGAN preparation | Job file |
 | [`hoi4_portraits_full_power_gpu`](workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json) | RunPod GPU, Qwen restoration | Automatic or manual |
-| [`hoi4_portraits_agent_full_power_gpu`](workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.json) | RunPod GPU, Qwen restoration | Job file |
 | [`hoi4_portraits_no_input_local_nvidia_16gb`](workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Random builder or manual |
 | [`hoi4_portraits_no_input_full_power_gpu`](workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json) | RunPod GPU, no input image | Random builder or manual |
-| [`hoi4_portraits_agent_no_input_local_nvidia_16gb`](workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Job file |
-| [`hoi4_portraits_agent_no_input_full_power_gpu`](workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json) | RunPod GPU, no input image | Job file |
 
-Every source-image workflow automatically finds the subject and crops to a head-and-shoulders portrait. Full-power workflows then use Qwen Image Edit 2511 to repair damage, recover detail, and colorize monochrome or sepia sources when needed; Real-ESRGAN performs the final refinement. The 16 GB workflows use Real-ESRGAN alone. Human workflows include large previews and can switch between automatic and manual descriptions. Agent workflows receive their portrait description from the job JSON.
+Every source-image workflow automatically finds the subject and crops to a head-and-shoulders portrait. Full-power workflows then use Qwen Image Edit 2511 to repair damage, recover detail, and colorize monochrome or sepia sources when needed; Real-ESRGAN performs the final refinement. The 16 GB workflows use Real-ESRGAN alone. Human workflows include large previews and can switch between automatic and manual descriptions.
 
-> Agent workflows are included for future automation. They are not currently practical through ComfyUI Cloud because Cloud does not yet provide a dependable way to install and run the required custom nodes.
+Matching agent workflows are included for every workflow type, but they currently have no practical use because ComfyUI does not yet provide a reliable MCP connection for running them.
 
 ## Windows setup
 
@@ -78,8 +74,6 @@ The final row applies the Krea identity reference and HOI4 LoRA, generates the p
 ### Generate a new leader from a prompt
 
 Enter an optional brief and let the workflow vary the remaining details, or switch the first node to **Use my prompt**. No input image or separate vision autoprompter is used.
-
-Agents can use the matching `hoi4_portraits_agent_no_input_*` workflow with the [no-input job example](docs/examples/prompt_job_input.example.json).
 
 ![No-input portrait workflow](docs/assets/workflow_hoi4_portraits_no_input_local_nvidia_16gb.png)
 
