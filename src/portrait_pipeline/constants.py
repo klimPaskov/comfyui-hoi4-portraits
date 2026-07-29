@@ -149,7 +149,7 @@ STAGES = [
     "COMPLETED",
 ]
 
-WORKFLOW_VERSION = "graph-spec-1.0.0"
+WORKFLOW_VERSION = "graph-spec-1.1.0"
 DEPENDENCY_LOCK_VERSION = "lock-2026-07-26.1"
 AUTOPROMPTER_PATH = "prompts/autoprompter_instruction.txt"
 STYLE_LORA_PATH = "loras/hoi4_portrait_new_style_lora.safetensors"

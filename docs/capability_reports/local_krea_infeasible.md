@@ -24,6 +24,13 @@ This report records the measured result on the detected Apple Silicon Mac with
 | Official Krea 2 Turbo NVFP4 on native MPS | blocked | live loader reached KSampler, then failed with `Undefined type Float8_e4m3fn`; NVFP4 requires the approved NVIDIA capability path |
 | Official NVFP4 on CPU, diagnostic substitution only | execution pass | one complete 832×1120 human route, eight steps, 34:36, heavy swap observed |
 
+The graph now includes a project-owned `HOI4KreaModelLoadBarrier` that releases
+CPU-resident Qwen conditioning models before Krea sampling. The live barrier
+canary passed node/schema loading and reached Krea model loading, but still
+blocked before the first sampler step at approximately 1.02 GiB free RAM and
+263.81 MB free swap on a bounded 208×280 canary. See the
+[`staged-load barrier evidence`](../preflight/mps_barrier_canary_2026-07-29.md).
+
 The official artifacts were checksum-verified before testing. No repacked or
 unapproved model format was substituted into the production graph.
 

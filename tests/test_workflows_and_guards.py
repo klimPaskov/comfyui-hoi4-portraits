@@ -130,6 +130,10 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertEqual(data["17"]["inputs"]["grounding_px"], 768)
             if data["_meta"]["human_workflow"]:
                 self.assertEqual(data["9"]["inputs"]["image"], ["8", 0])
+            self.assertEqual(data["29"]["class_type"], "HOI4KreaModelLoadBarrier")
+            self.assertEqual(data["20"]["inputs"]["model"], ["29", 0])
+            self.assertEqual(data["20"]["inputs"]["positive"], ["29", 1])
+            self.assertEqual(data["20"]["inputs"]["negative"], ["29", 2])
 
     def test_job_input_validates_public_contract_before_private_runtime_context(self):
         background = json.loads((self.root / "config/background_registry.json").read_text(encoding="utf-8"))["backgrounds"][0]

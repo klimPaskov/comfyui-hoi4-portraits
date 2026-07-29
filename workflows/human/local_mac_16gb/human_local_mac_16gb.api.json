@@ -289,16 +289,8 @@
       "strength_model": 0.8
     }
   },
-  "19": {
-    "class_type": "EmptySD3LatentImage",
-    "inputs": {
-      "width": 832,
-      "height": 1120,
-      "batch_size": 1
-    }
-  },
-  "20": {
-    "class_type": "KSampler",
+  "29": {
+    "class_type": "HOI4KreaModelLoadBarrier",
     "inputs": {
       "model": [
         "18",
@@ -311,6 +303,31 @@
       "negative": [
         "17",
         0
+      ]
+    }
+  },
+  "19": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 832,
+      "height": 1120,
+      "batch_size": 1
+    }
+  },
+  "20": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "29",
+        0
+      ],
+      "positive": [
+        "29",
+        1
+      ],
+      "negative": [
+        "29",
+        2
       ],
       "latent_image": [
         "19",
@@ -419,7 +436,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.0.0",
+    "graph_spec_version": "graph-spec-1.1.0",
     "workflow_id": "human_local_mac_16gb",
     "execution_profile": "human_local_mac_16gb",
     "route": "local_mac",
@@ -553,6 +570,7 @@
       "HOI4HumanControls",
       "HOI4JobInput",
       "HOI4JobSource",
+      "HOI4KreaModelLoadBarrier",
       "HOI4MaskAndBackgroundGuard",
       "HOI4SourceGuard",
       "HOI4SubjectSelect"

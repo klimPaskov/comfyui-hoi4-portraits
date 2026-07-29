@@ -49,6 +49,12 @@ run remains execution-only evidence. These results are recorded as Mac
 infeasibility evidence, not silently relabeled as production success. No final
 PNG, DDS, or mod wiring was created.
 
+The live graph also includes `HOI4KreaModelLoadBarrier`, which was exercised on
+the same Mac after the canary. The barrier released the CPU-resident Qwen
+conditioning stage before sampling, but the bounded 208×280 run still reached
+approximately 1.02 GiB free RAM and 263.81 MB free swap before the first
+sampler step. See [`staged-load barrier evidence`](../preflight/mps_barrier_canary_2026-07-29.md).
+
 The current automated suite is `41/41` passing. The RunPod route remains
 deferred by the project owner, and the generic/Chaos integration packages remain
 portable and fail-closed until the parent-owned live consumer validation and

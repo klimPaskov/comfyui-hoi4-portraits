@@ -40,6 +40,7 @@ PROJECT_NODES = {
     "HOI4ConservativePrep",
     "HOI4ForegroundMask",
     "HOI4MaskAndBackgroundGuard",
+    "HOI4KreaModelLoadBarrier",
     "HOI4PromptInput",
     "HOI4AutopromptClient",
     "HOI4EvidenceExport",
@@ -230,12 +231,16 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         inputs={"model": Link(14), "lora_name": "hoi4_portrait_new_style_lora.safetensors", "strength_model": 0.80}, input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"}, outputs=["model"], output_types=["MODEL"], pos=(1960, 200), widgets=["hoi4_portrait_new_style_lora.safetensors", 0.80], locked=["lora_name"],
     ))
     nodes.append(_node(
+        29, "HOI4KreaModelLoadBarrier", group["06 Krea 2 identity edit"], "Release text encoder before Krea sampling",
+        inputs={"model": Link(18), "positive": Link(16), "negative": Link(17)}, input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING"}, outputs=["model", "positive", "negative"], output_types=["MODEL", "CONDITIONING", "CONDITIONING"], pos=(1320, 620),
+    ))
+    nodes.append(_node(
         19, "EmptySD3LatentImage", group["08 Candidate generation"], "Profile work canvas",
         inputs={"width": width, "height": height, "batch_size": 1}, input_types={"width": "INT", "height": "INT", "batch_size": "INT"}, outputs=["latent"], output_types=["LATENT"], pos=(1960, 430), widgets=[width, height, 1], locked=["width", "height", "batch_size"],
     ))
     nodes.append(_node(
         20, "KSampler", group["08 Candidate generation"], "Krea 2 Turbo candidate",
-        inputs={"model": Link(18), "positive": Link(16), "negative": Link(17), "latent_image": Link(19), "seed": 0, "steps": 8, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0}, input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "latent_image": "LATENT", "seed": "INT", "steps": "INT", "cfg": "FLOAT", "sampler_name": "COMBO", "scheduler": "COMBO", "denoise": "FLOAT"}, outputs=["latent"], output_types=["LATENT"], pos=(2280, 120), widgets=[0, 8, 1.0, "euler", "simple", 1.0], locked=["steps", "cfg", "sampler_name", "scheduler", "denoise"],
+        inputs={"model": Link(29, 0), "positive": Link(29, 1), "negative": Link(29, 2), "latent_image": Link(19), "seed": 0, "steps": 8, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0}, input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "latent_image": "LATENT", "seed": "INT", "steps": "INT", "cfg": "FLOAT", "sampler_name": "COMBO", "scheduler": "COMBO", "denoise": "FLOAT"}, outputs=["latent"], output_types=["LATENT"], pos=(2280, 120), widgets=[0, 8, 1.0, "euler", "simple", 1.0], locked=["steps", "cfg", "sampler_name", "scheduler", "denoise"],
     ))
     nodes.append(_node(
         21, "VAEDecode", group["09 Preview and evidence export"], "Decode candidate",
@@ -364,7 +369,7 @@ def _apply_visual_layout(nodes: list[NodeSpec]) -> None:
         9: (70, 760),
         10: (390, 760), 11: (390, 920), 12: (390, 1080), 13: (390, 1240),
         14: (680, 760), 15: (680, 920), 16: (680, 1080), 17: (680, 1240),
-        18: (1110, 840), 19: (1430, 760), 20: (1430, 940),
+        18: (1110, 840), 29: (1320, 1120), 19: (1430, 760), 20: (1430, 940),
         21: (1750, 760), 22: (2030, 760), 23: (2030, 940),
         25: (1750, 1020), 26: (2030, 1120), 27: (2310, 1120), 28: (2310, 760),
     }

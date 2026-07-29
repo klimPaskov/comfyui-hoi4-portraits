@@ -18,6 +18,7 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
 - The required four workflows plus the local-NVIDIA agent workflow are structurally valid and live-schema loadable in the pinned loopback ComfyUI.
 - Local preprocessing artifacts and the private autoprompter health/negative-validation path are verified.
 - The live human-local qualification measured the Apple MPS `Float8_e4m3fn` and NVFP4 capability failures. A separate CPU-only NVFP4 fallback then ran the exact human/autoprompter route at 832×1120 for eight steps and produced a real candidate in 34:36; heavy swap, the missing two-run benchmark, unapproved thresholds, and the `UNCERTAIN` independent audit keep production acceptance blocked. See [`preflight/local_human_execution_2026-07-28.json`](preflight/local_human_execution_2026-07-28.json), [`preflight/krea_precision_options_2026-07-28.md`](preflight/krea_precision_options_2026-07-28.md), and [`../scripts/runtime/apply_mps_fp8_workaround.py`](../scripts/runtime/apply_mps_fp8_workaround.py).
+- The project-owned staged-load barrier was exercised in the live `human_local_mac_16gb` graph. It correctly released the CPU-resident conditioning stage and reached Krea model loading, but a bounded 208×280 one-step canary still reached approximately 1.02 GiB free RAM and 263.81 MB free swap before the first sampler step. See [`preflight/mps_barrier_canary_2026-07-29.md`](preflight/mps_barrier_canary_2026-07-29.md).
 - The official lower-storage NVFP4 artifact is also checksum-verified and reaches the sampler on the Mac, but its live MPS dequantization path fails with `Undefined type Float8_e4m3fn`; it is reserved for its pinned NVIDIA Blackwell policy. See [`preflight/krea_precision_options_2026-07-28.md`](preflight/krea_precision_options_2026-07-28.md).
 - The private Library of Congress qualification fixture passes YuNet, MediaPipe Face Landmarker, and BiRefNet on MPS. Run it with:
 
@@ -28,7 +29,7 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
   Raw landmarks and mattes remain under the ignored `jobs/` root; the checked-in summary is `docs/preflight/source_fixture_execution.json`.
 - The full-power autoprompter format and processor schema are verified, but CUDA execution is unavailable on the detected Mac.
 - DDS acceptance is synthetic-only; production DDS remains prohibited without an independent auditor PASS.
-- The current acceptance report is `BLOCKED` with exit code `20`.
+- The current acceptance report is `BLOCKED` with exit code `20`; schema and service health are passing, while local production generation remains fail-closed.
 - When a local profile is blocked before or during generation, the controller writes `jobs/<job_id>/local_generation_unavailable.json` and sets the output warning/error code to `LOCAL_GENERATION_UNAVAILABLE`. The marker records only project-relative evidence and explicitly confirms that no remote job was queued.
 
 ## Current blockers
@@ -45,6 +46,7 @@ These blockers are deliberate. The project does not label schema validation, pre
 - [Source fixture review](preflight/source_fixture_review.json)
 - [Source fixture preprocessing execution](preflight/source_fixture_execution.json)
 - [Live human-local execution evidence](preflight/local_human_execution_2026-07-28.json)
+- [Mac staged-load barrier canary](preflight/mps_barrier_canary_2026-07-29.md)
 - [Background runtime candidate](preflight/background_runtime_candidate.json)
 - [Acceptance report](acceptance/acceptance_report.md)
 - [Identity/style matrix](../experiments/identity_style_matrix.json)

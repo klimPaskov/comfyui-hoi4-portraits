@@ -901,6 +901,48 @@ class HOI4AutopromptClient:
         return result.normalized_prompt, {"source": "autoprompter", "instruction_sha256": sha256_file(exact_path), "validator": result.as_dict(), "attempts": attempts}
 
 
+class HOI4KreaModelLoadBarrier:
+    """Release completed text-encoder/runtime models before Krea sampling.
+
+    The Krea model patcher is passed through unchanged.  The barrier exists
+    only to make the required staged load order explicit: both grounded
+    conditioning branches must finish before ComfyUI is allowed to load the
+    diffusion model for sampling.  It does not change tensors, weights,
+    prompts, seeds, or model selection.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "model": ("MODEL",),
+            "positive": ("CONDITIONING",),
+            "negative": ("CONDITIONING",),
+        }}
+
+    RETURN_TYPES = ("MODEL", "CONDITIONING", "CONDITIONING")
+    RETURN_NAMES = ("model", "positive", "negative")
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/06 Krea 2 identity edit"
+
+    def run(self, model: Any, positive: Any, negative: Any):
+        try:
+            import gc
+            import comfy.model_management as model_management  # type: ignore
+        except Exception as exc:
+            _raise(ExitCode.DEPENDENCY_MISSING, f"ComfyUI model-release API is unavailable: {type(exc).__name__}")
+        # The model patcher is still an execution value here; KSampler has not
+        # loaded it yet.  The release call unloads the completed Qwen encoder
+        # (and any optional completed stage) without discarding the Krea
+        # patcher that this node returns.
+        # `--lowvram` intentionally places the Krea Qwen encoder on CPU.  The
+        # convenience `unload_all_models()` helper only iterates accelerator
+        # devices in this ComfyUI revision, so use the device-agnostic release
+        # path to include CPU-resident encoder models as well.
+        model_management.free_memory(1e30, None)
+        gc.collect()
+        return model, positive, negative
+
+
 class HOI4EvidenceExport:
     @classmethod
     def INPUT_TYPES(cls):

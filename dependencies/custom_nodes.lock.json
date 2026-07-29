@@ -15,9 +15,9 @@
     {
       "name": "hoi4_portrait_project_nodes",
       "repository": "local-project-source",
-      "revision": "graph-spec-1.0.0",
+      "revision": "graph-spec-1.1.0",
       "license": "MIT",
-      "source_tree_checksum": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb",
+      "source_tree_checksum": "9a5403b2848d9c10669f75ab83aa61d0ed540588b764c5cde3aca58d2162206b",
       "classes": [
         "HOI4JobInput",
         "HOI4HumanControls",
@@ -28,6 +28,7 @@
         "HOI4ConservativePrep",
         "HOI4ForegroundMask",
         "HOI4MaskAndBackgroundGuard",
+        "HOI4KreaModelLoadBarrier",
         "HOI4PromptInput",
         "HOI4AutopromptClient",
         "HOI4EvidenceExport"

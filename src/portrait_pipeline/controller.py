@@ -85,7 +85,7 @@ class JobController:
         evidence_paths.extend(
             sorted(
                 str(path.relative_to(self.root))
-                for pattern in ("mps_canary_*.json", "cpu_canary_*.json")
+                for pattern in ("mps_canary_*.json", "mps_barrier_canary_*.json", "cpu_canary_*.json")
                 for path in (self.root / "docs" / "preflight").glob(pattern)
                 if path.is_file()
             )

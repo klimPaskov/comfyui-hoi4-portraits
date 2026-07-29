@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-29T00:58:22.742367+00:00",
+  "generated_at": "2026-07-29T01:37:27.029422+00:00",
   "lock_version": "workflows-2026-07-26.1",
   "workflows": [
     {
@@ -8,9 +8,9 @@
       "display_name": "human_local_mac_16gb",
       "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
       "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-      "sha256": "9ede8697952ae52570117e652c4c7044915d864da3e46eebde78d23c2f1a3914",
-      "api_sha256": "89f27d8802038e76c7fd1314ccc04ab3cf294ba7282fad49521ef869590c8340",
-      "graph_spec_version": "graph-spec-1.0.0",
+      "sha256": "aac57f39a8c149588c7734793e3ce9c668b884b28d95f403070244ebcc17340f",
+      "api_sha256": "c0266104531fb6358cf1429e2e1db68a5c210b54309bff1380be0657c98552d8",
+      "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -33,6 +33,7 @@
         "HOI4HumanControls",
         "HOI4JobInput",
         "HOI4JobSource",
+        "HOI4KreaModelLoadBarrier",
         "HOI4MaskAndBackgroundGuard",
         "HOI4SourceGuard",
         "HOI4SubjectSelect",
@@ -45,11 +46,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
+        "hoi4_portrait_project_nodes": "9a5403b2848d9c10669f75ab83aa61d0ed540588b764c5cde3aca58d2162206b"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -79,7 +80,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:58:22.742367+00:00"
+        "checked_at": "2026-07-29T01:37:27.029422+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -97,9 +98,9 @@
       "display_name": "human_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-      "sha256": "6bf88fd5f7e9ac3a368a2cd62857f9af2ba98c21b0af9e5471af93db3e59e3e3",
-      "api_sha256": "98bae1bf136dcb2f668dd709cf4166a4a7832159c17674e1577fb71d5ff5fd6a",
-      "graph_spec_version": "graph-spec-1.0.0",
+      "sha256": "2ca6e74816616b5a38a46133190855e78082e7c6d90f84be1c4abc9105494a20",
+      "api_sha256": "4a63cf67444fe649aa9e7904389d7c64afbaef3e4e1cdc0af8c50e43fb86767c",
+      "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -122,6 +123,7 @@
         "HOI4HumanControls",
         "HOI4JobInput",
         "HOI4JobSource",
+        "HOI4KreaModelLoadBarrier",
         "HOI4MaskAndBackgroundGuard",
         "HOI4SourceGuard",
         "HOI4SubjectSelect",
@@ -134,11 +136,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
+        "hoi4_portrait_project_nodes": "9a5403b2848d9c10669f75ab83aa61d0ed540588b764c5cde3aca58d2162206b"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -168,7 +170,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:58:22.742367+00:00"
+        "checked_at": "2026-07-29T01:37:27.029422+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -186,9 +188,9 @@
       "display_name": "agent_local_mac_16gb",
       "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
       "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-      "sha256": "72ed7dbc7e90cce272ebaa4e84accb0c47598a6efb1b454245b11edfc65e06f9",
-      "api_sha256": "90838f5adb2a3d28401cd822e4f1d3e6cd2909e698f0ecf7d8a4a8074ea7906a",
-      "graph_spec_version": "graph-spec-1.0.0",
+      "sha256": "4d379b3115a18036455d41e3a96c8e500f2fe6112156ff20c624de5f156722e7",
+      "api_sha256": "fd8fb8eea68158dd367b5b84eb0236690139651a168bdf7ab9619a1298d98467",
+      "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -208,6 +210,7 @@
         "HOI4HeadShouldersCrop",
         "HOI4JobInput",
         "HOI4JobSource",
+        "HOI4KreaModelLoadBarrier",
         "HOI4MaskAndBackgroundGuard",
         "HOI4PromptInput",
         "HOI4SourceGuard",
@@ -221,11 +224,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
+        "hoi4_portrait_project_nodes": "9a5403b2848d9c10669f75ab83aa61d0ed540588b764c5cde3aca58d2162206b"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -249,7 +252,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:58:22.742367+00:00"
+        "checked_at": "2026-07-29T01:37:27.029422+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -267,9 +270,9 @@
       "display_name": "agent_full_power_gpu",
       "workflow_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
       "api_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-      "sha256": "34cbdd9597800e69db6a0b60bef2536247274b2ca655c1bc9818a1521d5dc7c0",
-      "api_sha256": "ebf8c240c672eb5dbd4db933ff179838e409856392caee1361b68d5ee79a1feb",
-      "graph_spec_version": "graph-spec-1.0.0",
+      "sha256": "0966d3f3a94c1a95c943f4bf55918f8050115cd274407f7e8dd404f48359bb9a",
+      "api_sha256": "5d0f69541c3c4bcf9d414f3d6f4d8ce7573689943787d9618f7b7d80adfe9c27",
+      "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -289,6 +292,7 @@
         "HOI4HeadShouldersCrop",
         "HOI4JobInput",
         "HOI4JobSource",
+        "HOI4KreaModelLoadBarrier",
         "HOI4MaskAndBackgroundGuard",
         "HOI4PromptInput",
         "HOI4SourceGuard",
@@ -302,11 +306,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
+        "hoi4_portrait_project_nodes": "9a5403b2848d9c10669f75ab83aa61d0ed540588b764c5cde3aca58d2162206b"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -330,7 +334,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:58:22.742367+00:00"
+        "checked_at": "2026-07-29T01:37:27.029422+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -348,9 +352,9 @@
       "display_name": "agent_remote_runpod",
       "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
       "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-      "sha256": "ccd922ef48989d8466b306cf34ddc4ed5dbe8103511955250662aecfdffe5d77",
-      "api_sha256": "de06c0bc360c92b82899f36472d5043846f7611e146d05f00e9bb7d17c4d792c",
-      "graph_spec_version": "graph-spec-1.0.0",
+      "sha256": "a63d2449ae3583d0e6a8630f11cb13a00da8f1fd2db1206e02a48ae294472c21",
+      "api_sha256": "e3d9aef0c39ace59fbe4776f42997c9f718bc3050985228805b0169435dc5bc4",
+      "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -370,6 +374,7 @@
         "HOI4HeadShouldersCrop",
         "HOI4JobInput",
         "HOI4JobSource",
+        "HOI4KreaModelLoadBarrier",
         "HOI4MaskAndBackgroundGuard",
         "HOI4PromptInput",
         "HOI4SourceGuard",
@@ -383,11 +388,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.0.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "8db0a69dc061b902b05c4f61679d906938a0695b232c027d14c147078b028ecb"
+        "hoi4_portrait_project_nodes": "9a5403b2848d9c10669f75ab83aa61d0ed540588b764c5cde3aca58d2162206b"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -411,7 +416,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:58:22.742367+00:00"
+        "checked_at": "2026-07-29T01:37:27.029422+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",

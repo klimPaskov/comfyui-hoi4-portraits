@@ -1,6 +1,6 @@
 {
-  "last_node_id": 23,
-  "last_link_id": 47,
+  "last_node_id": 29,
+  "last_link_id": 50,
   "nodes": [
     {
       "id": 1,
@@ -59,7 +59,7 @@
             12,
             15,
             19,
-            40
+            43
           ]
         }
       ],
@@ -161,7 +161,7 @@
           "type": "IMAGE",
           "links": [
             5,
-            41
+            44
           ]
         },
         {
@@ -326,7 +326,7 @@
           "type": "IMAGE",
           "links": [
             13,
-            42
+            45
           ]
         },
         {
@@ -470,14 +470,14 @@
             27,
             30,
             32,
-            43
+            46
           ]
         },
         {
           "name": "mask",
           "type": "MASK",
           "links": [
-            45
+            48
           ]
         },
         {
@@ -535,7 +535,7 @@
           "type": "STRING",
           "links": [
             29,
-            46
+            49
           ]
         },
         {
@@ -693,7 +693,7 @@
           "links": [
             23,
             26,
-            39
+            42
           ]
         }
       ],
@@ -1052,6 +1052,70 @@
       ]
     },
     {
+      "id": 29,
+      "type": "HOI4KreaModelLoadBarrier",
+      "title": "Release text encoder before Krea sampling",
+      "pos": [
+        1320,
+        1120
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 34
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 35
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            37
+          ]
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            38
+          ]
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Release text encoder before Krea sampling",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
       "id": 19,
       "type": "EmptySD3LatentImage",
       "title": "Profile work canvas",
@@ -1066,7 +1130,7 @@
       "color": "#66400c",
       "bgcolor": "#945e12",
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
@@ -1090,7 +1154,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            37
+            40
           ]
         }
       ],
@@ -1124,28 +1188,28 @@
       "color": "#66400c",
       "bgcolor": "#945e12",
       "flags": {},
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 34
+          "link": 37
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 35
+          "link": 38
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 36
+          "link": 39
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 37
+          "link": 40
         },
         {
           "name": "seed",
@@ -1183,7 +1247,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            38
+            41
           ]
         }
       ],
@@ -1222,18 +1286,18 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 20,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 38
+          "link": 41
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 39
+          "link": 42
         }
       ],
       "outputs": [
@@ -1241,7 +1305,7 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            44
+            47
           ]
         }
       ],
@@ -1267,43 +1331,43 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 21,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 40
+          "link": 43
         },
         {
           "name": "source_master",
           "type": "IMAGE",
-          "link": 41
+          "link": 44
         },
         {
           "name": "processed_reference",
           "type": "IMAGE",
-          "link": 42
+          "link": 45
         },
         {
           "name": "approved_background",
           "type": "IMAGE",
-          "link": 43
+          "link": 46
         },
         {
           "name": "candidate",
           "type": "IMAGE",
-          "link": 44
+          "link": 47
         },
         {
           "name": "mask",
           "type": "MASK",
-          "link": 45
+          "link": 48
         },
         {
           "name": "prompt",
           "type": "STRING",
-          "link": 46
+          "link": 49
         },
         {
           "name": "candidate_index",
@@ -1316,7 +1380,7 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            47
+            50
           ]
         },
         {
@@ -1351,13 +1415,13 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 22,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 47
+          "link": 50
         },
         {
           "name": "filename_prefix",
@@ -1647,7 +1711,7 @@
       34,
       18,
       0,
-      20,
+      29,
       0,
       "MODEL"
     ],
@@ -1655,7 +1719,7 @@
       35,
       16,
       0,
-      20,
+      29,
       1,
       "CONDITIONING"
     ],
@@ -1663,12 +1727,36 @@
       36,
       17,
       0,
-      20,
+      29,
       2,
       "CONDITIONING"
     ],
     [
       37,
+      29,
+      0,
+      20,
+      0,
+      "MODEL"
+    ],
+    [
+      38,
+      29,
+      1,
+      20,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      39,
+      29,
+      2,
+      20,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      40,
       19,
       0,
       20,
@@ -1676,7 +1764,7 @@
       "LATENT"
     ],
     [
-      38,
+      41,
       20,
       0,
       21,
@@ -1684,7 +1772,7 @@
       "LATENT"
     ],
     [
-      39,
+      42,
       12,
       0,
       21,
@@ -1692,7 +1780,7 @@
       "VAE"
     ],
     [
-      40,
+      43,
       1,
       0,
       22,
@@ -1700,7 +1788,7 @@
       "HOI4_JOB"
     ],
     [
-      41,
+      44,
       3,
       0,
       22,
@@ -1708,7 +1796,7 @@
       "IMAGE"
     ],
     [
-      42,
+      45,
       6,
       0,
       22,
@@ -1716,7 +1804,7 @@
       "IMAGE"
     ],
     [
-      43,
+      46,
       8,
       1,
       22,
@@ -1724,7 +1812,7 @@
       "IMAGE"
     ],
     [
-      44,
+      47,
       21,
       0,
       22,
@@ -1732,7 +1820,7 @@
       "IMAGE"
     ],
     [
-      45,
+      48,
       8,
       2,
       22,
@@ -1740,7 +1828,7 @@
       "MASK"
     ],
     [
-      46,
+      49,
       9,
       0,
       22,
@@ -1748,7 +1836,7 @@
       "STRING"
     ],
     [
-      47,
+      50,
       22,
       0,
       23,
@@ -1878,7 +1966,7 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.0.0",
+    "graph_spec_version": "graph-spec-1.1.0",
     "workflow_id": "agent_local_mac_16gb",
     "execution_profile": "agent_local_mac_16gb",
     "route": "local_mac",
@@ -2001,6 +2089,7 @@
       "HOI4HeadShouldersCrop",
       "HOI4JobInput",
       "HOI4JobSource",
+      "HOI4KreaModelLoadBarrier",
       "HOI4MaskAndBackgroundGuard",
       "HOI4PromptInput",
       "HOI4SourceGuard",
