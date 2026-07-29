@@ -29,6 +29,10 @@ from .util import atomic_json_write, canonical_hash, project_root, relative_safe
 from .workflow_validation import validate_workflow_file
 
 
+LOCAL_PROFILE_IDS = frozenset({"human_local_mac_16gb", "agent_local_mac_16gb"})
+LOCAL_GENERATION_UNAVAILABLE = "LOCAL_GENERATION_UNAVAILABLE"
+
+
 @dataclass
 class JobResult:
     output: dict[str, Any]
@@ -64,6 +68,45 @@ class JobController:
     def _write_output(self, job_root: Path, output: dict[str, Any]) -> JobResult:
         atomic_json_write(job_root / "output.json", output)
         return JobResult(output, job_root)
+
+    def _record_local_generation_unavailable(
+        self,
+        job: dict[str, Any],
+        job_root: Path,
+        output: dict[str, Any],
+        *,
+        stage: str,
+    ) -> None:
+        """Persist the local failure boundary without queueing remotely."""
+
+        if str(job.get("execution_profile")) not in LOCAL_PROFILE_IDS:
+            return
+        evidence_paths = ["docs/capability_reports/local_krea_infeasible.md"]
+        evidence_paths.extend(
+            sorted(
+                str(path.relative_to(self.root))
+                for pattern in ("mps_canary_*.json", "cpu_canary_*.json")
+                for path in (self.root / "docs" / "preflight").glob(pattern)
+                if path.is_file()
+            )
+        )
+        marker = {
+            "schema_version": "1.0.0",
+            "status": LOCAL_GENERATION_UNAVAILABLE,
+            "job_id": job.get("job_id"),
+            "execution_profile": job.get("execution_profile"),
+            "stage": stage,
+            "exit_code": output.get("exit_code"),
+            "reason": output.get("error_message"),
+            "blockers": [str(item) for item in output.get("blockers", [])],
+            "evidence": evidence_paths,
+            "remote_submission": "NOT_QUEUED_BY_LOCAL_ROUTE",
+            "policy": "Remote generation requires a separate authenticated submission.",
+        }
+        atomic_json_write(job_root / "local_generation_unavailable.json", marker)
+        output["error_code"] = LOCAL_GENERATION_UNAVAILABLE
+        output["error_message"] = f"{LOCAL_GENERATION_UNAVAILABLE}: {output.get('error_message', '')}"
+        output["warnings"] = list(dict.fromkeys([LOCAL_GENERATION_UNAVAILABLE, *output.get("warnings", [])]))
 
     def submit(self, job: dict[str, Any]) -> JobResult:
         issues = validate_job(job, self.root)
@@ -105,7 +148,8 @@ class JobController:
         if preflight_blocker:
             code, blockers = preflight_blocker
             output = build_blocked_output(job, code, blockers[0], blockers=blockers, root=self.root)
-            self._write_state(job_root, "BLOCKED", stage="JOB_ACCEPTED", blockers=blockers, exit_code=int(code))
+            self._record_local_generation_unavailable(job, job_root, output, stage="JOB_ACCEPTED")
+            self._write_state(job_root, "BLOCKED", stage="JOB_ACCEPTED", blockers=blockers, warnings=output.get("warnings"), exit_code=int(code))
             return self._write_output(job_root, output)
         return JobResult({"status": "SUBMITTED", "job_id": job_id, "input_hash": semantic_hash}, job_root)
 
@@ -261,18 +305,22 @@ class JobController:
         if blocker:
             code, blockers = blocker
             output = build_blocked_output(job, code, blockers[0], blockers=blockers, root=self.root)
-            self._write_state(job_root, "BLOCKED", stage="JOB_ACCEPTED", blockers=blockers, exit_code=int(code))
+            self._record_local_generation_unavailable(job, job_root, output, stage="JOB_ACCEPTED")
+            self._write_state(job_root, "BLOCKED", stage="JOB_ACCEPTED", blockers=blockers, warnings=output.get("warnings"), exit_code=int(code))
             return self._write_output(job_root, output)
         try:
             candidate_paths, seeds = self._run_comfy_candidates(job, job_root)
         except ComfyTransportError as exc:
             output = build_blocked_output(job, exc.code, str(exc), blockers=[str(exc)], root=self.root)
+            if exc.code in {ExitCode.OUT_OF_MEMORY, ExitCode.DEPENDENCY_MISSING, ExitCode.GENERATION_FAILED}:
+                self._record_local_generation_unavailable(job, job_root, output, stage="CANDIDATES_GENERATED")
             state = "CANCELED" if exc.code == ExitCode.CANCELED else "FAILED"
-            self._write_state(job_root, state, stage="CANDIDATES_GENERATED", blockers=output["blockers"], exit_code=int(exc.code))
+            self._write_state(job_root, state, stage="CANDIDATES_GENERATED", blockers=output["blockers"], warnings=output.get("warnings"), exit_code=int(exc.code))
             return self._write_output(job_root, output)
         except (OSError, RuntimeError, ValueError) as exc:
             output = build_blocked_output(job, ExitCode.GENERATION_FAILED, f"generation orchestration failed: {type(exc).__name__}", blockers=["authenticated ComfyUI route failed"], root=self.root)
-            self._write_state(job_root, "FAILED", stage="CANDIDATES_GENERATED", blockers=output["blockers"], exit_code=int(ExitCode.GENERATION_FAILED))
+            self._record_local_generation_unavailable(job, job_root, output, stage="CANDIDATES_GENERATED")
+            self._write_state(job_root, "FAILED", stage="CANDIDATES_GENERATED", blockers=output["blockers"], warnings=output.get("warnings"), exit_code=int(ExitCode.GENERATION_FAILED))
             return self._write_output(job_root, output)
         if self._cancel_requested(job_root):
             output = build_blocked_output(job, ExitCode.CANCELED, "job cancellation was requested", blockers=["caller canceled the job after candidate generation"], root=self.root)

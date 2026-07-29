@@ -8,8 +8,9 @@ from unittest import mock
 from pathlib import Path
 
 from portrait_pipeline.audit import audit_is_promotion_pass, independent_audit_blocked
-from portrait_pipeline.constants import CALIBRATED_THRESHOLD_STATUSES
-from portrait_pipeline.controller import JobController
+from portrait_pipeline.constants import CALIBRATED_THRESHOLD_STATUSES, ExitCode
+from portrait_pipeline.controller import JobController, LOCAL_GENERATION_UNAVAILABLE
+from portrait_pipeline.contracts import build_blocked_output, validate_schema
 from portrait_pipeline.dds import DdsValidationError, convert_png_to_dds
 from portrait_pipeline.graph_spec.builder import build_workflow_artifacts
 from portrait_pipeline.mcp.adapter import AdapterError, PortraitMcpService
@@ -36,6 +37,29 @@ class WorkflowAndGuardTests(unittest.TestCase):
         adapter_path = PortraitMcpService(self.root)._workflow_path("agent_full_power_gpu")
         self.assertEqual(controller_path, adapter_path)
         self.assertTrue(controller_path.is_file())
+
+    def test_local_generation_unavailable_is_explicit_and_never_remote(self):
+        controller = JobController(self.root)
+        job = {"job_id": "local-unavailable-001", "execution_profile": "human_local_mac_16gb"}
+        output = build_blocked_output(job, ExitCode.DEPENDENCY_MISSING, "measured local memory blocker", blockers=["MPS canary blocked"], root=self.root)
+        with tempfile.TemporaryDirectory() as directory:
+            job_root = Path(directory) / "job"
+            job_root.mkdir()
+            controller._record_local_generation_unavailable(job, job_root, output, stage="JOB_ACCEPTED")
+            marker = json.loads((job_root / "local_generation_unavailable.json").read_text(encoding="utf-8"))
+            self.assertEqual(marker["status"], LOCAL_GENERATION_UNAVAILABLE)
+            self.assertEqual(marker["remote_submission"], "NOT_QUEUED_BY_LOCAL_ROUTE")
+            self.assertEqual(output["error_code"], LOCAL_GENERATION_UNAVAILABLE)
+            self.assertIn(LOCAL_GENERATION_UNAVAILABLE, output["warnings"])
+            self.assertEqual(validate_schema(output, self.root / "schemas/portrait_job_output.schema.json"), [])
+
+            remote_job = {"job_id": "remote-unavailable-001", "execution_profile": "agent_remote_runpod"}
+            remote_output = build_blocked_output(remote_job, ExitCode.DEPENDENCY_MISSING, "remote blocker", blockers=["remote auth"], root=self.root)
+            remote_root = Path(directory) / "remote"
+            remote_root.mkdir()
+            controller._record_local_generation_unavailable(remote_job, remote_root, remote_output, stage="JOB_ACCEPTED")
+            self.assertFalse((remote_root / "local_generation_unavailable.json").exists())
+            self.assertEqual(remote_output["error_code"], ExitCode.DEPENDENCY_MISSING.name)
 
     def test_human_workflows_keep_exact_instruction(self):
         instruction = (self.root / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")

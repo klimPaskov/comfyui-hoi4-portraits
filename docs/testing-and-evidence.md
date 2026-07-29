@@ -14,7 +14,7 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
 
 ## Current evidence
 
-- `34/34` automated tests pass on the detected Mac runtime; rerun them with `scripts/run_tests.py` after every bounded change.
+- `40/40` automated tests pass on the detected Mac runtime; rerun them with `scripts/run_tests.py` after every bounded change.
 - The required four workflows plus the local-NVIDIA agent workflow are structurally valid and live-schema loadable in the pinned loopback ComfyUI.
 - Local preprocessing artifacts and the private autoprompter health/negative-validation path are verified.
 - The live human-local qualification measured the Apple MPS `Float8_e4m3fn` and NVFP4 capability failures. A separate CPU-only NVFP4 fallback then ran the exact human/autoprompter route at 832×1120 for eight steps and produced a real candidate in 34:36; heavy swap, the missing two-run benchmark, unapproved thresholds, and the `UNCERTAIN` independent audit keep production acceptance blocked. See [`preflight/local_human_execution_2026-07-28.json`](preflight/local_human_execution_2026-07-28.json), [`preflight/krea_precision_options_2026-07-28.md`](preflight/krea_precision_options_2026-07-28.md), and [`../scripts/runtime/apply_mps_fp8_workaround.py`](../scripts/runtime/apply_mps_fp8_workaround.py).
@@ -29,6 +29,7 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
 - The full-power autoprompter format and processor schema are verified, but CUDA execution is unavailable on the detected Mac.
 - DDS acceptance is synthetic-only; production DDS remains prohibited without an independent auditor PASS.
 - The current acceptance report is `BLOCKED` with exit code `20`.
+- When a local profile is blocked before or during generation, the controller writes `jobs/<job_id>/local_generation_unavailable.json` and sets the output warning/error code to `LOCAL_GENERATION_UNAVAILABLE`. The marker records only project-relative evidence and explicitly confirms that no remote job was queued.
 
 ## Current blockers
 
