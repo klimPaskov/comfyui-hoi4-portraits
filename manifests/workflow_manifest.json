@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-28",
+  "generated_at": "2026-07-29T00:58:22.742367+00:00",
   "lock_version": "workflows-2026-07-26.1",
   "workflows": [
     {
@@ -79,7 +79,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:32:06.767459+00:00"
+        "checked_at": "2026-07-29T00:58:22.742367+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -168,7 +168,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:32:06.767459+00:00"
+        "checked_at": "2026-07-29T00:58:22.742367+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -249,7 +249,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:32:06.767459+00:00"
+        "checked_at": "2026-07-29T00:58:22.742367+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -330,7 +330,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:32:06.767459+00:00"
+        "checked_at": "2026-07-29T00:58:22.742367+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -411,7 +411,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T00:32:06.767459+00:00"
+        "checked_at": "2026-07-29T00:58:22.742367+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
