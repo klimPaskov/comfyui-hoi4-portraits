@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/visual_audit_evidence.schema.json",
+  "title": "Private HOI4 Portrait Visual Audit Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "auditor",
+    "model",
+    "reference_set",
+    "source_sha256",
+    "candidate_sha256",
+    "scores"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNCERTAIN"
+      ]
+    },
+    "auditor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "process_id",
+        "independent_from_producer",
+        "reviewed_at"
+      ],
+      "properties": {
+        "process_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "independent_from_producer": {
+          "const": true
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "revision",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "reference_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "role",
+        "manifest_sha256",
+        "sample_count"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "country_leader",
+            "commander",
+            "operative",
+            "advisor"
+          ]
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sample_count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "candidate_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hairline",
+        "facial_hair",
+        "accessories",
+        "style"
+      ],
+      "properties": {
+        "hairline": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "facial_hair": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "accessories": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "style": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

@@ -282,6 +282,67 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(len(metrics["landmark_model_sha256"]), 64)
         self.assertEqual(len(metrics["landmark_face_detector_sha256"]), 64)
 
+    def test_visual_audit_evidence_is_hash_bound_and_fail_closed(self):
+        from portrait_pipeline.visual_audit import evaluate_visual_audit
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source.png"
+            candidate = root / "candidate.png"
+            source.write_bytes(b"source")
+            candidate.write_bytes(b"candidate")
+            metrics, gates, reasons = evaluate_visual_audit(
+                private_root=root,
+                source_path=source,
+                candidate_path=candidate,
+                producer_process_id="producer-1",
+                thresholds={"status": "BLOCKED_UNTIL_CALIBRATION", "style": {"reference_set_id": "UNSET_BLOCK_EXECUTION"}},
+                threshold_issues=["thresholds are not approved"],
+            )
+            self.assertEqual(metrics["visual_audit_status"], "UNCERTAIN")
+            self.assertEqual(set(gates.values()), {"UNCERTAIN"})
+            self.assertIn("private visual audit evidence is missing", reasons)
+
+    def test_visual_audit_pass_maps_only_after_approved_threshold_and_hash_checks(self):
+        from datetime import datetime, timezone
+        from portrait_pipeline.util import sha256_file
+        from portrait_pipeline.visual_audit import evaluate_visual_audit
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source.png"
+            candidate = root / "candidate.png"
+            source.write_bytes(b"source")
+            candidate.write_bytes(b"candidate")
+            evidence_path = root / "evidence/audit/visual_audit.json"
+            evidence_path.parent.mkdir(parents=True)
+            evidence_path.write_text(json.dumps({
+                "schema_version": "1.0.0",
+                "status": "PASS",
+                "auditor": {"process_id": "auditor-2", "independent_from_producer": True, "reviewed_at": datetime.now(timezone.utc).isoformat()},
+                "model": {"name": "test-visual-rubric", "revision": "test-revision", "artifact_sha256": "a" * 64},
+                "reference_set": {"id": "country-leader-style-v1", "role": "country_leader", "manifest_sha256": "b" * 64, "sample_count": 4},
+                "source_sha256": sha256_file(source),
+                "candidate_sha256": sha256_file(candidate),
+                "scores": {"hairline": 0.91, "facial_hair": 0.88, "accessories": 0.93, "style": 0.86},
+            }), encoding="utf-8")
+            metrics, gates, reasons = evaluate_visual_audit(
+                private_root=root,
+                source_path=source,
+                candidate_path=candidate,
+                producer_process_id="producer-1",
+                thresholds={
+                    "status": "APPROVED",
+                    "thresholds_id": "calibrated-test",
+                    "hair_and_accessories": {"required_attribute_agreement": 0.8},
+                    "style": {"minimum_score": 0.8, "reference_set_id": "country-leader-style-v1"},
+                },
+                threshold_issues=[],
+            )
+            self.assertEqual(gates, {"hairline": "PASS", "facial_hair": "PASS", "accessories": "PASS", "style": "PASS"})
+            self.assertEqual(metrics["visual_audit_reference_set_id"], "country-leader-style-v1")
+            self.assertEqual(reasons, [])
+
     def test_identity_style_matrix_execution_is_explicitly_fail_closed(self):
         from portrait_pipeline.constants import PROFILE_LIMITS
         from portrait_pipeline.experiments import build_execution_report, build_matrix

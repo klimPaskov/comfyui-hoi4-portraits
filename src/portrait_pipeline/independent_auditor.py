@@ -17,6 +17,7 @@ from typing import Any, Iterable
 from .audit import make_audit_record, write_audit
 from .constants import CALIBRATED_THRESHOLD_STATUSES, HARD_AUDIT_GATES
 from .util import is_sha256, project_root, relative_safe_path, sha256_file
+from .visual_audit import evaluate_visual_audit
 
 
 def _load_thresholds(root: Path) -> tuple[dict[str, Any], list[str]]:
@@ -430,6 +431,17 @@ def audit_candidate(
             reasons.append(f"mask-boundary audit failed closed: {type(exc).__name__}")
     else:
         reasons.append("source and candidate foreground masks are not both available for independent mask audit")
+    visual_metrics, visual_gates, visual_reasons = evaluate_visual_audit(
+        private_root=private_root,
+        source_path=paths["source_master"],
+        candidate_path=paths["candidate"],
+        producer_process_id=producer_process_id,
+        thresholds=thresholds,
+        threshold_issues=threshold_issues,
+    )
+    metrics.update(visual_metrics)
+    gates.update(visual_gates)
+    reasons.extend(visual_reasons)
     component_evidence_path = private_root / "evidence" / "mask" / "foreground.json"
     required_components = {"person_alpha", "hard_interior", "face", "hair_hat_boundary", "accessory_attention", "background", "boundary_ring"}
     if component_evidence_path.is_file():
