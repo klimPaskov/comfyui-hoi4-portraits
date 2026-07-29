@@ -11,14 +11,15 @@
     "license": "MIT"
   },
   "artifacts": {
-    "macos_arm64": {
-      "filename": "llama-b9637-bin-macos-arm64.tar.gz",
-      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b9637/llama-b9637-bin-macos-arm64.tar.gz",
-      "size_bytes": 10586927,
-      "sha256": "72a93f3e68c31de3e438d462669aad1fcdb423b995e9c41033cc7d27a9a3ac69",
-      "install_path": ".runtime/llama-cpp/b9637/llama-b9637/llama-server",
-      "extracted_binary_size_bytes": 33472,
-      "extracted_binary_sha256": "c68b4016e18701e8293e3730a8f13272d8d2d6c10139c8b00421332604b06347"
+    "windows_x64": {
+      "filename": "llama-b9637-bin-win-cpu-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b9637/llama-b9637-bin-win-cpu-x64.zip",
+      "size_bytes": 16906751,
+      "sha256": "f7783c2b8c007f95e710ac40f26a24861a80b603b0b739fc54d7c926a4716c1e",
+      "install_directory": ".runtime/llama-cpp/b9637/windows-x64",
+      "install_path": ".runtime/llama-cpp/b9637/windows-x64/llama-server.exe",
+      "extracted_binary_size_bytes": 9216,
+      "extracted_binary_sha256": "06444801bb1dc38a848bb5a527728c4ea14ad2aa45ce7e81a29a5fb5d2560eaf"
     }
   },
   "local_profile": {
@@ -49,8 +50,8 @@
     "device_requirement": "CUDA",
     "model_lock_entry": "Qwen3-VL-8B-Instruct-BF16-shards",
     "metadata_files_locked_in_models_lock": true,
-    "execution_status": "NOT_RUN_TARGET_CUDA_UNAVAILABLE_ON_HOST",
-    "reason": "The official BF16 safetensor shards and Transformers metadata are installed and pinned. Full-power execution still requires a CUDA host; the Mac MPS host cannot be relabeled as a full-power qualification run."
+    "execution_status": "NOT_RUN_TARGET_CUDA_HOST_REQUIRED",
+    "reason": "The official BF16 safetensor shards and Transformers metadata are installed and pinned. Full-power execution requires a CUDA host."
   },
   "protocol": {
     "proxy_endpoint": "/v1/chat/completions",

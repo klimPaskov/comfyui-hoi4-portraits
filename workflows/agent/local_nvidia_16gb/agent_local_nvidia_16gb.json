@@ -1110,7 +1110,7 @@
       ],
       "properties": {
         "Node name for S&R": "Prepare generation",
-        "hoi4_group": "08 Candidate generation",
+        "hoi4_group": "08 Portrait generation",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -1160,7 +1160,7 @@
       ],
       "properties": {
         "Node name for S&R": "Set portrait size",
-        "hoi4_group": "08 Candidate generation",
+        "hoi4_group": "08 Portrait generation",
         "hoi4_locked_controls": [
           "width",
           "height",
@@ -1253,7 +1253,7 @@
       ],
       "properties": {
         "Node name for S&R": "Generate portrait",
-        "hoi4_group": "08 Candidate generation",
+        "hoi4_group": "08 Portrait generation",
         "hoi4_locked_controls": [
           "steps",
           "cfg",
@@ -2018,7 +2018,7 @@
       "font_size": 24
     },
     {
-      "title": "08 Candidate generation",
+      "title": "08 Portrait generation",
       "bounding": [
         1900,
         800,
@@ -2081,7 +2081,7 @@
       "05 Prompt",
       "06 Krea 2 identity edit",
       "07 HOI4 style LoRA",
-      "08 Candidate generation",
+      "08 Portrait generation",
       "09 Preview and evidence export"
     ],
     "locked_controls": {

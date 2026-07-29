@@ -49,9 +49,7 @@ HUMAN_ONLY_PROJECT_NODES = {"HOI4HumanControls"}
 FORBIDDEN_CLASS_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 UI_ONLY_NODE_CLASSES = {"Note"}
 LOW_MEMORY_PROFILE_IDS = {
-    "human_local_mac_16gb",
     "human_local_nvidia_16gb",
-    "agent_local_mac_16gb",
     "agent_local_nvidia_16gb",
 }
 
@@ -69,7 +67,7 @@ GROUP_LAYOUT = {
     "05 Prompt": (40, 800, 500, 640),
     "06 Krea 2 identity edit": (580, 800, 900, 800),
     "07 HOI4 style LoRA": (1520, 800, 340, 640),
-    "08 Candidate generation": (1900, 800, 340, 640),
+    "08 Portrait generation": (1900, 800, 340, 640),
     "09 Preview and evidence export": (2280, 800, 1080, 760),
 }
 
@@ -82,7 +80,7 @@ GROUP_COLORS = {
     "05 Prompt": "#8064a2",
     "06 Krea 2 identity edit": "#6d597a",
     "07 HOI4 style LoRA": "#b56576",
-    "08 Candidate generation": "#c17817",
+    "08 Portrait generation": "#c17817",
     "09 Preview and evidence export": "#457b9d",
 }
 
@@ -95,7 +93,7 @@ NODE_COLORS = {
     "05 Prompt": ("#46375a", "#654c80"),
     "06 Krea 2 identity edit": ("#40344a", "#5b4a69"),
     "07 HOI4 style LoRA": ("#663442", "#914b5e"),
-    "08 Candidate generation": ("#66400c", "#945e12"),
+    "08 Portrait generation": ("#66400c", "#945e12"),
     "09 Preview and evidence export": ("#23465b", "#306985"),
 }
 
@@ -237,15 +235,15 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         inputs={"model": Link(14), "lora_name": "hoi4_portrait_new_style_lora.safetensors", "strength_model": 0.80}, input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"}, outputs=["model"], output_types=["MODEL"], pos=(1960, 200), widgets=["hoi4_portrait_new_style_lora.safetensors", 0.80], locked=["lora_name"],
     ))
     nodes.append(_node(
-        29, "HOI4KreaModelLoadBarrier", group["08 Candidate generation"], "Prepare generation",
+        29, "HOI4KreaModelLoadBarrier", group["08 Portrait generation"], "Prepare generation",
         inputs={"model": Link(18), "positive": Link(16), "negative": Link(17)}, input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING"}, outputs=["model", "positive", "negative"], output_types=["MODEL", "CONDITIONING", "CONDITIONING"], pos=(1320, 620),
     ))
     nodes.append(_node(
-        19, "EmptySD3LatentImage", group["08 Candidate generation"], "Set portrait size",
+        19, "EmptySD3LatentImage", group["08 Portrait generation"], "Set portrait size",
         inputs={"width": width, "height": height, "batch_size": 1}, input_types={"width": "INT", "height": "INT", "batch_size": "INT"}, outputs=["latent"], output_types=["LATENT"], pos=(1960, 430), widgets=[width, height, 1], locked=["width", "height", "batch_size"],
     ))
     nodes.append(_node(
-        20, "KSampler", group["08 Candidate generation"], "Generate portrait",
+        20, "KSampler", group["08 Portrait generation"], "Generate portrait",
         inputs={"model": Link(29, 0), "positive": Link(29, 1), "negative": Link(29, 2), "latent_image": Link(19), "seed": 0, "steps": 8, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0}, input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "latent_image": "LATENT", "seed": "INT", "steps": "INT", "cfg": "FLOAT", "sampler_name": "COMBO", "scheduler": "COMBO", "denoise": "FLOAT"}, outputs=["latent"], output_types=["LATENT"], pos=(2280, 120), widgets=[0, 8, 1.0, "euler", "simple", 1.0], locked=["steps", "cfg", "sampler_name", "scheduler", "denoise"],
     ))
     nodes.append(_node(
@@ -322,7 +320,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "prompt_source": "autoprompter" if is_human else "job_contract",
         "prompt_model": limits["prompt_model"],
         "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
-        "remote_authentication": "x_api_key_comfy_cloud" if limits["route"] == "comfy_cloud" else "loopback_only",
+        "remote_authentication": "authenticated_runpod_gateway" if limits["route"] == "runpod" else "loopback_only",
         "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
         "work_canvas": {"width": width, "height": height, "pixels": width * height},
         "final_canvas": {"width": 156, "height": 210},
@@ -516,15 +514,13 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         for class_name in entry.get("classes", [])
     }
     paths = {
-        "human_local_mac_16gb": root_path / "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "human_local_nvidia_16gb": root_path / "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json",
         "human_full_power_gpu": root_path / "workflows/human/full_power_gpu/human_full_power_gpu.json",
-        "agent_local_mac_16gb": root_path / "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "agent_local_nvidia_16gb": root_path / "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json",
         "agent_full_power_gpu": root_path / "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
     }
     manifests: list[dict[str, Any]] = []
-    live_probe_path = root_path / "docs" / "preflight" / "live_comfy_compatibility.json"
+    live_probe_path = root_path / ".runtime" / "reports" / "live_comfy_compatibility.json"
     try:
         live_probe = json.loads(live_probe_path.read_text(encoding="utf-8")) if live_probe_path.is_file() else {}
     except (OSError, json.JSONDecodeError):

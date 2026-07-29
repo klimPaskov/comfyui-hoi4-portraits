@@ -82,10 +82,8 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
 def validate_all_workflows(root: str | Path | None = None) -> list[dict[str, Any]]:
     root_path = project_root(root)
     specs = {
-        "human_local_mac_16gb": ("workflows/human/local_mac_16gb/human_local_mac_16gb.json", "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json"),
         "human_local_nvidia_16gb": ("workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json", "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json"),
         "human_full_power_gpu": ("workflows/human/full_power_gpu/human_full_power_gpu.json", "workflows/human/full_power_gpu/human_full_power_gpu.api.json"),
-        "agent_local_mac_16gb": ("workflows/agent/local_mac_16gb/agent_local_mac_16gb.json", "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json"),
         "agent_local_nvidia_16gb": ("workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json", "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json"),
         "agent_full_power_gpu": ("workflows/agent/full_power_gpu/agent_full_power_gpu.json", "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json"),
     }

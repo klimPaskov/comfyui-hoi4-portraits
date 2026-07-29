@@ -52,7 +52,7 @@ class PromptAndContractTests(unittest.TestCase):
         valid = {
             "schema_version": "1.0.0",
             "job_id": "fixture-001",
-            "execution_profile": "agent_local_mac_16gb",
+            "execution_profile": "agent_local_nvidia_16gb",
             "source_image_path": "fixtures/source.png",
             "source_provenance": {"source_class": "user_provided", "attribution": "user", "rights_notes": "authorized"},
             "subject_identity": {"record_name": "Example", "identity_classification": "approved_fictional_subject", "real_person": False},
@@ -81,7 +81,7 @@ class PromptAndContractTests(unittest.TestCase):
         instruction = (project_root() / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")
         service = object.__new__(AutoprompterService)
         service.root = Path(tempfile.mkdtemp(prefix="hoi4-autoprompt-test-"))
-        service.profile = "human_local_mac_16gb"
+        service.profile = "human_local_nvidia_16gb"
         service.model_id = "Qwen/Qwen3-VL-4B-Instruct-GGUF"
         service.instruction = instruction
         service.upstream_port = 1
@@ -115,7 +115,7 @@ class PromptAndContractTests(unittest.TestCase):
         instruction = (project_root() / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")
         service = object.__new__(AutoprompterService)
         service.root = Path(tempfile.mkdtemp(prefix="hoi4-autoprompt-test-"))
-        service.profile = "human_local_mac_16gb"
+        service.profile = "human_local_nvidia_16gb"
         service.model_id = "Qwen/Qwen3-VL-4B-Instruct-GGUF"
         service.instruction = instruction
         service.upstream_port = 1

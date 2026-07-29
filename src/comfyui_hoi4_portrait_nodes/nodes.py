@@ -273,7 +273,7 @@ class HOI4JobInput:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-            "execution_profile": ("STRING", {"default": "agent_local_mac_16gb"}),
+            "execution_profile": ("STRING", {"default": "agent_local_nvidia_16gb"}),
             "job_contract_path": ("STRING", {"default": "jobs/<job_id>/input.json"}),
             "candidate_count": ("INT", {"default": 1, "min": 1, "max": 12}),
             "retry_limit": ("INT", {"default": 0, "min": 0, "max": 4}),
@@ -899,7 +899,7 @@ class HOI4AutopromptClient:
     def run(self, job: dict[str, Any], image: Any, background_meta: dict[str, Any], control_meta: dict[str, Any], instruction_text: str, instruction_path: str, model_id: str, prompt_source: str):
         if prompt_source != "autoprompter":
             _raise(ExitCode.WORKFLOW_INVALID, "human autoprompter source is locked")
-        expected_model = "Qwen/Qwen3-VL-4B-Instruct-GGUF" if job.get("execution_profile") == "human_local_mac_16gb" else "Qwen/Qwen3-VL-8B-Instruct"
+        expected_model = "Qwen/Qwen3-VL-4B-Instruct-GGUF" if job.get("execution_profile") == "human_local_nvidia_16gb" else "Qwen/Qwen3-VL-8B-Instruct"
         if model_id != expected_model:
             _raise(ExitCode.WORKFLOW_INVALID, f"autoprompter model does not match profile; expected {expected_model}")
         root = _project_from_job(job)

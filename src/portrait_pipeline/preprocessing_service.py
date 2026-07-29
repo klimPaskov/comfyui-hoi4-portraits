@@ -235,16 +235,9 @@ class PreprocessingService:
                 raise PreprocessingBlocked(ExitCode.DEPENDENCY_MISSING, f"requested preprocessing device is invalid: {self.device_request}") from exc
             if device.type == "cuda" and not torch.cuda.is_available():
                 raise PreprocessingBlocked(ExitCode.DEPENDENCY_MISSING, "requested CUDA preprocessing device is unavailable")
-            if device.type == "mps":
-                mps = getattr(torch.backends, "mps", None)
-                if mps is None or not mps.is_available():
-                    raise PreprocessingBlocked(ExitCode.DEPENDENCY_MISSING, "requested MPS preprocessing device is unavailable")
             return device
         if torch.cuda.is_available():
             return torch.device("cuda")
-        mps = getattr(torch.backends, "mps", None)
-        if mps is not None and mps.is_available():
-            return torch.device("mps")
         return torch.device("cpu")
 
     def _load_birefnet(self) -> tuple[Any, Any, Any]:
@@ -262,10 +255,9 @@ class PreprocessingService:
                 model = AutoModelForImageSegmentation.from_pretrained(str(artifact.path.parent), trust_remote_code=True, local_files_only=True)
                 model.to(device)
                 # The pinned BiRefNet snapshot is stored in half precision.
-                # MPS can execute that representation directly, but CPU
-                # convolutions are more reliable when the model is promoted
-                # to float32.  Keep the conversion explicit so the input
-                # tensor and model parameters cannot silently diverge.
+                # CPU convolutions are more reliable when the model is
+                # promoted to float32. Keep the conversion explicit so the
+                # input tensor and model parameters cannot silently diverge.
                 if getattr(device, "type", None) == "cpu":
                     model.float()
                 model.eval()

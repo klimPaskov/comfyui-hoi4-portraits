@@ -12,17 +12,26 @@
     "sha256": "220517d011643ddfa66739d6fe79c487633c095cd10c95f5e7de0e45414b878f",
     "resolver": "uv 0.11.7; project plus pinned ComfyUI-Manager dependency closure for Python 3.12; pydantic server requirements included; hashes generated; private qualification install only"
   },
+  "runpod_sidecar_lock": {
+    "input_path": "dependencies/runpod_sidecar_requirements.in",
+    "path": "dependencies/runpod_sidecar_requirements.lock.txt",
+    "status": "RESOLVED",
+    "python_version": "3.12",
+    "python_platform": "x86_64-manylinux_2_28",
+    "sha256": "16013e6efcdc09111cd6d28f713dfbd39aff71dd175de0e2a7e4eefd99d1b321",
+    "resolver": "uv 0.11.7; official PyPI metadata; complete transitive hashes for preprocessing and full-power prompt sidecars; PyTorch remains provided by the existing ComfyUI installation"
+  },
   "profile_locks": {
-    "macos_arm64_cpu": {
-      "path": "dependencies/runtime_profiles/macos_arm64_cpu.lock.txt",
+    "windows_amd64_cuda": {
+      "path": "dependencies/project_requirements.lock.txt",
       "status": "RESOLVED",
       "python_version": "3.12",
-      "python_platform": "aarch64-apple-darwin",
-      "torch_backend": "cpu",
-      "sha256": "08f1820931fb6b9595472ae711f3d037f270a901582c9cca231619deb3f2ad8d",
-      "resolver": "uv 0.11.7; official PyPI resolver metadata; ComfyUI Krea 2 core 2a610155821d670a2d8047e654e5fce96b790eb5; no package installation performed"
+      "python_platform": "x86_64-windows",
+      "torch_backend": "provided by the existing NVIDIA ComfyUI installation",
+      "sha256": "220517d011643ddfa66739d6fe79c487633c095cd10c95f5e7de0e45414b878f",
+      "resolver": "uv 0.11.7; project dependency closure for Python 3.12; hashes generated; ComfyUI and its NVIDIA PyTorch build remain owned by the existing installation"
     },
-    "linux_amd64_cuda128": {
+    "linux_amd64_cuda": {
       "path": "dependencies/runtime_profiles/linux_amd64_cuda128.lock.txt",
       "status": "RESOLVED",
       "python_version": "3.12",

@@ -67,13 +67,13 @@ def main(argv: list[str] | None = None) -> int:
         "schema_version": "1.0.0",
         "checked_at": checked_at,
         "status": "BLOCKED_SIDECAR_NOT_RUNNING",
-        "profile": "human_local_mac_16gb",
+        "profile": "human_local_nvidia_16gb",
         "full_power": _full_power_format_probe(root),
         "negative_validation": {"status": "NOT_RUN"},
         "policy": "A negative validator probe is not a prompt-quality or portrait-generation acceptance run. A production-authorized source fixture is required for positive generation qualification.",
     }
     try:
-        service = AutoprompterService(root, profile="human_local_mac_16gb")
+        service = AutoprompterService(root, profile="human_local_nvidia_16gb")
         health = _get(args.base_url + "/health")
         models = _get(args.base_url + "/v1/models")
         buffer = BytesIO()

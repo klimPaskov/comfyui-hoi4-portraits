@@ -44,24 +44,13 @@ class JobStatus(_StringEnum):
 
 
 class ExecutionProfile(_StringEnum):
-    HUMAN_LOCAL_MAC_16GB = "human_local_mac_16gb"
     HUMAN_LOCAL_NVIDIA_16GB = "human_local_nvidia_16gb"
     HUMAN_FULL_POWER_GPU = "human_full_power_gpu"
-    AGENT_LOCAL_MAC_16GB = "agent_local_mac_16gb"
     AGENT_LOCAL_NVIDIA_16GB = "agent_local_nvidia_16gb"
     AGENT_FULL_POWER_GPU = "agent_full_power_gpu"
 
 
 PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
-    ExecutionProfile.HUMAN_LOCAL_MAC_16GB: {
-        "candidate_max": 2,
-        "retry_max": 2,
-        "canvas_width": 832,
-        "canvas_height": 1120,
-        "autoprompter": True,
-        "route": "local_mac",
-        "prompt_model": "Qwen/Qwen3-VL-4B-Instruct-GGUF",
-    },
     ExecutionProfile.HUMAN_LOCAL_NVIDIA_16GB: {
         "candidate_max": 2,
         "retry_max": 2,
@@ -77,17 +66,8 @@ PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
         "canvas_width": 1196,
         "canvas_height": 1610,
         "autoprompter": True,
-        "route": "comfy_cloud",
+        "route": "runpod",
         "prompt_model": "Qwen/Qwen3-VL-8B-Instruct",
-    },
-    ExecutionProfile.AGENT_LOCAL_MAC_16GB: {
-        "candidate_max": 2,
-        "retry_max": 2,
-        "canvas_width": 832,
-        "canvas_height": 1120,
-        "autoprompter": False,
-        "route": "local_mac",
-        "prompt_model": "job_contract",
     },
     ExecutionProfile.AGENT_LOCAL_NVIDIA_16GB: {
         "candidate_max": 2,
@@ -104,7 +84,7 @@ PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
         "canvas_width": 1196,
         "canvas_height": 1610,
         "autoprompter": False,
-        "route": "comfy_cloud",
+        "route": "runpod",
         "prompt_model": "job_contract",
     },
 }
@@ -119,7 +99,7 @@ GROUP_LABELS = [
     "05 Prompt",
     "06 Krea 2 identity edit",
     "07 HOI4 style LoRA",
-    "08 Candidate generation",
+    "08 Portrait generation",
     "09 Preview and evidence export",
 ]
 

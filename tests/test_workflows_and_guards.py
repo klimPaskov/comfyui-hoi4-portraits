@@ -28,16 +28,15 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_required_and_local_nvidia_workflows_are_structurally_valid(self):
         reports = validate_all_workflows(self.root)
-        self.assertEqual(len(reports), 6)
+        self.assertEqual(len(reports), 4)
         for report in reports:
             self.assertEqual(report["structural_status"], "PASS", report)
 
-    def test_workflow_manifest_uses_current_live_probe_timestamp(self):
+    def test_workflow_manifest_is_structural_and_fail_closed(self):
         manifest = json.loads((self.root / "manifests/workflow_manifest.json").read_text(encoding="utf-8"))
-        probe = json.loads((self.root / "docs/preflight/live_comfy_compatibility.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["generated_at"], probe["checked_at"])
         self.assertEqual(manifest["status"], "UNVALIDATED")
-        self.assertEqual(manifest["runtime_status"], "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED")
+        self.assertEqual(manifest["runtime_status"], "STRUCTURAL_ONLY_RUNTIME_BLOCKED")
+        self.assertEqual(len(manifest["workflows"]), 4)
         self.assertTrue(all(item["validation_status"] == "UNVALIDATED" for item in manifest["workflows"]))
 
     def test_local_nvidia_agent_is_routable_through_controller_and_adapter(self):
@@ -48,8 +47,8 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_local_generation_unavailable_is_explicit_and_never_remote(self):
         controller = JobController(self.root)
-        job = {"job_id": "local-unavailable-001", "execution_profile": "human_local_mac_16gb"}
-        output = build_blocked_output(job, ExitCode.DEPENDENCY_MISSING, "measured local memory blocker", blockers=["MPS canary blocked"], root=self.root)
+        job = {"job_id": "local-unavailable-001", "execution_profile": "human_local_nvidia_16gb"}
+        output = build_blocked_output(job, ExitCode.DEPENDENCY_MISSING, "measured local memory blocker", blockers=["local runtime canary blocked"], root=self.root)
         with tempfile.TemporaryDirectory() as directory:
             job_root = Path(directory) / "job"
             job_root.mkdir()
@@ -157,10 +156,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
                     declared.update(input_types.get(section, {}))
                 self.assertTrue(set(node.get("inputs", {})) <= declared, (path, class_type, node.get("inputs"), declared))
 
-    def test_krea_graph_matches_primary_fit_contract_and_records_schema_blocker(self):
-        review = json.loads((self.root / "docs/preflight/krea_compatibility_review.json").read_text(encoding="utf-8"))
-        self.assertEqual(review["status"], "QUALIFIED_CPU_FALLBACK_MPS_BLOCKED")
-        self.assertEqual(next(item["status"] for item in review["findings"] if item["id"] == "pinned_core_loader_type"), "PASS")
+    def test_krea_graph_matches_primary_fit_contract(self):
         for path in self.root.joinpath("workflows").glob("**/*.api.json"):
             data = json.loads(path.read_text(encoding="utf-8"))
             patch_inputs = data["14"]["inputs"]
@@ -176,11 +172,22 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertEqual(data["20"]["inputs"]["negative"], ["29", 2])
 
     def test_job_input_validates_public_contract_before_private_runtime_context(self):
-        background = json.loads((self.root / "config/background_registry.json").read_text(encoding="utf-8"))["backgrounds"][0]
+        registry_path = self.root / "config/background_registry.json"
+        original_registry = registry_path.read_text(encoding="utf-8")
+        background = {
+            "registry_id": "unit-test-background",
+            "runtime_path": "README.md",
+            "sha256": "0" * 64,
+            "status": "APPROVED",
+        }
+        registry_path.write_text(
+            json.dumps({"schema_version": "1.0.0", "registry_status": "RESOLVED", "backgrounds": [background]}),
+            encoding="utf-8",
+        )
         job = {
             "schema_version": "1.0.0",
             "job_id": "input-context-001",
-            "execution_profile": "human_local_mac_16gb",
+            "execution_profile": "human_local_nvidia_16gb",
             "source_image_path": "README.md",
             "source_provenance": {"source_class": "user_provided", "attribution": "unit-test", "rights_notes": "unit-test"},
             "subject_identity": {"record_name": "unit_test_subject", "identity_classification": "approved_fictional_subject", "real_person": False},
@@ -204,18 +211,19 @@ class WorkflowAndGuardTests(unittest.TestCase):
         try:
             with mock.patch.dict(os.environ, {"HOI4_PORTRAIT_PROJECT_ROOT": str(self.root)}):
                 (validated,) = NODE_CLASS_MAPPINGS["HOI4JobInput"]().run(
-                    "human_local_mac_16gb",
+                    "human_local_nvidia_16gb",
                     "jobs/input-context-001/input.json",
                     1,
                     0,
                     "derived",
                 )
             self.assertEqual(validated["job_id"], "input-context-001")
-            self.assertEqual(validated["_workflow_execution_profile"], "human_local_mac_16gb")
+            self.assertEqual(validated["_workflow_execution_profile"], "human_local_nvidia_16gb")
             self.assertEqual(validated["_project_root"], str(self.root))
         finally:
             contract_path.unlink(missing_ok=True)
             contract_dir.rmdir()
+            registry_path.write_text(original_registry, encoding="utf-8")
 
     def test_model_preflight_rejects_mismatch_and_unlocked_files(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -227,16 +235,16 @@ class WorkflowAndGuardTests(unittest.TestCase):
             import hashlib
 
             digest = hashlib.sha256(b"locked").hexdigest()
-            entry = {"name": "sample", "mandatory": True, "profiles": ["agent_local_mac_16gb"], "destination_folder": "models", "filename": "sample.safetensors", "size_bytes": 6, "sha256": digest}
-            self.assertEqual(_model_artifact_preflight(root, model_root, [entry], "agent_local_mac_16gb")["status"], "PASS")
+            entry = {"name": "sample", "mandatory": True, "profiles": ["agent_local_nvidia_16gb"], "destination_folder": "models", "filename": "sample.safetensors", "size_bytes": 6, "sha256": digest}
+            self.assertEqual(_model_artifact_preflight(root, model_root, [entry], "agent_local_nvidia_16gb")["status"], "PASS")
             model_path.write_bytes(b"changed")
-            self.assertEqual(_model_artifact_preflight(root, model_root, [entry], "agent_local_mac_16gb")["status"], "BLOCKED")
+            self.assertEqual(_model_artifact_preflight(root, model_root, [entry], "agent_local_nvidia_16gb")["status"], "BLOCKED")
             model_path.write_bytes(b"locked")
             (model_root / "unlocked.bin").write_bytes(b"extra")
-            self.assertEqual(_model_artifact_preflight(root, model_root, [entry], "agent_local_mac_16gb")["status"], "BLOCKED")
+            self.assertEqual(_model_artifact_preflight(root, model_root, [entry], "agent_local_nvidia_16gb")["status"], "BLOCKED")
             unsupported = dict(entry, filename="sample.bin")
             model_path.rename(model_root / "sample.bin")
-            self.assertEqual(_model_artifact_preflight(root, model_root, [unsupported], "agent_local_mac_16gb")["status"], "BLOCKED")
+            self.assertEqual(_model_artifact_preflight(root, model_root, [unsupported], "agent_local_nvidia_16gb")["status"], "BLOCKED")
 
     def test_preprocessing_lock_is_complete_and_installed_artifacts_pass(self):
         lock = json.loads((self.root / "dependencies/preprocessing_lock.json").read_text(encoding="utf-8"))
@@ -276,7 +284,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(mask_inputs[1]["default"], "BiRefNet")
 
     def test_profile_preflight_does_not_make_missing_remote_auth_a_local_blocker(self):
-        local = collect_preflight(self.root, profile="agent_local_mac_16gb")
+        local = collect_preflight(self.root, profile="agent_local_nvidia_16gb")
         remote = collect_preflight(self.root, profile="agent_full_power_gpu")
         self.assertEqual(next(g["status"] for g in local["gates"] if g["name"] == "remote_topology_auth"), "NOT_APPLICABLE")
         self.assertEqual(next(g["status"] for g in remote["gates"] if g["name"] == "remote_topology_auth"), "BLOCKED")
@@ -286,27 +294,17 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertNotIn("BLOCKED_UNTIL_CALIBRATION", CALIBRATED_THRESHOLD_STATUSES)
 
     def test_identity_calibration_evidence_is_recorded_but_stays_fail_closed(self):
-        evidence_path = self.root / "docs/preflight/identity_calibration_2026-07-29.json"
-        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-        self.assertEqual(evidence["status"], "BLOCKED_FACE_CALIBRATION_INCOMPLETE")
-        self.assertGreaterEqual(evidence["fixture_set"]["accepted_single_face_count"], 1)
-        self.assertGreaterEqual(evidence["positive_same_person"]["score_count"], 1)
-        self.assertEqual(evidence["fixture_manifest"]["status"], "PASS")
-        self.assertEqual(evidence["fixture_manifest"]["declared_count"], evidence["fixture_manifest"]["observed_count"])
-        self.assertFalse(evidence["operating_point"]["approved"])
         thresholds = json.loads((self.root / "config/identity_thresholds.json").read_text(encoding="utf-8"))
         self.assertEqual(thresholds["status"], "BLOCKED_UNTIL_CALIBRATION")
         self.assertTrue(thresholds["fail_closed"])
+        self.assertIsNone(thresholds["face_embedding"]["minimum_similarity"])
+        self.assertIsNone(thresholds["landmarks"]["max_normalized_error"])
 
-    def test_geometry_calibration_evidence_is_measured_but_not_approved(self):
-        evidence = json.loads((self.root / "docs/preflight/geometry_calibration_2026-07-29.json").read_text(encoding="utf-8"))
-        self.assertEqual(evidence["status"], "GEOMETRY_EVIDENCE_MEASURED_PRODUCTION_BLOCKED")
-        self.assertGreaterEqual(evidence["fixture_set"]["accepted_single_face_count"], 20)
-        self.assertGreater(evidence["measurement_count"], 0)
-        self.assertGreaterEqual(evidence["measurement_count"], 100)
-        self.assertEqual(evidence["model"]["face_crop_detector"]["name"], "YuNet")
-        self.assertIn("landmarker_input_policy", evidence["fixture_set"])
-        self.assertFalse(evidence["proposed_operating_point"]["approved"])
+    def test_geometry_thresholds_remain_unapproved(self):
+        thresholds = json.loads((self.root / "config/identity_thresholds.json").read_text(encoding="utf-8"))
+        self.assertIsNone(thresholds["pose"]["max_yaw_delta_degrees"])
+        self.assertIsNone(thresholds["expression"]["max_distance"])
+        self.assertIsNone(thresholds["asymmetry"]["max_change"])
 
     def test_independent_auditor_uses_the_calibrated_face_crop_policy(self):
         from portrait_pipeline.independent_auditor import _landmark_signals
@@ -424,7 +422,24 @@ class WorkflowAndGuardTests(unittest.TestCase):
                 "scores": {"hairline": 0.9, "facial_hair": 0.9, "accessories": 0.9, "style": 0.9},
                 "human_readable_evidence": {name: "visible fixture evidence" for name in ("hairline", "facial_hair", "accessories", "style")},
             })}}]}
-            with mock.patch("portrait_pipeline.visual_audit_service.VisualAuditProducer.start"), mock.patch("portrait_pipeline.visual_audit_service.VisualAuditProducer.stop"), mock.patch("portrait_pipeline.visual_audit_service._post_json", return_value=response) as post:
+            runtime_lock = {
+                "model": {"name": "fixture-visual-auditor", "revision": "fixture-revision", "sha256": "a" * 64},
+                "runtime": {
+                    "port": 8191,
+                    "context_size": 8192,
+                    "max_tokens": 512,
+                    "parallel_requests": 1,
+                    "temperature": 0.0,
+                },
+            }
+            runtime_tuple = (
+                runtime_lock,
+                self.root / "prompts/visual_audit_rubric.txt",
+                source,
+                source,
+                candidate,
+            )
+            with mock.patch("portrait_pipeline.visual_audit_service._load_runtime_lock", return_value=runtime_tuple), mock.patch("portrait_pipeline.visual_audit_service.VisualAuditProducer.start"), mock.patch("portrait_pipeline.visual_audit_service.VisualAuditProducer.stop"), mock.patch("portrait_pipeline.visual_audit_service._post_json", return_value=response) as post:
                 producer = VisualAuditProducer(root=self.root, auditor_process_id="visual-auditor-2", port=8191)
                 record = producer.produce(private_root=root, source_path=source, candidate_path=candidate, reference_manifest=manifest, producer_process_id="producer-1", output_path=output)
             self.assertEqual(record["status"], "PASS")
@@ -486,14 +501,14 @@ class WorkflowAndGuardTests(unittest.TestCase):
         lock = json.loads((self.root / "dependencies/models.lock.json").read_text(encoding="utf-8"))
         fp8 = next(model for model in lock["models"] if model["name"] == "krea2_turbo_fp8_scaled.safetensors")
         self.assertTrue(fp8["mandatory"])
-        for profile in ("human_local_mac_16gb", "human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
+        for profile in ("human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
             self.assertIn(profile, fp8["profiles"], profile)
         style = next(item for item in lock["project_owned_immutable_files"] if item["name"] == "hoi4_portrait_new_style_lora.safetensors")
         self.assertEqual(style["repository"], "Hoops-McCann/hoi4-portrait-new-style-lora")
         self.assertEqual(style["revision"], "2eb855d3176908af4329640c8d966a1b26fc3d6b")
         self.assertIn(style["revision"], style["source_url"])
-        self.assertEqual(style["source_visibility"], "private")
-        self.assertTrue(style["requires_authentication"])
+        self.assertEqual(style["source_visibility"], "public")
+        self.assertFalse(style["requires_authentication"])
         self.assertEqual(style["size_bytes"], 228587816)
         self.assertEqual(style["sha256"], "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1")
 
@@ -511,7 +526,10 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertTrue((installed_nodes / "__init__.py").is_file())
             self.assertTrue((installed_nodes / "portrait_pipeline" / "constants.py").is_file())
             installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
-            self.assertEqual(len(installed_workflows), 6)
+            self.assertEqual(len(installed_workflows), 4)
+            _copy_workflows(comfy_root, actions, {"human_full_power_gpu"})
+            installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
+            self.assertEqual([path.stem for path in installed_workflows], ["human_full_power_gpu"])
             config = (comfy_root / "extra_model_paths.yaml").read_text(encoding="utf-8")
             self.assertEqual(config.count("# BEGIN HOI4 PORTRAIT WORKFLOWS"), 1)
             _merge_extra_model_paths(comfy_root, actions)
@@ -521,21 +539,28 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertIn("Do not download, clone, replace, upgrade, or expose ComfyUI", prompt)
             self.assertIn("scripts/install_into_existing_comfyui.py", prompt)
 
-    def test_release_package_selection_rejects_weights_and_includes_user_assets(self):
+    def test_release_package_is_runtime_complete_without_repository_screenshots(self):
         from scripts.release.build_release_artifacts import FORBIDDEN_SUFFIXES, _selected_files
 
         relative = {path.relative_to(self.root).as_posix() for path in _selected_files()}
         self.assertIn("SETUP_WITH_CODING_AGENT.md", relative)
         self.assertIn("prompts/install_into_existing_comfyui_agent_prompt.md", relative)
-        self.assertIn("workflows/human/local_mac_16gb/human_local_mac_16gb.json", relative)
+        self.assertIn("scripts/bootstrap/bootstrap.py", relative)
+        self.assertIn("scripts/preflight/verify_live_comfy_compatibility.py", relative)
+        self.assertIn("workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json", relative)
         self.assertIn("workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json", relative)
-        self.assertIn("docs/assets/live_test_2026-07-28/compact_workflow_overview.png", relative)
-        self.assertFalse(any(Path(path).suffix.casefold() in FORBIDDEN_SUFFIXES for path in relative))
-        self.assertFalse(any("/mcp/" in f"/{path}/" or ".egg-info/" in path for path in relative))
+        self.assertFalse(any(path.startswith("docs/assets/") for path in relative))
+        self.assertFalse(
+            any(
+                Path(path).suffix.casefold() in FORBIDDEN_SUFFIXES
+                for path in relative
+            )
+        )
+        self.assertFalse(any(".egg-info/" in path for path in relative))
         self.assertNotIn("prompts/implementation_goal_prompt.md", relative)
 
     def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
-        for profile in ("human_local_mac_16gb", "human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
+        for profile in ("human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
             report = collect_preflight(self.root, profile=profile)
             gate = next(gate for gate in report["gates"] if gate["name"] == "comfyui_runtime_dependency_lock")
             self.assertEqual(gate["status"], "PASS", gate)
@@ -546,29 +571,27 @@ class WorkflowAndGuardTests(unittest.TestCase):
         from portrait_pipeline.benchmarks import build_benchmark_report
         from portrait_pipeline.comparisons import build_comparison_report
 
-        benchmark = build_benchmark_report(self.root, "agent_local_mac_16gb")
+        benchmark = build_benchmark_report(self.root, "agent_local_nvidia_16gb")
         self.assertNotEqual(benchmark["status"], "PASS")
         self.assertEqual(benchmark["claims"]["final_png"], "NOT_CREATED")
-        self.assertEqual(benchmark["measurements"]["generation"]["status"], "PASS_EXECUTION_ONLY_PRODUCTION_BLOCKED")
-        self.assertEqual(benchmark["measurements"]["generation"]["candidate_count"], 1)
+        self.assertEqual(benchmark["measurements"]["generation"]["status"], "BLOCKED_NOT_ATTEMPTED")
+        self.assertEqual(benchmark["measurements"]["generation"]["candidate_count"], 0)
         comparison = build_comparison_report(self.root)
         self.assertIn(comparison["status"], {"BLOCKED_NO_REAL_CANDIDATES", "BLOCKED_DIAGNOSTIC_CANDIDATES_NOT_PRODUCTION_AUTHORIZED"})
         self.assertGreaterEqual(comparison["candidate_counts"]["observed"], 0)
         self.assertIsNone(comparison["claims"]["identity_winner"])
 
-    def test_cloud_surface_is_authenticated_and_fail_closed(self):
-        from portrait_pipeline.comfy_client import ComfyCloudClient, ComfyTransportError
+    def test_remote_surface_is_authenticated_and_fail_closed(self):
+        from portrait_pipeline.comfy_client import AuthenticatedRemoteGatewayClient, ComfyTransportError
 
-        with mock.patch.dict(os.environ, {"COMFY_CLOUD_API_KEY": ""}, clear=False):
-            with self.assertRaises(ComfyTransportError) as context:
-                ComfyCloudClient()
+        with self.assertRaises(ComfyTransportError) as context:
+            AuthenticatedRemoteGatewayClient("https://example.invalid", "")
         self.assertEqual(context.exception.code, ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED)
 
         gateway = (self.root / "src/portrait_pipeline/mcp/gateway.py").read_text(encoding="utf-8")
         self.assertIn("agent_full_power_gpu", gateway)
-        self.assertNotIn("agent_remote_runpod", gateway)
         self.assertFalse((self.root / "deploy/runpod").exists())
-        self.assertFalse((self.root / "workflows/agent/remote_runpod").exists())
+        self.assertTrue((self.root / "workflows/agent/full_power_gpu").exists())
 
     def test_local_memory_profiles_expose_only_unqualified_switch_placeholders(self):
         from portrait_pipeline.graph_spec.builder import UI_ONLY_NODE_CLASSES
@@ -578,7 +601,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
                 continue
             data = json.loads(path.read_text(encoding="utf-8"))
             profile = data.get("extra", {}).get("hoi4_portrait", {}).get("profile")
-            if profile not in {"human_local_mac_16gb", "human_local_nvidia_16gb", "agent_local_mac_16gb", "agent_local_nvidia_16gb"}:
+            if profile not in {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}:
                 continue
             notes = {node["id"]: node for node in data["nodes"] if node.get("type") in UI_ONLY_NODE_CLASSES}
             self.assertEqual(set(notes), {31, 32, 33}, path)
@@ -589,13 +612,13 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertNotIn("Note", {node.get("class_type") for node in api.values() if isinstance(node, dict)})
             self.assertEqual(len(api["_meta"]["low_memory_placeholder_nodes"]), 3)
 
-    def test_cloud_profiles_use_cloud_auth_and_controlnet_is_not_included(self):
+    def test_runpod_profiles_use_remote_auth_and_controlnet_is_not_included(self):
         for path in self.root.joinpath("workflows").glob("**/*.json"):
             data = json.loads(path.read_text(encoding="utf-8"))
             meta = data.get("extra", {}).get("hoi4_portrait", {})
             if meta.get("profile") in {"human_full_power_gpu", "agent_full_power_gpu"}:
-                self.assertEqual(meta["route"], "comfy_cloud")
-                self.assertEqual(meta["remote_authentication"], "x_api_key_comfy_cloud")
+                self.assertEqual(meta["route"], "runpod")
+                self.assertEqual(meta["remote_authentication"], "x_api_key_runpod")
             for node in data.get("nodes", []):
                 text = json.dumps(node).casefold()
                 self.assertNotIn("controlnet", text, (path, node))

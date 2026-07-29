@@ -69,19 +69,11 @@
       0.3
     ],
     "working_resolution": [
-      "local_mac_canvas",
+      "local_nvidia_canvas",
       "full_power_canvas"
     ]
   },
   "profiles": {
-    "human_local_mac_16gb": {
-      "candidate_budget": 2,
-      "retry_limit": 2,
-      "canvas": [
-        832,
-        1120
-      ]
-    },
     "human_local_nvidia_16gb": {
       "candidate_budget": 2,
       "retry_limit": 2,
@@ -96,14 +88,6 @@
       "canvas": [
         1196,
         1610
-      ]
-    },
-    "agent_local_mac_16gb": {
-      "candidate_budget": 2,
-      "retry_limit": 2,
-      "canvas": [
-        832,
-        1120
       ]
     },
     "agent_local_nvidia_16gb": {
@@ -124,8 +108,8 @@
     }
   },
   "status": "PLANNED_BLOCKED_UNTIL_APPROVED_FIXTURE_BACKGROUND_THRESHOLDS",
-  "execution_status": "NOT_RUN_FAIL_CLOSED",
-  "required_eight_step_turbo_status": "NOT_RUN_PRODUCTION_BLOCKED",
+  "execution_status": "NOT_RUN",
+  "required_eight_step_turbo_status": "NOT_RUN",
   "required_prerequisites": [
     "production-authorized source fixture with immutable provenance",
     "approved HOI4 background registry entry",

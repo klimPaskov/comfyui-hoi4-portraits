@@ -104,13 +104,13 @@ def _dds_gate(root: Path) -> dict[str, Any]:
     return {"status": "PASS" if negative_passed and positive_passed else "FAIL", "negative_gate": "PASS" if negative_passed else "FAIL", "positive_round_trip": "PASS" if positive_passed else "FAIL", "evidence": "synthetic-only; production DDS remains prohibited until a real independent all-PASS audit exists"}
 
 
-def _comfy_cloud_gate(root: Path) -> dict[str, Any]:
-    """Record the Cloud route without mistaking credentials for acceptance."""
+def _runpod_gate(root: Path) -> dict[str, Any]:
+    """Record the RunPod route without mistaking credentials for acceptance."""
 
-    base_url = os.environ.get("COMFY_CLOUD_BASE_URL", "https://cloud.comfy.org")
-    key_present = bool(os.environ.get("COMFY_CLOUD_API_KEY") or os.environ.get("COMFY_API_KEY"))
+    base_url = os.environ.get("RUNPOD_ENDPOINT_URL", "")
+    key_present = bool(os.environ.get("RUNPOD_API_KEY"))
     workflows = ["human_full_power_gpu", "agent_full_power_gpu"]
-    probe_paths = sorted((root / "docs" / "preflight").glob("comfy_cloud_ui_probe_*.json"))
+    probe_paths = sorted((root / "docs" / "preflight").glob("runpod_ui_probe_*.json"))
     probe_path = probe_paths[-1] if probe_paths else None
     probe: dict[str, Any] = {}
     if probe_path is not None:
@@ -122,12 +122,12 @@ def _comfy_cloud_gate(root: Path) -> dict[str, Any]:
             probe = {}
     status = str(probe.get("status")) if probe.get("status") else ("BLOCKED_LIVE_CAPABILITY_NOT_VERIFIED" if key_present else "BLOCKED_NOT_CONNECTED")
     workflow_import = probe.get("workflow_import", "NOT_RUN")
-    node_parity = "BLOCKED" if status == "BLOCKED_CLOUD_NODE_MODEL_PARITY" else "NOT_RUN"
-    model_availability = "BLOCKED" if status == "BLOCKED_CLOUD_NODE_MODEL_PARITY" else "NOT_RUN"
+    node_parity = "BLOCKED" if status == "BLOCKED_RUNPOD_NODE_MODEL_PARITY" else "NOT_RUN"
+    model_availability = "BLOCKED" if status == "BLOCKED_RUNPOD_NODE_MODEL_PARITY" else "NOT_RUN"
     source_bridge = probe.get("source_upload", "NOT_RUN")
     return {
         "status": status,
-        "provider": "comfy_cloud",
+        "provider": "runpod",
         "base_url": base_url,
         "base_url_https": base_url.startswith("https://"),
         "api_key_present": key_present,
@@ -139,14 +139,14 @@ def _comfy_cloud_gate(root: Path) -> dict[str, Any]:
         "live_execution": "NOT_RUN",
         "ui_probe_path": str(probe_path.relative_to(root)) if probe_path is not None else None,
         "ui_probe_authentication": probe.get("authentication") if probe else None,
-        "acceptance_policy": "Cloud credentials never promote a workflow. Import, node/model parity, source/job-contract delivery, output checksums, and independent all-gates audit must pass first.",
+        "acceptance_policy": "RunPod credentials never promote a workflow. Import, node/model parity, source/job-contract delivery, output checksums, and independent all-gates audit must pass first.",
     }
 
 
 def _schema_gate(root: Path) -> dict[str, Any]:
     schema_files = {
-        "benchmark": (root / "schemas/portrait_benchmark_report.schema.json", sorted((root / "docs/benchmarks").glob("*.json"))),
-        "comparison": (root / "schemas/portrait_comparison_report.schema.json", [root / "docs/comparisons/identity_style_comparison.json"]),
+        "benchmark": (root / "schemas/portrait_benchmark_report.schema.json", sorted((root / ".runtime/reports/benchmarks").glob("*.json"))),
+        "comparison": (root / "schemas/portrait_comparison_report.schema.json", sorted((root / ".runtime/reports/comparisons").glob("*.json"))),
     }
     schema_fixtures = {
         "audit": (
@@ -161,7 +161,7 @@ def _schema_gate(root: Path) -> dict[str, Any]:
                     {
                         "schema_version": "1.0.0",
                         "job_id": "fixture-001",
-                        "execution_profile": "agent_local_mac_16gb",
+                        "execution_profile": "agent_local_nvidia_16gb",
                         "source_image_path": "fixtures/source.png",
                         "source_provenance": {"source_class": "user_provided", "attribution": "user", "rights_notes": "authorized"},
                         "subject_identity": {"record_name": "Example", "identity_classification": "approved_fictional_subject", "real_person": False},
@@ -297,8 +297,8 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
             {
                 "profile": report["profile"],
                 "status": report["status"],
-                "json_path": f"docs/benchmarks/{report['profile']}.json",
-                "markdown_path": f"docs/benchmarks/{report['profile']}.md",
+                "json_path": f".runtime/reports/benchmarks/{report['profile']}.json",
+                "markdown_path": f".runtime/reports/benchmarks/{report['profile']}.md",
                 "expected_model_bytes": report["resource_model"]["expected_model_bytes"],
                 "peak_memory_bytes": report["resource_model"]["peak_memory_bytes"],
                 "peak_vram_bytes": report["resource_model"]["peak_vram_bytes"],
@@ -310,8 +310,8 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
     comparison_report = write_comparison_report(root_path)
     comparison_gate = {
         "status": comparison_report["status"],
-        "json_path": "docs/comparisons/identity_style_comparison.json",
-        "markdown_path": "docs/comparisons/identity_style_comparison.md",
+        "json_path": ".runtime/reports/comparisons/identity_style_comparison.json",
+        "markdown_path": ".runtime/reports/comparisons/identity_style_comparison.md",
         "candidate_count": comparison_report["candidate_counts"]["observed"],
         "reason": comparison_report["reason"],
     }
@@ -328,7 +328,7 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
         "matrix_written": (root_path / "experiments" / "identity_style_matrix.json").is_file(),
         "execution_status": matrix_execution["execution_status"],
         "required_eight_step_turbo_status": matrix_execution["required_eight_step_turbo_status"],
-        "execution_report_path": "docs/preflight/identity_style_matrix_execution_2026-07-29.json",
+        "execution_report_path": ".runtime/reports/identity_style_matrix_execution.json",
         "queued_jobs": matrix_execution["queued_jobs"],
         "candidate_count": matrix_execution["candidate_count"],
         "blocked_reasons": matrix_execution["blocked_reasons"],
@@ -350,11 +350,11 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
         "direct_application": "NOT_PERFORMED",
     }
     dds_guard = _dds_gate(root_path)
-    comfy_cloud = _comfy_cloud_gate(root_path)
+    runpod = _runpod_gate(root_path)
     report = {
         "schema_version": "1.0.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" or benchmark_gate["status"] != "PASS" or comparison_gate["status"] != "PASS" or comfy_cloud["status"] != "PASS" or schema_gate["status"] != "PASS" else "PASS",
+        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" or benchmark_gate["status"] != "PASS" or comparison_gate["status"] != "PASS" or runpod["status"] != "PASS" or schema_gate["status"] != "PASS" else "PASS",
         "recommended_exit_code": preflight["recommended_exit_code"] if preflight["status"] != "PASS" else (int(ExitCode.AUDIT_UNCERTAIN) if comparison_gate["status"] != "PASS" else 0),
         "gates": {
             "package_checksums": next((gate for gate in preflight["gates"] if gate["name"] == "planning_package_checksums"), None),
@@ -380,14 +380,14 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
             "identity_style_experiments": experiments,
             "benchmark_reports": benchmark_gate,
             "identity_style_comparison": comparison_gate,
-            "comfy_cloud_execution": comfy_cloud,
+            "runpod_execution": runpod,
             "schema_validation": schema_gate,
             "integration_packages": integration,
             "secret_scan": _secret_scan(root_path),
         },
         "preflight_blockers": preflight["blockers"],
         "workflow_manifest": workflow_manifest,
-        "runtime_claims": {"local_mac_execution": "CPU_FALLBACK_CANDIDATE_PRODUCED_PRODUCTION_GATES_BLOCKED", "comfy_cloud_execution": "NOT_CLAIMED", "final_png": "NOT_CREATED", "final_dds": "NOT_CREATED", "mod_wiring": "PARENT_AGENT_ONLY"},
+        "runtime_claims": {"local_nvidia_execution": "TARGET_HOST_VALIDATION_REQUIRED", "runpod_execution": "NOT_CLAIMED", "final_png": "NOT_CREATED", "final_dds": "NOT_CREATED", "mod_wiring": "PARENT_AGENT_ONLY"},
         "source_pins": {"autoprompter_instruction_sha256": autoprompter_instruction_sha256(root_path), "style_lora_sha256": lora_gate["sha256"]},
     }
     return report
@@ -441,7 +441,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     root_path = project_root(args.root)
     report = run_acceptance(root_path)
-    output_dir = root_path / "docs" / "acceptance"
+    output_dir = root_path / ".runtime" / "reports" / "acceptance"
     output_dir.mkdir(parents=True, exist_ok=True)
     public_report = sanitize_public_paths(report, root_path)
     (output_dir / "acceptance_report.json").write_text(json.dumps(public_report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

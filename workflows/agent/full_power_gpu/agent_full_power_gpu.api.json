@@ -356,7 +356,7 @@
     "graph_spec_version": "graph-spec-1.1.0",
     "workflow_id": "agent_full_power_gpu",
     "execution_profile": "agent_full_power_gpu",
-    "route": "comfy_cloud",
+    "route": "runpod",
     "human_workflow": false,
     "autoprompter": false,
     "autoprompter_instruction_path": null,
@@ -364,7 +364,7 @@
     "prompt_source": "job_contract",
     "prompt_model": "job_contract",
     "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
-    "remote_authentication": "x_api_key_comfy_cloud",
+    "remote_authentication": "authenticated_runpod_gateway",
     "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
     "work_canvas": {
       "width": 1196,
@@ -384,7 +384,7 @@
       "05 Prompt",
       "06 Krea 2 identity edit",
       "07 HOI4 style LoRA",
-      "08 Candidate generation",
+      "08 Portrait generation",
       "09 Preview and evidence export"
     ],
     "locked_controls": {

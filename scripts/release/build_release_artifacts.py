@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a user-facing ZIP, Windows self-extractor, and macOS DMG."""
+"""Build a user-facing ZIP and Windows self-extractor."""
 
 from __future__ import annotations
 
@@ -8,10 +8,7 @@ import hashlib
 import json
 import os
 import shutil
-import stat
 import subprocess
-import sys
-import tempfile
 import zipfile
 from pathlib import Path
 
@@ -25,7 +22,7 @@ FORBIDDEN_SUFFIXES = {
 }
 FORBIDDEN_PARTS = {
     ".git", ".venv", "__pycache__", "models", "jobs", "outputs", "evidence",
-    "logs", ".runtime", "private", "source", "mcp",
+    "logs", ".runtime", "private", "source",
 }
 EXCLUDED_FILES = {
     "prompts/implementation_goal_prompt.md",
@@ -35,46 +32,34 @@ EXPLICIT_FILES = {
     "LICENSE",
     "README.md",
     "SETUP_WITH_CODING_AGENT.md",
-    "checksums.sha256",
     "pyproject.toml",
-    "bootstrap/bootstrap_command_contract.json",
     "config/background_registry.template.json",
     "config/identity_thresholds.template.json",
-    "docs/README.md",
-    "docs/cloud/comfy_cloud.md",
+    "docs/runpod.md",
     "docs/contracts-and-safety.md",
     "docs/getting-started.md",
     "docs/licensing-and-public-repository.md",
-    "docs/preflight/controlnet_policy.md",
-    "docs/preflight/krea_compatibility_review.md",
-    "docs/preflight/krea_gguf_mac_route_2026-07-29.md",
-    "docs/screenshots.md",
     "docs/testing-and-evidence.md",
     "docs/workflows.md",
-    "experiments/README.md",
-    "experiments/identity_style_matrix.json",
     "loras/HUGGINGFACE_MODEL_CARD.md",
     "loras/README.md",
-    "manifests/workflow_manifest.json",
     "scripts/__init__.py",
     "scripts/audit_candidate.py",
-    "scripts/install_into_existing_comfyui.py",
-    "scripts/produce_visual_audit.py",
-    "scripts/run_acceptance.py",
-    "scripts/run_benchmarks.py",
-    "scripts/run_comparison_report.py",
-    "scripts/run_experiment_matrix.py",
-    "scripts/run_tests.py",
     "scripts/bootstrap/__init__.py",
     "scripts/bootstrap/bootstrap.py",
-    "scripts/runtime/apply_mps_fp8_workaround.py",
-    "workflows/workflow_delivery_contract.md",
+    "scripts/install_into_existing_comfyui.py",
+    "scripts/install_runpod.sh",
+    "scripts/install_windows.ps1",
+    "scripts/start_runpod.sh",
+    "scripts/start_windows.ps1",
+    "scripts/produce_visual_audit.py",
 }
 INCLUDED_TREES = {
     "dependencies",
-    "docs/assets",
+    "docs/examples",
     "prompts",
     "schemas",
+    "scripts/preflight",
     "src",
     "workflows",
 }
@@ -94,7 +79,7 @@ def _selected_files() -> list[Path]:
         if any(part in FORBIDDEN_PARTS for part in relative.parts):
             continue
         if path.suffix.casefold() in FORBIDDEN_SUFFIXES:
-            if not (relative.parts[:2] == ("docs", "assets") and path.suffix.casefold() == ".png"):
+            if not (relative.parts[:2] == ("docs", "assets") and path.suffix.casefold() in {".png", ".jpg", ".jpeg"}):
                 raise RuntimeError(f"forbidden release artifact selected: {relative}")
         if path.suffix == ".pyc" or ".DS_Store" in relative.parts:
             continue
@@ -155,36 +140,6 @@ def _build_windows(zip_path: Path, version: str) -> Path:
     return output
 
 
-def _extract_zip(zip_path: Path, destination: Path) -> None:
-    with zipfile.ZipFile(zip_path) as archive:
-        archive.extractall(destination)
-
-
-def _build_dmg(zip_path: Path, version: str) -> Path:
-    output = DIST / f"HOI4-Portrait-Workflows-{version}-macOS.dmg"
-    with tempfile.TemporaryDirectory(prefix="hoi4-portrait-dmg-") as directory:
-        staging = Path(directory)
-        package = staging / "HOI4 Portrait Workflows"
-        package.mkdir()
-        _extract_zip(zip_path, package)
-        launcher = staging / "Open Setup Instructions.command"
-        launcher.write_text(
-            "#!/bin/zsh\n"
-            "set -e\n"
-            "package_root=\"$(cd \"$(dirname \"$0\")/HOI4 Portrait Workflows\" && pwd)\"\n"
-            "open \"$package_root/SETUP_WITH_CODING_AGENT.md\"\n",
-            encoding="utf-8",
-        )
-        launcher.chmod(launcher.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-        output.unlink(missing_ok=True)
-        _run([
-            "hdiutil", "create", "-volname", f"HOI4 Portrait Workflows {version}",
-            "-srcfolder", str(staging), "-ov", "-format", "UDZO", str(output),
-        ])
-    _run(["hdiutil", "verify", str(output)])
-    return output
-
-
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -205,8 +160,7 @@ def main(argv: list[str] | None = None) -> int:
     zip_path = DIST / f"HOI4-Portrait-Workflows-{version}.zip"
     _write_zip(zip_path, files, version)
     windows_path = _build_windows(zip_path, version)
-    dmg_path = _build_dmg(zip_path, version)
-    artifacts = [zip_path, windows_path, dmg_path]
+    artifacts = [zip_path, windows_path]
     sums_path = DIST / "SHA256SUMS.txt"
     sums_path.write_text("".join(f"{_sha256(path)}  {path.name}\n" for path in artifacts), encoding="utf-8")
     print(json.dumps({

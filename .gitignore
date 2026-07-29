@@ -33,6 +33,8 @@ repos/
 !docs/assets/**/*.png
 *.jpg
 *.jpeg
+!docs/assets/**/*.jpg
+!docs/assets/**/*.jpeg
 *.webp
 *.dds
 *.psd

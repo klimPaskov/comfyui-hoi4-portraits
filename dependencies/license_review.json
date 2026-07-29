@@ -2,8 +2,8 @@
   "schema_version": "1.0.0",
   "review_date": "2026-07-28",
   "status": "APPROVED",
-  "approval_attestation": "docs/preflight/owner_attestation.json",
-  "approved_scope": "local qualification and mod development; authenticated owner-controlled private hosting of the immutable style LoRA; no public model, LoRA, private background, or private source redistribution",
+  "approval_attestation": "owner_explicit_publication_instruction_2026-07-29",
+  "approved_scope": "local qualification and mod development; owner-authorized public hosting of the immutable style LoRA at its pinned Hugging Face revision; no Krea model, private background, or private source redistribution",
   "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.",
   "sources": [
     {
@@ -21,7 +21,7 @@
         "Krea retains ownership of the model; outputs remain subject to agreement compliance"
       ],
       "artifact_policy": "local_copy_only",
-      "owner_decision": "approved for local qualification and mod development; Comfy Cloud execution remains unconnected; no model distribution",
+      "owner_decision": "approved for local qualification and mod development; RunPod execution remains unconnected; no model distribution",
       "commercial_use_decision": "use remains subject to the Krea Community License revenue threshold and enterprise-license requirement",
       "content_filter_decision": "prompt validation, independent audit, human review, and fail-closed promotion",
       "ai_disclosure_decision": "apply where required by law, regulation, or platform policy"
@@ -81,11 +81,11 @@
       "artifact_revision": "2eb855d3176908af4329640c8d966a1b26fc3d6b",
       "artifact_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
       "license_identifier": null,
-      "status": "OWNER_APPROVED_PRIVATE_ONLY",
+      "status": "OWNER_APPROVED_PUBLIC_PINNED_SOURCE",
       "material_conditions": [
         "file is preserved byte-for-byte and is not redistributed by the public Git repository",
-        "Hugging Face repository visibility must remain private and access-controlled",
-        "no open-source license or public redistribution right is inferred"
+        "Hugging Face repository visibility is public by explicit owner instruction",
+        "public access does not by itself grant an open-source license or downstream redistribution rights"
       ]
     },
     {
@@ -99,5 +99,5 @@
   "blocking_reasons": [
     "Krea Community License use is approved only for local qualification and mod development under the recorded conditions; model distribution remains prohibited.",
     "BiRefNet source and snapshot license metadata still require reconciliation before redistribution.",
-    "The existing style LoRA remains private, access-controlled, and immutable."]
+    "The existing style LoRA remains immutable and publicly retrievable only from its pinned Hugging Face revision; no separate open-source license has been granted."]
 }

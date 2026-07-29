@@ -21,7 +21,7 @@ from typing import Any, Callable
 
 from ..constants import ExitCode
 from ..controller import JobController
-from ..comfy_client import ComfyCloudClient, ComfyTransportError, LoopbackComfyClient
+from ..comfy_client import ComfyTransportError, LoopbackComfyClient
 from ..constants import DEPENDENCY_LOCK_VERSION, PROFILE_LIMITS, WORKFLOW_VERSION
 from ..preflight import collect_preflight
 from ..util import atomic_json_write, canonical_hash, project_root, relative_safe_path, sha256_file
@@ -103,25 +103,19 @@ class PortraitMcpService:
         return len(running) + len(pending) if isinstance(running, list) and isinstance(pending, list) else None
 
     def _runtime_probe(self, profile: str | None = None) -> dict[str, Any]:
-        cloud_profile = profile in {"human_full_power_gpu", "agent_full_power_gpu"}
-        try:
-            client = ComfyCloudClient(timeout=3.0) if cloud_profile else LoopbackComfyClient(timeout=3.0)
-        except ComfyTransportError as exc:
-            return {"status": "BLOCKED", "error_code": exc.code.name, "message": str(exc), "binding": "https://cloud.comfy.org" if cloud_profile else "http://127.0.0.1:8188"}
+        client = LoopbackComfyClient(timeout=3.0)
         try:
             stats = client.health()
             inventory = client.inventory()
             queue = client.queue()
         except ComfyTransportError as exc:
-            return {"status": "BLOCKED", "error_code": exc.code.name, "message": str(exc), "binding": "https://cloud.comfy.org" if cloud_profile else "http://127.0.0.1:8188"}
-        return {"status": "PASS", "binding": "https://cloud.comfy.org" if cloud_profile else "http://127.0.0.1:8188", "system_stats": stats.payload, "queue": queue.payload, "object_info": inventory.payload, "queue_depth": self._queue_depth(queue.payload), "transport": "comfy_cloud_api" if cloud_profile else "loopback"}
+            return {"status": "BLOCKED", "error_code": exc.code.name, "message": str(exc), "binding": "http://127.0.0.1:8188"}
+        return {"status": "PASS", "binding": "http://127.0.0.1:8188", "system_stats": stats.payload, "queue": queue.payload, "object_info": inventory.payload, "queue_depth": self._queue_depth(queue.payload), "transport": "loopback"}
 
     def _workflow_path(self, workflow_id: str, api: bool = True) -> Path:
         paths = {
-            "human_local_mac_16gb": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
             "human_local_nvidia_16gb": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
             "human_full_power_gpu": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-            "agent_local_mac_16gb": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
             "agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
             "agent_full_power_gpu": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
         }
@@ -157,7 +151,7 @@ class PortraitMcpService:
         report = collect_preflight(self.root, profile=profile)
         runtime = self._runtime_probe(profile)
         node_classes = sorted(runtime.get("object_info", {})) if isinstance(runtime.get("object_info"), dict) else []
-        return {"profiles": list(PROFILE_LIMITS), "local_comfyui_binding": "http://127.0.0.1:8188", "cloud_binding": "https://cloud.comfy.org", "raw_comfyui_public": False, "remote_transport": "authenticated_comfy_cloud_api_or_project_gateway", "first_party_local_mcp_parity": False, "available_routes": ["/api/object_info", "/api/upload/image", "/api/prompt", "/api/job/{prompt_id}/status", "/api/view"], "runtime": runtime, "node_classes": node_classes, "hardware": report.get("hardware"), "gates": {gate["name"]: gate["status"] for gate in report["gates"]}, "unresolved_limitations": report["blockers"] + ([] if runtime["status"] == "PASS" else ["selected ComfyUI route health is unavailable"])}
+        return {"profiles": list(PROFILE_LIMITS), "local_comfyui_binding": "http://127.0.0.1:8188", "remote_binding": "authenticated RunPod gateway", "raw_comfyui_public": False, "remote_transport": "authenticated_project_gateway", "first_party_local_mcp_parity": False, "available_routes": ["/health", "/mcp", "/uploads", "/jobs"], "runtime": runtime, "node_classes": node_classes, "hardware": report.get("hardware"), "gates": {gate["name"]: gate["status"] for gate in report["gates"]}, "unresolved_limitations": report["blockers"] + ([] if runtime["status"] == "PASS" else ["selected ComfyUI route health is unavailable"])}
 
     def _portrait_inventory(self, params: dict[str, Any]) -> dict[str, Any]:
         model_lock = json.loads((self.root / "dependencies" / "models.lock.json").read_text(encoding="utf-8"))

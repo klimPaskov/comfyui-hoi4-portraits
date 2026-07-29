@@ -2,13 +2,13 @@
 
 The workflows reference `loras/hoi4_portrait_new_style_lora.safetensors` as an immutable project-owned input.
 
-The binary is checksum-locked and ignored by Git. Its authenticated source is the private Hugging Face repository [`Hoops-McCann/hoi4-portrait-new-style-lora`](https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora), pinned to commit:
+The binary is checksum-locked and ignored by Git. Its public Hugging Face source is [`Hoops-McCann/hoi4-portrait-new-style-lora`](https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora), pinned to commit:
 
 ```text
 2eb855d3176908af4329640c8d966a1b26fc3d6b
 ```
 
-Authenticate with a Hugging Face account that has access, then use the project bootstrap. The bootstrap downloads the exact pinned safetensors object into this directory, verifies its size and checksum, and stops on a missing token, unavailable source, unsupported format, or mismatch. It never commits the binary.
+The installer downloads the exact pinned safetensors object into this directory, verifies its size and checksum, and stops on an unavailable source, unsupported format, or mismatch. It never commits the binary.
 
 ```text
 Size      228587816 bytes

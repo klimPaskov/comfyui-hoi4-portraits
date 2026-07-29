@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: windows-latest
     steps:
       - name: Check out the pinned release
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -29,15 +29,19 @@ jobs:
       - name: Build and verify release packages
         env:
           RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
-        run: python3 scripts/release/build_release_artifacts.py --version "$RELEASE_VERSION"
+        shell: pwsh
+        run: python scripts/release/build_release_artifacts.py --version $env:RELEASE_VERSION
 
       - name: Create prerelease and upload assets
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
+        shell: pwsh
         run: |
-          gh release view "$RELEASE_VERSION" >/dev/null 2>&1 || \
-            gh release create "$RELEASE_VERSION" --prerelease \
-              --title "HOI4 Portrait Workflows $RELEASE_VERSION" \
+          gh release view $env:RELEASE_VERSION *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:RELEASE_VERSION --prerelease `
+              --title "HOI4 Portrait Workflows $env:RELEASE_VERSION" `
               --notes "Setup-only prerelease. ComfyUI and model weights are not bundled. Read SETUP_WITH_CODING_AGENT.md. Production acceptance remains fail-closed until every documented gate passes."
-          gh release upload "$RELEASE_VERSION" dist/* --clobber
+          }
+          gh release upload $env:RELEASE_VERSION dist/* --clobber

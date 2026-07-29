@@ -15,7 +15,7 @@ COMPARISON_SCHEMA_VERSION = "1.0.0"
 
 def _diagnostic_candidates(root: Path) -> list[dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
-    for path in sorted((root / "docs" / "preflight").glob("local_*_execution_*.json")):
+    for path in sorted((root / ".runtime" / "reports").glob("local_*_execution_*.json")):
         try:
             evidence = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
@@ -113,7 +113,7 @@ def render_comparison_markdown(report: dict[str, Any]) -> str:
 def write_comparison_report(root: str | Path | None = None) -> dict[str, Any]:
     root_path = project_root(root)
     report = build_comparison_report(root_path)
-    output_dir = root_path / "docs" / "comparisons"
+    output_dir = root_path / ".runtime" / "reports" / "comparisons"
     output_dir.mkdir(parents=True, exist_ok=True)
     atomic_json_write(output_dir / "identity_style_comparison.json", report)
     (output_dir / "identity_style_comparison.md").write_text(render_comparison_markdown(report), encoding="utf-8")

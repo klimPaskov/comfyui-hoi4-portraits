@@ -1,23 +1,22 @@
 {
   "schema_version": "1.0.0",
-  "registry_status": "RESOLVED",
+  "registry_status": "UNRESOLVED",
   "backgrounds": [
     {
-      "registry_id": "chaos-redux-portrait-leader-background",
+      "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
       "role_scope": ["country_leader", "commander", "operative"],
-      "source_class": "project_owned_local_copy",
-      "source_path": "Chaos Redux live checkout/gfx/leaders/portrait_leader_background.psd",
-      "runtime_path": "backgrounds/private/chaos_redux_portrait_leader_background.png",
-      "source_definition": "Chaos Redux live checkout at reviewed source revision; source SHA-256 4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6",
-      "attribution": "Chaos Redux project-owned background; local-copy use authorized by project owner",
-      "license_or_rights": "Project-owner authorization for local qualification and mod development; no redistribution",
-      "redistribution_rule": "local_copy_only",
-      "width": 156,
-      "height": 210,
-      "sha256": "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e",
-      "approved_by": ["project_owner"],
-      "approval_attestation": "docs/preflight/owner_attestation.json",
-      "status": "APPROVED"
+      "source_class": "project_owned|installed_game_private_copy",
+      "source_path": "RESOLVE_FROM_LIVE_PROJECT_OR_INSTALLED_GAME",
+      "runtime_path": "backgrounds/private_or_redistributable/exact_file.png",
+      "source_definition": "Owning GFX or catalog reference",
+      "attribution": "RESOLVE",
+      "license_or_rights": "RESOLVE",
+      "redistribution_rule": "bundle_allowed|local_copy_only|blocked",
+      "width": null,
+      "height": null,
+      "sha256": "RESOLVE",
+      "approved_by": [],
+      "status": "BLOCKED_UNTIL_RESOLVED"
     }
   ]
 }

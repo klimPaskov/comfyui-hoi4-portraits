@@ -7,7 +7,7 @@ tags:
 
 # HOI4 portrait new-style LoRA
 
-Private, project-owned style adapter used by the
+Project-owned style adapter used by the
 [`comfyui-hoi4-portraits`](https://github.com/klimPaskov/comfyui-hoi4-portraits)
 workflows.
 
@@ -22,10 +22,10 @@ before loading it and must stop on a mismatch.
 
 ## Access and use
 
-This repository is private and exists to provide an authenticated,
-revision-pinned source for authorized local setup and Comfy Cloud model import.
+This public repository provides a revision-pinned source for local setup and
+RunPod model import.
 No open-source or third-party license is inferred or granted by this model
-card. Access does not grant rights to redistribute the weights, source
+card. Public access does not grant rights to redistribute the weights, source
 portraits, HOI4 assets, backgrounds, or generated outputs.
 
 The adapter is loaded with `LoraLoaderModelOnly` after the Krea 2 identity-edit

@@ -21,7 +21,7 @@ from .constants import (
 )
 from .contracts import ValidationIssue, build_blocked_output, validate_job
 from .dds import DdsValidationError, convert_png_to_dds
-from .comfy_client import ComfyCloudClient, ComfyTransportError, LoopbackComfyClient
+from .comfy_client import ComfyTransportError, LoopbackComfyClient
 from .preflight import collect_preflight
 from .selection import select_identity_first
 from .finalize import FinalizationError, finalize_candidate_png
@@ -30,12 +30,9 @@ from .workflow_validation import validate_workflow_file
 
 
 LOCAL_PROFILE_IDS = frozenset({
-    "human_local_mac_16gb",
     "human_local_nvidia_16gb",
-    "agent_local_mac_16gb",
     "agent_local_nvidia_16gb",
 })
-COMFY_CLOUD_PROFILE_IDS = frozenset({"human_full_power_gpu", "agent_full_power_gpu"})
 LOCAL_GENERATION_UNAVAILABLE = "LOCAL_GENERATION_UNAVAILABLE"
 
 
@@ -91,7 +88,7 @@ class JobController:
         evidence_paths.extend(
             sorted(
                 str(path.relative_to(self.root))
-                for pattern in ("mps_canary_*.json", "mps_barrier_canary_*.json", "cpu_canary_*.json")
+                for pattern in ("local_canary_*.json", "gpu_canary_*.json", "cpu_canary_*.json")
                 for path in (self.root / "docs" / "preflight").glob(pattern)
                 if path.is_file()
             )
@@ -166,16 +163,14 @@ class JobController:
             return None
         if any("background" in item.casefold() for item in blockers):
             return ExitCode.BACKGROUND_UNRESOLVED, blockers
-        if job.get("execution_profile") in COMFY_CLOUD_PROFILE_IDS and any("Comfy Cloud" in item or "cloud" in item.casefold() for item in blockers):
+        if job.get("execution_profile") in {"human_full_power_gpu", "agent_full_power_gpu"} and any("RunPod" in item or "remote" in item.casefold() for item in blockers):
             return ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, blockers
         return ExitCode.DEPENDENCY_MISSING, blockers
 
     def _workflow_api_path(self, workflow_id: str) -> Path:
         paths = {
-            "human_local_mac_16gb": self.root / "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
             "human_local_nvidia_16gb": self.root / "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
             "human_full_power_gpu": self.root / "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-            "agent_local_mac_16gb": self.root / "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
             "agent_local_nvidia_16gb": self.root / "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
             "agent_full_power_gpu": self.root / "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
         }
@@ -268,13 +263,10 @@ class JobController:
         validation = validate_workflow_file(workflow_id, ui_path, api_path, self.root)
         if validation["structural_status"] != "PASS":
             raise ComfyTransportError(ExitCode.WORKFLOW_INVALID, "; ".join(validation["issues"]))
-        if workflow_id in COMFY_CLOUD_PROFILE_IDS:
-            # The Cloud client is authenticated and HTTPS-only.  Cloud
-            # execution remains behind the same preflight and capability
-            # gates; no unauthenticated or local fallback is allowed.
-            client = ComfyCloudClient()
-        else:
-            client = LoopbackComfyClient()
+        # Local installs and RunPod Pods both keep raw ComfyUI on loopback.
+        # Remote callers reach the authenticated project gateway; the
+        # controller itself always talks to the colocated loopback server.
+        client = LoopbackComfyClient()
         client.health()
         candidate_paths: list[str] = []
         seeds: list[int] = []

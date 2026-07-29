@@ -5,7 +5,7 @@
   "exit_code": 15,
   "error_code": "BACKGROUND_UNRESOLVED",
   "error_message": "The approved background registry is unresolved.",
-  "execution_profile": "human_local_mac_16gb",
+  "execution_profile": "human_local_nvidia_16gb",
   "workflow_version": "graph-spec-1.0.0",
   "dependency_lock_version": "runtime-lock-1.0.0",
   "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",

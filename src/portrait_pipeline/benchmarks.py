@@ -16,7 +16,7 @@ from .workflow_validation import validate_all_workflows
 
 BENCHMARK_SCHEMA_VERSION = "1.0.0"
 BENCHMARK_REPORT_VERSION = "runtime-capability-2026-07-26.1"
-LOCAL_PROFILES = {"human_local_mac_16gb", "human_local_nvidia_16gb", "agent_local_mac_16gb", "agent_local_nvidia_16gb"}
+LOCAL_PROFILES = {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}
 REMOTE_PROFILES = {"human_full_power_gpu", "agent_full_power_gpu"}
 
 
@@ -115,7 +115,7 @@ def _blocked_status(profile: str, preflight: dict[str, Any]) -> tuple[str, str]:
     if profile in REMOTE_PROFILES:
         remote_status = statuses.get("remote_topology_auth")
         if remote_status != "PASS":
-            return "BLOCKED_REMOTE_AUTH", "Comfy Cloud subscription/API-key access and authenticated remote acceptance are unavailable."
+            return "BLOCKED_REMOTE_AUTH", "RunPod gateway authentication and remote acceptance are unavailable."
     if preflight.get("status") != "PASS":
         return "BLOCKED_PREFLIGHT", "One or more mandatory preflight gates remain blocked."
     return "BLOCKED_RUNTIME_UNAVAILABLE", "No live ComfyUI health, load, and generation measurements were recorded."
@@ -124,7 +124,7 @@ def _blocked_status(profile: str, preflight: dict[str, Any]) -> tuple[str, str]:
 def _live_schema_measurements(root: Path, profile: str) -> tuple[dict[str, Any], dict[str, Any]]:
     """Use the pinned live probe for schema/load evidence without claiming execution."""
 
-    path = root / "docs" / "preflight" / "live_comfy_compatibility.json"
+    path = root / ".runtime" / "reports" / "live_comfy_compatibility.json"
     try:
         probe = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -137,62 +137,20 @@ def _live_schema_measurements(root: Path, profile: str) -> tuple[dict[str, Any],
         "binding": probe.get("server", {}).get("base_url", "http://127.0.0.1:8188"),
         "raw_comfy_binding": probe.get("server", {}).get("raw_comfy_binding", "loopback_only"),
         "reason": "Live health and /object_info schema evidence exists; no source-specific generation claim is made.",
-        "evidence_path": "docs/preflight/live_comfy_compatibility.json",
+        "evidence_path": ".runtime/reports/live_comfy_compatibility.json",
     }
     workflow_load = {
         "status": "PASS_SCHEMA_ONLY" if schema_pass else "NOT_MEASURED",
         "workflow_id": profile,
         "reason": "Live node-registry/load-shape validation passed; this is not a model-loading or eight-step execution result." if schema_pass else "Live schema evidence is unavailable for this profile.",
-        "evidence_path": "docs/preflight/live_comfy_compatibility.json",
+        "evidence_path": ".runtime/reports/live_comfy_compatibility.json",
     }
     return runtime_health, workflow_load
 
 
 def _local_execution_evidence(root: Path, profile: str) -> dict[str, Any]:
-    """Read checked-in execution summaries without treating them as passes.
+    """Return runtime evidence only when a target-host benchmark is present."""
 
-    Runtime portraits and audit data remain private under ``jobs/``.  The
-    small preflight summaries carry only the bounded evidence needed for the
-    public benchmark report: execution timing, candidate checksum, and the
-    independent-audit verdict.
-    """
-
-    if profile not in {"human_local_mac_16gb", "agent_local_mac_16gb"}:
-        return {"status": "NOT_APPLICABLE", "candidate_count": 0}
-    prefix = "local_human_execution_" if profile == "human_local_mac_16gb" else "local_agent_execution_"
-    paths = sorted((root / "docs" / "preflight").glob(prefix + "*.json"))
-    for path in reversed(paths):
-        try:
-            evidence = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
-        if not isinstance(evidence, dict):
-            continue
-        candidate = evidence.get("candidate")
-        audit = evidence.get("independent_audit")
-        if not isinstance(candidate, dict):
-            continue
-        candidate_path = candidate.get("path")
-        candidate_sha = candidate.get("sha256")
-        if not isinstance(candidate_path, str) or not isinstance(candidate_sha, str):
-            continue
-        runtime = evidence.get("runtime") if isinstance(evidence.get("runtime"), dict) else {}
-        return {
-            "status": "PASS_EXECUTION_ONLY",
-            "evidence_path": str(path.relative_to(root)),
-            "job_id": evidence.get("job_id"),
-            "candidate_count": 1,
-            "candidate_path": candidate_path,
-            "candidate_sha256": candidate_sha,
-            "candidate_dimensions": candidate.get("dimensions"),
-            "device": runtime.get("device"),
-            "model": runtime.get("model"),
-            "sampler_seconds": runtime.get("sampler_seconds"),
-            "prompt_execution_seconds": runtime.get("prompt_execution_seconds"),
-            "audit_verdict": audit.get("verdict") if isinstance(audit, dict) else "UNCERTAIN",
-            "face_embedding_similarity": audit.get("face_embedding_similarity") if isinstance(audit, dict) else None,
-            "production_authorized": False,
-        }
     return {"status": "NOT_RECORDED", "candidate_count": 0}
 
 
@@ -221,19 +179,17 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
         status_reason = "A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates."
         runtime_health["execution_evidence"] = execution_evidence
         workflow_load["execution_evidence"] = execution_evidence
-    if profile in {"human_local_mac_16gb", "agent_local_mac_16gb"} and gate_statuses.get("local_runtime_capability") == "PASS":
-        runtime_health["target_profile_accelerator"] = "MPS"
-    elif profile in {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}:
+    if profile in {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}:
         runtime_health["target_profile_accelerator"] = "CUDA"
         runtime_health["target_profile_accelerator_status"] = gate_statuses.get("local_runtime_capability")
     elif profile in REMOTE_PROFILES:
-        runtime_health["target_profile_accelerator"] = "Comfy Cloud GPU"
+        runtime_health["target_profile_accelerator"] = "RunPod NVIDIA GPU"
         runtime_health["target_profile_accelerator_status"] = gate_statuses.get("remote_topology_auth")
     preprocessing_ready = gate_statuses.get("approved_source_background") == "PASS" and gate_statuses.get("source_fixture_and_provenance") == "PASS"
     dry_validation_job = ({"status": "PASS_PREPROCESSING_ONLY_PRODUCTION_GATES_BLOCKED", "reason": "The source fixture, approved background, and deterministic preprocessing route are evidenced; calibrated identity/style thresholds and independent audit still block promotion."} if preprocessing_ready else {"status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND", "reason": "The live schema probe and private preprocessing qualification passed, but no production-authorized source fixture and approved background are available."})
     required_follow_up = [
         "run the target profile inside its target accelerator environment without mutation",
-        "verify Comfy Cloud subscription, API authentication, custom-node parity, model availability, and source upload behavior",
+        "verify RunPod gateway authentication, custom-node parity, model availability, and source upload behavior",
         "complete live source-specific model loading and the eight-step Turbo execution",
         "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
         "run the target profile with independent identity/style/mask/provenance audit",
@@ -331,7 +287,7 @@ def render_benchmark_markdown(report: dict[str, Any]) -> str:
 def write_benchmark_reports(root: str | Path | None = None, profiles: Iterable[str] | None = None) -> list[dict[str, Any]]:
     root_path = project_root(root)
     selected = tuple(profiles) if profiles is not None else tuple(PROFILE_LIMITS)
-    output_dir = root_path / "docs" / "benchmarks"
+    output_dir = root_path / ".runtime" / "reports" / "benchmarks"
     output_dir.mkdir(parents=True, exist_ok=True)
     reports = []
     for profile in selected:

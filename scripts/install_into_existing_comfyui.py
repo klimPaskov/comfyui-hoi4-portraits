@@ -17,6 +17,7 @@ import os
 import shutil
 import subprocess
 import sys
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -29,6 +30,7 @@ from portrait_pipeline.constants import ExitCode  # noqa: E402
 from portrait_pipeline.util import atomic_json_write, sha256_file  # noqa: E402
 from scripts.bootstrap.bootstrap import (  # noqa: E402
     BootstrapError,
+    _download_verified,
     _restore_models,
     _restore_preprocessing_models,
     _restore_preprocessing_source_artifacts,
@@ -159,12 +161,27 @@ def _merge_extra_model_paths(comfy_root: Path, actions: list[dict[str, Any]]) ->
     actions.append({"action": "extra_model_paths_installed", "path": str(path)})
 
 
-def _copy_workflows(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
+def _copy_workflows(
+    comfy_root: Path,
+    actions: list[dict[str, Any]],
+    workflow_ids: set[str] | None = None,
+) -> None:
     destination = comfy_root / "user" / "default" / "workflows" / "hoi4_portraits"
     destination.mkdir(parents=True, exist_ok=True)
     count = 0
     for source in sorted((ROOT / "workflows").glob("**/*.json")):
         if source.name.endswith(".api.json"):
+            continue
+        if workflow_ids is not None and source.stem not in workflow_ids:
+            target = destination / source.name
+            if target.is_file():
+                if sha256_file(target) != sha256_file(source):
+                    raise BootstrapError(
+                        ExitCode.WORKFLOW_INVALID,
+                        f"unselected installed workflow has local changes and was not removed: {target}",
+                    )
+                target.unlink()
+                actions.append({"action": "ui_workflow_removed", "path": str(target)})
             continue
         target = destination / source.name
         if target.is_file() and sha256_file(target) != sha256_file(source):
@@ -175,11 +192,59 @@ def _copy_workflows(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
     actions.append({"action": "ui_workflows_installed", "path": str(destination), "count": count})
 
 
-def install(comfy_root: Path, profile: str) -> list[dict[str, Any]]:
+def _install_autoprompter_runtime(profile: str, actions: list[dict[str, Any]]) -> None:
+    if profile != "local_nvidia_16gb" or os.name != "nt":
+        return
+    lock = json.loads((ROOT / "dependencies" / "autoprompter_runtime.lock.json").read_text(encoding="utf-8"))
+    artifact = lock["artifacts"]["windows_x64"]
+    archive = ROOT / ".runtime" / "downloads" / artifact["filename"]
+    _download_verified(
+        artifact["url"],
+        archive,
+        artifact["size_bytes"],
+        artifact["sha256"],
+        actions,
+    )
+    destination = ROOT / artifact["install_directory"]
+    executable = ROOT / artifact["install_path"]
+    if executable.is_file():
+        if (
+            executable.stat().st_size != artifact["extracted_binary_size_bytes"]
+            or sha256_file(executable) != artifact["extracted_binary_sha256"]
+        ):
+            raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "installed autoprompter runtime checksum mismatch")
+    else:
+        destination.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(archive) as package:
+            for member in package.infolist():
+                target = (destination / member.filename).resolve()
+                try:
+                    target.relative_to(destination.resolve())
+                except ValueError as exc:
+                    raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "autoprompter runtime archive contains an unsafe path") from exc
+            package.extractall(destination)
+        if (
+            not executable.is_file()
+            or executable.stat().st_size != artifact["extracted_binary_size_bytes"]
+            or sha256_file(executable) != artifact["extracted_binary_sha256"]
+        ):
+            raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "extracted autoprompter runtime checksum mismatch")
+    actions.append({
+        "action": "autoprompter_runtime_verified",
+        "path": str(executable),
+        "sha256": sha256_file(executable),
+    })
+
+
+def install(
+    comfy_root: Path,
+    profile: str,
+    workflow_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
     if not comfy_root.is_dir() or not (comfy_root / "main.py").is_file():
         raise BootstrapError(ExitCode.WORKFLOW_INVALID, "existing ComfyUI root must contain main.py")
-    if profile not in {"local_mac_16gb", "local_nvidia_16gb"}:
-        raise BootstrapError(ExitCode.INPUT_SCHEMA_INVALID, "existing-runtime install supports local Mac or local NVIDIA only")
+    if profile not in {"local_nvidia_16gb", "full_power_gpu"}:
+        raise BootstrapError(ExitCode.INPUT_SCHEMA_INVALID, "existing-runtime install supports local NVIDIA or full-power GPU profiles")
     actions: list[dict[str, Any]] = [{
         "action": "existing_comfyui_verified",
         "path": str(comfy_root),
@@ -194,18 +259,34 @@ def install(comfy_root: Path, profile: str) -> list[dict[str, Any]]:
     preprocessing_lock = json.loads((ROOT / "dependencies" / "preprocessing_lock.json").read_text(encoding="utf-8"))
     _restore_preprocessing_models(preprocessing_lock, actions)
     _restore_preprocessing_source_artifacts(preprocessing_lock, actions)
+    _install_autoprompter_runtime(profile, actions)
     _merge_extra_model_paths(comfy_root, actions)
-    _copy_workflows(comfy_root, actions)
+    _copy_workflows(comfy_root, actions, workflow_ids)
     return actions
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Install HOI4 portrait workflows into an existing ComfyUI checkout.")
     parser.add_argument("--comfyui-root", required=True, type=Path)
-    parser.add_argument("--profile", required=True, choices=["local_mac_16gb", "local_nvidia_16gb"])
+    parser.add_argument("--profile", required=True, choices=["local_nvidia_16gb", "full_power_gpu"])
+    parser.add_argument(
+        "--workflow",
+        action="append",
+        choices=[
+            "human_local_nvidia_16gb",
+            "human_full_power_gpu",
+            "agent_local_nvidia_16gb",
+            "agent_full_power_gpu",
+        ],
+        help="copy only the named UI workflow; repeat to install more than one",
+    )
     args = parser.parse_args(argv)
     try:
-        actions = install(args.comfyui_root.expanduser().resolve(), args.profile)
+        actions = install(
+            args.comfyui_root.expanduser().resolve(),
+            args.profile,
+            set(args.workflow) if args.workflow else None,
+        )
     except BootstrapError as exc:
         print(json.dumps({"status": "BLOCKED", "exit_code": int(exc.code), "error": str(exc)}, indent=2), file=sys.stderr)
         return int(exc.code)
@@ -214,6 +295,7 @@ def main(argv: list[str] | None = None) -> int:
         "status": "PASS_SETUP_ONLY",
         "installed_at": datetime.now(timezone.utc).isoformat(),
         "profile": args.profile,
+        "workflows": sorted(args.workflow) if args.workflow else "all",
         "comfyui_root": str(args.comfyui_root.expanduser().resolve()),
         "actions": actions,
         "warning": "Setup PASS is not generation or portrait-audit acceptance. Restart ComfyUI and run live compatibility checks.",

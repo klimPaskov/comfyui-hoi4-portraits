@@ -35,7 +35,7 @@ class GatewayConflict(AdapterError):
 
 
 class PortraitGateway:
-    """Narrow authenticated REST gateway for the remote Comfy Cloud route.
+    """Narrow authenticated REST gateway for the remote RunPod route.
 
     The gateway deliberately exposes no raw ComfyUI endpoint and accepts only
     the registered full-power workflow through the validated job contract.

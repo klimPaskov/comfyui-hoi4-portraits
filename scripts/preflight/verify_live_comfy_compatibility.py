@@ -26,10 +26,8 @@ from portrait_pipeline.util import atomic_json_write, project_root  # noqa: E402
 
 
 WORKFLOW_PATHS = {
-    "human_local_mac_16gb": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
     "human_local_nvidia_16gb": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
     "human_full_power_gpu": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-    "agent_local_mac_16gb": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
     "agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
     "agent_full_power_gpu": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
 }
@@ -224,7 +222,7 @@ def main(argv: list[str] | None = None) -> int:
         report = verify(root, args.base_url, args.profile[0] if args.profile and len(args.profile) == 1 else None)
     except LiveProbeError as exc:
         report = {"schema_version": "1.0.0", "checked_at": datetime.now(timezone.utc).isoformat(), "status": "BLOCKED_LIVE_SCHEMA", "error": str(exc), "policy": "No Krea execution is permitted without live schema evidence."}
-    output_path = root / "docs" / "preflight" / "live_comfy_compatibility.json"
+    output_path = root / ".runtime" / "reports" / "live_comfy_compatibility.json"
     atomic_json_write(output_path, report)
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0 if report.get("status") == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED" else 1

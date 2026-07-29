@@ -71,7 +71,7 @@ def _verify_file(root: Path, relative: str, expected_sha256: str, expected_size:
 
 def _resolve_local_runtime(root: Path) -> tuple[dict[str, Any], Path, Path, Path]:
     lock = _read_lock(root)
-    artifact = lock.get("artifacts", {}).get("macos_arm64", {})
+    artifact = lock.get("artifacts", {}).get("windows_x64", {})
     binary = root / str(artifact.get("install_path", ""))
     if not binary.is_file():
         raise AutoprompterServiceError(f"pinned llama-server binary is missing: {binary}")
@@ -177,10 +177,10 @@ class _Handler(BaseHTTPRequestHandler):
 
 
 class AutoprompterService:
-    def __init__(self, root: str | Path | None = None, *, profile: str = "human_local_mac_16gb", host: str = "127.0.0.1", port: int = 8099, upstream_port: int = 8100):
+    def __init__(self, root: str | Path | None = None, *, profile: str = "human_local_nvidia_16gb", host: str = "127.0.0.1", port: int = 8099, upstream_port: int = 8100):
         if host not in {"127.0.0.1", "localhost"}:
             raise AutoprompterServiceError("autoprompter may bind only to loopback")
-        if profile not in {"human_local_mac_16gb", "human_full_power_gpu"}:
+        if profile not in {"human_local_nvidia_16gb", "human_full_power_gpu"}:
             raise AutoprompterServiceError("autoprompter profile is not a human workflow profile")
         self.root = project_root(root)
         self.profile = profile
@@ -190,7 +190,7 @@ class AutoprompterService:
         self.child: subprocess.Popen[bytes] | None = None
         self._model: Any = None
         self._processor: Any = None
-        if profile == "human_local_mac_16gb":
+        if profile == "human_local_nvidia_16gb":
             self.lock, self.binary, self.model, self.mmproj = _resolve_local_runtime(self.root)
             self.model_id = "Qwen/Qwen3-VL-4B-Instruct-GGUF"
         else:
@@ -255,7 +255,7 @@ class AutoprompterService:
     def health(self) -> dict[str, Any]:
         if self.profile == "human_full_power_gpu":
             ready = self._model is not None and self._processor is not None
-            return {"status": "PASS" if ready else "BLOCKED", "binding": f"http://{self.host}:{self.port}", "upstream": "transformers_in_process", "profile": self.profile, "model_id": self.model_id, "instruction_sha256": __import__("hashlib").sha256(self.instruction.encode("utf-8")).hexdigest()}
+            return {"status": "PASS", "binding": f"http://{self.host}:{self.port}", "upstream": "transformers_loaded" if ready else "transformers_staged_idle", "profile": self.profile, "model_id": self.model_id, "instruction_sha256": __import__("hashlib").sha256(self.instruction.encode("utf-8")).hexdigest()}
         upstream = False
         try:
             with urllib.request.urlopen(f"http://127.0.0.1:{self.upstream_port}/health", timeout=2) as response:
@@ -316,6 +316,19 @@ class AutoprompterService:
         except Exception as exc:
             raise AutoprompterServiceError(f"full-power Qwen3-VL generation failed: {type(exc).__name__}") from exc
 
+    def _release_full_power(self) -> None:
+        if self.profile != "human_full_power_gpu":
+            return
+        self._model = None
+        self._processor = None
+        try:
+            import torch  # type: ignore
+
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except Exception:
+            pass
+
     def complete(self, payload: dict[str, Any]) -> dict[str, Any]:
         if payload.get("model_id") != self.model_id:
             raise AutoprompterServiceError("model_id does not match the pinned local profile")
@@ -330,12 +343,18 @@ class AutoprompterService:
             raise AutoprompterServiceError("processed image is not valid base64") from exc
         if not decoded.startswith(b"\x89PNG\r\n\x1a\n"):
             raise AutoprompterServiceError("autoprompter accepts PNG input only")
+        if self.profile == "human_full_power_gpu" and (self._model is None or self._processor is None):
+            self.start_upstream()
         attempts: list[dict[str, Any]] = []
         for attempt_index, retry_profile in enumerate(AUTOPROMPTER_RETRY_PROFILES, start=1):
             temperature = float(retry_profile["temperature"])
             seed = int(retry_profile["seed"])
             if self.profile == "human_full_power_gpu":
-                prompt = self._complete_full_power(image_value, temperature=temperature, seed=seed)
+                try:
+                    prompt = self._complete_full_power(image_value, temperature=temperature, seed=seed)
+                except Exception:
+                    self._release_full_power()
+                    raise
             else:
                 upstream_payload = {
                     "model": self.model_id,
@@ -368,15 +387,16 @@ class AutoprompterService:
             attempts.append(attempt_record)
             if validation.passed:
                 self._record_attempts(payload.get("job_id"), attempts)
+                self._release_full_power()
                 return {"prompt": validation.normalized_prompt, "model": self.model_id, "validator": validation.as_dict(), "attempts": attempts}
         final = attempts[-1] if attempts else {"failure_codes": ["AUTOPROMPT_EMPTY"]}
         self._record_attempts(payload.get("job_id"), attempts)
+        self._release_full_power()
         raise AutoprompterServiceError("autoprompt failed validation after bounded retries: " + ",".join(final.get("failure_codes", [])), attempts=attempts)
 
     def stop(self) -> None:
         if self.profile == "human_full_power_gpu":
-            self._model = None
-            self._processor = None
+            self._release_full_power()
             return
         if self.child is None or self.child.poll() is not None:
             return
@@ -391,7 +411,7 @@ class AutoprompterService:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run the loopback-only staged Qwen3-VL autoprompter.")
     parser.add_argument("--root", type=Path, default=None)
-    parser.add_argument("--profile", default="human_local_mac_16gb")
+    parser.add_argument("--profile", default="human_local_nvidia_16gb")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8099)
     parser.add_argument("--upstream-port", type=int, default=8100)
@@ -402,12 +422,17 @@ def main(argv: list[str] | None = None) -> int:
         if args.check_only:
             print(json.dumps({"status": "PASS", "profile": service.profile, "model_id": service.model_id, "binary": str(service.binary) if service.binary else None, "model": str(service.model), "mmproj": str(service.mmproj) if service.mmproj else None}, indent=2))
             return 0
-        service.start_upstream()
+        # The full-power VLM shares the GPU with portrait generation. Keep it
+        # staged on disk until a workflow request actually needs an automatic
+        # prompt, then release it immediately after the bounded prompt pass.
+        if service.profile != "human_full_power_gpu":
+            service.start_upstream()
         server = ThreadingHTTPServer((args.host, args.port), _Handler)
         _Handler.service = service
         for signal_name in (signal.SIGINT, signal.SIGTERM):
             signal.signal(signal_name, lambda _signum, _frame: threading.Thread(target=server.shutdown, daemon=True).start())
-        print(json.dumps({"status": "PASS", "binding": f"http://{args.host}:{args.port}", "upstream": f"http://127.0.0.1:{args.upstream_port}"}), flush=True)
+        upstream = "transformers_staged_idle" if service.profile == "human_full_power_gpu" else f"http://127.0.0.1:{args.upstream_port}"
+        print(json.dumps({"status": "PASS", "binding": f"http://{args.host}:{args.port}", "upstream": upstream}), flush=True)
         try:
             server.serve_forever()
         finally:

@@ -236,9 +236,9 @@ def _parse_model_response(response: dict[str, Any]) -> dict[str, Any]:
 class VisualAuditProducer:
     """One-shot local producer for a separate visual-audit process."""
 
-    def __init__(self, root: str | Path | None = None, *, runtime_profile: str = "local_mac_16gb", port: int | None = None, auditor_process_id: str | None = None):
+    def __init__(self, root: str | Path | None = None, *, runtime_profile: str = "local_nvidia_16gb", port: int | None = None, auditor_process_id: str | None = None):
         self.root = project_root(root)
-        if runtime_profile not in {"local_mac_16gb", "full_power_gpu"}:
+        if runtime_profile not in {"local_nvidia_16gb", "full_power_gpu"}:
             raise VisualAuditServiceError("unsupported visual-audit runtime profile")
         self.runtime_profile = runtime_profile
         self.binary_path: Path | None = None
@@ -246,7 +246,7 @@ class VisualAuditProducer:
         self.model_path: Path | None = None
         self._hf_model: Any = None
         self._hf_processor: Any = None
-        if runtime_profile == "local_mac_16gb":
+        if runtime_profile == "local_nvidia_16gb":
             self.lock, self.rubric_path, self.binary_path, self.model_path, self.mmproj_path_text = _load_runtime_lock(self.root)
             self.model = self.lock["model"]
             self.runtime = self.lock["runtime"]
@@ -456,7 +456,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--auditor-process-id", default=None)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--port", type=int, default=None)
-    parser.add_argument("--runtime-profile", choices=("local_mac_16gb", "full_power_gpu"), default="local_mac_16gb")
+    parser.add_argument("--runtime-profile", choices=("local_nvidia_16gb", "full_power_gpu"), default="local_nvidia_16gb")
     args = parser.parse_args(argv)
     try:
         producer = VisualAuditProducer(runtime_profile=args.runtime_profile, port=args.port, auditor_process_id=args.auditor_process_id)

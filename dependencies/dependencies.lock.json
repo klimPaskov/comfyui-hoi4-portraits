@@ -93,7 +93,7 @@
       "sha256": ["921bd305b10e82b4d1f5e802b6850677f965d8394203d182f078873851dada69", "3828ee7586cd0b2091b6209e5ad53e20d0649bbe87164a459d0676e035e8f523"],
       "profiles": ["all"],
       "mandatory": true,
-      "compatibility_notes": "Apple Silicon CPython 3.12 wheel plus source distribution are pinned; current system Python 3.9 cannot satisfy the project runtime floor."
+      "compatibility_notes": "CPython 3.12 is the project runtime floor; the selected wheel or source archive must match one of the pinned hashes."
     },
     {
       "name": "hoi4-portrait-project-nodes",

@@ -22,7 +22,7 @@ EXPERIMENT_AXES = {
     "cfg": [1.0],
     "sampler": ["euler_simple", "qualified_alternative"],
     "style_pass_denoise": [0.10, 0.20, 0.30],
-    "working_resolution": ["local_mac_canvas", "full_power_canvas"],
+    "working_resolution": ["local_nvidia_canvas", "full_power_canvas"],
 }
 
 
@@ -34,10 +34,8 @@ def build_matrix() -> dict[str, Any]:
         "staged_design": True,
         "axes": EXPERIMENT_AXES,
         "profiles": {
-            ExecutionProfile.HUMAN_LOCAL_MAC_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
             ExecutionProfile.HUMAN_LOCAL_NVIDIA_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
             ExecutionProfile.HUMAN_FULL_POWER_GPU.value: {"candidate_budget": 6, "retry_limit": 2, "canvas": [1196, 1610]},
-            ExecutionProfile.AGENT_LOCAL_MAC_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
             ExecutionProfile.AGENT_LOCAL_NVIDIA_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
             ExecutionProfile.AGENT_FULL_POWER_GPU.value: {"candidate_budget": 6, "retry_limit": 2, "canvas": [1196, 1610]},
         },
@@ -101,7 +99,7 @@ def build_execution_report(root: str | Path | None = None) -> dict[str, Any]:
 def write_execution_report(root: str | Path | None = None) -> dict[str, Any]:
     root_path = project_root(root)
     report = build_execution_report(root_path)
-    atomic_json_write(root_path / "docs" / "preflight" / "identity_style_matrix_execution_2026-07-29.json", report)
+    atomic_json_write(root_path / ".runtime" / "reports" / "identity_style_matrix_execution.json", report)
     return report
 
 
