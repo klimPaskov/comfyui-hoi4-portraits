@@ -98,6 +98,14 @@
         1120
       ]
     },
+    "agent_full_power_gpu": {
+      "candidate_budget": 6,
+      "retry_limit": 2,
+      "canvas": [
+        1196,
+        1610
+      ]
+    },
     "agent_remote_runpod": {
       "candidate_budget": 6,
       "retry_limit": 2,

@@ -265,7 +265,8 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertFalse(evidence["proposed_operating_point"]["approved"])
 
     def test_identity_style_matrix_execution_is_explicitly_fail_closed(self):
-        from portrait_pipeline.experiments import build_execution_report
+        from portrait_pipeline.constants import PROFILE_LIMITS
+        from portrait_pipeline.experiments import build_execution_report, build_matrix
 
         report = build_execution_report(self.root)
         self.assertEqual(report["status"], "BLOCKED_PREREQUISITES")
@@ -273,6 +274,9 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(report["queued_jobs"], 0)
         self.assertEqual(report["candidate_count"], 0)
         self.assertEqual(report["selection_status"], "NOT_RUN")
+        matrix = build_matrix()
+        self.assertEqual(set(matrix["profiles"]), set(PROFILE_LIMITS))
+        self.assertEqual(matrix["profiles"]["agent_full_power_gpu"]["canvas"], [1196, 1610])
 
     def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
         for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"):
