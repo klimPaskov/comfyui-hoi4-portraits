@@ -76,7 +76,8 @@
         "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
       },
       "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
-      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "validation_status": "UNVALIDATED",
+      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
@@ -166,7 +167,8 @@
         "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
       },
       "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
-      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "validation_status": "UNVALIDATED",
+      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
@@ -248,7 +250,8 @@
         "policy": "agent_save_only"
       },
       "autoprompter_instruction_sha256": null,
-      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "validation_status": "UNVALIDATED",
+      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
@@ -330,7 +333,8 @@
         "policy": "agent_save_only"
       },
       "autoprompter_instruction_sha256": null,
-      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "validation_status": "UNVALIDATED",
+      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
@@ -412,7 +416,8 @@
         "policy": "agent_save_only"
       },
       "autoprompter_instruction_sha256": null,
-      "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "validation_status": "UNVALIDATED",
+      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
@@ -430,5 +435,6 @@
       }
     }
   ],
-  "status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED"
+  "status": "UNVALIDATED",
+  "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED"
 }

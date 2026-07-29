@@ -479,6 +479,9 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
         required_node_checksums = {name: custom_node_entries[name].get("source_tree_checksum") for name in required_node_packages}
         live_workflow = live_workflows.get(workflow_id, {})
         live_schema_pass = live_workflow.get("status") == "PASS" and live_probe.get("status") == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED"
+        runtime_status = "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if live_schema_pass else "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
+        execution_evidence = {"path": str(live_probe_path.relative_to(root_path)), **live_probe.get("execution", {})} if live_schema_pass else None
+        execution_verified = isinstance(execution_evidence, dict) and execution_evidence.get("status") == "PASS" and execution_evidence.get("attempted") is True
         manifests.append({
             "workflow_id": workflow_id,
             "display_name": workflow_id,
@@ -499,13 +502,18 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
             "preview_nodes": graph.metadata.get("preview_nodes", []),
             "final_preview_save_pair": graph.metadata.get("final_preview_save_pair"),
             "autoprompter_instruction_sha256": graph.metadata["autoprompter_instruction_sha256"],
-            "validation_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if live_schema_pass else "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+            # The delivery contract reserves validation for a real acceptance
+            # execution. Keep schema/load evidence separate so a live registry
+            # check cannot accidentally promote the manifest.
+            "validation_status": "VALIDATED" if execution_verified else "UNVALIDATED",
+            "runtime_status": runtime_status,
             "load_test_evidence": {"path": str(live_probe_path.relative_to(root_path)), "status": "PASS", "checked_at": live_probe.get("checked_at")} if live_schema_pass else None,
-            "execution_test_evidence": {"path": str(live_probe_path.relative_to(root_path)), **live_probe.get("execution", {})} if live_schema_pass else None,
+            "execution_test_evidence": execution_evidence,
         })
-    manifest_status = "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if manifests and all(item.get("validation_status") == "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" for item in manifests) else "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
+    manifest_status = "VALIDATED" if manifests and all(item.get("validation_status") == "VALIDATED" for item in manifests) else "UNVALIDATED"
+    runtime_status = "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" if manifests and all(item.get("runtime_status") == "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED" for item in manifests) else "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
     generated_at = live_probe.get("checked_at") if isinstance(live_probe.get("checked_at"), str) else datetime.now(timezone.utc).isoformat()
-    manifest = {"schema_version": "1.0.0", "generated_at": generated_at, "lock_version": "workflows-2026-07-26.1", "workflows": manifests, "status": manifest_status}
+    manifest = {"schema_version": "1.0.0", "generated_at": generated_at, "lock_version": "workflows-2026-07-26.1", "workflows": manifests, "status": manifest_status, "runtime_status": runtime_status}
     atomic_json_write(root_path / "manifests/workflow_manifest.json", manifest)
     return manifest
 

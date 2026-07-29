@@ -36,6 +36,9 @@ class WorkflowAndGuardTests(unittest.TestCase):
         manifest = json.loads((self.root / "manifests/workflow_manifest.json").read_text(encoding="utf-8"))
         probe = json.loads((self.root / "docs/preflight/live_comfy_compatibility.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["generated_at"], probe["checked_at"])
+        self.assertEqual(manifest["status"], "UNVALIDATED")
+        self.assertEqual(manifest["runtime_status"], "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED")
+        self.assertTrue(all(item["validation_status"] == "UNVALIDATED" for item in manifest["workflows"]))
 
     def test_local_nvidia_agent_is_routable_through_controller_and_adapter(self):
         controller_path = JobController(self.root)._workflow_api_path("agent_full_power_gpu")

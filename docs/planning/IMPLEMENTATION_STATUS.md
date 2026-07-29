@@ -56,7 +56,7 @@ stage before sampling, but the bounded 208×280 run still reached approximately
 0.90 GiB available memory and approximately 22.4 GiB swap used before the first
 sampler step. See the [`barrier-fix follow-up evidence`](../preflight/mps_barrier_canary_2026-07-29_followup.md).
 
-The current automated suite is `42/42` passing. The RunPod route remains
+The current automated suite is `49/49` passing. The RunPod route remains
 deferred by the project owner, and the generic/Chaos integration packages remain
 portable and fail-closed until the parent-owned live consumer validation and
 final mod wiring gates are completed. The read-only live-target audit is recorded
