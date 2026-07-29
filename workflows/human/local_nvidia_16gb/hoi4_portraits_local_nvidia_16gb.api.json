@@ -129,6 +129,7 @@
         "39",
         0
       ],
+      "preparation_engine": "RealESRGAN x2",
       "control_meta": [
         "24",
         1
@@ -520,7 +521,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.7.0",
+    "graph_spec_version": "graph-spec-1.8.0",
     "workflow_id": "hoi4_portraits_local_nvidia_16gb",
     "execution_profile": "hoi4_portraits_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -563,6 +564,9 @@
       ],
       "Load AI portrait enhancer": [
         "model_name"
+      ],
+      "Prepare the portrait": [
+        "preparation_engine"
       ],
       "Separate person from background": [
         "mask_model"
@@ -649,6 +653,7 @@
       "HOI4ConservativePrep"
     ],
     "preparation_model": "RealESRGAN_x2plus.pth",
+    "preparation_engine": "realesrgan_x2",
     "colorization": false,
     "preview_nodes": [
       "Cropped portrait",

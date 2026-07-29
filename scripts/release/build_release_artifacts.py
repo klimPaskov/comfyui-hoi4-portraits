@@ -43,6 +43,7 @@ EXPLICIT_FILES = {
     "dependencies/preprocessing_lock.json",
     "dependencies/runpod_sidecar_requirements.lock.txt",
     "dependencies/licenses/krea2-community-license.source.md",
+    "dependencies/licenses/qwen-image-edit-2511.source.md",
     "loras/HUGGINGFACE_MODEL_CARD.md",
     "loras/README.md",
     "prompts/autoprompter_instruction.txt",

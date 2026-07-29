@@ -35,18 +35,15 @@
     }
   },
   "5": {
-    "class_type": "UpscaleModelLoader",
+    "class_type": "HOI4RestorationPrompt",
     "inputs": {
-      "model_name": "RealESRGAN_x2plus.pth"
+      "restoration_mode": "Restore and colorize when needed",
+      "custom_instructions": ""
     }
   },
   "6": {
-    "class_type": "ImageUpscaleWithModel",
+    "class_type": "FluxKontextImageScale",
     "inputs": {
-      "upscale_model": [
-        "5",
-        0
-      ],
       "image": [
         "3",
         0
@@ -54,56 +51,220 @@
     }
   },
   "7": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2511_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "8": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "9": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "8",
+        0
+      ],
+      "prompt": [
+        "5",
+        0
+      ],
+      "vae": [
+        "9",
+        0
+      ],
+      "image1": [
+        "6",
+        0
+      ]
+    }
+  },
+  "11": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "8",
+        0
+      ],
+      "prompt": "",
+      "vae": [
+        "9",
+        0
+      ],
+      "image1": [
+        "6",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "6",
+        0
+      ],
+      "vae": [
+        "9",
+        0
+      ]
+    }
+  },
+  "13": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "shift": 3.1
+    }
+  },
+  "14": {
+    "class_type": "CFGNorm",
+    "inputs": {
+      "model": [
+        "13",
+        0
+      ],
+      "strength": 1.0,
+      "pre_cfg": false
+    }
+  },
+  "15": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "14",
+        0
+      ],
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "11",
+        0
+      ],
+      "latent_image": [
+        "12",
+        0
+      ],
+      "seed": 0,
+      "steps": 40,
+      "cfg": 4.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "16": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "15",
+        0
+      ],
+      "vae": [
+        "9",
+        0
+      ]
+    }
+  },
+  "17": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "16",
+        0
+      ]
+    }
+  },
+  "18": {
+    "class_type": "UpscaleModelLoader",
+    "inputs": {
+      "model_name": "RealESRGAN_x2plus.pth"
+    }
+  },
+  "19": {
+    "class_type": "ImageUpscaleWithModel",
+    "inputs": {
+      "upscale_model": [
+        "18",
+        0
+      ],
+      "image": [
+        "16",
+        0
+      ]
+    }
+  },
+  "20": {
     "class_type": "HOI4FinishPreparedPortrait",
     "inputs": {
       "image": [
-        "6",
+        "19",
         0
       ],
       "contrast": 1.0,
       "sharpness": 1.0
     }
   },
-  "8": {
+  "21": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "6",
+        "19",
         0
       ]
     }
   },
-  "9": {
+  "22": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "7",
+        "20",
         0
       ]
     }
   },
-  "10": {
+  "23": {
     "class_type": "SaveImage",
     "inputs": {
       "images": [
-        "7",
+        "20",
         0
       ],
-      "filename_prefix": "hoi4_portraits/prepared_ai"
+      "filename_prefix": "hoi4_portraits/prepared_qwen"
     }
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.7.0",
+    "graph_spec_version": "graph-spec-1.8.0",
     "workflow_id": "hoi4_portraits_prepare_portrait_for_hoi4",
     "profile": "hoi4_portraits_prepare_portrait_for_hoi4",
     "execution_profile": "hoi4_portraits_prepare_portrait_for_hoi4",
     "workflow_kind": "portrait_preparation",
-    "enhancement_mode": "ai_model",
+    "enhancement_mode": "qwen_image_edit",
     "default_preparation_workflow": true,
     "upscale_model": "RealESRGAN_x2plus.pth",
-    "colorization": false,
-    "route": "local_or_runpod",
+    "restoration_model": "qwen_image_edit_2511_fp8mixed.safetensors",
+    "restoration_text_encoder": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+    "colorization": true,
+    "route": "full_power_gpu",
     "human_workflow": true,
     "autoprompter": false,
     "autoprompter_instruction_path": null,
@@ -111,35 +272,49 @@
     "prompt_source": "none",
     "prompt_model": null,
     "source_image_required": true,
-    "vision_model_required": false,
+    "vision_model_required": true,
     "required_groups": [
       "01 Choose image",
       "02 Crop portrait",
-      "03 Enhance portrait",
-      "04 Preview and save"
+      "03 Restoration settings",
+      "04 Restore with Qwen",
+      "05 Refine portrait",
+      "06 Preview and save"
     ],
     "required_core_nodes": [
-      "LoadImage",
-      "PreviewImage",
-      "UpscaleModelLoader",
+      "CFGNorm",
+      "CLIPLoader",
+      "FluxKontextImageScale",
       "ImageUpscaleWithModel",
-      "SaveImage"
+      "KSampler",
+      "LoadImage",
+      "ModelSamplingAuraFlow",
+      "PreviewImage",
+      "SaveImage",
+      "TextEncodeQwenImageEditPlus",
+      "UNETLoader",
+      "UpscaleModelLoader",
+      "VAEDecode",
+      "VAEEncode",
+      "VAELoader"
     ],
     "required_krea_nodes": [],
     "required_project_nodes": [
       "HOI4FinishPreparedPortrait",
-      "HOI4PortraitCrop"
+      "HOI4PortraitCrop",
+      "HOI4RestorationPrompt"
     ],
     "preview_nodes": [
       "Input image preview",
       "Head-and-shoulders preview",
-      "AI-enhanced preview",
+      "Qwen restoration preview",
+      "Refined portrait preview",
       "Prepared portrait preview"
     ],
     "final_preview_save_pair": {
-      "preview_node_id": 9,
-      "save_node_id": 10,
-      "shared_source_node_id": 7,
+      "preview_node_id": 22,
+      "save_node_id": 23,
+      "shared_source_node_id": 20,
       "shared_source_slot": 0,
       "policy": "preview_and_save_use_the_same_prepared_portrait"
     },

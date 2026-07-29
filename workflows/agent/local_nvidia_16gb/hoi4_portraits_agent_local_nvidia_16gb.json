@@ -413,6 +413,11 @@
           "name": "enhanced_image",
           "type": "IMAGE",
           "link": 14
+        },
+        {
+          "name": "preparation_engine",
+          "type": "COMBO",
+          "link": null
         }
       ],
       "outputs": [
@@ -435,9 +440,13 @@
       "properties": {
         "Node name for S&R": "Prepare the portrait",
         "hoi4_group": "03 Prepare portrait",
-        "hoi4_locked_controls": []
+        "hoi4_locked_controls": [
+          "preparation_engine"
+        ]
       },
-      "widgets_values": []
+      "widgets_values": [
+        "RealESRGAN x2"
+      ]
     },
     {
       "id": 7,
@@ -2169,7 +2178,7 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.7.0",
+    "graph_spec_version": "graph-spec-1.8.0",
     "workflow_id": "hoi4_portraits_agent_local_nvidia_16gb",
     "execution_profile": "hoi4_portraits_agent_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -2212,6 +2221,9 @@
       ],
       "Load AI portrait enhancer": [
         "model_name"
+      ],
+      "Prepare the portrait": [
+        "preparation_engine"
       ],
       "Separate person from background": [
         "mask_model"
@@ -2286,6 +2298,7 @@
       "HOI4ConservativePrep"
     ],
     "preparation_model": "RealESRGAN_x2plus.pth",
+    "preparation_engine": "realesrgan_x2",
     "colorization": false,
     "preview_nodes": [],
     "final_preview_save_pair": {

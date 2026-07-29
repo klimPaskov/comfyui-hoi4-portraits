@@ -67,10 +67,31 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
             "SaveImage",
         }
         enhancement_mode = metadata.get("enhancement_mode")
-        if enhancement_mode == "ai_model":
-            required_preparation_nodes |= {"UpscaleModelLoader", "ImageUpscaleWithModel"}
+        if enhancement_mode == "qwen_image_edit":
+            required_preparation_nodes |= {
+                "CFGNorm",
+                "CLIPLoader",
+                "FluxKontextImageScale",
+                "HOI4RestorationPrompt",
+                "ImageUpscaleWithModel",
+                "KSampler",
+                "ModelSamplingAuraFlow",
+                "TextEncodeQwenImageEditPlus",
+                "UNETLoader",
+                "UpscaleModelLoader",
+                "VAEDecode",
+                "VAEEncode",
+                "VAELoader",
+            }
         elif enhancement_mode == "basic":
-            if any(node.get("type") in {"UpscaleModelLoader", "ImageUpscaleWithModel"} for node in ui_nodes):
+            if any(node.get("type") in {
+                "FluxKontextImageScale",
+                "HOI4RestorationPrompt",
+                "ImageUpscaleWithModel",
+                "TextEncodeQwenImageEditPlus",
+                "UNETLoader",
+                "UpscaleModelLoader",
+            } for node in ui_nodes):
                 issues.append("basic portrait preparation workflow unexpectedly loads an enhancement model")
         else:
             issues.append("portrait preparation workflow has an unknown enhancement mode")
@@ -78,7 +99,7 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
         missing_preparation = sorted(required_preparation_nodes - present_types)
         if missing_preparation:
             issues.append(f"portrait preparation nodes are missing: {missing_preparation}")
-        if any(node.get("type") in {"HOI4AutopromptClient", "Krea2EditModelPatch", "KSampler", "DDColor_Colorize"} for node in ui_nodes):
+        if any(node.get("type") in {"HOI4AutopromptClient", "Krea2EditModelPatch", "DDColor_Colorize"} for node in ui_nodes):
             issues.append("portrait preparation workflow contains an unrelated generation or colorization node")
     elif metadata.get("human_workflow"):
         autoprompt_nodes = [node for node in ui_nodes if node.get("type") == "HOI4AutopromptClient"]

@@ -1,8 +1,40 @@
 {
   "schema_version": "1.0.0",
-  "verified_at": "2026-07-26",
+  "verified_at": "2026-07-29",
   "policy": "Primary/official documentation or source repositories only. A community implementation is not treated as first-party ComfyUI capability; it remains pinned and live-qualified separately.",
   "sources": [
+    {
+      "name": "ComfyUI Qwen Image Edit 2511 official documentation",
+      "url": "https://docs.comfy.org/tutorials/image/qwen/qwen-image-edit-2511",
+      "source_class": "official_documentation",
+      "evidence": ["official native node graph is published", "FP8-mixed model filename is listed", "Qwen image encoder and VAE filenames are listed"]
+    },
+    {
+      "name": "Qwen Image Edit 2511 official model",
+      "url": "https://huggingface.co/Qwen/Qwen-Image-Edit-2511",
+      "revision": "6f3ccc0b56e431dc6a0c2b2039706d7d26f22cb9",
+      "source_class": "primary_model_repository",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "Official ComfyUI Qwen Image Edit model repository",
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI",
+      "revision": "e9e85de74a8f48c1e3e2656617626348675a2f21",
+      "source_class": "official_model_repository",
+      "artifacts": [
+        {"path": "split_files/diffusion_models/qwen_image_edit_2511_fp8mixed.safetensors", "size_bytes": 20533762817, "sha256": "c9fdc158e46d3b61ef75f21ae866ca2fe808bf4a53643120d1c1e87c19280a4e"}
+      ]
+    },
+    {
+      "name": "Official ComfyUI Qwen Image encoder and VAE repository",
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI",
+      "revision": "46839d338df81ce625d5fae27d7e370314c0fbc9",
+      "source_class": "official_model_repository",
+      "artifacts": [
+        {"path": "split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors", "size_bytes": 9384670680, "sha256": "cb5636d852a0ea6a9075ab1bef496c0db7aef13c02350571e388aea959c5c0b4"},
+        {"path": "split_files/vae/qwen_image_vae.safetensors", "size_bytes": 253806246, "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f"}
+      ]
+    },
     {
       "name": "ComfyUI Krea 2 official documentation",
       "url": "https://docs.comfy.org/tutorials/image/krea/krea-2",

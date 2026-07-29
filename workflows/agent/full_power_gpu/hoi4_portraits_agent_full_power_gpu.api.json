@@ -61,21 +61,171 @@
       ]
     }
   },
-  "36": {
+  "40": {
+    "class_type": "FluxKontextImageScale",
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ]
+    }
+  },
+  "41": {
+    "class_type": "HOI4RestorationPrompt",
+    "inputs": {
+      "restoration_mode": "Restore and colorize when needed",
+      "custom_instructions": ""
+    }
+  },
+  "42": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2511_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "43": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "44": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "45": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "43",
+        0
+      ],
+      "prompt": [
+        "41",
+        0
+      ],
+      "vae": [
+        "44",
+        0
+      ],
+      "image1": [
+        "40",
+        0
+      ]
+    }
+  },
+  "46": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "43",
+        0
+      ],
+      "prompt": "",
+      "vae": [
+        "44",
+        0
+      ],
+      "image1": [
+        "40",
+        0
+      ]
+    }
+  },
+  "47": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "40",
+        0
+      ],
+      "vae": [
+        "44",
+        0
+      ]
+    }
+  },
+  "48": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "42",
+        0
+      ],
+      "shift": 3.1
+    }
+  },
+  "49": {
+    "class_type": "CFGNorm",
+    "inputs": {
+      "model": [
+        "48",
+        0
+      ],
+      "strength": 1.0,
+      "pre_cfg": false
+    }
+  },
+  "50": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "49",
+        0
+      ],
+      "positive": [
+        "45",
+        0
+      ],
+      "negative": [
+        "46",
+        0
+      ],
+      "latent_image": [
+        "47",
+        0
+      ],
+      "seed": 0,
+      "steps": 40,
+      "cfg": 4.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "51": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "50",
+        0
+      ],
+      "vae": [
+        "44",
+        0
+      ]
+    }
+  },
+  "52": {
     "class_type": "UpscaleModelLoader",
     "inputs": {
       "model_name": "RealESRGAN_x2plus.pth"
     }
   },
-  "39": {
+  "53": {
     "class_type": "ImageUpscaleWithModel",
     "inputs": {
       "upscale_model": [
-        "36",
+        "52",
         0
       ],
       "image": [
-        "5",
+        "51",
         0
       ]
     }
@@ -96,9 +246,10 @@
         1
       ],
       "enhanced_image": [
-        "39",
+        "53",
         0
-      ]
+      ],
+      "preparation_engine": "Qwen Image Edit 2511 and RealESRGAN x2"
     }
   },
   "7": {
@@ -376,7 +527,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.7.0",
+    "graph_spec_version": "graph-spec-1.8.0",
     "workflow_id": "hoi4_portraits_agent_full_power_gpu",
     "execution_profile": "hoi4_portraits_agent_full_power_gpu",
     "route": "runpod",
@@ -417,8 +568,40 @@
         "retry_limit",
         "seed_policy"
       ],
-      "Load AI portrait enhancer": [
+      "Load Qwen portrait restorer": [
+        "unet_name",
+        "weight_dtype"
+      ],
+      "Load Qwen image understanding": [
+        "clip_name",
+        "type",
+        "device"
+      ],
+      "Load Qwen image decoder": [
+        "vae_name"
+      ],
+      "Use a neutral negative prompt": [
+        "prompt"
+      ],
+      "Set Qwen image sampling": [
+        "shift"
+      ],
+      "Keep restoration balanced": [
+        "strength",
+        "pre_cfg"
+      ],
+      "Restore portrait with Qwen": [
+        "steps",
+        "cfg",
+        "sampler_name",
+        "scheduler",
+        "denoise"
+      ],
+      "Load final portrait refiner": [
         "model_name"
+      ],
+      "Prepare the portrait": [
+        "preparation_engine"
       ],
       "Separate person from background": [
         "mask_model"
@@ -475,12 +658,16 @@
       ]
     },
     "required_core_nodes": [
+      "CFGNorm",
       "CLIPLoader",
       "EmptySD3LatentImage",
+      "FluxKontextImageScale",
       "ImageUpscaleWithModel",
       "KSampler",
       "LoraLoaderModelOnly",
+      "ModelSamplingAuraFlow",
       "SaveImage",
+      "TextEncodeQwenImageEditPlus",
       "UNETLoader",
       "UpscaleModelLoader",
       "VAEDecode",
@@ -488,12 +675,18 @@
       "VAELoader"
     ],
     "required_preparation_nodes": [
-      "UpscaleModelLoader",
+      "CFGNorm",
+      "FluxKontextImageScale",
+      "HOI4ConservativePrep",
+      "HOI4RestorationPrompt",
       "ImageUpscaleWithModel",
-      "HOI4ConservativePrep"
+      "ModelSamplingAuraFlow",
+      "TextEncodeQwenImageEditPlus",
+      "UpscaleModelLoader"
     ],
-    "preparation_model": "RealESRGAN_x2plus.pth",
-    "colorization": false,
+    "preparation_model": "qwen_image_edit_2511_fp8mixed.safetensors + RealESRGAN_x2plus.pth",
+    "preparation_engine": "qwen_image_edit_2511",
+    "colorization": true,
     "preview_nodes": [],
     "final_preview_save_pair": {
       "preview_node_id": null,
@@ -516,6 +709,7 @@
       "HOI4KreaModelLoadBarrier",
       "HOI4MaskAndBackgroundGuard",
       "HOI4PromptInput",
+      "HOI4RestorationPrompt",
       "HOI4SourceGuard",
       "HOI4SubjectSelect"
     ],

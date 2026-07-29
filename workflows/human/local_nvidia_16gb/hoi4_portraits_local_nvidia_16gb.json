@@ -574,6 +574,11 @@
           "link": 16
         },
         {
+          "name": "preparation_engine",
+          "type": "COMBO",
+          "link": null
+        },
+        {
           "name": "control_meta",
           "type": "HOI4_META",
           "link": 17
@@ -600,9 +605,13 @@
       "properties": {
         "Node name for S&R": "Prepare the portrait",
         "hoi4_group": "03 Prepare portrait",
-        "hoi4_locked_controls": []
+        "hoi4_locked_controls": [
+          "preparation_engine"
+        ]
       },
-      "widgets_values": []
+      "widgets_values": [
+        "RealESRGAN x2"
+      ]
     },
     {
       "id": 7,
@@ -2376,7 +2385,7 @@
       24,
       1,
       6,
-      4,
+      5,
       "HOI4_META"
     ],
     [
@@ -2926,7 +2935,7 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.7.0",
+    "graph_spec_version": "graph-spec-1.8.0",
     "workflow_id": "hoi4_portraits_local_nvidia_16gb",
     "execution_profile": "hoi4_portraits_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -2969,6 +2978,9 @@
       ],
       "Load AI portrait enhancer": [
         "model_name"
+      ],
+      "Prepare the portrait": [
+        "preparation_engine"
       ],
       "Separate person from background": [
         "mask_model"
@@ -3055,6 +3067,7 @@
       "HOI4ConservativePrep"
     ],
     "preparation_model": "RealESRGAN_x2plus.pth",
+    "preparation_engine": "realesrgan_x2",
     "colorization": false,
     "preview_nodes": [
       "Cropped portrait",

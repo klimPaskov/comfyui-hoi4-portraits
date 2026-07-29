@@ -1,6 +1,6 @@
 {
-  "last_node_id": 39,
-  "last_link_id": 70,
+  "last_node_id": 54,
+  "last_link_id": 89,
   "nodes": [
     {
       "id": 1,
@@ -191,11 +191,11 @@
             3,
             5,
             7,
-            13,
-            18,
-            21,
-            30,
-            56
+            31,
+            36,
+            39,
+            48,
+            74
           ]
         },
         {
@@ -203,9 +203,9 @@
           "type": "HOI4_META",
           "links": [
             10,
-            17,
-            25,
-            33
+            35,
+            43,
+            51
           ]
         }
       ],
@@ -313,8 +313,8 @@
           "type": "IMAGE",
           "links": [
             6,
-            57,
-            68
+            75,
+            86
           ]
         },
         {
@@ -426,16 +426,16 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            12,
-            14,
-            64
+            11,
+            32,
+            82
           ]
         },
         {
           "name": "crop_meta",
           "type": "HOI4_META",
           "links": [
-            15
+            33
           ]
         }
       ],
@@ -447,15 +447,15 @@
       "widgets_values": []
     },
     {
-      "id": 36,
-      "type": "UpscaleModelLoader",
-      "title": "Load AI portrait enhancer",
+      "id": 40,
+      "type": "FluxKontextImageScale",
+      "title": "Scale portrait for restoration",
       "pos": [
         1980,
         100
       ],
       "size": [
-        360,
+        500,
         140
       ],
       "color": "#294a2b",
@@ -465,42 +465,40 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "model_name",
-          "type": "COMBO",
-          "link": null
+          "name": "image",
+          "type": "IMAGE",
+          "link": 11
         }
       ],
       "outputs": [
         {
-          "name": "upscale_model",
-          "type": "UPSCALE_MODEL",
+          "name": "scaled_portrait",
+          "type": "IMAGE",
           "links": [
-            11
+            15,
+            18,
+            19
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Load AI portrait enhancer",
+        "Node name for S&R": "Scale portrait for restoration",
         "hoi4_group": "03 Prepare portrait",
-        "hoi4_locked_controls": [
-          "model_name"
-        ]
+        "hoi4_locked_controls": []
       },
-      "widgets_values": [
-        "RealESRGAN_x2plus.pth"
-      ]
+      "widgets_values": []
     },
     {
-      "id": 39,
-      "type": "ImageUpscaleWithModel",
-      "title": "Enhance portrait with AI",
+      "id": 41,
+      "type": "HOI4RestorationPrompt",
+      "title": "Choose portrait restoration",
       "pos": [
         1980,
-        260
+        280
       ],
       "size": [
-        360,
-        140
+        500,
+        600
       ],
       "color": "#294a2b",
       "bgcolor": "#3d6b40",
@@ -509,517 +507,51 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "upscale_model",
-          "type": "UPSCALE_MODEL",
-          "link": 11
+          "name": "restoration_mode",
+          "type": "COMBO",
+          "link": null
         },
         {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 12
+          "name": "custom_instructions",
+          "type": "STRING",
+          "link": null
         }
       ],
       "outputs": [
         {
-          "name": "enhanced_image",
-          "type": "IMAGE",
+          "name": "restoration_instructions",
+          "type": "STRING",
           "links": [
-            16
+            13
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Enhance portrait with AI",
+        "Node name for S&R": "Choose portrait restoration",
         "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": []
       },
-      "widgets_values": []
+      "widgets_values": [
+        "Restore and colorize when needed",
+        ""
+      ]
     },
     {
-      "id": 6,
-      "type": "HOI4ConservativePrep",
-      "title": "Prepare the portrait",
+      "id": 42,
+      "type": "UNETLoader",
+      "title": "Load Qwen portrait restorer",
       "pos": [
-        1980,
-        420
+        2520,
+        100
       ],
       "size": [
-        360,
-        160
+        300,
+        130
       ],
       "color": "#294a2b",
       "bgcolor": "#3d6b40",
       "flags": {},
       "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "job",
-          "type": "HOI4_JOB",
-          "link": 13
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 14
-        },
-        {
-          "name": "crop_meta",
-          "type": "HOI4_META",
-          "link": 15
-        },
-        {
-          "name": "enhanced_image",
-          "type": "IMAGE",
-          "link": 16
-        },
-        {
-          "name": "control_meta",
-          "type": "HOI4_META",
-          "link": 17
-        }
-      ],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            19,
-            58,
-            65
-          ]
-        },
-        {
-          "name": "reference_meta",
-          "type": "HOI4_META",
-          "links": [
-            20
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Prepare the portrait",
-        "hoi4_group": "03 Prepare portrait",
-        "hoi4_locked_controls": []
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 7,
-      "type": "HOI4ForegroundMask",
-      "title": "Separate person from background",
-      "pos": [
-        2450,
-        100
-      ],
-      "size": [
-        320,
-        160
-      ],
-      "color": "#294b61",
-      "bgcolor": "#3b6f8d",
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "job",
-          "type": "HOI4_JOB",
-          "link": 18
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 19
-        },
-        {
-          "name": "reference_meta",
-          "type": "HOI4_META",
-          "link": 20
-        },
-        {
-          "name": "mask_model",
-          "type": "STRING",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            22
-          ]
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "links": [
-            23
-          ]
-        },
-        {
-          "name": "mask_meta",
-          "type": "HOI4_META",
-          "links": [
-            24
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Separate person from background",
-        "hoi4_group": "04 Choose background",
-        "hoi4_locked_controls": [
-          "mask_model"
-        ]
-      },
-      "widgets_values": [
-        "BiRefNet"
-      ]
-    },
-    {
-      "id": 34,
-      "type": "HOI4BundledBackground",
-      "title": "HOI4 scientist portrait background",
-      "pos": [
-        3170,
-        100
-      ],
-      "size": [
-        340,
-        160
-      ],
-      "color": "#294b61",
-      "bgcolor": "#3b6f8d",
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "asset_path",
-          "type": "STRING",
-          "link": null
-        },
-        {
-          "name": "asset_sha256",
-          "type": "STRING",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            26,
-            69
-          ]
-        },
-        {
-          "name": "background_details",
-          "type": "HOI4_META",
-          "links": [
-            27
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "HOI4 scientist portrait background",
-        "hoi4_group": "04 Choose background",
-        "hoi4_locked_controls": [
-          "asset_path",
-          "asset_sha256"
-        ]
-      },
-      "widgets_values": [
-        "backgrounds/local/hoi4_scientists_BG.png",
-        "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e"
-      ]
-    },
-    {
-      "id": 37,
-      "type": "HOI4BundledBackground",
-      "title": "HOI4 operative portrait background",
-      "pos": [
-        3530,
-        100
-      ],
-      "size": [
-        340,
-        160
-      ],
-      "color": "#294b61",
-      "bgcolor": "#3b6f8d",
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "asset_path",
-          "type": "STRING",
-          "link": null
-        },
-        {
-          "name": "asset_sha256",
-          "type": "STRING",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            28,
-            70
-          ]
-        },
-        {
-          "name": "background_details",
-          "type": "HOI4_META",
-          "links": [
-            29
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "HOI4 operative portrait background",
-        "hoi4_group": "04 Choose background",
-        "hoi4_locked_controls": [
-          "asset_path",
-          "asset_sha256"
-        ]
-      },
-      "widgets_values": [
-        "backgrounds/local/hoi4_operative_background.png",
-        "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d"
-      ]
-    },
-    {
-      "id": 8,
-      "type": "HOI4MaskAndBackgroundGuard",
-      "title": "Choose portrait background",
-      "pos": [
-        2450,
-        320
-      ],
-      "size": [
-        320,
-        260
-      ],
-      "color": "#294b61",
-      "bgcolor": "#3b6f8d",
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "job",
-          "type": "HOI4_JOB",
-          "link": 21
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 22
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 23
-        },
-        {
-          "name": "mask_meta",
-          "type": "HOI4_META",
-          "link": 24
-        },
-        {
-          "name": "control_meta",
-          "type": "HOI4_META",
-          "link": 25
-        },
-        {
-          "name": "scientist_background",
-          "type": "IMAGE",
-          "link": 26
-        },
-        {
-          "name": "scientist_background_meta",
-          "type": "HOI4_META",
-          "link": 27
-        },
-        {
-          "name": "operative_background",
-          "type": "IMAGE",
-          "link": 28
-        },
-        {
-          "name": "operative_background_meta",
-          "type": "HOI4_META",
-          "link": 29
-        }
-      ],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            31
-          ]
-        },
-        {
-          "name": "composite",
-          "type": "IMAGE",
-          "links": [
-            35,
-            40,
-            43,
-            45,
-            59,
-            66
-          ]
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "links": [
-            61
-          ]
-        },
-        {
-          "name": "background_meta",
-          "type": "HOI4_META",
-          "links": [
-            32
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Choose portrait background",
-        "hoi4_group": "04 Choose background",
-        "hoi4_locked_controls": []
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 9,
-      "type": "HOI4AutopromptClient",
-      "title": "Choose automatic or manual description",
-      "pos": [
-        340,
-        1080
-      ],
-      "size": [
-        440,
-        600
-      ],
-      "color": "#46375a",
-      "bgcolor": "#654c80",
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "job",
-          "type": "HOI4_JOB",
-          "link": 30
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 31
-        },
-        {
-          "name": "background_meta",
-          "type": "HOI4_META",
-          "link": 32
-        },
-        {
-          "name": "control_meta",
-          "type": "HOI4_META",
-          "link": 33
-        },
-        {
-          "name": "description_mode",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "manual_description",
-          "type": "STRING",
-          "link": null
-        },
-        {
-          "name": "instruction_text",
-          "type": "STRING",
-          "link": null
-        },
-        {
-          "name": "instruction_path",
-          "type": "STRING",
-          "link": null
-        },
-        {
-          "name": "model_id",
-          "type": "STRING",
-          "link": null
-        },
-        {
-          "name": "prompt_source",
-          "type": "COMBO",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "prompt",
-          "type": "STRING",
-          "links": [
-            42,
-            62
-          ]
-        },
-        {
-          "name": "prompt_meta",
-          "type": "HOI4_META",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Choose automatic or manual description",
-        "hoi4_group": "05 Portrait description",
-        "hoi4_locked_controls": [
-          "instruction_text",
-          "instruction_path",
-          "model_id",
-          "prompt_source"
-        ]
-      },
-      "widgets_values": [
-        "Create automatically",
-        "",
-        "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nPrioritize visible details that help recreate the person:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, jewelry, and other relevant visible details\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent details that cannot be inferred from the image.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
-        "prompts/autoprompter_instruction.txt",
-        "Qwen/Qwen3-VL-8B-Instruct",
-        "autoprompter"
-      ]
-    },
-    {
-      "id": 10,
-      "type": "UNETLoader",
-      "title": "Load Krea 2 Turbo",
-      "pos": [
-        880,
-        1080
-      ],
-      "size": [
-        260,
-        130
-      ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
-      "flags": {},
-      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -1038,95 +570,98 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            34
+            21
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Load Krea 2 Turbo",
-        "hoi4_group": "06 Krea 2 portrait edit",
+        "Node name for S&R": "Load Qwen portrait restorer",
+        "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": [
           "unet_name",
           "weight_dtype"
         ]
       },
       "widgets_values": [
-        "krea2_turbo_fp8_scaled.safetensors",
+        "qwen_image_edit_2511_fp8mixed.safetensors",
         "default"
       ]
     },
     {
-      "id": 11,
-      "type": "LoraLoaderModelOnly",
-      "title": "Preserve identity",
+      "id": 43,
+      "type": "CLIPLoader",
+      "title": "Load Qwen image understanding",
       "pos": [
-        880,
-        1240
+        2520,
+        260
       ],
       "size": [
-        260,
+        300,
         130
       ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
-      "order": 15,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
-          "name": "model",
-          "type": "MODEL",
-          "link": 34
-        },
-        {
-          "name": "lora_name",
+          "name": "clip_name",
           "type": "COMBO",
           "link": null
         },
         {
-          "name": "strength_model",
-          "type": "FLOAT",
+          "name": "type",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "device",
+          "type": "COMBO",
           "link": null
         }
       ],
       "outputs": [
         {
-          "name": "model",
-          "type": "MODEL",
+          "name": "clip",
+          "type": "CLIP",
           "links": [
-            37
+            12,
+            16
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Preserve identity",
-        "hoi4_group": "06 Krea 2 portrait edit",
+        "Node name for S&R": "Load Qwen image understanding",
+        "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": [
-          "lora_name",
-          "strength_model"
+          "clip_name",
+          "type",
+          "device"
         ]
       },
       "widgets_values": [
-        "krea2_identity_edit_v1_2.safetensors",
-        1.0
+        "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "qwen_image",
+        "default"
       ]
     },
     {
-      "id": 12,
+      "id": 44,
       "type": "VAELoader",
-      "title": "Prepare image decoder",
+      "title": "Load Qwen image decoder",
       "pos": [
-        880,
-        1400
+        2520,
+        420
       ],
       "size": [
-        260,
+        300,
         130
       ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
-      "order": 16,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -1140,15 +675,16 @@
           "name": "vae",
           "type": "VAE",
           "links": [
-            36,
-            39,
-            55
+            14,
+            17,
+            20,
+            28
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Prepare image decoder",
-        "hoi4_group": "06 Krea 2 portrait edit",
+        "Node name for S&R": "Load Qwen image decoder",
+        "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": [
           "vae_name"
         ]
@@ -1158,32 +694,146 @@
       ]
     },
     {
-      "id": 13,
-      "type": "VAEEncode",
-      "title": "Encode reference image",
+      "id": 45,
+      "type": "TextEncodeQwenImageEditPlus",
+      "title": "Describe the restoration",
       "pos": [
-        880,
-        1560
+        2860,
+        100
       ],
       "size": [
-        260,
-        130
+        360,
+        200
       ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
-      "order": 17,
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 12
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": 13
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 14
+        },
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Describe the restoration",
+        "hoi4_group": "03 Prepare portrait",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 46,
+      "type": "TextEncodeQwenImageEditPlus",
+      "title": "Use a neutral negative prompt",
+      "pos": [
+        2860,
+        340
+      ],
+      "size": [
+        360,
+        200
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 16
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 17
+        },
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Use a neutral negative prompt",
+        "hoi4_group": "03 Prepare portrait",
+        "hoi4_locked_controls": [
+          "prompt"
+        ]
+      },
+      "widgets_values": [
+        ""
+      ]
+    },
+    {
+      "id": 47,
+      "type": "VAEEncode",
+      "title": "Encode portrait for restoration",
+      "pos": [
+        2860,
+        580
+      ],
+      "size": [
+        360,
+        140
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 35
+          "link": 19
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 36
+          "link": 20
         }
       ],
       "outputs": [
@@ -1191,62 +841,42 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            38
+            26
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Encode reference image",
-        "hoi4_group": "06 Krea 2 portrait edit",
+        "Node name for S&R": "Encode portrait for restoration",
+        "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
     },
     {
-      "id": 14,
-      "type": "Krea2EditModelPatch",
-      "title": "Apply identity reference",
+      "id": 48,
+      "type": "ModelSamplingAuraFlow",
+      "title": "Set Qwen image sampling",
       "pos": [
-        1160,
-        1080
+        3260,
+        100
       ],
       "size": [
-        260,
+        360,
         130
       ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
-      "order": 18,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 37
+          "link": 21
         },
         {
-          "name": "source_latent",
-          "type": "LATENT",
-          "link": 38
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 39
-        },
-        {
-          "name": "source_image",
-          "type": "IMAGE",
-          "link": 40
-        },
-        {
-          "name": "fit_mode",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "ref_boost",
+          "name": "shift",
           "type": "FLOAT",
           "link": null
         }
@@ -1256,227 +886,53 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            46
+            22
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Apply identity reference",
-        "hoi4_group": "06 Krea 2 portrait edit",
+        "Node name for S&R": "Set Qwen image sampling",
+        "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": [
-          "fit_mode",
-          "ref_boost"
+          "shift"
         ]
       },
       "widgets_values": [
-        "fit",
-        1.0
+        3.1
       ]
     },
     {
-      "id": 15,
-      "type": "CLIPLoader",
-      "title": "Read portrait description",
+      "id": 49,
+      "type": "CFGNorm",
+      "title": "Keep restoration balanced",
       "pos": [
-        1160,
-        1240
+        3260,
+        260
       ],
       "size": [
-        260,
+        360,
         130
       ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
-      "order": 19,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip_name",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "type",
-          "type": "COMBO",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "links": [
-            41,
-            44
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Read portrait description",
-        "hoi4_group": "06 Krea 2 portrait edit",
-        "hoi4_locked_controls": [
-          "clip_name",
-          "type"
-        ]
-      },
-      "widgets_values": [
-        "qwen3vl_4b_fp8_scaled.safetensors",
-        "krea2"
-      ]
-    },
-    {
-      "id": 16,
-      "type": "Krea2EditGroundedEncode",
-      "title": "Connect portrait description",
-      "pos": [
-        1160,
-        1400
-      ],
-      "size": [
-        260,
-        130
-      ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
-      "flags": {},
-      "order": 20,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 41
-        },
-        {
-          "name": "prompt",
-          "type": "STRING",
-          "link": 42
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 43
-        },
-        {
-          "name": "grounding_px",
-          "type": "INT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "links": [
-            48
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Connect portrait description",
-        "hoi4_group": "06 Krea 2 portrait edit",
-        "hoi4_locked_controls": [
-          "grounding_px"
-        ]
-      },
-      "widgets_values": [
-        768
-      ]
-    },
-    {
-      "id": 17,
-      "type": "Krea2EditGroundedEncode",
-      "title": "Keep background empty",
-      "pos": [
-        1160,
-        1560
-      ],
-      "size": [
-        260,
-        130
-      ],
-      "color": "#40344a",
-      "bgcolor": "#5b4a69",
-      "flags": {},
-      "order": 21,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 44
-        },
-        {
-          "name": "prompt",
-          "type": "STRING",
-          "link": null
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 45
-        },
-        {
-          "name": "grounding_px",
-          "type": "INT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "links": [
-            49
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Keep background empty",
-        "hoi4_group": "06 Krea 2 portrait edit",
-        "hoi4_locked_controls": [
-          "prompt",
-          "grounding_px"
-        ]
-      },
-      "widgets_values": [
-        "",
-        768
-      ]
-    },
-    {
-      "id": 18,
-      "type": "LoraLoaderModelOnly",
-      "title": "Apply HOI4 portrait style",
-      "pos": [
-        1820,
-        1220
-      ],
-      "size": [
-        260,
-        170
-      ],
-      "color": "#663442",
-      "bgcolor": "#914b5e",
-      "flags": {},
-      "order": 22,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 46
+          "link": 22
         },
         {
-          "name": "lora_name",
-          "type": "COMBO",
-          "link": null
-        },
-        {
-          "name": "strength_model",
+          "name": "strength",
           "type": "FLOAT",
           "link": null
+        },
+        {
+          "name": "pre_cfg",
+          "type": "BOOLEAN",
+          "link": null
         }
       ],
       "outputs": [
@@ -1484,181 +940,60 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            47
+            23
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Apply HOI4 portrait style",
-        "hoi4_group": "07 HOI4 portrait style",
+        "Node name for S&R": "Keep restoration balanced",
+        "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": [
-          "lora_name"
+          "strength",
+          "pre_cfg"
         ]
       },
       "widgets_values": [
-        "hoi4_portrait_new_style_lora.safetensors",
-        0.8
+        1.0,
+        false
       ]
     },
     {
-      "id": 29,
-      "type": "HOI4KreaModelLoadBarrier",
-      "title": "Prepare generation",
-      "pos": [
-        2200,
-        1490
-      ],
-      "size": [
-        260,
-        130
-      ],
-      "color": "#66400c",
-      "bgcolor": "#945e12",
-      "flags": {},
-      "order": 23,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 47
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 48
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 49
-        }
-      ],
-      "outputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "links": [
-            50
-          ]
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            51
-          ]
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            52
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Prepare generation",
-        "hoi4_group": "08 Generate portrait",
-        "hoi4_locked_controls": []
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 19,
-      "type": "EmptySD3LatentImage",
-      "title": "Set portrait size",
-      "pos": [
-        2200,
-        1080
-      ],
-      "size": [
-        260,
-        150
-      ],
-      "color": "#66400c",
-      "bgcolor": "#945e12",
-      "flags": {},
-      "order": 24,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null
-        },
-        {
-          "name": "batch_size",
-          "type": "INT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "latent",
-          "type": "LATENT",
-          "links": [
-            53
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Set portrait size",
-        "hoi4_group": "08 Generate portrait",
-        "hoi4_locked_controls": [
-          "width",
-          "height",
-          "batch_size"
-        ]
-      },
-      "widgets_values": [
-        1196,
-        1610,
-        1
-      ]
-    },
-    {
-      "id": 20,
+      "id": 50,
       "type": "KSampler",
-      "title": "Generate portrait",
+      "title": "Restore portrait with Qwen",
       "pos": [
-        2200,
-        1260
+        3260,
+        420
       ],
       "size": [
-        260,
-        180
+        360,
+        220
       ],
-      "color": "#66400c",
-      "bgcolor": "#945e12",
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
       "flags": {},
-      "order": 25,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 50
+          "link": 23
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 51
+          "link": 24
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 52
+          "link": 25
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 53
+          "link": 26
         },
         {
           "name": "seed",
@@ -1696,7 +1031,1336 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            54
+            27
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Restore portrait with Qwen",
+        "hoi4_group": "03 Prepare portrait",
+        "hoi4_locked_controls": [
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
+      },
+      "widgets_values": [
+        0,
+        40,
+        4.0,
+        "euler",
+        "simple",
+        1.0
+      ]
+    },
+    {
+      "id": 51,
+      "type": "VAEDecode",
+      "title": "Build restored portrait",
+      "pos": [
+        3260,
+        680
+      ],
+      "size": [
+        360,
+        140
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 27
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            30,
+            89
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Build restored portrait",
+        "hoi4_group": "03 Prepare portrait",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 52,
+      "type": "UpscaleModelLoader",
+      "title": "Load final portrait refiner",
+      "pos": [
+        2520,
+        600
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_name",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Load final portrait refiner",
+        "hoi4_group": "03 Prepare portrait",
+        "hoi4_locked_controls": [
+          "model_name"
+        ]
+      },
+      "widgets_values": [
+        "RealESRGAN_x2plus.pth"
+      ]
+    },
+    {
+      "id": 53,
+      "type": "ImageUpscaleWithModel",
+      "title": "Refine restored portrait",
+      "pos": [
+        2520,
+        760
+      ],
+      "size": [
+        300,
+        140
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 29
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "enhanced_image",
+          "type": "IMAGE",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Refine restored portrait",
+        "hoi4_group": "03 Prepare portrait",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "HOI4ConservativePrep",
+      "title": "Prepare the portrait",
+      "pos": [
+        3260,
+        840
+      ],
+      "size": [
+        360,
+        160
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 31
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 32
+        },
+        {
+          "name": "crop_meta",
+          "type": "HOI4_META",
+          "link": 33
+        },
+        {
+          "name": "enhanced_image",
+          "type": "IMAGE",
+          "link": 34
+        },
+        {
+          "name": "preparation_engine",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "control_meta",
+          "type": "HOI4_META",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            37,
+            76,
+            83
+          ]
+        },
+        {
+          "name": "reference_meta",
+          "type": "HOI4_META",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Prepare the portrait",
+        "hoi4_group": "03 Prepare portrait",
+        "hoi4_locked_controls": [
+          "preparation_engine"
+        ]
+      },
+      "widgets_values": [
+        "Qwen Image Edit 2511 and RealESRGAN x2"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "HOI4ForegroundMask",
+      "title": "Separate person from background",
+      "pos": [
+        4210,
+        100
+      ],
+      "size": [
+        320,
+        160
+      ],
+      "color": "#294b61",
+      "bgcolor": "#3b6f8d",
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 36
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 37
+        },
+        {
+          "name": "reference_meta",
+          "type": "HOI4_META",
+          "link": 38
+        },
+        {
+          "name": "mask_model",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            40
+          ]
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            41
+          ]
+        },
+        {
+          "name": "mask_meta",
+          "type": "HOI4_META",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Separate person from background",
+        "hoi4_group": "04 Choose background",
+        "hoi4_locked_controls": [
+          "mask_model"
+        ]
+      },
+      "widgets_values": [
+        "BiRefNet"
+      ]
+    },
+    {
+      "id": 34,
+      "type": "HOI4BundledBackground",
+      "title": "HOI4 scientist portrait background",
+      "pos": [
+        4930,
+        100
+      ],
+      "size": [
+        340,
+        160
+      ],
+      "color": "#294b61",
+      "bgcolor": "#3b6f8d",
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "asset_path",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "asset_sha256",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            44,
+            87
+          ]
+        },
+        {
+          "name": "background_details",
+          "type": "HOI4_META",
+          "links": [
+            45
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "HOI4 scientist portrait background",
+        "hoi4_group": "04 Choose background",
+        "hoi4_locked_controls": [
+          "asset_path",
+          "asset_sha256"
+        ]
+      },
+      "widgets_values": [
+        "backgrounds/local/hoi4_scientists_BG.png",
+        "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "HOI4BundledBackground",
+      "title": "HOI4 operative portrait background",
+      "pos": [
+        5290,
+        100
+      ],
+      "size": [
+        340,
+        160
+      ],
+      "color": "#294b61",
+      "bgcolor": "#3b6f8d",
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "asset_path",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "asset_sha256",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            46,
+            88
+          ]
+        },
+        {
+          "name": "background_details",
+          "type": "HOI4_META",
+          "links": [
+            47
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "HOI4 operative portrait background",
+        "hoi4_group": "04 Choose background",
+        "hoi4_locked_controls": [
+          "asset_path",
+          "asset_sha256"
+        ]
+      },
+      "widgets_values": [
+        "backgrounds/local/hoi4_operative_background.png",
+        "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "HOI4MaskAndBackgroundGuard",
+      "title": "Choose portrait background",
+      "pos": [
+        4210,
+        320
+      ],
+      "size": [
+        320,
+        260
+      ],
+      "color": "#294b61",
+      "bgcolor": "#3b6f8d",
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 39
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 40
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 41
+        },
+        {
+          "name": "mask_meta",
+          "type": "HOI4_META",
+          "link": 42
+        },
+        {
+          "name": "control_meta",
+          "type": "HOI4_META",
+          "link": 43
+        },
+        {
+          "name": "scientist_background",
+          "type": "IMAGE",
+          "link": 44
+        },
+        {
+          "name": "scientist_background_meta",
+          "type": "HOI4_META",
+          "link": 45
+        },
+        {
+          "name": "operative_background",
+          "type": "IMAGE",
+          "link": 46
+        },
+        {
+          "name": "operative_background_meta",
+          "type": "HOI4_META",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            49
+          ]
+        },
+        {
+          "name": "composite",
+          "type": "IMAGE",
+          "links": [
+            53,
+            58,
+            61,
+            63,
+            77,
+            84
+          ]
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            79
+          ]
+        },
+        {
+          "name": "background_meta",
+          "type": "HOI4_META",
+          "links": [
+            50
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Choose portrait background",
+        "hoi4_group": "04 Choose background",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "HOI4AutopromptClient",
+      "title": "Choose automatic or manual description",
+      "pos": [
+        340,
+        1110
+      ],
+      "size": [
+        440,
+        600
+      ],
+      "color": "#46375a",
+      "bgcolor": "#654c80",
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "job",
+          "type": "HOI4_JOB",
+          "link": 48
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 49
+        },
+        {
+          "name": "background_meta",
+          "type": "HOI4_META",
+          "link": 50
+        },
+        {
+          "name": "control_meta",
+          "type": "HOI4_META",
+          "link": 51
+        },
+        {
+          "name": "description_mode",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "manual_description",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "instruction_text",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "instruction_path",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "model_id",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "prompt_source",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "links": [
+            60,
+            80
+          ]
+        },
+        {
+          "name": "prompt_meta",
+          "type": "HOI4_META",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Choose automatic or manual description",
+        "hoi4_group": "05 Portrait description",
+        "hoi4_locked_controls": [
+          "instruction_text",
+          "instruction_path",
+          "model_id",
+          "prompt_source"
+        ]
+      },
+      "widgets_values": [
+        "Create automatically",
+        "",
+        "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nPrioritize visible details that help recreate the person:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, jewelry, and other relevant visible details\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent details that cannot be inferred from the image.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
+        "prompts/autoprompter_instruction.txt",
+        "Qwen/Qwen3-VL-8B-Instruct",
+        "autoprompter"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "UNETLoader",
+      "title": "Load Krea 2 Turbo",
+      "pos": [
+        880,
+        1110
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "unet_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "weight_dtype",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            52
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Load Krea 2 Turbo",
+        "hoi4_group": "06 Krea 2 portrait edit",
+        "hoi4_locked_controls": [
+          "unet_name",
+          "weight_dtype"
+        ]
+      },
+      "widgets_values": [
+        "krea2_turbo_fp8_scaled.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "LoraLoaderModelOnly",
+      "title": "Preserve identity",
+      "pos": [
+        880,
+        1270
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 52
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "strength_model",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            55
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Preserve identity",
+        "hoi4_group": "06 Krea 2 portrait edit",
+        "hoi4_locked_controls": [
+          "lora_name",
+          "strength_model"
+        ]
+      },
+      "widgets_values": [
+        "krea2_identity_edit_v1_2.safetensors",
+        1.0
+      ]
+    },
+    {
+      "id": 12,
+      "type": "VAELoader",
+      "title": "Prepare image decoder",
+      "pos": [
+        880,
+        1430
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae_name",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "vae",
+          "type": "VAE",
+          "links": [
+            54,
+            57,
+            73
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Prepare image decoder",
+        "hoi4_group": "06 Krea 2 portrait edit",
+        "hoi4_locked_controls": [
+          "vae_name"
+        ]
+      },
+      "widgets_values": [
+        "qwen_image_vae.safetensors"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "VAEEncode",
+      "title": "Encode reference image",
+      "pos": [
+        880,
+        1590
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 53
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            56
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Encode reference image",
+        "hoi4_group": "06 Krea 2 portrait edit",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "Krea2EditModelPatch",
+      "title": "Apply identity reference",
+      "pos": [
+        1180,
+        1110
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 55
+        },
+        {
+          "name": "source_latent",
+          "type": "LATENT",
+          "link": 56
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 57
+        },
+        {
+          "name": "source_image",
+          "type": "IMAGE",
+          "link": 58
+        },
+        {
+          "name": "fit_mode",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "ref_boost",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            64
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Apply identity reference",
+        "hoi4_group": "06 Krea 2 portrait edit",
+        "hoi4_locked_controls": [
+          "fit_mode",
+          "ref_boost"
+        ]
+      },
+      "widgets_values": [
+        "fit",
+        1.0
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CLIPLoader",
+      "title": "Read portrait description",
+      "pos": [
+        1180,
+        1270
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "type",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            59,
+            62
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Read portrait description",
+        "hoi4_group": "06 Krea 2 portrait edit",
+        "hoi4_locked_controls": [
+          "clip_name",
+          "type"
+        ]
+      },
+      "widgets_values": [
+        "qwen3vl_4b_fp8_scaled.safetensors",
+        "krea2"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "Krea2EditGroundedEncode",
+      "title": "Connect portrait description",
+      "pos": [
+        1480,
+        1430
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 59
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": 60
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 61
+        },
+        {
+          "name": "grounding_px",
+          "type": "INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "links": [
+            66
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Connect portrait description",
+        "hoi4_group": "06 Krea 2 portrait edit",
+        "hoi4_locked_controls": [
+          "grounding_px"
+        ]
+      },
+      "widgets_values": [
+        768
+      ]
+    },
+    {
+      "id": 17,
+      "type": "Krea2EditGroundedEncode",
+      "title": "Keep background empty",
+      "pos": [
+        1480,
+        1590
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 62
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 63
+        },
+        {
+          "name": "grounding_px",
+          "type": "INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "links": [
+            67
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Keep background empty",
+        "hoi4_group": "06 Krea 2 portrait edit",
+        "hoi4_locked_controls": [
+          "prompt",
+          "grounding_px"
+        ]
+      },
+      "widgets_values": [
+        "",
+        768
+      ]
+    },
+    {
+      "id": 18,
+      "type": "LoraLoaderModelOnly",
+      "title": "Apply HOI4 portrait style",
+      "pos": [
+        2220,
+        1220
+      ],
+      "size": [
+        260,
+        170
+      ],
+      "color": "#663442",
+      "bgcolor": "#914b5e",
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 64
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "strength_model",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            65
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Apply HOI4 portrait style",
+        "hoi4_group": "07 HOI4 portrait style",
+        "hoi4_locked_controls": [
+          "lora_name"
+        ]
+      },
+      "widgets_values": [
+        "hoi4_portrait_new_style_lora.safetensors",
+        0.8
+      ]
+    },
+    {
+      "id": 29,
+      "type": "HOI4KreaModelLoadBarrier",
+      "title": "Prepare generation",
+      "pos": [
+        2600,
+        1530
+      ],
+      "size": [
+        260,
+        130
+      ],
+      "color": "#66400c",
+      "bgcolor": "#945e12",
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 65
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 66
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 67
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            68
+          ]
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            69
+          ]
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            70
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Prepare generation",
+        "hoi4_group": "08 Generate portrait",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 19,
+      "type": "EmptySD3LatentImage",
+      "title": "Set portrait size",
+      "pos": [
+        2600,
+        1110
+      ],
+      "size": [
+        260,
+        150
+      ],
+      "color": "#66400c",
+      "bgcolor": "#945e12",
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            71
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Set portrait size",
+        "hoi4_group": "08 Generate portrait",
+        "hoi4_locked_controls": [
+          "width",
+          "height",
+          "batch_size"
+        ]
+      },
+      "widgets_values": [
+        1196,
+        1610,
+        1
+      ]
+    },
+    {
+      "id": 20,
+      "type": "KSampler",
+      "title": "Generate portrait",
+      "pos": [
+        2600,
+        1300
+      ],
+      "size": [
+        260,
+        180
+      ],
+      "color": "#66400c",
+      "bgcolor": "#945e12",
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 68
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 69
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 70
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 71
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "cfg",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "sampler_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "scheduler",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "denoise",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            72
           ]
         }
       ],
@@ -1725,8 +2389,8 @@
       "type": "VAEDecode",
       "title": "Build portrait image",
       "pos": [
-        2580,
-        1080
+        2980,
+        1110
       ],
       "size": [
         300,
@@ -1735,18 +2399,18 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 26,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 54
+          "link": 72
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 55
+          "link": 73
         }
       ],
       "outputs": [
@@ -1754,7 +2418,7 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            60
+            78
           ]
         }
       ],
@@ -1770,8 +2434,8 @@
       "type": "HOI4EvidenceExport",
       "title": "Prepare portrait for saving",
       "pos": [
-        2900,
-        1080
+        3320,
+        1110
       ],
       "size": [
         300,
@@ -1780,43 +2444,43 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 27,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
           "name": "job",
           "type": "HOI4_JOB",
-          "link": 56
+          "link": 74
         },
         {
           "name": "source_master",
           "type": "IMAGE",
-          "link": 57
+          "link": 75
         },
         {
           "name": "processed_reference",
           "type": "IMAGE",
-          "link": 58
+          "link": 76
         },
         {
           "name": "approved_background",
           "type": "IMAGE",
-          "link": 59
+          "link": 77
         },
         {
           "name": "candidate",
           "type": "IMAGE",
-          "link": 60
+          "link": 78
         },
         {
           "name": "mask",
           "type": "MASK",
-          "link": 61
+          "link": 79
         },
         {
           "name": "prompt",
           "type": "STRING",
-          "link": 62
+          "link": 80
         },
         {
           "name": "candidate_index",
@@ -1829,8 +2493,8 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            63,
-            67
+            81,
+            85
           ]
         },
         {
@@ -1855,8 +2519,8 @@
       "type": "SaveImage",
       "title": "Save portrait PNG",
       "pos": [
-        2900,
-        1290
+        3320,
+        1320
       ],
       "size": [
         300,
@@ -1865,13 +2529,13 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 28,
+      "order": 40,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 63
+          "link": 81
         },
         {
           "name": "filename_prefix",
@@ -1906,13 +2570,13 @@
       "color": "#164f49",
       "bgcolor": "#217a70",
       "flags": {},
-      "order": 29,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 64
+          "link": 82
         }
       ],
       "outputs": [
@@ -1934,23 +2598,23 @@
       "type": "PreviewImage",
       "title": "Prepared portrait",
       "pos": [
-        1980,
-        600
+        3700,
+        520
       ],
       "size": [
         400,
-        400
+        470
       ],
       "color": "#294a2b",
       "bgcolor": "#3d6b40",
       "flags": {},
-      "order": 30,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 65
+          "link": 83
         }
       ],
       "outputs": [
@@ -1972,7 +2636,7 @@
       "type": "PreviewImage",
       "title": "Background preview",
       "pos": [
-        2810,
+        4570,
         300
       ],
       "size": [
@@ -1982,13 +2646,13 @@
       "color": "#294b61",
       "bgcolor": "#3b6f8d",
       "flags": {},
-      "order": 31,
+      "order": 43,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 66
+          "link": 84
         }
       ],
       "outputs": [
@@ -2010,8 +2674,8 @@
       "type": "PreviewImage",
       "title": "Saved portrait preview",
       "pos": [
-        3220,
-        1080
+        3680,
+        1110
       ],
       "size": [
         400,
@@ -2020,13 +2684,13 @@
       "color": "#23465b",
       "bgcolor": "#306985",
       "flags": {},
-      "order": 32,
+      "order": 44,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 67
+          "link": 85
         }
       ],
       "outputs": [
@@ -2058,13 +2722,13 @@
       "color": "#1f4862",
       "bgcolor": "#2c6d90",
       "flags": {},
-      "order": 33,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 68
+          "link": 86
         }
       ],
       "outputs": [
@@ -2086,7 +2750,7 @@
       "type": "PreviewImage",
       "title": "Scientist background preview",
       "pos": [
-        3170,
+        4930,
         320
       ],
       "size": [
@@ -2096,13 +2760,13 @@
       "color": "#294b61",
       "bgcolor": "#3b6f8d",
       "flags": {},
-      "order": 34,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 69
+          "link": 87
         }
       ],
       "outputs": [
@@ -2124,7 +2788,7 @@
       "type": "PreviewImage",
       "title": "Operative background preview",
       "pos": [
-        3530,
+        5290,
         320
       ],
       "size": [
@@ -2134,13 +2798,13 @@
       "color": "#294b61",
       "bgcolor": "#3b6f8d",
       "flags": {},
-      "order": 35,
+      "order": 47,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 70
+          "link": 88
         }
       ],
       "outputs": [
@@ -2153,6 +2817,44 @@
       "properties": {
         "Node name for S&R": "Operative background preview",
         "hoi4_group": "04 Choose background",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 54,
+      "type": "PreviewImage",
+      "title": "Qwen restoration preview",
+      "pos": [
+        3700,
+        100
+      ],
+      "size": [
+        400,
+        400
+      ],
+      "color": "#294a2b",
+      "bgcolor": "#3d6b40",
+      "flags": {},
+      "order": 48,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 89
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Qwen restoration preview",
+        "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -2241,22 +2943,166 @@
     ],
     [
       11,
-      36,
+      5,
       0,
-      39,
+      40,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      43,
+      0,
+      45,
+      0,
+      "CLIP"
+    ],
+    [
+      13,
+      41,
+      0,
+      45,
+      1,
+      "STRING"
+    ],
+    [
+      14,
+      44,
+      0,
+      45,
+      2,
+      "VAE"
+    ],
+    [
+      15,
+      40,
+      0,
+      45,
+      3,
+      "IMAGE"
+    ],
+    [
+      16,
+      43,
+      0,
+      46,
+      0,
+      "CLIP"
+    ],
+    [
+      17,
+      44,
+      0,
+      46,
+      2,
+      "VAE"
+    ],
+    [
+      18,
+      40,
+      0,
+      46,
+      3,
+      "IMAGE"
+    ],
+    [
+      19,
+      40,
+      0,
+      47,
+      0,
+      "IMAGE"
+    ],
+    [
+      20,
+      44,
+      0,
+      47,
+      1,
+      "VAE"
+    ],
+    [
+      21,
+      42,
+      0,
+      48,
+      0,
+      "MODEL"
+    ],
+    [
+      22,
+      48,
+      0,
+      49,
+      0,
+      "MODEL"
+    ],
+    [
+      23,
+      49,
+      0,
+      50,
+      0,
+      "MODEL"
+    ],
+    [
+      24,
+      45,
+      0,
+      50,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      25,
+      46,
+      0,
+      50,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      26,
+      47,
+      0,
+      50,
+      3,
+      "LATENT"
+    ],
+    [
+      27,
+      50,
+      0,
+      51,
+      0,
+      "LATENT"
+    ],
+    [
+      28,
+      44,
+      0,
+      51,
+      1,
+      "VAE"
+    ],
+    [
+      29,
+      52,
+      0,
+      53,
       0,
       "UPSCALE_MODEL"
     ],
     [
-      12,
-      5,
+      30,
+      51,
       0,
-      39,
+      53,
       1,
       "IMAGE"
     ],
     [
-      13,
+      31,
       24,
       0,
       6,
@@ -2264,7 +3110,7 @@
       "HOI4_JOB"
     ],
     [
-      14,
+      32,
       5,
       0,
       6,
@@ -2272,7 +3118,7 @@
       "IMAGE"
     ],
     [
-      15,
+      33,
       5,
       1,
       6,
@@ -2280,23 +3126,23 @@
       "HOI4_META"
     ],
     [
-      16,
-      39,
+      34,
+      53,
       0,
       6,
       3,
       "IMAGE"
     ],
     [
-      17,
+      35,
       24,
       1,
       6,
-      4,
+      5,
       "HOI4_META"
     ],
     [
-      18,
+      36,
       24,
       0,
       7,
@@ -2304,7 +3150,7 @@
       "HOI4_JOB"
     ],
     [
-      19,
+      37,
       6,
       0,
       7,
@@ -2312,7 +3158,7 @@
       "IMAGE"
     ],
     [
-      20,
+      38,
       6,
       1,
       7,
@@ -2320,7 +3166,7 @@
       "HOI4_META"
     ],
     [
-      21,
+      39,
       24,
       0,
       8,
@@ -2328,7 +3174,7 @@
       "HOI4_JOB"
     ],
     [
-      22,
+      40,
       7,
       0,
       8,
@@ -2336,7 +3182,7 @@
       "IMAGE"
     ],
     [
-      23,
+      41,
       7,
       1,
       8,
@@ -2344,7 +3190,7 @@
       "MASK"
     ],
     [
-      24,
+      42,
       7,
       2,
       8,
@@ -2352,7 +3198,7 @@
       "HOI4_META"
     ],
     [
-      25,
+      43,
       24,
       1,
       8,
@@ -2360,7 +3206,7 @@
       "HOI4_META"
     ],
     [
-      26,
+      44,
       34,
       0,
       8,
@@ -2368,7 +3214,7 @@
       "IMAGE"
     ],
     [
-      27,
+      45,
       34,
       1,
       8,
@@ -2376,7 +3222,7 @@
       "HOI4_META"
     ],
     [
-      28,
+      46,
       37,
       0,
       8,
@@ -2384,7 +3230,7 @@
       "IMAGE"
     ],
     [
-      29,
+      47,
       37,
       1,
       8,
@@ -2392,7 +3238,7 @@
       "HOI4_META"
     ],
     [
-      30,
+      48,
       24,
       0,
       9,
@@ -2400,7 +3246,7 @@
       "HOI4_JOB"
     ],
     [
-      31,
+      49,
       8,
       0,
       9,
@@ -2408,7 +3254,7 @@
       "IMAGE"
     ],
     [
-      32,
+      50,
       8,
       3,
       9,
@@ -2416,7 +3262,7 @@
       "HOI4_META"
     ],
     [
-      33,
+      51,
       24,
       1,
       9,
@@ -2424,7 +3270,7 @@
       "HOI4_META"
     ],
     [
-      34,
+      52,
       10,
       0,
       11,
@@ -2432,7 +3278,7 @@
       "MODEL"
     ],
     [
-      35,
+      53,
       8,
       1,
       13,
@@ -2440,7 +3286,7 @@
       "IMAGE"
     ],
     [
-      36,
+      54,
       12,
       0,
       13,
@@ -2448,7 +3294,7 @@
       "VAE"
     ],
     [
-      37,
+      55,
       11,
       0,
       14,
@@ -2456,7 +3302,7 @@
       "MODEL"
     ],
     [
-      38,
+      56,
       13,
       0,
       14,
@@ -2464,7 +3310,7 @@
       "LATENT"
     ],
     [
-      39,
+      57,
       12,
       0,
       14,
@@ -2472,7 +3318,7 @@
       "VAE"
     ],
     [
-      40,
+      58,
       8,
       1,
       14,
@@ -2480,7 +3326,7 @@
       "IMAGE"
     ],
     [
-      41,
+      59,
       15,
       0,
       16,
@@ -2488,7 +3334,7 @@
       "CLIP"
     ],
     [
-      42,
+      60,
       9,
       0,
       16,
@@ -2496,7 +3342,7 @@
       "STRING"
     ],
     [
-      43,
+      61,
       8,
       1,
       16,
@@ -2504,7 +3350,7 @@
       "IMAGE"
     ],
     [
-      44,
+      62,
       15,
       0,
       17,
@@ -2512,7 +3358,7 @@
       "CLIP"
     ],
     [
-      45,
+      63,
       8,
       1,
       17,
@@ -2520,7 +3366,7 @@
       "IMAGE"
     ],
     [
-      46,
+      64,
       14,
       0,
       18,
@@ -2528,7 +3374,7 @@
       "MODEL"
     ],
     [
-      47,
+      65,
       18,
       0,
       29,
@@ -2536,7 +3382,7 @@
       "MODEL"
     ],
     [
-      48,
+      66,
       16,
       0,
       29,
@@ -2544,7 +3390,7 @@
       "CONDITIONING"
     ],
     [
-      49,
+      67,
       17,
       0,
       29,
@@ -2552,7 +3398,7 @@
       "CONDITIONING"
     ],
     [
-      50,
+      68,
       29,
       0,
       20,
@@ -2560,7 +3406,7 @@
       "MODEL"
     ],
     [
-      51,
+      69,
       29,
       1,
       20,
@@ -2568,7 +3414,7 @@
       "CONDITIONING"
     ],
     [
-      52,
+      70,
       29,
       2,
       20,
@@ -2576,7 +3422,7 @@
       "CONDITIONING"
     ],
     [
-      53,
+      71,
       19,
       0,
       20,
@@ -2584,7 +3430,7 @@
       "LATENT"
     ],
     [
-      54,
+      72,
       20,
       0,
       21,
@@ -2592,7 +3438,7 @@
       "LATENT"
     ],
     [
-      55,
+      73,
       12,
       0,
       21,
@@ -2600,7 +3446,7 @@
       "VAE"
     ],
     [
-      56,
+      74,
       24,
       0,
       22,
@@ -2608,7 +3454,7 @@
       "HOI4_JOB"
     ],
     [
-      57,
+      75,
       3,
       0,
       22,
@@ -2616,7 +3462,7 @@
       "IMAGE"
     ],
     [
-      58,
+      76,
       6,
       0,
       22,
@@ -2624,7 +3470,7 @@
       "IMAGE"
     ],
     [
-      59,
+      77,
       8,
       1,
       22,
@@ -2632,7 +3478,7 @@
       "IMAGE"
     ],
     [
-      60,
+      78,
       21,
       0,
       22,
@@ -2640,7 +3486,7 @@
       "IMAGE"
     ],
     [
-      61,
+      79,
       8,
       2,
       22,
@@ -2648,7 +3494,7 @@
       "MASK"
     ],
     [
-      62,
+      80,
       9,
       0,
       22,
@@ -2656,7 +3502,7 @@
       "STRING"
     ],
     [
-      63,
+      81,
       22,
       0,
       23,
@@ -2664,7 +3510,7 @@
       "IMAGE"
     ],
     [
-      64,
+      82,
       5,
       0,
       25,
@@ -2672,7 +3518,7 @@
       "IMAGE"
     ],
     [
-      65,
+      83,
       6,
       0,
       26,
@@ -2680,7 +3526,7 @@
       "IMAGE"
     ],
     [
-      66,
+      84,
       8,
       1,
       27,
@@ -2688,7 +3534,7 @@
       "IMAGE"
     ],
     [
-      67,
+      85,
       22,
       0,
       28,
@@ -2696,7 +3542,7 @@
       "IMAGE"
     ],
     [
-      68,
+      86,
       3,
       0,
       30,
@@ -2704,7 +3550,7 @@
       "IMAGE"
     ],
     [
-      69,
+      87,
       34,
       0,
       35,
@@ -2712,10 +3558,18 @@
       "IMAGE"
     ],
     [
-      70,
+      88,
       37,
       0,
       38,
+      0,
+      "IMAGE"
+    ],
+    [
+      89,
+      51,
+      0,
+      54,
       0,
       "IMAGE"
     ]
@@ -2759,7 +3613,7 @@
       "bounding": [
         1940,
         40,
-        440,
+        2200,
         980
       ],
       "color": "#588157",
@@ -2768,7 +3622,7 @@
     {
       "title": "04 Choose background",
       "bounding": [
-        2410,
+        4170,
         40,
         1550,
         900
@@ -2780,7 +3634,7 @@
       "title": "05 Portrait description",
       "bounding": [
         300,
-        1020,
+        1050,
         500,
         720
       ],
@@ -2791,8 +3645,8 @@
       "title": "06 Krea 2 portrait edit",
       "bounding": [
         840,
-        1020,
-        900,
+        1050,
+        1300,
         780
       ],
       "color": "#6d597a",
@@ -2801,8 +3655,8 @@
     {
       "title": "07 HOI4 portrait style",
       "bounding": [
-        1780,
-        1020,
+        2180,
+        1050,
         340,
         720
       ],
@@ -2812,8 +3666,8 @@
     {
       "title": "08 Generate portrait",
       "bounding": [
-        2160,
-        1020,
+        2560,
+        1050,
         340,
         720
       ],
@@ -2823,9 +3677,9 @@
     {
       "title": "09 Preview and save",
       "bounding": [
-        2540,
-        1020,
-        1080,
+        2940,
+        1050,
+        2300,
         720
       ],
       "color": "#457b9d",
@@ -2835,14 +3689,14 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.32,
+      "scale": 0.28,
       "offset": [
         160,
         260
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.7.0",
+    "graph_spec_version": "graph-spec-1.8.0",
     "workflow_id": "hoi4_portraits_full_power_gpu",
     "execution_profile": "hoi4_portraits_full_power_gpu",
     "route": "runpod",
@@ -2883,8 +3737,40 @@
         "retry_limit",
         "seed_policy"
       ],
-      "Load AI portrait enhancer": [
+      "Load Qwen portrait restorer": [
+        "unet_name",
+        "weight_dtype"
+      ],
+      "Load Qwen image understanding": [
+        "clip_name",
+        "type",
+        "device"
+      ],
+      "Load Qwen image decoder": [
+        "vae_name"
+      ],
+      "Use a neutral negative prompt": [
+        "prompt"
+      ],
+      "Set Qwen image sampling": [
+        "shift"
+      ],
+      "Keep restoration balanced": [
+        "strength",
+        "pre_cfg"
+      ],
+      "Restore portrait with Qwen": [
+        "steps",
+        "cfg",
+        "sampler_name",
+        "scheduler",
+        "denoise"
+      ],
+      "Load final portrait refiner": [
         "model_name"
+      ],
+      "Prepare the portrait": [
+        "preparation_engine"
       ],
       "Separate person from background": [
         "mask_model"
@@ -2952,13 +3838,17 @@
       ]
     },
     "required_core_nodes": [
+      "CFGNorm",
       "CLIPLoader",
       "EmptySD3LatentImage",
+      "FluxKontextImageScale",
       "ImageUpscaleWithModel",
       "KSampler",
       "LoraLoaderModelOnly",
+      "ModelSamplingAuraFlow",
       "PreviewImage",
       "SaveImage",
+      "TextEncodeQwenImageEditPlus",
       "UNETLoader",
       "UpscaleModelLoader",
       "VAEDecode",
@@ -2966,12 +3856,18 @@
       "VAELoader"
     ],
     "required_preparation_nodes": [
-      "UpscaleModelLoader",
+      "CFGNorm",
+      "FluxKontextImageScale",
+      "HOI4ConservativePrep",
+      "HOI4RestorationPrompt",
       "ImageUpscaleWithModel",
-      "HOI4ConservativePrep"
+      "ModelSamplingAuraFlow",
+      "TextEncodeQwenImageEditPlus",
+      "UpscaleModelLoader"
     ],
-    "preparation_model": "RealESRGAN_x2plus.pth",
-    "colorization": false,
+    "preparation_model": "qwen_image_edit_2511_fp8mixed.safetensors + RealESRGAN_x2plus.pth",
+    "preparation_engine": "qwen_image_edit_2511",
+    "colorization": true,
     "preview_nodes": [
       "Cropped portrait",
       "Prepared portrait",
@@ -2979,7 +3875,8 @@
       "Saved portrait preview",
       "Input portrait preview",
       "Scientist background preview",
-      "Operative background preview"
+      "Operative background preview",
+      "Qwen restoration preview"
     ],
     "final_preview_save_pair": {
       "preview_node_id": 28,
@@ -3004,6 +3901,7 @@
       "HOI4JobSource",
       "HOI4KreaModelLoadBarrier",
       "HOI4MaskAndBackgroundGuard",
+      "HOI4RestorationPrompt",
       "HOI4SourceGuard",
       "HOI4SubjectSelect"
     ],

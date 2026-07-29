@@ -34,6 +34,7 @@ from .nodes import (
     HOI4PortraitCrop,
     HOI4PromptInput,
     HOI4RandomPortraitPrompt,
+    HOI4RestorationPrompt,
     HOI4SourceGuard,
     HOI4SubjectSelect,
 )
@@ -54,6 +55,7 @@ NODE_CLASS_MAPPINGS = {
     "HOI4KreaModelLoadBarrier": HOI4KreaModelLoadBarrier,
     "HOI4PromptInput": HOI4PromptInput,
     "HOI4RandomPortraitPrompt": HOI4RandomPortraitPrompt,
+    "HOI4RestorationPrompt": HOI4RestorationPrompt,
     "HOI4AutopromptClient": HOI4AutopromptClient,
     "HOI4BundledBackground": HOI4BundledBackground,
     "HOI4EvidenceExport": HOI4EvidenceExport,
@@ -76,6 +78,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
         "HOI4KreaModelLoadBarrier": "Prepare generation",
         "HOI4PromptInput": "Use portrait description",
         "HOI4RandomPortraitPrompt": "Create a fictional portrait idea",
+        "HOI4RestorationPrompt": "Choose portrait restoration",
         "HOI4AutopromptClient": "Create portrait description",
         "HOI4BundledBackground": "HOI4 portrait background",
         "HOI4EvidenceExport": "Prepare portrait for saving",

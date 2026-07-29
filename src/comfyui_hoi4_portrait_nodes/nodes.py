@@ -794,7 +794,15 @@ class HOI4ConservativePrep:
                 "crop_meta": ("HOI4_META",),
                 "enhanced_image": ("IMAGE",),
             },
-            "optional": {"control_meta": ("HOI4_META",)},
+            "optional": {
+                "control_meta": ("HOI4_META",),
+                "preparation_engine": (
+                    [
+                        "RealESRGAN x2",
+                        "Qwen Image Edit 2511 and RealESRGAN x2",
+                    ],
+                ),
+            },
         }
 
     RETURN_TYPES = ("IMAGE", "HOI4_META")
@@ -809,6 +817,7 @@ class HOI4ConservativePrep:
         crop_meta: dict[str, Any],
         enhanced_image: Any,
         control_meta: dict[str, Any] | None = None,
+        preparation_engine: str = "RealESRGAN x2",
     ):
         if Image is None:
             _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required for source preparation")
@@ -818,6 +827,12 @@ class HOI4ConservativePrep:
         limits = PROFILE_LIMITS.get(profile)
         if not limits:
             _raise(ExitCode.WORKFLOW_INVALID, "job execution profile is unknown")
+        supported_engines = {
+            "RealESRGAN x2",
+            "Qwen Image Edit 2511 and RealESRGAN x2",
+        }
+        if preparation_engine not in supported_engines:
+            _raise(ExitCode.WORKFLOW_INVALID, "portrait preparation engine is not supported")
         target = (int(limits["canvas_width"]), int(limits["canvas_height"]))
         if enhanced.size != target:
             prepared = enhanced.resize(target, Image.Resampling.LANCZOS)
@@ -825,14 +840,22 @@ class HOI4ConservativePrep:
         else:
             prepared = enhanced
             resize_operation = "IDENTITY_SIZE"
+        qwen_restoration = preparation_engine.startswith("Qwen Image Edit 2511")
         meta = {
             "crop_meta": crop_meta,
             "restoration": {
-                "status": "AI_UPSCALE_APPLIED",
-                "model": "RealESRGAN_x2plus.pth",
-                "operations": ["Real-ESRGAN_x2plus", resize_operation],
+                "status": "AI_RESTORATION_AND_UPSCALE_APPLIED" if qwen_restoration else "AI_UPSCALE_APPLIED",
+                "model": preparation_engine,
+                "operations": (
+                    ["Qwen-Image-Edit-2511 FP8 mixed", "Real-ESRGAN_x2plus", resize_operation]
+                    if qwen_restoration
+                    else ["Real-ESRGAN_x2plus", resize_operation]
+                ),
             },
-            "colorization": {"status": "NOT_USED", "source_color_preserved": True},
+            "colorization": {
+                "status": "AI_RESTORATION_ENABLED" if qwen_restoration else "NOT_USED",
+                "source_color_preserved": not qwen_restoration,
+            },
             "source_size": {"width": source.width, "height": source.height},
             "work_canvas": {"width": prepared.width, "height": prepared.height},
             "pixel_sha256": _pixel_digest(prepared),
@@ -841,6 +864,67 @@ class HOI4ConservativePrep:
         _write_image(job_root / "evidence" / "reference" / "processed.png", prepared)
         atomic_json_write(job_root / "evidence" / "reference" / "processed.json", meta)
         return _pil_to_comfy(prepared), meta
+
+
+class HOI4RestorationPrompt:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "restoration_mode": (
+                    [
+                        "Restore and colorize when needed",
+                        "Restore without changing color",
+                        "Use my instructions",
+                    ],
+                ),
+                "custom_instructions": (
+                    "STRING",
+                    {
+                        "default": "",
+                        "multiline": True,
+                        "dynamicPrompts": False,
+                    },
+                ),
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("restoration_instructions",)
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/03 Prepare portrait"
+
+    _PRESERVATION_RULES = (
+        "Preserve the subject's identity, facial geometry, expression, pose, hairstyle, "
+        "clothing, insignia, accessories, framing, and background. Do not add, remove, "
+        "replace, or redesign any person, object, uniform feature, medal, symbol, or "
+        "background element. Keep the person's age and appearance unchanged. Produce a "
+        "clean high-resolution photographic restoration, not an illustration."
+    )
+
+    def run(self, restoration_mode: str, custom_instructions: str):
+        if restoration_mode == "Restore and colorize when needed":
+            task = (
+                "Restore this historical portrait photograph at high fidelity. Remove blur, "
+                "fading, scratches, compression artifacts, halftone patterns, dust, and noise. "
+                "Reconstruct natural facial detail and fabric texture. If the source is monochrome "
+                "or sepia, colorize it with restrained, historically plausible natural colors. "
+                "If it already contains color, preserve and correct the existing palette."
+            )
+        elif restoration_mode == "Restore without changing color":
+            task = (
+                "Restore this historical portrait photograph at high fidelity. Remove blur, "
+                "fading, scratches, compression artifacts, halftone patterns, dust, and noise. "
+                "Reconstruct natural facial detail and fabric texture while preserving the "
+                "source image's existing monochrome, sepia, or color treatment."
+            )
+        elif restoration_mode == "Use my instructions":
+            task = " ".join(str(custom_instructions).replace("\r", " ").replace("\n", " ").split())
+            if not task:
+                _raise(ExitCode.INPUT_SCHEMA_INVALID, "custom restoration instructions are empty")
+        else:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "restoration mode is not supported")
+        return (f"{task} {self._PRESERVATION_RULES}",)
 
 
 class HOI4PortraitCrop:

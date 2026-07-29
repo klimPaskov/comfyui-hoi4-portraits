@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-29T17:48:56.769505+00:00",
-  "lock_version": "workflows-2026-07-26.1",
+  "generated_at": "2026-07-29T19:23:35.620777+00:00",
+  "lock_version": "workflows-2026-07-29.1",
   "workflows": [
     {
       "workflow_id": "hoi4_portraits_local_nvidia_16gb",
       "display_name": "hoi4_portraits_local_nvidia_16gb",
       "workflow_json": "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json",
       "api_json": "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.api.json",
-      "sha256": "c8b0e5dfaa7efe2b4c3f8fdcbd33307de9284f74cac9a75d279cd3d0224cc9b2",
-      "api_sha256": "a3759d81f19bbafb3625300128d8174fa6a38a699ebc25cd533d052e293b67d6",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "56bdea31b6d7481b7c3820ec0a34a834afa7566daa76178f4a215179c797b953",
+      "api_sha256": "dbf7ff7b120c4472d03f3321ee4fd336190459f5e6369c84585fd74c05c922c0",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -49,11 +49,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -88,7 +88,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
+        "checked_at": "2026-07-29T19:23:35.620777+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -106,18 +106,22 @@
       "display_name": "hoi4_portraits_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.api.json",
-      "sha256": "8ebb5169d50d73a5d0371697668228ca36d1e85a496fd23ea324bacf60b811dd",
-      "api_sha256": "a871f0635b9f2edc129ea8c6046025d043003fe59585f5d020c677c9115d2418",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "fd1e45afd25a93e9ed2b1be883651941775a27af152b93a18d6c3ea7cae71f11",
+      "api_sha256": "61c067102c72062379dd4b21da932f321a13a27c24bab137d1409dc5106abfda",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
+        "CFGNorm",
         "CLIPLoader",
         "EmptySD3LatentImage",
+        "FluxKontextImageScale",
         "ImageUpscaleWithModel",
         "KSampler",
         "LoraLoaderModelOnly",
+        "ModelSamplingAuraFlow",
         "PreviewImage",
         "SaveImage",
+        "TextEncodeQwenImageEditPlus",
         "UNETLoader",
         "UpscaleModelLoader",
         "VAEDecode",
@@ -136,6 +140,7 @@
         "HOI4JobSource",
         "HOI4KreaModelLoadBarrier",
         "HOI4MaskAndBackgroundGuard",
+        "HOI4RestorationPrompt",
         "HOI4SourceGuard",
         "HOI4SubjectSelect",
         "Krea2EditGroundedEncode",
@@ -147,11 +152,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -160,6 +165,8 @@
         "krea2_identity_edit_v1_2.safetensors",
         "hoi4_portrait_new_style_lora.safetensors",
         "RealESRGAN_x2plus.pth",
+        "qwen_image_edit_2511_fp8mixed.safetensors",
+        "qwen_2.5_vl_7b_fp8_scaled.safetensors",
         "Qwen3-VL-8B-Instruct-BF16-shards"
       ],
       "autoprompter_present": true,
@@ -171,7 +178,8 @@
         "Saved portrait preview",
         "Input portrait preview",
         "Scientist background preview",
-        "Operative background preview"
+        "Operative background preview",
+        "Qwen restoration preview"
       ],
       "final_preview_save_pair": {
         "preview_node_id": 28,
@@ -182,31 +190,18 @@
       },
       "autoprompter_instruction_sha256": "b83f4d149c7279dc610bb1fa51a915707092851e5e2416cfe9a33b2555b59a3b",
       "validation_status": "UNVALIDATED",
-      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
-      "load_test_evidence": {
-        "path": ".runtime/reports/live_comfy_compatibility.json",
-        "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
-      },
-      "execution_test_evidence": {
-        "path": ".runtime/reports/live_comfy_compatibility.json",
-        "status": "NOT_RUN_CALIBRATION_REQUIRED",
-        "attempted": false,
-        "fixture_present": true,
-        "background_resolved": true,
-        "eight_step_turbo_execution": "NOT_RUN",
-        "model_loading": "NOT_RUN",
-        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
-      }
+      "runtime_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+      "load_test_evidence": null,
+      "execution_test_evidence": null
     },
     {
       "workflow_id": "hoi4_portraits_agent_local_nvidia_16gb",
       "display_name": "hoi4_portraits_agent_local_nvidia_16gb",
       "workflow_json": "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.json",
       "api_json": "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.api.json",
-      "sha256": "a908b6ffb93503dee4d38581c77f5b5451973414981f8744424727ba7027beb2",
-      "api_sha256": "38563697717ab6ce156cf33aec1c5f98c1a81f52f782ff8390734e0c2f66db8e",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "43c7073d417802a85733a471771d84a8f622fe39a847062798bf80353cbcacc6",
+      "api_sha256": "483dca24bf81e9bacb8de057cbea7e935ef09f9157b549ad405b1dd18f0ffc1b",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -242,11 +237,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -272,7 +267,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
+        "checked_at": "2026-07-29T19:23:35.620777+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -290,17 +285,21 @@
       "display_name": "hoi4_portraits_agent_full_power_gpu",
       "workflow_json": "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.json",
       "api_json": "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.api.json",
-      "sha256": "7e3545f350960b250d5dbf5b308cc3c28aa662345feb0624f9f85eb4a3813af5",
-      "api_sha256": "7a679d0eb417833093a6afb9a2e94bbd0ea0ed001c046510edf0738c4b6a58e4",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "f10370bb05957bcd49d9b12e4311ae635a53cb0626c858d11c4a5cc5e269f3b0",
+      "api_sha256": "51fe6f13c53a7229beb24dad1df1db4f1af8212d2473c6e569e4531baa64aa7a",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
+        "CFGNorm",
         "CLIPLoader",
         "EmptySD3LatentImage",
+        "FluxKontextImageScale",
         "ImageUpscaleWithModel",
         "KSampler",
         "LoraLoaderModelOnly",
+        "ModelSamplingAuraFlow",
         "SaveImage",
+        "TextEncodeQwenImageEditPlus",
         "UNETLoader",
         "UpscaleModelLoader",
         "VAEDecode",
@@ -317,6 +316,7 @@
         "HOI4KreaModelLoadBarrier",
         "HOI4MaskAndBackgroundGuard",
         "HOI4PromptInput",
+        "HOI4RestorationPrompt",
         "HOI4SourceGuard",
         "HOI4SubjectSelect",
         "Krea2EditGroundedEncode",
@@ -328,11 +328,11 @@
       ],
       "required_custom_node_revisions": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -340,7 +340,9 @@
         "qwen_image_vae.safetensors",
         "krea2_identity_edit_v1_2.safetensors",
         "hoi4_portrait_new_style_lora.safetensors",
-        "RealESRGAN_x2plus.pth"
+        "RealESRGAN_x2plus.pth",
+        "qwen_image_edit_2511_fp8mixed.safetensors",
+        "qwen_2.5_vl_7b_fp8_scaled.safetensors"
       ],
       "autoprompter_present": false,
       "prompt_source": "job_contract",
@@ -354,31 +356,18 @@
       },
       "autoprompter_instruction_sha256": null,
       "validation_status": "UNVALIDATED",
-      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
-      "load_test_evidence": {
-        "path": ".runtime/reports/live_comfy_compatibility.json",
-        "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
-      },
-      "execution_test_evidence": {
-        "path": ".runtime/reports/live_comfy_compatibility.json",
-        "status": "NOT_RUN_CALIBRATION_REQUIRED",
-        "attempted": false,
-        "fixture_present": true,
-        "background_resolved": true,
-        "eight_step_turbo_execution": "NOT_RUN",
-        "model_loading": "NOT_RUN",
-        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
-      }
+      "runtime_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+      "load_test_evidence": null,
+      "execution_test_evidence": null
     },
     {
       "workflow_id": "hoi4_portraits_no_input_local_nvidia_16gb",
       "display_name": "hoi4_portraits_no_input_local_nvidia_16gb",
       "workflow_json": "workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json",
       "api_json": "workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.api.json",
-      "sha256": "8c0314b5cd39b658d73fade4a0914ee436927f0ee923b24e0057e27a6fa98ae9",
-      "api_sha256": "8ade8920448a6a7dc08095c88007b9238ecae178514cbcd37befe5bb7753d04f",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "8b6a5bd43061e5c23757e051ea556c7c5bf28c6b483e793dfb153b3af2f3d3f8",
+      "api_sha256": "c294c027ee11799e9852cbf00011ccb3e349fdfdeaea6d6b517dacdb032de8c4",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -400,10 +389,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -429,7 +418,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
+        "checked_at": "2026-07-29T19:23:35.620777+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -447,9 +436,9 @@
       "display_name": "hoi4_portraits_no_input_full_power_gpu",
       "workflow_json": "workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json",
       "api_json": "workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.api.json",
-      "sha256": "15000e703ef7aa12cb2d3b745bf58ab88d17acac69b0fecd453cf01921f1ef4a",
-      "api_sha256": "73603a6cfc04890133ba1bcf2117b4ea0fded85593cec1899256eb9887353801",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "0ff0bf7c6047731df84a4f1d099adbe0ac02260149234a7d9051cbbaea9e4674",
+      "api_sha256": "286c6122bb1193b8eab5340b7319c5104a49709ebf010fae687c147d3a334360",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -471,10 +460,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -500,7 +489,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
+        "checked_at": "2026-07-29T19:23:35.620777+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -518,9 +507,9 @@
       "display_name": "hoi4_portraits_agent_no_input_local_nvidia_16gb",
       "workflow_json": "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json",
       "api_json": "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.api.json",
-      "sha256": "ee160ce0466d043cc5e2189f8cb7139c5836052c1b674f98ef0bbddb6b8c45f0",
-      "api_sha256": "c50f52fe799237584e9e8480d962936d59d5265f90f9df8e14be660f840c9cc6",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "1a0dd1a46325eafedc870b40e2352508582dbe9c5a98d80e2d4c33cbd65a363b",
+      "api_sha256": "502489e8323ac15ee760d39459622d2666a7618bd82ddba6f78a5c6d5ec42c4a",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -541,10 +530,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -568,7 +557,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
+        "checked_at": "2026-07-29T19:23:35.620777+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -586,9 +575,9 @@
       "display_name": "hoi4_portraits_agent_no_input_full_power_gpu",
       "workflow_json": "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json",
       "api_json": "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.api.json",
-      "sha256": "04464d428d5c0c8771e1d032e428895d6626b38ee34f423963a2745bbfe4ad4f",
-      "api_sha256": "f723a893ae64bde70cc40d2daf093e9114f6525136c189455fe67e2aefd21ffd",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "410e9802e2ad9c3ef8a5c3cb4757477cf596fced172b995f9244bdf60ba97a55",
+      "api_sha256": "92f0ea8739414ff4e15dbe392dc7193ee6e0fd9f78011a17d9c42dee3b58bb00",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -609,10 +598,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -636,7 +625,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
+        "checked_at": "2026-07-29T19:23:35.620777+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -654,32 +643,46 @@
       "display_name": "hoi4_portraits_prepare_portrait_for_hoi4",
       "workflow_json": "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json",
       "api_json": "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json",
-      "sha256": "6fa5e6539504cb10d24776cf354b3963cd030e2acce90dd8bbe8d25612552170",
-      "api_sha256": "476236d9ad16c9887444e5e3c343762e4497336018d5327bf0b97e128c2c138f",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "886c1fee3baa529f0ffbe756054739ff04fb9a632f826bfd6b8fb2f6cea30530",
+      "api_sha256": "75e50ff565536a2f2527418e8d78e496fe7b8a9f725fba00abfb9d5c62ec5018",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
-        "LoadImage",
-        "PreviewImage",
-        "UpscaleModelLoader",
+        "CFGNorm",
+        "CLIPLoader",
+        "FluxKontextImageScale",
         "ImageUpscaleWithModel",
-        "SaveImage"
+        "KSampler",
+        "LoadImage",
+        "ModelSamplingAuraFlow",
+        "PreviewImage",
+        "SaveImage",
+        "TextEncodeQwenImageEditPlus",
+        "UNETLoader",
+        "UpscaleModelLoader",
+        "VAEDecode",
+        "VAEEncode",
+        "VAELoader"
       ],
       "required_custom_nodes": [
         "HOI4FinishPreparedPortrait",
-        "HOI4PortraitCrop"
+        "HOI4PortraitCrop",
+        "HOI4RestorationPrompt"
       ],
       "required_custom_node_packages": [
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "face_detection_yunet_2023mar.onnx",
+        "qwen_image_edit_2511_fp8mixed.safetensors",
+        "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "qwen_image_vae.safetensors",
         "RealESRGAN_x2plus.pth"
       ],
       "autoprompter_present": false,
@@ -687,43 +690,31 @@
       "preview_nodes": [
         "Input image preview",
         "Head-and-shoulders preview",
-        "AI-enhanced preview",
+        "Qwen restoration preview",
+        "Refined portrait preview",
         "Prepared portrait preview"
       ],
       "final_preview_save_pair": {
-        "preview_node_id": 9,
-        "save_node_id": 10,
-        "shared_source_node_id": 7,
+        "preview_node_id": 22,
+        "save_node_id": 23,
+        "shared_source_node_id": 20,
         "shared_source_slot": 0,
         "policy": "preview_and_save_use_the_same_prepared_portrait"
       },
       "autoprompter_instruction_sha256": null,
       "validation_status": "UNVALIDATED",
-      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
-      "load_test_evidence": {
-        "path": ".runtime/reports/live_comfy_compatibility.json",
-        "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
-      },
-      "execution_test_evidence": {
-        "path": ".runtime/reports/live_comfy_compatibility.json",
-        "status": "NOT_RUN_CALIBRATION_REQUIRED",
-        "attempted": false,
-        "fixture_present": true,
-        "background_resolved": true,
-        "eight_step_turbo_execution": "NOT_RUN",
-        "model_loading": "NOT_RUN",
-        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
-      }
+      "runtime_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED",
+      "load_test_evidence": null,
+      "execution_test_evidence": null
     },
     {
       "workflow_id": "hoi4_portraits_prepare_portrait_basic",
       "display_name": "hoi4_portraits_prepare_portrait_basic",
       "workflow_json": "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.json",
       "api_json": "workflows/human/prepare_portrait_basic/hoi4_portraits_prepare_portrait_basic.api.json",
-      "sha256": "212ccba797e0a158ea3fa1b2658d3aa113dfc5de3a5b224da6dcb2afaac122e8",
-      "api_sha256": "2d38c449c0b778951ce6aa7bdcc152114ebc5185065d40b069ac84462cb89442",
-      "graph_spec_version": "graph-spec-1.7.0",
+      "sha256": "3795a0c4afb069c59d30a280136b0dcd3411abcdaae50063799a16261ae20bb7",
+      "api_sha256": "385af580e3bd95095a84c71808bbd316868e0f0632654e4ee01f7b2258477871",
+      "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "LoadImage",
@@ -738,10 +729,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.7.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.8.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3"
+        "hoi4_portrait_project_nodes": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f"
       },
       "required_models": [
         "face_detection_yunet_2023mar.onnx"
@@ -766,7 +757,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T17:48:56.769505+00:00"
+        "checked_at": "2026-07-29T19:23:35.620777+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -781,5 +772,5 @@
     }
   ],
   "status": "UNVALIDATED",
-  "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED"
+  "runtime_status": "STRUCTURAL_ONLY_RUNTIME_BLOCKED"
 }

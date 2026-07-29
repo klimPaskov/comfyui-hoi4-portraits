@@ -6,7 +6,7 @@
 - NVIDIA GPU with 12–16 GB VRAM for the local profile, or a RunPod GPU
 - Python 3.12 or the Python environment bundled with ComfyUI
 - Git
-- Enough disk space for the Krea model, encoder, VAE, identity adapter, autoprompter, and style LoRA
+- Enough disk space for the selected workflow's models; the complete RunPod setup needs roughly 75 GB
 
 ## Automated setup
 
@@ -43,15 +43,16 @@ Open `hoi4_portraits_no_input_local_nvidia_16gb` to create a leader without an i
 
 ## Prepare an old photo
 
-Source-image workflows prepare full-body, group, faded, and black-and-white photos automatically. Open `hoi4_portraits_prepare_portrait_for_hoi4` when you want the Real-ESRGAN-enhanced PNG without running portrait generation. Use `hoi4_portraits_prepare_portrait_basic` for cropping and simple adjustments without the enhancement model.
+Source-image workflows prepare full-body, group, faded, and black-and-white photos automatically. Open `hoi4_portraits_prepare_portrait_for_hoi4` when you want Qwen restoration and optional colorization without running portrait generation. Use `hoi4_portraits_prepare_portrait_basic` for cropping and simple adjustments without an enhancement model.
 
 1. Choose the image.
 2. Set the face number to `0` for the largest detected face, or try `1`, `2`, and so on for another person.
 3. Choose normal, wide, or tight framing.
 4. Review the tighter crop before continuing.
-5. Review the enhanced portrait beside the Save node.
+5. Choose whether Qwen should colorize monochrome sources or preserve the existing color treatment.
+6. Review the Qwen restoration, Real-ESRGAN refinement, and final image beside the Save node.
 
-Preparation preserves the source colors. Black-and-white inputs remain black-and-white until the final Krea 2 portrait generation.
+The full-power preparation workflow colorizes monochrome and sepia inputs by default. Switch the restoration node to **Restore without changing color** when you want to preserve black and white.
 
 ## Memory presets
 

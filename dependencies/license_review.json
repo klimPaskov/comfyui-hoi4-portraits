@@ -3,7 +3,7 @@
   "review_date": "2026-07-28",
   "status": "APPROVED",
   "approval_attestation": "owner_explicit_publication_instruction_2026-07-29",
-  "approved_scope": "local qualification and mod development; owner-authorized public hosting of the immutable style LoRA at its pinned Hugging Face revision; no Krea model, private background, or private source redistribution",
+  "approved_scope": "local and remote portrait restoration with Apache-2.0 Qwen Image Edit 2511; local qualification and mod development with Krea 2; owner-authorized public hosting of the immutable style LoRA at its pinned Hugging Face revision; no Krea model, private background, or private source redistribution",
   "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.",
   "sources": [
     {
@@ -25,6 +25,19 @@
       "commercial_use_decision": "use remains subject to the Krea Community License revenue threshold and enterprise-license requirement",
       "content_filter_decision": "prompt validation, independent audit, human review, and fail-closed promotion",
       "ai_disclosure_decision": "apply where required by law, regulation, or platform policy"
+    },
+    {
+      "name": "Qwen Image Edit 2511",
+      "source_url": "https://huggingface.co/Qwen/Qwen-Image-Edit-2511/tree/6f3ccc0b56e431dc6a0c2b2039706d7d26f22cb9",
+      "artifact_source_url": "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/tree/e9e85de74a8f48c1e3e2656617626348675a2f21",
+      "license_identifier": "Apache-2.0",
+      "status": "PINNED_PRIMARY_AND_OFFICIAL_COMFYUI_SOURCES_REVIEWED"
+    },
+    {
+      "name": "Qwen Image ComfyUI encoder and VAE",
+      "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/tree/46839d338df81ce625d5fae27d7e370314c0fbc9",
+      "license_identifier": "Apache-2.0",
+      "status": "PINNED_OFFICIAL_COMFYUI_SOURCE_REVIEWED"
     },
     {
       "name": "ComfyUI",

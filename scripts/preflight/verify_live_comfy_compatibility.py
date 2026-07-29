@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the pinned ComfyUI/Krea graph contract against a live loopback server.
+"""Verify the pinned ComfyUI Qwen/Krea graph contract against a live loopback server.
 
 This probe intentionally stops at registry/schema validation.  It does not submit
 an identity-edit job: a production execution requires an approved source fixture,
@@ -51,6 +51,12 @@ REQUIRED_CORE_NODES = {
 }
 REQUIRED_HUMAN_PREVIEW_NODE = "PreviewImage"
 REQUIRED_KREA_NODES = {"Krea2EditModelPatch", "Krea2EditGroundedEncode"}
+REQUIRED_QWEN_NODES = {
+    "CFGNorm",
+    "FluxKontextImageScale",
+    "ModelSamplingAuraFlow",
+    "TextEncodeQwenImageEditPlus",
+}
 
 
 class LiveProbeError(RuntimeError):
@@ -170,7 +176,17 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "hoi4_portraits_prepare_portrait_for_hoi4",
         "hoi4_portraits_prepare_portrait_basic",
     } for workflow_id in workflow_ids)
-    required_nodes = sorted(REQUIRED_CORE_NODES | ({*REQUIRED_KREA_NODES} if identity_graph_required else set()) | {REQUIRED_HUMAN_PREVIEW_NODE})
+    qwen_graph_required = any(workflow_id in {
+        "hoi4_portraits_full_power_gpu",
+        "hoi4_portraits_agent_full_power_gpu",
+        "hoi4_portraits_prepare_portrait_for_hoi4",
+    } for workflow_id in workflow_ids)
+    required_nodes = sorted(
+        REQUIRED_CORE_NODES
+        | (REQUIRED_KREA_NODES if identity_graph_required else set())
+        | (REQUIRED_QWEN_NODES if qwen_graph_required else set())
+        | {REQUIRED_HUMAN_PREVIEW_NODE}
+    )
     node_presence = {name: name in object_info for name in required_nodes}
     clip_contract = object_info.get("CLIPLoader", {}).get("input", {}).get("required", {}).get("type", [])
     clip_choices = _combo_choices(clip_contract) or []
@@ -187,6 +203,8 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "core_nodes_present": all(node_presence[name] for name in sorted(REQUIRED_CORE_NODES)),
         "preview_node_present": node_presence[REQUIRED_HUMAN_PREVIEW_NODE],
         "krea_nodes_present": all(node_presence[name] for name in sorted(REQUIRED_KREA_NODES)) if identity_graph_required else True,
+        "qwen_nodes_present": all(node_presence[name] for name in sorted(REQUIRED_QWEN_NODES)) if qwen_graph_required else True,
+        "cliploader_qwen_image_choice": "qwen_image" in clip_choices if qwen_graph_required else True,
         "cliploader_krea2_choice": krea_loader_schema,
         "krea_patch_fit_contract": ({"model", "source_latent"} <= set(patch.get("input", {}).get("required", {})) and {"vae", "source_image", "fit_mode"} <= patch_optional) if identity_graph_required else True,
         "krea_grounded_encode_contract": ({"clip", "prompt"} <= set(grounded.get("input", {}).get("required", {})) and {"image", "grounding_px"} <= grounded_optional) if identity_graph_required else True,
@@ -229,12 +247,12 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "cliploader_type_choices": clip_choices,
         "workflows": workflow_checks,
         "execution": execution,
-        "policy": "Live registry/schema PASS permits the pinned Krea graph to be used for qualification only; production generation remains fail-closed until source, background, calibrated thresholds, and independent audit gates pass.",
+        "policy": "Live registry/schema PASS confirms that the pinned Qwen and Krea graph inputs match the active ComfyUI server. Model execution and final portrait approval remain separate checks.",
     }
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Verify live pinned ComfyUI/Krea schema compatibility on loopback.")
+    parser = argparse.ArgumentParser(description="Verify live pinned ComfyUI Qwen/Krea schema compatibility on loopback.")
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--base-url", default="http://127.0.0.1:8188")
     parser.add_argument("--profile", choices=tuple(WORKFLOW_PATHS), action="append")

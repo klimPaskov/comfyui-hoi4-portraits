@@ -821,7 +821,7 @@
         40,
         40,
         540,
-        700
+        740
       ],
       "color": "#8064a2",
       "font_size": 24
@@ -832,7 +832,7 @@
         620,
         40,
         640,
-        700
+        740
       ],
       "color": "#6d597a",
       "font_size": 24
@@ -843,7 +843,7 @@
         1300,
         40,
         340,
-        700
+        740
       ],
       "color": "#b56576",
       "font_size": 24
@@ -881,7 +881,7 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.7.0",
+    "graph_spec_version": "graph-spec-1.8.0",
     "workflow_id": "hoi4_portraits_agent_no_input_local_nvidia_16gb",
     "profile": "hoi4_portraits_agent_no_input_local_nvidia_16gb",
     "execution_profile": "hoi4_portraits_agent_no_input_local_nvidia_16gb",

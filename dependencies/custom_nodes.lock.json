@@ -15,9 +15,9 @@
     {
       "name": "hoi4_portrait_project_nodes",
       "repository": "local-project-source",
-      "revision": "graph-spec-1.7.0",
+      "revision": "graph-spec-1.8.0",
       "license": "MIT",
-      "source_tree_checksum": "b42816a5ecd68502812c7d8ddc0e3cf248803b6d48f7f25013455284e81614b3",
+      "source_tree_checksum": "0bb197cd08c91b0838f227a3d8c12985e0cb61db65afb81a170ad7204a91e69f",
       "classes": [
         "HOI4JobInput",
         "HOI4PromptJobInput",
@@ -35,6 +35,7 @@
         "HOI4KreaModelLoadBarrier",
         "HOI4PromptInput",
         "HOI4RandomPortraitPrompt",
+        "HOI4RestorationPrompt",
         "HOI4AutopromptClient",
         "HOI4EvidenceExport"
       ],

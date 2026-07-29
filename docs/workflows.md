@@ -6,8 +6,8 @@ The source-portrait workflows use these visible stages:
 
 1. Job and source
 2. Subject selection
-3. Crop and source preparation
-4. AI restoration, mask, and background
+3. Tight head-and-shoulders crop
+4. Qwen restoration on full power, or Real-ESRGAN preparation on 16 GB
 5. Automatic description, manual description, or agent job-file prompt
 6. Krea 2 identity edit
 7. HOI4 style LoRA
@@ -24,22 +24,24 @@ The local graph includes visible 12 GB and 8 GB GGUF placeholders for users who 
 
 ## Prepare a portrait
 
-Every source-image workflow automatically crops tightly around the face and shoulders, then uses the official Real-ESRGAN 2× model to restore and enlarge the reference before generation. It does not colorize the source.
+Every source-image workflow automatically crops tightly around the face and shoulders. Full-power workflows use Qwen Image Edit 2511 to repair damage, recover natural detail, and colorize monochrome or sepia photos when needed. Real-ESRGAN then performs a final 2× refinement. The 16 GB workflows use Real-ESRGAN alone and preserve the source colors.
 
-`hoi4_portraits_prepare_portrait_for_hoi4` offers the same model-enhanced preparation as a separate utility and stops before Krea and the HOI4 style LoRA. It is the recommended preparation workflow.
+`hoi4_portraits_prepare_portrait_for_hoi4` offers the complete Qwen restoration route as a separate utility and stops before Krea and the HOI4 style LoRA. It is the recommended preparation workflow on a full-power GPU.
 
 `hoi4_portraits_prepare_portrait_basic` is the lightweight alternative. It crops, resizes, and applies small contrast and sharpness adjustments without loading an enhancement model.
 
 The default choice keeps the source background. The optional scientist and operative choices use `tools/art/scientists_BG.png` and `tools/art/portrait_operative_background.png` from your installed copy of Hearts of Iron IV. The installer copies them locally when the game is found; the game assets are not included in the download.
 
-The workflow has four stages:
+The complete preparation workflow has six stages:
 
 1. Choose and preview the photo.
 2. Find a face and crop to head and shoulders.
-3. Restore and enlarge the crop with Real-ESRGAN.
-4. Preview and save the prepared portrait.
+3. Choose automatic color restoration, original-color restoration, or custom instructions.
+4. Restore the crop with Qwen Image Edit 2511.
+5. Refine and enlarge it with Real-ESRGAN.
+6. Preview and save the prepared portrait.
 
-Black-and-white photos remain black-and-white in both preparation workflows. The final Krea 2 and HOI4 LoRA generation handles the styled color portrait.
+The basic preparation workflow does not load Qwen or Real-ESRGAN. It is useful when the source already has enough detail.
 
 The examples in the main README use a severely faded full-body portrait, a crowded group photograph, and a small newspaper image. Very damaged sources can still retain grain, printing patterns, or uncertain colors after preparation.
 

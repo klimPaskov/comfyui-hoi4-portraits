@@ -66,7 +66,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.7.0",
+    "graph_spec_version": "graph-spec-1.8.0",
     "workflow_id": "hoi4_portraits_prepare_portrait_basic",
     "profile": "hoi4_portraits_prepare_portrait_basic",
     "execution_profile": "hoi4_portraits_prepare_portrait_basic",
@@ -74,6 +74,8 @@
     "enhancement_mode": "basic",
     "default_preparation_workflow": false,
     "upscale_model": null,
+    "restoration_model": null,
+    "restoration_text_encoder": null,
     "colorization": false,
     "route": "local_or_runpod",
     "human_workflow": true,
