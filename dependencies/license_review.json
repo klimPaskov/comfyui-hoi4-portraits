@@ -21,7 +21,7 @@
         "Krea retains ownership of the model; outputs remain subject to agreement compliance"
       ],
       "artifact_policy": "local_copy_only",
-      "owner_decision": "approved for local qualification and mod development; RunPod deployment deferred; no model distribution",
+      "owner_decision": "approved for local qualification and mod development; Comfy Cloud execution remains unconnected; no model distribution",
       "commercial_use_decision": "use remains subject to the Krea Community License revenue threshold and enterprise-license requirement",
       "content_filter_decision": "prompt validation, independent audit, human review, and fail-closed promotion",
       "ai_disclosure_decision": "apply where required by law, regulation, or platform policy"

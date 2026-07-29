@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "collected_at": "2026-07-28T18:51:59.486501+00:00",
+  "collected_at": "2026-07-29T08:22:18.843939+00:00",
   "project_root": "<project-root>",
   "profile": null,
   "hardware": {
@@ -18,7 +18,7 @@
           "vm.swapusage"
         ],
         "returncode": 0,
-        "stdout": "vm.swapusage: total = 8192.00M  used = 6761.56M  free = 1430.44M  (encrypted)",
+        "stdout": "vm.swapusage: total = 5120.00M  used = 4048.81M  free = 1071.19M  (encrypted)",
         "stderr": ""
       },
       "vm_stat": {
@@ -26,7 +26,7 @@
           "/usr/bin/vm_stat"
         ],
         "returncode": 0,
-        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14960.\nPages active:                                 260312.\nPages inactive:                               525620.\nPages speculative:                              4941.\nPages throttled:                                   0.\nPages wired down:                             138415.\nPages purgeable:                                 215.\n\"Translation faults\":                      121846180.\nPages copy-on-write:                         8432394.\nPages zero filled:                          65539613.\nPages reactivated:                          24444374.\nPages purged:                                1654483.\nFile-backed pages:                            588446.\nAnonymous pages:                              202427.\nPages stored in compressor:                   773221.\nPages occupied by compressor:                  61322.\nDecompressions:                             36715669.\nCompressions:                               49357943.\nPageins:                                   468313049.\nPageouts:                                      40613.\nSwapins:                                     9784910.\nSwapouts:                                   13379550.\nPages tagged:                                  76128.\nPages tagged resident:                         64318.\nPages tagged compressed:                       11810.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4311.\nPages tag-storage free:                          227.\nPages tag-storage non-tag pageable:            28149.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    1731968.\nTagged compressions:                          743057.\nTagged decompressions:                        636188.",
+        "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15519.\nPages active:                                 294336.\nPages inactive:                               287217.\nPages speculative:                              6444.\nPages throttled:                                   0.\nPages wired down:                             144173.\nPages purgeable:                                 341.\n\"Translation faults\":                      595059186.\nPages copy-on-write:                        29793025.\nPages zero filled:                         280757300.\nPages reactivated:                         195851797.\nPages purged:                                4437096.\nFile-backed pages:                            368205.\nAnonymous pages:                              219792.\nPages stored in compressor:                   968682.\nPages occupied by compressor:                 258314.\nDecompressions:                            179558449.\nCompressions:                              251631006.\nPageins:                                  2510956408.\nPageouts:                                     203731.\nSwapins:                                    28444023.\nSwapouts:                                   39042018.\nPages tagged:                                  88417.\nPages tagged resident:                         51537.\nPages tagged compressed:                       36880.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4294.\nPages tag-storage free:                          162.\nPages tag-storage non-tag pageable:            28231.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    5881728.\nTagged compressions:                         2694184.\nTagged decompressions:                       2463907.",
         "stderr": ""
       }
     },
@@ -45,7 +45,7 @@
         "<project-root>"
       ],
       "returncode": 0,
-      "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   181Gi   249Gi    43%    1.7M  2.6G    0%   /System/Volumes/Data",
+      "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   193Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
       "stderr": ""
     }
   },
@@ -68,7 +68,7 @@
               "vm.swapusage"
             ],
             "returncode": 0,
-            "stdout": "vm.swapusage: total = 8192.00M  used = 6761.56M  free = 1430.44M  (encrypted)",
+            "stdout": "vm.swapusage: total = 5120.00M  used = 4048.81M  free = 1071.19M  (encrypted)",
             "stderr": ""
           },
           "vm_stat": {
@@ -76,7 +76,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14960.\nPages active:                                 260312.\nPages inactive:                               525620.\nPages speculative:                              4941.\nPages throttled:                                   0.\nPages wired down:                             138415.\nPages purgeable:                                 215.\n\"Translation faults\":                      121846180.\nPages copy-on-write:                         8432394.\nPages zero filled:                          65539613.\nPages reactivated:                          24444374.\nPages purged:                                1654483.\nFile-backed pages:                            588446.\nAnonymous pages:                              202427.\nPages stored in compressor:                   773221.\nPages occupied by compressor:                  61322.\nDecompressions:                             36715669.\nCompressions:                               49357943.\nPageins:                                   468313049.\nPageouts:                                      40613.\nSwapins:                                     9784910.\nSwapouts:                                   13379550.\nPages tagged:                                  76128.\nPages tagged resident:                         64318.\nPages tagged compressed:                       11810.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4311.\nPages tag-storage free:                          227.\nPages tag-storage non-tag pageable:            28149.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    1731968.\nTagged compressions:                          743057.\nTagged decompressions:                        636188.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15519.\nPages active:                                 294336.\nPages inactive:                               287217.\nPages speculative:                              6444.\nPages throttled:                                   0.\nPages wired down:                             144173.\nPages purgeable:                                 341.\n\"Translation faults\":                      595059186.\nPages copy-on-write:                        29793025.\nPages zero filled:                         280757300.\nPages reactivated:                         195851797.\nPages purged:                                4437096.\nFile-backed pages:                            368205.\nAnonymous pages:                              219792.\nPages stored in compressor:                   968682.\nPages occupied by compressor:                 258314.\nDecompressions:                            179558449.\nCompressions:                              251631006.\nPageins:                                  2510956408.\nPageouts:                                     203731.\nSwapins:                                    28444023.\nSwapouts:                                   39042018.\nPages tagged:                                  88417.\nPages tagged resident:                         51537.\nPages tagged compressed:                       36880.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4294.\nPages tag-storage free:                          162.\nPages tag-storage non-tag pageable:            28231.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    5881728.\nTagged compressions:                         2694184.\nTagged decompressions:                       2463907.",
             "stderr": ""
           }
         },
@@ -95,7 +95,7 @@
             "<project-root>"
           ],
           "returncode": 0,
-          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   181Gi   249Gi    43%    1.7M  2.6G    0%   /System/Volumes/Data",
+          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   193Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
           "stderr": ""
         },
         "available_tools": {
@@ -291,6 +291,56 @@
           "fixtures/private/loc_dag_1518_portrait.jpg",
           "fixtures/private/manifest.json",
           "fixtures/private/user_portraits_2026-07-28/fixture_manifest.json",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664261.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664539.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664529.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664514.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664489.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664264.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664362.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664558.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664559.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664363.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664405.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664567.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664576.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664371.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664159.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664549.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664164.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664372.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664545.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664551.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664593.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664550.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664546.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2017648630.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664590.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664221.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664547.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004663943.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664396.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664392.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664557.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664542.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664393.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664378.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/manifest.json",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004663944.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664540.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664554.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664568.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664233.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664541.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004663979.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664409.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664268.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664486.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664044.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664534.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664252.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664537.jpg",
+          "fixtures/private/loc_calibration_2026-07-29/loc_2004664536.jpg",
           "fixtures/private/user_portraits_2026-07-28/portraits/BAY_otto_von_lossow_identity_preserve_trial_02.png",
           "fixtures/private/user_portraits_2026-07-28/portraits/AFX_louis_ruquoy_identity_preserve_trial_01.png",
           "fixtures/private/user_portraits_2026-07-28/portraits/HAW_samuel_wilder_king_identity_preserve.png",
@@ -333,159 +383,159 @@
       "status": "PASS",
       "results": [
         {
-          "path": "00_executive_brief.md",
+          "path": "docs/planning/00_executive_brief.md",
           "expected": "5a592ac7e0acf735c7fa2fcab06c14b68a45d252dc7f6dedbf26a10d2b236f09",
           "actual": "5a592ac7e0acf735c7fa2fcab06c14b68a45d252dc7f6dedbf26a10d2b236f09",
           "match": true
         },
         {
-          "path": "01_current_capability_and_dependency_audit.md",
+          "path": "docs/planning/01_current_capability_and_dependency_audit.md",
           "expected": "f73d267958523bbb8c5299d30efb2ab951a5c13ce53951255b89543e53cb62b7",
           "actual": "f73d267958523bbb8c5299d30efb2ab951a5c13ce53951255b89543e53cb62b7",
           "match": true
         },
         {
-          "path": "02_system_architecture.md",
+          "path": "docs/planning/02_system_architecture.md",
           "expected": "2ed20971a716a8d50eaa16699fa167b42f8a27d986e4f8db150d11bc075cf35c",
           "actual": "2ed20971a716a8d50eaa16699fa167b42f8a27d986e4f8db150d11bc075cf35c",
           "match": true
         },
         {
-          "path": "03_shared_processing_pipeline.md",
+          "path": "docs/planning/03_shared_processing_pipeline.md",
           "expected": "a88b98b930bbea39b4dd119d1082b45a60e152b55c23f6ee29db81f0b35fcfbc",
           "actual": "a88b98b930bbea39b4dd119d1082b45a60e152b55c23f6ee29db81f0b35fcfbc",
           "match": true
         },
         {
-          "path": "04_four_workflow_specifications.md",
+          "path": "docs/planning/04_four_workflow_specifications.md",
           "expected": "eca0ebe1336ab5488b5eaec8395950a7e4d23826307d28768888d4b90c3b3941",
           "actual": "eca0ebe1336ab5488b5eaec8395950a7e4d23826307d28768888d4b90c3b3941",
           "match": true
         },
         {
-          "path": "05_identity_preservation_and_audit.md",
+          "path": "docs/planning/05_identity_preservation_and_audit.md",
           "expected": "2cab2cafc2b9f9debd03278c1f9feec5c25231d1853dbcfc43d1d2c425b51ea0",
           "actual": "2cab2cafc2b9f9debd03278c1f9feec5c25231d1853dbcfc43d1d2c425b51ea0",
           "match": true
         },
         {
-          "path": "06_autoprompter_specification.md",
+          "path": "docs/planning/06_autoprompter_specification.md",
           "expected": "f7349e65ba3b19639f575d3ac26b3da7bb70c36e7fc0ad4543fbbf582a5b2033",
           "actual": "f7349e65ba3b19639f575d3ac26b3da7bb70c36e7fc0ad4543fbbf582a5b2033",
           "match": true
         },
         {
-          "path": "07_mac_16gb_execution_profile.md",
+          "path": "docs/planning/07_mac_16gb_execution_profile.md",
           "expected": "a3780def2ae07e28a95faf223bc4405ac71fc4ea2bf7887ca9f33fbb857b3164",
           "actual": "a3780def2ae07e28a95faf223bc4405ac71fc4ea2bf7887ca9f33fbb857b3164",
           "match": true
         },
         {
-          "path": "08_full_power_gpu_profile.md",
+          "path": "docs/planning/08_full_power_gpu_profile.md",
           "expected": "8e3aa33d912f27915ce76d5aa9f2d13b634e477c53db13590a61a8c9b5531208",
           "actual": "8e3aa33d912f27915ce76d5aa9f2d13b634e477c53db13590a61a8c9b5531208",
           "match": true
         },
         {
-          "path": "09_runpod_architecture.md",
+          "path": "docs/planning/09_runpod_architecture.md",
           "expected": "7858bbd6682059f8b078c02c548166475cf37968567d8d5eb312d965bffe87fb",
           "actual": "7858bbd6682059f8b078c02c548166475cf37968567d8d5eb312d965bffe87fb",
           "match": true
         },
         {
-          "path": "10_comfyui_mcp_contract.md",
+          "path": "docs/planning/10_comfyui_mcp_contract.md",
           "expected": "5678b06ee237c8e81ca344e1e23b0be4cb83097f8c26e4ffb46ddb825710f482",
           "actual": "5678b06ee237c8e81ca344e1e23b0be4cb83097f8c26e4ffb46ddb825710f482",
           "match": true
         },
         {
-          "path": "11_agent_job_api.md",
+          "path": "docs/planning/11_agent_job_api.md",
           "expected": "61a547f2a5594ebee184c2b63c63fa4b7f01394f3841c864f412126a41fb6719",
           "actual": "61a547f2a5594ebee184c2b63c63fa4b7f01394f3841c864f412126a41fb6719",
           "match": true
         },
         {
-          "path": "12_model_and_custom_node_manifest.md",
+          "path": "docs/planning/12_model_and_custom_node_manifest.md",
           "expected": "e197121970e97e9bcfbb7cfd8b503300da101665ae089bf09f4c3b7a82a757ef",
           "actual": "e197121970e97e9bcfbb7cfd8b503300da101665ae089bf09f4c3b7a82a757ef",
           "match": true
         },
         {
-          "path": "13_bootstrap_and_installation_plan.md",
+          "path": "docs/planning/13_bootstrap_and_installation_plan.md",
           "expected": "d3ebe92937376f0a018945f2a7d473060711c6ad898423efd5342f6935b4a9cb",
           "actual": "d3ebe92937376f0a018945f2a7d473060711c6ad898423efd5342f6935b4a9cb",
           "match": true
         },
         {
-          "path": "14_dds_export_and_validation.md",
+          "path": "docs/planning/14_dds_export_and_validation.md",
           "expected": "dad293518140ca91f54f110a293e5844812b5bc328f665731b9fa707231b3b62",
           "actual": "dad293518140ca91f54f110a293e5844812b5bc328f665731b9fa707231b3b62",
           "match": true
         },
         {
-          "path": "15_test_matrix_and_acceptance_criteria.md",
+          "path": "docs/planning/15_test_matrix_and_acceptance_criteria.md",
           "expected": "0d85dce3d30dab43fc839730fdb74fe4ccec8b7a243b8941631521353a83a8e0",
           "actual": "0d85dce3d30dab43fc839730fdb74fe4ccec8b7a243b8941631521353a83a8e0",
           "match": true
         },
         {
-          "path": "16_security_licensing_and_provenance.md",
+          "path": "docs/planning/16_security_licensing_and_provenance.md",
           "expected": "2fb23496fc6b57fae3daac25cb21494ccca3c4707688bdcd79e7c45911d6b8dc",
           "actual": "2fb23496fc6b57fae3daac25cb21494ccca3c4707688bdcd79e7c45911d6b8dc",
           "match": true
         },
         {
-          "path": "17_chaos_redux_integration.md",
+          "path": "docs/planning/17_chaos_redux_integration.md",
           "expected": "ef292a0d6414088100f8d8180cb10afe6042077b7aa349637689303c747c36ad",
           "actual": "ef292a0d6414088100f8d8180cb10afe6042077b7aa349637689303c747c36ad",
           "match": true
         },
         {
-          "path": "18_agentic_hoi4_modding_integration.md",
+          "path": "docs/planning/18_agentic_hoi4_modding_integration.md",
           "expected": "61439422ae76dad54b03bad910cc87c9e33de424d7e487391963c3b481dd9770",
           "actual": "61439422ae76dad54b03bad910cc87c9e33de424d7e487391963c3b481dd9770",
           "match": true
         },
         {
-          "path": "19_git_branch_commit_and_release_plan.md",
+          "path": "docs/planning/19_git_branch_commit_and_release_plan.md",
           "expected": "e2af1642c79922ff1a9d5d8a39920c76d7f15c5eb54577fad406bc664dc15b28",
           "actual": "e2af1642c79922ff1a9d5d8a39920c76d7f15c5eb54577fad406bc664dc15b28",
           "match": true
         },
         {
-          "path": "20_implementation_order.md",
+          "path": "docs/planning/20_implementation_order.md",
           "expected": "04a80d110355d86d0271e3fcf5d2679040d51554e3628e2a2dd3ed0cfa0d61b0",
           "actual": "04a80d110355d86d0271e3fcf5d2679040d51554e3628e2a2dd3ed0cfa0d61b0",
           "match": true
         },
         {
-          "path": "21_risks_blockers_and_fallbacks.md",
+          "path": "docs/planning/21_risks_blockers_and_fallbacks.md",
           "expected": "961b1479227a7fd481754679e7fe31c0cc8b203bdcf45b47b86608e736fbc206",
           "actual": "961b1479227a7fd481754679e7fe31c0cc8b203bdcf45b47b86608e736fbc206",
           "match": true
         },
         {
-          "path": "22_source_reading_report.md",
+          "path": "docs/planning/22_source_reading_report.md",
           "expected": "7d5824544747df4131d06c6b1c2bd5d3d9d0250635f813d80acd61a23f8a031f",
           "actual": "7d5824544747df4131d06c6b1c2bd5d3d9d0250635f813d80acd61a23f8a031f",
           "match": true
         },
         {
-          "path": "23_primary_source_bibliography.md",
+          "path": "docs/planning/23_primary_source_bibliography.md",
           "expected": "ef519ee8b2babb6a063d37371f94e7b9513e05fe5015b9cab2cbcbe48d32f84e",
           "actual": "ef519ee8b2babb6a063d37371f94e7b9513e05fe5015b9cab2cbcbe48d32f84e",
           "match": true
         },
         {
-          "path": "24_package_validation_report.md",
+          "path": "docs/planning/24_package_validation_report.md",
           "expected": "828d57c4f6df911d9aed0cadfc96d6ba622df406ef6250bb222c0ffd3a184213",
           "actual": "828d57c4f6df911d9aed0cadfc96d6ba622df406ef6250bb222c0ffd3a184213",
           "match": true
         },
         {
           "path": "README.md",
-          "expected": "157433eaa272e1f45d6e7c1907d166da007b67249e602ba827a3bad3ba38843f",
-          "actual": "157433eaa272e1f45d6e7c1907d166da007b67249e602ba827a3bad3ba38843f",
+          "expected": "d54304f9a59a73abd1568044abb4ee13692d506f1cf0e2cb9310290af9c15f40",
+          "actual": "d54304f9a59a73abd1568044abb4ee13692d506f1cf0e2cb9310290af9c15f40",
           "match": true
         },
         {
@@ -508,8 +558,8 @@
         },
         {
           "path": "integrations/agentic-hoi4-modding/README.md",
-          "expected": "614bab97245b5666ca22e9cd1009117fc78b8a03c5b71dbd00535bd63a3cfb7d",
-          "actual": "614bab97245b5666ca22e9cd1009117fc78b8a03c5b71dbd00535bd63a3cfb7d",
+          "expected": "e64b0e9e1151e8cb55f684a2206574874fd2168524853d333c8855a465866586",
+          "actual": "e64b0e9e1151e8cb55f684a2206574874fd2168524853d333c8855a465866586",
           "match": true
         },
         {
@@ -736,8 +786,8 @@
         },
         {
           "path": "schemas/portrait_job_input.schema.json",
-          "expected": "ceab5c7e026ae91b5012ace012ed1836d4d3db820e6c389ead1a78e16c7dcda5",
-          "actual": "ceab5c7e026ae91b5012ace012ed1836d4d3db820e6c389ead1a78e16c7dcda5",
+          "expected": "e31726fe6d30d31b9efa92819d64968b446a84c3c8f35d6fe159de243b5968a1",
+          "actual": "e31726fe6d30d31b9efa92819d64968b446a84c3c8f35d6fe159de243b5968a1",
           "match": true
         },
         {
@@ -772,8 +822,8 @@
         },
         {
           "path": "workflows/workflow_delivery_contract.md",
-          "expected": "b851b68814dc3267c26eb1a5783c1f141119b4d1c5063a87902864ecf83a0bea",
-          "actual": "b851b68814dc3267c26eb1a5783c1f141119b4d1c5063a87902864ecf83a0bea",
+          "expected": "34376d797e16561694f58cbd71b60c67473b0c0b387404f00323702b4582303f",
+          "actual": "34376d797e16561694f58cbd71b60c67473b0c0b387404f00323702b4582303f",
           "match": true
         }
       ]
@@ -1048,6 +1098,7 @@
         ],
         "requested_profile": null,
         "local_files": [
+          "models/.DS_Store",
           "models/text_encoders/qwen3vl_4b_fp8_scaled.safetensors",
           "models/autoprompter/model-00004-of-00004.safetensors",
           "models/autoprompter/model-00001-of-00004.safetensors",
@@ -1066,6 +1117,7 @@
           "models/autoprompter/model-00002-of-00004.safetensors",
           "models/autoprompter/preprocessor_config.json",
           "models/loras/krea2_identity_edit_v1_2.safetensors",
+          "models/diffusion_models/krea2_turbo_nvfp4.safetensors",
           "models/diffusion_models/krea2_turbo_fp8_scaled.safetensors",
           "models/vae/qwen_image_vae.safetensors",
           "models/preprocessing/sface/face_recognition_sface_2021dec.onnx",
@@ -1077,14 +1129,14 @@
           "models/preprocessing/birefnet/birefnet.py",
           "models/preprocessing/birefnet/BiRefNet_config.py"
         ],
-        "locked_models": 7
+        "locked_models": 8
       }
     },
     {
       "name": "custom_node_preflight",
-      "status": "PASS",
+      "status": "BLOCKED",
       "evidence": {
-        "status": "PASS",
+        "status": "BLOCKED",
         "lock_path": "<project-root>/dependencies/custom_nodes.lock.json",
         "checks": [
           {
@@ -1103,8 +1155,8 @@
               "Krea2EditModelPatch"
             ],
             "class_matches": {
-              "Krea2EditGroundedEncode": true,
-              "Krea2EditModelPatch": true
+              "Krea2EditModelPatch": true,
+              "Krea2EditGroundedEncode": true
             },
             "signature_match": true,
             "status": "PASS"
@@ -1121,6 +1173,7 @@
               "HOI4HumanControls",
               "HOI4JobInput",
               "HOI4JobSource",
+              "HOI4KreaModelLoadBarrier",
               "HOI4MaskAndBackgroundGuard",
               "HOI4PromptInput",
               "HOI4SourceGuard",
@@ -1135,15 +1188,16 @@
               "HOI4HumanControls",
               "HOI4JobInput",
               "HOI4JobSource",
+              "HOI4KreaModelLoadBarrier",
               "HOI4MaskAndBackgroundGuard",
               "HOI4PromptInput",
               "HOI4SourceGuard",
               "HOI4SubjectSelect"
             ],
-            "expected_source_tree_checksum": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9",
-            "actual_source_tree_checksum": "705fbd3033888600c2d4775b1a6c38e7b54181d763633ffe36bdaa49865552e9",
-            "source_checksum_match": true,
-            "status": "PASS"
+            "expected_source_tree_checksum": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8",
+            "actual_source_tree_checksum": "2c2a3c43076f2f4e231d7a7178f7f8bb2d8e4868764b1bf4957fb218efec0055",
+            "source_checksum_match": false,
+            "status": "BLOCKED"
           }
         ]
       }
@@ -1188,18 +1242,22 @@
     },
     {
       "name": "remote_topology_auth",
-      "status": "DEFERRED_OUT_OF_SCOPE",
+      "status": "BLOCKED",
       "evidence": {
         "profile": null,
+        "provider": "comfy_cloud",
+        "base_url": "https://cloud.comfy.org",
+        "base_url_https": true,
         "credential_presence": {
-          "RUNPOD_API_KEY": false,
-          "RUNPOD_ENDPOINT_ID": false,
+          "COMFY_CLOUD_API_KEY": false,
+          "COMFY_API_KEY": false,
+          "COMFY_CLOUD_BASE_URL": false,
           "HF_TOKEN": false,
           "GITHUB_TOKEN": false,
           "PORTRAIT_GATEWAY_TOKEN": false
         },
         "raw_comfyui_binding": "not configured",
-        "remote_gateway": "authenticated_only",
+        "remote_transport": "authenticated_cloud_api",
         "owner_scope": {
           "status": "PASS",
           "path": "<project-root>/docs/preflight/owner_attestation.json",
@@ -1207,10 +1265,23 @@
             "local_qualification": true,
             "mod_development": true,
             "public_code_repository": true,
-            "runpod_live_deployment": "DEFERRED_OUT_OF_CURRENT_SCOPE"
+            "comfy_cloud_live_execution": "BLOCKED_UNCONNECTED"
           }
         },
-        "live_execution": "NOT_RUN"
+        "subscription_and_node_parity": "NOT_RUN",
+        "live_execution": "NOT_RUN",
+        "cloud_ui_probe": {
+          "path": "docs/preflight/comfy_cloud_ui_probe_2026-07-29.json",
+          "status": "BLOCKED_CLOUD_NODE_MODEL_PARITY",
+          "authentication": {
+            "mcp_url": "https://cloud.comfy.org/mcp",
+            "oauth_configured": true,
+            "cloud_ui_authenticated": true,
+            "callable_mcp_tools_visible_in_current_codex_task": false,
+            "runs_left_visible": "5 / 5",
+            "runs_spent_by_probe": 0
+          }
+        }
       }
     },
     {
@@ -1256,7 +1327,213 @@
           "RESOLVED"
         ],
         "thresholds_id": "UNSET_BLOCK_EXECUTION",
-        "approved_by": []
+        "approved_by": [],
+        "calibration_evidence": {
+          "path": "docs/preflight/identity_calibration_2026-07-29.json",
+          "status": "BLOCKED_FACE_CALIBRATION_INCOMPLETE",
+          "calibration_id": "loc-daguerreotype-face-embedding-2026-07-29",
+          "fixture_set": {
+            "fixture_count": 50,
+            "accepted_single_face_count": 46,
+            "rejected_count": 4,
+            "rejected": [
+              {
+                "fixture_id": "loc_2004664044",
+                "reason": "expected exactly one face",
+                "face_count": 0
+              },
+              {
+                "fixture_id": "loc_2004664164",
+                "reason": "expected exactly one face",
+                "face_count": 0
+              },
+              {
+                "fixture_id": "loc_2004664252",
+                "reason": "decode_or_model_error:OSError"
+              },
+              {
+                "fixture_id": "loc_2004664489",
+                "reason": "decode_or_model_error:OSError"
+              }
+            ],
+            "variant_policy": [
+              "resize_round_trip",
+              "grayscale",
+              "brightness_0.82",
+              "jpeg_quality_62"
+            ]
+          },
+          "fixture_manifest": {
+            "status": "PASS",
+            "path": "fixtures/private/loc_calibration_2026-07-29/manifest.json",
+            "sha256": "01df5e07c47d14b5f22ba48374712c05a498792f7ac439d4f6ff4c7a1a65aeb6",
+            "declared_count": 50,
+            "observed_count": 50,
+            "missing_fixture_ids": [],
+            "extra_fixture_ids": []
+          },
+          "positive_same_person": {
+            "score_count": 183,
+            "minimum": 0.518024990144113,
+            "p05": 0.9274091219101137,
+            "median": 0.9764529401926332,
+            "maximum": 1.0000000319389528
+          },
+          "negative_different_person": {
+            "pair_count": 1035,
+            "required_pair_count": 1000,
+            "maximum": 0.4804377850061883,
+            "p999": 0.4647333824512428,
+            "median": 0.15404127465257034
+          },
+          "operating_point": {
+            "target_false_accept_rate_max": 0.001,
+            "target_false_reject_rate_max": 0.05,
+            "candidate_minimum_similarity": 0.4804377850061883,
+            "observed_positive_p05": 0.9274091219101137,
+            "target_simultaneously_demonstrated": true,
+            "approved": false
+          },
+          "blocked_reasons": [
+            "landmark, pose, expression, hair/accessory, mask, and style thresholds require separate calibrated evidence",
+            "the tracked production threshold file remains unchanged and fail-closed"
+          ]
+        },
+        "geometry_calibration_evidence": {
+          "path": "docs/preflight/geometry_calibration_2026-07-29.json",
+          "status": "GEOMETRY_EVIDENCE_MEASURED_PRODUCTION_BLOCKED",
+          "calibration_id": "loc-daguerreotype-geometry-2026-07-29",
+          "fixture_set": {
+            "fixture_count": 50,
+            "accepted_single_face_count": 44,
+            "rejected_count": 7,
+            "rejected": [
+              {
+                "fixture_id": "loc_2004663943",
+                "reason": "ValueError:expected exactly one face, found 0"
+              },
+              {
+                "fixture_id": "loc_2004663944",
+                "reason": "ValueError:YuNet expected exactly one face, found 0"
+              },
+              {
+                "fixture_id": "loc_2004664044",
+                "reason": "ValueError:YuNet expected exactly one face, found 0"
+              },
+              {
+                "fixture_id": "loc_2004664164",
+                "reason": "ValueError:YuNet expected exactly one face, found 0"
+              },
+              {
+                "fixture_id": "loc_2004664252",
+                "reason": "OSError:image file is truncated (5 bytes not processed)"
+              },
+              {
+                "fixture_id": "loc_2004664264",
+                "reason": "ValueError:expected exactly one face, found 0"
+              },
+              {
+                "fixture_id": "loc_2004664489",
+                "reason": "OSError:image file is truncated (15 bytes not processed)"
+              }
+            ],
+            "variant_policy": [
+              "resize_round_trip",
+              "grayscale",
+              "brightness_0.82",
+              "jpeg_quality_62"
+            ],
+            "landmarker_input_policy": "pinned_yunet_single_face_crop; bbox margin is 0.65x the larger face dimension; no bbox is emitted"
+          },
+          "measurement_count": 175,
+          "scalar_distributions": {
+            "landmark_normalized_error": {
+              "count": 175,
+              "p95": 0.012320056179475288,
+              "p99": 0.02243965139519266,
+              "maximum": 0.03135627319991576
+            },
+            "pose_delta_yaw_degrees": {
+              "count": 175,
+              "p95": 1.4713990079575003,
+              "p99": 1.99893909726533,
+              "maximum": 2.2230746411865265
+            },
+            "pose_delta_pitch_degrees": {
+              "count": 175,
+              "p95": 1.3789875986343119,
+              "p99": 3.031438567081186,
+              "maximum": 4.964682395047204
+            },
+            "pose_delta_roll_degrees": {
+              "count": 175,
+              "p95": 0.6645364669575153,
+              "p99": 1.5830176580580155,
+              "maximum": 4.248678949142786
+            },
+            "expression_distance": {
+              "count": 175,
+              "p95": 0.05692535229479473,
+              "p99": 0.06998442287746623,
+              "maximum": 0.08757547256585073
+            },
+            "asymmetry_change": {
+              "count": 175,
+              "p95": 0.01266802871557901,
+              "p99": 0.02396310367947704,
+              "maximum": 0.05112607220647673
+            }
+          },
+          "region_distributions": {
+            "eyes": {
+              "count": 175,
+              "p95": 0.013928533173378351,
+              "p99": 0.018898316387462758,
+              "maximum": 0.034847052149243836
+            },
+            "nose": {
+              "count": 175,
+              "p95": 0.016168557502055973,
+              "p99": 0.027566860174825535,
+              "maximum": 0.029850346839692163
+            },
+            "mouth": {
+              "count": 175,
+              "p95": 0.015780304053987258,
+              "p99": 0.021529395652012524,
+              "maximum": 0.03415971318720145
+            },
+            "jaw": {
+              "count": 175,
+              "p95": 0.014642377073977279,
+              "p99": 0.02608663675461458,
+              "maximum": 0.05060885138186936
+            }
+          },
+          "proposed_operating_point": {
+            "basis": "observed_p99_preprocessing_invariance; not an approval",
+            "landmark_max_normalized_error": 0.02243965139519266,
+            "region_limits": {
+              "eyes": 0.018898316387462758,
+              "nose": 0.027566860174825535,
+              "mouth": 0.021529395652012524,
+              "jaw": 0.02608663675461458
+            },
+            "pose_limits": {
+              "yaw": 1.99893909726533,
+              "pitch": 3.031438567081186,
+              "roll": 1.5830176580580155
+            },
+            "expression_max_distance": 0.06998442287746623,
+            "asymmetry_max_change": 0.02396310367947704,
+            "approved": false
+          },
+          "blocked_reasons": [
+            "these measurements cover preprocessing invariance only; source-specific generated-candidate acceptance is still required",
+            "hairline, facial-hair, accessory, foreground-mask, and HOI4-style thresholds require separate labeled evidence",
+            "the tracked production threshold file remains unchanged and fail-closed"
+          ]
+        }
       }
     },
     {
@@ -1265,11 +1542,11 @@
       "evidence": {
         "reason": "Live core/node/schema compatibility is verified; source-specific execution remains a separate qualification gate and the detected 16 GB Mac has a measured memory/offload blocker.",
         "compatibility_review_path": "<project-root>/docs/preflight/krea_compatibility_review.json",
-        "compatibility_review_status": "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE",
+        "compatibility_review_status": "QUALIFIED_CPU_FALLBACK_MPS_BLOCKED",
         "compatibility_review": {
           "schema_version": "1.0.0",
-          "reviewed_at": "2026-07-28",
-          "status": "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE",
+          "reviewed_at": "2026-07-29",
+          "status": "QUALIFIED_CPU_FALLBACK_MPS_BLOCKED",
           "policy": "Krea 2 Turbo may be used for private qualification only after the exact ComfyUI core/custom-node schema is verified in the live pinned runtime; production execution remains blocked until source, background, calibration, and independent-audit gates pass.",
           "sources": [
             {
@@ -1291,6 +1568,18 @@
               "role": "live_loopback_registry_probe",
               "url": "http://127.0.0.1:8188/object_info",
               "revision_or_date": "live probe recorded 2026-07-28; machine evidence docs/preflight/live_comfy_compatibility.json"
+            },
+            {
+              "role": "official_krea2_inference_repository",
+              "url": "https://raw.githubusercontent.com/krea-ai/krea-2/db3984fbc6e13b34c0064990fc2d95ac64d00058/inference.py",
+              "revision_or_date": "db3984fbc6e13b34c0064990fc2d95ac64d00058; checked 2026-07-29",
+              "finding": "official pipeline defaults to CUDA and moves the 12B DiT, VAE, and Qwen encoder to that device"
+            },
+            {
+              "role": "official_krea2_turbo_model_card",
+              "url": "https://huggingface.co/krea/Krea-2-Turbo",
+              "revision_or_date": "model card last updated 2026-06-22; checked 2026-07-29",
+              "finding": "generic MPS snippet is not a ComfyUI Krea2Edit staged-offload qualification"
             }
           ],
           "findings": [
@@ -1333,15 +1622,30 @@
               "id": "live_runtime_execution",
               "status": "BLOCKED_LOCAL_16GB_MEMORY_INFEASIBLE",
               "finding": "The private user fixture, approved local-copy-only background, model checksums, and preprocessing route passed. The first MPS attempt exposed the FP8 dtype limitation; the documented CPU-dequantization workaround then passed that exception site, but full-resolution and reduced diagnostic runs exhausted practical unified-memory/offload headroom before the first sampler step completed. Production generation remains fail-closed."
+            },
+            {
+              "id": "official_nvfp4_mps_qualification",
+              "status": "BLOCKED_MPS_NVFP4_DEQUANTIZATION",
+              "finding": "The official Comfy-Org Krea 2 NVFP4 artifact was downloaded and checksum-verified. It loaded through the live UNETLoader and reached KSampler, but the Apple-MPS run failed in the NVFP4 dequantization path with `Undefined type Float8_e4m3fn`. The locked artifact policy requires NVIDIA Blackwell SM>=10 for native NVFP4 compute, so this is not an approved Mac fallback."
+            },
+            {
+              "id": "cpu_nvfp4_full_workflow_qualification",
+              "status": "PASS_EXECUTION_ONLY",
+              "finding": "A diagnostic CPU-only run using the checksum-verified official NVFP4 artifact, the exact human autoprompter instruction, the corrected foreground reference input, the immutable style LoRA, and the locked 832x1120 canvas completed all eight Turbo steps and exported a real candidate in 34:36. The run observed heavy swap and is not a production acceptance pass without two consecutive benchmark runs, calibrated thresholds, and an independent auditor PASS."
+            },
+            {
+              "id": "official_krea_apple_route_recheck",
+              "status": "BLOCKED_NO_APPROVED_APPLE_KREA_EDIT_ROUTE",
+              "finding": "The current official Krea 2 inference source defaults its 12B pipeline to CUDA and does not expose a verified Apple staged-offload path for the required ComfyUI Identity Edit workflow. The official Turbo model card's generic MPS mention does not establish that capability."
             }
           ],
-          "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The locked 12B route remains infeasible on the detected 16 GB Mac because practical model residency and offload pressure prevent the first sampler step from completing. This does not establish production suitability: the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
+          "conclusion": "Krea live core/node/schema compatibility and the project-owned FP8/MPS dtype workaround are verified in the pinned loopback runtime. The official lower-storage NVFP4 option is checksum-verified and fails the Apple-MPS capability path, while a separate CPU-only NVFP4 fallback completed the full human workflow and produced a real candidate at the locked canvas. A current official-source recheck found no approved Apple staged-offload route for the required ComfyUI Identity Edit workflow. This establishes execution capability but not production suitability: the default MPS route remains blocked, the CPU route is heavily swapping and has only one run, and the identity/style experiment matrix, calibrated thresholds, and independent audit remain blocked."
         },
         "live_probe_path": "<project-root>/docs/preflight/live_comfy_compatibility.json",
         "live_probe_status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
         "live_probe": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-28T18:45:44.622547+00:00",
+          "checked_at": "2026-07-29T07:15:44.298834+00:00",
           "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
           "server": {
             "base_url": "http://127.0.0.1:8188",
@@ -1350,7 +1654,7 @@
               "system": {
                 "os": "darwin",
                 "ram_total": 17179869184,
-                "ram_free": 8988327936,
+                "ram_free": 5652611072,
                 "comfyui_version": "0.25.0",
                 "required_frontend_version": "1.45.19",
                 "installed_templates_version": "0.10.0",
@@ -1406,9 +1710,9 @@
                   "type": "mps",
                   "index": null,
                   "vram_total": 17179869184,
-                  "vram_free": 8988393472,
+                  "vram_free": 5652709376,
                   "torch_vram_total": 17179869184,
-                  "torch_vram_free": 8988393472
+                  "torch_vram_free": 5652709376
                 }
               ]
             }
@@ -1821,6 +2125,21 @@
                   ]
                 },
                 {
+                  "node_id": "29",
+                  "class_type": "HOI4KreaModelLoadBarrier",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ],
+                  "workflow_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ]
+                },
+                {
                   "node_id": "19",
                   "class_type": "EmptySD3LatentImage",
                   "status": "PASS",
@@ -1950,6 +2269,534 @@
                 },
                 {
                   "node_id": "28",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "30",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                }
+              ],
+              "prompt_source": "autoprompter",
+              "human_workflow": true
+            },
+            {
+              "workflow_id": "human_local_nvidia_16gb",
+              "path": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
+              "status": "PASS",
+              "issues": [],
+              "checked_nodes": [
+                {
+                  "node_id": "1",
+                  "class_type": "HOI4JobInput",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "candidate_count",
+                    "execution_profile",
+                    "job_contract_path",
+                    "retry_limit",
+                    "seed_policy"
+                  ],
+                  "workflow_input_names": [
+                    "candidate_count",
+                    "execution_profile",
+                    "job_contract_path",
+                    "retry_limit",
+                    "seed_policy"
+                  ]
+                },
+                {
+                  "node_id": "24",
+                  "class_type": "HOI4HumanControls",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "approved_background_registry_id",
+                    "bbox_bottom",
+                    "bbox_left",
+                    "bbox_right",
+                    "bbox_top",
+                    "candidate_count",
+                    "crop_override_bottom",
+                    "crop_override_left",
+                    "crop_override_right",
+                    "crop_override_top",
+                    "face_index",
+                    "fixed_seed",
+                    "job",
+                    "monochrome_mode",
+                    "output_job_id",
+                    "prompt_override",
+                    "restoration_level",
+                    "seed_mode",
+                    "source_image_path",
+                    "subject_selector_mode"
+                  ],
+                  "workflow_input_names": [
+                    "approved_background_registry_id",
+                    "bbox_bottom",
+                    "bbox_left",
+                    "bbox_right",
+                    "bbox_top",
+                    "candidate_count",
+                    "crop_override_bottom",
+                    "crop_override_left",
+                    "crop_override_right",
+                    "crop_override_top",
+                    "face_index",
+                    "fixed_seed",
+                    "job",
+                    "monochrome_mode",
+                    "output_job_id",
+                    "prompt_override",
+                    "restoration_level",
+                    "seed_mode",
+                    "source_image_path",
+                    "subject_selector_mode"
+                  ]
+                },
+                {
+                  "node_id": "2",
+                  "class_type": "HOI4JobSource",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "3",
+                  "class_type": "HOI4SourceGuard",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "4",
+                  "class_type": "HOI4SubjectSelect",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "5",
+                  "class_type": "HOI4HeadShouldersCrop",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "control_meta",
+                    "image",
+                    "job",
+                    "selection_meta"
+                  ],
+                  "workflow_input_names": [
+                    "control_meta",
+                    "image",
+                    "job",
+                    "selection_meta"
+                  ]
+                },
+                {
+                  "node_id": "6",
+                  "class_type": "HOI4ConservativePrep",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "control_meta",
+                    "crop_meta",
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "control_meta",
+                    "crop_meta",
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "7",
+                  "class_type": "HOI4ForegroundMask",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job",
+                    "mask_model",
+                    "reference_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "mask_model",
+                    "reference_meta"
+                  ]
+                },
+                {
+                  "node_id": "8",
+                  "class_type": "HOI4MaskAndBackgroundGuard",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job",
+                    "mask",
+                    "mask_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "mask",
+                    "mask_meta"
+                  ]
+                },
+                {
+                  "node_id": "9",
+                  "class_type": "HOI4AutopromptClient",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "background_meta",
+                    "control_meta",
+                    "image",
+                    "instruction_path",
+                    "instruction_text",
+                    "job",
+                    "model_id",
+                    "prompt_source"
+                  ],
+                  "workflow_input_names": [
+                    "background_meta",
+                    "control_meta",
+                    "image",
+                    "instruction_path",
+                    "instruction_text",
+                    "job",
+                    "model_id",
+                    "prompt_source"
+                  ]
+                },
+                {
+                  "node_id": "10",
+                  "class_type": "UNETLoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "unet_name",
+                    "weight_dtype"
+                  ],
+                  "workflow_input_names": [
+                    "unet_name",
+                    "weight_dtype"
+                  ]
+                },
+                {
+                  "node_id": "11",
+                  "class_type": "LoraLoaderModelOnly",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ],
+                  "workflow_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "12",
+                  "class_type": "VAELoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "vae_name"
+                  ],
+                  "workflow_input_names": [
+                    "vae_name"
+                  ]
+                },
+                {
+                  "node_id": "13",
+                  "class_type": "VAEEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "pixels",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "pixels",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "14",
+                  "class_type": "Krea2EditModelPatch",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "fit_mode",
+                    "model",
+                    "ref_boost",
+                    "ref_boost_a",
+                    "ref_boost_mask",
+                    "source_image",
+                    "source_image_b",
+                    "source_latent",
+                    "source_latent_b",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "fit_mode",
+                    "model",
+                    "ref_boost",
+                    "source_image",
+                    "source_latent",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "15",
+                  "class_type": "CLIPLoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip_name",
+                    "device",
+                    "type"
+                  ],
+                  "workflow_input_names": [
+                    "clip_name",
+                    "type"
+                  ]
+                },
+                {
+                  "node_id": "16",
+                  "class_type": "Krea2EditGroundedEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "image_b",
+                    "prompt",
+                    "system_prompt"
+                  ],
+                  "workflow_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "prompt"
+                  ]
+                },
+                {
+                  "node_id": "17",
+                  "class_type": "Krea2EditGroundedEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "image_b",
+                    "prompt",
+                    "system_prompt"
+                  ],
+                  "workflow_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "prompt"
+                  ]
+                },
+                {
+                  "node_id": "18",
+                  "class_type": "LoraLoaderModelOnly",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ],
+                  "workflow_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "29",
+                  "class_type": "HOI4KreaModelLoadBarrier",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ],
+                  "workflow_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ]
+                },
+                {
+                  "node_id": "19",
+                  "class_type": "EmptySD3LatentImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "batch_size",
+                    "height",
+                    "width"
+                  ],
+                  "workflow_input_names": [
+                    "batch_size",
+                    "height",
+                    "width"
+                  ]
+                },
+                {
+                  "node_id": "20",
+                  "class_type": "KSampler",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "cfg",
+                    "denoise",
+                    "latent_image",
+                    "model",
+                    "negative",
+                    "positive",
+                    "sampler_name",
+                    "scheduler",
+                    "seed",
+                    "steps"
+                  ],
+                  "workflow_input_names": [
+                    "cfg",
+                    "denoise",
+                    "latent_image",
+                    "model",
+                    "negative",
+                    "positive",
+                    "sampler_name",
+                    "scheduler",
+                    "seed",
+                    "steps"
+                  ]
+                },
+                {
+                  "node_id": "21",
+                  "class_type": "VAEDecode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "samples",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "samples",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "22",
+                  "class_type": "HOI4EvidenceExport",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "approved_background",
+                    "candidate",
+                    "candidate_index",
+                    "job",
+                    "mask",
+                    "processed_reference",
+                    "prompt",
+                    "source_master"
+                  ],
+                  "workflow_input_names": [
+                    "approved_background",
+                    "candidate",
+                    "candidate_index",
+                    "job",
+                    "mask",
+                    "processed_reference",
+                    "prompt",
+                    "source_master"
+                  ]
+                },
+                {
+                  "node_id": "23",
+                  "class_type": "SaveImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "filename_prefix",
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "filename_prefix",
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "25",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "26",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "27",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "28",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "30",
                   "class_type": "PreviewImage",
                   "status": "PASS",
                   "live_input_names": [
@@ -2312,6 +3159,21 @@
                   ]
                 },
                 {
+                  "node_id": "29",
+                  "class_type": "HOI4KreaModelLoadBarrier",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ],
+                  "workflow_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ]
+                },
+                {
                   "node_id": "19",
                   "class_type": "EmptySD3LatentImage",
                   "status": "PASS",
@@ -2441,6 +3303,17 @@
                 },
                 {
                   "node_id": "28",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "30",
                   "class_type": "PreviewImage",
                   "status": "PASS",
                   "live_input_names": [
@@ -2739,6 +3612,422 @@
                     "lora_name",
                     "model",
                     "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "29",
+                  "class_type": "HOI4KreaModelLoadBarrier",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ],
+                  "workflow_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ]
+                },
+                {
+                  "node_id": "19",
+                  "class_type": "EmptySD3LatentImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "batch_size",
+                    "height",
+                    "width"
+                  ],
+                  "workflow_input_names": [
+                    "batch_size",
+                    "height",
+                    "width"
+                  ]
+                },
+                {
+                  "node_id": "20",
+                  "class_type": "KSampler",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "cfg",
+                    "denoise",
+                    "latent_image",
+                    "model",
+                    "negative",
+                    "positive",
+                    "sampler_name",
+                    "scheduler",
+                    "seed",
+                    "steps"
+                  ],
+                  "workflow_input_names": [
+                    "cfg",
+                    "denoise",
+                    "latent_image",
+                    "model",
+                    "negative",
+                    "positive",
+                    "sampler_name",
+                    "scheduler",
+                    "seed",
+                    "steps"
+                  ]
+                },
+                {
+                  "node_id": "21",
+                  "class_type": "VAEDecode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "samples",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "samples",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "22",
+                  "class_type": "HOI4EvidenceExport",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "approved_background",
+                    "candidate",
+                    "candidate_index",
+                    "job",
+                    "mask",
+                    "processed_reference",
+                    "prompt",
+                    "source_master"
+                  ],
+                  "workflow_input_names": [
+                    "approved_background",
+                    "candidate",
+                    "candidate_index",
+                    "job",
+                    "mask",
+                    "processed_reference",
+                    "prompt",
+                    "source_master"
+                  ]
+                },
+                {
+                  "node_id": "23",
+                  "class_type": "SaveImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "filename_prefix",
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "filename_prefix",
+                    "images"
+                  ]
+                }
+              ],
+              "prompt_source": "job_contract",
+              "human_workflow": false
+            },
+            {
+              "workflow_id": "agent_local_nvidia_16gb",
+              "path": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
+              "status": "PASS",
+              "issues": [],
+              "checked_nodes": [
+                {
+                  "node_id": "1",
+                  "class_type": "HOI4JobInput",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "candidate_count",
+                    "execution_profile",
+                    "job_contract_path",
+                    "retry_limit",
+                    "seed_policy"
+                  ],
+                  "workflow_input_names": [
+                    "candidate_count",
+                    "execution_profile",
+                    "job_contract_path",
+                    "retry_limit",
+                    "seed_policy"
+                  ]
+                },
+                {
+                  "node_id": "2",
+                  "class_type": "HOI4JobSource",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "3",
+                  "class_type": "HOI4SourceGuard",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "4",
+                  "class_type": "HOI4SubjectSelect",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "5",
+                  "class_type": "HOI4HeadShouldersCrop",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "control_meta",
+                    "image",
+                    "job",
+                    "selection_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "selection_meta"
+                  ]
+                },
+                {
+                  "node_id": "6",
+                  "class_type": "HOI4ConservativePrep",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "control_meta",
+                    "crop_meta",
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "crop_meta",
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "7",
+                  "class_type": "HOI4ForegroundMask",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job",
+                    "mask_model",
+                    "reference_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "mask_model",
+                    "reference_meta"
+                  ]
+                },
+                {
+                  "node_id": "8",
+                  "class_type": "HOI4MaskAndBackgroundGuard",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job",
+                    "mask",
+                    "mask_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "mask",
+                    "mask_meta"
+                  ]
+                },
+                {
+                  "node_id": "9",
+                  "class_type": "HOI4PromptInput",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "background_meta",
+                    "job",
+                    "prompt_source"
+                  ],
+                  "workflow_input_names": [
+                    "background_meta",
+                    "job",
+                    "prompt_source"
+                  ]
+                },
+                {
+                  "node_id": "10",
+                  "class_type": "UNETLoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "unet_name",
+                    "weight_dtype"
+                  ],
+                  "workflow_input_names": [
+                    "unet_name",
+                    "weight_dtype"
+                  ]
+                },
+                {
+                  "node_id": "11",
+                  "class_type": "LoraLoaderModelOnly",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ],
+                  "workflow_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "12",
+                  "class_type": "VAELoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "vae_name"
+                  ],
+                  "workflow_input_names": [
+                    "vae_name"
+                  ]
+                },
+                {
+                  "node_id": "13",
+                  "class_type": "VAEEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "pixels",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "pixels",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "14",
+                  "class_type": "Krea2EditModelPatch",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "fit_mode",
+                    "model",
+                    "ref_boost",
+                    "ref_boost_a",
+                    "ref_boost_mask",
+                    "source_image",
+                    "source_image_b",
+                    "source_latent",
+                    "source_latent_b",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "fit_mode",
+                    "model",
+                    "ref_boost",
+                    "source_image",
+                    "source_latent",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "15",
+                  "class_type": "CLIPLoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip_name",
+                    "device",
+                    "type"
+                  ],
+                  "workflow_input_names": [
+                    "clip_name",
+                    "type"
+                  ]
+                },
+                {
+                  "node_id": "16",
+                  "class_type": "Krea2EditGroundedEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "image_b",
+                    "prompt",
+                    "system_prompt"
+                  ],
+                  "workflow_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "prompt"
+                  ]
+                },
+                {
+                  "node_id": "17",
+                  "class_type": "Krea2EditGroundedEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "image_b",
+                    "prompt",
+                    "system_prompt"
+                  ],
+                  "workflow_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "prompt"
+                  ]
+                },
+                {
+                  "node_id": "18",
+                  "class_type": "LoraLoaderModelOnly",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ],
+                  "workflow_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "29",
+                  "class_type": "HOI4KreaModelLoadBarrier",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ],
+                  "workflow_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
                   ]
                 },
                 {
@@ -3128,389 +4417,18 @@
                   ]
                 },
                 {
-                  "node_id": "19",
-                  "class_type": "EmptySD3LatentImage",
+                  "node_id": "29",
+                  "class_type": "HOI4KreaModelLoadBarrier",
                   "status": "PASS",
                   "live_input_names": [
-                    "batch_size",
-                    "height",
-                    "width"
-                  ],
-                  "workflow_input_names": [
-                    "batch_size",
-                    "height",
-                    "width"
-                  ]
-                },
-                {
-                  "node_id": "20",
-                  "class_type": "KSampler",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "cfg",
-                    "denoise",
-                    "latent_image",
                     "model",
                     "negative",
-                    "positive",
-                    "sampler_name",
-                    "scheduler",
-                    "seed",
-                    "steps"
+                    "positive"
                   ],
                   "workflow_input_names": [
-                    "cfg",
-                    "denoise",
-                    "latent_image",
                     "model",
                     "negative",
-                    "positive",
-                    "sampler_name",
-                    "scheduler",
-                    "seed",
-                    "steps"
-                  ]
-                },
-                {
-                  "node_id": "21",
-                  "class_type": "VAEDecode",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "samples",
-                    "vae"
-                  ],
-                  "workflow_input_names": [
-                    "samples",
-                    "vae"
-                  ]
-                },
-                {
-                  "node_id": "22",
-                  "class_type": "HOI4EvidenceExport",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "approved_background",
-                    "candidate",
-                    "candidate_index",
-                    "job",
-                    "mask",
-                    "processed_reference",
-                    "prompt",
-                    "source_master"
-                  ],
-                  "workflow_input_names": [
-                    "approved_background",
-                    "candidate",
-                    "candidate_index",
-                    "job",
-                    "mask",
-                    "processed_reference",
-                    "prompt",
-                    "source_master"
-                  ]
-                },
-                {
-                  "node_id": "23",
-                  "class_type": "SaveImage",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "filename_prefix",
-                    "images"
-                  ],
-                  "workflow_input_names": [
-                    "filename_prefix",
-                    "images"
-                  ]
-                }
-              ],
-              "prompt_source": "job_contract",
-              "human_workflow": false
-            },
-            {
-              "workflow_id": "agent_remote_runpod",
-              "path": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-              "status": "PASS",
-              "issues": [],
-              "checked_nodes": [
-                {
-                  "node_id": "1",
-                  "class_type": "HOI4JobInput",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "candidate_count",
-                    "execution_profile",
-                    "job_contract_path",
-                    "retry_limit",
-                    "seed_policy"
-                  ],
-                  "workflow_input_names": [
-                    "candidate_count",
-                    "execution_profile",
-                    "job_contract_path",
-                    "retry_limit",
-                    "seed_policy"
-                  ]
-                },
-                {
-                  "node_id": "2",
-                  "class_type": "HOI4JobSource",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "job"
-                  ],
-                  "workflow_input_names": [
-                    "job"
-                  ]
-                },
-                {
-                  "node_id": "3",
-                  "class_type": "HOI4SourceGuard",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "image",
-                    "job"
-                  ],
-                  "workflow_input_names": [
-                    "image",
-                    "job"
-                  ]
-                },
-                {
-                  "node_id": "4",
-                  "class_type": "HOI4SubjectSelect",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "image",
-                    "job"
-                  ],
-                  "workflow_input_names": [
-                    "image",
-                    "job"
-                  ]
-                },
-                {
-                  "node_id": "5",
-                  "class_type": "HOI4HeadShouldersCrop",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "control_meta",
-                    "image",
-                    "job",
-                    "selection_meta"
-                  ],
-                  "workflow_input_names": [
-                    "image",
-                    "job",
-                    "selection_meta"
-                  ]
-                },
-                {
-                  "node_id": "6",
-                  "class_type": "HOI4ConservativePrep",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "control_meta",
-                    "crop_meta",
-                    "image",
-                    "job"
-                  ],
-                  "workflow_input_names": [
-                    "crop_meta",
-                    "image",
-                    "job"
-                  ]
-                },
-                {
-                  "node_id": "7",
-                  "class_type": "HOI4ForegroundMask",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "image",
-                    "job",
-                    "mask_model",
-                    "reference_meta"
-                  ],
-                  "workflow_input_names": [
-                    "image",
-                    "job",
-                    "mask_model",
-                    "reference_meta"
-                  ]
-                },
-                {
-                  "node_id": "8",
-                  "class_type": "HOI4MaskAndBackgroundGuard",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "image",
-                    "job",
-                    "mask",
-                    "mask_meta"
-                  ],
-                  "workflow_input_names": [
-                    "image",
-                    "job",
-                    "mask",
-                    "mask_meta"
-                  ]
-                },
-                {
-                  "node_id": "9",
-                  "class_type": "HOI4PromptInput",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "background_meta",
-                    "job",
-                    "prompt_source"
-                  ],
-                  "workflow_input_names": [
-                    "background_meta",
-                    "job",
-                    "prompt_source"
-                  ]
-                },
-                {
-                  "node_id": "10",
-                  "class_type": "UNETLoader",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "unet_name",
-                    "weight_dtype"
-                  ],
-                  "workflow_input_names": [
-                    "unet_name",
-                    "weight_dtype"
-                  ]
-                },
-                {
-                  "node_id": "11",
-                  "class_type": "LoraLoaderModelOnly",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "lora_name",
-                    "model",
-                    "strength_model"
-                  ],
-                  "workflow_input_names": [
-                    "lora_name",
-                    "model",
-                    "strength_model"
-                  ]
-                },
-                {
-                  "node_id": "12",
-                  "class_type": "VAELoader",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "vae_name"
-                  ],
-                  "workflow_input_names": [
-                    "vae_name"
-                  ]
-                },
-                {
-                  "node_id": "13",
-                  "class_type": "VAEEncode",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "pixels",
-                    "vae"
-                  ],
-                  "workflow_input_names": [
-                    "pixels",
-                    "vae"
-                  ]
-                },
-                {
-                  "node_id": "14",
-                  "class_type": "Krea2EditModelPatch",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "fit_mode",
-                    "model",
-                    "ref_boost",
-                    "ref_boost_a",
-                    "ref_boost_mask",
-                    "source_image",
-                    "source_image_b",
-                    "source_latent",
-                    "source_latent_b",
-                    "vae"
-                  ],
-                  "workflow_input_names": [
-                    "fit_mode",
-                    "model",
-                    "ref_boost",
-                    "source_image",
-                    "source_latent",
-                    "vae"
-                  ]
-                },
-                {
-                  "node_id": "15",
-                  "class_type": "CLIPLoader",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "clip_name",
-                    "device",
-                    "type"
-                  ],
-                  "workflow_input_names": [
-                    "clip_name",
-                    "type"
-                  ]
-                },
-                {
-                  "node_id": "16",
-                  "class_type": "Krea2EditGroundedEncode",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "clip",
-                    "grounding_px",
-                    "image",
-                    "image_b",
-                    "prompt",
-                    "system_prompt"
-                  ],
-                  "workflow_input_names": [
-                    "clip",
-                    "grounding_px",
-                    "image",
-                    "prompt"
-                  ]
-                },
-                {
-                  "node_id": "17",
-                  "class_type": "Krea2EditGroundedEncode",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "clip",
-                    "grounding_px",
-                    "image",
-                    "image_b",
-                    "prompt",
-                    "system_prompt"
-                  ],
-                  "workflow_input_names": [
-                    "clip",
-                    "grounding_px",
-                    "image",
-                    "prompt"
-                  ]
-                },
-                {
-                  "node_id": "18",
-                  "class_type": "LoraLoaderModelOnly",
-                  "status": "PASS",
-                  "live_input_names": [
-                    "lora_name",
-                    "model",
-                    "strength_model"
-                  ],
-                  "workflow_input_names": [
-                    "lora_name",
-                    "model",
-                    "strength_model"
+                    "positive"
                   ]
                 },
                 {
@@ -3623,6 +4541,161 @@
             "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
           },
           "policy": "Live registry/schema PASS permits the pinned Krea graph to be used for qualification only; production generation remains fail-closed until source, background, calibrated thresholds, and independent audit gates pass."
+        },
+        "mps_canary_evidence": {
+          "path": "docs/preflight/mps_canary_2026-07-29.json",
+          "status": "BLOCKED_LOCAL_MEMORY_PRESSURE_BEFORE_FIRST_SAMPLER_STEP",
+          "observed_at": "2026-07-28T23:50:27Z",
+          "execution_profile": "human_local_mac_16gb",
+          "runtime": {
+            "binding": "http://127.0.0.1:8188",
+            "raw_comfyui_loopback_only": true,
+            "preprocessing_health": "PASS",
+            "preprocessing_endpoints": "subject_and_mask_loopback_configured",
+            "autoprompter_stage": "REACHED_BEFORE_KREA_LOAD",
+            "mps_fp8_workaround": {
+              "status": "CHECK_PASS",
+              "script": "scripts/runtime/apply_mps_fp8_workaround.py",
+              "script_sha256": "bbb56f8b6462c52d42faa769b44364be482056e6ca518277dbae1872d58207d7"
+            }
+          },
+          "model": {
+            "filename": "krea2_turbo_fp8_scaled.safetensors",
+            "official_revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+            "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1",
+            "loader_stage": "Krea2 model load requested",
+            "sampler_steps_requested": 1,
+            "sampler_steps_completed": 0
+          },
+          "attempt": {
+            "prompt_id": "b3623779-b731-4dd7-83fa-e9c276590743",
+            "canvas": "208x280_canary_only",
+            "batch_size": 1,
+            "candidate_produced": false,
+            "failure_stage": "Krea model loading/offload before first sampler step",
+            "observed_ram_free_before_queue_bytes": 6849495040,
+            "observed_ram_free_at_pressure_bytes": 1785561088,
+            "observed_system_free_percent_at_pressure": 10,
+            "swapins_at_pressure": 23177840,
+            "swapouts_at_pressure": 29134309,
+            "recovery_action": "bounded_canary_interrupted_and_comfyui_restarted_once"
+          },
+          "production_authorization": {
+            "status": "BLOCKED",
+            "identity_style_audit": "NOT_RUN",
+            "dds_created": false,
+            "mod_integration_created": false
+          }
+        },
+        "barrier_canary_evidence": {
+          "path": "docs/preflight/mps_barrier_canary_2026-07-29_followup.json",
+          "status": "BLOCKED_LOCAL_MEMORY_PRESSURE_DURING_KREA_MODEL_LOAD",
+          "observed_at": "2026-07-29T02:27:06Z",
+          "execution_profile": "human_local_mac_16gb",
+          "runtime": {
+            "binding": "http://127.0.0.1:8188",
+            "raw_comfyui_loopback_only": true,
+            "argv": [
+              "--lowvram",
+              "--cpu-vae",
+              "--preview-method",
+              "auto",
+              "--disable-smart-memory",
+              "--cache-none"
+            ],
+            "preprocessing_health": "PASS",
+            "autoprompter_health": "PASS",
+            "graph_submission": "PASS",
+            "barrier_node": {
+              "class": "HOI4KreaModelLoadBarrier",
+              "release_call": "comfy.model_management.unload_all_models",
+              "source_fix_live_loaded": true
+            },
+            "stages_reached": [
+              "source_snapshot",
+              "subject_selection",
+              "crop_and_reference",
+              "mask_and_approved_background",
+              "autoprompter",
+              "qwen_text_encoder_load",
+              "krea_model_load_requested"
+            ]
+          },
+          "model": {
+            "filename": "krea2_turbo_fp8_scaled.safetensors",
+            "official_revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+            "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1"
+          },
+          "attempt": {
+            "prompt_id": "89c706da-a19c-487a-b3c9-bcc7555f92f7",
+            "canvas": "208x280_canary_only",
+            "batch_size": 1,
+            "sampler_steps_requested": 1,
+            "sampler_steps_completed": 0,
+            "candidate_produced": false,
+            "krea_load_requested_at_local": "2026-07-29T05:27:42",
+            "interrupt_received_at_local": "2026-07-29T05:29:00",
+            "monitor_min_available_memory_bytes": 962707456,
+            "monitor_min_free_swap_bytes": 335609856,
+            "monitor_peak_swap_used_bytes": 24060559360,
+            "failure_stage": "Krea model loading/offload before first sampler step",
+            "safety_action": "global_interrupt_received_then_comfyui_terminated_and_restarted",
+            "remote_submission": "NOT_QUEUED_BY_LOCAL_ROUTE"
+          },
+          "production_authorization": {
+            "status": "BLOCKED",
+            "identity_style_audit": "NOT_RUN",
+            "dds_created": false,
+            "mod_integration_created": false
+          }
+        },
+        "cpu_canary_evidence": {
+          "path": "docs/preflight/cpu_canary_2026-07-29.json",
+          "status": "INTERRUPTED_LOCAL_MEMORY_PRESSURE_BEFORE_FIRST_SAMPLER_STEP",
+          "observed_at": "2026-07-29T00:08:44Z",
+          "execution_profile": "human_local_mac_16gb",
+          "runtime": {
+            "qualification_binding": "http://127.0.0.1:8190",
+            "user_facing_mps_binding": "http://127.0.0.1:8188",
+            "device": "cpu",
+            "raw_comfyui_loopback_only": true,
+            "preprocessing_health": "PASS",
+            "preprocessing_endpoints": "subject_and_mask_loopback_configured",
+            "autoprompter_stage": "PASS",
+            "source_snapshot": "PASS",
+            "subject_selection": "PASS",
+            "crop_and_reference": "PASS",
+            "mask_and_approved_background": "PASS",
+            "prompt_validation": "PASS",
+            "text_encoder_load": "PASS",
+            "krea_model_load_requested": "PASS",
+            "sampler_steps_requested": 1,
+            "sampler_steps_completed": 0
+          },
+          "model": {
+            "filename": "krea2_turbo_nvfp4.safetensors",
+            "official_revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+            "sha256": "61527003b2d537055494d01bc8efe51d6e86e64192ba23e3721a5647231fe394",
+            "workflow_override": "diagnostic_only_cpu_substitution; public Mac workflow remains FP8_locked"
+          },
+          "attempt": {
+            "job_id": "local-human-fernand-cpu-canary-2026-07-29",
+            "prompt_id": "f4a3a01c-60da-41c7-92e5-35d82b3db485",
+            "canvas": "208x280_canary_only",
+            "batch_size": 1,
+            "candidate_produced": false,
+            "failure_stage": "CPU Krea model load/offload before first sampler step",
+            "swap_total_bytes_at_interrupt": 12884901888,
+            "swap_used_bytes_at_interrupt": 12050104320,
+            "swap_free_bytes_at_interrupt": 835977216,
+            "recovery_action": "bounded_cpu_canary_interrupted_and_isolated_server_stopped"
+          },
+          "production_authorization": {
+            "status": "BLOCKED",
+            "identity_style_audit": "NOT_RUN",
+            "dds_created": false,
+            "mod_integration_created": false
+          }
         }
       }
     },
@@ -3638,7 +4711,7 @@
         "lock_status": "PINNED_LOCAL_AND_FULL_POWER_RUNTIME_EXECUTION_UNVERIFIED",
         "runtime_report": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-28T15:30:58.385975+00:00",
+          "checked_at": "2026-07-29T00:58:22.761124+00:00",
           "status": "PASS_HEALTH_AND_NEGATIVE_VALIDATION",
           "profile": "human_local_mac_16gb",
           "full_power": {
@@ -3695,6 +4768,50 @@
         "full_power_format_status": "PASS",
         "positive_generation_status": "BLOCKED_NO_PRODUCTION_AUTHORIZED_SOURCE",
         "production_prompt_claim": "NOT_CLAIMED"
+      }
+    },
+    {
+      "name": "visual_audit_runtime",
+      "status": "PASS_FORMAT_ONLY_EXECUTION_UNVERIFIED",
+      "evidence": {
+        "status": "PASS_FORMAT_ONLY_EXECUTION_UNVERIFIED",
+        "lock_path": "dependencies/visual_audit_runtime.lock.json",
+        "execution_status": "NOT_RUN",
+        "production_claim": "NOT_CLAIMED",
+        "lock_status": "PINNED_LOCAL_LOOPBACK_PRODUCER_EXECUTION_UNVERIFIED",
+        "rubric_path": "prompts/visual_audit_rubric.txt",
+        "rubric_sha256": "bd6c3bf844cecfae1c7488018337e75ff7a3d714bab7b3f56ce7c9726fc66f5b",
+        "binary_path": ".runtime/llama-cpp/b9637/llama-b9637/llama-server",
+        "binary_sha256": "c68b4016e18701e8293e3730a8f13272d8d2d6c10139c8b00421332604b06347",
+        "model_path": "models/autoprompter/Qwen3VL-4B-Instruct-Q4_K_M.gguf",
+        "model_sha256": "66358cb18bb6b3b1b6675aa412c7a88ef01d228f481184d13668e5201c730a0a",
+        "mmproj_path": "models/autoprompter/mmproj-Qwen3VL-4B-Instruct-F16.gguf",
+        "mmproj_sha256": "256f3a43bd4205ffef48d6b92715e1e70b5b0e9aef06522584967513a9985331",
+        "model_revision": "1cd86afb9a95c410a6038ab3b40d8b578c892266",
+        "rubric_contract": {
+          "format": "json_object",
+          "required_fields": [
+            "status",
+            "scores.hairline",
+            "scores.facial_hair",
+            "scores.accessories",
+            "scores.style",
+            "human_readable_evidence.hairline",
+            "human_readable_evidence.facial_hair",
+            "human_readable_evidence.accessories",
+            "human_readable_evidence.style"
+          ]
+        },
+        "full_power": {
+          "lock_status": "PINNED_LOCAL_LOOPBACK_PRODUCER_EXECUTION_UNVERIFIED",
+          "rubric_path": "prompts/visual_audit_rubric.txt",
+          "model_root": "models/autoprompter",
+          "model_revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+          "artifact_manifest_sha256": "f98da5ae00f1c07b5dffafbb0b7f78340271ab5f7abc3504a326dafb3199b564",
+          "loader": "transformers.Qwen3VLForConditionalGeneration",
+          "device_requirement": "CUDA",
+          "execution_status": "NOT_RUN_CUDA_UNAVAILABLE_OR_UNVERIFIED"
+        }
       }
     },
     {
@@ -3857,7 +4974,7 @@
               "Krea retains ownership of the model; outputs remain subject to agreement compliance"
             ],
             "artifact_policy": "local_copy_only",
-            "owner_decision": "approved for local qualification and mod development; RunPod deployment deferred; no model distribution",
+            "owner_decision": "approved for local qualification and mod development; Comfy Cloud execution remains unconnected; no model distribution",
             "commercial_use_decision": "use remains subject to the Krea Community License revenue threshold and enterprise-license requirement",
             "content_filter_decision": "prompt validation, independent audit, human review, and fail-closed promotion",
             "ai_disclosure_decision": "apply where required by law, regulation, or platform policy"
@@ -3940,8 +5057,10 @@
     }
   ],
   "blockers": [
-    "Identity/style thresholds are still calibration placeholders; no production candidate may be accepted.",
-    "Krea 2 source-specific eight-step execution and the immutable style-LoRA experiment matrix remain blocked: the detected 16 GB Mac exhausted practical memory/offload headroom after the FP8/MPS dtype workaround, and calibrated audit thresholds are still required."
+    "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
+    "The authenticated Cloud UI probe saved all six workflows but found unsupported project custom nodes and missing required LoRAs; the project API-key route remains unavailable and Cloud execution is blocked by node/model parity.",
+    "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+    "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
   ],
   "status": "BLOCKED",
   "recommended_exit_code": 20,

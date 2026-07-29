@@ -104,49 +104,42 @@ def _dds_gate(root: Path) -> dict[str, Any]:
     return {"status": "PASS" if negative_passed and positive_passed else "FAIL", "negative_gate": "PASS" if negative_passed else "FAIL", "positive_round_trip": "PASS" if positive_passed else "FAIL", "evidence": "synthetic-only; production DDS remains prohibited until a real independent all-PASS audit exists"}
 
 
-def _runpod_deployment_gate(root: Path) -> dict[str, Any]:
-    deployment_root = root / "deploy" / "runpod"
-    owner_attestation_path = root / "docs" / "preflight" / "owner_attestation.json"
-    owner_scope: dict[str, Any] = {}
-    try:
-        owner_scope = json.loads(owner_attestation_path.read_text(encoding="utf-8")).get("scope", {})
-    except (OSError, json.JSONDecodeError):
-        owner_scope = {}
-    deferred = owner_scope.get("runpod_live_deployment") == "DEFERRED_OUT_OF_CURRENT_SCOPE"
-    required = ["Dockerfile", "entrypoint.sh", "install_runtime.sh", "readiness.py", "healthcheck.sh", "image_lock.json", "README.md"]
-    missing = [name for name in required if not (deployment_root / name).is_file()]
-    image_lock: dict[str, Any] = {}
-    if not missing:
+def _comfy_cloud_gate(root: Path) -> dict[str, Any]:
+    """Record the Cloud route without mistaking credentials for acceptance."""
+
+    base_url = os.environ.get("COMFY_CLOUD_BASE_URL", "https://cloud.comfy.org")
+    key_present = bool(os.environ.get("COMFY_CLOUD_API_KEY") or os.environ.get("COMFY_API_KEY"))
+    workflows = ["human_full_power_gpu", "agent_full_power_gpu"]
+    probe_paths = sorted((root / "docs" / "preflight").glob("comfy_cloud_ui_probe_*.json"))
+    probe_path = probe_paths[-1] if probe_paths else None
+    probe: dict[str, Any] = {}
+    if probe_path is not None:
         try:
-            image_lock = json.loads((deployment_root / "image_lock.json").read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            missing.append("image_lock.json:INVALID_JSON")
-    dockerfile = (deployment_root / "Dockerfile").read_text(encoding="utf-8") if (deployment_root / "Dockerfile").is_file() else ""
-    entrypoint = (deployment_root / "entrypoint.sh").read_text(encoding="utf-8") if (deployment_root / "entrypoint.sh").is_file() else ""
-    install_runtime = (deployment_root / "install_runtime.sh").read_text(encoding="utf-8") if (deployment_root / "install_runtime.sh").is_file() else ""
-    project_lock = root / "dependencies" / "project_requirements.lock.txt"
-    project_lock_entry = image_lock.get("project_dependency_lock", {})
-    structural_checks = {
-        "base_image_digest_pinned": "@sha256:" in dockerfile,
-        "raw_comfy_loopback": "127.0.0.1" in dockerfile and "127.0.0.1" in entrypoint,
-        "gateway_secret_runtime_only": "PORTRAIT_GATEWAY_TOKEN" in entrypoint and "values_recorded" in json.dumps(image_lock),
-        "model_weights_not_baked": "models" in json.dumps(image_lock) and "models" in (deployment_root / ".dockerignore").read_text(encoding="utf-8") if (deployment_root / ".dockerignore").is_file() else False,
-        "checksum_package_payload": "COPY . /opt/portrait-project/" in dockerfile,
-        "project_dependency_lock_pinned": project_lock.is_file() and project_lock_entry.get("status") == "RESOLVED" and sha256_file(project_lock) == project_lock_entry.get("sha256") and "--require-hashes --no-deps -r \"$project_lock\"" in install_runtime,
-    }
-    status = "PASS" if not missing and image_lock.get("build_permitted") is True and all(structural_checks.values()) else ("BLOCKED_UNRESOLVED_IMAGE_LOCK" if not missing else "BLOCKED_DEPLOYMENT_SURFACE_MISSING")
+            loaded = json.loads(probe_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                probe = loaded
+        except (OSError, json.JSONDecodeError):
+            probe = {}
+    status = str(probe.get("status")) if probe.get("status") else ("BLOCKED_LIVE_CAPABILITY_NOT_VERIFIED" if key_present else "BLOCKED_NOT_CONNECTED")
+    workflow_import = probe.get("workflow_import", "NOT_RUN")
+    node_parity = "BLOCKED" if status == "BLOCKED_CLOUD_NODE_MODEL_PARITY" else "NOT_RUN"
+    model_availability = "BLOCKED" if status == "BLOCKED_CLOUD_NODE_MODEL_PARITY" else "NOT_RUN"
+    source_bridge = probe.get("source_upload", "NOT_RUN")
     return {
-        "status": "DEFERRED_OUT_OF_SCOPE" if deferred else status,
-        "path": str(deployment_root.relative_to(root)),
-        "required_files": required,
-        "missing": missing,
-        "structural_checks": structural_checks,
-        "image_lock_status": image_lock.get("status"),
-        "build_permitted": image_lock.get("build_permitted"),
-        "unresolved": image_lock.get("unresolved", []),
-        "owner_scope": owner_scope,
-        "live_execution": "NOT_RUN_DEFERRED" if deferred else "NOT_RUN",
-        "acceptance_policy": "The deployment surface is not a successful remote runtime claim until an empty-volume Pod passes the documented live acceptance sequence.",
+        "status": status,
+        "provider": "comfy_cloud",
+        "base_url": base_url,
+        "base_url_https": base_url.startswith("https://"),
+        "api_key_present": key_present,
+        "profiles": workflows,
+        "workflow_import": workflow_import,
+        "node_parity": node_parity,
+        "model_availability": model_availability,
+        "source_upload_and_job_contract_bridge": source_bridge,
+        "live_execution": "NOT_RUN",
+        "ui_probe_path": str(probe_path.relative_to(root)) if probe_path is not None else None,
+        "ui_probe_authentication": probe.get("authentication") if probe else None,
+        "acceptance_policy": "Cloud credentials never promote a workflow. Import, node/model parity, source/job-contract delivery, output checksums, and independent all-gates audit must pass first.",
     }
 
 
@@ -357,11 +350,11 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
         "direct_application": "NOT_PERFORMED",
     }
     dds_guard = _dds_gate(root_path)
-    runpod_deployment = _runpod_deployment_gate(root_path)
+    comfy_cloud = _comfy_cloud_gate(root_path)
     report = {
         "schema_version": "1.0.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" or benchmark_gate["status"] != "PASS" or comparison_gate["status"] != "PASS" or runpod_deployment["status"] not in {"PASS", "DEFERRED_OUT_OF_SCOPE"} or schema_gate["status"] != "PASS" else "PASS",
+        "overall_status": "BLOCKED" if preflight["status"] != "PASS" or any(item["structural_status"] != "PASS" for item in workflows) or dds_guard["status"] != "PASS" or integration["status"] != "PASS" or benchmark_gate["status"] != "PASS" or comparison_gate["status"] != "PASS" or comfy_cloud["status"] != "PASS" or schema_gate["status"] != "PASS" else "PASS",
         "recommended_exit_code": preflight["recommended_exit_code"] if preflight["status"] != "PASS" else (int(ExitCode.AUDIT_UNCERTAIN) if comparison_gate["status"] != "PASS" else 0),
         "gates": {
             "package_checksums": next((gate for gate in preflight["gates"] if gate["name"] == "planning_package_checksums"), None),
@@ -387,14 +380,14 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
             "identity_style_experiments": experiments,
             "benchmark_reports": benchmark_gate,
             "identity_style_comparison": comparison_gate,
-            "runpod_deployment_surface": runpod_deployment,
+            "comfy_cloud_execution": comfy_cloud,
             "schema_validation": schema_gate,
             "integration_packages": integration,
             "secret_scan": _secret_scan(root_path),
         },
         "preflight_blockers": preflight["blockers"],
         "workflow_manifest": workflow_manifest,
-        "runtime_claims": {"local_mac_execution": "CPU_FALLBACK_CANDIDATE_PRODUCED_PRODUCTION_GATES_BLOCKED", "remote_runpod_execution": "NOT_CLAIMED", "final_png": "NOT_CREATED", "final_dds": "NOT_CREATED", "mod_wiring": "PARENT_AGENT_ONLY"},
+        "runtime_claims": {"local_mac_execution": "CPU_FALLBACK_CANDIDATE_PRODUCED_PRODUCTION_GATES_BLOCKED", "comfy_cloud_execution": "NOT_CLAIMED", "final_png": "NOT_CREATED", "final_dds": "NOT_CREATED", "mod_wiring": "PARENT_AGENT_ONLY"},
         "source_pins": {"autoprompter_instruction_sha256": autoprompter_instruction_sha256(root_path), "style_lora_sha256": lora_gate["sha256"]},
     }
     return report

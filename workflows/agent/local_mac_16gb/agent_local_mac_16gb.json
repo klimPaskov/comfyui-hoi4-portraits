@@ -1,5 +1,5 @@
 {
-  "last_node_id": 29,
+  "last_node_id": 33,
   "last_link_id": 50,
   "nodes": [
     {
@@ -1440,6 +1440,90 @@
       "widgets_values": [
         "evidence/candidates"
       ]
+    },
+    {
+      "id": 31,
+      "type": "Note",
+      "title": "Lower-memory model options",
+      "pos": [
+        1200,
+        900
+      ],
+      "size": [
+        250,
+        120
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Lower-memory model options",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": [
+        "These options are shown for planning only. The active route remains the pinned Krea 2 Turbo model and identity edit adapter."
+      ]
+    },
+    {
+      "id": 32,
+      "type": "Note",
+      "title": "Optional 12 GB model path",
+      "pos": [
+        1200,
+        1050
+      ],
+      "size": [
+        250,
+        140
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Optional 12 GB model path",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": [
+        "Placeholder only — not connected. Activate only after an official, checksum-locked Krea identity-edit GGUF and loader parity pass on a 12 GB host."
+      ]
+    },
+    {
+      "id": 33,
+      "type": "Note",
+      "title": "Optional 8 GB model path",
+      "pos": [
+        1200,
+        1210
+      ],
+      "size": [
+        250,
+        140
+      ],
+      "color": "#40344a",
+      "bgcolor": "#5b4a69",
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Optional 8 GB model path",
+        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_locked_controls": []
+      },
+      "widgets_values": [
+        "Placeholder only — not connected. Activate only after an official, checksum-locked Krea identity-edit GGUF and loader parity pass on an 8 GB host."
+      ]
     }
   ],
   "links": [
@@ -1976,6 +2060,8 @@
     "autoprompter_instruction_sha256": null,
     "prompt_source": "job_contract",
     "prompt_model": "job_contract",
+    "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
+    "remote_authentication": "loopback_only",
     "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
     "work_canvas": {
       "width": 832,
@@ -2099,7 +2185,27 @@
       "max": 2,
       "retry_max": 2
     },
-    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow"
+    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow",
+    "low_memory_placeholder_nodes": [
+      {
+        "node_id": 31,
+        "title": "Lower-memory model options",
+        "connected": false,
+        "ui_only": true
+      },
+      {
+        "node_id": 32,
+        "title": "Optional 12 GB model path",
+        "connected": false,
+        "ui_only": true
+      },
+      {
+        "node_id": 33,
+        "title": "Optional 8 GB model path",
+        "connected": false,
+        "ui_only": true
+      }
+    ]
   },
   "version": 0.4
 }

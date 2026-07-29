@@ -16,7 +16,7 @@ This report contains no production acceptance claim. Any CPU diagnostic executio
 | `autoprompter_runtime` | **PASS** |
 | `calibrated_identity_thresholds` | **BLOCKED** |
 | `comfyui_runtime_dependency_lock` | **PASS** |
-| `custom_node_preflight` | **PASS** |
+| `custom_node_preflight` | **BLOCKED** |
 | `hardware_detection` | **PASS** |
 | `immutable_style_lora` | **PASS** |
 | `krea_live_compatibility` | **PASS** |
@@ -45,13 +45,14 @@ This report contains no production acceptance claim. Any CPU diagnostic executio
 
 ## Blockers
 
+- One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.
 - Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.
 - Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required.
 
 ## Required follow-up
 
 - run the target profile inside its target accelerator environment without mutation
-- resolve image-specific Python and system-package pins before building the RunPod image
+- verify Comfy Cloud subscription, API authentication, custom-node parity, model availability, and source upload behavior
 - complete live source-specific model loading and the eight-step Turbo execution
 - verify all model revisions, formats, sizes, and SHA-256 values in the target environment
 - run the target profile with independent identity/style/mask/provenance audit

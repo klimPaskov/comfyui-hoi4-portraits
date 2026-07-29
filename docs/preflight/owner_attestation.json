@@ -8,7 +8,7 @@
     "local_qualification": true,
     "mod_development": true,
     "public_code_repository": true,
-    "runpod_live_deployment": "DEFERRED_OUT_OF_CURRENT_SCOPE"
+    "comfy_cloud_live_execution": "BLOCKED_UNCONNECTED"
   },
   "approvals": {
     "chaos_redux_background": {
@@ -48,6 +48,6 @@
   "limitations": [
     "This attestation does not grant rights to redistribute Krea weights, the private style LoRA, the private background, or private source portraits.",
     "It does not approve a candidate without an independent all-gate PASS audit.",
-    "RunPod live deployment and authenticated remote acceptance are deferred by explicit project-owner scope decision."
+    "Comfy Cloud live execution and authenticated remote acceptance remain blocked until an eligible plan, API key, and live capability parity are verified."
   ]
 }

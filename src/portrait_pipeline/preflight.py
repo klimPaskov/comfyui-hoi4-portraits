@@ -24,10 +24,11 @@ SUPPORTED_PREPROCESSING_SUFFIXES = {
 }
 PROFILE_RUNTIME_LOCKS = {
     "human_local_mac_16gb": "macos_arm64_cpu",
+    "human_local_nvidia_16gb": "linux_amd64_cuda128",
     "agent_local_mac_16gb": "macos_arm64_cpu",
+    "agent_local_nvidia_16gb": "linux_amd64_cuda128",
     "human_full_power_gpu": "linux_amd64_cuda128",
     "agent_full_power_gpu": "linux_amd64_cuda128",
-    "agent_remote_runpod": "linux_amd64_cuda128",
 }
 
 
@@ -193,8 +194,9 @@ def _planning_checksum_check(root: Path) -> dict[str, Any]:
 
 def _env_presence() -> dict[str, bool]:
     names = (
-        "RUNPOD_API_KEY",
-        "RUNPOD_ENDPOINT_ID",
+        "COMFY_CLOUD_API_KEY",
+        "COMFY_API_KEY",
+        "COMFY_CLOUD_BASE_URL",
         "HF_TOKEN",
         "GITHUB_TOKEN",
         "PORTRAIT_GATEWAY_TOKEN",
@@ -556,12 +558,12 @@ def _autoprompter_preflight(root: Path, profile: str | None) -> dict[str, Any]:
     local_pass = report.get("status") == "PASS_HEALTH_AND_NEGATIVE_VALIDATION" and report.get("negative_validation", {}).get("status") == "PASS" and local_health.get("status") == "PASS"
     full_power = report.get("full_power", {}) if isinstance(report, dict) else {}
     full_format_pass = full_power.get("status") == "PASS_FORMAT_AND_PROCESSOR_SCHEMA"
-    if profile in {"agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"}:
+    if profile in {"agent_local_mac_16gb", "agent_local_nvidia_16gb", "agent_full_power_gpu"}:
         status = "NOT_APPLICABLE"
-    elif profile == "human_local_mac_16gb":
+    elif profile in {"human_local_mac_16gb", "human_local_nvidia_16gb"}:
         status = "PASS" if local_pass and full_format_pass else "BLOCKED"
     elif profile == "human_full_power_gpu":
-        status = "PASS_FORMAT_ONLY_EXECUTION_BLOCKED" if full_format_pass and full_power.get("execution") == "BLOCKED_TARGET_CUDA_UNAVAILABLE" else "BLOCKED"
+        status = "PASS_FORMAT_ONLY_CLOUD_EXECUTION_UNVERIFIED" if full_format_pass else "BLOCKED"
     else:
         status = "PASS_LOCAL_AND_FULL_POWER_FORMAT_ONLY" if local_pass and full_format_pass else "BLOCKED"
     evidence["local_sidecar_status"] = "PASS" if local_pass else "BLOCKED"
@@ -793,17 +795,19 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     })
     runtime_version_info = runtime_probe.get("python_version_info", [])
     python_floor_ok = isinstance(runtime_version_info, list) and len(runtime_version_info) >= 2 and tuple(runtime_version_info[:2]) >= (3, 10)
-    local_profile = profile in {"human_local_mac_16gb", "agent_local_mac_16gb"} if profile else True
-    full_gpu_profile = profile in {"human_full_power_gpu", "agent_full_power_gpu"}
+    mac_local_profile = profile in {"human_local_mac_16gb", "agent_local_mac_16gb"} if profile else True
+    nvidia_local_profile = profile in {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}
+    cloud_profile = profile in {"human_full_power_gpu", "agent_full_power_gpu"}
+    local_profile = mac_local_profile or nvidia_local_profile
     comfy_runtime_present = bool(comfy_path) or (root_path / "comfyui" / "main.py").is_file()
-    required_accelerator = "MPS" if local_profile else ("CUDA" if full_gpu_profile else "not_local")
-    accelerator_ok = bool(torch_probe.get("mps_available")) if local_profile else (bool(torch_cuda) if full_gpu_profile else True)
+    required_accelerator = "MPS" if mac_local_profile else ("CUDA" if nvidia_local_profile else ("Comfy Cloud" if cloud_profile else "not_local"))
+    accelerator_ok = bool(torch_probe.get("mps_available")) if mac_local_profile else (bool(torch_cuda) if nvidia_local_profile else True)
     gates.append({
         "name": "local_runtime_capability",
-        "status": "PASS" if (not local_profile and not full_gpu_profile) or (python_floor_ok and torch_probe.get("installed") and accelerator_ok and comfy_runtime_present) else "BLOCKED",
+        "status": "PASS" if (cloud_profile or (not local_profile and not cloud_profile) or (python_floor_ok and torch_probe.get("installed") and accelerator_ok and comfy_runtime_present)) else "BLOCKED",
         "evidence": {"profile": profile, "python_version": runtime_probe.get("python_version"), "python_executable": runtime_probe.get("python_executable"), "host_python_version": platform.python_version(), "python_floor": ">=3.10", "python_floor_ok": python_floor_ok, "torch": torch_probe, "runtime_probe": runtime_probe, "comfy_cli": comfy_path, "comfy_runtime_present": comfy_runtime_present, "required_accelerator": required_accelerator, "accelerator_ok": accelerator_ok},
     })
-    if gates[-1]["status"] == "BLOCKED" and (profile is None or local_profile or full_gpu_profile):
+    if gates[-1]["status"] == "BLOCKED" and (profile is None or local_profile):
         blockers.append(f"The required {required_accelerator} runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.")
 
     lora_present = style_path.is_file()
@@ -839,7 +843,10 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
 
     model_entries = json.loads((root_path / "dependencies" / "models.lock.json").read_text(encoding="utf-8")).get("models", [])
     local_model_files = [str(path.relative_to(root_path)) for path in model_root.rglob("*") if path.is_file()] if model_root.is_dir() else []
-    model_profile = "human_local_mac_16gb" if profile == "agent_local_mac_16gb" else profile
+    model_profile = {
+        "agent_local_mac_16gb": "human_local_mac_16gb",
+        "agent_local_nvidia_16gb": "human_local_nvidia_16gb",
+    }.get(profile, profile)
     model_evidence = _model_artifact_preflight(root_path, model_root, model_entries, model_profile)
     model_evidence["requested_profile"] = profile
     model_status = model_evidence["status"]
@@ -862,12 +869,27 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
 
     env_presence = _env_presence()
     owner_scope = _owner_scope(root_path)
-    remote_required = profile in {None, "agent_remote_runpod"}
-    remote_deferred = owner_scope.get("scope", {}).get("runpod_live_deployment") == "DEFERRED_OUT_OF_CURRENT_SCOPE"
-    remote_status = "DEFERRED_OUT_OF_SCOPE" if remote_required and remote_deferred else ("PASS" if env_presence["RUNPOD_API_KEY"] and env_presence["RUNPOD_ENDPOINT_ID"] else ("BLOCKED" if remote_required else "NOT_APPLICABLE"))
-    gates.append({"name": "remote_topology_auth", "status": remote_status, "evidence": {"profile": profile, "credential_presence": env_presence, "raw_comfyui_binding": "not configured", "remote_gateway": "authenticated_only", "owner_scope": owner_scope, "live_execution": "NOT_RUN" if remote_status == "DEFERRED_OUT_OF_SCOPE" else "UNQUALIFIED"}})
+    remote_required = profile is None or cloud_profile
+    cloud_base_url = os.environ.get("COMFY_CLOUD_BASE_URL", "https://cloud.comfy.org")
+    cloud_base_is_https = cloud_base_url.startswith("https://")
+    cloud_key_present = env_presence["COMFY_CLOUD_API_KEY"] or env_presence["COMFY_API_KEY"]
+    cloud_probe_paths = sorted((root_path / "docs" / "preflight").glob("comfy_cloud_ui_probe_*.json"))
+    cloud_probe_path = cloud_probe_paths[-1] if cloud_probe_paths else None
+    cloud_probe: dict[str, Any] = {}
+    if cloud_probe_path is not None:
+        try:
+            loaded_probe = json.loads(cloud_probe_path.read_text(encoding="utf-8"))
+            if isinstance(loaded_probe, dict):
+                cloud_probe = loaded_probe
+        except (OSError, json.JSONDecodeError):
+            cloud_probe = {}
+    remote_status = "PASS" if remote_required and cloud_key_present and cloud_base_is_https else ("BLOCKED" if remote_required else "NOT_APPLICABLE")
+    gates.append({"name": "remote_topology_auth", "status": remote_status, "evidence": {"profile": profile, "provider": "comfy_cloud", "base_url": cloud_base_url, "base_url_https": cloud_base_is_https, "credential_presence": env_presence, "raw_comfyui_binding": "not configured", "remote_transport": "authenticated_cloud_api", "owner_scope": owner_scope, "subscription_and_node_parity": "NOT_RUN", "live_execution": "NOT_RUN", "cloud_ui_probe": {"path": str(cloud_probe_path.relative_to(root_path)) if cloud_probe_path is not None else None, "status": cloud_probe.get("status") if cloud_probe else None, "authentication": cloud_probe.get("authentication") if cloud_probe else None}}})
     if remote_status == "BLOCKED":
-        blockers.append("RunPod endpoint credentials are absent; remote submission/acceptance cannot run.")
+        if cloud_probe.get("status") == "BLOCKED_CLOUD_NODE_MODEL_PARITY":
+            blockers.append("The authenticated Cloud UI probe saved all six workflows but found unsupported project custom nodes and missing required LoRAs; the project API-key route remains unavailable and Cloud execution is blocked by node/model parity.")
+        else:
+            blockers.append("Comfy Cloud subscription/API-key access is unavailable; cloud full-power execution cannot run.")
 
     generic_existing = [str(path) for path in generic_candidates if path is not None and path.is_dir() and path != root_path / "integrations" / "agentic-hoi4-modding"]
     repo_gate = {
@@ -1006,8 +1028,8 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     gates.append({"name": "autoprompter_runtime", "status": autoprompter_status, "evidence": autoprompter_evidence})
     if autoprompter_status == "BLOCKED":
         blockers.append("The required human autoprompter runtime lock or live local sidecar evidence is unavailable.")
-    elif autoprompter_status == "PASS_FORMAT_ONLY_EXECUTION_BLOCKED":
-        blockers.append("The full-power human autoprompter format is pinned and processor-verified, but target CUDA execution is unavailable on the detected host.")
+    elif autoprompter_status == "PASS_FORMAT_ONLY_CLOUD_EXECUTION_UNVERIFIED":
+        blockers.append("The full-power human autoprompter format is pinned and processor-verified, but Comfy Cloud execution and node parity are not yet verified.")
 
     visual_audit_evidence = _visual_audit_runtime_preflight(root_path)
     visual_audit_status = visual_audit_evidence["status"]

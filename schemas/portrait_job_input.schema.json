@@ -34,10 +34,11 @@
     "execution_profile": {
       "enum": [
         "human_local_mac_16gb",
+        "human_local_nvidia_16gb",
         "human_full_power_gpu",
         "agent_local_mac_16gb",
-        "agent_full_power_gpu",
-        "agent_remote_runpod"
+        "agent_local_nvidia_16gb",
+        "agent_full_power_gpu"
       ]
     },
     "source_image_path": {

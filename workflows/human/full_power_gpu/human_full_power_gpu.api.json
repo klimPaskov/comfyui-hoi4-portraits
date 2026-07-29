@@ -448,13 +448,15 @@
     "graph_spec_version": "graph-spec-1.1.0",
     "workflow_id": "human_full_power_gpu",
     "execution_profile": "human_full_power_gpu",
-    "route": "full_power_gpu",
+    "route": "comfy_cloud",
     "human_workflow": true,
     "autoprompter": true,
     "autoprompter_instruction_path": "prompts/autoprompter_instruction.txt",
     "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
     "prompt_source": "autoprompter",
     "prompt_model": "Qwen/Qwen3-VL-8B-Instruct",
+    "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
+    "remote_authentication": "x_api_key_comfy_cloud",
     "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
     "work_canvas": {
       "width": 1196,
@@ -589,6 +591,7 @@
       "max": 6,
       "retry_max": 2
     },
-    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow"
+    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow",
+    "low_memory_placeholder_nodes": []
   }
 }

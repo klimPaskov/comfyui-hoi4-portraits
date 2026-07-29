@@ -47,6 +47,13 @@ PROJECT_NODES = {
 }
 HUMAN_ONLY_PROJECT_NODES = {"HOI4HumanControls"}
 FORBIDDEN_CLASS_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
+UI_ONLY_NODE_CLASSES = {"Note"}
+LOW_MEMORY_PROFILE_IDS = {
+    "human_local_mac_16gb",
+    "human_local_nvidia_16gb",
+    "agent_local_mac_16gb",
+    "agent_local_nvidia_16gb",
+}
 
 # The UI workflow is deliberately laid out as a compact two-row rectangular
 # stage board.  The larger input and preview panels are placed beside the
@@ -281,6 +288,25 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
             ),
         ])
 
+    if profile in LOW_MEMORY_PROFILE_IDS:
+        # These are deliberately UI-only notes.  They make the lower-memory
+        # choices discoverable without putting an unverified GGUF loader into
+        # the executable API graph.
+        nodes.extend([
+            _node(
+                31, "Note", group["06 Krea 2 identity edit"], "Lower-memory model options",
+                widgets=["These options are shown for planning only. The active route remains the pinned Krea 2 Turbo model and identity edit adapter."],
+            ),
+            _node(
+                32, "Note", group["06 Krea 2 identity edit"], "Optional 12 GB model path",
+                widgets=["Placeholder only — not connected. Activate only after an official, checksum-locked Krea identity-edit GGUF and loader parity pass on a 12 GB host."],
+            ),
+            _node(
+                33, "Note", group["06 Krea 2 identity edit"], "Optional 8 GB model path",
+                widgets=["Placeholder only — not connected. Activate only after an official, checksum-locked Krea identity-edit GGUF and loader parity pass on an 8 GB host."],
+            ),
+        ])
+
     _apply_visual_layout(nodes, is_human=is_human)
 
     metadata = {
@@ -295,6 +321,8 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "autoprompter_instruction_sha256": autoprompter_instruction_sha256(root_path) if is_human else None,
         "prompt_source": "autoprompter" if is_human else "job_contract",
         "prompt_model": limits["prompt_model"],
+        "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
+        "remote_authentication": "x_api_key_comfy_cloud" if limits["route"] == "comfy_cloud" else "loopback_only",
         "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
         "work_canvas": {"width": width, "height": height, "pixels": width * height},
         "final_canvas": {"width": 156, "height": 210},
@@ -313,6 +341,10 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "required_project_nodes": sorted((PROJECT_NODES | (HUMAN_ONLY_PROJECT_NODES if is_human else set())) & {node.class_type for node in nodes}),
         "candidate_budget": {"max": int(limits["candidate_max"]), "retry_max": int(limits["retry_max"])},
         "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow",
+        "low_memory_placeholder_nodes": [
+            {"node_id": node.node_id, "title": node.title, "connected": False, "ui_only": True}
+            for node in nodes if node.class_type == "Note"
+        ],
     }
     graph = GraphSpec(profile, profile, nodes, GROUP_LABELS, metadata)
     validate_graph(graph)
@@ -386,6 +418,7 @@ def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool) -> None:
         18: (1560, 1000),
         19: (1940, 900), 20: (1940, 1080), 29: (1940, 1300),
         21: (2320, 900), 22: (2640, 900), 23: (2640, 1090), 28: (2940, 900),
+        31: (1200, 900), 32: (1200, 1050), 33: (1200, 1210),
     }
     sizes = {
         1: (350, 170), 24: (350, 580), 2: (350, 140), 3: (350, 140),
@@ -398,6 +431,7 @@ def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool) -> None:
         14: (260, 130), 15: (260, 130), 16: (260, 130), 17: (260, 130),
         18: (260, 170), 19: (260, 150), 20: (260, 180), 29: (260, 130),
         21: (300, 140), 22: (300, 170), 23: (300, 140), 28: (400, 480),
+        31: (250, 120), 32: (250, 140), 33: (250, 140),
     }
     for node in nodes:
         if node.node_id in positions:
@@ -407,6 +441,10 @@ def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool) -> None:
 
 
 def _api_json(graph: GraphSpec) -> dict[str, Any]:
+    executable_nodes = [
+        node for node in graph.nodes
+        if node.node_id != 1 and node.class_type not in UI_ONLY_NODE_CLASSES
+    ]
     return {
         "1": {
             "class_type": "HOI4JobInput",
@@ -414,7 +452,7 @@ def _api_json(graph: GraphSpec) -> dict[str, Any]:
         },
         **{
             str(node.node_id): {"class_type": node.class_type, "inputs": {key: _api_value(value) for key, value in node.inputs.items() if key != "instruction_text" or graph.metadata["human_workflow"]}}
-            for node in graph.nodes if node.node_id != 1
+            for node in executable_nodes
         },
         "_meta": graph.metadata,
     }
@@ -479,10 +517,11 @@ def build_workflow_artifacts(root: str | Path | None = None) -> dict[str, Any]:
     }
     paths = {
         "human_local_mac_16gb": root_path / "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
+        "human_local_nvidia_16gb": root_path / "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json",
         "human_full_power_gpu": root_path / "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "agent_local_mac_16gb": root_path / "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
+        "agent_local_nvidia_16gb": root_path / "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json",
         "agent_full_power_gpu": root_path / "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
-        "agent_remote_runpod": root_path / "workflows/agent/remote_runpod/agent_remote_runpod.json",
     }
     manifests: list[dict[str, Any]] = []
     live_probe_path = root_path / "docs" / "preflight" / "live_comfy_compatibility.json"

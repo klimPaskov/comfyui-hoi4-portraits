@@ -82,6 +82,14 @@
         1120
       ]
     },
+    "human_local_nvidia_16gb": {
+      "candidate_budget": 2,
+      "retry_limit": 2,
+      "canvas": [
+        832,
+        1120
+      ]
+    },
     "human_full_power_gpu": {
       "candidate_budget": 6,
       "retry_limit": 2,
@@ -98,15 +106,15 @@
         1120
       ]
     },
-    "agent_full_power_gpu": {
-      "candidate_budget": 6,
+    "agent_local_nvidia_16gb": {
+      "candidate_budget": 2,
       "retry_limit": 2,
       "canvas": [
-        1196,
-        1610
+        832,
+        1120
       ]
     },
-    "agent_remote_runpod": {
+    "agent_full_power_gpu": {
       "candidate_budget": 6,
       "retry_limit": 2,
       "canvas": [

@@ -45,10 +45,11 @@ class JobStatus(_StringEnum):
 
 class ExecutionProfile(_StringEnum):
     HUMAN_LOCAL_MAC_16GB = "human_local_mac_16gb"
+    HUMAN_LOCAL_NVIDIA_16GB = "human_local_nvidia_16gb"
     HUMAN_FULL_POWER_GPU = "human_full_power_gpu"
     AGENT_LOCAL_MAC_16GB = "agent_local_mac_16gb"
+    AGENT_LOCAL_NVIDIA_16GB = "agent_local_nvidia_16gb"
     AGENT_FULL_POWER_GPU = "agent_full_power_gpu"
-    AGENT_REMOTE_RUNPOD = "agent_remote_runpod"
 
 
 PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
@@ -61,13 +62,22 @@ PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
         "route": "local_mac",
         "prompt_model": "Qwen/Qwen3-VL-4B-Instruct-GGUF",
     },
+    ExecutionProfile.HUMAN_LOCAL_NVIDIA_16GB: {
+        "candidate_max": 2,
+        "retry_max": 2,
+        "canvas_width": 832,
+        "canvas_height": 1120,
+        "autoprompter": True,
+        "route": "local_nvidia",
+        "prompt_model": "Qwen/Qwen3-VL-4B-Instruct-GGUF",
+    },
     ExecutionProfile.HUMAN_FULL_POWER_GPU: {
         "candidate_max": 6,
         "retry_max": 2,
         "canvas_width": 1196,
         "canvas_height": 1610,
         "autoprompter": True,
-        "route": "full_power_gpu",
+        "route": "comfy_cloud",
         "prompt_model": "Qwen/Qwen3-VL-8B-Instruct",
     },
     ExecutionProfile.AGENT_LOCAL_MAC_16GB: {
@@ -79,22 +89,22 @@ PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
         "route": "local_mac",
         "prompt_model": "job_contract",
     },
+    ExecutionProfile.AGENT_LOCAL_NVIDIA_16GB: {
+        "candidate_max": 2,
+        "retry_max": 2,
+        "canvas_width": 832,
+        "canvas_height": 1120,
+        "autoprompter": False,
+        "route": "local_nvidia",
+        "prompt_model": "job_contract",
+    },
     ExecutionProfile.AGENT_FULL_POWER_GPU: {
         "candidate_max": 6,
         "retry_max": 2,
         "canvas_width": 1196,
         "canvas_height": 1610,
         "autoprompter": False,
-        "route": "full_power_gpu",
-        "prompt_model": "job_contract",
-    },
-    ExecutionProfile.AGENT_REMOTE_RUNPOD: {
-        "candidate_max": 6,
-        "retry_max": 2,
-        "canvas_width": 1196,
-        "canvas_height": 1610,
-        "autoprompter": False,
-        "route": "remote_runpod",
+        "route": "comfy_cloud",
         "prompt_model": "job_contract",
     },
 }

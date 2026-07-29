@@ -28,7 +28,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_required_and_local_nvidia_workflows_are_structurally_valid(self):
         reports = validate_all_workflows(self.root)
-        self.assertEqual(len(reports), 5)
+        self.assertEqual(len(reports), 6)
         for report in reports:
             self.assertEqual(report["structural_status"], "PASS", report)
 
@@ -41,8 +41,8 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertTrue(all(item["validation_status"] == "UNVALIDATED" for item in manifest["workflows"]))
 
     def test_local_nvidia_agent_is_routable_through_controller_and_adapter(self):
-        controller_path = JobController(self.root)._workflow_api_path("agent_full_power_gpu")
-        adapter_path = PortraitMcpService(self.root)._workflow_path("agent_full_power_gpu")
+        controller_path = JobController(self.root)._workflow_api_path("agent_local_nvidia_16gb")
+        adapter_path = PortraitMcpService(self.root)._workflow_path("agent_local_nvidia_16gb")
         self.assertEqual(controller_path, adapter_path)
         self.assertTrue(controller_path.is_file())
 
@@ -61,7 +61,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertIn(LOCAL_GENERATION_UNAVAILABLE, output["warnings"])
             self.assertEqual(validate_schema(output, self.root / "schemas/portrait_job_output.schema.json"), [])
 
-            remote_job = {"job_id": "remote-unavailable-001", "execution_profile": "agent_remote_runpod"}
+            remote_job = {"job_id": "remote-unavailable-001", "execution_profile": "agent_full_power_gpu"}
             remote_output = build_blocked_output(remote_job, ExitCode.DEPENDENCY_MISSING, "remote blocker", blockers=["remote auth"], root=self.root)
             remote_root = Path(directory) / "remote"
             remote_root.mkdir()
@@ -277,9 +277,9 @@ class WorkflowAndGuardTests(unittest.TestCase):
 
     def test_profile_preflight_does_not_make_missing_remote_auth_a_local_blocker(self):
         local = collect_preflight(self.root, profile="agent_local_mac_16gb")
-        remote = collect_preflight(self.root, profile="agent_remote_runpod")
+        remote = collect_preflight(self.root, profile="agent_full_power_gpu")
         self.assertEqual(next(g["status"] for g in local["gates"] if g["name"] == "remote_topology_auth"), "NOT_APPLICABLE")
-        self.assertEqual(next(g["status"] for g in remote["gates"] if g["name"] == "remote_topology_auth"), "DEFERRED_OUT_OF_SCOPE")
+        self.assertEqual(next(g["status"] for g in remote["gates"] if g["name"] == "remote_topology_auth"), "BLOCKED")
 
     def test_calibrated_threshold_status_gate_is_consistent(self):
         self.assertEqual(CALIBRATED_THRESHOLD_STATUSES, frozenset({"APPROVED", "RESOLVED"}))
@@ -486,11 +486,11 @@ class WorkflowAndGuardTests(unittest.TestCase):
         lock = json.loads((self.root / "dependencies/models.lock.json").read_text(encoding="utf-8"))
         fp8 = next(model for model in lock["models"] if model["name"] == "krea2_turbo_fp8_scaled.safetensors")
         self.assertTrue(fp8["mandatory"])
-        for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"):
+        for profile in ("human_local_mac_16gb", "human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
             self.assertIn(profile, fp8["profiles"], profile)
 
     def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
-        for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"):
+        for profile in ("human_local_mac_16gb", "human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
             report = collect_preflight(self.root, profile=profile)
             gate = next(gate for gate in report["gates"] if gate["name"] == "comfyui_runtime_dependency_lock")
             self.assertEqual(gate["status"], "PASS", gate)
@@ -511,20 +511,49 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertGreaterEqual(comparison["candidate_counts"]["observed"], 0)
         self.assertIsNone(comparison["claims"]["identity_winner"])
 
-    def test_runpod_surface_is_fail_closed_and_keeps_raw_comfy_loopback(self):
-        image_lock = json.loads((self.root / "deploy/runpod/image_lock.json").read_text(encoding="utf-8"))
-        dockerfile = (self.root / "deploy/runpod/Dockerfile").read_text(encoding="utf-8")
+    def test_cloud_surface_is_authenticated_and_fail_closed(self):
+        from portrait_pipeline.comfy_client import ComfyCloudClient, ComfyTransportError
+
+        with mock.patch.dict(os.environ, {"COMFY_CLOUD_API_KEY": ""}, clear=False):
+            with self.assertRaises(ComfyTransportError) as context:
+                ComfyCloudClient()
+        self.assertEqual(context.exception.code, ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED)
+
         gateway = (self.root / "src/portrait_pipeline/mcp/gateway.py").read_text(encoding="utf-8")
-        self.assertFalse(image_lock["build_permitted"])
-        self.assertTrue(image_lock["base_image"]["reference"].startswith("nvidia/cuda:"))
-        self.assertIn("127.0.0.1", dockerfile)
-        self.assertIn("IMAGE_LOCK_STATUS", dockerfile)
-        self.assertIn("COPY . /opt/portrait-project/", dockerfile)
-        self.assertIn("project_requirements.lock.txt", (self.root / "deploy/runpod/install_runtime.sh").read_text(encoding="utf-8"))
-        for route in ("/v1/uploads", "/v1/jobs", "/v1/capabilities"):
-            self.assertIn(route, (self.root / "deploy/runpod/README.md").read_text(encoding="utf-8"))
-        self.assertIn("agent_remote_runpod", gateway)
-        self.assertIn("arbitrary ComfyUI workflow submission", (self.root / "deploy/runpod/README.md").read_text(encoding="utf-8"))
+        self.assertIn("agent_full_power_gpu", gateway)
+        self.assertNotIn("agent_remote_runpod", gateway)
+        self.assertFalse((self.root / "deploy/runpod").exists())
+        self.assertFalse((self.root / "workflows/agent/remote_runpod").exists())
+
+    def test_local_memory_profiles_expose_only_unqualified_switch_placeholders(self):
+        from portrait_pipeline.graph_spec.builder import UI_ONLY_NODE_CLASSES
+
+        for path in self.root.joinpath("workflows").glob("**/*.json"):
+            if path.name.endswith(".api.json"):
+                continue
+            data = json.loads(path.read_text(encoding="utf-8"))
+            profile = data.get("extra", {}).get("hoi4_portrait", {}).get("profile")
+            if profile not in {"human_local_mac_16gb", "human_local_nvidia_16gb", "agent_local_mac_16gb", "agent_local_nvidia_16gb"}:
+                continue
+            notes = {node["id"]: node for node in data["nodes"] if node.get("type") in UI_ONLY_NODE_CLASSES}
+            self.assertEqual(set(notes), {31, 32, 33}, path)
+            note_text = " ".join(str(node.get("widgets_values", [""])[0]) for node in notes.values())
+            self.assertIn("12 GB", note_text)
+            self.assertIn("8 GB", note_text)
+            api = json.loads(path.with_name(path.name.replace(".json", ".api.json")).read_text(encoding="utf-8"))
+            self.assertNotIn("Note", {node.get("class_type") for node in api.values() if isinstance(node, dict)})
+            self.assertEqual(len(api["_meta"]["low_memory_placeholder_nodes"]), 3)
+
+    def test_cloud_profiles_use_cloud_auth_and_controlnet_is_not_included(self):
+        for path in self.root.joinpath("workflows").glob("**/*.json"):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            meta = data.get("extra", {}).get("hoi4_portrait", {})
+            if meta.get("profile") in {"human_full_power_gpu", "agent_full_power_gpu"}:
+                self.assertEqual(meta["route"], "comfy_cloud")
+                self.assertEqual(meta["remote_authentication"], "x_api_key_comfy_cloud")
+            for node in data.get("nodes", []):
+                text = json.dumps(node).casefold()
+                self.assertNotIn("controlnet", text, (path, node))
 
     def test_remote_adapter_errors_use_authenticated_machine_contract(self):
         service = PortraitMcpService(self.root, remote=True)

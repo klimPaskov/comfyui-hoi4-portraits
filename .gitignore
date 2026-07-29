@@ -11,10 +11,6 @@ backgrounds/source/
 outputs/
 models/
 comfyui/
-runpod/
-!deploy/
-!deploy/runpod/
-!deploy/runpod/**
 reports/runtime/
 reports/benchmarks/
 logs/

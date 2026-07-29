@@ -1,16 +1,17 @@
 # Workflow guide
 
-The required four graphs plus the local-NVIDIA agent convenience graph are standalone ComfyUI files generated from the versioned graph specification. Their UI JSON files are for loading into ComfyUI; the `.api.json` files are API-format payloads for the controller and tests.
+The six profiles are standalone ComfyUI files generated from the versioned graph specification. UI JSON files are for loading into ComfyUI; `.api.json` files are API-format payloads for the controller and tests.
 
 ## Route comparison
 
 | Workflow | Prompt contract | Accelerator | Human controls | Remote auth |
 | --- | --- | --- | --- | --- |
 | `human_local_mac_16gb` | Exact autoprompter instruction | MPS | Yes | No |
-| `human_full_power_gpu` | Exact autoprompter instruction | CUDA | Yes | No |
+| `human_local_nvidia_16gb` | Exact autoprompter instruction | Local CUDA | Yes | No |
+| `human_full_power_gpu` | Exact autoprompter instruction | Comfy Cloud GPU | Yes | X-API-Key |
 | `agent_local_mac_16gb` | `portrait_job_input.prompt` | MPS | No | No |
-| `agent_full_power_gpu` | `portrait_job_input.prompt` | Local CUDA | No | No |
-| `agent_remote_runpod` | `portrait_job_input.prompt` | Remote CUDA | No | Yes |
+| `agent_local_nvidia_16gb` | `portrait_job_input.prompt` | Local CUDA | No | No |
+| `agent_full_power_gpu` | `portrait_job_input.prompt` | Comfy Cloud GPU | No | X-API-Key |
 
 ## Shared stages
 
@@ -27,9 +28,11 @@ The workflow graph does not silently substitute a missing background, invent pro
 
 ## Human workflows
 
-The human profiles call the project autoprompter with the exact instruction in [`prompts/autoprompter_instruction.txt`](../prompts/autoprompter_instruction.txt). The local Mac uses the pinned 4B GGUF sidecar; the full-power route uses the pinned Qwen3-VL 8B BF16 Transformers format and requires CUDA.
+The human profiles call the project autoprompter with the exact instruction in [`prompts/autoprompter_instruction.txt`](../prompts/autoprompter_instruction.txt). The local 16 GB routes use the pinned 4B GGUF sidecar; the full-power route uses the pinned Qwen3-VL 8B BF16 Transformers format in the target Cloud environment.
 
 Both human graphs now include five read-only `PreviewImage` checkpoints placed beside the stages that produce them: input portrait, cropped portrait, prepared portrait, background preview, and saved portrait preview. The saved portrait preview is wired to the same evidence-export image as `SaveImage`, so the visible preview is exactly the image being saved. They do not bypass provenance, audit, DDS, or integration gates.
+
+The local 16 GB graphs also include disconnected UI notes for possible 12 GB and 8 GB GGUF routes. These are placeholders, not executable model selectors; they remain inactive until an official model, loader, revision, checksum, license, and live capability pass exists.
 
 ## Agent workflows
 
@@ -39,7 +42,7 @@ The agent profiles contain no autoprompter. The prompt must be present in the va
 
 When an approved private role-specific visual reference manifest is available, run the separate auditor with `--visual-reference-manifest <private-job-root>/references/manifest.json`. The auditor starts the pinned loopback Qwen rubric runtime, verifies every reference checksum, terminates that model process, and then recomputes the full audit. Missing or unapproved reference sets leave the visual gates `UNCERTAIN`; they never authorize thresholds or promotion.
 
-For a verified CUDA host, add `--visual-runtime-profile full_power_gpu`; that route uses the pinned Qwen3-VL-8B Transformers/BF16 lock and fails closed when CUDA is unavailable.
+For a verified Cloud route, use `human_full_power_gpu` or `agent_full_power_gpu` only after the Cloud API key, subscription, custom-node parity, model availability, and source/job-contract bridge pass live preflight. Local NVIDIA profiles require a CUDA host.
 
 ```text
 .venv/bin/python scripts/audit_candidate.py \

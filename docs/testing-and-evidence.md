@@ -14,8 +14,8 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
 
 ## Current evidence
 
-- `49/49` automated tests pass on the detected Mac runtime; rerun them with `scripts/run_tests.py` after every bounded change.
-- The required four workflows plus the local-NVIDIA agent workflow are structurally valid and live-schema loadable in the pinned loopback ComfyUI.
+- `53/53` automated tests pass on the detected Mac runtime; rerun them with `scripts/run_tests.py` after every bounded change.
+- All six workflows are structurally valid and live-schema loadable in the pinned loopback ComfyUI.
 - Local preprocessing artifacts and the private autoprompter health/negative-validation path are verified.
 - The live human-local qualification measured the Apple MPS `Float8_e4m3fn` and NVFP4 capability failures. A separate CPU-only NVFP4 fallback then ran the exact human/autoprompter route at 832×1120 for eight steps and produced a real candidate in 34:36; heavy swap, the missing two-run benchmark, unapproved thresholds, and the `UNCERTAIN` independent audit keep production acceptance blocked. See [`preflight/local_human_execution_2026-07-28.json`](preflight/local_human_execution_2026-07-28.json), [`preflight/krea_precision_options_2026-07-28.md`](preflight/krea_precision_options_2026-07-28.md), and [`../scripts/runtime/apply_mps_fp8_workaround.py`](../scripts/runtime/apply_mps_fp8_workaround.py).
 - The project-owned staged-load barrier was exercised in the live `human_local_mac_16gb` graph. It correctly released the CPU-resident conditioning stage and reached Krea model loading, but a bounded 208×280 one-step canary still reached approximately 1.02 GiB free RAM and 263.81 MB free swap before the first sampler step. See [`preflight/mps_barrier_canary_2026-07-29.md`](preflight/mps_barrier_canary_2026-07-29.md).
@@ -38,7 +38,7 @@ The acceptance command writes both JSON and Markdown reports under `docs/accepta
 
 ## Current blockers
 
-The acceptance report directly records every blocked or deferred gate. The important production blockers are the measured local MPS/FP8 incompatibility, uncalibrated identity/style thresholds, incomplete independent-audit evidence, the still-unqualified source-specific Krea execution path, and the deferred remote RunPod qualification. RunPod is outside the current live scope, but its workflow and authenticated gateway remain fail-closed.
+The acceptance report directly records every blocked or deferred gate. The important production blockers are the measured local MPS/FP8 incompatibility, uncalibrated identity/style thresholds, incomplete independent-audit evidence, the still-unqualified source-specific Krea execution path, and the Cloud node/model parity failure recorded in [`preflight/comfy_cloud_ui_probe_2026-07-29.md`](preflight/comfy_cloud_ui_probe_2026-07-29.md). Cloud remains fail-closed until workflow/node/model parity, source upload, and a real audited generation are verified.
 
 These blockers are deliberate. The project does not label schema validation, preprocessing qualification, dry-run reports, or a blocked output as local image generation.
 
@@ -46,6 +46,7 @@ These blockers are deliberate. The project does not label schema validation, pre
 
 - [Initial preflight](preflight/initial_preflight.md)
 - [Live ComfyUI compatibility](preflight/live_comfy_compatibility.json)
+- [Authenticated Cloud UI parity probe](preflight/comfy_cloud_ui_probe_2026-07-29.md)
 - [Autoprompter runtime test](preflight/autoprompter_runtime_test.json)
 - [Source fixture review](preflight/source_fixture_review.json)
 - [Source fixture preprocessing execution](preflight/source_fixture_execution.json)

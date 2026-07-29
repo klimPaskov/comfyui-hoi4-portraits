@@ -16,8 +16,8 @@ from .workflow_validation import validate_all_workflows
 
 BENCHMARK_SCHEMA_VERSION = "1.0.0"
 BENCHMARK_REPORT_VERSION = "runtime-capability-2026-07-26.1"
-LOCAL_PROFILES = {"human_local_mac_16gb", "agent_local_mac_16gb", "human_full_power_gpu", "agent_full_power_gpu"}
-REMOTE_PROFILES = {"agent_remote_runpod"}
+LOCAL_PROFILES = {"human_local_mac_16gb", "human_local_nvidia_16gb", "agent_local_mac_16gb", "agent_local_nvidia_16gb"}
+REMOTE_PROFILES = {"human_full_power_gpu", "agent_full_power_gpu"}
 
 
 def _profile_applies(entry: dict[str, Any], profile: str) -> bool:
@@ -111,10 +111,8 @@ def _blocked_status(profile: str, preflight: dict[str, Any]) -> tuple[str, str]:
         return "BLOCKED_RUNTIME_UNAVAILABLE", "The target local runtime is not installed or its accelerator capability is not verified."
     if profile in REMOTE_PROFILES:
         remote_status = statuses.get("remote_topology_auth")
-        if remote_status == "DEFERRED_OUT_OF_SCOPE":
-            return "DEFERRED_OUT_OF_SCOPE", "RunPod live execution was explicitly deferred by the project owner for the current scope."
         if remote_status != "PASS":
-            return "BLOCKED_REMOTE_AUTH", "RunPod endpoint credentials and authenticated remote acceptance are unavailable."
+            return "BLOCKED_REMOTE_AUTH", "Comfy Cloud subscription/API-key access and authenticated remote acceptance are unavailable."
     if preflight.get("status") != "PASS":
         return "BLOCKED_PREFLIGHT", "One or more mandatory preflight gates remain blocked."
     return "BLOCKED_RUNTIME_UNAVAILABLE", "No live ComfyUI health, load, and generation measurements were recorded."
@@ -220,19 +218,19 @@ def build_benchmark_report(root: str | Path | None, profile: str) -> dict[str, A
         status_reason = "A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates."
         runtime_health["execution_evidence"] = execution_evidence
         workflow_load["execution_evidence"] = execution_evidence
-    if profile in LOCAL_PROFILES and gate_statuses.get("local_runtime_capability") == "PASS":
+    if profile in {"human_local_mac_16gb", "agent_local_mac_16gb"} and gate_statuses.get("local_runtime_capability") == "PASS":
         runtime_health["target_profile_accelerator"] = "MPS"
-    elif profile in {"human_full_power_gpu", "agent_full_power_gpu"}:
+    elif profile in {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"}:
         runtime_health["target_profile_accelerator"] = "CUDA"
         runtime_health["target_profile_accelerator_status"] = gate_statuses.get("local_runtime_capability")
-    elif profile == "agent_remote_runpod":
-        runtime_health["target_profile_accelerator"] = "CUDA"
+    elif profile in REMOTE_PROFILES:
+        runtime_health["target_profile_accelerator"] = "Comfy Cloud GPU"
         runtime_health["target_profile_accelerator_status"] = gate_statuses.get("remote_topology_auth")
     preprocessing_ready = gate_statuses.get("approved_source_background") == "PASS" and gate_statuses.get("source_fixture_and_provenance") == "PASS"
     dry_validation_job = ({"status": "PASS_PREPROCESSING_ONLY_PRODUCTION_GATES_BLOCKED", "reason": "The source fixture, approved background, and deterministic preprocessing route are evidenced; calibrated identity/style thresholds and independent audit still block promotion."} if preprocessing_ready else {"status": "BLOCKED_NO_APPROVED_FIXTURE_OR_BACKGROUND", "reason": "The live schema probe and private preprocessing qualification passed, but no production-authorized source fixture and approved background are available."})
     required_follow_up = [
         "run the target profile inside its target accelerator environment without mutation",
-        "resolve image-specific Python and system-package pins before building the RunPod image",
+        "verify Comfy Cloud subscription, API authentication, custom-node parity, model availability, and source upload behavior",
         "complete live source-specific model loading and the eight-step Turbo execution",
         "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
         "run the target profile with independent identity/style/mask/provenance audit",

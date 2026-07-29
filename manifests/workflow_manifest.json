@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-29T05:26:34.999131+00:00",
+  "generated_at": "2026-07-29T07:15:44.298834+00:00",
   "lock_version": "workflows-2026-07-26.1",
   "workflows": [
     {
@@ -8,8 +8,8 @@
       "display_name": "human_local_mac_16gb",
       "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
       "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-      "sha256": "f47f9e19ee666c39f51d41c1af0b0db54f2a28c925fc043c08ba02339ddd4293",
-      "api_sha256": "f912a58531e926ab877949b6e61ada96c4afb96608127ecc620f9facd852c5bd",
+      "sha256": "918cfa3fd76a006b739596790aa207ae5fbdfa1a740b2c43125c355c3116aedc",
+      "api_sha256": "978159eef3f4ad30f570826ab028f2a9657c16a699e2233070c4020c25ac0cc9",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -82,7 +82,99 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T05:26:34.999131+00:00"
+        "checked_at": "2026-07-29T07:15:44.298834+00:00"
+      },
+      "execution_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "NOT_RUN_CALIBRATION_REQUIRED",
+        "attempted": false,
+        "fixture_present": true,
+        "background_resolved": true,
+        "eight_step_turbo_execution": "NOT_RUN",
+        "model_loading": "NOT_RUN",
+        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+      }
+    },
+    {
+      "workflow_id": "human_local_nvidia_16gb",
+      "display_name": "human_local_nvidia_16gb",
+      "workflow_json": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json",
+      "api_json": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
+      "sha256": "d4868b769ad177eb98c8276dd810e1e27b085fff0d8987b20b6f5b1a57542180",
+      "api_sha256": "3bf9a089f42343da82171c0d175c6ee9ebc52b59ccd084dc90206f78fc3cbf3f",
+      "graph_spec_version": "graph-spec-1.1.0",
+      "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
+      "required_core_nodes": [
+        "CLIPLoader",
+        "EmptySD3LatentImage",
+        "KSampler",
+        "LoraLoaderModelOnly",
+        "PreviewImage",
+        "SaveImage",
+        "UNETLoader",
+        "VAEDecode",
+        "VAEEncode",
+        "VAELoader"
+      ],
+      "required_custom_nodes": [
+        "HOI4AutopromptClient",
+        "HOI4ConservativePrep",
+        "HOI4EvidenceExport",
+        "HOI4ForegroundMask",
+        "HOI4HeadShouldersCrop",
+        "HOI4HumanControls",
+        "HOI4JobInput",
+        "HOI4JobSource",
+        "HOI4KreaModelLoadBarrier",
+        "HOI4MaskAndBackgroundGuard",
+        "HOI4SourceGuard",
+        "HOI4SubjectSelect",
+        "Krea2EditGroundedEncode",
+        "Krea2EditModelPatch"
+      ],
+      "required_custom_node_packages": [
+        "comfyui-krea2edit",
+        "hoi4_portrait_project_nodes"
+      ],
+      "required_custom_node_revisions": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
+      },
+      "required_custom_node_source_checksums": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+      },
+      "required_models": [
+        "krea2_turbo_fp8_scaled.safetensors",
+        "qwen3vl_4b_fp8_scaled.safetensors",
+        "qwen_image_vae.safetensors",
+        "krea2_identity_edit_v1_2.safetensors",
+        "hoi4_portrait_new_style_lora.safetensors",
+        "Qwen3VL-4B-Instruct-Q4_K_M.gguf"
+      ],
+      "autoprompter_present": true,
+      "prompt_source": "autoprompter",
+      "preview_nodes": [
+        "Cropped portrait",
+        "Prepared portrait",
+        "Background preview",
+        "Saved portrait preview",
+        "Input portrait preview"
+      ],
+      "final_preview_save_pair": {
+        "preview_node_id": 28,
+        "save_node_id": 23,
+        "shared_source_node_id": 22,
+        "shared_source_slot": 0,
+        "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
+      },
+      "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+      "validation_status": "UNVALIDATED",
+      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "load_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "PASS",
+        "checked_at": "2026-07-29T07:15:44.298834+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -100,8 +192,8 @@
       "display_name": "human_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-      "sha256": "d536a0f393c18dbc4c8e67b4370b84e2b94f0f6688d774f52ed93ef348ca8a93",
-      "api_sha256": "37f11d6ba2ec7bbcc38895a8fd47455bd24f059aae0a893fb2226ea293cbeb94",
+      "sha256": "b5e822525ad04dd10494a1d776689ed287c77312577f3757dcc5d2b8c566259c",
+      "api_sha256": "786fab7fead056f6c4b429e67ff585be0b835ce28dc4553019342d4ae4282c60",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -174,7 +266,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T05:26:34.999131+00:00"
+        "checked_at": "2026-07-29T07:15:44.298834+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -192,8 +284,8 @@
       "display_name": "agent_local_mac_16gb",
       "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
       "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-      "sha256": "db0535e82ace13520689e03d21e380b4eba5ab24a81db35b354eb58c554c7201",
-      "api_sha256": "90ed0d374ee62974cf16459a164b102894128ecaf44be088cc95aa99a597469e",
+      "sha256": "b978af5fd6222558ed2b79dca2f7cdd4de2fa87b81fb979addccf99af1010b1f",
+      "api_sha256": "6b1aebba4318d02da6f5b55e4ccd82e432373dd386a6f0ee6caa1f3e8ff32786",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -257,7 +349,90 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T05:26:34.999131+00:00"
+        "checked_at": "2026-07-29T07:15:44.298834+00:00"
+      },
+      "execution_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "NOT_RUN_CALIBRATION_REQUIRED",
+        "attempted": false,
+        "fixture_present": true,
+        "background_resolved": true,
+        "eight_step_turbo_execution": "NOT_RUN",
+        "model_loading": "NOT_RUN",
+        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+      }
+    },
+    {
+      "workflow_id": "agent_local_nvidia_16gb",
+      "display_name": "agent_local_nvidia_16gb",
+      "workflow_json": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json",
+      "api_json": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
+      "sha256": "57d3d84530e0f633c77e97f5371cc77812ae975fb5331c0e30e0e85615442aaa",
+      "api_sha256": "22579a065b27a1f027cc0194ff1061fb26c152297bbfc3d6b6a7f99163adf8da",
+      "graph_spec_version": "graph-spec-1.1.0",
+      "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
+      "required_core_nodes": [
+        "CLIPLoader",
+        "EmptySD3LatentImage",
+        "KSampler",
+        "LoraLoaderModelOnly",
+        "SaveImage",
+        "UNETLoader",
+        "VAEDecode",
+        "VAEEncode",
+        "VAELoader"
+      ],
+      "required_custom_nodes": [
+        "HOI4ConservativePrep",
+        "HOI4EvidenceExport",
+        "HOI4ForegroundMask",
+        "HOI4HeadShouldersCrop",
+        "HOI4JobInput",
+        "HOI4JobSource",
+        "HOI4KreaModelLoadBarrier",
+        "HOI4MaskAndBackgroundGuard",
+        "HOI4PromptInput",
+        "HOI4SourceGuard",
+        "HOI4SubjectSelect",
+        "Krea2EditGroundedEncode",
+        "Krea2EditModelPatch"
+      ],
+      "required_custom_node_packages": [
+        "comfyui-krea2edit",
+        "hoi4_portrait_project_nodes"
+      ],
+      "required_custom_node_revisions": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
+      },
+      "required_custom_node_source_checksums": {
+        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+      },
+      "required_models": [
+        "krea2_turbo_fp8_scaled.safetensors",
+        "qwen3vl_4b_fp8_scaled.safetensors",
+        "qwen_image_vae.safetensors",
+        "krea2_identity_edit_v1_2.safetensors",
+        "hoi4_portrait_new_style_lora.safetensors"
+      ],
+      "autoprompter_present": false,
+      "prompt_source": "job_contract",
+      "preview_nodes": [],
+      "final_preview_save_pair": {
+        "preview_node_id": null,
+        "save_node_id": 23,
+        "shared_source_node_id": 22,
+        "shared_source_slot": 0,
+        "policy": "agent_save_only"
+      },
+      "autoprompter_instruction_sha256": null,
+      "validation_status": "UNVALIDATED",
+      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+      "load_test_evidence": {
+        "path": "docs/preflight/live_comfy_compatibility.json",
+        "status": "PASS",
+        "checked_at": "2026-07-29T07:15:44.298834+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -275,8 +450,8 @@
       "display_name": "agent_full_power_gpu",
       "workflow_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
       "api_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-      "sha256": "6999a30fe2b481e3157a87457505c75bfc0baa6a9b2300fae2e6302d0342a964",
-      "api_sha256": "280b96c131fda9817d0aa61dd0e0550772506f25b1bae605a275eee2fe29a5f4",
+      "sha256": "14bceefb845244468dd18ab24e8403f8f107187d539a4eb15dc42e24a8f29036",
+      "api_sha256": "e7e2ff15052a4fcb33d70235658d63d112db0e63add1c9045ece1d0cacdce9c6",
       "graph_spec_version": "graph-spec-1.1.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -340,90 +515,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T05:26:34.999131+00:00"
-      },
-      "execution_test_evidence": {
-        "path": "docs/preflight/live_comfy_compatibility.json",
-        "status": "NOT_RUN_CALIBRATION_REQUIRED",
-        "attempted": false,
-        "fixture_present": true,
-        "background_resolved": true,
-        "eight_step_turbo_execution": "NOT_RUN",
-        "model_loading": "NOT_RUN",
-        "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
-      }
-    },
-    {
-      "workflow_id": "agent_remote_runpod",
-      "display_name": "agent_remote_runpod",
-      "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
-      "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-      "sha256": "0c09491c6d047480c7026783712e3ab7af84afe79276fd9da9f0aa81094f5369",
-      "api_sha256": "da71d586e84e07d638f9544e5e9b253618f7f3d08ab14d39238e92ba6331f8c2",
-      "graph_spec_version": "graph-spec-1.1.0",
-      "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
-      "required_core_nodes": [
-        "CLIPLoader",
-        "EmptySD3LatentImage",
-        "KSampler",
-        "LoraLoaderModelOnly",
-        "SaveImage",
-        "UNETLoader",
-        "VAEDecode",
-        "VAEEncode",
-        "VAELoader"
-      ],
-      "required_custom_nodes": [
-        "HOI4ConservativePrep",
-        "HOI4EvidenceExport",
-        "HOI4ForegroundMask",
-        "HOI4HeadShouldersCrop",
-        "HOI4JobInput",
-        "HOI4JobSource",
-        "HOI4KreaModelLoadBarrier",
-        "HOI4MaskAndBackgroundGuard",
-        "HOI4PromptInput",
-        "HOI4SourceGuard",
-        "HOI4SubjectSelect",
-        "Krea2EditGroundedEncode",
-        "Krea2EditModelPatch"
-      ],
-      "required_custom_node_packages": [
-        "comfyui-krea2edit",
-        "hoi4_portrait_project_nodes"
-      ],
-      "required_custom_node_revisions": {
-        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
-      },
-      "required_custom_node_source_checksums": {
-        "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
-      },
-      "required_models": [
-        "krea2_turbo_fp8_scaled.safetensors",
-        "qwen3vl_4b_fp8_scaled.safetensors",
-        "qwen_image_vae.safetensors",
-        "krea2_identity_edit_v1_2.safetensors",
-        "hoi4_portrait_new_style_lora.safetensors"
-      ],
-      "autoprompter_present": false,
-      "prompt_source": "job_contract",
-      "preview_nodes": [],
-      "final_preview_save_pair": {
-        "preview_node_id": null,
-        "save_node_id": 23,
-        "shared_source_node_id": 22,
-        "shared_source_slot": 0,
-        "policy": "agent_save_only"
-      },
-      "autoprompter_instruction_sha256": null,
-      "validation_status": "UNVALIDATED",
-      "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
-      "load_test_evidence": {
-        "path": "docs/preflight/live_comfy_compatibility.json",
-        "status": "PASS",
-        "checked_at": "2026-07-29T05:26:34.999131+00:00"
+        "checked_at": "2026-07-29T07:15:44.298834+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",

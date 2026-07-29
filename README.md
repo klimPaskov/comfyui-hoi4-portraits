@@ -1,20 +1,19 @@
-# ComfyUI HOI4 Portrait Workflows
+# HOI4 Portrait Workflows
 
-Five standalone ComfyUI graphs for turning a portrait source into an auditable Hearts of Iron IV portrait candidate.
+Open ComfyUI workflows for creating identity-preserving Hearts of Iron IV portrait candidates with Krea 2 Turbo and the project’s style LoRA. The graphs stop before DDS/mod wiring until the independent audit passes.
 
-The pipeline preserves identity, uses Krea 2 identity editing plus the project’s immutable style LoRA, and stops before DDS/mod wiring unless the independent audit passes identity, geometry, expression, accessories, mask integrity, style, and provenance. There is no face-swapping route.
+## Workflows
 
-## Choose a workflow
-
-| Workflow | Use it on | Prompt | Human previews |
+| Workflow | Runtime | Prompt | Previews |
 | --- | --- | --- | --- |
-| [`human_local_mac_16gb`](workflows/human/local_mac_16gb/human_local_mac_16gb.json) | Apple Silicon, 16 GB | Autoprompter | Yes |
-| [`human_full_power_gpu`](workflows/human/full_power_gpu/human_full_power_gpu.json) | Local NVIDIA CUDA | Autoprompter | Yes |
+| [`human_local_mac_16gb`](workflows/human/local_mac_16gb/human_local_mac_16gb.json) | Apple Silicon, 16 GB | Built-in autoprompter | Yes |
+| [`human_local_nvidia_16gb`](workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json) | Local NVIDIA, 16 GB | Built-in autoprompter | Yes |
+| [`human_full_power_gpu`](workflows/human/full_power_gpu/human_full_power_gpu.json) | ComfyUI Cloud | Built-in autoprompter | Yes |
 | [`agent_local_mac_16gb`](workflows/agent/local_mac_16gb/agent_local_mac_16gb.json) | Apple Silicon, 16 GB | Job contract | No |
-| [`agent_full_power_gpu`](workflows/agent/full_power_gpu/agent_full_power_gpu.json) | Local NVIDIA CUDA | Job contract | No |
-| [`agent_remote_runpod`](workflows/agent/remote_runpod/agent_remote_runpod.json) | Authenticated remote CUDA | Job contract | No |
+| [`agent_local_nvidia_16gb`](workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json) | Local NVIDIA, 16 GB | Job contract | No |
+| [`agent_full_power_gpu`](workflows/agent/full_power_gpu/agent_full_power_gpu.json) | ComfyUI Cloud | Job contract | No |
 
-Human graphs contain the exact instruction in [`prompts/autoprompter_instruction.txt`](prompts/autoprompter_instruction.txt). Agent graphs contain no autoprompter and accept the prompt only from the job contract.
+Full-power profiles use ComfyUI Cloud; no separate remote deployment is included. Human graphs contain the exact text in [`prompts/autoprompter_instruction.txt`](prompts/autoprompter_instruction.txt); agent graphs contain no autoprompter and read the prompt from the validated job contract.
 
 ## Quick start
 
@@ -23,35 +22,31 @@ git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
 cd comfyui-hoi4-portraits
 ```
 
-Read [`docs/getting-started.md`](docs/getting-started.md), install the pinned private runtime, start the loopback services, and drag one workflow JSON onto the ComfyUI canvas at `http://127.0.0.1:8188/`.
+Follow [`docs/getting-started.md`](docs/getting-started.md), then load a UI JSON into a loopback ComfyUI server at `http://127.0.0.1:8188/`. The 16 GB graphs include visible, disconnected notes for possible 12 GB and 8 GB GGUF routes. They are not enabled until an official model, loader, checksum, license, and live capability qualification exists.
 
-Human workflows show five checkpoints beside the stages that produce them: input portrait, cropped portrait, prepared portrait, background preview, and saved portrait preview. The last preview and `SaveImage` consume the same image.
+Full-power profiles are the remote ComfyUI Cloud route. The authenticated Cloud UI now contains all six saved workflows, but execution is **blocked by Cloud node/model parity**: the project custom nodes and required LoRAs are not available there. No run was spent. See [`docs/cloud/comfy_cloud.md`](docs/cloud/comfy_cloud.md) and the [live Cloud probe](docs/preflight/comfy_cloud_ui_probe_2026-07-29.md).
 
-## Current qualification status
+## Safety and scope
 
-The pinned graphs are structurally valid and load against the live local ComfyUI node registry. The detected Mac server is healthy and the automated suite is 42/42. The default Apple-MPS Krea paths remain blocked: FP8 reaches the measured MPS memory limit and NVFP4 fails its MPS dequantization capability check. A diagnostic CPU-only NVFP4 fallback did complete the exact human/autoprompter route at 832×1120 for eight Turbo steps in 34:36 and produced a private candidate, but heavy swap, missing repeat benchmarks, unapproved thresholds, and an `UNCERTAIN` independent audit keep production acceptance blocked. A newer one-step CPU canary was stopped before sampling after exhausting practical swap headroom. No final PNG, DDS, or mod integration output is claimed. See the [acceptance report](docs/acceptance/acceptance_report.md), [MPS canary](docs/preflight/mps_canary_2026-07-29.md), [barrier follow-up](docs/preflight/mps_barrier_canary_2026-07-29_followup.md), and [CPU canary](docs/preflight/cpu_canary_2026-07-29.md).
-
-## Workflow screenshots
-
-Close-up UI captures are indexed in [`docs/screenshots.md`](docs/screenshots.md).
-
-![Compact workflow overview](docs/assets/live_test_2026-07-28/compact_workflow_overview.png)
-
-![Compact input and prompt stages](docs/assets/live_test_2026-07-28/compact_input_prompt.png)
-
-![Compact Krea, preview, and save stages](docs/assets/live_test_2026-07-28/compact_krea_preview_save.png)
+- Identity is selected first; face swapping is not used.
+- ControlNet is intentionally not included: no approved live experiment currently shows a benefit over the identity reference, mask, and approved background route.
+- Preview and `SaveImage` in human workflows consume the same evidence-export image.
+- No final DDS or mod integration is produced without an independent all-gates PASS.
+- `workflows/` and `loras/` are top-level project paths; model weights, source portraits, caches, secrets, and binary artifacts remain excluded from Git. Revisions and checksums are recorded in [`dependencies/models.lock.json`](dependencies/models.lock.json) and [`loras/README.md`](loras/README.md).
 
 ## Documentation
 
-- [`docs/getting-started.md`](docs/getting-started.md) — installation and local startup.
-- [`docs/workflows.md`](docs/workflows.md) — stage-by-stage workflow guide.
+- [`docs/workflows.md`](docs/workflows.md) — workflow stages and profile selection.
+- [`docs/getting-started.md`](docs/getting-started.md) — local setup and loading.
+- [`docs/cloud/comfy_cloud.md`](docs/cloud/comfy_cloud.md) — Cloud authentication, import status, and current blocker.
 - [`docs/contracts-and-safety.md`](docs/contracts-and-safety.md) — schemas, gates, and exit codes.
-- [`docs/screenshots.md`](docs/screenshots.md) — close-up screenshots and captions.
-- [`docs/testing-and-evidence.md`](docs/testing-and-evidence.md) — tests and acceptance evidence.
-- [`docs/planning/`](docs/planning/) — the numbered planning package and checksum-verified design records.
+- [`docs/testing-and-evidence.md`](docs/testing-and-evidence.md) — verification and acceptance status.
+- [`docs/screenshots.md`](docs/screenshots.md) — close-up UI examples.
 
-## Public/private boundary
+![Workflow overview](docs/assets/live_test_2026-07-28/compact_workflow_overview.png)
 
-Source portraits, generated portraits, model weights, caches, secrets, and the private immutable style LoRA are intentionally excluded from Git. Model revisions and checksums are recorded in [`dependencies/models.lock.json`](dependencies/models.lock.json). See [`docs/licensing-and-public-repository.md`](docs/licensing-and-public-repository.md) before installing private artifacts.
+![Input and prompt stages](docs/assets/live_test_2026-07-28/compact_input_prompt.png)
 
-Project-owned code is released under [`LICENSE`](LICENSE). That license does not grant rights to Krea 2, ComfyUI, HOI4 assets, private portraits, or the style LoRA.
+![Krea, preview, and save stages](docs/assets/live_test_2026-07-28/compact_krea_preview_save.png)
+
+Project-owned code is released under [`LICENSE`](LICENSE). This does not grant rights to third-party models, HOI4 assets, source portraits, or the style LoRA.

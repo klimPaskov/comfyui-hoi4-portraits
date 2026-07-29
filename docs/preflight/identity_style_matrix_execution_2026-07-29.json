@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "execution_id": "krea2-identity-style-factorial-v1-2026-07-29",
   "matrix_id": "krea2_identity_style_factorial_v1",
-  "matrix_design_sha256": "04ca22e909f306cec35f498e9b8f99087571437294c3370d029268b8a7e6950c",
+  "matrix_design_sha256": "3fd827ef6ed6015bad9af80825fff6ae168d4c18425b3875267429ab63af4ebf",
   "status": "BLOCKED_PREREQUISITES",
   "execution_status": "NOT_RUN_FAIL_CLOSED",
   "required_eight_step_turbo_status": "NOT_RUN_PRODUCTION_BLOCKED",
@@ -11,10 +11,28 @@
       "status": "BLOCKED",
       "preflight_status": "BLOCKED",
       "blocked_gates": [
+        "custom_node_preflight",
         "calibrated_identity_thresholds",
         "visual_audit_runtime"
       ],
       "blockers": [
+        "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
+        "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+        "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
+      ]
+    },
+    "human_local_nvidia_16gb": {
+      "status": "BLOCKED",
+      "preflight_status": "BLOCKED",
+      "blocked_gates": [
+        "local_runtime_capability",
+        "custom_node_preflight",
+        "calibrated_identity_thresholds",
+        "visual_audit_runtime"
+      ],
+      "blockers": [
+        "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
+        "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
         "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
       ]
@@ -23,26 +41,46 @@
       "status": "BLOCKED",
       "preflight_status": "BLOCKED",
       "blocked_gates": [
-        "local_runtime_capability",
+        "custom_node_preflight",
+        "remote_topology_auth",
         "calibrated_identity_thresholds",
         "autoprompter_runtime",
         "visual_audit_runtime"
       ],
       "blockers": [
-        "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
+        "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
+        "The authenticated Cloud UI probe saved all six workflows but found unsupported project custom nodes and missing required LoRAs; the project API-key route remains unavailable and Cloud execution is blocked by node/model parity.",
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
         "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required.",
-        "The required human autoprompter runtime lock or live local sidecar evidence is unavailable."
+        "The full-power human autoprompter format is pinned and processor-verified, but Comfy Cloud execution and node parity are not yet verified."
       ]
     },
     "agent_local_mac_16gb": {
       "status": "BLOCKED",
       "preflight_status": "BLOCKED",
       "blocked_gates": [
+        "custom_node_preflight",
         "calibrated_identity_thresholds",
         "visual_audit_runtime"
       ],
       "blockers": [
+        "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
+        "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
+        "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
+      ]
+    },
+    "agent_local_nvidia_16gb": {
+      "status": "BLOCKED",
+      "preflight_status": "BLOCKED",
+      "blocked_gates": [
+        "local_runtime_capability",
+        "custom_node_preflight",
+        "calibrated_identity_thresholds",
+        "visual_audit_runtime"
+      ],
+      "blockers": [
+        "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
+        "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
         "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
       ]
@@ -51,24 +89,14 @@
       "status": "BLOCKED",
       "preflight_status": "BLOCKED",
       "blocked_gates": [
-        "local_runtime_capability",
+        "custom_node_preflight",
+        "remote_topology_auth",
         "calibrated_identity_thresholds",
         "visual_audit_runtime"
       ],
       "blockers": [
-        "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
-        "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
-        "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
-      ]
-    },
-    "agent_remote_runpod": {
-      "status": "BLOCKED",
-      "preflight_status": "BLOCKED",
-      "blocked_gates": [
-        "calibrated_identity_thresholds",
-        "visual_audit_runtime"
-      ],
-      "blockers": [
+        "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
+        "The authenticated Cloud UI probe saved all six workflows but found unsupported project custom nodes and missing required LoRAs; the project API-key route remains unavailable and Cloud execution is blocked by node/model parity.",
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
         "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
       ]
@@ -78,10 +106,12 @@
   "candidate_count": 0,
   "selection_status": "NOT_RUN",
   "blocked_reasons": [
+    "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
     "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
     "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required.",
     "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
-    "The required human autoprompter runtime lock or live local sidecar evidence is unavailable."
+    "The authenticated Cloud UI probe saved all six workflows but found unsupported project custom nodes and missing required LoRAs; the project API-key route remains unavailable and Cloud execution is blocked by node/model parity.",
+    "The full-power human autoprompter format is pinned and processor-verified, but Comfy Cloud execution and node parity are not yet verified."
   ],
   "selection_policy": {
     "identity_first": true,

@@ -35,10 +35,11 @@ def build_matrix() -> dict[str, Any]:
         "axes": EXPERIMENT_AXES,
         "profiles": {
             ExecutionProfile.HUMAN_LOCAL_MAC_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
+            ExecutionProfile.HUMAN_LOCAL_NVIDIA_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
             ExecutionProfile.HUMAN_FULL_POWER_GPU.value: {"candidate_budget": 6, "retry_limit": 2, "canvas": [1196, 1610]},
             ExecutionProfile.AGENT_LOCAL_MAC_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
+            ExecutionProfile.AGENT_LOCAL_NVIDIA_16GB.value: {"candidate_budget": 2, "retry_limit": 2, "canvas": [832, 1120]},
             ExecutionProfile.AGENT_FULL_POWER_GPU.value: {"candidate_budget": 6, "retry_limit": 2, "canvas": [1196, 1610]},
-            ExecutionProfile.AGENT_REMOTE_RUNPOD.value: {"candidate_budget": 6, "retry_limit": 2, "canvas": [1196, 1610]},
         },
         "status": "PLANNED_BLOCKED_UNTIL_APPROVED_FIXTURE_BACKGROUND_THRESHOLDS",
         "execution_status": "NOT_RUN",

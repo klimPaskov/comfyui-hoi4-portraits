@@ -2,9 +2,9 @@
   "1": {
     "class_type": "HOI4JobInput",
     "inputs": {
-      "execution_profile": "agent_full_power_gpu",
+      "execution_profile": "agent_local_nvidia_16gb",
       "job_contract_path": "jobs/<job_id>/input.json",
-      "candidate_count": 6,
+      "candidate_count": 2,
       "retry_limit": 2,
       "seed_policy": "derived"
     }
@@ -262,8 +262,8 @@
   "19": {
     "class_type": "EmptySD3LatentImage",
     "inputs": {
-      "width": 1196,
-      "height": 1610,
+      "width": 832,
+      "height": 1120,
       "batch_size": 1
     }
   },
@@ -354,9 +354,9 @@
   "_meta": {
     "schema_version": "1.0.0",
     "graph_spec_version": "graph-spec-1.1.0",
-    "workflow_id": "agent_full_power_gpu",
-    "execution_profile": "agent_full_power_gpu",
-    "route": "comfy_cloud",
+    "workflow_id": "agent_local_nvidia_16gb",
+    "execution_profile": "agent_local_nvidia_16gb",
+    "route": "local_nvidia",
     "human_workflow": false,
     "autoprompter": false,
     "autoprompter_instruction_path": null,
@@ -364,12 +364,12 @@
     "prompt_source": "job_contract",
     "prompt_model": "job_contract",
     "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
-    "remote_authentication": "x_api_key_comfy_cloud",
+    "remote_authentication": "loopback_only",
     "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
     "work_canvas": {
-      "width": 1196,
-      "height": 1610,
-      "pixels": 1925560
+      "width": 832,
+      "height": 1120,
+      "pixels": 931840
     },
     "final_canvas": {
       "width": 156,
@@ -485,10 +485,29 @@
       "HOI4SubjectSelect"
     ],
     "candidate_budget": {
-      "max": 6,
+      "max": 2,
       "retry_max": 2
     },
     "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow",
-    "low_memory_placeholder_nodes": []
+    "low_memory_placeholder_nodes": [
+      {
+        "node_id": 31,
+        "title": "Lower-memory model options",
+        "connected": false,
+        "ui_only": true
+      },
+      {
+        "node_id": 32,
+        "title": "Optional 12 GB model path",
+        "connected": false,
+        "ui_only": true
+      },
+      {
+        "node_id": 33,
+        "title": "Optional 8 GB model path",
+        "connected": false,
+        "ui_only": true
+      }
+    ]
   }
 }

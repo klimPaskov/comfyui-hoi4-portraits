@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-29T05:28:47.697034+00:00",
-  "profile": "agent_remote_runpod",
-  "status": "DEFERRED_OUT_OF_SCOPE",
-  "status_reason": "RunPod live execution was explicitly deferred by the project owner for the current scope.",
+  "created_at": "2026-07-29T08:18:45.361802+00:00",
+  "profile": "agent_local_nvidia_16gb",
+  "status": "BLOCKED_RUNTIME_UNAVAILABLE",
+  "status_reason": "The target local runtime is not installed or its accelerator capability is not verified.",
   "hardware": {
     "platform": "macOS-26.5.2-arm64-arm-64bit",
     "python": "3.12.13 (main, Apr 14 2026, 14:33:40) [Clang 22.1.3 ]",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 6144.00M  used = 4787.25M  free = 1356.75M  (encrypted)",
+          "stdout": "vm.swapusage: total = 5120.00M  used = 4048.81M  free = 1071.19M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15104.\nPages active:                                 247695.\nPages inactive:                               489956.\nPages speculative:                              6340.\nPages throttled:                                   0.\nPages wired down:                             136844.\nPages purgeable:                                   6.\n\"Translation faults\":                      556629407.\nPages copy-on-write:                        27142640.\nPages zero filled:                         260706780.\nPages reactivated:                         174525224.\nPages purged:                                3651421.\nFile-backed pages:                            550215.\nAnonymous pages:                              193776.\nPages stored in compressor:                   725442.\nPages occupied by compressor:                 109725.\nDecompressions:                            174262267.\nCompressions:                              245314671.\nPageins:                                  2063930822.\nPageouts:                                     117132.\nSwapins:                                    28366075.\nSwapouts:                                   39008023.\nPages tagged:                                  78694.\nPages tagged resident:                         64276.\nPages tagged compressed:                       14418.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          241.\nPages tag-storage non-tag pageable:            28152.\nPages tag-storage non-tag wired:                  78.\nBytes of compressed tags:                    2103936.\nTagged compressions:                         2484403.\nTagged decompressions:                       2289171.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14414.\nPages active:                                 287158.\nPages inactive:                               281479.\nPages speculative:                              8184.\nPages throttled:                                   0.\nPages wired down:                             143715.\nPages purgeable:                                   6.\n\"Translation faults\":                      594056999.\nPages copy-on-write:                        29704221.\nPages zero filled:                         280321543.\nPages reactivated:                         195647991.\nPages purged:                                4388154.\nFile-backed pages:                            377617.\nAnonymous pages:                              199204.\nPages stored in compressor:                  1004257.\nPages occupied by compressor:                 270572.\nDecompressions:                            179398100.\nCompressions:                              251494440.\nPageins:                                  2484506947.\nPageouts:                                     203179.\nSwapins:                                    28443895.\nSwapouts:                                   39042018.\nPages tagged:                                  90463.\nPages tagged resident:                         53148.\nPages tagged compressed:                       37315.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4294.\nPages tag-storage free:                          563.\nPages tag-storage non-tag pageable:            27831.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    5917312.\nTagged compressions:                         2691425.\nTagged decompressions:                       2461528.",
           "stderr": ""
         }
       },
@@ -51,7 +51,7 @@
           "<project-root>"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   191Gi   241Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   193Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }
@@ -61,15 +61,15 @@
     "recommended_exit_code": 20,
     "gate_statuses": {
       "hardware_detection": "PASS",
-      "local_runtime_capability": "PASS",
+      "local_runtime_capability": "BLOCKED",
       "immutable_style_lora": "PASS",
       "approved_source_background": "PASS",
       "source_fixture_and_provenance": "PASS",
       "planning_package_checksums": "PASS",
       "model_artifact_preflight": "PASS",
-      "custom_node_preflight": "PASS",
+      "custom_node_preflight": "BLOCKED",
       "comfyui_runtime_dependency_lock": "PASS",
-      "remote_topology_auth": "DEFERRED_OUT_OF_SCOPE",
+      "remote_topology_auth": "NOT_APPLICABLE",
       "repository_preflight": "PASS",
       "calibrated_identity_thresholds": "BLOCKED",
       "krea_live_compatibility": "PASS",
@@ -79,15 +79,17 @@
       "license_and_rights_review": "APPROVED"
     },
     "blockers": [
+      "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
+      "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
       "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
       "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
     ]
   },
   "resource_model": {
-    "expected_model_bytes": 20694849246,
+    "expected_model_bytes": 13370318600,
     "physical_memory_bytes": 17179869184,
-    "expected_model_to_physical_memory_ratio": 1.2045987675664946,
-    "capacity_assessment": "MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY",
+    "expected_model_to_physical_memory_ratio": 0.7782549713738263,
+    "capacity_assessment": "MODEL_BYTES_WITHIN_PHYSICAL_MEMORY_NOT_EXECUTION_PROOF",
     "peak_memory_bytes": null,
     "peak_vram_bytes": null,
     "measurement_note": "File-size arithmetic is not a measured execution or OOM result; offload, allocator overhead, activations, and runtime staging remain unmeasured.",
@@ -100,33 +102,6 @@
         "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1",
         "shard_sha256": null,
         "source_url": "https://huggingface.co/Comfy-Org/Krea-2/resolve/952f49d49653cb42e7d6cf7cbfad74738073ec7d/diffusion_models/krea2_turbo_fp8_scaled.safetensors"
-      },
-      {
-        "name": "qwen3vl_4b_fp8_scaled.safetensors",
-        "filename": "qwen3vl_4b_fp8_scaled.safetensors",
-        "size_bytes": 5242467968,
-        "revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
-        "sha256": "54bd5144df0bbc25dd6ccadfcb826b521445a1b06ae5a42570bdd2974ca87094",
-        "shard_sha256": null,
-        "source_url": "https://huggingface.co/Comfy-Org/Krea-2/resolve/952f49d49653cb42e7d6cf7cbfad74738073ec7d/text_encoders/qwen3vl_4b_fp8_scaled.safetensors"
-      },
-      {
-        "name": "qwen_image_vae.safetensors",
-        "filename": "qwen_image_vae.safetensors",
-        "size_bytes": 253806246,
-        "revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
-        "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f",
-        "shard_sha256": null,
-        "source_url": "https://huggingface.co/Comfy-Org/Krea-2/resolve/952f49d49653cb42e7d6cf7cbfad74738073ec7d/vae/qwen_image_vae.safetensors"
-      },
-      {
-        "name": "krea2_identity_edit_v1_2.safetensors",
-        "filename": "krea2_identity_edit_v1_2.safetensors",
-        "size_bytes": 1828256432,
-        "revision": "2686ea3601417448f9649f6e74ca7103d446da96",
-        "sha256": "6adf9a69cc9502d286db7b69964d37da7e9cfe4b05b4d004bc275f087d3fd3cf",
-        "shard_sha256": null,
-        "source_url": "https://huggingface.co/conradlocke/krea2-identity-edit/resolve/2686ea3601417448f9649f6e74ca7103d446da96/krea2_identity_edit_v1_2.safetensors"
       },
       {
         "name": "immutable_style_lora",
@@ -142,7 +117,7 @@
   "measurements": {
     "workflow_structure": {
       "status": "PASS",
-      "workflow_id": "agent_remote_runpod",
+      "workflow_id": "agent_local_nvidia_16gb",
       "structural_status": "PASS",
       "runtime_status": "NOT_MEASURED",
       "issues": []
@@ -154,11 +129,11 @@
       "reason": "Live health and /object_info schema evidence exists; no source-specific generation claim is made.",
       "evidence_path": "docs/preflight/live_comfy_compatibility.json",
       "target_profile_accelerator": "CUDA",
-      "target_profile_accelerator_status": "DEFERRED_OUT_OF_SCOPE"
+      "target_profile_accelerator_status": "BLOCKED"
     },
     "workflow_load": {
       "status": "PASS_SCHEMA_ONLY",
-      "workflow_id": "agent_remote_runpod",
+      "workflow_id": "agent_local_nvidia_16gb",
       "reason": "Live node-registry/load-shape validation passed; this is not a model-loading or eight-step execution result.",
       "evidence_path": "docs/preflight/live_comfy_compatibility.json"
     },
@@ -192,15 +167,15 @@
   },
   "required_follow_up": [
     "run the target profile inside its target accelerator environment without mutation",
-    "resolve image-specific Python and system-package pins before building the RunPod image",
+    "verify Comfy Cloud subscription, API authentication, custom-node parity, model availability, and source upload behavior",
     "complete live source-specific model loading and the eight-step Turbo execution",
     "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
     "run the target profile with independent identity/style/mask/provenance audit",
     "record peak host memory, peak VRAM, runtime, thermal, cancellation, and repeatability evidence"
   ],
   "claims": {
-    "local_generation": "NOT_APPLICABLE",
-    "remote_generation": "NOT_CLAIMED",
+    "local_generation": "NOT_CLAIMED",
+    "remote_generation": "NOT_APPLICABLE",
     "local_preprocessing_and_validation": "STRUCTURE_ONLY",
     "final_png": "NOT_CREATED",
     "final_dds": "NOT_CREATED"

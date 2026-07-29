@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-29T05:27:25.767480+00:00",
+  "created_at": "2026-07-29T08:17:26.584816+00:00",
   "profile": "human_local_mac_16gb",
   "status": "BLOCKED_PRODUCTION_GATES_CPU_FALLBACK",
   "status_reason": "A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates.",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 6144.00M  used = 4795.25M  free = 1348.75M  (encrypted)",
+          "stdout": "vm.swapusage: total = 5120.00M  used = 4048.81M  free = 1071.19M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15134.\nPages active:                                 244525.\nPages inactive:                               494819.\nPages speculative:                              6873.\nPages throttled:                                   0.\nPages wired down:                             138232.\nPages purgeable:                                 194.\n\"Translation faults\":                      556317492.\nPages copy-on-write:                        27100684.\nPages zero filled:                         260582205.\nPages reactivated:                         173462335.\nPages purged:                                3646561.\nFile-backed pages:                            553707.\nAnonymous pages:                              192510.\nPages stored in compressor:                   718614.\nPages occupied by compressor:                 106435.\nDecompressions:                            174259568.\nCompressions:                              245304897.\nPageins:                                  2052585106.\nPageouts:                                     116672.\nSwapins:                                    28365795.\nSwapouts:                                   39008023.\nPages tagged:                                  76214.\nPages tagged resident:                         62136.\nPages tagged compressed:                       14078.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          206.\nPages tag-storage non-tag pageable:            28186.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    2055424.\nTagged compressions:                         2483987.\nTagged decompressions:                       2289102.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14462.\nPages active:                                 301227.\nPages inactive:                               293576.\nPages speculative:                              6950.\nPages throttled:                                   0.\nPages wired down:                             137990.\nPages purgeable:                                1816.\n\"Translation faults\":                      593492130.\nPages copy-on-write:                        29660648.\nPages zero filled:                         280117395.\nPages reactivated:                         195487253.\nPages purged:                                4366953.\nFile-backed pages:                            385761.\nAnonymous pages:                              215992.\nPages stored in compressor:                   983039.\nPages occupied by compressor:                 250759.\nDecompressions:                            179277029.\nCompressions:                              251347496.\nPageins:                                  2472539037.\nPageouts:                                     202911.\nSwapins:                                    28443863.\nSwapouts:                                   39042018.\nPages tagged:                                  88454.\nPages tagged resident:                         53955.\nPages tagged compressed:                       34499.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4295.\nPages tag-storage free:                          582.\nPages tag-storage non-tag pageable:            27811.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    5320256.\nTagged compressions:                         2686117.\nTagged decompressions:                       2459040.",
           "stderr": ""
         }
       },
@@ -51,7 +51,7 @@
           "<project-root>"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   191Gi   241Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   193Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }
@@ -67,7 +67,7 @@
       "source_fixture_and_provenance": "PASS",
       "planning_package_checksums": "PASS",
       "model_artifact_preflight": "PASS",
-      "custom_node_preflight": "PASS",
+      "custom_node_preflight": "BLOCKED",
       "comfyui_runtime_dependency_lock": "PASS",
       "remote_topology_auth": "NOT_APPLICABLE",
       "repository_preflight": "PASS",
@@ -79,6 +79,7 @@
       "license_and_rights_review": "APPROVED"
     },
     "blockers": [
+      "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
       "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
       "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
     ]
@@ -245,7 +246,7 @@
   },
   "required_follow_up": [
     "run the target profile inside its target accelerator environment without mutation",
-    "resolve image-specific Python and system-package pins before building the RunPod image",
+    "verify Comfy Cloud subscription, API authentication, custom-node parity, model availability, and source upload behavior",
     "complete live source-specific model loading and the eight-step Turbo execution",
     "verify all model revisions, formats, sizes, and SHA-256 values in the target environment",
     "run the target profile with independent identity/style/mask/provenance audit",

@@ -55,6 +55,8 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
             issues.append("agent workflow contains an autoprompter model reference")
     if any(_contains_value(ui, token) for token in ("faceswap", "face_swap", "subject_replacement")):
         issues.append("workflow contains a prohibited identity-replacement route")
+    if any(_contains_value(node, token) for node in ui_nodes for token in ("ControlNet", "controlnet")):
+        issues.append("workflow contains an unapproved ControlNet route")
     required = set(metadata.get("required_core_nodes", [])) | set(metadata.get("required_krea_nodes", [])) | set(metadata.get("required_project_nodes", []))
     present = {str(node.get("type")) for node in ui_nodes} | {str(node.get("class_type")) for node in api_nodes.values()}
     missing = sorted(required - present)
@@ -81,9 +83,10 @@ def validate_all_workflows(root: str | Path | None = None) -> list[dict[str, Any
     root_path = project_root(root)
     specs = {
         "human_local_mac_16gb": ("workflows/human/local_mac_16gb/human_local_mac_16gb.json", "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json"),
+        "human_local_nvidia_16gb": ("workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json", "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json"),
         "human_full_power_gpu": ("workflows/human/full_power_gpu/human_full_power_gpu.json", "workflows/human/full_power_gpu/human_full_power_gpu.api.json"),
         "agent_local_mac_16gb": ("workflows/agent/local_mac_16gb/agent_local_mac_16gb.json", "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json"),
+        "agent_local_nvidia_16gb": ("workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json", "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json"),
         "agent_full_power_gpu": ("workflows/agent/full_power_gpu/agent_full_power_gpu.json", "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json"),
-        "agent_remote_runpod": ("workflows/agent/remote_runpod/agent_remote_runpod.json", "workflows/agent/remote_runpod/agent_remote_runpod.api.json"),
     }
     return [validate_workflow_file(workflow_id, root_path / ui, root_path / api, root_path) for workflow_id, (ui, api) in specs.items()]

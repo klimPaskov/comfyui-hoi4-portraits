@@ -7,17 +7,21 @@ Implementation must deliver both UI graph JSON and API-format JSON for each work
 ```text
 workflows/human/local_mac_16gb/human_local_mac_16gb.json
 workflows/human/local_mac_16gb/human_local_mac_16gb.api.json
+workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json
+workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json
 workflows/human/full_power_gpu/human_full_power_gpu.json
 workflows/human/full_power_gpu/human_full_power_gpu.api.json
 workflows/agent/local_mac_16gb/agent_local_mac_16gb.json
 workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json
-workflows/agent/remote_runpod/agent_remote_runpod.json
-workflows/agent/remote_runpod/agent_remote_runpod.api.json
+workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json
+workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json
+workflows/agent/full_power_gpu/agent_full_power_gpu.json
+workflows/agent/full_power_gpu/agent_full_power_gpu.api.json
 ```
 
 ## Build rule
 
-Maintain one typed graph specification under `src/portrait_pipeline/graph_spec/`. Generate all four graphs through a deterministic builder. Hand-editing one workflow without updating the shared graph specification is forbidden. The builder must assign stable node ids, group names, note text, exposed controls, bypass states, and output names.
+Maintain one typed graph specification under `src/portrait_pipeline/graph_spec/`. Generate all six graphs through a deterministic builder. Hand-editing one workflow without updating the shared graph specification is forbidden. The builder must assign stable node ids, group names, note text, exposed controls, bypass states, and output names.
 
 ## Standalone rule
 

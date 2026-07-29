@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0.0",
+  "checked_at": "2026-07-29T08:07:55Z",
+  "provider": "comfy_cloud",
+  "status": "BLOCKED_CLOUD_NODE_MODEL_PARITY",
+  "authentication": {
+    "mcp_url": "https://cloud.comfy.org/mcp",
+    "oauth_configured": true,
+    "cloud_ui_authenticated": true,
+    "callable_mcp_tools_visible_in_current_codex_task": false,
+    "runs_left_visible": "5 / 5",
+    "runs_spent_by_probe": 0
+  },
+  "workflow_import": {
+    "status": "SAVED_TO_AUTHENTICATED_CLOUD_WORKSPACE",
+    "profiles": [
+      "human_local_mac_16gb",
+      "human_local_nvidia_16gb",
+      "human_full_power_gpu",
+      "agent_local_mac_16gb",
+      "agent_local_nvidia_16gb",
+      "agent_full_power_gpu"
+    ],
+    "saved_names_match_profile_ids": true
+  },
+  "human_full_power_gpu": {
+    "status": "BLOCKED_CLOUD_NODE_MODEL_PARITY",
+    "cloud_error_toast": "3 errors found",
+    "unsupported_node_pack": {
+      "status": "BLOCKED",
+      "cloud_message": "Required custom nodes aren't supported on Cloud. Replace them with supported nodes.",
+      "class_counts": {
+        "HOI4AutopromptClient": 1,
+        "HOI4ConservativePrep": 1,
+        "HOI4EvidenceExport": 1,
+        "HOI4ForegroundMask": 1,
+        "HOI4HeadShouldersCrop": 1,
+        "HOI4HumanControls": 1,
+        "HOI4JobInput": 1,
+        "HOI4JobSource": 1,
+        "HOI4KreaModelLoadBarrier": 1,
+        "HOI4MaskAndBackgroundGuard": 1,
+        "HOI4SourceGuard": 1,
+        "HOI4SubjectSelect": 1,
+        "Krea2EditGroundedEncode": 2,
+        "Krea2EditModelPatch": 1
+      }
+    },
+    "missing_models": [
+      {
+        "name": "hoi4_portrait_new_style_lora.safetensors",
+        "folder": "loras",
+        "status": "BLOCKED_NOT_AVAILABLE_IN_CLOUD"
+      },
+      {
+        "name": "krea2_identity_edit_v1_2.safetensors",
+        "folder": "loras",
+        "status": "BLOCKED_NOT_AVAILABLE_IN_CLOUD"
+      }
+    ],
+    "base_assets_resolved_by_cloud": [
+      "Comfy-Org/Krea-2 - krea2_turbo_fp8_scaled",
+      "Comfy-Org/Qwen-Image_ComfyUI - qwen_image_vae",
+      "Comfy-Org/Qwen3-VL - qwen3vl_4b_fp8_scaled"
+    ]
+  },
+  "agent_full_power_gpu": {
+    "status": "BLOCKED_CLOUD_NODE_MODEL_PARITY",
+    "cloud_error_toast": "3 errors found",
+    "prompt_route": "job_contract_required; no autoprompter node in the agent graph",
+    "run_status": "NOT_SUBMITTED"
+  },
+  "source_upload": "NOT_ATTEMPTED",
+  "output_artifacts": {
+    "portraits": "NOT_CREATED",
+    "dds": "NOT_CREATED",
+    "mod_integration": "NOT_CREATED"
+  },
+  "stop_gate": "STOPPED_BEFORE_RUN",
+  "official_references": [
+    "https://docs.comfy.org/agent-tools/mcp",
+    "https://docs.comfy.org/get_started/cloud",
+    "https://docs.comfy.org/cloud/import-models",
+    "https://docs.comfy.org/development/cloud/api-reference"
+  ]
+}

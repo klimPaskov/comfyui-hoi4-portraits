@@ -15,6 +15,7 @@ Start here:
 - [Geometry calibration evidence](preflight/geometry_calibration_2026-07-29.md)
 - [Identity/style matrix execution gate](preflight/identity_style_matrix_execution_2026-07-29.json)
 - [Contracts and safety](contracts-and-safety.md)
+- [Authenticated Cloud UI parity probe](preflight/comfy_cloud_ui_probe_2026-07-29.md)
 - [Testing and evidence](testing-and-evidence.md)
 - [Licensing and public-repository policy](licensing-and-public-repository.md)
 

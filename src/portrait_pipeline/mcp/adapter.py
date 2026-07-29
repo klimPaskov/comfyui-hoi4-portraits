@@ -21,7 +21,7 @@ from typing import Any, Callable
 
 from ..constants import ExitCode
 from ..controller import JobController
-from ..comfy_client import ComfyTransportError, LoopbackComfyClient
+from ..comfy_client import ComfyCloudClient, ComfyTransportError, LoopbackComfyClient
 from ..constants import DEPENDENCY_LOCK_VERSION, PROFILE_LIMITS, WORKFLOW_VERSION
 from ..preflight import collect_preflight
 from ..util import atomic_json_write, canonical_hash, project_root, relative_safe_path, sha256_file
@@ -102,23 +102,28 @@ class PortraitMcpService:
         pending = payload.get("queue_pending", [])
         return len(running) + len(pending) if isinstance(running, list) and isinstance(pending, list) else None
 
-    def _runtime_probe(self) -> dict[str, Any]:
-        client = LoopbackComfyClient(timeout=3.0)
+    def _runtime_probe(self, profile: str | None = None) -> dict[str, Any]:
+        cloud_profile = profile in {"human_full_power_gpu", "agent_full_power_gpu"}
+        try:
+            client = ComfyCloudClient(timeout=3.0) if cloud_profile else LoopbackComfyClient(timeout=3.0)
+        except ComfyTransportError as exc:
+            return {"status": "BLOCKED", "error_code": exc.code.name, "message": str(exc), "binding": "https://cloud.comfy.org" if cloud_profile else "http://127.0.0.1:8188"}
         try:
             stats = client.health()
-            queue = client.queue()
             inventory = client.inventory()
+            queue = client.queue()
         except ComfyTransportError as exc:
-            return {"status": "BLOCKED", "error_code": exc.code.name, "message": str(exc), "binding": "http://127.0.0.1:8188"}
-        return {"status": "PASS", "binding": "http://127.0.0.1:8188", "system_stats": stats.payload, "queue": queue.payload, "object_info": inventory.payload, "queue_depth": self._queue_depth(queue.payload)}
+            return {"status": "BLOCKED", "error_code": exc.code.name, "message": str(exc), "binding": "https://cloud.comfy.org" if cloud_profile else "http://127.0.0.1:8188"}
+        return {"status": "PASS", "binding": "https://cloud.comfy.org" if cloud_profile else "http://127.0.0.1:8188", "system_stats": stats.payload, "queue": queue.payload, "object_info": inventory.payload, "queue_depth": self._queue_depth(queue.payload), "transport": "comfy_cloud_api" if cloud_profile else "loopback"}
 
     def _workflow_path(self, workflow_id: str, api: bool = True) -> Path:
         paths = {
             "human_local_mac_16gb": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
+            "human_local_nvidia_16gb": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
             "human_full_power_gpu": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
             "agent_local_mac_16gb": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
+            "agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
             "agent_full_power_gpu": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-            "agent_remote_runpod": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
         }
         if workflow_id not in paths:
             raise AdapterError(ExitCode.WORKFLOW_INVALID, f"unknown workflow id: {workflow_id}")
@@ -143,16 +148,16 @@ class PortraitMcpService:
     def _portrait_health(self, params: dict[str, Any]) -> dict[str, Any]:
         profile = self._profile(params)
         report = collect_preflight(self.root, profile=profile)
-        runtime = self._runtime_probe()
+        runtime = self._runtime_probe(profile)
         status = "PASS" if report["status"] == "PASS" and runtime["status"] == "PASS" else "BLOCKED"
         return {"status": status, "adapter": "project_owned", "remote": self.remote, "raw_comfyui_exposed": False, "comfyui_binding": "http://127.0.0.1:8188", "comfyui": runtime, "blockers": report["blockers"] + ([] if runtime["status"] == "PASS" else ["loopback ComfyUI health is unavailable"]), "workflow_version": WORKFLOW_VERSION, "dependency_lock_version": DEPENDENCY_LOCK_VERSION, "profile": report.get("profile"), "queue_depth": runtime.get("queue_depth")}
 
     def _portrait_capabilities(self, params: dict[str, Any]) -> dict[str, Any]:
         profile = self._profile(params)
         report = collect_preflight(self.root, profile=profile)
-        runtime = self._runtime_probe()
+        runtime = self._runtime_probe(profile)
         node_classes = sorted(runtime.get("object_info", {})) if isinstance(runtime.get("object_info"), dict) else []
-        return {"profiles": list(PROFILE_LIMITS), "local_comfyui_binding": "http://127.0.0.1:8188", "raw_comfyui_public": False, "remote_transport": "authenticated_gateway_only", "first_party_local_mcp_parity": False, "available_routes": ["/system_stats", "/features", "/object_info", "/queue", "/prompt", "/history", "/interrupt", "/free", "/view"], "runtime": runtime, "node_classes": node_classes, "hardware": report.get("hardware"), "gates": {gate["name"]: gate["status"] for gate in report["gates"]}, "unresolved_limitations": report["blockers"] + ([] if runtime["status"] == "PASS" else ["loopback ComfyUI health is unavailable"])}
+        return {"profiles": list(PROFILE_LIMITS), "local_comfyui_binding": "http://127.0.0.1:8188", "cloud_binding": "https://cloud.comfy.org", "raw_comfyui_public": False, "remote_transport": "authenticated_comfy_cloud_api_or_project_gateway", "first_party_local_mcp_parity": False, "available_routes": ["/api/object_info", "/api/upload/image", "/api/prompt", "/api/job/{prompt_id}/status", "/api/view"], "runtime": runtime, "node_classes": node_classes, "hardware": report.get("hardware"), "gates": {gate["name"]: gate["status"] for gate in report["gates"]}, "unresolved_limitations": report["blockers"] + ([] if runtime["status"] == "PASS" else ["selected ComfyUI route health is unavailable"])}
 
     def _portrait_inventory(self, params: dict[str, Any]) -> dict[str, Any]:
         model_lock = json.loads((self.root / "dependencies" / "models.lock.json").read_text(encoding="utf-8"))

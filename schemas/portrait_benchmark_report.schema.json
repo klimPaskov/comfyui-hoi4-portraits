@@ -8,7 +8,7 @@
     "schema_version": {"const": "1.0.0"},
     "report_version": {"type": "string", "minLength": 1},
     "created_at": {"type": "string", "format": "date-time"},
-    "profile": {"enum": ["human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"]},
+    "profile": {"enum": ["human_local_mac_16gb", "human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_local_nvidia_16gb", "agent_full_power_gpu"]},
     "status": {"type": "string", "minLength": 1},
     "status_reason": {"type": "string"},
     "hardware": {"type": "object"},

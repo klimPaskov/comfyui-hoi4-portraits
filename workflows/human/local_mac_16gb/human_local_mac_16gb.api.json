@@ -455,6 +455,8 @@
     "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
     "prompt_source": "autoprompter",
     "prompt_model": "Qwen/Qwen3-VL-4B-Instruct-GGUF",
+    "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
+    "remote_authentication": "loopback_only",
     "identity_policy": "identity_edit_only; replacement_routes_are_not_in_the_graph",
     "work_canvas": {
       "width": 832,
@@ -589,6 +591,26 @@
       "max": 2,
       "retry_max": 2
     },
-    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow"
+    "finalization_policy": "controller_only_after_independent_audit_all_pass; no DDS node is present in the workflow",
+    "low_memory_placeholder_nodes": [
+      {
+        "node_id": 31,
+        "title": "Lower-memory model options",
+        "connected": false,
+        "ui_only": true
+      },
+      {
+        "node_id": 32,
+        "title": "Optional 12 GB model path",
+        "connected": false,
+        "ui_only": true
+      },
+      {
+        "node_id": 33,
+        "title": "Optional 8 GB model path",
+        "connected": false,
+        "ui_only": true
+      }
+    ]
   }
 }

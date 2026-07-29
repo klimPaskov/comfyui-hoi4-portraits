@@ -1,10 +1,10 @@
-# Benchmark Report: `agent_remote_runpod`
+# Benchmark Report: `human_local_nvidia_16gb`
 
-- Status: **DEFERRED_OUT_OF_SCOPE**
-- Reason: RunPod live execution was explicitly deferred by the project owner for the current scope.
-- Expected locked model bytes: `20694849246`
+- Status: **BLOCKED_RUNTIME_UNAVAILABLE**
+- Reason: The target local runtime is not installed or its accelerator capability is not verified.
+- Expected locked model bytes: `16703780520`
 - Physical memory bytes: `17179869184`
-- Capacity assessment: **MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY**
+- Capacity assessment: **MODEL_BYTES_WITHIN_PHYSICAL_MEMORY_NOT_EXECUTION_PROOF**
 
 This report contains no production acceptance claim. Any CPU diagnostic execution evidence is explicitly quarantined from promotion. File-size arithmetic is a risk indicator, not an infeasibility measurement.
 
@@ -13,19 +13,19 @@ This report contains no production acceptance claim. Any CPU diagnostic executio
 | Gate | Status |
 | --- | --- |
 | `approved_source_background` | **PASS** |
-| `autoprompter_runtime` | **NOT_APPLICABLE** |
+| `autoprompter_runtime` | **PASS** |
 | `calibrated_identity_thresholds` | **BLOCKED** |
 | `comfyui_runtime_dependency_lock` | **PASS** |
-| `custom_node_preflight` | **PASS** |
+| `custom_node_preflight` | **BLOCKED** |
 | `hardware_detection` | **PASS** |
 | `immutable_style_lora` | **PASS** |
 | `krea_live_compatibility` | **PASS** |
 | `license_and_rights_review` | **APPROVED** |
-| `local_runtime_capability` | **PASS** |
+| `local_runtime_capability` | **BLOCKED** |
 | `model_artifact_preflight` | **PASS** |
 | `planning_package_checksums` | **PASS** |
 | `preprocessing_and_audit_dependencies` | **PASS** |
-| `remote_topology_auth` | **DEFERRED_OUT_OF_SCOPE** |
+| `remote_topology_auth` | **NOT_APPLICABLE** |
 | `repository_preflight` | **PASS** |
 | `source_fixture_and_provenance` | **PASS** |
 | `visual_audit_runtime` | **PASS_FORMAT_ONLY_EXECUTION_UNVERIFIED** |
@@ -45,13 +45,15 @@ This report contains no production acceptance claim. Any CPU diagnostic executio
 
 ## Blockers
 
+- The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.
+- One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.
 - Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.
 - Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required.
 
 ## Required follow-up
 
 - run the target profile inside its target accelerator environment without mutation
-- resolve image-specific Python and system-package pins before building the RunPod image
+- verify Comfy Cloud subscription, API authentication, custom-node parity, model availability, and source upload behavior
 - complete live source-specific model loading and the eight-step Turbo execution
 - verify all model revisions, formats, sizes, and SHA-256 values in the target environment
 - run the target profile with independent identity/style/mask/provenance audit

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-29T05:30:55.611490+00:00",
+  "created_at": "2026-07-29T08:21:27.171781+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 20,
   "gates": {
@@ -160,8 +160,8 @@
         },
         {
           "path": "README.md",
-          "expected": "bd396f5687abd8bb46074f854194732e68bb0439b42d65942ef55f5381a080e2",
-          "actual": "bd396f5687abd8bb46074f854194732e68bb0439b42d65942ef55f5381a080e2",
+          "expected": "d54304f9a59a73abd1568044abb4ee13692d506f1cf0e2cb9310290af9c15f40",
+          "actual": "d54304f9a59a73abd1568044abb4ee13692d506f1cf0e2cb9310290af9c15f40",
           "match": true
         },
         {
@@ -412,8 +412,8 @@
         },
         {
           "path": "schemas/portrait_job_input.schema.json",
-          "expected": "d2d9a48c91cf5a54ccb0118d20d5915c23ce29155dc9a1a2dfbc6e9073bd3a0c",
-          "actual": "d2d9a48c91cf5a54ccb0118d20d5915c23ce29155dc9a1a2dfbc6e9073bd3a0c",
+          "expected": "e31726fe6d30d31b9efa92819d64968b446a84c3c8f35d6fe159de243b5968a1",
+          "actual": "e31726fe6d30d31b9efa92819d64968b446a84c3c8f35d6fe159de243b5968a1",
           "match": true
         },
         {
@@ -448,8 +448,8 @@
         },
         {
           "path": "workflows/workflow_delivery_contract.md",
-          "expected": "b851b68814dc3267c26eb1a5783c1f141119b4d1c5063a87902864ecf83a0bea",
-          "actual": "b851b68814dc3267c26eb1a5783c1f141119b4d1c5063a87902864ecf83a0bea",
+          "expected": "34376d797e16561694f58cbd71b60c67473b0c0b387404f00323702b4582303f",
+          "actual": "34376d797e16561694f58cbd71b60c67473b0c0b387404f00323702b4582303f",
           "match": true
         }
       ]
@@ -472,7 +472,7 @@
               "vm.swapusage"
             ],
             "returncode": 0,
-            "stdout": "vm.swapusage: total = 6144.00M  used = 4795.25M  free = 1348.75M  (encrypted)",
+            "stdout": "vm.swapusage: total = 5120.00M  used = 4048.81M  free = 1071.19M  (encrypted)",
             "stderr": ""
           },
           "vm_stat": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15709.\nPages active:                                 239722.\nPages inactive:                               502539.\nPages speculative:                              5994.\nPages throttled:                                   0.\nPages wired down:                             138207.\nPages purgeable:                                 498.\n\"Translation faults\":                      556228771.\nPages copy-on-write:                        27090616.\nPages zero filled:                         260539175.\nPages reactivated:                         173068776.\nPages purged:                                3643163.\nFile-backed pages:                            559008.\nAnonymous pages:                              189247.\nPages stored in compressor:                   714023.\nPages occupied by compressor:                 104007.\nDecompressions:                            174259087.\nCompressions:                              245299819.\nPageins:                                  2048876375.\nPageouts:                                     116577.\nSwapins:                                    28365715.\nSwapouts:                                   39008023.\nPages tagged:                                  76235.\nPages tagged resident:                         61924.\nPages tagged compressed:                       14311.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          210.\nPages tag-storage non-tag pageable:            28182.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    2103424.\nTagged compressions:                         2483983.\nTagged decompressions:                       2288866.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    16045.\nPages active:                                 303605.\nPages inactive:                               297048.\nPages speculative:                              6133.\nPages throttled:                                   0.\nPages wired down:                             144449.\nPages purgeable:                                4501.\n\"Translation faults\":                      593348709.\nPages copy-on-write:                        29650990.\nPages zero filled:                         280056417.\nPages reactivated:                         195430105.\nPages purged:                                4359563.\nFile-backed pages:                            342014.\nAnonymous pages:                              264772.\nPages stored in compressor:                   928797.\nPages occupied by compressor:                 238306.\nDecompressions:                            179242309.\nCompressions:                              251253620.\nPageins:                                  2468436115.\nPageouts:                                     202869.\nSwapins:                                    28443863.\nSwapouts:                                   39042018.\nPages tagged:                                  88577.\nPages tagged resident:                         54658.\nPages tagged compressed:                       33919.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4295.\nPages tag-storage free:                          180.\nPages tag-storage non-tag pageable:            28213.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    5190656.\nTagged compressions:                         2685002.\nTagged decompressions:                       2458505.",
             "stderr": ""
           }
         },
@@ -499,7 +499,7 @@
             "<project-root>"
           ],
           "returncode": 0,
-          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   191Gi   241Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
+          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   193Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
           "stderr": ""
         },
         "available_tools": {
@@ -604,18 +604,22 @@
     },
     "remote_topology_auth": {
       "name": "remote_topology_auth",
-      "status": "DEFERRED_OUT_OF_SCOPE",
+      "status": "BLOCKED",
       "evidence": {
         "profile": null,
+        "provider": "comfy_cloud",
+        "base_url": "https://cloud.comfy.org",
+        "base_url_https": true,
         "credential_presence": {
-          "RUNPOD_API_KEY": false,
-          "RUNPOD_ENDPOINT_ID": false,
+          "COMFY_CLOUD_API_KEY": false,
+          "COMFY_API_KEY": false,
+          "COMFY_CLOUD_BASE_URL": false,
           "HF_TOKEN": false,
           "GITHUB_TOKEN": false,
           "PORTRAIT_GATEWAY_TOKEN": false
         },
         "raw_comfyui_binding": "not configured",
-        "remote_gateway": "authenticated_only",
+        "remote_transport": "authenticated_cloud_api",
         "owner_scope": {
           "status": "PASS",
           "path": "<project-root>/docs/preflight/owner_attestation.json",
@@ -623,10 +627,23 @@
             "local_qualification": true,
             "mod_development": true,
             "public_code_repository": true,
-            "runpod_live_deployment": "DEFERRED_OUT_OF_CURRENT_SCOPE"
+            "comfy_cloud_live_execution": "BLOCKED_UNCONNECTED"
           }
         },
-        "live_execution": "NOT_RUN"
+        "subscription_and_node_parity": "NOT_RUN",
+        "live_execution": "NOT_RUN",
+        "cloud_ui_probe": {
+          "path": "docs/preflight/comfy_cloud_ui_probe_2026-07-29.json",
+          "status": "BLOCKED_CLOUD_NODE_MODEL_PARITY",
+          "authentication": {
+            "mcp_url": "https://cloud.comfy.org/mcp",
+            "oauth_configured": true,
+            "cloud_ui_authenticated": true,
+            "callable_mcp_tools_visible_in_current_codex_task": false,
+            "runs_left_visible": "5 / 5",
+            "runs_spent_by_probe": 0
+          }
+        }
       }
     },
     "immutable_lora": {
@@ -1072,6 +1089,7 @@
         ],
         "requested_profile": null,
         "local_files": [
+          "models/.DS_Store",
           "models/text_encoders/qwen3vl_4b_fp8_scaled.safetensors",
           "models/autoprompter/model-00004-of-00004.safetensors",
           "models/autoprompter/model-00001-of-00004.safetensors",
@@ -1107,9 +1125,9 @@
     },
     "custom_node_preflight": {
       "name": "custom_node_preflight",
-      "status": "PASS",
+      "status": "BLOCKED",
       "evidence": {
-        "status": "PASS",
+        "status": "BLOCKED",
         "lock_path": "<project-root>/dependencies/custom_nodes.lock.json",
         "checks": [
           {
@@ -1168,9 +1186,9 @@
               "HOI4SubjectSelect"
             ],
             "expected_source_tree_checksum": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8",
-            "actual_source_tree_checksum": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8",
-            "source_checksum_match": true,
-            "status": "PASS"
+            "actual_source_tree_checksum": "2c2a3c43076f2f4e231d7a7178f7f8bb2d8e4868764b1bf4957fb218efec0055",
+            "source_checksum_match": false,
+            "status": "BLOCKED"
           }
         ]
       }
@@ -1322,7 +1340,7 @@
         "live_probe_status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
         "live_probe": {
           "schema_version": "1.0.0",
-          "checked_at": "2026-07-29T05:26:34.999131+00:00",
+          "checked_at": "2026-07-29T07:15:44.298834+00:00",
           "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
           "server": {
             "base_url": "http://127.0.0.1:8188",
@@ -1331,7 +1349,7 @@
               "system": {
                 "os": "darwin",
                 "ram_total": 17179869184,
-                "ram_free": 8642215936,
+                "ram_free": 5652611072,
                 "comfyui_version": "0.25.0",
                 "required_frontend_version": "1.45.19",
                 "installed_templates_version": "0.10.0",
@@ -1387,9 +1405,9 @@
                   "type": "mps",
                   "index": null,
                   "vram_total": 17179869184,
-                  "vram_free": 8638545920,
+                  "vram_free": 5652709376,
                   "torch_vram_total": 17179869184,
-                  "torch_vram_free": 8638545920
+                  "torch_vram_free": 5652709376
                 }
               ]
             }
@@ -1954,6 +1972,534 @@
                   "workflow_input_names": [
                     "images"
                   ]
+                },
+                {
+                  "node_id": "30",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                }
+              ],
+              "prompt_source": "autoprompter",
+              "human_workflow": true
+            },
+            {
+              "workflow_id": "human_local_nvidia_16gb",
+              "path": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
+              "status": "PASS",
+              "issues": [],
+              "checked_nodes": [
+                {
+                  "node_id": "1",
+                  "class_type": "HOI4JobInput",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "candidate_count",
+                    "execution_profile",
+                    "job_contract_path",
+                    "retry_limit",
+                    "seed_policy"
+                  ],
+                  "workflow_input_names": [
+                    "candidate_count",
+                    "execution_profile",
+                    "job_contract_path",
+                    "retry_limit",
+                    "seed_policy"
+                  ]
+                },
+                {
+                  "node_id": "24",
+                  "class_type": "HOI4HumanControls",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "approved_background_registry_id",
+                    "bbox_bottom",
+                    "bbox_left",
+                    "bbox_right",
+                    "bbox_top",
+                    "candidate_count",
+                    "crop_override_bottom",
+                    "crop_override_left",
+                    "crop_override_right",
+                    "crop_override_top",
+                    "face_index",
+                    "fixed_seed",
+                    "job",
+                    "monochrome_mode",
+                    "output_job_id",
+                    "prompt_override",
+                    "restoration_level",
+                    "seed_mode",
+                    "source_image_path",
+                    "subject_selector_mode"
+                  ],
+                  "workflow_input_names": [
+                    "approved_background_registry_id",
+                    "bbox_bottom",
+                    "bbox_left",
+                    "bbox_right",
+                    "bbox_top",
+                    "candidate_count",
+                    "crop_override_bottom",
+                    "crop_override_left",
+                    "crop_override_right",
+                    "crop_override_top",
+                    "face_index",
+                    "fixed_seed",
+                    "job",
+                    "monochrome_mode",
+                    "output_job_id",
+                    "prompt_override",
+                    "restoration_level",
+                    "seed_mode",
+                    "source_image_path",
+                    "subject_selector_mode"
+                  ]
+                },
+                {
+                  "node_id": "2",
+                  "class_type": "HOI4JobSource",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "3",
+                  "class_type": "HOI4SourceGuard",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "4",
+                  "class_type": "HOI4SubjectSelect",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "5",
+                  "class_type": "HOI4HeadShouldersCrop",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "control_meta",
+                    "image",
+                    "job",
+                    "selection_meta"
+                  ],
+                  "workflow_input_names": [
+                    "control_meta",
+                    "image",
+                    "job",
+                    "selection_meta"
+                  ]
+                },
+                {
+                  "node_id": "6",
+                  "class_type": "HOI4ConservativePrep",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "control_meta",
+                    "crop_meta",
+                    "image",
+                    "job"
+                  ],
+                  "workflow_input_names": [
+                    "control_meta",
+                    "crop_meta",
+                    "image",
+                    "job"
+                  ]
+                },
+                {
+                  "node_id": "7",
+                  "class_type": "HOI4ForegroundMask",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job",
+                    "mask_model",
+                    "reference_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "mask_model",
+                    "reference_meta"
+                  ]
+                },
+                {
+                  "node_id": "8",
+                  "class_type": "HOI4MaskAndBackgroundGuard",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "image",
+                    "job",
+                    "mask",
+                    "mask_meta"
+                  ],
+                  "workflow_input_names": [
+                    "image",
+                    "job",
+                    "mask",
+                    "mask_meta"
+                  ]
+                },
+                {
+                  "node_id": "9",
+                  "class_type": "HOI4AutopromptClient",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "background_meta",
+                    "control_meta",
+                    "image",
+                    "instruction_path",
+                    "instruction_text",
+                    "job",
+                    "model_id",
+                    "prompt_source"
+                  ],
+                  "workflow_input_names": [
+                    "background_meta",
+                    "control_meta",
+                    "image",
+                    "instruction_path",
+                    "instruction_text",
+                    "job",
+                    "model_id",
+                    "prompt_source"
+                  ]
+                },
+                {
+                  "node_id": "10",
+                  "class_type": "UNETLoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "unet_name",
+                    "weight_dtype"
+                  ],
+                  "workflow_input_names": [
+                    "unet_name",
+                    "weight_dtype"
+                  ]
+                },
+                {
+                  "node_id": "11",
+                  "class_type": "LoraLoaderModelOnly",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ],
+                  "workflow_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "12",
+                  "class_type": "VAELoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "vae_name"
+                  ],
+                  "workflow_input_names": [
+                    "vae_name"
+                  ]
+                },
+                {
+                  "node_id": "13",
+                  "class_type": "VAEEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "pixels",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "pixels",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "14",
+                  "class_type": "Krea2EditModelPatch",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "fit_mode",
+                    "model",
+                    "ref_boost",
+                    "ref_boost_a",
+                    "ref_boost_mask",
+                    "source_image",
+                    "source_image_b",
+                    "source_latent",
+                    "source_latent_b",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "fit_mode",
+                    "model",
+                    "ref_boost",
+                    "source_image",
+                    "source_latent",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "15",
+                  "class_type": "CLIPLoader",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip_name",
+                    "device",
+                    "type"
+                  ],
+                  "workflow_input_names": [
+                    "clip_name",
+                    "type"
+                  ]
+                },
+                {
+                  "node_id": "16",
+                  "class_type": "Krea2EditGroundedEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "image_b",
+                    "prompt",
+                    "system_prompt"
+                  ],
+                  "workflow_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "prompt"
+                  ]
+                },
+                {
+                  "node_id": "17",
+                  "class_type": "Krea2EditGroundedEncode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "image_b",
+                    "prompt",
+                    "system_prompt"
+                  ],
+                  "workflow_input_names": [
+                    "clip",
+                    "grounding_px",
+                    "image",
+                    "prompt"
+                  ]
+                },
+                {
+                  "node_id": "18",
+                  "class_type": "LoraLoaderModelOnly",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ],
+                  "workflow_input_names": [
+                    "lora_name",
+                    "model",
+                    "strength_model"
+                  ]
+                },
+                {
+                  "node_id": "29",
+                  "class_type": "HOI4KreaModelLoadBarrier",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ],
+                  "workflow_input_names": [
+                    "model",
+                    "negative",
+                    "positive"
+                  ]
+                },
+                {
+                  "node_id": "19",
+                  "class_type": "EmptySD3LatentImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "batch_size",
+                    "height",
+                    "width"
+                  ],
+                  "workflow_input_names": [
+                    "batch_size",
+                    "height",
+                    "width"
+                  ]
+                },
+                {
+                  "node_id": "20",
+                  "class_type": "KSampler",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "cfg",
+                    "denoise",
+                    "latent_image",
+                    "model",
+                    "negative",
+                    "positive",
+                    "sampler_name",
+                    "scheduler",
+                    "seed",
+                    "steps"
+                  ],
+                  "workflow_input_names": [
+                    "cfg",
+                    "denoise",
+                    "latent_image",
+                    "model",
+                    "negative",
+                    "positive",
+                    "sampler_name",
+                    "scheduler",
+                    "seed",
+                    "steps"
+                  ]
+                },
+                {
+                  "node_id": "21",
+                  "class_type": "VAEDecode",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "samples",
+                    "vae"
+                  ],
+                  "workflow_input_names": [
+                    "samples",
+                    "vae"
+                  ]
+                },
+                {
+                  "node_id": "22",
+                  "class_type": "HOI4EvidenceExport",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "approved_background",
+                    "candidate",
+                    "candidate_index",
+                    "job",
+                    "mask",
+                    "processed_reference",
+                    "prompt",
+                    "source_master"
+                  ],
+                  "workflow_input_names": [
+                    "approved_background",
+                    "candidate",
+                    "candidate_index",
+                    "job",
+                    "mask",
+                    "processed_reference",
+                    "prompt",
+                    "source_master"
+                  ]
+                },
+                {
+                  "node_id": "23",
+                  "class_type": "SaveImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "filename_prefix",
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "filename_prefix",
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "25",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "26",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "27",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "28",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
+                },
+                {
+                  "node_id": "30",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
                 }
               ],
               "prompt_source": "autoprompter",
@@ -2460,6 +3006,17 @@
                   "workflow_input_names": [
                     "images"
                   ]
+                },
+                {
+                  "node_id": "30",
+                  "class_type": "PreviewImage",
+                  "status": "PASS",
+                  "live_input_names": [
+                    "images"
+                  ],
+                  "workflow_input_names": [
+                    "images"
+                  ]
                 }
               ],
               "prompt_source": "autoprompter",
@@ -2867,8 +3424,8 @@
               "human_workflow": false
             },
             {
-              "workflow_id": "agent_full_power_gpu",
-              "path": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
+              "workflow_id": "agent_local_nvidia_16gb",
+              "path": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
               "status": "PASS",
               "issues": [],
               "checked_nodes": [
@@ -3268,8 +3825,8 @@
               "human_workflow": false
             },
             {
-              "workflow_id": "agent_remote_runpod",
-              "path": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
+              "workflow_id": "agent_full_power_gpu",
+              "path": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
               "status": "PASS",
               "issues": [],
               "checked_nodes": [
@@ -4364,7 +4921,7 @@
               "Krea retains ownership of the model; outputs remain subject to agreement compliance"
             ],
             "artifact_policy": "local_copy_only",
-            "owner_decision": "approved for local qualification and mod development; RunPod deployment deferred; no model distribution",
+            "owner_decision": "approved for local qualification and mod development; Comfy Cloud execution remains unconnected; no model distribution",
             "commercial_use_decision": "use remains subject to the Krea Community License revenue threshold and enterprise-license requirement",
             "content_filter_decision": "prompt validation, independent audit, human review, and fail-closed promotion",
             "ai_disclosure_decision": "apply where required by law, regulation, or platform policy"
@@ -4450,38 +5007,64 @@
         "workflow_id": "human_local_mac_16gb",
         "ui_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "api_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-        "ui_sha256": "aac57f39a8c149588c7734793e3ce9c668b884b28d95f403070244ebcc17340f",
-        "api_sha256": "c0266104531fb6358cf1429e2e1db68a5c210b54309bff1380be0657c98552d8",
+        "ui_sha256": "918cfa3fd76a006b739596790aa207ae5fbdfa1a740b2c43125c355c3116aedc",
+        "api_sha256": "978159eef3f4ad30f570826ab028f2a9657c16a699e2233070c4020c25ac0cc9",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
-        "node_count": 29,
+        "node_count": 33,
         "group_count": 10,
-        "api_node_count": 29
+        "api_node_count": 30
+      },
+      {
+        "workflow_id": "human_local_nvidia_16gb",
+        "ui_path": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json",
+        "api_path": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
+        "ui_sha256": "d4868b769ad177eb98c8276dd810e1e27b085fff0d8987b20b6f5b1a57542180",
+        "api_sha256": "3bf9a089f42343da82171c0d175c6ee9ebc52b59ccd084dc90206f78fc3cbf3f",
+        "structural_status": "PASS",
+        "runtime_status": "BLOCKED_UNVERIFIED",
+        "issues": [],
+        "node_count": 33,
+        "group_count": 10,
+        "api_node_count": 30
       },
       {
         "workflow_id": "human_full_power_gpu",
         "ui_path": "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "api_path": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-        "ui_sha256": "2ca6e74816616b5a38a46133190855e78082e7c6d90f84be1c4abc9105494a20",
-        "api_sha256": "4a63cf67444fe649aa9e7904389d7c64afbaef3e4e1cdc0af8c50e43fb86767c",
+        "ui_sha256": "b5e822525ad04dd10494a1d776689ed287c77312577f3757dcc5d2b8c566259c",
+        "api_sha256": "786fab7fead056f6c4b429e67ff585be0b835ce28dc4553019342d4ae4282c60",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
-        "node_count": 29,
+        "node_count": 30,
         "group_count": 10,
-        "api_node_count": 29
+        "api_node_count": 30
       },
       {
         "workflow_id": "agent_local_mac_16gb",
         "ui_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "api_path": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-        "ui_sha256": "4d379b3115a18036455d41e3a96c8e500f2fe6112156ff20c624de5f156722e7",
-        "api_sha256": "fd8fb8eea68158dd367b5b84eb0236690139651a168bdf7ab9619a1298d98467",
+        "ui_sha256": "b978af5fd6222558ed2b79dca2f7cdd4de2fa87b81fb979addccf99af1010b1f",
+        "api_sha256": "6b1aebba4318d02da6f5b55e4ccd82e432373dd386a6f0ee6caa1f3e8ff32786",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
-        "node_count": 24,
+        "node_count": 27,
+        "group_count": 10,
+        "api_node_count": 24
+      },
+      {
+        "workflow_id": "agent_local_nvidia_16gb",
+        "ui_path": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json",
+        "api_path": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
+        "ui_sha256": "57d3d84530e0f633c77e97f5371cc77812ae975fb5331c0e30e0e85615442aaa",
+        "api_sha256": "22579a065b27a1f027cc0194ff1061fb26c152297bbfc3d6b6a7f99163adf8da",
+        "structural_status": "PASS",
+        "runtime_status": "BLOCKED_UNVERIFIED",
+        "issues": [],
+        "node_count": 27,
         "group_count": 10,
         "api_node_count": 24
       },
@@ -4489,21 +5072,8 @@
         "workflow_id": "agent_full_power_gpu",
         "ui_path": "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
         "api_path": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-        "ui_sha256": "0966d3f3a94c1a95c943f4bf55918f8050115cd274407f7e8dd404f48359bb9a",
-        "api_sha256": "5d0f69541c3c4bcf9d414f3d6f4d8ce7573689943787d9618f7b7d80adfe9c27",
-        "structural_status": "PASS",
-        "runtime_status": "BLOCKED_UNVERIFIED",
-        "issues": [],
-        "node_count": 24,
-        "group_count": 10,
-        "api_node_count": 24
-      },
-      {
-        "workflow_id": "agent_remote_runpod",
-        "ui_path": "workflows/agent/remote_runpod/agent_remote_runpod.json",
-        "api_path": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-        "ui_sha256": "a63d2449ae3583d0e6a8630f11cb13a00da8f1fd2db1206e02a48ae294472c21",
-        "api_sha256": "e3d9aef0c39ace59fbe4776f42997c9f718bc3050985228805b0169435dc5bc4",
+        "ui_sha256": "14bceefb845244468dd18ab24e8403f8f107187d539a4eb15dc42e24a8f29036",
+        "api_sha256": "e7e2ff15052a4fcb33d70235658d63d112db0e63add1c9045ece1d0cacdce9c6",
         "structural_status": "PASS",
         "runtime_status": "BLOCKED_UNVERIFIED",
         "issues": [],
@@ -4722,10 +5292,12 @@
       "queued_jobs": 0,
       "candidate_count": 0,
       "blocked_reasons": [
+        "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
         "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required.",
         "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
-        "The required human autoprompter runtime lock or live local sidecar evidence is unavailable."
+        "The authenticated Cloud UI probe saved all six workflows but found unsupported project custom nodes and missing required LoRAs; the project API-key route remains unavailable and Cloud execution is blocked by node/model parity.",
+        "The full-power human autoprompter format is pinned and processor-verified, but Comfy Cloud execution and node parity are not yet verified."
       ],
       "selection_policy": {
         "identity_first": true,
@@ -4747,8 +5319,17 @@
           "peak_vram_bytes": null
         },
         {
-          "profile": "human_full_power_gpu",
+          "profile": "human_local_nvidia_16gb",
           "status": "BLOCKED_RUNTIME_UNAVAILABLE",
+          "json_path": "docs/benchmarks/human_local_nvidia_16gb.json",
+          "markdown_path": "docs/benchmarks/human_local_nvidia_16gb.md",
+          "expected_model_bytes": 16703780520,
+          "peak_memory_bytes": null,
+          "peak_vram_bytes": null
+        },
+        {
+          "profile": "human_full_power_gpu",
+          "status": "BLOCKED_REMOTE_AUTH",
           "json_path": "docs/benchmarks/human_full_power_gpu.json",
           "markdown_path": "docs/benchmarks/human_full_power_gpu.md",
           "expected_model_bytes": 38229188758,
@@ -4765,19 +5346,19 @@
           "peak_vram_bytes": null
         },
         {
-          "profile": "agent_full_power_gpu",
+          "profile": "agent_local_nvidia_16gb",
           "status": "BLOCKED_RUNTIME_UNAVAILABLE",
-          "json_path": "docs/benchmarks/agent_full_power_gpu.json",
-          "markdown_path": "docs/benchmarks/agent_full_power_gpu.md",
-          "expected_model_bytes": 20694849246,
+          "json_path": "docs/benchmarks/agent_local_nvidia_16gb.json",
+          "markdown_path": "docs/benchmarks/agent_local_nvidia_16gb.md",
+          "expected_model_bytes": 13370318600,
           "peak_memory_bytes": null,
           "peak_vram_bytes": null
         },
         {
-          "profile": "agent_remote_runpod",
-          "status": "DEFERRED_OUT_OF_SCOPE",
-          "json_path": "docs/benchmarks/agent_remote_runpod.json",
-          "markdown_path": "docs/benchmarks/agent_remote_runpod.md",
+          "profile": "agent_full_power_gpu",
+          "status": "BLOCKED_REMOTE_AUTH",
+          "json_path": "docs/benchmarks/agent_full_power_gpu.json",
+          "markdown_path": "docs/benchmarks/agent_full_power_gpu.md",
           "expected_model_bytes": 20694849246,
           "peak_memory_bytes": null,
           "peak_vram_bytes": null
@@ -4792,43 +5373,42 @@
       "candidate_count": 2,
       "reason": "Diagnostic candidates were observed, but no comparison ranking or production winner is produced until calibrated thresholds and independent all-PASS audits authorize them."
     },
-    "runpod_deployment_surface": {
-      "status": "DEFERRED_OUT_OF_SCOPE",
-      "path": "deploy/runpod",
-      "required_files": [
-        "Dockerfile",
-        "entrypoint.sh",
-        "install_runtime.sh",
-        "readiness.py",
-        "healthcheck.sh",
-        "image_lock.json",
-        "README.md"
+    "comfy_cloud_execution": {
+      "status": "BLOCKED_CLOUD_NODE_MODEL_PARITY",
+      "provider": "comfy_cloud",
+      "base_url": "https://cloud.comfy.org",
+      "base_url_https": true,
+      "api_key_present": false,
+      "profiles": [
+        "human_full_power_gpu",
+        "agent_full_power_gpu"
       ],
-      "missing": [],
-      "structural_checks": {
-        "base_image_digest_pinned": true,
-        "raw_comfy_loopback": true,
-        "gateway_secret_runtime_only": true,
-        "model_weights_not_baked": true,
-        "checksum_package_payload": true,
-        "project_dependency_lock_pinned": true
+      "workflow_import": {
+        "status": "SAVED_TO_AUTHENTICATED_CLOUD_WORKSPACE",
+        "profiles": [
+          "human_local_mac_16gb",
+          "human_local_nvidia_16gb",
+          "human_full_power_gpu",
+          "agent_local_mac_16gb",
+          "agent_local_nvidia_16gb",
+          "agent_full_power_gpu"
+        ],
+        "saved_names_match_profile_ids": true
       },
-      "image_lock_status": "BLOCKED_UNRESOLVED_RUNTIME_LOCK",
-      "build_permitted": false,
-      "unresolved": [
-        "Python artifact and checksum are not resolved for the image build.",
-        "The PyTorch/cu128 profile is checksum-locked, but a live GPU compatibility/import test is unverified.",
-        "System library versions are not pinned.",
-        "A live RunPod Pod, empty-volume bootstrap, remote authentication, and generation acceptance have not been run."
-      ],
-      "owner_scope": {
-        "local_qualification": true,
-        "mod_development": true,
-        "public_code_repository": true,
-        "runpod_live_deployment": "DEFERRED_OUT_OF_CURRENT_SCOPE"
+      "node_parity": "BLOCKED",
+      "model_availability": "BLOCKED",
+      "source_upload_and_job_contract_bridge": "NOT_ATTEMPTED",
+      "live_execution": "NOT_RUN",
+      "ui_probe_path": "docs/preflight/comfy_cloud_ui_probe_2026-07-29.json",
+      "ui_probe_authentication": {
+        "mcp_url": "https://cloud.comfy.org/mcp",
+        "oauth_configured": true,
+        "cloud_ui_authenticated": true,
+        "callable_mcp_tools_visible_in_current_codex_task": false,
+        "runs_left_visible": "5 / 5",
+        "runs_spent_by_probe": 0
       },
-      "live_execution": "NOT_RUN_DEFERRED",
-      "acceptance_policy": "The deployment surface is not a successful remote runtime claim until an empty-volume Pod passes the documented live acceptance sequence."
+      "acceptance_policy": "Cloud credentials never promote a workflow. Import, node/model parity, source/job-contract delivery, output checksums, and independent all-gates audit must pass first."
     },
     "schema_validation": {
       "status": "PASS",
@@ -4847,7 +5427,7 @@
         },
         {
           "schema": "schemas/portrait_benchmark_report.schema.json",
-          "report": "docs/benchmarks/agent_remote_runpod.json",
+          "report": "docs/benchmarks/agent_local_nvidia_16gb.json",
           "status": "PASS",
           "error": null
         },
@@ -4860,6 +5440,12 @@
         {
           "schema": "schemas/portrait_benchmark_report.schema.json",
           "report": "docs/benchmarks/human_local_mac_16gb.json",
+          "status": "PASS",
+          "error": null
+        },
+        {
+          "schema": "schemas/portrait_benchmark_report.schema.json",
+          "report": "docs/benchmarks/human_local_nvidia_16gb.json",
           "status": "PASS",
           "error": null
         },
@@ -4915,12 +5501,14 @@
     }
   },
   "preflight_blockers": [
+    "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
+    "The authenticated Cloud UI probe saved all six workflows but found unsupported project custom nodes and missing required LoRAs; the project API-key route remains unavailable and Cloud execution is blocked by node/model parity.",
     "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
     "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
   ],
   "workflow_manifest": {
     "schema_version": "1.0.0",
-    "generated_at": "2026-07-29T05:26:34.999131+00:00",
+    "generated_at": "2026-07-29T07:15:44.298834+00:00",
     "lock_version": "workflows-2026-07-26.1",
     "workflows": [
       {
@@ -4928,8 +5516,8 @@
         "display_name": "human_local_mac_16gb",
         "workflow_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.json",
         "api_json": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
-        "sha256": "aac57f39a8c149588c7734793e3ce9c668b884b28d95f403070244ebcc17340f",
-        "api_sha256": "c0266104531fb6358cf1429e2e1db68a5c210b54309bff1380be0657c98552d8",
+        "sha256": "918cfa3fd76a006b739596790aa207ae5fbdfa1a740b2c43125c355c3116aedc",
+        "api_sha256": "978159eef3f4ad30f570826ab028f2a9657c16a699e2233070c4020c25ac0cc9",
         "graph_spec_version": "graph-spec-1.1.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
         "required_core_nodes": [
@@ -4983,10 +5571,11 @@
         "autoprompter_present": true,
         "prompt_source": "autoprompter",
         "preview_nodes": [
-          "PREVIEW 1 • crop / identity reference",
-          "PREVIEW 2 • prepared reference",
-          "PREVIEW 3 • approved background",
-          "PREVIEW 4 • same image as SaveImage"
+          "Cropped portrait",
+          "Prepared portrait",
+          "Background preview",
+          "Saved portrait preview",
+          "Input portrait preview"
         ],
         "final_preview_save_pair": {
           "preview_node_id": 28,
@@ -5001,7 +5590,99 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T05:26:34.999131+00:00"
+          "checked_at": "2026-07-29T07:15:44.298834+00:00"
+        },
+        "execution_test_evidence": {
+          "path": "docs/preflight/live_comfy_compatibility.json",
+          "status": "NOT_RUN_CALIBRATION_REQUIRED",
+          "attempted": false,
+          "fixture_present": true,
+          "background_resolved": true,
+          "eight_step_turbo_execution": "NOT_RUN",
+          "model_loading": "NOT_RUN",
+          "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+        }
+      },
+      {
+        "workflow_id": "human_local_nvidia_16gb",
+        "display_name": "human_local_nvidia_16gb",
+        "workflow_json": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json",
+        "api_json": "workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.api.json",
+        "sha256": "d4868b769ad177eb98c8276dd810e1e27b085fff0d8987b20b6f5b1a57542180",
+        "api_sha256": "3bf9a089f42343da82171c0d175c6ee9ebc52b59ccd084dc90206f78fc3cbf3f",
+        "graph_spec_version": "graph-spec-1.1.0",
+        "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
+        "required_core_nodes": [
+          "CLIPLoader",
+          "EmptySD3LatentImage",
+          "KSampler",
+          "LoraLoaderModelOnly",
+          "PreviewImage",
+          "SaveImage",
+          "UNETLoader",
+          "VAEDecode",
+          "VAEEncode",
+          "VAELoader"
+        ],
+        "required_custom_nodes": [
+          "HOI4AutopromptClient",
+          "HOI4ConservativePrep",
+          "HOI4EvidenceExport",
+          "HOI4ForegroundMask",
+          "HOI4HeadShouldersCrop",
+          "HOI4HumanControls",
+          "HOI4JobInput",
+          "HOI4JobSource",
+          "HOI4KreaModelLoadBarrier",
+          "HOI4MaskAndBackgroundGuard",
+          "HOI4SourceGuard",
+          "HOI4SubjectSelect",
+          "Krea2EditGroundedEncode",
+          "Krea2EditModelPatch"
+        ],
+        "required_custom_node_packages": [
+          "comfyui-krea2edit",
+          "hoi4_portrait_project_nodes"
+        ],
+        "required_custom_node_revisions": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
+        },
+        "required_custom_node_source_checksums": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+        },
+        "required_models": [
+          "krea2_turbo_fp8_scaled.safetensors",
+          "qwen3vl_4b_fp8_scaled.safetensors",
+          "qwen_image_vae.safetensors",
+          "krea2_identity_edit_v1_2.safetensors",
+          "hoi4_portrait_new_style_lora.safetensors",
+          "Qwen3VL-4B-Instruct-Q4_K_M.gguf"
+        ],
+        "autoprompter_present": true,
+        "prompt_source": "autoprompter",
+        "preview_nodes": [
+          "Cropped portrait",
+          "Prepared portrait",
+          "Background preview",
+          "Saved portrait preview",
+          "Input portrait preview"
+        ],
+        "final_preview_save_pair": {
+          "preview_node_id": 28,
+          "save_node_id": 23,
+          "shared_source_node_id": 22,
+          "shared_source_slot": 0,
+          "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
+        },
+        "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+        "validation_status": "UNVALIDATED",
+        "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+        "load_test_evidence": {
+          "path": "docs/preflight/live_comfy_compatibility.json",
+          "status": "PASS",
+          "checked_at": "2026-07-29T07:15:44.298834+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -5019,8 +5700,8 @@
         "display_name": "human_full_power_gpu",
         "workflow_json": "workflows/human/full_power_gpu/human_full_power_gpu.json",
         "api_json": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
-        "sha256": "2ca6e74816616b5a38a46133190855e78082e7c6d90f84be1c4abc9105494a20",
-        "api_sha256": "4a63cf67444fe649aa9e7904389d7c64afbaef3e4e1cdc0af8c50e43fb86767c",
+        "sha256": "b5e822525ad04dd10494a1d776689ed287c77312577f3757dcc5d2b8c566259c",
+        "api_sha256": "786fab7fead056f6c4b429e67ff585be0b835ce28dc4553019342d4ae4282c60",
         "graph_spec_version": "graph-spec-1.1.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
         "required_core_nodes": [
@@ -5074,10 +5755,11 @@
         "autoprompter_present": true,
         "prompt_source": "autoprompter",
         "preview_nodes": [
-          "PREVIEW 1 • crop / identity reference",
-          "PREVIEW 2 • prepared reference",
-          "PREVIEW 3 • approved background",
-          "PREVIEW 4 • same image as SaveImage"
+          "Cropped portrait",
+          "Prepared portrait",
+          "Background preview",
+          "Saved portrait preview",
+          "Input portrait preview"
         ],
         "final_preview_save_pair": {
           "preview_node_id": 28,
@@ -5092,7 +5774,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T05:26:34.999131+00:00"
+          "checked_at": "2026-07-29T07:15:44.298834+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -5110,8 +5792,8 @@
         "display_name": "agent_local_mac_16gb",
         "workflow_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.json",
         "api_json": "workflows/agent/local_mac_16gb/agent_local_mac_16gb.api.json",
-        "sha256": "4d379b3115a18036455d41e3a96c8e500f2fe6112156ff20c624de5f156722e7",
-        "api_sha256": "fd8fb8eea68158dd367b5b84eb0236690139651a168bdf7ab9619a1298d98467",
+        "sha256": "b978af5fd6222558ed2b79dca2f7cdd4de2fa87b81fb979addccf99af1010b1f",
+        "api_sha256": "6b1aebba4318d02da6f5b55e4ccd82e432373dd386a6f0ee6caa1f3e8ff32786",
         "graph_spec_version": "graph-spec-1.1.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
         "required_core_nodes": [
@@ -5175,7 +5857,90 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T05:26:34.999131+00:00"
+          "checked_at": "2026-07-29T07:15:44.298834+00:00"
+        },
+        "execution_test_evidence": {
+          "path": "docs/preflight/live_comfy_compatibility.json",
+          "status": "NOT_RUN_CALIBRATION_REQUIRED",
+          "attempted": false,
+          "fixture_present": true,
+          "background_resolved": true,
+          "eight_step_turbo_execution": "NOT_RUN",
+          "model_loading": "NOT_RUN",
+          "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
+        }
+      },
+      {
+        "workflow_id": "agent_local_nvidia_16gb",
+        "display_name": "agent_local_nvidia_16gb",
+        "workflow_json": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json",
+        "api_json": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
+        "sha256": "57d3d84530e0f633c77e97f5371cc77812ae975fb5331c0e30e0e85615442aaa",
+        "api_sha256": "22579a065b27a1f027cc0194ff1061fb26c152297bbfc3d6b6a7f99163adf8da",
+        "graph_spec_version": "graph-spec-1.1.0",
+        "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
+        "required_core_nodes": [
+          "CLIPLoader",
+          "EmptySD3LatentImage",
+          "KSampler",
+          "LoraLoaderModelOnly",
+          "SaveImage",
+          "UNETLoader",
+          "VAEDecode",
+          "VAEEncode",
+          "VAELoader"
+        ],
+        "required_custom_nodes": [
+          "HOI4ConservativePrep",
+          "HOI4EvidenceExport",
+          "HOI4ForegroundMask",
+          "HOI4HeadShouldersCrop",
+          "HOI4JobInput",
+          "HOI4JobSource",
+          "HOI4KreaModelLoadBarrier",
+          "HOI4MaskAndBackgroundGuard",
+          "HOI4PromptInput",
+          "HOI4SourceGuard",
+          "HOI4SubjectSelect",
+          "Krea2EditGroundedEncode",
+          "Krea2EditModelPatch"
+        ],
+        "required_custom_node_packages": [
+          "comfyui-krea2edit",
+          "hoi4_portrait_project_nodes"
+        ],
+        "required_custom_node_revisions": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
+        },
+        "required_custom_node_source_checksums": {
+          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
+          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+        },
+        "required_models": [
+          "krea2_turbo_fp8_scaled.safetensors",
+          "qwen3vl_4b_fp8_scaled.safetensors",
+          "qwen_image_vae.safetensors",
+          "krea2_identity_edit_v1_2.safetensors",
+          "hoi4_portrait_new_style_lora.safetensors"
+        ],
+        "autoprompter_present": false,
+        "prompt_source": "job_contract",
+        "preview_nodes": [],
+        "final_preview_save_pair": {
+          "preview_node_id": null,
+          "save_node_id": 23,
+          "shared_source_node_id": 22,
+          "shared_source_slot": 0,
+          "policy": "agent_save_only"
+        },
+        "autoprompter_instruction_sha256": null,
+        "validation_status": "UNVALIDATED",
+        "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
+        "load_test_evidence": {
+          "path": "docs/preflight/live_comfy_compatibility.json",
+          "status": "PASS",
+          "checked_at": "2026-07-29T07:15:44.298834+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -5193,8 +5958,8 @@
         "display_name": "agent_full_power_gpu",
         "workflow_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.json",
         "api_json": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
-        "sha256": "0966d3f3a94c1a95c943f4bf55918f8050115cd274407f7e8dd404f48359bb9a",
-        "api_sha256": "5d0f69541c3c4bcf9d414f3d6f4d8ce7573689943787d9618f7b7d80adfe9c27",
+        "sha256": "14bceefb845244468dd18ab24e8403f8f107187d539a4eb15dc42e24a8f29036",
+        "api_sha256": "e7e2ff15052a4fcb33d70235658d63d112db0e63add1c9045ece1d0cacdce9c6",
         "graph_spec_version": "graph-spec-1.1.0",
         "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
         "required_core_nodes": [
@@ -5258,90 +6023,7 @@
         "load_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
           "status": "PASS",
-          "checked_at": "2026-07-29T05:26:34.999131+00:00"
-        },
-        "execution_test_evidence": {
-          "path": "docs/preflight/live_comfy_compatibility.json",
-          "status": "NOT_RUN_CALIBRATION_REQUIRED",
-          "attempted": false,
-          "fixture_present": true,
-          "background_resolved": true,
-          "eight_step_turbo_execution": "NOT_RUN",
-          "model_loading": "NOT_RUN",
-          "reason": "A live schema check cannot substitute for a source-specific execution and independent audit."
-        }
-      },
-      {
-        "workflow_id": "agent_remote_runpod",
-        "display_name": "agent_remote_runpod",
-        "workflow_json": "workflows/agent/remote_runpod/agent_remote_runpod.json",
-        "api_json": "workflows/agent/remote_runpod/agent_remote_runpod.api.json",
-        "sha256": "a63d2449ae3583d0e6a8630f11cb13a00da8f1fd2db1206e02a48ae294472c21",
-        "api_sha256": "e3d9aef0c39ace59fbe4776f42997c9f718bc3050985228805b0169435dc5bc4",
-        "graph_spec_version": "graph-spec-1.1.0",
-        "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
-        "required_core_nodes": [
-          "CLIPLoader",
-          "EmptySD3LatentImage",
-          "KSampler",
-          "LoraLoaderModelOnly",
-          "SaveImage",
-          "UNETLoader",
-          "VAEDecode",
-          "VAEEncode",
-          "VAELoader"
-        ],
-        "required_custom_nodes": [
-          "HOI4ConservativePrep",
-          "HOI4EvidenceExport",
-          "HOI4ForegroundMask",
-          "HOI4HeadShouldersCrop",
-          "HOI4JobInput",
-          "HOI4JobSource",
-          "HOI4KreaModelLoadBarrier",
-          "HOI4MaskAndBackgroundGuard",
-          "HOI4PromptInput",
-          "HOI4SourceGuard",
-          "HOI4SubjectSelect",
-          "Krea2EditGroundedEncode",
-          "Krea2EditModelPatch"
-        ],
-        "required_custom_node_packages": [
-          "comfyui-krea2edit",
-          "hoi4_portrait_project_nodes"
-        ],
-        "required_custom_node_revisions": {
-          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "graph-spec-1.1.0"
-        },
-        "required_custom_node_source_checksums": {
-          "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
-        },
-        "required_models": [
-          "krea2_turbo_fp8_scaled.safetensors",
-          "qwen3vl_4b_fp8_scaled.safetensors",
-          "qwen_image_vae.safetensors",
-          "krea2_identity_edit_v1_2.safetensors",
-          "hoi4_portrait_new_style_lora.safetensors"
-        ],
-        "autoprompter_present": false,
-        "prompt_source": "job_contract",
-        "preview_nodes": [],
-        "final_preview_save_pair": {
-          "preview_node_id": null,
-          "save_node_id": 23,
-          "shared_source_node_id": 22,
-          "shared_source_slot": 0,
-          "policy": "agent_save_only"
-        },
-        "autoprompter_instruction_sha256": null,
-        "validation_status": "UNVALIDATED",
-        "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
-        "load_test_evidence": {
-          "path": "docs/preflight/live_comfy_compatibility.json",
-          "status": "PASS",
-          "checked_at": "2026-07-29T05:26:34.999131+00:00"
+          "checked_at": "2026-07-29T07:15:44.298834+00:00"
         },
         "execution_test_evidence": {
           "path": "docs/preflight/live_comfy_compatibility.json",
@@ -5360,7 +6042,7 @@
   },
   "runtime_claims": {
     "local_mac_execution": "CPU_FALLBACK_CANDIDATE_PRODUCED_PRODUCTION_GATES_BLOCKED",
-    "remote_runpod_execution": "NOT_CLAIMED",
+    "comfy_cloud_execution": "NOT_CLAIMED",
     "final_png": "NOT_CREATED",
     "final_dds": "NOT_CREATED",
     "mod_wiring": "PARENT_AGENT_ONLY"

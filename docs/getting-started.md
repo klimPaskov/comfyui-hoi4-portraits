@@ -7,7 +7,7 @@ git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
 cd comfyui-hoi4-portraits
 ```
 
-The public clone does not include model weights, source portraits, generated images, caches, secrets, or the private immutable LoRA. Supply those through the documented private runtime instead of committing them.
+The public clone does not include model weights, source portraits, generated images, caches, secrets, or binary model artifacts. Supply those through the documented local runtime instead of committing them; the top-level `loras/` path contains the public checksum/documentation boundary for the project-owned style LoRA.
 
 ## 2. Install the pinned runtime
 
@@ -20,7 +20,7 @@ python3.12 scripts/bootstrap/bootstrap.py \
   --owner-authorized-private-install
 ```
 
-Use `full_power_gpu` on a CUDA host for the human route. Use `agent_full_power_gpu` for the local-NVIDIA agent route. Use `remote_runpod` only after the remote image lock and gateway credentials are resolved. A normal restore remains fail-closed and will stop on missing source, background, license, threshold, checksum, or capability evidence.
+Use `local_nvidia_16gb` on a local NVIDIA host. `full_power_gpu` and `agent_full_power_gpu` are ComfyUI Cloud routes; local bootstrap does not download their Cloud models. A normal restore remains fail-closed and will stop on missing source, background, license, threshold, checksum, or capability evidence.
 
 The exact model and dependency revisions are recorded in [`dependencies/models.lock.json`](../dependencies/models.lock.json), [`dependencies/autoprompter_runtime.lock.json`](../dependencies/autoprompter_runtime.lock.json), and the runtime profile locks.
 
@@ -42,7 +42,7 @@ HOI4_MASK_SERVICE_LOOPBACK="http://127.0.0.1:8790/v1/mask" \
 .venv/bin/python comfyui/main.py --listen 127.0.0.1 --port 8188
 ```
 
-Raw ComfyUI is intentionally not exposed publicly. Remote operations go through the authenticated project gateway, not directly to ComfyUI.
+Raw ComfyUI is intentionally bound to loopback. Remote operations use the authenticated Comfy Cloud API or authenticated project gateway, never a public raw ComfyUI port.
 
 On Apple Silicon, check the reversible FP8/MPS fallback before starting ComfyUI:
 
@@ -63,6 +63,12 @@ workflows/human/local_mac_16gb/human_local_mac_16gb.json
 ```
 
 The graph should load and show its grouped nodes. Loading is not the same as production generation: the source, background, provenance, threshold, and audit guards still run before any candidate can be accepted.
+
+On a local NVIDIA machine, load:
+
+```text
+workflows/human/local_nvidia_16gb/human_local_nvidia_16gb.json
+```
 
 ## 5. Provide a job contract
 

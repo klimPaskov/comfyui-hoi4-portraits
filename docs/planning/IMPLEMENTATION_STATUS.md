@@ -39,7 +39,7 @@ execution evidence in `docs/preflight/source_fixture_execution.json`.
 
 ## Runtime boundary
 
-The five checked-in workflow artifacts are structurally generated and validated
+The six checked-in workflow artifacts are structurally generated and validated
 against the live local ComfyUI node registry. The user-facing MPS server is
 healthy on loopback, but the measured [`human_local_mac_16gb` MPS canary](../preflight/mps_canary_2026-07-29.md)
 could not complete a sampler step even at `208x280`. The separate
@@ -56,8 +56,13 @@ stage before sampling, but the bounded 208×280 run still reached approximately
 0.90 GiB available memory and approximately 22.4 GiB swap used before the first
 sampler step. See the [`barrier-fix follow-up evidence`](../preflight/mps_barrier_canary_2026-07-29_followup.md).
 
-The current automated suite is `49/49` passing. The RunPod route remains
-deferred by the project owner, and the generic/Chaos integration packages remain
+The current automated suite is `53/53` passing. Full-power remote execution is
+now assigned to ComfyUI Cloud; the former RunPod deployment surface was removed.
+The authenticated Cloud UI import was successful for all six workflows, but the
+Cloud node/model parity probe is blocked because the project custom nodes and
+required LoRAs are not available there. See
+[`Cloud parity evidence`](../preflight/comfy_cloud_ui_probe_2026-07-29.md).
+The generic/Chaos integration packages remain
 portable and fail-closed until the parent-owned live consumer validation and
 final mod wiring gates are completed. The read-only live-target audit is recorded
 in [`integration target validation`](../preflight/integration_target_validation_2026-07-29.md).
