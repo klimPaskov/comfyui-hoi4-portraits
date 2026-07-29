@@ -343,8 +343,8 @@ def _copy_workflows(
 
 
 def _copy_example_input(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
-    source = ROOT / "docs" / "assets" / "examples" / "nora_before.png"
-    destination = comfy_root / "input" / "hoi4_preparation_example.png"
+    source = ROOT / "docs" / "assets" / "examples" / "preparation_01_before.jpg"
+    destination = comfy_root / "input" / "hoi4_preparation_example.jpg"
     if not source.is_file():
         raise InstallError(ExitCode.SOURCE_INVALID, "the portrait preparation example image is missing")
     destination.parent.mkdir(parents=True, exist_ok=True)

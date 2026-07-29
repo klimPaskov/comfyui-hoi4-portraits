@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-29T16:10:41.681219+00:00",
+  "generated_at": "2026-07-29T17:05:36.347087+00:00",
   "lock_version": "workflows-2026-07-26.1",
   "workflows": [
     {
@@ -8,9 +8,9 @@
       "display_name": "hoi4_portraits_local_nvidia_16gb",
       "workflow_json": "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json",
       "api_json": "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.api.json",
-      "sha256": "20eb04876b8376846319f48fc3d8c2d1e6f5751020b146f607c5e2c1baafc8ff",
-      "api_sha256": "7074c932c73d401ce32ebb3a460c6822b1b14a555e33df40f645e40896a82ebc",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "d529ec172973323f0a6679967d9a3f0700f480a6f9cbf694b2251df901acfab0",
+      "api_sha256": "894a3c127d87a8ec96b8249d68d86b6c03e6e575a6f63b4a3418fb5a82492f53",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -50,12 +50,12 @@
       "required_custom_node_revisions": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -67,7 +67,7 @@
         "Qwen3VL-4B-Instruct-Q4_K_M.gguf"
       ],
       "autoprompter_present": true,
-      "prompt_source": "autoprompter",
+      "prompt_source": "automatic_or_manual",
       "preview_nodes": [
         "Cropped portrait",
         "Prepared portrait",
@@ -84,13 +84,13 @@
         "shared_source_slot": 0,
         "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
       },
-      "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+      "autoprompter_instruction_sha256": "b83f4d149c7279dc610bb1fa51a915707092851e5e2416cfe9a33b2555b59a3b",
       "validation_status": "UNVALIDATED",
       "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -108,9 +108,9 @@
       "display_name": "hoi4_portraits_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.api.json",
-      "sha256": "151fdb7b3529fd2676b8eafac589f8ae6e2920ed25c907255441f5770cdafeba",
-      "api_sha256": "d21bf60321f94164f7649087eb4dfb016ffabbe2a3256d517280d87c618f5fbe",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "210a782d1b0b5ee0b16dd54c39db7b7ca49e999c7bc5f554dfb26709f0a41944",
+      "api_sha256": "51bf7563cbb2d676f561020ceec8d693db9a2c463f9badb4e76f99184bc791a0",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -150,12 +150,12 @@
       "required_custom_node_revisions": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -167,7 +167,7 @@
         "Qwen3-VL-8B-Instruct-BF16-shards"
       ],
       "autoprompter_present": true,
-      "prompt_source": "autoprompter",
+      "prompt_source": "automatic_or_manual",
       "preview_nodes": [
         "Cropped portrait",
         "Prepared portrait",
@@ -184,13 +184,13 @@
         "shared_source_slot": 0,
         "policy": "human_final_preview_and_save_consume_the_same_evidence_export_image"
       },
-      "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
+      "autoprompter_instruction_sha256": "b83f4d149c7279dc610bb1fa51a915707092851e5e2416cfe9a33b2555b59a3b",
       "validation_status": "UNVALIDATED",
       "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -208,9 +208,9 @@
       "display_name": "hoi4_portraits_agent_local_nvidia_16gb",
       "workflow_json": "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.json",
       "api_json": "workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.api.json",
-      "sha256": "75dd9dff5334ec31c53ff368807c29be17f51c6961e5d41437a51a4835152727",
-      "api_sha256": "4d6ab2006d6af20e63a514c5a3b5eb837013214956b886ce21b46dce0162a24c",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "2af844dbd9bd9c95d0fe465b9f57aad82809226c86ec1a328020433e859d4802",
+      "api_sha256": "b610d35abc51e0d04936a21eb050ac1f6522874dcc23db80bd2b29817d151527",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -247,12 +247,12 @@
       "required_custom_node_revisions": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -278,7 +278,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -296,9 +296,9 @@
       "display_name": "hoi4_portraits_agent_full_power_gpu",
       "workflow_json": "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.json",
       "api_json": "workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.api.json",
-      "sha256": "23c24b10e2318ceb09a27ed8b65ef67a8073400bb672a967db77b5dac69daeb4",
-      "api_sha256": "ea474e900dd82f955224b1b576f3e01d8269a13a8e161a9ac0f053997d10ce46",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "de8cf6ffe18a9764772800ab2560a1e2e2df2b2ca0ff2bc720ae9dad6cd219c0",
+      "api_sha256": "4bca8f4316a14de4e99da9c1b69121f42e5b95fd5ad6d6d76b8f7f6ba8d2bf3f",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -335,12 +335,12 @@
       "required_custom_node_revisions": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -366,7 +366,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -384,9 +384,9 @@
       "display_name": "hoi4_portraits_no_input_local_nvidia_16gb",
       "workflow_json": "workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json",
       "api_json": "workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.api.json",
-      "sha256": "9e4d2735fbed1bdeacdacb370724a864014e603b99f3d9288a33c32aad3da4b6",
-      "api_sha256": "a3a515d1013f9f0faa977967184d1139b0de08bddfab4ff7a8229da9cb5944a5",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "383b787a94273465c6fcb4fac18f67d57c8c8e75e977e1d597389945a563f0e0",
+      "api_sha256": "720a902f765191558b116c69093bb6584003c1fee13b2f07a95b5ea336aa0e18",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -408,10 +408,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -420,7 +420,7 @@
         "hoi4_portrait_new_style_lora.safetensors"
       ],
       "autoprompter_present": true,
-      "prompt_source": "text_only_autoprompter",
+      "prompt_source": "random_builder_or_manual",
       "preview_nodes": [
         "Portrait preview"
       ],
@@ -431,13 +431,13 @@
         "shared_source_slot": 0,
         "policy": "preview_and_save_consume_the_same_decoded_image"
       },
-      "autoprompter_instruction_sha256": "4347ea1e11368eadf39c0e55b805b62e65c0bf6998b5fc8ad6560d7fbc832f7d",
+      "autoprompter_instruction_sha256": "b7420484f6d8f3930ba38d4356aba78500149b33d393398e02ce7de9860d4c38",
       "validation_status": "UNVALIDATED",
       "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -455,9 +455,9 @@
       "display_name": "hoi4_portraits_no_input_full_power_gpu",
       "workflow_json": "workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json",
       "api_json": "workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.api.json",
-      "sha256": "5e72d6a5fcacbab931682b9924d12d79732973761f6c91d0b9940e0a37a074b7",
-      "api_sha256": "03b4dbc280396ce9aa0857b619e8f45a8ed52ee4586b0292f0f10ca81becce7e",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "3e5b4bd680ff6eca629edba682e073d41f0fdcf5d361dcd2b0d3326b148bc3b0",
+      "api_sha256": "dbde74c219201e7b701e5414009160cff4a575208cdf9ef20d9fa4dc21dfef18",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -479,10 +479,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -491,7 +491,7 @@
         "hoi4_portrait_new_style_lora.safetensors"
       ],
       "autoprompter_present": true,
-      "prompt_source": "text_only_autoprompter",
+      "prompt_source": "random_builder_or_manual",
       "preview_nodes": [
         "Portrait preview"
       ],
@@ -502,13 +502,13 @@
         "shared_source_slot": 0,
         "policy": "preview_and_save_consume_the_same_decoded_image"
       },
-      "autoprompter_instruction_sha256": "4347ea1e11368eadf39c0e55b805b62e65c0bf6998b5fc8ad6560d7fbc832f7d",
+      "autoprompter_instruction_sha256": "b7420484f6d8f3930ba38d4356aba78500149b33d393398e02ce7de9860d4c38",
       "validation_status": "UNVALIDATED",
       "runtime_status": "LIVE_SCHEMA_LOADABLE_EXECUTION_BLOCKED",
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -526,9 +526,9 @@
       "display_name": "hoi4_portraits_agent_no_input_local_nvidia_16gb",
       "workflow_json": "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json",
       "api_json": "workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.api.json",
-      "sha256": "cbcea9d77125992b702b7a66ded83cd5d1751a199b4aba505116c03b67719c85",
-      "api_sha256": "42abcd876cdd5672523361e3263b759901e751c32c4dd8ec4f545893d0e8fe10",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "71e355b725bdb02416d8efd9692ff9153eb459b9954fd4e285326b67e9ccdcdb",
+      "api_sha256": "ba43039fe261806be45886532a3ba6cb884e7497487ef0290aa75eaa7fb0aef5",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -549,10 +549,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -576,7 +576,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -594,9 +594,9 @@
       "display_name": "hoi4_portraits_agent_no_input_full_power_gpu",
       "workflow_json": "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json",
       "api_json": "workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.api.json",
-      "sha256": "901cf6410665c23fed91e693535053806d75045e96c1db7fe65395572c4d4eac",
-      "api_sha256": "aa24f72157db81b18387fba03a759c9434c956150d18dc2e31f31810d9c044ec",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "992b23f1debb4c1351ae54119cf911075fa60e447e0ce0861dcd17f1154237dc",
+      "api_sha256": "7d00b0cc670bafc70e3ada6dcc94a277b3c07091b995ef68e2d89789a1943523",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "CLIPLoader",
@@ -617,10 +617,10 @@
         "hoi4_portrait_project_nodes"
       ],
       "required_custom_node_revisions": {
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -644,7 +644,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
@@ -662,9 +662,9 @@
       "display_name": "hoi4_portraits_prepare_portrait_for_hoi4",
       "workflow_json": "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json",
       "api_json": "workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.api.json",
-      "sha256": "54a22f07b20a154afa32b7c27249b1aaa4b7f56435d5a2f3762b318be918d2ca",
-      "api_sha256": "50f7d1176cb5587d7cbe757533a3e99c8892fc13c8dddba1f798ba83726a457a",
-      "graph_spec_version": "graph-spec-1.5.0",
+      "sha256": "861ce20de4309912c725351d70bae0b96cdad76e5cc5c2a3a937389b410e3179",
+      "api_sha256": "51e4f9d652a14ddc07fe14bc65f5366e2d54f7a82a551cbecbc184e79ae3b8a9",
+      "graph_spec_version": "graph-spec-1.6.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
         "LoadImage",
@@ -683,11 +683,11 @@
       ],
       "required_custom_node_revisions": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
-        "hoi4_portrait_project_nodes": "graph-spec-1.5.0"
+        "hoi4_portrait_project_nodes": "graph-spec-1.6.0"
       },
       "required_custom_node_source_checksums": {
         "ComfyUI-DDColor": "30d5b8e7666382a6a78404caee28dfa87f741037",
-        "hoi4_portrait_project_nodes": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145"
+        "hoi4_portrait_project_nodes": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8"
       },
       "required_models": [
         "ddcolor_modelscope.pth",
@@ -714,7 +714,7 @@
       "load_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T16:10:41.681219+00:00"
+        "checked_at": "2026-07-29T17:05:36.347087+00:00"
       },
       "execution_test_evidence": {
         "path": ".runtime/reports/live_comfy_compatibility.json",

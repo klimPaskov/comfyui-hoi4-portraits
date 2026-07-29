@@ -79,8 +79,48 @@ class WorkflowAndGuardTests(unittest.TestCase):
                 continue
             ui_path = path.with_name(path.name.replace(".api.json", ".json"))
             values = [node.get("widgets_values", []) for node in json.loads(ui_path.read_text(encoding="utf-8")).get("nodes", []) if node.get("type") == "HOI4AutopromptClient"]
-            self.assertEqual(values[0][0], instruction)
+            self.assertEqual(values[0][0], "Create automatically")
+            self.assertEqual(values[0][2], instruction)
+            self.assertEqual(data["9"]["inputs"]["description_mode"], "Create automatically")
+            self.assertEqual(data["9"]["inputs"]["manual_description"], "")
             self.assertEqual(data["_meta"]["autoprompter"], True)
+
+    def test_human_autoprompter_can_be_switched_to_an_unrestricted_manual_description(self):
+        instruction = (self.root / "prompts/autoprompter_instruction.txt").read_text(encoding="utf-8")
+        job = {
+            "job_id": "manual-description-test",
+            "execution_profile": "hoi4_portraits_local_nvidia_16gb",
+            "_project_root": str(self.root),
+            "subject_identity": {},
+            "allowed_autoprompt_claims": {},
+        }
+        with mock.patch("comfyui_hoi4_portrait_nodes.nodes.atomic_json_write"):
+            prompt, metadata = NODE_CLASS_MAPPINGS["HOI4AutopromptClient"]().run(
+                job,
+                None,
+                {},
+                {},
+                "Use my description",
+                "British officer with a period banner behind him",
+                instruction,
+                "prompts/autoprompter_instruction.txt",
+                "Qwen/Qwen3-VL-4B-Instruct-GGUF",
+                "autoprompter",
+            )
+        self.assertEqual(
+            prompt,
+            "hoi4_portrait, British officer with a period banner behind him",
+        )
+        self.assertEqual(metadata["source"], "human_manual_override")
+
+    def test_prompt_instructions_do_not_steer_symbol_or_flag_usage(self):
+        for relative in (
+            "prompts/autoprompter_instruction.txt",
+            "prompts/random_portrait_instruction.txt",
+        ):
+            text = (self.root / relative).read_text(encoding="utf-8").casefold()
+            self.assertNotIn("flag", text)
+            self.assertNotIn("symbol", text)
 
     def test_agent_workflows_have_no_autoprompter(self):
         for path in (self.root / "workflows/agent").glob("**/*.api.json"):
@@ -264,7 +304,9 @@ class WorkflowAndGuardTests(unittest.TestCase):
         instruction = (self.root / "prompts/random_portrait_instruction.txt").read_text(encoding="utf-8")
         node = NODE_CLASS_MAPPINGS["HOI4RandomPortraitPrompt"]()
         arguments = {
-            "character_brief": "round glasses",
+            "prompt_mode": "Create a random portrait",
+            "manual_prompt": "",
+            "character_brief": "random British officers with round glasses",
             "country_influence": "random",
             "role": "random",
             "presentation": "random",
@@ -280,8 +322,26 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertTrue(first[0].startswith("hoi4_portrait,"))
         self.assertIn("round glasses", first[0])
+        self.assertIn("British officers", first[0])
+        self.assertNotIn(first[1]["selected"]["country_influence"] + " visual influence", first[0])
+        self.assertNotIn(first[1]["selected"]["role"], first[0])
+        self.assertNotIn("no flag", first[0].casefold())
+        self.assertNotIn("no symbol", first[0].casefold())
         self.assertFalse(first[1]["used_image"])
         self.assertFalse(first[1]["used_language_model"])
+
+        manual_arguments = {
+            **arguments,
+            "prompt_mode": "Use my prompt",
+            "manual_prompt": "British officers assembled for a wartime portrait",
+        }
+        with mock.patch.dict("os.environ", {"HOI4_PORTRAIT_PROJECT_ROOT": str(self.root)}):
+            manual = node.run(**manual_arguments)
+        self.assertEqual(
+            manual[0],
+            "hoi4_portrait, British officers assembled for a wartime portrait",
+        )
+        self.assertEqual(manual[1]["source"], "human_manual_prompt")
 
     def test_agent_prompt_workflow_loads_a_job_contract_without_a_source_image(self):
         job_id = "agent-prompt-test-001"
@@ -708,7 +768,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
             installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
             self.assertEqual(len(installed_workflows), 9)
             _copy_example_input(comfy_root, actions)
-            self.assertTrue((comfy_root / "input/hoi4_preparation_example.png").is_file())
+            self.assertTrue((comfy_root / "input/hoi4_preparation_example.jpg").is_file())
             _copy_workflows(comfy_root, actions, {"hoi4_portraits_full_power_gpu"})
             installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
             self.assertEqual([path.stem for path in installed_workflows], ["hoi4_portraits_full_power_gpu"])

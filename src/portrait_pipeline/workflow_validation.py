@@ -49,7 +49,7 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
             instruction_path = root_path / RANDOM_PORTRAIT_PROMPT_PATH
             instruction = instruction_path.read_text(encoding="utf-8")
             values = autoprompt_nodes[0].get("widgets_values", [])
-            if len(values) < 9 or values[7] != instruction or values[8] != RANDOM_PORTRAIT_PROMPT_PATH:
+            if len(values) < 11 or values[9] != instruction or values[10] != RANDOM_PORTRAIT_PROMPT_PATH:
                 issues.append("random portrait instruction does not match the project file")
             if metadata.get("autoprompter_instruction_sha256") != sha256_file(instruction_path):
                 issues.append("random portrait instruction checksum mismatch")
@@ -81,7 +81,7 @@ def validate_workflow_file(workflow_id: str, ui_path: str | Path, api_path: str 
         else:
             instruction = autoprompter_instruction(root_path)
             values = autoprompt_nodes[0].get("widgets_values", [])
-            if not values or values[0] != instruction:
+            if len(values) < 3 or values[2] != instruction:
                 issues.append("human workflow instruction does not exactly match the approved instruction file")
             if metadata.get("autoprompter_instruction_sha256") != sha256_file(root_path / "prompts/autoprompter_instruction.txt"):
                 issues.append("human workflow instruction checksum mismatch")

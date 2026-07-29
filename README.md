@@ -10,16 +10,16 @@ Turn portrait photos into Hearts of Iron IV-style leader portraits with Krea 2 T
 
 | Workflow | Use | Prompt source |
 | --- | --- | --- |
-| [`hoi4_portraits_local_nvidia_16gb`](workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Built-in portrait autoprompter |
+| [`hoi4_portraits_local_nvidia_16gb`](workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Automatic or manual |
 | [`hoi4_portraits_agent_local_nvidia_16gb`](workflows/agent/local_nvidia_16gb/hoi4_portraits_agent_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU | Job file |
-| [`hoi4_portraits_full_power_gpu`](workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json) | RunPod GPU | Built-in portrait autoprompter |
+| [`hoi4_portraits_full_power_gpu`](workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json) | RunPod GPU | Automatic or manual |
 | [`hoi4_portraits_agent_full_power_gpu`](workflows/agent/full_power_gpu/hoi4_portraits_agent_full_power_gpu.json) | RunPod GPU | Job file |
-| [`hoi4_portraits_no_input_local_nvidia_16gb`](workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Text-only random portrait builder |
-| [`hoi4_portraits_no_input_full_power_gpu`](workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json) | RunPod GPU, no input image | Text-only random portrait builder |
+| [`hoi4_portraits_no_input_local_nvidia_16gb`](workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Random builder or manual |
+| [`hoi4_portraits_no_input_full_power_gpu`](workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json) | RunPod GPU, no input image | Random builder or manual |
 | [`hoi4_portraits_agent_no_input_local_nvidia_16gb`](workflows/agent/no_input_local_nvidia_16gb/hoi4_portraits_agent_no_input_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Job file |
 | [`hoi4_portraits_agent_no_input_full_power_gpu`](workflows/agent/no_input_full_power_gpu/hoi4_portraits_agent_no_input_full_power_gpu.json) | RunPod GPU, no input image | Job file |
 
-Every source-image workflow automatically crops, colorizes black-and-white photos when needed, and lightly enhances the portrait before generation. Human workflows include large previews for the source image, prepared portrait, background, and saved result. Agent workflows receive their prompt from the job JSON.
+Every source-image workflow automatically crops, colorizes black-and-white photos when needed, and lightly enhances the portrait before generation. Human workflows include large previews for the source image, prepared portrait, background, and saved result. Their portrait-description node can switch between automatic and manual prompting. Agent workflows receive their prompt from the job JSON.
 
 > Agent workflows are included for future automation. They are not currently practical through ComfyUI Cloud because Cloud does not yet provide a dependable way to install and run the required custom nodes.
 
@@ -77,7 +77,7 @@ The final row applies the Krea identity reference and HOI4 LoRA, generates the p
 
 ### Generate a new leader from a prompt
 
-Choose a country influence, role, age, presentation, expression, and seed. No input image or separate vision autoprompter is used.
+Enter an optional brief and let the workflow vary the remaining details, or switch the first node to **Use my prompt**. No input image or separate vision autoprompter is used.
 
 Agents can use the matching `hoi4_portraits_agent_no_input_*` workflow with the [no-input job example](docs/examples/prompt_job_input.example.json).
 
@@ -87,11 +87,15 @@ Agents can use the matching `hoi4_portraits_agent_no_input_*` workflow with the 
 
 The same preparation is already part of every source-image workflow. [`hoi4_portraits_prepare_portrait_for_hoi4`](workflows/human/prepare_portrait/hoi4_portraits_prepare_portrait_for_hoi4.json) is also available when you only want a clean 832 × 1120 head-and-shoulders PNG without generating a new portrait.
 
-![Portrait preparation workflow](docs/assets/workflow_hoi4_portraits_prepare_portrait_for_hoi4.png)
+The workflow screenshot below was captured after a completed run, with the input, crop, colorized image, final preview, and saved result visible.
 
-| Nora source | Prepared portrait |
+![Completed portrait preparation workflow](docs/assets/workflow_hoi4_portraits_prepare_portrait_for_hoi4.png)
+
+| Difficult source | Prepared portrait |
 | --- | --- |
-| ![Nora Connolly-O'Brien source portrait](docs/assets/examples/nora_before.png) | ![Prepared Nora Connolly-O'Brien portrait](docs/assets/examples/nora_after.png) |
+| ![Severely faded seated portrait](docs/assets/examples/preparation_01_before.jpg) | ![Prepared faded portrait](docs/assets/examples/preparation_01_after.png) |
+| ![Crowded historical group photograph](docs/assets/examples/preparation_02_before.jpg) | ![Prepared subject from group photograph](docs/assets/examples/preparation_02_after.png) |
+| ![Small damaged newspaper portrait](docs/assets/examples/preparation_03_before.jpg) | ![Prepared newspaper portrait](docs/assets/examples/preparation_03_after.png) |
 
 ## Portrait examples
 

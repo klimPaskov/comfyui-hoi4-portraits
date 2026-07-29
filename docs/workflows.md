@@ -8,13 +8,15 @@ The source-portrait workflows use these visible stages:
 2. Subject selection
 3. Crop and source preparation
 4. Color, restoration, mask, and background
-5. Human autoprompt or agent job-file prompt
+5. Automatic description, manual description, or agent job-file prompt
 6. Krea 2 identity edit
 7. HOI4 style LoRA
 8. Portrait generation
 9. Large previews and save
 
 The background selector defaults to **Keep current background**. Choose **Scientist laboratory** or **Operative background** to use either local game background. Each option has its own preview.
+
+In a human workflow, use **Create automatically** in the portrait-description node or switch it to **Use my description** and type the prompt below it.
 
 Local workflows target 12–16 GB NVIDIA GPUs. The RunPod setup installs the source-photo, no-input, agent, and portrait-preparation workflows.
 
@@ -37,11 +39,13 @@ The workflow has four stages:
 
 Color treatment defaults to **Automatic**. Existing color photos keep their original color. Because historical colors are estimated, review uniforms, ribbons, and skin tones before using the image.
 
+The examples in the main README use a severely faded full-body portrait, a crowded group photograph, and a small newspaper image. Very damaged sources can still retain grain, printing patterns, or uncertain colors after preparation.
+
 ## Generate a fictional leader
 
-The no-input workflows do not need an input image. Choose the character controls, enter an optional brief, and change the seed for a new leader.
+The no-input workflows do not need an input image. The first node can create a varied prompt from an optional brief and the character controls, or use a complete prompt written by you.
 
-1. Create a fictional portrait idea
+1. Choose random generation or write your own prompt
 2. Load Krea 2 Turbo
 3. Apply the HOI4 style LoRA
 4. Generate the portrait

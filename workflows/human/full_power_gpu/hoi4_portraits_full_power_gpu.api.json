@@ -31,7 +31,6 @@
       "restoration_level": "conservative",
       "approved_background_registry_id": "<from_job_contract>",
       "background_choice": "Keep current background",
-      "prompt_override": "",
       "seed_mode": "derived",
       "fixed_seed": 0,
       "candidate_count": 6,
@@ -222,7 +221,9 @@
         "24",
         1
       ],
-      "instruction_text": "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nDescribe only:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, and jewelry\n\nDo not describe the background, lighting, art style, brushwork, color palette, image quality, or composition.\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent unclear details.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
+      "description_mode": "Create automatically",
+      "manual_description": "",
+      "instruction_text": "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nPrioritize visible details that help recreate the person:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, jewelry, and other relevant visible details\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent details that cannot be inferred from the image.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
       "instruction_path": "prompts/autoprompter_instruction.txt",
       "model_id": "Qwen/Qwen3-VL-8B-Instruct",
       "prompt_source": "autoprompter"
@@ -513,15 +514,15 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.5.0",
+    "graph_spec_version": "graph-spec-1.6.0",
     "workflow_id": "hoi4_portraits_full_power_gpu",
     "execution_profile": "hoi4_portraits_full_power_gpu",
     "route": "runpod",
     "human_workflow": true,
     "autoprompter": true,
     "autoprompter_instruction_path": "prompts/autoprompter_instruction.txt",
-    "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
-    "prompt_source": "autoprompter",
+    "autoprompter_instruction_sha256": "b83f4d149c7279dc610bb1fa51a915707092851e5e2416cfe9a33b2555b59a3b",
+    "prompt_source": "automatic_or_manual",
     "prompt_model": "Qwen/Qwen3-VL-8B-Instruct",
     "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
     "remote_authentication": "authenticated_runpod_gateway",
@@ -568,7 +569,7 @@
         "asset_path",
         "asset_sha256"
       ],
-      "Create portrait description": [
+      "Choose automatic or manual description": [
         "instruction_text",
         "instruction_path",
         "model_id",

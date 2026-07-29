@@ -172,11 +172,6 @@
           "link": null
         },
         {
-          "name": "prompt_override",
-          "type": "STRING",
-          "link": null
-        },
-        {
           "name": "seed_mode",
           "type": "COMBO",
           "link": null
@@ -244,7 +239,6 @@
         "conservative",
         "<from_job_contract>",
         "Keep current background",
-        "",
         "derived",
         0,
         2,
@@ -888,7 +882,7 @@
     {
       "id": 9,
       "type": "HOI4AutopromptClient",
-      "title": "Create portrait description",
+      "title": "Choose automatic or manual description",
       "pos": [
         340,
         1080
@@ -922,6 +916,16 @@
           "name": "control_meta",
           "type": "HOI4_META",
           "link": 32
+        },
+        {
+          "name": "description_mode",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "manual_description",
+          "type": "STRING",
+          "link": null
         },
         {
           "name": "instruction_text",
@@ -960,7 +964,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Create portrait description",
+        "Node name for S&R": "Choose automatic or manual description",
         "hoi4_group": "05 Portrait description",
         "hoi4_locked_controls": [
           "instruction_text",
@@ -970,7 +974,9 @@
         ]
       },
       "widgets_values": [
-        "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nDescribe only:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, and jewelry\n\nDo not describe the background, lighting, art style, brushwork, color palette, image quality, or composition.\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent unclear details.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
+        "Create automatically",
+        "",
+        "Write one concise natural-language image prompt describing the input portrait.\n\nBegin with:\n\nhoi4_portrait,\n\nPrioritize visible details that help recreate the person:\n\n- approximate age and gender\n- nationality, ideology, military role, or political role when clearly visible\n- hair, hairline, facial hair, glasses, and accessories\n- expression and head direction\n- eye shape and spacing\n- nose shape\n- mouth shape\n- jawline and chin\n- facial proportions, skin tone, and visible asymmetry\n- clothing, uniform, medals, hats, jewelry, and other relevant visible details\n\nUse concise natural language, not a tag list. Do not use the person’s name. Do not invent details that cannot be inferred from the image.\n\nOutput only the final prompt with no headings, quotation marks, explanations, or formatting.\n",
         "prompts/autoprompter_instruction.txt",
         "Qwen/Qwen3-VL-4B-Instruct-GGUF",
         "autoprompter"
@@ -2890,15 +2896,15 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.5.0",
+    "graph_spec_version": "graph-spec-1.6.0",
     "workflow_id": "hoi4_portraits_local_nvidia_16gb",
     "execution_profile": "hoi4_portraits_local_nvidia_16gb",
     "route": "local_nvidia",
     "human_workflow": true,
     "autoprompter": true,
     "autoprompter_instruction_path": "prompts/autoprompter_instruction.txt",
-    "autoprompter_instruction_sha256": "01d90630b4e604d43feeb16fe40465c4aa14dec837933a81e5cff4232033c3c8",
-    "prompt_source": "autoprompter",
+    "autoprompter_instruction_sha256": "b83f4d149c7279dc610bb1fa51a915707092851e5e2416cfe9a33b2555b59a3b",
+    "prompt_source": "automatic_or_manual",
     "prompt_model": "Qwen/Qwen3-VL-4B-Instruct-GGUF",
     "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
     "remote_authentication": "loopback_only",
@@ -2945,7 +2951,7 @@
         "asset_path",
         "asset_sha256"
       ],
-      "Create portrait description": [
+      "Choose automatic or manual description": [
         "instruction_text",
         "instruction_path",
         "model_id",

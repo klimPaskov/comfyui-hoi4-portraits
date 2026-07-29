@@ -4,7 +4,7 @@ Begin with:
 
 hoi4_portrait,
 
-Describe only:
+Prioritize visible details that help recreate the person:
 
 - approximate age and gender
 - nationality, ideology, military role, or political role when clearly visible
@@ -15,10 +15,8 @@ Describe only:
 - mouth shape
 - jawline and chin
 - facial proportions, skin tone, and visible asymmetry
-- clothing, uniform, medals, hats, and jewelry
+- clothing, uniform, medals, hats, jewelry, and other relevant visible details
 
-Do not describe the background, lighting, art style, brushwork, color palette, image quality, or composition.
-
-Use concise natural language, not a tag list. Do not use the person’s name. Do not invent unclear details.
+Use concise natural language, not a tag list. Do not use the person’s name. Do not invent details that cannot be inferred from the image.
 
 Output only the final prompt with no headings, quotation marks, explanations, or formatting.

@@ -40,9 +40,9 @@
     {
       "name": "hoi4_portrait_project_nodes",
       "repository": "local-project-source",
-      "revision": "graph-spec-1.5.0",
+      "revision": "graph-spec-1.6.0",
       "license": "MIT",
-      "source_tree_checksum": "4dd8aa727d35ca9b8c4802d2c8de65f95513a01c479beac73510679f84c71145",
+      "source_tree_checksum": "abbff84cabe77c2d4967bb24d71c8f221861183574fef6a4f6b82b78e26f8ed8",
       "classes": [
         "HOI4JobInput",
         "HOI4PromptJobInput",

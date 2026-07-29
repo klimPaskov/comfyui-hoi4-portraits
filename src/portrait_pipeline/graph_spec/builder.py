@@ -248,10 +248,10 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
     if is_human:
         nodes.append(_node(
             24, "HOI4HumanControls", group["00 Portrait setup"], "Choose input portrait and options",
-            inputs={"job": Link(1), "source_image_path": "<from_job_contract>", "subject_selector_mode": "automatic", "face_index": 0, "bbox_left": 0, "bbox_top": 0, "bbox_right": 0, "bbox_bottom": 0, "crop_override_left": 0, "crop_override_top": 0, "crop_override_right": 0, "crop_override_bottom": 0, "monochrome_mode": "automatic", "restoration_level": "conservative", "approved_background_registry_id": "<from_job_contract>", "background_choice": "Keep current background", "prompt_override": "", "seed_mode": "derived", "fixed_seed": 0, "candidate_count": int(limits["candidate_max"]), "output_job_id": "<job_id_from_contract>"},
-            input_types={"job": "HOI4_JOB", "source_image_path": "STRING", "subject_selector_mode": "COMBO", "face_index": "INT", "bbox_left": "INT", "bbox_top": "INT", "bbox_right": "INT", "bbox_bottom": "INT", "crop_override_left": "INT", "crop_override_top": "INT", "crop_override_right": "INT", "crop_override_bottom": "INT", "monochrome_mode": "COMBO", "restoration_level": "COMBO", "approved_background_registry_id": "STRING", "background_choice": "COMBO", "prompt_override": "STRING", "seed_mode": "COMBO", "fixed_seed": "INT", "candidate_count": "INT", "output_job_id": "STRING"},
+            inputs={"job": Link(1), "source_image_path": "<from_job_contract>", "subject_selector_mode": "automatic", "face_index": 0, "bbox_left": 0, "bbox_top": 0, "bbox_right": 0, "bbox_bottom": 0, "crop_override_left": 0, "crop_override_top": 0, "crop_override_right": 0, "crop_override_bottom": 0, "monochrome_mode": "automatic", "restoration_level": "conservative", "approved_background_registry_id": "<from_job_contract>", "background_choice": "Keep current background", "seed_mode": "derived", "fixed_seed": 0, "candidate_count": int(limits["candidate_max"]), "output_job_id": "<job_id_from_contract>"},
+            input_types={"job": "HOI4_JOB", "source_image_path": "STRING", "subject_selector_mode": "COMBO", "face_index": "INT", "bbox_left": "INT", "bbox_top": "INT", "bbox_right": "INT", "bbox_bottom": "INT", "crop_override_left": "INT", "crop_override_top": "INT", "crop_override_right": "INT", "crop_override_bottom": "INT", "monochrome_mode": "COMBO", "restoration_level": "COMBO", "approved_background_registry_id": "STRING", "background_choice": "COMBO", "seed_mode": "COMBO", "fixed_seed": "INT", "candidate_count": "INT", "output_job_id": "STRING"},
             outputs=["job", "control_meta"], output_types=["HOI4_JOB", "HOI4_META"], pos=(360, 80),
-            widgets=["<from_job_contract>", "automatic", 0, 0, 0, 0, 0, 0, 0, 0, "automatic", "conservative", "<from_job_contract>", "Keep current background", "", "derived", 0, int(limits["candidate_max"]), "<job_id_from_contract>"],
+            widgets=["<from_job_contract>", "automatic", 0, 0, 0, 0, 0, 0, 0, 0, "automatic", "conservative", "<from_job_contract>", "Keep current background", "derived", 0, int(limits["candidate_max"]), "<job_id_from_contract>"],
         ))
     control_inputs = {"control_meta": Link(24, 1)} if is_human else {}
     control_input_types = {"control_meta": "HOI4_META"} if is_human else {}
@@ -346,10 +346,10 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
 
     if is_human:
         nodes.append(_node(
-            9, "HOI4AutopromptClient", group["05 Portrait description"], "Create portrait description",
-            inputs={"job": Link(job_node_id), "image": Link(8, 0), "background_meta": Link(8, 3), "control_meta": Link(24, 1), "instruction_text": instruction, "instruction_path": AUTOPROMPTER_PATH, "model_id": limits["prompt_model"], "prompt_source": "autoprompter"},
-            input_types={"job": "HOI4_JOB", "image": "IMAGE", "background_meta": "HOI4_META", "control_meta": "HOI4_META", "instruction_text": "STRING", "instruction_path": "STRING", "model_id": "STRING", "prompt_source": "COMBO"},
-            outputs=["prompt", "prompt_meta"], output_types=["STRING", "HOI4_META"], pos=(680, 340), widgets=[instruction, AUTOPROMPTER_PATH, limits["prompt_model"], "autoprompter"], locked=["instruction_text", "instruction_path", "model_id", "prompt_source"],
+            9, "HOI4AutopromptClient", group["05 Portrait description"], "Choose automatic or manual description",
+            inputs={"job": Link(job_node_id), "image": Link(8, 0), "background_meta": Link(8, 3), "control_meta": Link(24, 1), "description_mode": "Create automatically", "manual_description": "", "instruction_text": instruction, "instruction_path": AUTOPROMPTER_PATH, "model_id": limits["prompt_model"], "prompt_source": "autoprompter"},
+            input_types={"job": "HOI4_JOB", "image": "IMAGE", "background_meta": "HOI4_META", "control_meta": "HOI4_META", "description_mode": "COMBO", "manual_description": "STRING", "instruction_text": "STRING", "instruction_path": "STRING", "model_id": "STRING", "prompt_source": "COMBO"},
+            outputs=["prompt", "prompt_meta"], output_types=["STRING", "HOI4_META"], pos=(680, 340), size=(460, 520), widgets=["Create automatically", "", instruction, AUTOPROMPTER_PATH, limits["prompt_model"], "autoprompter"], locked=["instruction_text", "instruction_path", "model_id", "prompt_source"],
         ))
     else:
         nodes.append(_node(
@@ -484,7 +484,7 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "autoprompter": is_human,
         "autoprompter_instruction_path": AUTOPROMPTER_PATH if is_human else None,
         "autoprompter_instruction_sha256": autoprompter_instruction_sha256(root_path) if is_human else None,
-        "prompt_source": "autoprompter" if is_human else "job_contract",
+        "prompt_source": "automatic_or_manual" if is_human else "job_contract",
         "prompt_model": limits["prompt_model"],
         "controlnet_policy": "not_included; no approved live-compatible ControlNet experiment demonstrated a benefit over the Krea identity reference, mask, and approved-background route",
         "remote_authentication": "authenticated_runpod_gateway" if limits["route"] == "runpod" else "loopback_only",
@@ -532,8 +532,10 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
     groups = RANDOM_PROMPT_GROUPS
     prompt_node = (
         _node(
-            1, "HOI4RandomPortraitPrompt", groups[0], "Create a fictional portrait idea",
+            1, "HOI4RandomPortraitPrompt", groups[0], "Choose random or write your own prompt",
             inputs={
+                "prompt_mode": "Create a random portrait",
+                "manual_prompt": "",
                 "character_brief": "",
                 "country_influence": "random",
                 "role": "random",
@@ -545,6 +547,8 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
                 "instruction_path": RANDOM_PORTRAIT_PROMPT_PATH,
             },
             input_types={
+                "prompt_mode": "COMBO",
+                "manual_prompt": "STRING",
                 "character_brief": "STRING",
                 "country_influence": "COMBO",
                 "role": "COMBO",
@@ -556,8 +560,8 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
                 "instruction_path": "STRING",
             },
             outputs=["prompt", "prompt_details", "seed"], output_types=["STRING", "HOI4_META", "INT"],
-            pos=(80, 100), size=(460, 600),
-            widgets=["", "random", "random", "random", "random", "random", 0, instruction, RANDOM_PORTRAIT_PROMPT_PATH],
+            pos=(80, 100), size=(500, 680),
+            widgets=["Create a random portrait", "", "", "random", "random", "random", "random", "random", 0, instruction, RANDOM_PORTRAIT_PROMPT_PATH],
             locked=["instruction_text", "instruction_path"],
         )
         if is_human
@@ -684,7 +688,7 @@ def build_random_prompt_graph(workflow_id: str, root: str | Path | None = None) 
         "autoprompter_kind": "deterministic_text_only" if is_human else None,
         "autoprompter_instruction_path": RANDOM_PORTRAIT_PROMPT_PATH if is_human else None,
         "autoprompter_instruction_sha256": sha256_file(instruction_path) if is_human else None,
-        "prompt_source": "text_only_autoprompter" if is_human else "job_contract",
+        "prompt_source": "random_builder_or_manual" if is_human else "job_contract",
         "prompt_model": None,
         "source_image_required": False,
         "vision_model_required": False,
@@ -724,9 +728,9 @@ def build_preparation_graph(root: str | Path | None = None) -> GraphSpec:
     nodes = [
         _node(
             1, "LoadImage", groups[0], "Choose portrait photo",
-            inputs={"image": "hoi4_preparation_example.png"}, input_types={"image": "COMBO"},
+            inputs={"image": "hoi4_preparation_example.jpg"}, input_types={"image": "COMBO"},
             outputs=["image", "mask"], output_types=["IMAGE", "MASK"],
-            pos=(80, 100), size=(300, 180), widgets=["hoi4_preparation_example.png", "image"],
+            pos=(80, 100), size=(300, 180), widgets=["hoi4_preparation_example.jpg", "image"],
         ),
         _node(
             2, PREVIEW_NODE, groups[0], "Input image preview",

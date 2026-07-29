@@ -50,6 +50,15 @@ def _raise(code: ExitCode, message: str) -> None:
     raise RuntimeError(f"{code.name} ({int(code)}): {message}")
 
 
+def _manual_generation_prompt(value: str, *, field_name: str) -> str:
+    prompt = " ".join(str(value).replace("\r", " ").replace("\n", " ").split())
+    if not prompt:
+        _raise(ExitCode.INPUT_SCHEMA_INVALID, f"{field_name} requires a portrait description")
+    if len(prompt) > 1200:
+        _raise(ExitCode.INPUT_SCHEMA_INVALID, f"{field_name} exceeds 1200 characters")
+    return prompt if prompt.casefold().startswith("hoi4_portrait,") else f"hoi4_portrait, {prompt}"
+
+
 def _project_from_job(job: dict[str, Any]) -> Path:
     root = job.get("_project_root") or os.environ.get("HOI4_PORTRAIT_PROJECT_ROOT")
     if not root:
@@ -433,7 +442,6 @@ class HOI4HumanControls:
             "restoration_level": (["none", "conservative", "qualified_enhanced"], {"default": "conservative"}),
             "approved_background_registry_id": ("STRING", {"default": "<from_job_contract>"}),
             "background_choice": (["Keep current background", "Scientist laboratory", "Operative background"], {"default": "Keep current background"}),
-            "prompt_override": ("STRING", {"default": "", "multiline": True}),
             "seed_mode": (["fixed", "derived", "random_recorded"], {"default": "derived"}),
             "fixed_seed": ("INT", {"default": 0, "min": 0}),
             "candidate_count": ("INT", {"default": 1, "min": 1, "max": 6}),
@@ -445,7 +453,7 @@ class HOI4HumanControls:
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/00 Portrait setup"
 
-    def run(self, job: dict[str, Any], source_image_path: str, subject_selector_mode: str, face_index: int, bbox_left: int, bbox_top: int, bbox_right: int, bbox_bottom: int, crop_override_left: int, crop_override_top: int, crop_override_right: int, crop_override_bottom: int, monochrome_mode: str, restoration_level: str, approved_background_registry_id: str, background_choice: str, prompt_override: str, seed_mode: str, fixed_seed: int, candidate_count: int, output_job_id: str):
+    def run(self, job: dict[str, Any], source_image_path: str, subject_selector_mode: str, face_index: int, bbox_left: int, bbox_top: int, bbox_right: int, bbox_bottom: int, crop_override_left: int, crop_override_top: int, crop_override_right: int, crop_override_bottom: int, monochrome_mode: str, restoration_level: str, approved_background_registry_id: str, background_choice: str, seed_mode: str, fixed_seed: int, candidate_count: int, output_job_id: str):
         root = _project_from_job(job)
         if output_job_id not in {"", "<job_id_from_contract>", str(job.get("job_id"))}:
             _raise(ExitCode.WORKFLOW_INVALID, "human control output_job_id cannot change the validated job root")
@@ -497,11 +505,6 @@ class HOI4HumanControls:
                 _raise(ExitCode.BACKGROUND_UNRESOLVED, "human background control does not identify an approved registry entry")
             entry = matches[0]
             updated["approved_background"] = {"registry_id": entry["registry_id"], "path": entry.get("runtime_path") or entry.get("path"), "sha256": entry.get("sha256")}
-        if prompt_override.strip():
-            result = validate_prompt(prompt_override, record_name=updated.get("subject_identity", {}).get("record_name"), allowed_claims=updated.get("allowed_autoprompt_claims"))
-            if not result.passed:
-                _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
-            updated["prompt"] = result.normalized_prompt
         # The control node is allowed to change only the documented human
         # controls. Revalidate the resulting contract before it reaches any
         # producer node.
@@ -515,7 +518,7 @@ class HOI4HumanControls:
         if not (crop_override[0] == crop_override[1] == crop_override[2] == crop_override[3] == 0):
             if crop_override[2] <= crop_override[0] or crop_override[3] <= crop_override[1] or crop_override[2] - crop_override[0] <= 0:
                 _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "human crop override is empty")
-        control_meta = {"source": resolved_source, "subject_selector_mode": subject_selector_mode, "crop_override_xyxy": crop_override if any(crop_override) else None, "monochrome_mode": monochrome_mode, "restoration_level": restoration_level, "approved_background_registry_id": updated.get("approved_background", {}).get("registry_id"), "background_choice": background_choice, "prompt_override": bool(prompt_override.strip()), "prompt_override_value": prompt_override if prompt_override.strip() else "", "seed_mode": seed_mode, "candidate_count": int(candidate_count), "output_job_id": updated.get("job_id")}
+        control_meta = {"source": resolved_source, "subject_selector_mode": subject_selector_mode, "crop_override_xyxy": crop_override if any(crop_override) else None, "monochrome_mode": monochrome_mode, "restoration_level": restoration_level, "approved_background_registry_id": updated.get("approved_background", {}).get("registry_id"), "background_choice": background_choice, "seed_mode": seed_mode, "candidate_count": int(candidate_count), "output_job_id": updated.get("job_id")}
         return updated, control_meta
 
 
@@ -1340,7 +1343,7 @@ class HOI4RandomPortraitPrompt:
     )
     CLOTHING = (
         "tailored 1940s civilian suit",
-        "plain period service uniform without insignia",
+        "period service uniform",
         "formal diplomatic dress",
         "practical wartime administration attire",
         "period overcoat over formal clothing",
@@ -1349,6 +1352,8 @@ class HOI4RandomPortraitPrompt:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
+            "prompt_mode": (["Create a random portrait", "Use my prompt"], {"default": "Create a random portrait"}),
+            "manual_prompt": ("STRING", {"multiline": True, "default": ""}),
             "character_brief": ("STRING", {"multiline": True, "default": ""}),
             "country_influence": (["random", *cls.COUNTRIES], {"default": "random"}),
             "role": (["random", *cls.ROLES], {"default": "random"}),
@@ -1375,6 +1380,8 @@ class HOI4RandomPortraitPrompt:
 
     def run(
         self,
+        prompt_mode: str,
+        manual_prompt: str,
         character_brief: str,
         country_influence: str,
         role: str,
@@ -1394,6 +1401,20 @@ class HOI4RandomPortraitPrompt:
         if instruction_path != RANDOM_PORTRAIT_PROMPT_PATH or instruction_text != exact_instruction:
             _raise(ExitCode.WORKFLOW_INVALID, "random portrait instruction does not match the project file")
 
+        if prompt_mode not in {"Create a random portrait", "Use my prompt"}:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown portrait prompt mode")
+        if prompt_mode == "Use my prompt":
+            prompt = _manual_generation_prompt(manual_prompt, field_name="manual prompt mode")
+            return prompt, {
+                "source": "human_manual_prompt",
+                "seed": int(seed),
+                "instruction_path": instruction_path,
+                "instruction_sha256": sha256_file(exact_path),
+                "selected": {},
+                "used_image": False,
+                "used_language_model": False,
+            }, int(seed)
+
         brief = " ".join(str(character_brief).replace("\r", " ").replace("\n", " ").split())
         if len(brief) > 500:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "character brief exceeds 500 characters")
@@ -1410,23 +1431,29 @@ class HOI4RandomPortraitPrompt:
             "expression": self._choose(expression, self.EXPRESSIONS, rng),
             "clothing": rng.choice(self.CLOTHING),
         }
-        details = ", ".join((
-            "fictional original adult leader",
-            selected["country_influence"] + " visual influence",
-            selected["role"],
+
+        # The free-form brief is authoritative. Random country and role values
+        # are omitted when a brief is present so requests such as "random
+        # British officers" cannot be contradicted by an unrelated random
+        # country or civilian role. Explicit dropdown choices are still used.
+        details_parts = [brief.rstrip(" .")] if brief else ["fictional original adult leader"]
+        if not brief or country_influence != "random":
+            details_parts.append(selected["country_influence"] + " visual influence")
+        if not brief or role != "random":
+            details_parts.append(selected["role"])
+        details_parts.extend((
             selected["presentation"] + " presentation",
             selected["age"],
             selected["expression"] + " expression",
             selected["clothing"],
         ))
-        if brief:
-            details += ", " + brief.rstrip(" .")
+        details = ", ".join(details_parts)
         prompt = (
             "hoi4_portrait, "
             + details
-            + ", chest-up formal portrait, 1936-1948 period, neutral studio backdrop, "
+            + ", chest-up formal portrait, 1936-1948 period, "
               "painterly grand-strategy game portrait, restrained historical color palette, "
-              "clear facial features, no text, no flag, no logo, no watermark, no extremist insignia"
+              "clear facial features"
         )
         return prompt, {
             "source": "deterministic_text_only_autoprompter",
@@ -1447,6 +1474,8 @@ class HOI4AutopromptClient:
             "image": ("IMAGE",),
             "background_meta": ("HOI4_META",),
             "control_meta": ("HOI4_META",),
+            "description_mode": (["Create automatically", "Use my description"], {"default": "Create automatically"}),
+            "manual_description": ("STRING", {"multiline": True, "default": ""}),
             "instruction_text": ("STRING", {"multiline": True, "default": ""}),
             "instruction_path": ("STRING", {"default": "prompts/autoprompter_instruction.txt"}),
             "model_id": ("STRING", {"default": "Qwen/Qwen3-VL-4B-Instruct-GGUF"}),
@@ -1458,9 +1487,11 @@ class HOI4AutopromptClient:
     FUNCTION = "run"
     CATEGORY = "HOI4 Portrait/05 Portrait description"
 
-    def run(self, job: dict[str, Any], image: Any, background_meta: dict[str, Any], control_meta: dict[str, Any], instruction_text: str, instruction_path: str, model_id: str, prompt_source: str):
+    def run(self, job: dict[str, Any], image: Any, background_meta: dict[str, Any], control_meta: dict[str, Any], description_mode: str, manual_description: str, instruction_text: str, instruction_path: str, model_id: str, prompt_source: str):
         if prompt_source != "autoprompter":
             _raise(ExitCode.WORKFLOW_INVALID, "human autoprompter source is locked")
+        if description_mode not in {"Create automatically", "Use my description"}:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown portrait description mode")
         expected_model = "Qwen/Qwen3-VL-4B-Instruct-GGUF" if job.get("execution_profile") == "hoi4_portraits_local_nvidia_16gb" else "Qwen/Qwen3-VL-8B-Instruct"
         if model_id != expected_model:
             _raise(ExitCode.WORKFLOW_INVALID, f"autoprompter model does not match profile; expected {expected_model}")
@@ -1469,14 +1500,18 @@ class HOI4AutopromptClient:
         exact_instruction = exact_path.read_text(encoding="utf-8")
         if instruction_text != exact_instruction:
             _raise(ExitCode.WORKFLOW_INVALID, "autoprompter instruction does not exactly match the project file")
-        prompt_override = str(control_meta.get("prompt_override_value", "")) if isinstance(control_meta, dict) else ""
-        if prompt_override:
-            result = validate_prompt(prompt_override, record_name=job.get("subject_identity", {}).get("record_name"), allowed_claims=job.get("allowed_autoprompt_claims"))
-            if not result.passed:
-                _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
+        if description_mode == "Use my description":
+            prompt = _manual_generation_prompt(manual_description, field_name="manual description mode")
+            validator = {
+                "passed": True,
+                "normalized_prompt": prompt,
+                "failure_codes": [],
+                "findings": [],
+                "claims": {},
+            }
             attempts = [{"attempt": 1, "status": "PASS", "source": "human_manual_override"}]
             atomic_json_write(_job_root(job) / "evidence" / "prompt" / "autoprompter_attempts.json", {"schema_version": "1.0.0", "instruction_sha256": sha256_file(exact_path), "attempts": attempts})
-            return result.normalized_prompt, {"source": "human_manual_override", "instruction_sha256": sha256_file(exact_path), "validator": result.as_dict(), "attempts": attempts, "background_meta": background_meta}
+            return prompt, {"source": "human_manual_override", "instruction_sha256": sha256_file(exact_path), "validator": validator, "attempts": attempts, "background_meta": background_meta}
         endpoint = os.environ.get("HOI4_AUTOPROMPTER_LOOPBACK", "http://127.0.0.1:8099/v1/chat/completions")
         if not endpoint.startswith("http://127.0.0.1:") and not endpoint.startswith("http://localhost:"):
             _raise(ExitCode.REMOTE_AUTH_OR_TRANSPORT_FAILED, "autoprompter is not bound to loopback")

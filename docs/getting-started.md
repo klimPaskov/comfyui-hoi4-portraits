@@ -29,7 +29,7 @@ Open `Workflows > hoi4_portraits`, then select `hoi4_portraits_local_nvidia_16gb
 1. Create a job file based on [`job_input.example.json`](examples/job_input.example.json).
 2. Set the job file path in the first workflow node.
 3. Confirm the source portrait and background previews.
-4. Enter a manual prompt or use the built-in autoprompter.
+4. In the portrait-description node, choose **Create automatically** or **Use my description**.
 5. Queue the workflow.
 6. Review the final preview beside the Save Image node.
 
@@ -39,7 +39,7 @@ Agent workflows read their portrait description from the job file. Use `hoi4_por
 
 ## Prompt workflow
 
-Open `hoi4_portraits_no_input_local_nvidia_16gb` to create a fictional leader without an input image. Choose the portrait controls, add an optional character brief, and queue the workflow. Change the seed to create another portrait.
+Open `hoi4_portraits_no_input_local_nvidia_16gb` to create a leader without an input image. Leave the first node on **Create a random portrait** and add an optional brief, or choose **Use my prompt**. Change the seed to create another portrait.
 
 ## Prepare an old photo
 

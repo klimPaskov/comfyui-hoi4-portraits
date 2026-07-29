@@ -2,7 +2,7 @@
   "1": {
     "class_type": "LoadImage",
     "inputs": {
-      "image": "hoi4_preparation_example.png"
+      "image": "hoi4_preparation_example.jpg"
     }
   },
   "2": {
@@ -100,7 +100,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.5.0",
+    "graph_spec_version": "graph-spec-1.6.0",
     "workflow_id": "hoi4_portraits_prepare_portrait_for_hoi4",
     "profile": "hoi4_portraits_prepare_portrait_for_hoi4",
     "execution_profile": "hoi4_portraits_prepare_portrait_for_hoi4",

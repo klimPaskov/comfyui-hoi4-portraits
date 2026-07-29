@@ -60,7 +60,7 @@
         "hoi4_locked_controls": []
       },
       "widgets_values": [
-        "hoi4_preparation_example.png",
+        "hoi4_preparation_example.jpg",
         "image"
       ]
     },
@@ -623,7 +623,7 @@
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.5.0",
+    "graph_spec_version": "graph-spec-1.6.0",
     "workflow_id": "hoi4_portraits_prepare_portrait_for_hoi4",
     "profile": "hoi4_portraits_prepare_portrait_for_hoi4",
     "execution_profile": "hoi4_portraits_prepare_portrait_for_hoi4",

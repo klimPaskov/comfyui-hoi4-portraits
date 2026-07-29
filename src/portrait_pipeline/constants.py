@@ -139,7 +139,7 @@ STAGES = [
     "COMPLETED",
 ]
 
-WORKFLOW_VERSION = "graph-spec-1.5.0"
+WORKFLOW_VERSION = "graph-spec-1.6.0"
 DEPENDENCY_LOCK_VERSION = "lock-2026-07-26.1"
 AUTOPROMPTER_PATH = "prompts/autoprompter_instruction.txt"
 RANDOM_PORTRAIT_PROMPT_PATH = "prompts/random_portrait_instruction.txt"
