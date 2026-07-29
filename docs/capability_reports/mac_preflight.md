@@ -5,7 +5,9 @@ macOS 26.5.2, arm64, 10 CPU cores, PyTorch 2.11.0, and MPS available.
 
 The loopback services and pinned artifacts are installed and checksum-verified.
 Raw ComfyUI remains bound to `127.0.0.1`; the user-facing server is on port
-8188 and the isolated CPU qualification server is on port 8189.
+8188. The isolated CPU qualification server used for the bounded canary was
+stopped after the test so it does not consume memory needed by the user-facing
+MPS process.
 
 The hardware capability gate passes, but the locked Krea 2 FP8 production graph
 does not pass live MPS generation. The official NVFP4 artifact also fails the

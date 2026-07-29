@@ -24,6 +24,14 @@ core revision, ComfyUI/PyTorch versions, node presence, live input schemas, and
 all five workflow checks. The model artifact preflight separately records the
 required local model files and SHA-256 values.
 
+The current official Krea 2 source was checked again on 2026-07-29. The
+[official inference repository at the checked commit](https://github.com/krea-ai/krea-2/tree/db3984fbc6e13b34c0064990fc2d95ac64d00058)
+constructs its 12B pipeline with a CUDA device default and does not expose a
+verified Apple staged-offload path for the required Identity Edit workflow. The
+[official Turbo model card](https://huggingface.co/krea/Krea-2-Turbo) has a
+generic MPS mention, but it is not a live ComfyUI/Krea2Edit compatibility or
+quality qualification. No new approved Mac route was found.
+
 This is a schema/import and local-capability qualification result, not a
 production generation claim. The private user fixture, approved local-copy-only
 background, and preprocessing route passed. The first MPS attempt exposed the

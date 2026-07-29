@@ -27,6 +27,18 @@ This report records the measured result on the detected Apple Silicon Mac with
 The official artifacts were checksum-verified before testing. No repacked or
 unapproved model format was substituted into the production graph.
 
+## Current official-source check — 2026-07-29
+
+The current `main` revision of [Krea AI's official Krea 2 inference
+repository](https://github.com/krea-ai/krea-2/tree/db3984fbc6e13b34c0064990fc2d95ac64d00058)
+builds the 12B pipeline with a CUDA device default and moves the DiT, VAE, and
+Qwen encoder to that device. The [official Krea 2 Turbo model
+card](https://huggingface.co/krea/Krea-2-Turbo) contains a generic library
+snippet mentioning MPS, but it does not provide a verified Apple route for the
+ComfyUI Krea 2 Identity Edit nodes, staged offload, or the required style-LoRA
+workflow. That note therefore does not override the measured ComfyUI/MPS
+failure above.
+
 ## Conclusion
 
 The approved Krea 2 production route is not currently feasible on this Mac's
