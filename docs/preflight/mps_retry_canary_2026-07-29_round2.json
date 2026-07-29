@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "checked_at": "2026-07-29T08:12:00+03:00",
+  "status": "BLOCKED_MAC_MEMORY_LIMIT_LOADER_NOT_SAMPLER",
+  "execution_profile": "human_local_mac_16gb",
+  "workflow_id": "human_local_mac_16gb",
+  "workflow_path": "workflows/human/local_mac_16gb/human_local_mac_16gb.api.json",
+  "comfyui_revision": "2a610155821d670a2d8047e654e5fce96b790eb5",
+  "binding": "http://127.0.0.1:8188",
+  "device": "mps",
+  "argv": [
+    "--listen",
+    "127.0.0.1",
+    "--port",
+    "8188",
+    "--lowvram",
+    "--cpu-vae",
+    "--preview-method",
+    "auto",
+    "--disable-smart-memory",
+    "--cache-none"
+  ],
+  "submission": {
+    "status": "PASS",
+    "prompt_id": "2d9ab9aa-15ed-4d8e-8f8f-67c6950ea909",
+    "submitted_at": "2026-07-29T08:08:33.350000+03:00",
+    "candidate_count": 1,
+    "canvas": "832x1120",
+    "steps": 8,
+    "input_job": "jobs/local-human-fernand-cpu-full-08-01/input.json",
+    "route": "exact user-facing human graph through /prompt"
+  },
+  "stage_evidence": {
+    "source_intake": "PASS",
+    "subject_selection": "PASS",
+    "crop_and_preparation": "PASS",
+    "foreground_mask_and_approved_background": "PASS",
+    "autoprompter": "PASS",
+    "krea_model_load_requested": "PASS",
+    "sampler_started": false,
+    "candidate_created": false,
+    "final_preview_save_pair_reached": false
+  },
+  "memory_observations": [
+    {
+      "stage": "before_submission",
+      "free_unified_memory_bytes": 6877904896
+    },
+    {
+      "stage": "after_preprocessing_and_autoprompt",
+      "free_unified_memory_bytes": 3558047744
+    },
+    {
+      "stage": "krea_loader_without_sampler",
+      "free_unified_memory_bytes": 1102036992
+    }
+  ],
+  "recovery": {
+    "interrupt_endpoint": "DID_NOT_CLEAR_BLOCKING_LOADER",
+    "action": "controlled_SIGINT_then_restart",
+    "restart_status": "PASS",
+    "post_restart_queue": "EMPTY",
+    "post_restart_free_unified_memory_bytes": 6877904896
+  },
+  "production_claim": "NOT_CLAIMED",
+  "reason": "The exact 832x1120 eight-step human graph reaches Krea loading but exhausts practical 16 GiB unified-memory headroom before the first sampler step. No new candidate, DDS, or mod output was created."
+}
