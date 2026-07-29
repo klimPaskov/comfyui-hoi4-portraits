@@ -7,7 +7,7 @@ This is a read-only audit of the local live target checkouts. No target reposito
 ## Chaos Redux
 
 - Target snapshots found: `2`.
-- Installed-game target consumer surface: `PRESENT`.
+- Installed-game target consumer surface: `BLOCKED_MISSING_CONSUMER_FILES`.
 - Direct apply: `BLOCKED_READ_ONLY_AUDIT`.
 - Baseline comparisons are recorded in the JSON report; divergent or missing files require a regenerated patch and parent review.
 

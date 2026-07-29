@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "observed_at": "2026-07-29T00:33:28.751291+00:00",
+  "observed_at": "2026-07-29T00:35:32.703087+00:00",
   "scope": "read_only_live_integration_target_validation",
   "overall_status": "PORTABLE_VALIDATION_PASS_LIVE_APPLY_BLOCKED",
   "source_project": "comfyui-hoi4-portraits",
@@ -173,6 +173,7 @@
               "size_bytes": 191777
             }
           ],
+          "consumer_surface_status": "BLOCKED_MISSING_CONSUMER_FILES",
           "direct_apply": "BLOCKED_READ_ONLY_AUDIT"
         }
       },
@@ -353,11 +354,12 @@
               "size_bytes": null
             }
           ],
+          "consumer_surface_status": "BLOCKED_MISSING_CONSUMER_FILES",
           "direct_apply": "BLOCKED_READ_ONLY_AUDIT"
         }
       }
     ],
-    "installed_game_target_surface": "PRESENT",
+    "installed_game_target_surface": "BLOCKED_MISSING_CONSUMER_FILES",
     "direct_apply": "BLOCKED_READ_ONLY_AUDIT"
   },
   "agentic_hoi4_modding": {

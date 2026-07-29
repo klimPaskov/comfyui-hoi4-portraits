@@ -111,12 +111,19 @@ def compare_chaos_package(target: Path) -> dict[str, Any]:
     counts: dict[str, int] = {}
     for item in records:
         counts[item["comparison"]] = counts.get(item["comparison"], 0) + 1
+    consumer_surface = [file_record(target, path) for path in consumer_paths]
+    consumer_surface_status = (
+        "PASS"
+        if consumer_surface and all(item["exists"] for item in consumer_surface)
+        else "BLOCKED_MISSING_CONSUMER_FILES"
+    )
     return {
         "target_snapshot": git_snapshot(target),
         "package_manifest": "integrations/chaos-redux/replacement_manifest.json",
         "destination_comparisons": records,
         "comparison_counts": counts,
-        "consumer_surface": [file_record(target, path) for path in consumer_paths],
+        "consumer_surface": consumer_surface,
+        "consumer_surface_status": consumer_surface_status,
         "direct_apply": "BLOCKED_READ_ONLY_AUDIT",
     }
 
@@ -247,7 +254,11 @@ def main() -> int:
         "source_project": "comfyui-hoi4-portraits",
         "chaos_redux": {
             "targets": chaos_records,
-            "installed_game_target_surface": "PRESENT" if installed.is_dir() else "UNAVAILABLE",
+            "installed_game_target_surface": (
+                chaos_records[0]["audit"].get("consumer_surface_status", "BLOCKED")
+                if installed.is_dir() and chaos_records
+                else "UNAVAILABLE"
+            ),
             "direct_apply": "BLOCKED_READ_ONLY_AUDIT",
         },
         "agentic_hoi4_modding": generic,
