@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "observed_at": "2026-07-29T02:27:06Z",
+  "status": "BLOCKED_LOCAL_MEMORY_PRESSURE_DURING_KREA_MODEL_LOAD",
+  "scope": "private_user_fixture_live_user_facing_barrier_fix_followup",
+  "execution_profile": "human_local_mac_16gb",
+  "workflow_id": "human_local_mac_16gb",
+  "workflow_graph_spec_version": "graph-spec-1.1.0",
+  "hardware": {
+    "os": "darwin",
+    "architecture": "arm64",
+    "ram_bytes": 17179869184,
+    "accelerator": "mps",
+    "comfyui_revision": "2a610155821d670a2d8047e654e5fce96b790eb5",
+    "comfyui_version": "0.25.0",
+    "pytorch_version": "2.11.0"
+  },
+  "runtime": {
+    "binding": "http://127.0.0.1:8188",
+    "raw_comfyui_loopback_only": true,
+    "argv": [
+      "--lowvram",
+      "--cpu-vae",
+      "--preview-method",
+      "auto",
+      "--disable-smart-memory",
+      "--cache-none"
+    ],
+    "preprocessing_health": "PASS",
+    "autoprompter_health": "PASS",
+    "graph_submission": "PASS",
+    "barrier_node": {
+      "class": "HOI4KreaModelLoadBarrier",
+      "release_call": "comfy.model_management.unload_all_models",
+      "source_fix_live_loaded": true
+    },
+    "stages_reached": [
+      "source_snapshot",
+      "subject_selection",
+      "crop_and_reference",
+      "mask_and_approved_background",
+      "autoprompter",
+      "qwen_text_encoder_load",
+      "krea_model_load_requested"
+    ]
+  },
+  "attempt": {
+    "prompt_id": "89c706da-a19c-487a-b3c9-bcc7555f92f7",
+    "canvas": "208x280_canary_only",
+    "batch_size": 1,
+    "sampler_steps_requested": 1,
+    "sampler_steps_completed": 0,
+    "candidate_produced": false,
+    "krea_load_requested_at_local": "2026-07-29T05:27:42",
+    "interrupt_received_at_local": "2026-07-29T05:29:00",
+    "monitor_min_available_memory_bytes": 962707456,
+    "monitor_min_free_swap_bytes": 335609856,
+    "monitor_peak_swap_used_bytes": 24060559360,
+    "failure_stage": "Krea model loading/offload before first sampler step",
+    "safety_action": "global_interrupt_received_then_comfyui_terminated_and_restarted",
+    "remote_submission": "NOT_QUEUED_BY_LOCAL_ROUTE"
+  },
+  "model": {
+    "filename": "krea2_turbo_fp8_scaled.safetensors",
+    "official_revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+    "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1"
+  },
+  "production_authorization": {
+    "status": "BLOCKED",
+    "identity_style_audit": "NOT_RUN",
+    "dds_created": false,
+    "mod_integration_created": false
+  },
+  "conclusion": "The corrected barrier is live and the exact human Mac graph reaches Krea loading, but official FP8 Krea materialization remains impractical on this 16 GiB unified-memory host. The Mac generation route remains fail-closed; preprocessing, prompting, validation, auditing, and local evidence export remain usable."
+}

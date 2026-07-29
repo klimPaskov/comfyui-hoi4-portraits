@@ -31,6 +31,14 @@ blocked before the first sampler step at approximately 1.02 GiB free RAM and
 263.81 MB free swap on a bounded 208×280 canary. See the
 [`staged-load barrier evidence`](../preflight/mps_barrier_canary_2026-07-29.md).
 
+The barrier release call was corrected to ComfyUI's device-aware
+`unload_all_models()` API and retested through the exact user-facing graph. The
+follow-up still remained in Krea model materialization, reached approximately
+0.90 GiB minimum available memory and 22.4 GiB peak swap used, and completed
+zero sampler steps. ComfyUI had to be terminated and restarted after the
+interrupt. See the
+[`barrier-fix follow-up evidence`](../preflight/mps_barrier_canary_2026-07-29_followup.md).
+
 A fresh retry through the same user-facing graph again submitted successfully,
 passed preprocessing and the autoprompter, and reached Krea model loading. The
 bounded run was safely interrupted at approximately 1.07 GiB free unified

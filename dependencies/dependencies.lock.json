@@ -105,7 +105,7 @@
       "redistribution_permission": "allowed",
       "install_method": "copy or symlink the checked-out project node package into ComfyUI/custom_nodes",
       "destination": "comfyui/custom_nodes/hoi4_portrait_nodes",
-      "sha256": "93a252e82ea738427bd75a213be6dab0f81a47f7e298fe6bd1d04583ba502960",
+      "sha256": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8",
       "profiles": ["all"],
       "mandatory": true,
       "compatibility_notes": "Source checksum is recorded in the release manifest after each bounded commit."

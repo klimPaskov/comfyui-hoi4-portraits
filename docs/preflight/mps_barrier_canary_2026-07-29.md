@@ -4,8 +4,9 @@ Status: **BLOCKED_LOCAL_MEMORY_PRESSURE_BEFORE_FIRST_SAMPLER_STEP**
 
 The exact `human_local_mac_16gb` graph was re-tested after adding the
 project-owned `HOI4KreaModelLoadBarrier`. The barrier waits for both grounded
-Qwen conditioning branches and uses ComfyUI's device-agnostic release path so
-CPU-resident text-encoder models are unloaded before Krea sampling.
+Qwen conditioning branches and uses ComfyUI's device-aware
+`unload_all_models()` release path so CPU-resident text-encoder models are
+unloaded before Krea sampling.
 
 The live node registry contained the barrier and the run reached the pinned
 official Krea 2 FP8 model-load stage. Even at a bounded `208x280` one-step

@@ -968,14 +968,15 @@ class HOI4KreaModelLoadBarrier:
         except Exception as exc:
             _raise(ExitCode.DEPENDENCY_MISSING, f"ComfyUI model-release API is unavailable: {type(exc).__name__}")
         # The model patcher is still an execution value here; KSampler has not
-        # loaded it yet.  The release call unloads the completed Qwen encoder
-        # (and any optional completed stage) without discarding the Krea
-        # patcher that this node returns.
-        # `--lowvram` intentionally places the Krea Qwen encoder on CPU.  The
-        # convenience `unload_all_models()` helper only iterates accelerator
-        # devices in this ComfyUI revision, so use the device-agnostic release
-        # path to include CPU-resident encoder models as well.
-        model_management.free_memory(1e30, None)
+        # loaded it yet.  Release every device-aware ComfyUI model record so
+        # the completed Qwen encoder is not retained while KSampler loads the
+        # Krea diffusion model.  Calling free_memory(..., device=None) is not
+        # equivalent when --disable-smart-memory is enabled in the pinned
+        # ComfyUI revision: that combination leaves the per-device unload
+        # budget at zero.  unload_all_models() is the supported path and still
+        # preserves the Krea patcher returned by this node as an execution
+        # value; it does not mutate model files, weights, prompts, or seeds.
+        model_management.unload_all_models()
         gc.collect()
         return model, positive, negative
 

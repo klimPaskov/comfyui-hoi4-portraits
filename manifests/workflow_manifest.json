@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-29T02:18:17.240401+00:00",
+  "generated_at": "2026-07-29T02:34:11.108514+00:00",
   "lock_version": "workflows-2026-07-26.1",
   "workflows": [
     {
@@ -50,7 +50,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "93a252e82ea738427bd75a213be6dab0f81a47f7e298fe6bd1d04583ba502960"
+        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -80,7 +80,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:18:17.240401+00:00"
+        "checked_at": "2026-07-29T02:34:11.108514+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -140,7 +140,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "93a252e82ea738427bd75a213be6dab0f81a47f7e298fe6bd1d04583ba502960"
+        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -170,7 +170,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:18:17.240401+00:00"
+        "checked_at": "2026-07-29T02:34:11.108514+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -228,7 +228,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "93a252e82ea738427bd75a213be6dab0f81a47f7e298fe6bd1d04583ba502960"
+        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -252,7 +252,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:18:17.240401+00:00"
+        "checked_at": "2026-07-29T02:34:11.108514+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -310,7 +310,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "93a252e82ea738427bd75a213be6dab0f81a47f7e298fe6bd1d04583ba502960"
+        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -334,7 +334,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:18:17.240401+00:00"
+        "checked_at": "2026-07-29T02:34:11.108514+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
@@ -392,7 +392,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "93a252e82ea738427bd75a213be6dab0f81a47f7e298fe6bd1d04583ba502960"
+        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -416,7 +416,7 @@
       "load_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
         "status": "PASS",
-        "checked_at": "2026-07-29T02:18:17.240401+00:00"
+        "checked_at": "2026-07-29T02:34:11.108514+00:00"
       },
       "execution_test_evidence": {
         "path": "docs/preflight/live_comfy_compatibility.json",
