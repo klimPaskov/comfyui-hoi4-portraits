@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.metadata
 import json
 import os
 import shutil
@@ -28,13 +29,13 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from portrait_pipeline.constants import ExitCode  # noqa: E402
 from portrait_pipeline.util import atomic_json_write, sha256_file  # noqa: E402
-from scripts.bootstrap.bootstrap import (  # noqa: E402
-    BootstrapError,
+from scripts.install_support import (  # noqa: E402
+    InstallError,
     _download_verified,
     _restore_models,
     _restore_preprocessing_models,
     _restore_preprocessing_source_artifacts,
-    _restore_project_owned_immutable_files,
+    _restore_project_owned_files,
 )
 
 CONFIG_BEGIN = "# BEGIN HOI4 PORTRAIT WORKFLOWS"
@@ -45,7 +46,7 @@ def _run(command: list[str], cwd: Path) -> dict[str, Any]:
     result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False, timeout=900)
     if result.returncode != 0:
         detail = (result.stderr or result.stdout).strip()[-1000:]
-        raise BootstrapError(ExitCode.DEPENDENCY_MISSING, f"command failed: {command[0]}: {detail}")
+        raise InstallError(ExitCode.DEPENDENCY_MISSING, f"command failed: {command[0]}: {detail}")
     return {"command": command, "returncode": 0, "stdout": result.stdout.strip()[-1000:]}
 
 
@@ -54,7 +55,7 @@ def _checkout_krea_nodes(comfy_root: Path, actions: list[dict[str, Any]]) -> Non
     entry = next(item for item in lock["custom_nodes"] if item["name"] == "comfyui-krea2edit")
     destination = comfy_root / "custom_nodes" / "comfyui-krea2edit"
     if destination.exists() and not (destination / ".git").is_dir():
-        raise BootstrapError(ExitCode.NODE_MISSING, f"refusing to replace non-Git node directory: {destination}")
+        raise InstallError(ExitCode.NODE_MISSING, f"refusing to replace non-Git node directory: {destination}")
     if not destination.exists():
         destination.parent.mkdir(parents=True, exist_ok=True)
         actions.append(_run(["git", "clone", entry["repository"], str(destination)], comfy_root))
@@ -62,8 +63,53 @@ def _checkout_krea_nodes(comfy_root: Path, actions: list[dict[str, Any]]) -> Non
     actions.append(_run(["git", "checkout", "--detach", entry["revision"]], destination))
     actual = _run(["git", "rev-parse", "HEAD"], destination)["stdout"]
     if actual != entry["revision"]:
-        raise BootstrapError(ExitCode.NODE_MISSING, "Krea Edit node revision does not match the lock")
+        raise InstallError(ExitCode.NODE_MISSING, "Krea Edit node revision does not match the lock")
     actions.append({"action": "krea_edit_nodes_verified", "path": str(destination), "revision": actual})
+
+
+def _checkout_ddcolor_nodes(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
+    lock = json.loads((ROOT / "dependencies" / "custom_nodes.lock.json").read_text(encoding="utf-8"))
+    entry = next(item for item in lock["custom_nodes"] if item["name"] == "ComfyUI-DDColor")
+    destination = comfy_root / "custom_nodes" / "ComfyUI-DDColor"
+    if destination.exists() and not (destination / ".git").is_dir():
+        raise InstallError(ExitCode.NODE_MISSING, f"refusing to replace non-Git node directory: {destination}")
+    if not destination.exists():
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        actions.append(_run(["git", "clone", entry["repository"], str(destination)], comfy_root))
+    actions.append(_run(["git", "fetch", "--tags", "--force", "origin", entry["revision"]], destination))
+    actions.append(_run(["git", "checkout", "--detach", entry["revision"]], destination))
+    actual = _run(["git", "rev-parse", "HEAD"], destination)["stdout"]
+    if actual != entry["revision"]:
+        raise InstallError(ExitCode.NODE_MISSING, "DDColor node revision does not match")
+
+    requirements = entry.get("requirements", {})
+    missing_or_different = []
+    for package, expected in requirements.items():
+        try:
+            actual_version = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            actual_version = None
+        if actual_version != expected:
+            missing_or_different.append(f"{package}=={expected}")
+    if missing_or_different:
+        actions.append(_run([sys.executable, "-m", "pip", "install", *missing_or_different], comfy_root))
+    for package, expected in requirements.items():
+        try:
+            actual_version = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError as exc:
+            raise InstallError(ExitCode.DEPENDENCY_MISSING, f"DDColor requires {package} {expected}") from exc
+        if actual_version != expected:
+            raise InstallError(ExitCode.DEPENDENCY_MISSING, f"DDColor requires {package} {expected}, found {actual_version}")
+
+    checkpoint = entry["checkpoint"]
+    _download_verified(
+        checkpoint["url"],
+        destination / "checkpoints" / checkpoint["filename"],
+        checkpoint["size_bytes"],
+        checkpoint["sha256"],
+        actions,
+    )
+    actions.append({"action": "ddcolor_nodes_verified", "path": str(destination), "revision": actual})
 
 
 def _source_files() -> list[tuple[Path, Path]]:
@@ -103,10 +149,11 @@ def _copy_project_nodes(comfy_root: Path, actions: list[dict[str, Any]]) -> None
     if destination.exists():
         actual = _tree_fingerprint(destination, relative_paths)
         if actual != expected:
-            raise BootstrapError(
+            raise InstallError(
                 ExitCode.NODE_MISSING,
                 f"existing project node directory differs; back it up or remove it explicitly: {destination}",
             )
+        (destination / ".hoi4_project_root").write_text(str(ROOT) + "\n", encoding="utf-8")
         actions.append({"action": "project_nodes_verified", "path": str(destination), "sha256": actual})
         return
     for source, relative in pairs:
@@ -115,7 +162,8 @@ def _copy_project_nodes(comfy_root: Path, actions: list[dict[str, Any]]) -> None
         shutil.copy2(source, target)
     actual = _tree_fingerprint(destination, relative_paths)
     if actual != expected:
-        raise BootstrapError(ExitCode.NODE_MISSING, "copied project node pack failed checksum verification")
+        raise InstallError(ExitCode.NODE_MISSING, "copied project node pack failed checksum verification")
+    (destination / ".hoi4_project_root").write_text(str(ROOT) + "\n", encoding="utf-8")
     actions.append({"action": "project_nodes_installed", "path": str(destination), "sha256": actual})
 
 
@@ -144,12 +192,12 @@ def _merge_extra_model_paths(comfy_root: Path, actions: list[dict[str, Any]]) ->
     block = _extra_model_block()
     if CONFIG_BEGIN in existing or CONFIG_END in existing:
         if CONFIG_BEGIN not in existing or CONFIG_END not in existing:
-            raise BootstrapError(ExitCode.WORKFLOW_INVALID, "existing HOI4 extra-model-path marker block is malformed")
+            raise InstallError(ExitCode.WORKFLOW_INVALID, "existing HOI4 extra-model-path marker block is malformed")
         start = existing.index(CONFIG_BEGIN)
         end = existing.index(CONFIG_END, start) + len(CONFIG_END)
         current = existing[start:end].rstrip() + "\n"
         if current != block:
-            raise BootstrapError(
+            raise InstallError(
                 ExitCode.WORKFLOW_INVALID,
                 "existing HOI4 extra-model-path block differs; remove only that marked block and rerun",
             )
@@ -176,7 +224,7 @@ def _copy_workflows(
             target = destination / source.name
             if target.is_file():
                 if sha256_file(target) != sha256_file(source):
-                    raise BootstrapError(
+                    raise InstallError(
                         ExitCode.WORKFLOW_INVALID,
                         f"unselected installed workflow has local changes and was not removed: {target}",
                     )
@@ -185,15 +233,36 @@ def _copy_workflows(
             continue
         target = destination / source.name
         if target.is_file() and sha256_file(target) != sha256_file(source):
-            raise BootstrapError(ExitCode.WORKFLOW_INVALID, f"existing workflow differs: {target}")
+            raise InstallError(ExitCode.WORKFLOW_INVALID, f"existing workflow differs: {target}")
         if not target.is_file():
             shutil.copy2(source, target)
         count += 1
     actions.append({"action": "ui_workflows_installed", "path": str(destination), "count": count})
 
 
-def _install_autoprompter_runtime(profile: str, actions: list[dict[str, Any]]) -> None:
-    if profile != "local_nvidia_16gb" or os.name != "nt":
+def _copy_example_input(comfy_root: Path, actions: list[dict[str, Any]]) -> None:
+    source = ROOT / "docs" / "assets" / "examples" / "preparation_before.png"
+    destination = comfy_root / "input" / "hoi4_preparation_example.png"
+    if not source.is_file():
+        raise InstallError(ExitCode.SOURCE_INVALID, "the portrait preparation example image is missing")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.is_file() and sha256_file(destination) != sha256_file(source):
+        raise InstallError(ExitCode.SOURCE_INVALID, f"existing example image differs: {destination}")
+    if not destination.is_file():
+        shutil.copy2(source, destination)
+    actions.append({"action": "example_input_installed", "path": str(destination)})
+
+
+def _install_autoprompter_runtime(
+    profile: str,
+    actions: list[dict[str, Any]],
+    workflow_ids: set[str] | None = None,
+) -> None:
+    if (
+        profile != "local_nvidia_16gb"
+        or os.name != "nt"
+        or (workflow_ids is not None and "human_local_nvidia_16gb" not in workflow_ids)
+    ):
         return
     lock = json.loads((ROOT / "dependencies" / "autoprompter_runtime.lock.json").read_text(encoding="utf-8"))
     artifact = lock["artifacts"]["windows_x64"]
@@ -212,7 +281,7 @@ def _install_autoprompter_runtime(profile: str, actions: list[dict[str, Any]]) -
             executable.stat().st_size != artifact["extracted_binary_size_bytes"]
             or sha256_file(executable) != artifact["extracted_binary_sha256"]
         ):
-            raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "installed autoprompter runtime checksum mismatch")
+            raise InstallError(ExitCode.MODEL_CHECKSUM_MISMATCH, "installed autoprompter runtime checksum mismatch")
     else:
         destination.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(archive) as package:
@@ -221,14 +290,14 @@ def _install_autoprompter_runtime(profile: str, actions: list[dict[str, Any]]) -
                 try:
                     target.relative_to(destination.resolve())
                 except ValueError as exc:
-                    raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "autoprompter runtime archive contains an unsafe path") from exc
+                    raise InstallError(ExitCode.DEPENDENCY_MISSING, "autoprompter runtime archive contains an unsafe path") from exc
             package.extractall(destination)
         if (
             not executable.is_file()
             or executable.stat().st_size != artifact["extracted_binary_size_bytes"]
             or sha256_file(executable) != artifact["extracted_binary_sha256"]
         ):
-            raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, "extracted autoprompter runtime checksum mismatch")
+            raise InstallError(ExitCode.MODEL_CHECKSUM_MISMATCH, "extracted autoprompter runtime checksum mismatch")
     actions.append({
         "action": "autoprompter_runtime_verified",
         "path": str(executable),
@@ -242,25 +311,41 @@ def install(
     workflow_ids: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     if not comfy_root.is_dir() or not (comfy_root / "main.py").is_file():
-        raise BootstrapError(ExitCode.WORKFLOW_INVALID, "existing ComfyUI root must contain main.py")
+        raise InstallError(ExitCode.WORKFLOW_INVALID, "existing ComfyUI root must contain main.py")
     if profile not in {"local_nvidia_16gb", "full_power_gpu"}:
-        raise BootstrapError(ExitCode.INPUT_SCHEMA_INVALID, "existing-runtime install supports local NVIDIA or full-power GPU profiles")
+        raise InstallError(ExitCode.INPUT_SCHEMA_INVALID, "existing-runtime install supports local NVIDIA or full-power GPU profiles")
     actions: list[dict[str, Any]] = [{
         "action": "existing_comfyui_verified",
         "path": str(comfy_root),
         "main_sha256": sha256_file(comfy_root / "main.py"),
         "comfyui_downloaded": False,
     }]
-    _checkout_krea_nodes(comfy_root, actions)
+    identity_workflows = {
+        "human_local_nvidia_16gb",
+        "human_full_power_gpu",
+        "agent_local_nvidia_16gb",
+        "agent_full_power_gpu",
+    }
+    if workflow_ids is None or workflow_ids.intersection(identity_workflows):
+        _checkout_krea_nodes(comfy_root, actions)
+    if workflow_ids is None or "prepare_portrait_for_hoi4" in workflow_ids:
+        _checkout_ddcolor_nodes(comfy_root, actions)
     _copy_project_nodes(comfy_root, actions)
     model_lock = json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8"))
-    _restore_project_owned_immutable_files(model_lock, actions)
-    _restore_models(model_lock, profile, actions)
+    generation_workflows = identity_workflows | {
+        "human_prompt_local_nvidia_16gb",
+        "human_prompt_full_power_gpu",
+    }
+    if workflow_ids is None or workflow_ids.intersection(generation_workflows):
+        _restore_project_owned_files(model_lock, actions)
+    _restore_models(model_lock, profile, actions, workflow_ids)
     preprocessing_lock = json.loads((ROOT / "dependencies" / "preprocessing_lock.json").read_text(encoding="utf-8"))
     _restore_preprocessing_models(preprocessing_lock, actions)
     _restore_preprocessing_source_artifacts(preprocessing_lock, actions)
-    _install_autoprompter_runtime(profile, actions)
+    _install_autoprompter_runtime(profile, actions, workflow_ids)
     _merge_extra_model_paths(comfy_root, actions)
+    if workflow_ids is None or "prepare_portrait_for_hoi4" in workflow_ids:
+        _copy_example_input(comfy_root, actions)
     _copy_workflows(comfy_root, actions, workflow_ids)
     return actions
 
@@ -277,6 +362,9 @@ def main(argv: list[str] | None = None) -> int:
             "human_full_power_gpu",
             "agent_local_nvidia_16gb",
             "agent_full_power_gpu",
+            "human_prompt_local_nvidia_16gb",
+            "human_prompt_full_power_gpu",
+            "prepare_portrait_for_hoi4",
         ],
         help="copy only the named UI workflow; repeat to install more than one",
     )
@@ -287,7 +375,7 @@ def main(argv: list[str] | None = None) -> int:
             args.profile,
             set(args.workflow) if args.workflow else None,
         )
-    except BootstrapError as exc:
+    except InstallError as exc:
         print(json.dumps({"status": "BLOCKED", "exit_code": int(exc.code), "error": str(exc)}, indent=2), file=sys.stderr)
         return int(exc.code)
     receipt = {
@@ -298,7 +386,7 @@ def main(argv: list[str] | None = None) -> int:
         "workflows": sorted(args.workflow) if args.workflow else "all",
         "comfyui_root": str(args.comfyui_root.expanduser().resolve()),
         "actions": actions,
-        "warning": "Setup PASS is not generation or portrait-audit acceptance. Restart ComfyUI and run live compatibility checks.",
+        "next_step": "Restart ComfyUI, open the installed workflow, and try one portrait.",
     }
     receipt_path = ROOT / ".runtime" / "existing_comfyui_install_receipt.json"
     receipt_path.parent.mkdir(parents=True, exist_ok=True)

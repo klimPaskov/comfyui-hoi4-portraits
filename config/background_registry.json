@@ -1,22 +1,28 @@
 {
   "schema_version": "1.0.0",
-  "registry_status": "UNRESOLVED",
+  "registry_status": "RESOLVED",
   "backgrounds": [
     {
-      "registry_id": "UNRESOLVED_BLOCK_EXECUTION",
-      "role_scope": ["country_leader", "commander", "operative"],
-      "source_class": "project_owned|installed_game_private_copy",
-      "source_path": "RESOLVE_FROM_LIVE_PROJECT_OR_INSTALLED_GAME",
-      "runtime_path": "backgrounds/private_or_redistributable/exact_file.png",
-      "source_definition": "Owning GFX or catalog reference",
-      "attribution": "RESOLVE",
-      "license_or_rights": "RESOLVE",
-      "redistribution_rule": "bundle_allowed|local_copy_only|blocked",
-      "width": null,
-      "height": null,
-      "sha256": "RESOLVE",
-      "approved_by": [],
-      "status": "BLOCKED_UNTIL_RESOLVED"
+      "registry_id": "scientist_laboratory_cc0",
+      "role_scope": [
+        "country_leader",
+        "commander",
+        "operative"
+      ],
+      "source_class": "redistributable_public_domain",
+      "source_path": "https://commons.wikimedia.org/wiki/File:Interior_of_a_laboratory(GN04185).jpg",
+      "runtime_path": "backgrounds/bundled/scientist_laboratory_cc0.jpg",
+      "source_definition": "Interior of a laboratory, circa 1905",
+      "attribution": "State Government Photographer; History Trust of South Australia",
+      "license_or_rights": "CC0 1.0 Universal",
+      "redistribution_rule": "bundle_allowed",
+      "width": 3264,
+      "height": 2448,
+      "sha256": "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa",
+      "approved_by": [
+        "project maintainer"
+      ],
+      "status": "APPROVED"
     }
   ]
 }

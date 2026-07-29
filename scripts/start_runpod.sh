@@ -3,6 +3,12 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 COMFY_ROOT="${1:-${COMFYUI_ROOT:-/workspace/ComfyUI}}"
+WORKFLOW="${2:-human_full_power_gpu}"
+
+if [[ "${WORKFLOW}" != "human_full_power_gpu" && "${WORKFLOW}" != "human_prompt_full_power_gpu" && "${WORKFLOW}" != "prepare_portrait_for_hoi4" ]]; then
+  echo "Choose human_full_power_gpu, human_prompt_full_power_gpu, or prepare_portrait_for_hoi4." >&2
+  exit 10
+fi
 
 if [[ ! -f "${COMFY_ROOT}/main.py" ]]; then
   echo "ComfyUI was not found at ${COMFY_ROOT}." >&2
@@ -35,20 +41,24 @@ export HOI4_AUTOPROMPTER_LOOPBACK="http://127.0.0.1:8099/v1/chat/completions"
 LOG_ROOT="${PROJECT_ROOT}/.runtime/logs"
 mkdir -p "${LOG_ROOT}"
 
-"${PYTHON_BIN}" -m portrait_pipeline.preprocessing_service \
-  --root "${PROJECT_ROOT}" --host 127.0.0.1 --port 8790 --device cuda \
-  >"${LOG_ROOT}/preprocessing.log" 2>&1 &
-PREPROCESSING_PID=$!
+PREPROCESSING_PID=""
+AUTOPROMPTER_PID=""
+if [[ "${WORKFLOW}" == "human_full_power_gpu" ]]; then
+  "${PYTHON_BIN}" -m portrait_pipeline.preprocessing_service \
+    --root "${PROJECT_ROOT}" --host 127.0.0.1 --port 8790 --device cuda \
+    >"${LOG_ROOT}/preprocessing.log" 2>&1 &
+  PREPROCESSING_PID=$!
 
-"${PYTHON_BIN}" -m portrait_pipeline.autoprompter_service \
-  --root "${PROJECT_ROOT}" --profile human_full_power_gpu \
-  --host 127.0.0.1 --port 8099 \
-  >"${LOG_ROOT}/autoprompter.log" 2>&1 &
-AUTOPROMPTER_PID=$!
+  "${PYTHON_BIN}" -m portrait_pipeline.autoprompter_service \
+    --root "${PROJECT_ROOT}" --profile human_full_power_gpu \
+    --host 127.0.0.1 --port 8099 \
+    >"${LOG_ROOT}/autoprompter.log" 2>&1 &
+  AUTOPROMPTER_PID=$!
+fi
 
 cleanup() {
-  kill "${AUTOPROMPTER_PID}" 2>/dev/null || true
-  kill "${PREPROCESSING_PID}" 2>/dev/null || true
+  if [[ -n "${AUTOPROMPTER_PID}" ]]; then kill "${AUTOPROMPTER_PID}" 2>/dev/null || true; fi
+  if [[ -n "${PREPROCESSING_PID}" ]]; then kill "${PREPROCESSING_PID}" 2>/dev/null || true; fi
 }
 trap cleanup EXIT INT TERM
 

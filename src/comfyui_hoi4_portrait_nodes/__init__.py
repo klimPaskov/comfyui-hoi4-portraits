@@ -19,6 +19,7 @@ if str(_project_src) not in sys.path:
 
 from .nodes import (
     HOI4AutopromptClient,
+    HOI4BundledBackground,
     HOI4ConservativePrep,
     HOI4EvidenceExport,
     HOI4ForegroundMask,
@@ -27,10 +28,14 @@ from .nodes import (
     HOI4JobInput,
     HOI4JobSource,
     HOI4MaskAndBackgroundGuard,
+    HOI4FinishPreparedPortrait,
     HOI4KreaModelLoadBarrier,
+    HOI4PortraitCrop,
     HOI4PromptInput,
+    HOI4RandomPortraitPrompt,
     HOI4SourceGuard,
     HOI4SubjectSelect,
+    HOI4UseColorWhenNeeded,
 )
 
 NODE_CLASS_MAPPINGS = {
@@ -43,9 +48,14 @@ NODE_CLASS_MAPPINGS = {
     "HOI4ConservativePrep": HOI4ConservativePrep,
     "HOI4ForegroundMask": HOI4ForegroundMask,
     "HOI4MaskAndBackgroundGuard": HOI4MaskAndBackgroundGuard,
+    "HOI4PortraitCrop": HOI4PortraitCrop,
+    "HOI4UseColorWhenNeeded": HOI4UseColorWhenNeeded,
+    "HOI4FinishPreparedPortrait": HOI4FinishPreparedPortrait,
     "HOI4KreaModelLoadBarrier": HOI4KreaModelLoadBarrier,
     "HOI4PromptInput": HOI4PromptInput,
+    "HOI4RandomPortraitPrompt": HOI4RandomPortraitPrompt,
     "HOI4AutopromptClient": HOI4AutopromptClient,
+    "HOI4BundledBackground": HOI4BundledBackground,
     "HOI4EvidenceExport": HOI4EvidenceExport,
 }
 
@@ -60,10 +70,15 @@ NODE_DISPLAY_NAME_MAPPINGS = {
         "HOI4ConservativePrep": "Prepare the portrait",
         "HOI4ForegroundMask": "Separate person from background",
         "HOI4MaskAndBackgroundGuard": "Add approved background",
+        "HOI4PortraitCrop": "Crop to head and shoulders",
+        "HOI4UseColorWhenNeeded": "Choose color treatment",
+        "HOI4FinishPreparedPortrait": "Finish prepared portrait",
         "HOI4KreaModelLoadBarrier": "Prepare generation",
         "HOI4PromptInput": "Use portrait description",
+        "HOI4RandomPortraitPrompt": "Create a fictional portrait idea",
         "HOI4AutopromptClient": "Create portrait description",
-        "HOI4EvidenceExport": "Save portrait evidence",
+        "HOI4BundledBackground": "Optional scientist laboratory background",
+        "HOI4EvidenceExport": "Prepare portrait for saving",
     }.items()
 }
 

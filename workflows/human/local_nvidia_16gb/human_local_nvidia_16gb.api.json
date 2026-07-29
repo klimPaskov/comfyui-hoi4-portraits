@@ -30,6 +30,7 @@
       "monochrome_mode": "automatic",
       "restoration_level": "conservative",
       "approved_background_registry_id": "<from_job_contract>",
+      "background_choice": "Keep current background",
       "prompt_override": "",
       "seed_mode": "derived",
       "fixed_seed": 0,
@@ -132,6 +133,13 @@
       "mask_model": "BiRefNet"
     }
   },
+  "34": {
+    "class_type": "HOI4BundledBackground",
+    "inputs": {
+      "asset_path": "backgrounds/bundled/scientist_laboratory_cc0.jpg",
+      "asset_sha256": "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa"
+    }
+  },
   "8": {
     "class_type": "HOI4MaskAndBackgroundGuard",
     "inputs": {
@@ -150,6 +158,18 @@
       "mask_meta": [
         "7",
         2
+      ],
+      "control_meta": [
+        "24",
+        1
+      ],
+      "scientist_background": [
+        "34",
+        0
+      ],
+      "scientist_background_meta": [
+        "34",
+        1
       ]
     }
   },
@@ -443,9 +463,18 @@
       ]
     }
   },
+  "35": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "34",
+        0
+      ]
+    }
+  },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.1.0",
+    "graph_spec_version": "graph-spec-1.2.0",
     "workflow_id": "human_local_nvidia_16gb",
     "execution_profile": "human_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -468,19 +497,19 @@
       "height": 210
     },
     "required_groups": [
-      "00 Job and source",
-      "01 Subject selection",
-      "02 Crop and source preparation",
-      "03 Color and restoration",
-      "04 Masks and approved background",
-      "05 Prompt",
-      "06 Krea 2 identity edit",
-      "07 HOI4 style LoRA",
-      "08 Portrait generation",
-      "09 Preview and evidence export"
+      "00 Portrait setup",
+      "01 Choose subject",
+      "02 Crop portrait",
+      "03 Prepare portrait",
+      "04 Choose background",
+      "05 Portrait description",
+      "06 Krea 2 portrait edit",
+      "07 HOI4 portrait style",
+      "08 Generate portrait",
+      "09 Preview and save"
     ],
     "locked_controls": {
-      "Portrait workflow settings": [
+      "Choose portrait settings": [
         "execution_profile",
         "candidate_count",
         "retry_limit",
@@ -488,6 +517,10 @@
       ],
       "Separate person from background": [
         "mask_model"
+      ],
+      "Optional scientist laboratory background": [
+        "asset_path",
+        "asset_sha256"
       ],
       "Create portrait description": [
         "instruction_text",
@@ -536,7 +569,7 @@
         "scheduler",
         "denoise"
       ],
-      "Save portrait evidence": [
+      "Prepare portrait for saving": [
         "candidate_index"
       ],
       "Save portrait PNG": [
@@ -560,7 +593,8 @@
       "Prepared portrait",
       "Background preview",
       "Saved portrait preview",
-      "Input portrait preview"
+      "Input portrait preview",
+      "Scientist background preview"
     ],
     "final_preview_save_pair": {
       "preview_node_id": 28,
@@ -575,6 +609,7 @@
     ],
     "required_project_nodes": [
       "HOI4AutopromptClient",
+      "HOI4BundledBackground",
       "HOI4ConservativePrep",
       "HOI4EvidenceExport",
       "HOI4ForegroundMask",
@@ -601,13 +636,13 @@
       },
       {
         "node_id": 32,
-        "title": "Optional 12 GB model path",
+        "title": "Use a 12 GB GGUF model",
         "connected": false,
         "ui_only": true
       },
       {
         "node_id": 33,
-        "title": "Optional 8 GB model path",
+        "title": "Use an 8 GB GGUF model",
         "connected": false,
         "ui_only": true
       }

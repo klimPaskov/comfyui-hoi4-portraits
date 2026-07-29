@@ -52,7 +52,7 @@
     },
     {
       "name": "DDColor",
-      "purpose": "conditional monochrome colorization",
+      "purpose": "older colorization checkpoint retained for compatibility; the portrait preparation workflow uses the ComfyUI-DDColor checkpoint",
       "official_source": "https://github.com/piddnad/DDColor.git",
       "source_revision": "2adb63f2656ac41cbdf7b894cddd94121a3faf13",
       "license": "Apache-2.0",
@@ -64,8 +64,8 @@
       "artifact_size_bytes": 911914869,
       "artifact_sha256": "d81711971ec59200da26d5e8a1afae8dd3778d495ea8ad7a7dadc769f403f7e7",
       "destination_path": "models/preprocessing/ddcolor/pytorch_model.bin",
-      "mandatory": true,
-      "status": "INSTALLED_CHECKSUM_PASS"
+      "mandatory": false,
+      "status": "OPTIONAL_NOT_USED_BY_WORKFLOWS"
     },
     {
       "name": "Real-ESRGAN",

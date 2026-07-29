@@ -91,16 +91,16 @@ PROFILE_LIMITS: dict[str, dict[str, int | bool | str]] = {
 
 
 GROUP_LABELS = [
-    "00 Job and source",
-    "01 Subject selection",
-    "02 Crop and source preparation",
-    "03 Color and restoration",
-    "04 Masks and approved background",
-    "05 Prompt",
-    "06 Krea 2 identity edit",
-    "07 HOI4 style LoRA",
-    "08 Portrait generation",
-    "09 Preview and evidence export",
+    "00 Portrait setup",
+    "01 Choose subject",
+    "02 Crop portrait",
+    "03 Prepare portrait",
+    "04 Choose background",
+    "05 Portrait description",
+    "06 Krea 2 portrait edit",
+    "07 HOI4 portrait style",
+    "08 Generate portrait",
+    "09 Preview and save",
 ]
 
 HARD_AUDIT_GATES = [
@@ -139,9 +139,10 @@ STAGES = [
     "COMPLETED",
 ]
 
-WORKFLOW_VERSION = "graph-spec-1.1.0"
+WORKFLOW_VERSION = "graph-spec-1.2.0"
 DEPENDENCY_LOCK_VERSION = "lock-2026-07-26.1"
 AUTOPROMPTER_PATH = "prompts/autoprompter_instruction.txt"
+RANDOM_PORTRAIT_PROMPT_PATH = "prompts/random_portrait_instruction.txt"
 STYLE_LORA_PATH = "loras/hoi4_portrait_new_style_lora.safetensors"
 STYLE_LORA_SHA256 = "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
 STYLE_LORA_REPOSITORY = "Hoops-McCann/hoi4-portrait-new-style-lora"

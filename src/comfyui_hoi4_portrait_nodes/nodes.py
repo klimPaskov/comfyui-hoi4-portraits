@@ -6,6 +6,7 @@ import binascii
 import hashlib
 import io
 import os
+import random
 import subprocess
 import sys
 import tempfile
@@ -17,7 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from portrait_pipeline.constants import ExitCode
+from portrait_pipeline.constants import ExitCode, RANDOM_PORTRAIT_PROMPT_PATH
 from portrait_pipeline.contracts import validate_job
 from portrait_pipeline.prompt import validate_prompt
 from portrait_pipeline.constants import PROFILE_LIMITS
@@ -29,9 +30,10 @@ except Exception:  # pragma: no cover - import-only path on a clean preflight ho
     torch = None
 
 try:
-    from PIL import Image, ImageOps  # type: ignore
+    from PIL import Image, ImageEnhance, ImageOps  # type: ignore
 except Exception:  # pragma: no cover - import-only path on a clean preflight host
     Image = None
+    ImageEnhance = None
     ImageOps = None
 
 
@@ -44,6 +46,29 @@ def _project_from_job(job: dict[str, Any]) -> Path:
     if not root:
         _raise(ExitCode.INTERNAL_ERROR, "job does not identify an allowed project root")
     return project_root(root)
+
+
+def _standalone_project_root() -> Path:
+    """Find the project used by simple workflows that do not use a job file."""
+
+    candidates: list[Path] = []
+    environment_root = os.environ.get("HOI4_PORTRAIT_PROJECT_ROOT")
+    if environment_root:
+        candidates.append(Path(environment_root))
+    marker = Path(__file__).resolve().parent / ".hoi4_project_root"
+    try:
+        marker_value = marker.read_text(encoding="utf-8").strip()
+    except OSError:
+        marker_value = ""
+    if marker_value:
+        candidates.append(Path(marker_value))
+    candidates.append(Path(__file__).resolve().parents[2])
+    for candidate in candidates:
+        try:
+            return project_root(candidate)
+        except (FileNotFoundError, ValueError):
+            continue
+    _raise(ExitCode.INTERNAL_ERROR, "the HOI4 portrait project folder could not be found")
 
 
 def _job_path(path_value: str, root: Path) -> Path:
@@ -283,7 +308,7 @@ class HOI4JobInput:
     RETURN_TYPES = ("HOI4_JOB",)
     RETURN_NAMES = ("job",)
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/00 Job and source"
+    CATEGORY = "HOI4 Portrait/00 Portrait setup"
 
     def run(self, execution_profile: str, job_contract_path: str, candidate_count: int, retry_limit: int, seed_policy: str):
         # The actual JSON is loaded here so the graph cannot silently accept a
@@ -331,6 +356,7 @@ class HOI4HumanControls:
             "monochrome_mode": (["automatic", "force_skip", "force_run_with_review"], {"default": "automatic"}),
             "restoration_level": (["none", "conservative", "qualified_enhanced"], {"default": "conservative"}),
             "approved_background_registry_id": ("STRING", {"default": "<from_job_contract>"}),
+            "background_choice": (["Keep current background", "Scientist laboratory"], {"default": "Keep current background"}),
             "prompt_override": ("STRING", {"default": "", "multiline": True}),
             "seed_mode": (["fixed", "derived", "random_recorded"], {"default": "derived"}),
             "fixed_seed": ("INT", {"default": 0, "min": 0}),
@@ -341,9 +367,9 @@ class HOI4HumanControls:
     RETURN_TYPES = ("HOI4_JOB", "HOI4_META")
     RETURN_NAMES = ("job", "control_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/00 Job and source"
+    CATEGORY = "HOI4 Portrait/00 Portrait setup"
 
-    def run(self, job: dict[str, Any], source_image_path: str, subject_selector_mode: str, face_index: int, bbox_left: int, bbox_top: int, bbox_right: int, bbox_bottom: int, crop_override_left: int, crop_override_top: int, crop_override_right: int, crop_override_bottom: int, monochrome_mode: str, restoration_level: str, approved_background_registry_id: str, prompt_override: str, seed_mode: str, fixed_seed: int, candidate_count: int, output_job_id: str):
+    def run(self, job: dict[str, Any], source_image_path: str, subject_selector_mode: str, face_index: int, bbox_left: int, bbox_top: int, bbox_right: int, bbox_bottom: int, crop_override_left: int, crop_override_top: int, crop_override_right: int, crop_override_bottom: int, monochrome_mode: str, restoration_level: str, approved_background_registry_id: str, background_choice: str, prompt_override: str, seed_mode: str, fixed_seed: int, candidate_count: int, output_job_id: str):
         root = _project_from_job(job)
         if output_job_id not in {"", "<job_id_from_contract>", str(job.get("job_id"))}:
             _raise(ExitCode.WORKFLOW_INVALID, "human control output_job_id cannot change the validated job root")
@@ -380,6 +406,8 @@ class HOI4HumanControls:
             updated["seed_policy"] = {"mode": seed_mode}
         else:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown human seed mode")
+        if background_choice not in {"Keep current background", "Scientist laboratory"}:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown portrait background choice")
         if approved_background_registry_id not in {"", "<from_job_contract>"}:
             registry_path = root / "config" / "background_registry.json"
             registry = json.loads(registry_path.read_text(encoding="utf-8")) if registry_path.is_file() else {}
@@ -406,7 +434,7 @@ class HOI4HumanControls:
         if not (crop_override[0] == crop_override[1] == crop_override[2] == crop_override[3] == 0):
             if crop_override[2] <= crop_override[0] or crop_override[3] <= crop_override[1] or crop_override[2] - crop_override[0] <= 0:
                 _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "human crop override is empty")
-        control_meta = {"source": resolved_source, "subject_selector_mode": subject_selector_mode, "crop_override_xyxy": crop_override if any(crop_override) else None, "monochrome_mode": monochrome_mode, "restoration_level": restoration_level, "approved_background_registry_id": updated.get("approved_background", {}).get("registry_id"), "prompt_override": bool(prompt_override.strip()), "prompt_override_value": prompt_override if prompt_override.strip() else "", "seed_mode": seed_mode, "candidate_count": int(candidate_count), "output_job_id": updated.get("job_id")}
+        control_meta = {"source": resolved_source, "subject_selector_mode": subject_selector_mode, "crop_override_xyxy": crop_override if any(crop_override) else None, "monochrome_mode": monochrome_mode, "restoration_level": restoration_level, "approved_background_registry_id": updated.get("approved_background", {}).get("registry_id"), "background_choice": background_choice, "prompt_override": bool(prompt_override.strip()), "prompt_override_value": prompt_override if prompt_override.strip() else "", "seed_mode": seed_mode, "candidate_count": int(candidate_count), "output_job_id": updated.get("job_id")}
         return updated, control_meta
 
 
@@ -418,7 +446,7 @@ class HOI4JobSource:
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "source_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/00 Job and source"
+    CATEGORY = "HOI4 Portrait/00 Portrait setup"
 
     def run(self, job: dict[str, Any]):
         if Image is None:
@@ -479,7 +507,7 @@ class HOI4SourceGuard:
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "source_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/00 Job and source"
+    CATEGORY = "HOI4 Portrait/00 Portrait setup"
 
     def run(self, job: dict[str, Any], image: Any):
         root = _project_from_job(job)
@@ -503,7 +531,7 @@ class HOI4SubjectSelect:
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "selection_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/01 Subject selection"
+    CATEGORY = "HOI4 Portrait/01 Choose subject"
 
     def run(self, job: dict[str, Any], image: Any):
         selector = job.get("subject_selector")
@@ -604,7 +632,7 @@ class HOI4HeadShouldersCrop:
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "crop_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/02 Crop and source preparation"
+    CATEGORY = "HOI4 Portrait/02 Crop portrait"
 
     def run(self, job: dict[str, Any], image: Any, selection_meta: dict[str, Any], control_meta: dict[str, Any] | None = None):
         if Image is None:
@@ -668,7 +696,7 @@ class HOI4ConservativePrep:
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "reference_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/03 Color and restoration"
+    CATEGORY = "HOI4 Portrait/03 Prepare portrait"
 
     def run(self, job: dict[str, Any], image: Any, crop_meta: dict[str, Any], control_meta: dict[str, Any] | None = None):
         if Image is None:
@@ -719,6 +747,155 @@ class HOI4ConservativePrep:
         return _pil_to_comfy(prepared), meta
 
 
+class HOI4PortraitCrop:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "face_index": ("INT", {"default": 0, "min": 0, "max": 20, "step": 1}),
+                "framing": (["Normal head and shoulders", "Wider shoulders", "Tighter portrait"],),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE", "HOI4_META")
+    RETURN_NAMES = ("cropped_portrait", "crop_details")
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/02 Crop portrait"
+
+    def run(self, image: Any, face_index: int, framing: str):
+        if Image is None or ImageOps is None:
+            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required to crop the portrait")
+        try:
+            import cv2  # type: ignore
+            import numpy as np  # type: ignore
+        except (ImportError, ModuleNotFoundError):
+            _raise(ExitCode.DEPENDENCY_MISSING, "OpenCV is required to find the face")
+        root = _standalone_project_root()
+        entry = _preprocessing_entry(root, "YuNet")
+        model_path = relative_safe_path(root, str(entry["destination_path"]))
+        source = _comfy_to_pil(image).convert("RGB")
+        rgb = np.asarray(source)
+        bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+        detector = cv2.FaceDetectorYN.create(
+            str(model_path),
+            "",
+            (source.width, source.height),
+            score_threshold=0.45,
+            nms_threshold=0.3,
+            top_k=5000,
+        )
+        _, detections = detector.detect(bgr)
+        if detections is None or len(detections) == 0:
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "no usable face was found in the image")
+        faces = sorted(
+            detections.tolist(),
+            key=lambda row: (-(float(row[2]) * float(row[3])), float(row[0]), float(row[1])),
+        )
+        if face_index >= len(faces):
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, f"face {face_index} was not found; detected {len(faces)} face(s)")
+        x, y, face_width, face_height = [float(value) for value in faces[face_index][:4]]
+        height_multiplier = {
+            "Tighter portrait": 2.9,
+            "Normal head and shoulders": 3.4,
+            "Wider shoulders": 4.2,
+        }.get(framing)
+        if height_multiplier is None:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "portrait framing choice is invalid")
+        crop_height = max(350, int(round(face_height * height_multiplier)))
+        crop_width = int(round(crop_height * 26 / 35))
+        center_x = x + face_width / 2.0
+        face_center_y = y + face_height / 2.0
+        crop_left = int(round(center_x - crop_width / 2.0))
+        crop_top = int(round(face_center_y - crop_height * 0.28))
+        crop_right = crop_left + crop_width
+        crop_bottom = crop_top + crop_height
+        canvas = Image.new("RGB", (crop_width, crop_height), (28, 28, 28))
+        source_box = (
+            max(0, crop_left),
+            max(0, crop_top),
+            min(source.width, crop_right),
+            min(source.height, crop_bottom),
+        )
+        if source_box[2] <= source_box[0] or source_box[3] <= source_box[1]:
+            _raise(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "the portrait crop falls outside the image")
+        patch = source.crop(source_box)
+        canvas.paste(patch, (source_box[0] - crop_left, source_box[1] - crop_top))
+        prepared = ImageOps.fit(canvas, (832, 1120), method=Image.Resampling.LANCZOS)
+        details = {
+            "detected_faces": len(faces),
+            "selected_face": int(face_index),
+            "framing": framing,
+            "face_box_xywh": [round(x), round(y), round(face_width), round(face_height)],
+            "crop_box_xyxy": [crop_left, crop_top, crop_right, crop_bottom],
+            "output_size": [832, 1120],
+        }
+        return _pil_to_comfy(prepared), details
+
+
+class HOI4UseColorWhenNeeded:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "original": ("IMAGE",),
+                "colorized": ("IMAGE",),
+                "color_choice": (["Automatic", "Use colorized image", "Keep original"],),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE", "HOI4_META")
+    RETURN_NAMES = ("portrait", "color_details")
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/03 Color and enhance"
+
+    def run(self, original: Any, colorized: Any, color_choice: str):
+        source = _comfy_to_pil(original).convert("RGB")
+        pixels = list(source.getdata())
+        chroma = [max(pixel) - min(pixel) for pixel in pixels]
+        median_chroma = sorted(chroma)[len(chroma) // 2] if chroma else 0
+        neutral_fraction = sum(1 for value in chroma if value <= 5) / len(chroma) if chroma else 1.0
+        monochrome = median_chroma <= 5 and neutral_fraction >= 0.92
+        use_colorized = color_choice == "Use colorized image" or (color_choice == "Automatic" and monochrome)
+        if color_choice not in {"Automatic", "Use colorized image", "Keep original"}:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "color choice is invalid")
+        selected = colorized if use_colorized else original
+        details = {
+            "choice": color_choice,
+            "detected_black_and_white": monochrome,
+            "used_colorized_image": use_colorized,
+            "median_channel_difference": median_chroma,
+            "mostly_neutral_pixels": neutral_fraction,
+        }
+        return selected, details
+
+
+class HOI4FinishPreparedPortrait:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "contrast": ("FLOAT", {"default": 1.04, "min": 0.8, "max": 1.3, "step": 0.01}),
+                "sharpness": ("FLOAT", {"default": 1.08, "min": 0.8, "max": 1.5, "step": 0.01}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("prepared_portrait",)
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/03 Color and enhance"
+
+    def run(self, image: Any, contrast: float, sharpness: float):
+        if ImageEnhance is None or ImageOps is None:
+            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required to finish the portrait")
+        source = _comfy_to_pil(image).convert("RGB")
+        finished = ImageEnhance.Contrast(source).enhance(float(contrast))
+        finished = ImageEnhance.Sharpness(finished).enhance(float(sharpness))
+        finished = ImageOps.fit(finished, (832, 1120), method=Image.Resampling.LANCZOS)
+        return (_pil_to_comfy(finished),)
+
+
 class HOI4ForegroundMask:
     @classmethod
     def INPUT_TYPES(cls):
@@ -727,7 +904,7 @@ class HOI4ForegroundMask:
     RETURN_TYPES = ("IMAGE", "MASK", "HOI4_META")
     RETURN_NAMES = ("image", "mask", "mask_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/04 Masks and approved background"
+    CATEGORY = "HOI4 Portrait/04 Choose background"
 
     def run(self, job: dict[str, Any], image: Any, reference_meta: dict[str, Any], mask_model: str):
         if mask_model != "BiRefNet":
@@ -785,17 +962,59 @@ class HOI4ForegroundMask:
         return image, mask_values, mask_record
 
 
+class HOI4BundledBackground:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "asset_path": ("STRING", {"default": "backgrounds/bundled/scientist_laboratory_cc0.jpg"}),
+            "asset_sha256": ("STRING", {"default": "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa"}),
+        }}
+
+    RETURN_TYPES = ("IMAGE", "HOI4_META")
+    RETURN_NAMES = ("image", "background_details")
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/04 Background"
+
+    def run(self, asset_path: str, asset_sha256: str):
+        if asset_path != "backgrounds/bundled/scientist_laboratory_cc0.jpg":
+            _raise(ExitCode.BACKGROUND_UNRESOLVED, "unsupported bundled background")
+        if asset_sha256 != "e734a0a9924330c017416ef28c51d2895e7c05b5783e5074a10748c9097dbcaa":
+            _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "scientist background checksum setting is incorrect")
+        root = project_root(os.environ.get("HOI4_PORTRAIT_PROJECT_ROOT", Path.cwd()))
+        path = relative_safe_path(root, asset_path)
+        if not path.is_file() or sha256_file(path) != asset_sha256:
+            _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "scientist background is missing or changed")
+        if Image is None:
+            _raise(ExitCode.DEPENDENCY_MISSING, "Pillow is required to load the scientist background")
+        with Image.open(path) as opened:
+            image = opened.convert("RGB")
+            image.load()
+        return _pil_to_comfy(image), {
+            "registry_id": "scientist_laboratory_cc0",
+            "asset_path": asset_path,
+            "asset_sha256": asset_sha256,
+            "pixel_sha256": _pixel_digest(image),
+        }
+
+
 class HOI4MaskAndBackgroundGuard:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "mask": ("MASK",), "mask_meta": ("HOI4_META",)}}
+        return {
+            "required": {"job": ("HOI4_JOB",), "image": ("IMAGE",), "mask": ("MASK",), "mask_meta": ("HOI4_META",)},
+            "optional": {
+                "control_meta": ("HOI4_META",),
+                "scientist_background": ("IMAGE",),
+                "scientist_background_meta": ("HOI4_META",),
+            },
+        }
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "MASK", "HOI4_META")
     RETURN_NAMES = ("image", "composite", "mask", "background_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/04 Masks and approved background"
+    CATEGORY = "HOI4 Portrait/04 Choose background"
 
-    def run(self, job: dict[str, Any], image: Any, mask: Any, mask_meta: dict[str, Any]):
+    def run(self, job: dict[str, Any], image: Any, mask: Any, mask_meta: dict[str, Any], control_meta: dict[str, Any] | None = None, scientist_background: Any = None, scientist_background_meta: dict[str, Any] | None = None):
         root = _project_from_job(job)
         required_components = {"person_alpha", "hard_interior", "face", "hair_hat_boundary", "accessory_attention", "background", "boundary_ring"}
         component_records = mask_meta.get("component_masks") if isinstance(mask_meta, dict) else None
@@ -811,11 +1030,35 @@ class HOI4MaskAndBackgroundGuard:
                 _raise(ExitCode.MASK_AUDIT_FAILED, f"component-mask evidence path escapes the job root: {component_name}")
             if not component_path.is_file() or sha256_file(component_path) != record["sha256"]:
                 _raise(ExitCode.MASK_AUDIT_FAILED, f"component-mask evidence checksum failed: {component_name}")
+        background_choice = control_meta.get("background_choice") if isinstance(control_meta, dict) else None
+        if background_choice == "Keep current background":
+            guard_meta = {
+                "background_choice": "Keep current background",
+                "background_registry_id": None,
+                "background_sha256": None,
+                "mask_meta": mask_meta,
+            }
+            atomic_json_write(_job_root(job) / "evidence" / "background_composite.json", guard_meta)
+            return image, image, mask, guard_meta
+
         registry_path = root / "config" / "background_registry.json"
         if not registry_path.is_file():
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "background registry is missing")
         registry = json.loads(registry_path.read_text(encoding="utf-8"))
         requested = job.get("approved_background", {})
+        if background_choice == "Scientist laboratory":
+            scientist_matches = [
+                item for item in registry.get("backgrounds", [])
+                if item.get("registry_id") == "scientist_laboratory_cc0"
+            ]
+            if not scientist_matches:
+                _raise(ExitCode.BACKGROUND_UNRESOLVED, "scientist background is not registered")
+            entry = scientist_matches[0]
+            requested = {
+                "registry_id": entry.get("registry_id"),
+                "path": entry.get("runtime_path"),
+                "sha256": entry.get("sha256"),
+            }
         matches = [item for item in registry.get("backgrounds", []) if item.get("registry_id") == requested.get("registry_id")]
         if not matches or matches[0].get("status") != "APPROVED" or matches[0].get("sha256") != requested.get("sha256"):
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "requested background does not match an approved registry entry")
@@ -830,8 +1073,19 @@ class HOI4MaskAndBackgroundGuard:
         if not background_path.is_file() or sha256_file(background_path) != requested.get("sha256"):
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "approved background file is missing or checksum mismatched")
         with Image.open(background_path) as background_image:
-            background_image = background_image.convert("RGB").resize((image.shape[2], image.shape[1]))
-            background = _pil_to_comfy(background_image).to(device=image.device, dtype=image.dtype)
+            original_background = background_image.convert("RGB")
+            original_background.load()
+        if background_choice == "Scientist laboratory":
+            if scientist_background is None or not isinstance(scientist_background_meta, dict):
+                _raise(ExitCode.BACKGROUND_UNRESOLVED, "scientist background node is not connected")
+            if (
+                scientist_background_meta.get("registry_id") != requested["registry_id"]
+                or scientist_background_meta.get("asset_sha256") != requested["sha256"]
+                or _pixel_digest(_comfy_to_pil(scientist_background).convert("RGB")) != scientist_background_meta.get("pixel_sha256")
+            ):
+                _raise(ExitCode.MODEL_CHECKSUM_MISMATCH, "scientist background node does not match the bundled asset")
+        background_image = original_background.resize((image.shape[2], image.shape[1]))
+        background = _pil_to_comfy(background_image).to(device=image.device, dtype=image.dtype)
         working_mask = mask
         if not hasattr(working_mask, "isfinite"):
             _raise(ExitCode.MASK_AUDIT_FAILED, "foreground mask tensor is unavailable")
@@ -853,7 +1107,7 @@ class HOI4MaskAndBackgroundGuard:
                 _raise(ExitCode.MASK_AUDIT_FAILED, "composite changed an eroded foreground interior pixel")
         else:
             _raise(ExitCode.MASK_AUDIT_FAILED, "foreground mask has no hard interior")
-        guard_meta = {"background_registry_id": requested["registry_id"], "background_sha256": requested["sha256"], "mask_semantics": "foreground_alpha; independently_audited", "foreground_integrity_required": True, "mask_meta": mask_meta, "hard_interior_pixels": interior_pixels, "interior_max_difference": 0.0, "boundary_blend_only": True}
+        guard_meta = {"background_choice": background_choice or "Approved job background", "background_registry_id": requested["registry_id"], "background_sha256": requested["sha256"], "mask_semantics": "foreground_alpha; independently_audited", "foreground_integrity_required": True, "mask_meta": mask_meta, "hard_interior_pixels": interior_pixels, "interior_max_difference": 0.0, "boundary_blend_only": True}
         atomic_json_write(_job_root(job) / "evidence" / "background_composite.json", guard_meta)
         return image, composite, mask, guard_meta
 
@@ -866,7 +1120,7 @@ class HOI4PromptInput:
     RETURN_TYPES = ("STRING", "HOI4_META")
     RETURN_NAMES = ("prompt", "prompt_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/05 Prompt"
+    CATEGORY = "HOI4 Portrait/05 Portrait description"
 
     def run(self, job: dict[str, Any], background_meta: dict[str, Any], prompt_source: str):
         if prompt_source != "job_contract":
@@ -875,6 +1129,140 @@ class HOI4PromptInput:
         if not result.passed:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "; ".join(result.failure_codes + result.findings))
         return result.normalized_prompt, {"source": "job_contract", "validator": result.as_dict(), "background_meta": background_meta}
+
+
+class HOI4RandomPortraitPrompt:
+    """Build a reproducible fictional leader prompt without an image or LLM."""
+
+    COUNTRIES = (
+        "Central European",
+        "Northern European",
+        "Mediterranean",
+        "Eastern European",
+        "East Asian",
+        "South Asian",
+        "Middle Eastern",
+        "North American",
+        "Latin American",
+    )
+    ROLES = (
+        "civilian head of government",
+        "career army commander",
+        "naval commander",
+        "air force commander",
+        "diplomat",
+        "intelligence director",
+        "industrial organizer",
+        "scientist and administrator",
+    )
+    PRESENTATIONS = ("masculine", "feminine", "androgynous")
+    AGES = ("young adult", "middle-aged", "older adult")
+    EXPRESSIONS = (
+        "calm and resolute",
+        "stern and focused",
+        "reserved and thoughtful",
+        "confident with a restrained smile",
+        "weary but determined",
+    )
+    CLOTHING = (
+        "tailored 1940s civilian suit",
+        "plain period service uniform without insignia",
+        "formal diplomatic dress",
+        "practical wartime administration attire",
+        "period overcoat over formal clothing",
+    )
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "character_brief": ("STRING", {"multiline": True, "default": ""}),
+            "country_influence": (["random", *cls.COUNTRIES], {"default": "random"}),
+            "role": (["random", *cls.ROLES], {"default": "random"}),
+            "presentation": (["random", *cls.PRESENTATIONS], {"default": "random"}),
+            "age": (["random", *cls.AGES], {"default": "random"}),
+            "expression": (["random", *cls.EXPRESSIONS], {"default": "random"}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
+            "instruction_text": ("STRING", {"multiline": True, "default": ""}),
+            "instruction_path": ("STRING", {"default": RANDOM_PORTRAIT_PROMPT_PATH}),
+        }}
+
+    RETURN_TYPES = ("STRING", "HOI4_META")
+    RETURN_NAMES = ("prompt", "prompt_details")
+    FUNCTION = "run"
+    CATEGORY = "HOI4 Portrait/01 Portrait idea"
+
+    @staticmethod
+    def _choose(value: str, values: tuple[str, ...], rng: random.Random) -> str:
+        if value == "random":
+            return rng.choice(values)
+        if value not in values:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, f"unsupported random portrait option: {value}")
+        return value
+
+    def run(
+        self,
+        character_brief: str,
+        country_influence: str,
+        role: str,
+        presentation: str,
+        age: str,
+        expression: str,
+        seed: int,
+        instruction_text: str,
+        instruction_path: str,
+    ):
+        root = project_root(os.environ.get("HOI4_PORTRAIT_PROJECT_ROOT", Path.cwd()))
+        exact_path = relative_safe_path(root, instruction_path)
+        try:
+            exact_instruction = exact_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            _raise(ExitCode.DEPENDENCY_MISSING, f"random portrait instruction is unavailable: {type(exc).__name__}")
+        if instruction_path != RANDOM_PORTRAIT_PROMPT_PATH or instruction_text != exact_instruction:
+            _raise(ExitCode.WORKFLOW_INVALID, "random portrait instruction does not match the project file")
+
+        brief = " ".join(str(character_brief).replace("\r", " ").replace("\n", " ").split())
+        if len(brief) > 500:
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "character brief exceeds 500 characters")
+        forbidden = ("http://", "https://", "<script", "faceswap", "face swap", "deepfake")
+        if any(token in brief.casefold() for token in forbidden):
+            _raise(ExitCode.INPUT_SCHEMA_INVALID, "character brief contains an unsupported instruction")
+
+        rng = random.Random(int(seed))
+        selected = {
+            "country_influence": self._choose(country_influence, self.COUNTRIES, rng),
+            "role": self._choose(role, self.ROLES, rng),
+            "presentation": self._choose(presentation, self.PRESENTATIONS, rng),
+            "age": self._choose(age, self.AGES, rng),
+            "expression": self._choose(expression, self.EXPRESSIONS, rng),
+            "clothing": rng.choice(self.CLOTHING),
+        }
+        details = ", ".join((
+            "fictional original adult leader",
+            selected["country_influence"] + " visual influence",
+            selected["role"],
+            selected["presentation"] + " presentation",
+            selected["age"],
+            selected["expression"] + " expression",
+            selected["clothing"],
+        ))
+        if brief:
+            details += ", " + brief.rstrip(" .")
+        prompt = (
+            "hoi4_portrait, "
+            + details
+            + ", chest-up formal portrait, 1936-1948 period, neutral studio backdrop, "
+              "painterly grand-strategy game portrait, restrained historical color palette, "
+              "clear facial features, no text, no flag, no logo, no watermark, no extremist insignia"
+        )
+        return prompt, {
+            "source": "deterministic_text_only_autoprompter",
+            "seed": int(seed),
+            "instruction_path": instruction_path,
+            "instruction_sha256": sha256_file(exact_path),
+            "selected": selected,
+            "used_image": False,
+            "used_language_model": False,
+        }
 
 
 class HOI4AutopromptClient:
@@ -894,7 +1282,7 @@ class HOI4AutopromptClient:
     RETURN_TYPES = ("STRING", "HOI4_META")
     RETURN_NAMES = ("prompt", "prompt_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/05 Prompt"
+    CATEGORY = "HOI4 Portrait/05 Portrait description"
 
     def run(self, job: dict[str, Any], image: Any, background_meta: dict[str, Any], control_meta: dict[str, Any], instruction_text: str, instruction_path: str, model_id: str, prompt_source: str):
         if prompt_source != "autoprompter":
@@ -959,7 +1347,7 @@ class HOI4KreaModelLoadBarrier:
     RETURN_TYPES = ("MODEL", "CONDITIONING", "CONDITIONING")
     RETURN_NAMES = ("model", "positive", "negative")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/06 Krea 2 identity edit"
+    CATEGORY = "HOI4 Portrait/06 Krea 2 portrait edit"
 
     def run(self, model: Any, positive: Any, negative: Any):
         try:
@@ -998,7 +1386,7 @@ class HOI4EvidenceExport:
     RETURN_TYPES = ("IMAGE", "HOI4_META")
     RETURN_NAMES = ("image", "evidence_meta")
     FUNCTION = "run"
-    CATEGORY = "HOI4 Portrait/09 Preview and evidence export"
+    CATEGORY = "HOI4 Portrait/09 Preview and save"
 
     def run(self, job: dict[str, Any], source_master: Any, processed_reference: Any, approved_background: Any, candidate: Any, mask: Any, prompt: str, candidate_index: int):
         if not prompt.startswith("hoi4_portrait,"):

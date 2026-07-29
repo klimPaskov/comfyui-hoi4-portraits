@@ -22,17 +22,6 @@
       "source_files_status": "PASS"
     },
     {
-      "name": "DDColor",
-      "source_url": "https://huggingface.co/piddnad/ddcolor_modelscope",
-      "revision": "060f67494e31883a4b13cb27f889f3154847ada4",
-      "artifact": "pytorch_model.bin",
-      "size_bytes": 911914869,
-      "sha256": "d81711971ec59200da26d5e8a1afae8dd3778d495ea8ad7a7dadc769f403f7e7",
-      "verification_method": "Hugging Face primary repository tree LFS metadata",
-      "metadata_status": "PASS",
-      "local_install_status": "PASS"
-    },
-    {
       "name": "YuNet",
       "source_url": "https://github.com/opencv/opencv_zoo/tree/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet",
       "revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",

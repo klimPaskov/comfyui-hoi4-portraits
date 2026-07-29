@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ComfyUIRoot,
 
-    [ValidateSet("human_local_nvidia_16gb", "agent_local_nvidia_16gb")]
+    [ValidateSet("human_local_nvidia_16gb", "agent_local_nvidia_16gb", "human_prompt_local_nvidia_16gb", "prepare_portrait_for_hoi4")]
     [string]$Workflow = "human_local_nvidia_16gb"
 )
 
@@ -27,16 +27,19 @@ $env:HOI4_AUTOPROMPTER_LOOPBACK = "http://127.0.0.1:8099/v1/chat/completions"
 $RuntimeLog = Join-Path $ProjectRoot ".runtime\logs"
 New-Item -ItemType Directory -Path $RuntimeLog -Force | Out-Null
 
-$Preprocessing = Start-Process -FilePath $Python -PassThru -WindowStyle Hidden `
-    -RedirectStandardOutput (Join-Path $RuntimeLog "preprocessing.out.log") `
-    -RedirectStandardError (Join-Path $RuntimeLog "preprocessing.err.log") `
-    -ArgumentList @(
-        "-m", "portrait_pipeline.preprocessing_service",
-        "--root", "`"$ProjectRoot`"",
-        "--host", "127.0.0.1",
-        "--port", "8790",
-        "--device", "cuda"
-    )
+$Preprocessing = $null
+if ($Workflow -in @("human_local_nvidia_16gb", "agent_local_nvidia_16gb")) {
+    $Preprocessing = Start-Process -FilePath $Python -PassThru -WindowStyle Hidden `
+        -RedirectStandardOutput (Join-Path $RuntimeLog "preprocessing.out.log") `
+        -RedirectStandardError (Join-Path $RuntimeLog "preprocessing.err.log") `
+        -ArgumentList @(
+            "-m", "portrait_pipeline.preprocessing_service",
+            "--root", "`"$ProjectRoot`"",
+            "--host", "127.0.0.1",
+            "--port", "8790",
+            "--device", "cuda"
+        )
+}
 
 $Autoprompter = $null
 if ($Workflow -eq "human_local_nvidia_16gb") {
@@ -61,7 +64,7 @@ finally {
     if ($Autoprompter -and -not $Autoprompter.HasExited) {
         Stop-Process -Id $Autoprompter.Id
     }
-    if (-not $Preprocessing.HasExited) {
+    if ($Preprocessing -and -not $Preprocessing.HasExited) {
         Stop-Process -Id $Preprocessing.Id
     }
 }

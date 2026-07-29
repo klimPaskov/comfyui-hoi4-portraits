@@ -30,6 +30,9 @@ WORKFLOW_PATHS = {
     "human_full_power_gpu": "workflows/human/full_power_gpu/human_full_power_gpu.api.json",
     "agent_local_nvidia_16gb": "workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.api.json",
     "agent_full_power_gpu": "workflows/agent/full_power_gpu/agent_full_power_gpu.api.json",
+    "human_prompt_local_nvidia_16gb": "workflows/human/prompt_local_nvidia_16gb/human_prompt_local_nvidia_16gb.api.json",
+    "human_prompt_full_power_gpu": "workflows/human/prompt_full_power_gpu/human_prompt_full_power_gpu.api.json",
+    "prepare_portrait_for_hoi4": "workflows/human/prepare_portrait/prepare_portrait_for_hoi4.api.json",
 }
 FORBIDDEN_TOKENS = ("faceswap", "face_swap", "ipadapterface", "replacer", "subjectreplacement")
 REQUIRED_CORE_NODES = {
@@ -133,10 +136,12 @@ def _validate_api_workflow(root: Path, workflow_id: str, object_info: dict[str, 
         checked_nodes.append({"node_id": node_id, "class_type": class_type, "status": "PASS" if not unknown and not invalid_choices else "BLOCKED", "live_input_names": sorted(declared), "workflow_input_names": sorted(inputs)})
 
     metadata = workflow.get("_meta", {})
-    expected_human = bool(PROFILE_LIMITS[workflow_id]["autoprompter"])
+    expected_human = bool(metadata.get("human_workflow"))
     if metadata.get("human_workflow") is not expected_human:
         issues.append("workflow metadata human_workflow does not match profile")
-    if expected_human and "HOI4AutopromptClient" not in {item.get("class_type") for item in checked_nodes}:
+    workflow_kind = metadata.get("workflow_kind")
+    prompt_class = "HOI4RandomPortraitPrompt" if workflow_kind == "random_text_to_image" else "HOI4AutopromptClient"
+    if expected_human and workflow_kind != "portrait_preparation" and prompt_class not in {item.get("class_type") for item in checked_nodes}:
         issues.append("human workflow is missing the autoprompter node")
     if expected_human and REQUIRED_HUMAN_PREVIEW_NODE not in {item.get("class_type") for item in checked_nodes}:
         issues.append("human workflow is missing its PreviewImage inspection nodes")
@@ -153,7 +158,9 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
     revision = _git_revision(root / "comfyui")
     expected_revision = "2a610155821d670a2d8047e654e5fce96b790eb5"
 
-    required_nodes = sorted(REQUIRED_CORE_NODES | REQUIRED_KREA_NODES | {REQUIRED_HUMAN_PREVIEW_NODE})
+    workflow_ids = [profile] if profile else list(WORKFLOW_PATHS)
+    identity_graph_required = any(workflow_id not in {"human_prompt_local_nvidia_16gb", "human_prompt_full_power_gpu", "prepare_portrait_for_hoi4"} for workflow_id in workflow_ids)
+    required_nodes = sorted(REQUIRED_CORE_NODES | ({*REQUIRED_KREA_NODES} if identity_graph_required else set()) | {REQUIRED_HUMAN_PREVIEW_NODE})
     node_presence = {name: name in object_info for name in required_nodes}
     clip_contract = object_info.get("CLIPLoader", {}).get("input", {}).get("required", {}).get("type", [])
     clip_choices = _combo_choices(clip_contract) or []
@@ -169,12 +176,11 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
         "pinned_core_revision": revision == expected_revision,
         "core_nodes_present": all(node_presence[name] for name in sorted(REQUIRED_CORE_NODES)),
         "preview_node_present": node_presence[REQUIRED_HUMAN_PREVIEW_NODE],
-        "krea_nodes_present": all(node_presence[name] for name in sorted(REQUIRED_KREA_NODES)),
+        "krea_nodes_present": all(node_presence[name] for name in sorted(REQUIRED_KREA_NODES)) if identity_graph_required else True,
         "cliploader_krea2_choice": krea_loader_schema,
-        "krea_patch_fit_contract": {"model", "source_latent"} <= set(patch.get("input", {}).get("required", {})) and {"vae", "source_image", "fit_mode"} <= patch_optional,
-        "krea_grounded_encode_contract": {"clip", "prompt"} <= set(grounded.get("input", {}).get("required", {})) and {"image", "grounding_px"} <= grounded_optional,
+        "krea_patch_fit_contract": ({"model", "source_latent"} <= set(patch.get("input", {}).get("required", {})) and {"vae", "source_image", "fit_mode"} <= patch_optional) if identity_graph_required else True,
+        "krea_grounded_encode_contract": ({"clip", "prompt"} <= set(grounded.get("input", {}).get("required", {})) and {"image", "grounding_px"} <= grounded_optional) if identity_graph_required else True,
     }
-    workflow_ids = [profile] if profile else list(WORKFLOW_PATHS)
     workflow_checks = [_validate_api_workflow(root, workflow_id, object_info) for workflow_id in workflow_ids]
     schema_pass = all(schema_checks.values()) and all(item["status"] == "PASS" for item in workflow_checks)
 
@@ -215,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Verify live pinned ComfyUI/Krea schema compatibility on loopback.")
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--base-url", default="http://127.0.0.1:8188")
-    parser.add_argument("--profile", choices=tuple(PROFILE_LIMITS), action="append")
+    parser.add_argument("--profile", choices=tuple(WORKFLOW_PATHS), action="append")
     args = parser.parse_args(argv)
     root = project_root(args.root)
     try:

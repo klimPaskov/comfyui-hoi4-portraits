@@ -353,7 +353,7 @@
   },
   "_meta": {
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.1.0",
+    "graph_spec_version": "graph-spec-1.2.0",
     "workflow_id": "agent_local_nvidia_16gb",
     "execution_profile": "agent_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -376,19 +376,19 @@
       "height": 210
     },
     "required_groups": [
-      "00 Job and source",
-      "01 Subject selection",
-      "02 Crop and source preparation",
-      "03 Color and restoration",
-      "04 Masks and approved background",
-      "05 Prompt",
-      "06 Krea 2 identity edit",
-      "07 HOI4 style LoRA",
-      "08 Portrait generation",
-      "09 Preview and evidence export"
+      "00 Portrait setup",
+      "01 Choose subject",
+      "02 Crop portrait",
+      "03 Prepare portrait",
+      "04 Choose background",
+      "05 Portrait description",
+      "06 Krea 2 portrait edit",
+      "07 HOI4 portrait style",
+      "08 Generate portrait",
+      "09 Preview and save"
     ],
     "locked_controls": {
-      "Portrait workflow settings": [
+      "Choose portrait settings": [
         "execution_profile",
         "candidate_count",
         "retry_limit",
@@ -441,7 +441,7 @@
         "scheduler",
         "denoise"
       ],
-      "Save portrait evidence": [
+      "Prepare portrait for saving": [
         "candidate_index"
       ],
       "Save portrait PNG": [
@@ -498,13 +498,13 @@
       },
       {
         "node_id": 32,
-        "title": "Optional 12 GB model path",
+        "title": "Use a 12 GB GGUF model",
         "connected": false,
         "ui_only": true
       },
       {
         "node_id": 33,
-        "title": "Optional 8 GB model path",
+        "title": "Use an 8 GB GGUF model",
         "connected": false,
         "ui_only": true
       }

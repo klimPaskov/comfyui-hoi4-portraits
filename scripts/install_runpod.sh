@@ -38,22 +38,24 @@ fi
 
 echo "Using ComfyUI: ${COMFY_ROOT}"
 echo "Using Python: ${PYTHON_BIN}"
-echo "Installing checksum-locked sidecar dependencies..."
+echo "Installing required Python packages..."
 "${PYTHON_BIN}" -m pip install --require-hashes \
   -r "${PROJECT_ROOT}/dependencies/runpod_sidecar_requirements.lock.txt"
 
-echo "Installing pinned nodes, models, LoRA, model paths, and workflows..."
+echo "Installing nodes, models, LoRA, and workflows..."
 PYTHONPATH="${PROJECT_ROOT}/src:${PROJECT_ROOT}" \
   "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_into_existing_comfyui.py" \
   --comfyui-root "${COMFY_ROOT}" \
   --profile full_power_gpu \
-  --workflow human_full_power_gpu
+  --workflow human_full_power_gpu \
+  --workflow human_prompt_full_power_gpu \
+  --workflow prepare_portrait_for_hoi4
 
 echo
 echo "Setup complete."
 echo "Models: ${PROJECT_ROOT}/models"
 echo "LoRA: ${PROJECT_ROOT}/loras/hoi4_portrait_new_style_lora.safetensors"
-echo "Workflow: ${COMFY_ROOT}/user/default/workflows/hoi4_portraits/human_full_power_gpu.json"
+echo "Workflows: ${COMFY_ROOT}/user/default/workflows/hoi4_portraits"
 echo
 echo "Start the human full-power workflow with:"
 echo "  ${PROJECT_ROOT}/scripts/start_runpod.sh \"${COMFY_ROOT}\""

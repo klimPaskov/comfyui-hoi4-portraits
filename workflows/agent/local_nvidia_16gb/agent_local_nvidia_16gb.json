@@ -5,7 +5,7 @@
     {
       "id": 1,
       "type": "HOI4JobInput",
-      "title": "Portrait workflow settings",
+      "title": "Choose portrait settings",
       "pos": [
         70,
         100
@@ -64,8 +64,8 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Portrait workflow settings",
-        "hoi4_group": "00 Job and source",
+        "Node name for S&R": "Choose portrait settings",
+        "hoi4_group": "00 Portrait setup",
         "hoi4_locked_controls": [
           "execution_profile",
           "candidate_count",
@@ -121,7 +121,7 @@
       ],
       "properties": {
         "Node name for S&R": "Load input portrait",
-        "hoi4_group": "00 Job and source",
+        "hoi4_group": "00 Portrait setup",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -172,7 +172,7 @@
       ],
       "properties": {
         "Node name for S&R": "Check input portrait",
-        "hoi4_group": "00 Job and source",
+        "hoi4_group": "00 Portrait setup",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -224,7 +224,7 @@
       ],
       "properties": {
         "Node name for S&R": "Select the subject",
-        "hoi4_group": "01 Subject selection",
+        "hoi4_group": "01 Choose subject",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -281,7 +281,7 @@
       ],
       "properties": {
         "Node name for S&R": "Crop the portrait",
-        "hoi4_group": "02 Crop and source preparation",
+        "hoi4_group": "02 Crop portrait",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -339,7 +339,7 @@
       ],
       "properties": {
         "Node name for S&R": "Prepare the portrait",
-        "hoi4_group": "03 Color and restoration",
+        "hoi4_group": "03 Prepare portrait",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -408,7 +408,7 @@
       ],
       "properties": {
         "Node name for S&R": "Separate person from background",
-        "hoi4_group": "04 Masks and approved background",
+        "hoi4_group": "04 Choose background",
         "hoi4_locked_controls": [
           "mask_model"
         ]
@@ -420,14 +420,14 @@
     {
       "id": 8,
       "type": "HOI4MaskAndBackgroundGuard",
-      "title": "Add approved background",
+      "title": "Choose portrait background",
       "pos": [
         2380,
         300
       ],
       "size": [
         320,
-        180
+        240
       ],
       "color": "#294b61",
       "bgcolor": "#3b6f8d",
@@ -489,8 +489,8 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Add approved background",
-        "hoi4_group": "04 Masks and approved background",
+        "Node name for S&R": "Choose portrait background",
+        "hoi4_group": "04 Choose background",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -546,7 +546,7 @@
       ],
       "properties": {
         "Node name for S&R": "Use portrait description",
-        "hoi4_group": "05 Prompt",
+        "hoi4_group": "05 Portrait description",
         "hoi4_locked_controls": [
           "prompt_source"
         ]
@@ -595,7 +595,7 @@
       ],
       "properties": {
         "Node name for S&R": "Load Krea 2 Turbo",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": [
           "unet_name",
           "weight_dtype"
@@ -651,7 +651,7 @@
       ],
       "properties": {
         "Node name for S&R": "Preserve identity",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": [
           "lora_name",
           "strength_model"
@@ -699,7 +699,7 @@
       ],
       "properties": {
         "Node name for S&R": "Prepare image decoder",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": [
           "vae_name"
         ]
@@ -748,7 +748,7 @@
       ],
       "properties": {
         "Node name for S&R": "Encode reference image",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -813,7 +813,7 @@
       ],
       "properties": {
         "Node name for S&R": "Apply identity reference",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": [
           "fit_mode",
           "ref_boost"
@@ -865,7 +865,7 @@
       ],
       "properties": {
         "Node name for S&R": "Read portrait description",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": [
           "clip_name",
           "type"
@@ -926,7 +926,7 @@
       ],
       "properties": {
         "Node name for S&R": "Connect portrait description",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": [
           "grounding_px"
         ]
@@ -985,7 +985,7 @@
       ],
       "properties": {
         "Node name for S&R": "Keep background empty",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": [
           "prompt",
           "grounding_px"
@@ -1041,7 +1041,7 @@
       ],
       "properties": {
         "Node name for S&R": "Apply HOI4 portrait style",
-        "hoi4_group": "07 HOI4 style LoRA",
+        "hoi4_group": "07 HOI4 portrait style",
         "hoi4_locked_controls": [
           "lora_name"
         ]
@@ -1110,7 +1110,7 @@
       ],
       "properties": {
         "Node name for S&R": "Prepare generation",
-        "hoi4_group": "08 Portrait generation",
+        "hoi4_group": "08 Generate portrait",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -1160,7 +1160,7 @@
       ],
       "properties": {
         "Node name for S&R": "Set portrait size",
-        "hoi4_group": "08 Portrait generation",
+        "hoi4_group": "08 Generate portrait",
         "hoi4_locked_controls": [
           "width",
           "height",
@@ -1253,7 +1253,7 @@
       ],
       "properties": {
         "Node name for S&R": "Generate portrait",
-        "hoi4_group": "08 Portrait generation",
+        "hoi4_group": "08 Generate portrait",
         "hoi4_locked_controls": [
           "steps",
           "cfg",
@@ -1311,7 +1311,7 @@
       ],
       "properties": {
         "Node name for S&R": "Build portrait image",
-        "hoi4_group": "09 Preview and evidence export",
+        "hoi4_group": "09 Preview and save",
         "hoi4_locked_controls": []
       },
       "widgets_values": []
@@ -1319,7 +1319,7 @@
     {
       "id": 22,
       "type": "HOI4EvidenceExport",
-      "title": "Save portrait evidence",
+      "title": "Prepare portrait for saving",
       "pos": [
         2640,
         900
@@ -1390,8 +1390,8 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "Save portrait evidence",
-        "hoi4_group": "09 Preview and evidence export",
+        "Node name for S&R": "Prepare portrait for saving",
+        "hoi4_group": "09 Preview and save",
         "hoi4_locked_controls": [
           "candidate_index"
         ]
@@ -1432,7 +1432,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Save portrait PNG",
-        "hoi4_group": "09 Preview and evidence export",
+        "hoi4_group": "09 Preview and save",
         "hoi4_locked_controls": [
           "filename_prefix"
         ]
@@ -1462,17 +1462,17 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Lower-memory model options",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": []
       },
       "widgets_values": [
-        "These options are shown for planning only. The active route remains the pinned Krea 2 Turbo model and identity edit adapter."
+        "The included model is active. You can connect a compatible 12 GB or 8 GB Krea 2 GGUF model here after installing it."
       ]
     },
     {
       "id": 32,
       "type": "Note",
-      "title": "Optional 12 GB model path",
+      "title": "Use a 12 GB GGUF model",
       "pos": [
         1200,
         1050
@@ -1489,18 +1489,18 @@
       "inputs": [],
       "outputs": [],
       "properties": {
-        "Node name for S&R": "Optional 12 GB model path",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "Node name for S&R": "Use a 12 GB GGUF model",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": []
       },
       "widgets_values": [
-        "Placeholder only — not connected. Activate only after an official, checksum-locked Krea identity-edit GGUF and loader parity pass on a 12 GB host."
+        "This node is not connected. Install a compatible Krea 2 GGUF model, then connect its loader here."
       ]
     },
     {
       "id": 33,
       "type": "Note",
-      "title": "Optional 8 GB model path",
+      "title": "Use an 8 GB GGUF model",
       "pos": [
         1200,
         1210
@@ -1517,12 +1517,12 @@
       "inputs": [],
       "outputs": [],
       "properties": {
-        "Node name for S&R": "Optional 8 GB model path",
-        "hoi4_group": "06 Krea 2 identity edit",
+        "Node name for S&R": "Use an 8 GB GGUF model",
+        "hoi4_group": "06 Krea 2 portrait edit",
         "hoi4_locked_controls": []
       },
       "widgets_values": [
-        "Placeholder only — not connected. Activate only after an official, checksum-locked Krea identity-edit GGUF and loader parity pass on an 8 GB host."
+        "This node is not connected. Install a compatible Krea 2 GGUF model, then connect its loader here."
       ]
     }
   ],
@@ -1930,7 +1930,7 @@
   ],
   "groups": [
     {
-      "title": "00 Job and source",
+      "title": "00 Portrait setup",
       "bounding": [
         40,
         40,
@@ -1941,7 +1941,7 @@
       "font_size": 24
     },
     {
-      "title": "01 Subject selection",
+      "title": "01 Choose subject",
       "bounding": [
         840,
         40,
@@ -1952,7 +1952,7 @@
       "font_size": 24
     },
     {
-      "title": "02 Crop and source preparation",
+      "title": "02 Crop portrait",
       "bounding": [
         1380,
         40,
@@ -1963,7 +1963,7 @@
       "font_size": 24
     },
     {
-      "title": "03 Color and restoration",
+      "title": "03 Prepare portrait",
       "bounding": [
         1860,
         40,
@@ -1974,18 +1974,18 @@
       "font_size": 24
     },
     {
-      "title": "04 Masks and approved background",
+      "title": "04 Choose background",
       "bounding": [
         2340,
         40,
-        700,
+        1100,
         700
       ],
       "color": "#527fa3",
       "font_size": 24
     },
     {
-      "title": "05 Prompt",
+      "title": "05 Portrait description",
       "bounding": [
         40,
         800,
@@ -1996,7 +1996,7 @@
       "font_size": 24
     },
     {
-      "title": "06 Krea 2 identity edit",
+      "title": "06 Krea 2 portrait edit",
       "bounding": [
         580,
         800,
@@ -2007,7 +2007,7 @@
       "font_size": 24
     },
     {
-      "title": "07 HOI4 style LoRA",
+      "title": "07 HOI4 portrait style",
       "bounding": [
         1520,
         800,
@@ -2018,7 +2018,7 @@
       "font_size": 24
     },
     {
-      "title": "08 Portrait generation",
+      "title": "08 Generate portrait",
       "bounding": [
         1900,
         800,
@@ -2029,7 +2029,7 @@
       "font_size": 24
     },
     {
-      "title": "09 Preview and evidence export",
+      "title": "09 Preview and save",
       "bounding": [
         2280,
         800,
@@ -2043,14 +2043,14 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.7,
+      "scale": 0.32,
       "offset": [
-        0,
-        0
+        160,
+        260
       ]
     },
     "schema_version": "1.0.0",
-    "graph_spec_version": "graph-spec-1.1.0",
+    "graph_spec_version": "graph-spec-1.2.0",
     "workflow_id": "agent_local_nvidia_16gb",
     "execution_profile": "agent_local_nvidia_16gb",
     "route": "local_nvidia",
@@ -2073,19 +2073,19 @@
       "height": 210
     },
     "required_groups": [
-      "00 Job and source",
-      "01 Subject selection",
-      "02 Crop and source preparation",
-      "03 Color and restoration",
-      "04 Masks and approved background",
-      "05 Prompt",
-      "06 Krea 2 identity edit",
-      "07 HOI4 style LoRA",
-      "08 Portrait generation",
-      "09 Preview and evidence export"
+      "00 Portrait setup",
+      "01 Choose subject",
+      "02 Crop portrait",
+      "03 Prepare portrait",
+      "04 Choose background",
+      "05 Portrait description",
+      "06 Krea 2 portrait edit",
+      "07 HOI4 portrait style",
+      "08 Generate portrait",
+      "09 Preview and save"
     ],
     "locked_controls": {
-      "Portrait workflow settings": [
+      "Choose portrait settings": [
         "execution_profile",
         "candidate_count",
         "retry_limit",
@@ -2138,7 +2138,7 @@
         "scheduler",
         "denoise"
       ],
-      "Save portrait evidence": [
+      "Prepare portrait for saving": [
         "candidate_index"
       ],
       "Save portrait PNG": [
@@ -2195,13 +2195,13 @@
       },
       {
         "node_id": 32,
-        "title": "Optional 12 GB model path",
+        "title": "Use a 12 GB GGUF model",
         "connected": false,
         "ui_only": true
       },
       {
         "node_id": 33,
-        "title": "Optional 8 GB model path",
+        "title": "Use an 8 GB GGUF model",
         "connected": false,
         "ui_only": true
       }

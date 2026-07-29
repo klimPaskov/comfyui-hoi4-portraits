@@ -13,11 +13,36 @@
       "status": "INSTALLED_LIVE_SIGNATURE_PASS_EXECUTION_UNVERIFIED"
     },
     {
+      "name": "ComfyUI-DDColor",
+      "repository": "https://github.com/kijai/ComfyUI-DDColor.git",
+      "revision": "30d5b8e7666382a6a78404caee28dfa87f741037",
+      "license": "Apache-2.0",
+      "source_tree_checksum": "30d5b8e7666382a6a78404caee28dfa87f741037",
+      "classes": ["DDColor_Colorize"],
+      "requirements": {
+        "numpy": "2.5.1",
+        "opencv-contrib-python": "4.10.0.84",
+        "Pillow": "11.3.0",
+        "timm": "1.0.24",
+        "huggingface-hub": "1.25.1"
+      },
+      "checkpoint": {
+        "repository": "https://huggingface.co/piddnad/DDColor-models",
+        "revision": "e9e7b527709c8aeb2f5e1bf701e72fd468a13baa",
+        "filename": "ddcolor_modelscope.pth",
+        "size_bytes": 911950059,
+        "sha256": "17c460d7e55b32a598370621d77173be59e03c24b0823f06821db23a50c263ce",
+        "url": "https://huggingface.co/piddnad/DDColor-models/resolve/e9e7b527709c8aeb2f5e1bf701e72fd468a13baa/ddcolor_modelscope.pth",
+        "license": "Apache-2.0"
+      },
+      "status": "INSTALLED_LIVE_SIGNATURE_AND_EXECUTION_PASS"
+    },
+    {
       "name": "hoi4_portrait_project_nodes",
       "repository": "local-project-source",
-      "revision": "graph-spec-1.1.0",
+      "revision": "graph-spec-1.2.0",
       "license": "MIT",
-      "source_tree_checksum": "58b66e7bfb37df2fef2ea79f658b22f2687e97149480b51c1b15bf8c5763f15a",
+      "source_tree_checksum": "d8c1b204c54f9617435dd56b1669f552ca8fd52e833ace9a9cc45a7579d31e3f",
       "classes": [
         "HOI4JobInput",
         "HOI4HumanControls",
@@ -28,8 +53,13 @@
         "HOI4ConservativePrep",
         "HOI4ForegroundMask",
         "HOI4MaskAndBackgroundGuard",
+        "HOI4BundledBackground",
+        "HOI4PortraitCrop",
+        "HOI4UseColorWhenNeeded",
+        "HOI4FinishPreparedPortrait",
         "HOI4KreaModelLoadBarrier",
         "HOI4PromptInput",
+        "HOI4RandomPortraitPrompt",
         "HOI4AutopromptClient",
         "HOI4EvidenceExport"
       ],

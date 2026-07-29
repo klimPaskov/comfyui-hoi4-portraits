@@ -280,10 +280,23 @@ def _restore_project_owned_immutable_files(model_lock: dict[str, Any], actions: 
         })
 
 
-def _restore_models(model_lock: dict[str, Any], profile: str, actions: list[dict[str, Any]]) -> None:
-    workflow_profiles = {
-        "local_nvidia_16gb": {"human_local_nvidia_16gb", "agent_local_nvidia_16gb"},
-        "full_power_gpu": {"human_full_power_gpu", "agent_full_power_gpu"},
+def _restore_models(
+    model_lock: dict[str, Any],
+    profile: str,
+    actions: list[dict[str, Any]],
+    workflow_ids: set[str] | None = None,
+) -> None:
+    workflow_profiles = workflow_ids or {
+        "local_nvidia_16gb": {
+            "human_local_nvidia_16gb",
+            "agent_local_nvidia_16gb",
+            "human_prompt_local_nvidia_16gb",
+        },
+        "full_power_gpu": {
+            "human_full_power_gpu",
+            "agent_full_power_gpu",
+            "human_prompt_full_power_gpu",
+        },
     }[profile]
     for entry in model_lock.get("models", []):
         if not entry.get("mandatory") or not workflow_profiles.intersection(entry.get("profiles", [])):
