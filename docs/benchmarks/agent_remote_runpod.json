@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-29T02:55:00.298615+00:00",
+  "created_at": "2026-07-29T03:00:38.373208+00:00",
   "profile": "agent_remote_runpod",
   "status": "DEFERRED_OUT_OF_SCOPE",
   "status_reason": "RunPod live execution was explicitly deferred by the project owner for the current scope.",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 6144.00M  used = 4664.75M  free = 1479.25M  (encrypted)",
+          "stdout": "vm.swapusage: total = 6144.00M  used = 4656.75M  free = 1487.25M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14535.\nPages active:                                 362843.\nPages inactive:                               356681.\nPages speculative:                              6270.\nPages throttled:                                   0.\nPages wired down:                             138937.\nPages purgeable:                                  13.\n\"Translation faults\":                      507025108.\nPages copy-on-write:                        21867487.\nPages zero filled:                         242407042.\nPages reactivated:                         128469531.\nPages purged:                                3219241.\nFile-backed pages:                            562240.\nAnonymous pages:                              163554.\nPages stored in compressor:                   752263.\nPages occupied by compressor:                 126285.\nDecompressions:                            165034261.\nCompressions:                              233264294.\nPageins:                                  1409063153.\nPageouts:                                      97280.\nSwapins:                                    27570263.\nSwapouts:                                   37367269.\nPages tagged:                                  75567.\nPages tagged resident:                         59414.\nPages tagged compressed:                       16153.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          374.\nPages tag-storage non-tag pageable:            28018.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    2487040.\nTagged compressions:                         2339793.\nTagged decompressions:                       2155356.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    15413.\nPages active:                                 360913.\nPages inactive:                               353664.\nPages speculative:                              6630.\nPages throttled:                                   0.\nPages wired down:                             139000.\nPages purgeable:                                   5.\n\"Translation faults\":                      508888990.\nPages copy-on-write:                        22115485.\nPages zero filled:                         243108406.\nPages reactivated:                         130275516.\nPages purged:                                3239655.\nFile-backed pages:                            562552.\nAnonymous pages:                              158655.\nPages stored in compressor:                   757881.\nPages occupied by compressor:                 130170.\nDecompressions:                            165052196.\nCompressions:                              233291483.\nPageins:                                  1441822035.\nPageouts:                                      98145.\nSwapins:                                    27570686.\nSwapouts:                                   37367269.\nPages tagged:                                  75617.\nPages tagged resident:                         59526.\nPages tagged compressed:                       16091.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          234.\nPages tag-storage non-tag pageable:            28158.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    2465920.\nTagged compressions:                         2341975.\nTagged decompressions:                       2157225.",
           "stderr": ""
         }
       },
