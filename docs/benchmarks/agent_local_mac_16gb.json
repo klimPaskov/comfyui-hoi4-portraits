@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-29T03:24:53.738769+00:00",
+  "created_at": "2026-07-29T03:39:53.945256+00:00",
   "profile": "agent_local_mac_16gb",
   "status": "BLOCKED_PRODUCTION_GATES_CPU_FALLBACK",
   "status_reason": "A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates.",
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14652.\nPages active:                                 352178.\nPages inactive:                               342203.\nPages speculative:                              9153.\nPages throttled:                                   0.\nPages wired down:                             142289.\nPages purgeable:                                   4.\n\"Translation faults\":                      515779649.\nPages copy-on-write:                        23004582.\nPages zero filled:                         245665787.\nPages reactivated:                         135823923.\nPages purged:                                3302926.\nFile-backed pages:                            555124.\nAnonymous pages:                              148410.\nPages stored in compressor:                   784322.\nPages occupied by compressor:                 144904.\nDecompressions:                            165143044.\nCompressions:                              233421586.\nPageins:                                  1543109926.\nPageouts:                                     101378.\nSwapins:                                    27573907.\nSwapouts:                                   37367269.\nPages tagged:                                  78521.\nPages tagged resident:                         58653.\nPages tagged compressed:                       19868.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          732.\nPages tag-storage non-tag pageable:            27660.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    3241984.\nTagged compressions:                         2350502.\nTagged decompressions:                       2161657.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14927.\nPages active:                                 360351.\nPages inactive:                               351104.\nPages speculative:                              8666.\nPages throttled:                                   0.\nPages wired down:                             139492.\nPages purgeable:                                  27.\n\"Translation faults\":                      519561188.\nPages copy-on-write:                        23505201.\nPages zero filled:                         247154255.\nPages reactivated:                         138740970.\nPages purged:                                3346110.\nFile-backed pages:                            555561.\nAnonymous pages:                              164560.\nPages stored in compressor:                   763384.\nPages occupied by compressor:                 131111.\nDecompressions:                            165242328.\nCompressions:                              233509808.\nPageins:                                  1613071002.\nPageouts:                                     103306.\nSwapins:                                    27574438.\nSwapouts:                                   37367269.\nPages tagged:                                  75898.\nPages tagged resident:                         58877.\nPages tagged compressed:                       17021.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4297.\nPages tag-storage free:                          267.\nPages tag-storage non-tag pageable:            28125.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    2594176.\nTagged compressions:                         2357343.\nTagged decompressions:                       2169186.",
           "stderr": ""
         }
       },
@@ -83,14 +83,23 @@
     ]
   },
   "resource_model": {
-    "expected_model_bytes": 7553118462,
+    "expected_model_bytes": 20694849246,
     "physical_memory_bytes": 17179869184,
-    "expected_model_to_physical_memory_ratio": 0.43964935827534646,
-    "capacity_assessment": "MODEL_BYTES_WITHIN_PHYSICAL_MEMORY_NOT_EXECUTION_PROOF",
+    "expected_model_to_physical_memory_ratio": 1.2045987675664946,
+    "capacity_assessment": "MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY",
     "peak_memory_bytes": null,
     "peak_vram_bytes": null,
     "measurement_note": "File-size arithmetic is not a measured execution or OOM result; offload, allocator overhead, activations, and runtime staging remain unmeasured.",
     "locked_artifacts": [
+      {
+        "name": "krea2_turbo_fp8_scaled.safetensors",
+        "filename": "krea2_turbo_fp8_scaled.safetensors",
+        "size_bytes": 13141730784,
+        "revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+        "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1",
+        "shard_sha256": null,
+        "source_url": "https://huggingface.co/Comfy-Org/Krea-2/resolve/952f49d49653cb42e7d6cf7cbfad74738073ec7d/diffusion_models/krea2_turbo_fp8_scaled.safetensors"
+      },
       {
         "name": "qwen3vl_4b_fp8_scaled.safetensors",
         "filename": "qwen3vl_4b_fp8_scaled.safetensors",

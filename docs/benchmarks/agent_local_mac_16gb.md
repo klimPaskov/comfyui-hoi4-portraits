@@ -2,9 +2,9 @@
 
 - Status: **BLOCKED_PRODUCTION_GATES_CPU_FALLBACK**
 - Reason: A private CPU fallback candidate was produced, but local production acceptance remains blocked by accelerator, memory, calibration, and audit gates.
-- Expected locked model bytes: `7553118462`
+- Expected locked model bytes: `20694849246`
 - Physical memory bytes: `17179869184`
-- Capacity assessment: **MODEL_BYTES_WITHIN_PHYSICAL_MEMORY_NOT_EXECUTION_PROOF**
+- Capacity assessment: **MODEL_BYTES_EXCEED_PHYSICAL_MEMORY_RISK_ONLY**
 
 This report contains no production acceptance claim. Any CPU diagnostic execution evidence is explicitly quarantined from promotion. File-size arithmetic is a risk indicator, not an infeasibility measurement.
 

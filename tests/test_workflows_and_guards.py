@@ -278,6 +278,13 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertEqual(set(matrix["profiles"]), set(PROFILE_LIMITS))
         self.assertEqual(matrix["profiles"]["agent_full_power_gpu"]["canvas"], [1196, 1610])
 
+    def test_production_graph_model_scope_matches_the_model_lock(self):
+        lock = json.loads((self.root / "dependencies/models.lock.json").read_text(encoding="utf-8"))
+        fp8 = next(model for model in lock["models"] if model["name"] == "krea2_turbo_fp8_scaled.safetensors")
+        self.assertTrue(fp8["mandatory"])
+        for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"):
+            self.assertIn(profile, fp8["profiles"], profile)
+
     def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
         for profile in ("human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"):
             report = collect_preflight(self.root, profile=profile)

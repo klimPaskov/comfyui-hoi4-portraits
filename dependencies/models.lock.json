@@ -19,7 +19,7 @@
       "size_bytes": 13141730784,
       "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1",
       "destination_folder": "models/diffusion_models",
-      "profiles": ["human_full_power_gpu", "agent_full_power_gpu", "agent_remote_runpod"],
+      "profiles": ["human_local_mac_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_full_power_gpu", "agent_remote_runpod"],
       "quantization_or_dtype": "FP8 scaled",
       "loader_node": "UNETLoader",
       "mandatory": true,
