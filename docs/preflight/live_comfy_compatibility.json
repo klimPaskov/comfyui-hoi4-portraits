@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "checked_at": "2026-07-29T02:34:11.108514+00:00",
+  "checked_at": "2026-07-29T02:56:33.328026+00:00",
   "status": "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED",
   "server": {
     "base_url": "http://127.0.0.1:8188",
@@ -9,7 +9,7 @@
       "system": {
         "os": "darwin",
         "ram_total": 17179869184,
-        "ram_free": 8914419712,
+        "ram_free": 6216531968,
         "comfyui_version": "0.25.0",
         "required_frontend_version": "1.45.19",
         "installed_templates_version": "0.10.0",
@@ -65,9 +65,9 @@
           "type": "mps",
           "index": null,
           "vram_total": 17179869184,
-          "vram_free": 8914419712,
+          "vram_free": 6216597504,
           "torch_vram_total": 17179869184,
-          "torch_vram_free": 8914419712
+          "torch_vram_free": 6216597504
         }
       ]
     }
