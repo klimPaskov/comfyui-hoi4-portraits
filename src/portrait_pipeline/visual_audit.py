@@ -76,6 +76,7 @@ def evaluate_visual_audit(
     model = record["model"]
     reference_set = record["reference_set"]
     scores = record["scores"]
+    human_readable_evidence = record["human_readable_evidence"]
     metrics.update({
         "visual_audit_status": record["status"],
         "visual_audit_process_id": auditor["process_id"],
@@ -87,6 +88,7 @@ def evaluate_visual_audit(
         "visual_audit_source_sha256": record["source_sha256"],
         "visual_audit_candidate_sha256": record["candidate_sha256"],
         "visual_audit_scores": json.dumps(scores, sort_keys=True, separators=(",", ":")),
+        "visual_audit_human_readable_evidence": json.dumps(human_readable_evidence, sort_keys=True, separators=(",", ":")),
     })
 
     if not auditor["independent_from_producer"] or auditor["process_id"] == producer_process_id:

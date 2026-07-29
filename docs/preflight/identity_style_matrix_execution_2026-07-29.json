@@ -11,7 +11,8 @@
       "status": "BLOCKED",
       "preflight_status": "BLOCKED",
       "blocked_gates": [
-        "calibrated_identity_thresholds"
+        "calibrated_identity_thresholds",
+        "visual_audit_runtime"
       ],
       "blockers": [
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
@@ -24,7 +25,8 @@
       "blocked_gates": [
         "local_runtime_capability",
         "calibrated_identity_thresholds",
-        "autoprompter_runtime"
+        "autoprompter_runtime",
+        "visual_audit_runtime"
       ],
       "blockers": [
         "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
@@ -37,7 +39,8 @@
       "status": "BLOCKED",
       "preflight_status": "BLOCKED",
       "blocked_gates": [
-        "calibrated_identity_thresholds"
+        "calibrated_identity_thresholds",
+        "visual_audit_runtime"
       ],
       "blockers": [
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
@@ -49,7 +52,8 @@
       "preflight_status": "BLOCKED",
       "blocked_gates": [
         "local_runtime_capability",
-        "calibrated_identity_thresholds"
+        "calibrated_identity_thresholds",
+        "visual_audit_runtime"
       ],
       "blockers": [
         "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
@@ -61,7 +65,8 @@
       "status": "BLOCKED",
       "preflight_status": "BLOCKED",
       "blocked_gates": [
-        "calibrated_identity_thresholds"
+        "calibrated_identity_thresholds",
+        "visual_audit_runtime"
       ],
       "blockers": [
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",

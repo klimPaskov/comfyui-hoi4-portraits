@@ -571,6 +571,33 @@ def _autoprompter_preflight(root: Path, profile: str | None) -> dict[str, Any]:
     return {"status": status, **evidence}
 
 
+def _visual_audit_runtime_preflight(root: Path) -> dict[str, Any]:
+    """Verify the private visual-rubric lock without running the model."""
+
+    lock_path = root / "dependencies" / "visual_audit_runtime.lock.json"
+    evidence: dict[str, Any] = {"lock_path": str(lock_path.relative_to(root)), "execution_status": "NOT_RUN", "production_claim": "NOT_CLAIMED"}
+    try:
+        from .visual_audit_service import _load_runtime_lock
+
+        lock, rubric, binary, model, mmproj = _load_runtime_lock(root)
+    except Exception as exc:
+        return {"status": "BLOCKED", **evidence, "error_type": type(exc).__name__, "reason": str(exc)}
+    evidence.update({
+        "lock_status": lock.get("status"),
+        "rubric_path": str(rubric.relative_to(root)),
+        "rubric_sha256": sha256_file(rubric),
+        "binary_path": str(binary.relative_to(root)),
+        "binary_sha256": sha256_file(binary),
+        "model_path": str(model.relative_to(root)),
+        "model_sha256": sha256_file(model),
+        "mmproj_path": str(mmproj.relative_to(root)),
+        "mmproj_sha256": sha256_file(mmproj),
+        "model_revision": lock.get("model", {}).get("revision"),
+        "rubric_contract": lock.get("response_contract"),
+    })
+    return {"status": "PASS_FORMAT_ONLY_EXECUTION_UNVERIFIED", **evidence}
+
+
 def _background_preflight(root: Path, registry_path: Path, registry: dict[str, Any]) -> dict[str, Any]:
     entries: list[dict[str, Any]] = []
     for item in registry.get("backgrounds", []):
@@ -970,6 +997,12 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
         blockers.append("The required human autoprompter runtime lock or live local sidecar evidence is unavailable.")
     elif autoprompter_status == "PASS_FORMAT_ONLY_EXECUTION_BLOCKED":
         blockers.append("The full-power human autoprompter format is pinned and processor-verified, but target CUDA execution is unavailable on the detected host.")
+
+    visual_audit_evidence = _visual_audit_runtime_preflight(root_path)
+    visual_audit_status = visual_audit_evidence["status"]
+    gates.append({"name": "visual_audit_runtime", "status": visual_audit_status, "evidence": visual_audit_evidence})
+    if visual_audit_status == "BLOCKED":
+        blockers.append("The pinned independent visual-audit rubric runtime or its checksum-verified local artifacts are unavailable.")
 
     preprocessing_lock_path = root_path / "dependencies" / "preprocessing_lock.json"
     preprocessing_lock = json.loads(preprocessing_lock_path.read_text(encoding="utf-8")) if preprocessing_lock_path.is_file() else {}

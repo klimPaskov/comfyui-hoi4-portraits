@@ -19,6 +19,7 @@
 | `runtime_dependency_lock` | **PASS** |
 | `krea_live_compatibility` | **PASS** |
 | `autoprompter_runtime` | **PASS_LOCAL_AND_FULL_POWER_FORMAT_ONLY** |
+| `visual_audit_runtime` | **PASS_FORMAT_ONLY_EXECUTION_UNVERIFIED** |
 | `preprocessing_and_audit_dependencies` | **PASS** |
 | `calibrated_identity_thresholds` | **BLOCKED** |
 | `repository_preflight` | **PASS** |
@@ -41,6 +42,7 @@
 
 ## Additional blocked or skipped surfaces
 
+- `visual_audit_runtime`: PASS_FORMAT_ONLY_EXECUTION_UNVERIFIED
 - `identity_style_experiments`: The matrix execution report is fail-closed: no candidate was queued because mandatory preflight and independent-audit prerequisites remain unresolved.
 - `benchmark_reports`: human_local_mac_16gb=BLOCKED_PRODUCTION_GATES_CPU_FALLBACK, human_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_local_mac_16gb=BLOCKED_PRODUCTION_GATES_CPU_FALLBACK, agent_full_power_gpu=BLOCKED_RUNTIME_UNAVAILABLE, agent_remote_runpod=DEFERRED_OUT_OF_SCOPE
 - `identity_style_comparison`: Diagnostic candidates were observed, but no comparison ranking or production winner is produced until calibrated thresholds and independent all-PASS audits authorize them.

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/visual_reference_set.schema.json",
+  "title": "Private HOI4 Role-Specific Visual Reference Set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "reference_set_id",
+    "revision",
+    "role",
+    "status",
+    "source_class",
+    "rights_notes",
+    "approved_by",
+    "reviewed_at",
+    "images"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "reference_set_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role": {
+      "enum": [
+        "country_leader",
+        "commander",
+        "operative",
+        "advisor"
+      ]
+    },
+    "status": {
+      "const": "APPROVED_PRIVATE"
+    },
+    "source_class": {
+      "enum": [
+        "public_domain",
+        "user_authorized",
+        "project_owned_private",
+        "synthetic"
+      ]
+    },
+    "rights_notes": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approved_by": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "images": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reference_id",
+          "path",
+          "sha256",
+          "width",
+          "height"
+        ],
+        "properties": {
+          "reference_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}

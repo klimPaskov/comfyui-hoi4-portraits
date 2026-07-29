@@ -196,6 +196,74 @@ def _schema_gate(root: Path) -> dict[str, Any]:
                 )
             ],
         ),
+        "visual_audit_evidence": (
+            root / "schemas/visual_audit_evidence.schema.json",
+            [
+                (
+                    "in-memory:valid-visual-audit-evidence",
+                    {
+                        "schema_version": "1.0.0",
+                        "status": "PASS",
+                        "auditor": {
+                            "process_id": "visual-auditor-fixture",
+                            "independent_from_producer": True,
+                            "reviewed_at": datetime.now(timezone.utc).isoformat(),
+                        },
+                        "model": {
+                            "name": "fixture-visual-rubric",
+                            "revision": "fixture-revision",
+                            "artifact_sha256": "a" * 64,
+                        },
+                        "reference_set": {
+                            "id": "fixture-country-leader-style-v1",
+                            "role": "country_leader",
+                            "manifest_sha256": "b" * 64,
+                            "sample_count": 1,
+                        },
+                        "source_sha256": "c" * 64,
+                        "candidate_sha256": "d" * 64,
+                        "scores": {
+                            "hairline": 1.0,
+                            "facial_hair": 1.0,
+                            "accessories": 1.0,
+                            "style": 1.0,
+                        },
+                        "human_readable_evidence": {
+                            "hairline": "fixture hairline agrees",
+                            "facial_hair": "fixture facial hair agrees",
+                            "accessories": "fixture accessories agree",
+                            "style": "fixture style agrees with the approved reference set",
+                        },
+                    },
+                )
+            ],
+        ),
+        "visual_reference_set": (
+            root / "schemas/visual_reference_set.schema.json",
+            [
+                (
+                    "in-memory:valid-visual-reference-set",
+                    {
+                        "schema_version": "1.0.0",
+                        "reference_set_id": "fixture-country-leader-style-v1",
+                        "revision": "fixture-revision",
+                        "role": "country_leader",
+                        "status": "APPROVED_PRIVATE",
+                        "source_class": "synthetic",
+                        "rights_notes": "Synthetic acceptance fixture only.",
+                        "approved_by": ["acceptance-fixture"],
+                        "reviewed_at": datetime.now(timezone.utc).isoformat(),
+                        "images": [{
+                            "reference_id": "fixture-reference-1",
+                            "path": "private/reference.png",
+                            "sha256": "a" * 64,
+                            "width": 156,
+                            "height": 210,
+                        }],
+                    },
+                )
+            ],
+        ),
     }
     try:
         from jsonschema import Draft202012Validator  # type: ignore
@@ -308,6 +376,7 @@ def run_acceptance(root: str | Path | None = None) -> dict[str, Any]:
             "runtime_dependency_lock": next((gate for gate in preflight["gates"] if gate["name"] == "comfyui_runtime_dependency_lock"), None),
             "krea_live_compatibility": next((gate for gate in preflight["gates"] if gate["name"] == "krea_live_compatibility"), None),
             "autoprompter_runtime": next((gate for gate in preflight["gates"] if gate["name"] == "autoprompter_runtime"), None),
+            "visual_audit_runtime": next((gate for gate in preflight["gates"] if gate["name"] == "visual_audit_runtime"), None),
             "preprocessing_and_audit_dependencies": next((gate for gate in preflight["gates"] if gate["name"] == "preprocessing_and_audit_dependencies"), None),
             "calibrated_identity_thresholds": next((gate for gate in preflight["gates"] if gate["name"] == "calibrated_identity_thresholds"), None),
             "repository_preflight": next((gate for gate in preflight["gates"] if gate["name"] == "repository_preflight"), None),

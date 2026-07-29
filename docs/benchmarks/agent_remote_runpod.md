@@ -28,6 +28,7 @@ This report contains no production acceptance claim. Any CPU diagnostic executio
 | `remote_topology_auth` | **DEFERRED_OUT_OF_SCOPE** |
 | `repository_preflight` | **PASS** |
 | `source_fixture_and_provenance` | **PASS** |
+| `visual_audit_runtime` | **PASS_FORMAT_ONLY_EXECUTION_UNVERIFIED** |
 
 ## Measurements
 

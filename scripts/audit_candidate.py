@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from portrait_pipeline.independent_auditor import audit_candidate  # noqa: E402
+from portrait_pipeline.visual_audit_service import VisualAuditProducer  # noqa: E402
 
 
 def main() -> int:
@@ -23,7 +24,18 @@ def main() -> int:
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--producer-process-id", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--visual-reference-manifest", type=Path, default=None, help="private approved role-specific reference-set manifest")
+    parser.add_argument("--visual-auditor-process-id", default=None)
+    parser.add_argument("--visual-port", type=int, default=None)
     args = parser.parse_args()
+    if args.visual_reference_manifest is not None:
+        VisualAuditProducer(port=args.visual_port, auditor_process_id=args.visual_auditor_process_id).produce(
+            private_root=args.job_root,
+            source_path=args.source_master,
+            candidate_path=args.candidate,
+            reference_manifest=args.visual_reference_manifest,
+            producer_process_id=args.producer_process_id,
+        )
     audit = audit_candidate(job_root=args.job_root, candidate_id=args.candidate_id, source_master=args.source_master, processed_reference=args.processed_reference, candidate=args.candidate, mask=args.mask, manifest=args.manifest, producer_process_id=args.producer_process_id, root=ROOT, output_path=args.output)
     print(json.dumps(audit, indent=2, ensure_ascii=False))
     return 0 if audit.get("verdict") in {"PASS", "FAIL"} else 43

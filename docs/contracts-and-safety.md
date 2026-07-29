@@ -8,6 +8,7 @@ The schemas are normative JSON contracts. Do not add fields casually or pass a U
 - [`portrait_job_output.schema.json`](../schemas/portrait_job_output.schema.json)
 - [`portrait_audit.schema.json`](../schemas/portrait_audit.schema.json)
 - [`visual_audit_evidence.schema.json`](../schemas/visual_audit_evidence.schema.json) (private, hash-bound visual evidence)
+- [`visual_reference_set.schema.json`](../schemas/visual_reference_set.schema.json) (private, rights-attested role references)
 - [`portrait_benchmark_report.schema.json`](../schemas/portrait_benchmark_report.schema.json)
 - [`portrait_comparison_report.schema.json`](../schemas/portrait_comparison_report.schema.json)
 

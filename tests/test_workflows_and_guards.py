@@ -325,6 +325,12 @@ class WorkflowAndGuardTests(unittest.TestCase):
                 "source_sha256": sha256_file(source),
                 "candidate_sha256": sha256_file(candidate),
                 "scores": {"hairline": 0.91, "facial_hair": 0.88, "accessories": 0.93, "style": 0.86},
+                "human_readable_evidence": {
+                    "hairline": "Hairline silhouette and parting agree with the source.",
+                    "facial_hair": "Facial-hair presence and boundaries agree with the source.",
+                    "accessories": "No source-visible accessory is removed or invented.",
+                    "style": "The candidate matches the approved role-specific HOI4 painted reference set.",
+                },
             }), encoding="utf-8")
             metrics, gates, reasons = evaluate_visual_audit(
                 private_root=root,
@@ -341,7 +347,64 @@ class WorkflowAndGuardTests(unittest.TestCase):
             )
             self.assertEqual(gates, {"hairline": "PASS", "facial_hair": "PASS", "accessories": "PASS", "style": "PASS"})
             self.assertEqual(metrics["visual_audit_reference_set_id"], "country-leader-style-v1")
+            self.assertIn("Hairline silhouette", metrics["visual_audit_human_readable_evidence"])
             self.assertEqual(reasons, [])
+
+    def test_visual_audit_producer_hashes_approved_reference_set_and_validates_model_response(self):
+        from datetime import datetime, timezone
+        from PIL import Image
+        from portrait_pipeline.util import sha256_file
+        from portrait_pipeline.visual_audit_service import VisualAuditProducer
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source.png"
+            candidate = root / "candidate.png"
+            reference = root / "references/ref.png"
+            reference.parent.mkdir(parents=True)
+            Image.new("RGB", (64, 64), (20, 40, 60)).save(source)
+            Image.new("RGB", (64, 64), (60, 40, 20)).save(candidate)
+            Image.new("RGB", (72, 96), (30, 50, 70)).save(reference)
+            manifest = root / "references/manifest.json"
+            manifest.write_text(json.dumps({
+                "schema_version": "1.0.0",
+                "reference_set_id": "fixture-country-leader-style-v1",
+                "revision": "fixture-revision",
+                "role": "country_leader",
+                "status": "APPROVED_PRIVATE",
+                "source_class": "synthetic",
+                "rights_notes": "Synthetic test-only reference.",
+                "approved_by": ["test"],
+                "reviewed_at": datetime.now(timezone.utc).isoformat(),
+                "images": [{"reference_id": "ref-1", "path": "references/ref.png", "sha256": sha256_file(reference), "width": 72, "height": 96}],
+            }), encoding="utf-8")
+            output = root / "evidence/audit/visual_audit.json"
+            response = {"choices": [{"message": {"content": json.dumps({
+                "status": "PASS",
+                "scores": {"hairline": 0.9, "facial_hair": 0.9, "accessories": 0.9, "style": 0.9},
+                "human_readable_evidence": {name: "visible fixture evidence" for name in ("hairline", "facial_hair", "accessories", "style")},
+            })}}]}
+            with mock.patch("portrait_pipeline.visual_audit_service.VisualAuditProducer.start"), mock.patch("portrait_pipeline.visual_audit_service.VisualAuditProducer.stop"), mock.patch("portrait_pipeline.visual_audit_service._post_json", return_value=response) as post:
+                producer = VisualAuditProducer(root=self.root, auditor_process_id="visual-auditor-2", port=8191)
+                record = producer.produce(private_root=root, source_path=source, candidate_path=candidate, reference_manifest=manifest, producer_process_id="producer-1", output_path=output)
+            self.assertEqual(record["status"], "PASS")
+            self.assertEqual(record["reference_set"]["sample_count"], 1)
+            self.assertEqual(record["source_sha256"], sha256_file(source))
+            self.assertEqual(record["candidate_sha256"], sha256_file(candidate))
+            self.assertTrue(output.is_file())
+            self.assertEqual(post.call_count, 1)
+            content = post.call_args.args[1]["messages"][0]["content"]
+            self.assertEqual(len(content), 4)
+            self.assertIn("SOURCE", content[0]["text"])
+
+    def test_acceptance_schema_gate_includes_visual_audit_contracts(self):
+        from portrait_pipeline.acceptance import _schema_gate
+
+        result = _schema_gate(self.root)
+        self.assertEqual(result["status"], "PASS")
+        schemas = {item["schema"] for item in result["checked"]}
+        self.assertIn("schemas/visual_audit_evidence.schema.json", schemas)
+        self.assertIn("schemas/visual_reference_set.schema.json", schemas)
 
     def test_identity_style_matrix_execution_is_explicitly_fail_closed(self):
         from portrait_pipeline.constants import PROFILE_LIMITS

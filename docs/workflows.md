@@ -37,4 +37,20 @@ The agent profiles contain no autoprompter. The prompt must be present in the va
 
 ## Selection and promotion
 
+When an approved private role-specific visual reference manifest is available, run the separate auditor with `--visual-reference-manifest <private-job-root>/references/manifest.json`. The auditor starts the pinned loopback Qwen rubric runtime, verifies every reference checksum, terminates that model process, and then recomputes the full audit. Missing or unapproved reference sets leave the visual gates `UNCERTAIN`; they never authorize thresholds or promotion.
+
+```text
+.venv/bin/python scripts/audit_candidate.py \
+  --job-root <private-job-root> \
+  --candidate-id candidate-000 \
+  --source-master <private-job-root>/evidence/source/master.png \
+  --processed-reference <private-job-root>/evidence/reference/processed.png \
+  --candidate <private-job-root>/candidates/candidate-000.png \
+  --mask <private-job-root>/evidence/mask/candidate-000.png \
+  --manifest <private-job-root>/manifest.json \
+  --producer-process-id <producer-process-id> \
+  --output <private-job-root>/audit/candidate-000.json \
+  --visual-reference-manifest <private-job-root>/references/manifest.json
+```
+
 Candidates are selected by identity first. Style is evaluated only among identity-eligible candidates. Face swapping is not part of any graph. DDS conversion and mod integration require a separate read-only auditor PASS; a producer cannot create or rank its own approval.
