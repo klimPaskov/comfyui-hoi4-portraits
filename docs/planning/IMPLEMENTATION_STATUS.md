@@ -6,9 +6,12 @@ bootstrap, experiment design, evidence manifests, independent DDS oracle, and
 portable integration packages.
 
 The release is intentionally not marked production-ready. The formal reports
-are under `docs/preflight/` and `docs/acceptance/`. The acceptance run returns
-exit code `15` (`BACKGROUND_UNRESOLVED`) because the first hard blocker is the
-unresolved approved HOI4 background.
+are under `docs/preflight/` and `docs/acceptance/`. The latest acceptance run
+is `BLOCKED` with recommended exit code `20` because calibrated identity/style
+thresholds, source-specific production qualification, the immutable-LoRA
+experiment matrix, and independent all-PASS audit evidence remain unresolved.
+The approved background, pinned dependencies, preprocessing artifacts, live
+ComfyUI schema, and project-owned loopback services are passing gates.
 
 ## Commands
 
@@ -36,8 +39,17 @@ execution evidence in `docs/preflight/source_fixture_execution.json`.
 
 ## Runtime boundary
 
-The four workflows are structurally generated and validated. Their runtime
-load/execution status is `BLOCKED_UNVERIFIED` until the pinned ComfyUI runtime,
-Krea nodes/models, preprocessing/audit assets, approved background, calibration
-thresholds, and (for RunPod) authenticated endpoint are live-tested. No final
+The five checked-in workflow artifacts are structurally generated and validated
+against the live local ComfyUI node registry. The user-facing MPS server is
+healthy on loopback, but the measured [`human_local_mac_16gb` MPS canary](../preflight/mps_canary_2026-07-29.md)
+could not complete a sampler step even at `208x280`. The separate
+[`CPU fallback canary`](../preflight/cpu_canary_2026-07-29.md) reached Krea model
+loading but was interrupted under swap pressure; the earlier full CPU NVFP4
+run remains execution-only evidence. These results are recorded as Mac
+infeasibility evidence, not silently relabeled as production success. No final
 PNG, DDS, or mod wiring was created.
+
+The current automated suite is `39/39` passing. The RunPod route remains
+deferred by the project owner, and the generic/Chaos integration packages remain
+portable and fail-closed until the parent-owned live consumer validation and
+final mod wiring gates are completed.

@@ -919,13 +919,31 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
             }
         except (OSError, json.JSONDecodeError):
             mps_canary_evidence = {"path": str(mps_canary_path.relative_to(root_path)), "status": "INVALID_JSON"}
+    cpu_canary_evidence: dict[str, Any] = {"status": "NOT_RECORDED"}
+    cpu_canary_paths = sorted((root_path / "docs" / "preflight").glob("cpu_canary_*.json"))
+    if cpu_canary_paths:
+        cpu_canary_path = cpu_canary_paths[-1]
+        try:
+            cpu_canary = json.loads(cpu_canary_path.read_text(encoding="utf-8"))
+            cpu_canary_evidence = {
+                "path": str(cpu_canary_path.relative_to(root_path)),
+                "status": cpu_canary.get("status"),
+                "observed_at": cpu_canary.get("observed_at"),
+                "execution_profile": cpu_canary.get("execution_profile"),
+                "runtime": cpu_canary.get("runtime"),
+                "model": cpu_canary.get("model"),
+                "attempt": cpu_canary.get("attempt"),
+                "production_authorization": cpu_canary.get("production_authorization"),
+            }
+        except (OSError, json.JSONDecodeError):
+            cpu_canary_evidence = {"path": str(cpu_canary_path.relative_to(root_path)), "status": "INVALID_JSON"}
     live_schema_pass = live_krea.get("status") == "PASS_SCHEMA_ONLY_EXECUTION_BLOCKED"
     krea_review_statuses = {"BLOCKED_EXECUTION_NOT_MEASURED", "BLOCKED_EXECUTION_LOCAL_16GB_MEMORY_INFEASIBLE", "QUALIFIED_CPU_FALLBACK_MPS_BLOCKED"}
     krea_status = "PASS" if live_schema_pass and krea_review.get("status") in krea_review_statuses else "BLOCKED"
-    gates.append({"name": "krea_live_compatibility", "status": krea_status, "evidence": {"reason": "Live core/node/schema compatibility is verified; source-specific execution remains a separate qualification gate and the detected 16 GB Mac has a measured memory/offload blocker.", "compatibility_review_path": str(krea_review_path), "compatibility_review_status": krea_review.get("status"), "compatibility_review": krea_review, "live_probe_path": str(live_krea_path), "live_probe_status": live_krea.get("status"), "live_probe": live_krea, "mps_canary_evidence": mps_canary_evidence}})
+    gates.append({"name": "krea_live_compatibility", "status": krea_status, "evidence": {"reason": "Live core/node/schema compatibility is verified; source-specific execution remains a separate qualification gate and the detected 16 GB Mac has a measured memory/offload blocker.", "compatibility_review_path": str(krea_review_path), "compatibility_review_status": krea_review.get("status"), "compatibility_review": krea_review, "live_probe_path": str(live_krea_path), "live_probe_status": live_krea.get("status"), "live_probe": live_krea, "mps_canary_evidence": mps_canary_evidence, "cpu_canary_evidence": cpu_canary_evidence}})
     if krea_status != "PASS":
         blockers.append("Krea 2 Turbo live core/node/schema compatibility is not verified in the pinned runtime.")
-    blockers.append("Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required.")
+    blockers.append("Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required.")
 
     autoprompter_evidence = _autoprompter_preflight(root_path, profile)
     autoprompter_status = autoprompter_evidence["status"]

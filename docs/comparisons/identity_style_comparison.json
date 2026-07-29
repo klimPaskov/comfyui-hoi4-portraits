@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "comparison_id": "identity-style-comparison-2026-07-26.1",
-  "created_at": "2026-07-28T23:54:12.815061+00:00",
+  "created_at": "2026-07-29T00:18:08.954362+00:00",
   "status": "BLOCKED_DIAGNOSTIC_CANDIDATES_NOT_PRODUCTION_AUTHORIZED",
   "reason": "Diagnostic candidates were observed, but no comparison ranking or production winner is produced until calibrated thresholds and independent all-PASS audits authorize them.",
   "matrix_id": "krea2_identity_style_factorial_v1",
@@ -81,7 +81,7 @@
     },
     "blockers": [
       "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
-      "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS routes fail, the CPU fallback completed only one heavily-swapping run, and calibrated audit thresholds plus independent audit evidence are still required."
+      "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
     ]
   },
   "claims": {
