@@ -7,7 +7,19 @@ git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
 cd comfyui-hoi4-portraits
 ```
 
-The public clone does not include model weights, source portraits, generated images, caches, secrets, or binary model artifacts. Supply those through the documented local runtime instead of committing them; the top-level `loras/` path contains the public checksum/documentation boundary for the project-owned style LoRA.
+The public clone does not include model weights, source portraits, generated images, caches, secrets, or binary model artifacts. The immutable style LoRA is stored in a private, authenticated Hugging Face repository and remains excluded from Git.
+
+Authenticate with an account that has access before running the installer:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install "huggingface-hub==1.25.1"
+.venv/bin/hf auth login
+```
+
+The bootstrap recognizes the standard Hugging Face token cache or `HF_TOKEN`. It resolves the exact revision in [`dependencies/models.lock.json`](../dependencies/models.lock.json), verifies size and SHA-256, and writes only the ignored local copy under `loras/`.
+
+If you already have ComfyUI, use [`SETUP_WITH_CODING_AGENT.md`](../SETUP_WITH_CODING_AGENT.md) and the included agent prompt. That route runs `scripts/install_into_existing_comfyui.py`, reports `"comfyui_downloaded": false`, preserves unrelated custom nodes and configuration, and copies all six workflows into ComfyUI’s user workflow directory.
 
 ## 2. Install the pinned runtime
 
@@ -17,7 +29,8 @@ The supported installer records preflight evidence before it changes the runtime
 python3.12 scripts/bootstrap/bootstrap.py \
   --profile local_mac_16gb \
   --private-qualification-install \
-  --owner-authorized-private-install
+  --owner-authorized-private-install \
+  --restore-from-lock
 ```
 
 Use `local_nvidia_16gb` on a local NVIDIA host. `full_power_gpu` and `agent_full_power_gpu` are ComfyUI Cloud routes; local bootstrap does not download their Cloud models. A normal restore remains fail-closed and will stop on missing source, background, license, threshold, checksum, or capability evidence.

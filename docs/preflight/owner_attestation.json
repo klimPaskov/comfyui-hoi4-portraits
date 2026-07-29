@@ -1,13 +1,14 @@
 {
   "schema_version": "1.0.0",
-  "attestation_id": "owner-approval-2026-07-28-local-qualification",
-  "attested_at": "2026-07-28",
+  "attestation_id": "owner-approval-2026-07-29-private-model-hosting",
+  "attested_at": "2026-07-29",
   "attested_by": "project_owner",
   "attestation_source": "explicit project-owner approval in the active Codex task",
   "scope": {
     "local_qualification": true,
     "mod_development": true,
     "public_code_repository": true,
+    "private_authenticated_model_hosting": true,
     "comfy_cloud_live_execution": "BLOCKED_UNCONNECTED"
   },
   "approvals": {
@@ -37,7 +38,10 @@
       "approved": true,
       "sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
       "mutation_policy": "immutable",
-      "redistribution": false
+      "repository": "Hoops-McCann/hoi4-portrait-new-style-lora",
+      "revision": "2eb855d3176908af4329640c8d966a1b26fc3d6b",
+      "hosting": "private_authenticated_owner_controlled_only",
+      "public_redistribution": false
     },
     "public_domain_source_fixture": {
       "fixture_id": "loc_dag_1518_portrait",
@@ -46,7 +50,7 @@
     }
   },
   "limitations": [
-    "This attestation does not grant rights to redistribute Krea weights, the private style LoRA, the private background, or private source portraits.",
+    "This attestation permits private authenticated owner-controlled hosting of the immutable style LoRA; it does not grant public redistribution rights for Krea weights, the style LoRA, the private background, or private source portraits.",
     "It does not approve a candidate without an independent all-gate PASS audit.",
     "Comfy Cloud live execution and authenticated remote acceptance remain blocked until an eligible plan, API key, and live capability parity are verified."
   ]

@@ -164,6 +164,8 @@ DEPENDENCY_LOCK_VERSION = "lock-2026-07-26.1"
 AUTOPROMPTER_PATH = "prompts/autoprompter_instruction.txt"
 STYLE_LORA_PATH = "loras/hoi4_portrait_new_style_lora.safetensors"
 STYLE_LORA_SHA256 = "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1"
+STYLE_LORA_REPOSITORY = "Hoops-McCann/hoi4-portrait-new-style-lora"
+STYLE_LORA_REVISION = "2eb855d3176908af4329640c8d966a1b26fc3d6b"
 # Calibration records may use either vocabulary used by the planning package
 # (`APPROVED`) or the registry vocabulary used by the runtime (`RESOLVED`).
 # Call sites still require a non-placeholder id, approver record, and

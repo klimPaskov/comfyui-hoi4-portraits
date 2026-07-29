@@ -11,7 +11,9 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-_project_src = Path(__file__).resolve().parents[1]
+_node_root = Path(__file__).resolve().parent
+_project_src_candidates = (_node_root.parent, _node_root)
+_project_src = next((candidate for candidate in _project_src_candidates if (candidate / "portrait_pipeline").is_dir()), _node_root.parent)
 if str(_project_src) not in sys.path:
     sys.path.insert(0, str(_project_src))
 

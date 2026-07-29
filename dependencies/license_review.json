@@ -3,7 +3,7 @@
   "review_date": "2026-07-28",
   "status": "APPROVED",
   "approval_attestation": "docs/preflight/owner_attestation.json",
-  "approved_scope": "local qualification and mod development; no model, LoRA, private background, or private source redistribution",
+  "approved_scope": "local qualification and mod development; authenticated owner-controlled private hosting of the immutable style LoRA; no public model, LoRA, private background, or private source redistribution",
   "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.",
   "sources": [
     {
@@ -76,10 +76,17 @@
     },
     {
       "name": "Existing HOI4 style LoRA",
-      "source_url": null,
+      "source_url": "https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora",
+      "artifact_source_url": "https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora/resolve/2eb855d3176908af4329640c8d966a1b26fc3d6b/hoi4_portrait_new_style_lora.safetensors",
+      "artifact_revision": "2eb855d3176908af4329640c8d966a1b26fc3d6b",
+      "artifact_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
       "license_identifier": null,
       "status": "OWNER_APPROVED_PRIVATE_ONLY",
-      "material_conditions": ["file is preserved byte-for-byte and is not redistributed by this repository"]
+      "material_conditions": [
+        "file is preserved byte-for-byte and is not redistributed by the public Git repository",
+        "Hugging Face repository visibility must remain private and access-controlled",
+        "no open-source license or public redistribution right is inferred"
+      ]
     },
     {
       "name": "HOI4 portrait background",
@@ -92,5 +99,5 @@
   "blocking_reasons": [
     "Krea Community License use is approved only for local qualification and mod development under the recorded conditions; model distribution remains prohibited.",
     "BiRefNet source and snapshot license metadata still require reconciliation before redistribution.",
-    "The existing style LoRA remains private and immutable."]
+    "The existing style LoRA remains private, access-controlled, and immutable."]
 }

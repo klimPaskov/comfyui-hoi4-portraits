@@ -488,6 +488,51 @@ class WorkflowAndGuardTests(unittest.TestCase):
         self.assertTrue(fp8["mandatory"])
         for profile in ("human_local_mac_16gb", "human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_local_nvidia_16gb", "agent_full_power_gpu"):
             self.assertIn(profile, fp8["profiles"], profile)
+        style = next(item for item in lock["project_owned_immutable_files"] if item["name"] == "hoi4_portrait_new_style_lora.safetensors")
+        self.assertEqual(style["repository"], "Hoops-McCann/hoi4-portrait-new-style-lora")
+        self.assertEqual(style["revision"], "2eb855d3176908af4329640c8d966a1b26fc3d6b")
+        self.assertIn(style["revision"], style["source_url"])
+        self.assertEqual(style["source_visibility"], "private")
+        self.assertTrue(style["requires_authentication"])
+        self.assertEqual(style["size_bytes"], 228587816)
+        self.assertEqual(style["sha256"], "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1")
+
+    def test_existing_comfyui_installer_is_non_destructive_and_packages_agent_setup(self):
+        from scripts.install_into_existing_comfyui import _copy_project_nodes, _copy_workflows, _merge_extra_model_paths
+
+        with tempfile.TemporaryDirectory() as directory:
+            comfy_root = Path(directory)
+            (comfy_root / "main.py").write_text("# existing ComfyUI fixture\n", encoding="utf-8")
+            actions = []
+            _copy_project_nodes(comfy_root, actions)
+            _merge_extra_model_paths(comfy_root, actions)
+            _copy_workflows(comfy_root, actions)
+            installed_nodes = comfy_root / "custom_nodes" / "hoi4_portrait_nodes"
+            self.assertTrue((installed_nodes / "__init__.py").is_file())
+            self.assertTrue((installed_nodes / "portrait_pipeline" / "constants.py").is_file())
+            installed_workflows = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
+            self.assertEqual(len(installed_workflows), 6)
+            config = (comfy_root / "extra_model_paths.yaml").read_text(encoding="utf-8")
+            self.assertEqual(config.count("# BEGIN HOI4 PORTRAIT WORKFLOWS"), 1)
+            _merge_extra_model_paths(comfy_root, actions)
+            self.assertEqual((comfy_root / "extra_model_paths.yaml").read_text(encoding="utf-8"), config)
+            self.assertTrue((self.root / "SETUP_WITH_CODING_AGENT.md").is_file())
+            prompt = (self.root / "prompts/install_into_existing_comfyui_agent_prompt.md").read_text(encoding="utf-8")
+            self.assertIn("Do not download, clone, replace, upgrade, or expose ComfyUI", prompt)
+            self.assertIn("scripts/install_into_existing_comfyui.py", prompt)
+
+    def test_release_package_selection_rejects_weights_and_includes_user_assets(self):
+        from scripts.release.build_release_artifacts import FORBIDDEN_SUFFIXES, _selected_files
+
+        relative = {path.relative_to(self.root).as_posix() for path in _selected_files()}
+        self.assertIn("SETUP_WITH_CODING_AGENT.md", relative)
+        self.assertIn("prompts/install_into_existing_comfyui_agent_prompt.md", relative)
+        self.assertIn("workflows/human/local_mac_16gb/human_local_mac_16gb.json", relative)
+        self.assertIn("workflows/agent/local_nvidia_16gb/agent_local_nvidia_16gb.json", relative)
+        self.assertIn("docs/assets/live_test_2026-07-28/compact_workflow_overview.png", relative)
+        self.assertFalse(any(Path(path).suffix.casefold() in FORBIDDEN_SUFFIXES for path in relative))
+        self.assertFalse(any("/mcp/" in f"/{path}/" or ".egg-info/" in path for path in relative))
+        self.assertNotIn("prompts/implementation_goal_prompt.md", relative)
 
     def test_profile_runtime_locks_are_checksum_verified_but_live_runtime_stays_separate(self):
         for profile in ("human_local_mac_16gb", "human_local_nvidia_16gb", "human_full_power_gpu", "agent_local_mac_16gb", "agent_local_nvidia_16gb", "agent_full_power_gpu"):

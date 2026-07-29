@@ -187,9 +187,16 @@
     {
       "name": "hoi4_portrait_new_style_lora.safetensors",
       "path": "loras/hoi4_portrait_new_style_lora.safetensors",
+      "repository": "Hoops-McCann/hoi4-portrait-new-style-lora",
+      "revision": "2eb855d3176908af4329640c8d966a1b26fc3d6b",
+      "filename": "hoi4_portrait_new_style_lora.safetensors",
+      "source_url": "https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora/resolve/2eb855d3176908af4329640c8d966a1b26fc3d6b/hoi4_portrait_new_style_lora.safetensors",
+      "source_visibility": "private",
+      "requires_authentication": true,
       "size_bytes": 228587816,
       "sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
-      "mutation_policy": "never_modify_or_rewrite; load via extra-model-path or read-only reference"
+      "mutation_policy": "never_modify_or_rewrite; restore from the authenticated pinned source and load via extra-model-path or read-only reference",
+      "distribution_policy": "private_authenticated_owner_controlled_huggingface_only"
     }
   ]
 }

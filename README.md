@@ -24,12 +24,20 @@ cd comfyui-hoi4-portraits
 
 Follow [`docs/getting-started.md`](docs/getting-started.md), then load a UI JSON into a loopback ComfyUI server at `http://127.0.0.1:8188/`. The 16 GB graphs include visible, disconnected notes for possible 12 GB and 8 GB GGUF routes. They are not enabled until an official model, loader, checksum, license, and live capability qualification exists.
 
+The style LoRA is not stored in Git. Authorized users authenticate to its [private Hugging Face repository](https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora); bootstrap restores the exact pinned revision and verifies its checksum before ComfyUI can load it.
+
+For an existing ComfyUI installation, download the latest Windows `.exe`,
+macOS `.dmg`, or portable `.zip` from [Releases](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases).
+The packages include [`SETUP_WITH_CODING_AGENT.md`](SETUP_WITH_CODING_AGENT.md)
+and a ready-to-copy [agent setup prompt](prompts/install_into_existing_comfyui_agent_prompt.md).
+They do not bundle or download ComfyUI.
+
 Full-power profiles are the remote ComfyUI Cloud route. The authenticated Cloud UI now contains all six saved workflows, but execution is **blocked by Cloud node/model parity**: the project custom nodes and required LoRAs are not available there. No run was spent. See [`docs/cloud/comfy_cloud.md`](docs/cloud/comfy_cloud.md) and the [live Cloud probe](docs/preflight/comfy_cloud_ui_probe_2026-07-29.md).
 
 ## Safety and scope
 
 - Identity is selected first; face swapping is not used.
-- ControlNet is intentionally not included: no approved live experiment currently shows a benefit over the identity reference, mask, and approved background route.
+- ControlNet is intentionally not included: Krea Edit already supplies image-conditioned identity and geometry guidance, and no approved live experiment shows that an additional ControlNet improves identity-first selection.
 - Preview and `SaveImage` in human workflows consume the same evidence-export image.
 - No final DDS or mod integration is produced without an independent all-gates PASS.
 - `workflows/` and `loras/` are top-level project paths; model weights, source portraits, caches, secrets, and binary artifacts remain excluded from Git. Revisions and checksums are recorded in [`dependencies/models.lock.json`](dependencies/models.lock.json) and [`loras/README.md`](loras/README.md).

@@ -50,6 +50,7 @@ venv/
 dist/
 build/
 *.egg-info/
+packaging/windows/payload.zip
 
 # Editor and OS state
 .idea/

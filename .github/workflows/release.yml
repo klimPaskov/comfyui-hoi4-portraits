@@ -1,0 +1,43 @@
+name: Build release packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version
+        required: true
+        type: string
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Check out the pinned release
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Install the pinned Go toolchain
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: "1.26.5"
+
+      - name: Build and verify release packages
+        env:
+          RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
+        run: python3 scripts/release/build_release_artifacts.py --version "$RELEASE_VERSION"
+
+      - name: Create prerelease and upload assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          gh release view "$RELEASE_VERSION" >/dev/null 2>&1 || \
+            gh release create "$RELEASE_VERSION" --prerelease \
+              --title "HOI4 Portrait Workflows $RELEASE_VERSION" \
+              --notes "Setup-only prerelease. ComfyUI and model weights are not bundled. Read SETUP_WITH_CODING_AGENT.md. Production acceptance remains fail-closed until every documented gate passes."
+          gh release upload "$RELEASE_VERSION" dist/* --clobber

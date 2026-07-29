@@ -47,24 +47,27 @@ def _model_budget(root: Path, profile: str) -> dict[str, Any]:
             "source_url": entry.get("source_url"),
         })
 
-    immutable_size = None
+    immutable_entry: dict[str, Any] | None = None
     immutable_entries = lock.get("project_owned_immutable_files", [])
     for entry in immutable_entries:
         if entry.get("path") == STYLE_LORA_PATH:
-            immutable_size = entry.get("size_bytes")
+            immutable_entry = entry
             break
     style_path = root / STYLE_LORA_PATH
     actual_style_sha = sha256_file(style_path) if style_path.is_file() else None
-    if immutable_size is not None:
-        expected_bytes += int(immutable_size)
+    if immutable_entry is not None and immutable_entry.get("size_bytes") is not None:
+        immutable_size = int(immutable_entry["size_bytes"])
+        expected_bytes += immutable_size
         artifacts.append({
             "name": "immutable_style_lora",
             "filename": STYLE_LORA_PATH,
-            "size_bytes": int(immutable_size),
-            "revision": "project-owned-immutable",
+            "size_bytes": immutable_size,
+            "repository": immutable_entry.get("repository"),
+            "revision": immutable_entry.get("revision"),
             "sha256": STYLE_LORA_SHA256,
             "actual_sha256": actual_style_sha,
-            "source_url": None,
+            "source_url": immutable_entry.get("source_url"),
+            "source_visibility": immutable_entry.get("source_visibility"),
         })
     return {
         "lock_path": str(lock_path),

@@ -766,6 +766,16 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
         root_path / "integrations" / "agentic-hoi4-modding",
     ]
     style_path = root_path / STYLE_LORA_PATH
+    model_lock_path = root_path / "dependencies" / "models.lock.json"
+    model_lock = json.loads(model_lock_path.read_text(encoding="utf-8")) if model_lock_path.is_file() else {}
+    immutable_style_source = next(
+        (
+            entry
+            for entry in model_lock.get("project_owned_immutable_files", [])
+            if isinstance(entry, dict) and entry.get("path") == STYLE_LORA_PATH
+        ),
+        {},
+    )
     background_registry = root_path / "config" / "background_registry.json"
     registry = json.loads(background_registry.read_text(encoding="utf-8")) if background_registry.is_file() else {}
     background_evidence = _background_preflight(root_path, background_registry, registry)
@@ -816,7 +826,22 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     gates.append({
         "name": "immutable_style_lora",
         "status": lora_status,
-        "evidence": {"path": str(style_path), "present": lora_present, "expected_sha256": STYLE_LORA_SHA256, "actual_sha256": lora_actual, "immutable": True},
+        "evidence": {
+            "path": str(style_path),
+            "present": lora_present,
+            "expected_sha256": STYLE_LORA_SHA256,
+            "actual_sha256": lora_actual,
+            "immutable": True,
+            "source": {
+                "repository": immutable_style_source.get("repository"),
+                "revision": immutable_style_source.get("revision"),
+                "source_url": immutable_style_source.get("source_url"),
+                "source_visibility": immutable_style_source.get("source_visibility"),
+                "requires_authentication": immutable_style_source.get("requires_authentication"),
+                "size_bytes": immutable_style_source.get("size_bytes"),
+                "sha256": immutable_style_source.get("sha256"),
+            },
+        },
     })
     if lora_status != "PASS":
         blockers.append("The required immutable style LoRA is missing or its checksum does not match.")
@@ -841,7 +866,7 @@ def collect_preflight(root: str | Path | None = None, *, profile: str | None = N
     if planning_checksums["status"] != "PASS":
         blockers.append("One or more planning package checksums do not match.")
 
-    model_entries = json.loads((root_path / "dependencies" / "models.lock.json").read_text(encoding="utf-8")).get("models", [])
+    model_entries = model_lock.get("models", [])
     local_model_files = [str(path.relative_to(root_path)) for path in model_root.rglob("*") if path.is_file()] if model_root.is_dir() else []
     model_profile = {
         "agent_local_mac_16gb": "human_local_mac_16gb",

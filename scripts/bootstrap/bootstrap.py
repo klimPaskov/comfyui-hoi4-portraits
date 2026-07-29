@@ -82,7 +82,19 @@ def _qualification_install_decision(preflight: dict[str, Any], *, owner_authoriz
         if name == "planning_package_checksums" and status != "PASS":
             hard_refusals.append("planning package checksum verification is not PASS")
         if name == "immutable_style_lora" and status != "PASS":
-            hard_refusals.append("immutable style LoRA verification is not PASS")
+            if isinstance(evidence, dict) and evidence.get("present"):
+                hard_refusals.append("immutable style LoRA checksum verification is not PASS")
+            else:
+                source = evidence.get("source", {}) if isinstance(evidence, dict) else {}
+                if not (
+                    isinstance(source, dict)
+                    and source.get("repository")
+                    and source.get("revision")
+                    and str(source.get("source_url", "")).startswith("https://huggingface.co/")
+                    and source.get("size_bytes")
+                    and source.get("sha256")
+                ):
+                    hard_refusals.append("missing immutable style LoRA has no complete authenticated source lock")
         if name == "license_and_rights_review" and status not in {"PASS", "APPROVED", "RESOLVED"}:
             # The command explicitly authorizes a private qualification copy,
             # but never converts the unresolved review into production
@@ -176,6 +188,25 @@ def _artifact_url(entry: dict[str, Any], filename: str) -> str:
     return source_url
 
 
+def _huggingface_token() -> str | None:
+    """Resolve Hugging Face auth without printing or persisting a secret."""
+
+    environment_token = os.environ.get("HF_TOKEN")
+    if environment_token:
+        return environment_token.strip() or None
+    token_path_override = os.environ.get("HF_TOKEN_PATH")
+    if token_path_override:
+        token_path = Path(token_path_override).expanduser()
+    else:
+        hf_home = Path(os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface")).expanduser()
+        token_path = hf_home / "token"
+    try:
+        token = token_path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    return token or None
+
+
 def _download_verified(url: str, destination: Path, expected_size: int | None, expected_sha256: str, actions: list[dict[str, Any]]) -> None:
     if destination.is_file():
         actual_size = destination.stat().st_size
@@ -185,7 +216,9 @@ def _download_verified(url: str, destination: Path, expected_size: int | None, e
             return
         raise BootstrapError(ExitCode.MODEL_CHECKSUM_MISMATCH, f"locked model checksum mismatch: {destination.relative_to(ROOT)}")
     destination.parent.mkdir(parents=True, exist_ok=True)
-    request = urllib.request.Request(url, headers={"Authorization": f"Bearer {os.environ['HF_TOKEN']}"} if os.environ.get("HF_TOKEN") else {})
+    parsed_url = urllib.parse.urlparse(url)
+    token = _huggingface_token() if parsed_url.hostname == "huggingface.co" else None
+    request = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"} if token else {})
     temporary: Path | None = None
     try:
         with urllib.request.urlopen(request, timeout=120) as response, tempfile.NamedTemporaryFile("wb", dir=destination.parent, prefix=f".{destination.name}.", suffix=".download", delete=False) as handle:
@@ -207,6 +240,45 @@ def _download_verified(url: str, destination: Path, expected_size: int | None, e
     finally:
         if temporary is not None and temporary.exists():
             temporary.unlink()
+
+
+def _restore_project_owned_immutable_files(model_lock: dict[str, Any], actions: list[dict[str, Any]]) -> None:
+    for entry in model_lock.get("project_owned_immutable_files", []):
+        path_value = entry.get("path")
+        filename = entry.get("filename")
+        source_url = entry.get("source_url")
+        revision = entry.get("revision")
+        expected_size = entry.get("size_bytes")
+        expected_hash = entry.get("sha256")
+        if not (
+            isinstance(path_value, str)
+            and isinstance(filename, str)
+            and isinstance(source_url, str)
+            and source_url.startswith("https://huggingface.co/")
+            and isinstance(revision, str)
+            and len(revision) == 40
+            and revision in source_url
+            and isinstance(expected_size, int)
+            and isinstance(expected_hash, str)
+            and len(expected_hash) == 64
+        ):
+            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "immutable project model source lock is incomplete")
+        destination = relative_safe_path(ROOT, path_value)
+        if destination.name != filename or destination.suffix.casefold() != ".safetensors":
+            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "immutable project model path or format is unsupported")
+        try:
+            destination.relative_to((ROOT / "loras").resolve())
+        except ValueError as exc:
+            raise BootstrapError(ExitCode.DEPENDENCY_MISSING, "immutable project model path escapes the controlled LoRA root") from exc
+        _download_verified(source_url, destination, expected_size, expected_hash, actions)
+        actions.append({
+            "action": "immutable_project_model_verified",
+            "path": path_value,
+            "repository": entry.get("repository"),
+            "revision": revision,
+            "size_bytes": expected_size,
+            "sha256": expected_hash,
+        })
 
 
 def _restore_models(model_lock: dict[str, Any], profile: str, actions: list[dict[str, Any]]) -> None:
@@ -377,7 +449,9 @@ def restore_from_lock(profile: str) -> list[dict[str, Any]]:
     actions.append({"action": "project_nodes_symlink", "path": str(project_nodes), "target": str(project_nodes.resolve())})
     runtime_lock = json.loads((ROOT / "dependencies" / "runtime_requirements_lock.json").read_text(encoding="utf-8"))
     python = _install_python_environment(dependency_lock, runtime_lock, actions, profile)
-    _restore_models(json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8")), profile, actions)
+    model_lock = json.loads((ROOT / "dependencies" / "models.lock.json").read_text(encoding="utf-8"))
+    _restore_project_owned_immutable_files(model_lock, actions)
+    _restore_models(model_lock, profile, actions)
     preprocessing_lock = json.loads((ROOT / "dependencies" / "preprocessing_lock.json").read_text(encoding="utf-8"))
     _restore_preprocessing_models(preprocessing_lock, actions)
     _restore_preprocessing_source_artifacts(preprocessing_lock, actions)

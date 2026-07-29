@@ -1,11 +1,18 @@
 # Project style LoRA
 
-The workflow references `loras/hoi4_portrait_new_style_lora.safetensors` as an immutable project-owned input.
+The workflows reference `loras/hoi4_portrait_new_style_lora.safetensors` as an immutable project-owned input.
 
-The binary is intentionally checksum-locked and ignored by Git because it is a model artifact and the project’s rights record does not authorize redistribution. It is not stored under a `private/` workflow folder. Obtain the authorized local copy separately, then verify it against:
+The binary is checksum-locked and ignored by Git. Its authenticated source is the private Hugging Face repository [`Hoops-McCann/hoi4-portrait-new-style-lora`](https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora), pinned to commit:
 
 ```text
+2eb855d3176908af4329640c8d966a1b26fc3d6b
+```
+
+Authenticate with a Hugging Face account that has access, then use the project bootstrap. The bootstrap downloads the exact pinned safetensors object into this directory, verifies its size and checksum, and stops on a missing token, unavailable source, unsupported format, or mismatch. It never commits the binary.
+
+```text
+Size      228587816 bytes
 SHA-256  2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1
 ```
 
-The workflow must stop on a missing or mismatching file. Do not rewrite, merge, re-train, or commit the binary without a new rights decision.
+The ComfyUI loader still selects the local filename because ComfyUI model nodes load materialized files, not HTTP URLs. The workflow must stop on a missing or mismatching file. Do not rewrite, merge, re-train, redistribute, or commit the binary without a new rights decision.

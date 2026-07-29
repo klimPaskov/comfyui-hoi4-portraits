@@ -50,7 +50,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+        "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -142,7 +142,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+        "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -234,7 +234,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+        "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -324,7 +324,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+        "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -407,7 +407,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+        "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",
@@ -490,7 +490,7 @@
       },
       "required_custom_node_source_checksums": {
         "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-        "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+        "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
       },
       "required_models": [
         "krea2_turbo_fp8_scaled.safetensors",

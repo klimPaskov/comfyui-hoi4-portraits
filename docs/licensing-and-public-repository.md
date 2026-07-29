@@ -6,7 +6,7 @@ This project is public-facing code and workflow metadata. Public visibility does
 
 - model weights or tokenizer caches;
 - source portraits or generated portraits;
-- the immutable private LoRA;
+- the immutable private LoRA binary (its pinned private Hugging Face source and checksum metadata are public);
 - API keys, gateway tokens, `.env` files, or remote credentials;
 - local ComfyUI installations and caches;
 - private background/source material.
@@ -17,7 +17,7 @@ The repository `.gitignore` blocks these classes. Review `git status --ignored` 
 
 The exact revision, source URL, retrieval date, checksum, and applicable license must be recorded for every model and preprocessing artifact. Krea 2 use remains subject to the [Krea 2 licensing terms](https://www.krea.ai/krea-2-licensing). The project keeps Krea artifacts local until the owner confirms the intended use and distribution scope.
 
-ComfyUI and the Krea node pack are pinned to their source revisions in the dependency locks. Qwen and llama.cpp sources are recorded in the autoprompter lock and model lock. Read those records before redistributing any runtime or model artifact.
+ComfyUI and the Krea node pack are pinned to their source revisions in the dependency locks. Qwen and llama.cpp sources are recorded in the autoprompter lock and model lock. The style LoRA is hosted only in the private, authenticated [`Hoops-McCann/hoi4-portrait-new-style-lora`](https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora) repository at its recorded immutable commit. Private access is not an open-source license and does not authorize public redistribution. Read those records before redistributing any runtime or model artifact.
 
 ## Source and background rights
 

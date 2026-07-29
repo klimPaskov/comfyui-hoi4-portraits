@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "created_at": "2026-07-29T08:21:27.171781+00:00",
+  "created_at": "2026-07-29T09:49:04.536422+00:00",
   "overall_status": "BLOCKED",
   "recommended_exit_code": 20,
   "gates": {
@@ -160,8 +160,8 @@
         },
         {
           "path": "README.md",
-          "expected": "d54304f9a59a73abd1568044abb4ee13692d506f1cf0e2cb9310290af9c15f40",
-          "actual": "d54304f9a59a73abd1568044abb4ee13692d506f1cf0e2cb9310290af9c15f40",
+          "expected": "5b27fa58e5bc14a1f5432be31acb0eac3740b3ece4fd9b9ce4f6281e69d9b779",
+          "actual": "5b27fa58e5bc14a1f5432be31acb0eac3740b3ece4fd9b9ce4f6281e69d9b779",
           "match": true
         },
         {
@@ -472,7 +472,7 @@
               "vm.swapusage"
             ],
             "returncode": 0,
-            "stdout": "vm.swapusage: total = 5120.00M  used = 4048.81M  free = 1071.19M  (encrypted)",
+            "stdout": "vm.swapusage: total = 5120.00M  used = 3848.81M  free = 1271.19M  (encrypted)",
             "stderr": ""
           },
           "vm_stat": {
@@ -480,7 +480,7 @@
               "/usr/bin/vm_stat"
             ],
             "returncode": 0,
-            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    16045.\nPages active:                                 303605.\nPages inactive:                               297048.\nPages speculative:                              6133.\nPages throttled:                                   0.\nPages wired down:                             144449.\nPages purgeable:                                4501.\n\"Translation faults\":                      593348709.\nPages copy-on-write:                        29650990.\nPages zero filled:                         280056417.\nPages reactivated:                         195430105.\nPages purged:                                4359563.\nFile-backed pages:                            342014.\nAnonymous pages:                              264772.\nPages stored in compressor:                   928797.\nPages occupied by compressor:                 238306.\nDecompressions:                            179242309.\nCompressions:                              251253620.\nPageins:                                  2468436115.\nPageouts:                                     202869.\nSwapins:                                    28443863.\nSwapouts:                                   39042018.\nPages tagged:                                  88577.\nPages tagged resident:                         54658.\nPages tagged compressed:                       33919.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4295.\nPages tag-storage free:                          180.\nPages tag-storage non-tag pageable:            28213.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    5190656.\nTagged compressions:                         2685002.\nTagged decompressions:                       2458505.",
+            "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    21311.\nPages active:                                 301392.\nPages inactive:                               314218.\nPages speculative:                              7476.\nPages throttled:                                   0.\nPages wired down:                             124154.\nPages purgeable:                                1345.\n\"Translation faults\":                      609007869.\nPages copy-on-write:                        30850140.\nPages zero filled:                         286922578.\nPages reactivated:                         197439313.\nPages purged:                                4667463.\nFile-backed pages:                            434691.\nAnonymous pages:                              188395.\nPages stored in compressor:                   878158.\nPages occupied by compressor:                 237050.\nDecompressions:                            181000027.\nCompressions:                              253235678.\nPageins:                                  2703433637.\nPageouts:                                     210191.\nSwapins:                                    28456868.\nSwapouts:                                   39042018.\nPages tagged:                                  92961.\nPages tagged resident:                         64144.\nPages tagged compressed:                       28817.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4302.\nPages tag-storage free:                          179.\nPages tag-storage non-tag pageable:            28208.\nPages tag-storage non-tag wired:                  79.\nBytes of compressed tags:                    4179328.\nTagged compressions:                         2753367.\nTagged decompressions:                       2527375.",
             "stderr": ""
           }
         },
@@ -499,7 +499,7 @@
             "<project-root>"
           ],
           "returncode": 0,
-          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   193Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
+          "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   194Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
           "stderr": ""
         },
         "available_tools": {
@@ -627,6 +627,7 @@
             "local_qualification": true,
             "mod_development": true,
             "public_code_repository": true,
+            "private_authenticated_model_hosting": true,
             "comfy_cloud_live_execution": "BLOCKED_UNCONNECTED"
           }
         },
@@ -1125,9 +1126,9 @@
     },
     "custom_node_preflight": {
       "name": "custom_node_preflight",
-      "status": "BLOCKED",
+      "status": "PASS",
       "evidence": {
-        "status": "BLOCKED",
+        "status": "PASS",
         "lock_path": "<project-root>/dependencies/custom_nodes.lock.json",
         "checks": [
           {
@@ -1185,10 +1186,10 @@
               "HOI4SourceGuard",
               "HOI4SubjectSelect"
             ],
-            "expected_source_tree_checksum": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8",
-            "actual_source_tree_checksum": "2c2a3c43076f2f4e231d7a7178f7f8bb2d8e4868764b1bf4957fb218efec0055",
-            "source_checksum_match": false,
-            "status": "BLOCKED"
+            "expected_source_tree_checksum": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc",
+            "actual_source_tree_checksum": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc",
+            "source_checksum_match": true,
+            "status": "PASS"
           }
         ]
       }
@@ -4903,7 +4904,7 @@
         "review_date": "2026-07-28",
         "status": "APPROVED",
         "approval_attestation": "docs/preflight/owner_attestation.json",
-        "approved_scope": "local qualification and mod development; no model, LoRA, private background, or private source redistribution",
+        "approved_scope": "local qualification and mod development; authenticated owner-controlled private hosting of the immutable style LoRA; no public model, LoRA, private background, or private source redistribution",
         "policy": "A source or model license is not inferred from a model card. Preserve the source URL, retrieval date, exact revision, and the applicable license terms before install or redistribution.",
         "sources": [
           {
@@ -4978,11 +4979,16 @@
           },
           {
             "name": "Existing HOI4 style LoRA",
-            "source_url": null,
+            "source_url": "https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora",
+            "artifact_source_url": "https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora/resolve/2eb855d3176908af4329640c8d966a1b26fc3d6b/hoi4_portrait_new_style_lora.safetensors",
+            "artifact_revision": "2eb855d3176908af4329640c8d966a1b26fc3d6b",
+            "artifact_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
             "license_identifier": null,
             "status": "OWNER_APPROVED_PRIVATE_ONLY",
             "material_conditions": [
-              "file is preserved byte-for-byte and is not redistributed by this repository"
+              "file is preserved byte-for-byte and is not redistributed by the public Git repository",
+              "Hugging Face repository visibility must remain private and access-controlled",
+              "no open-source license or public redistribution right is inferred"
             ]
           },
           {
@@ -4998,7 +5004,7 @@
         "blocking_reasons": [
           "Krea Community License use is approved only for local qualification and mod development under the recorded conditions; model distribution remains prohibited.",
           "BiRefNet source and snapshot license metadata still require reconciliation before redistribution.",
-          "The existing style LoRA remains private and immutable."
+          "The existing style LoRA remains private, access-controlled, and immutable."
         ]
       }
     },
@@ -5292,7 +5298,6 @@
       "queued_jobs": 0,
       "candidate_count": 0,
       "blocked_reasons": [
-        "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
         "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
         "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required.",
         "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
@@ -5501,7 +5506,6 @@
     }
   },
   "preflight_blockers": [
-    "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
     "The authenticated Cloud UI probe saved all six workflows but found unsupported project custom nodes and missing required LoRAs; the project API-key route remains unavailable and Cloud execution is blocked by node/model parity.",
     "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
     "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
@@ -5558,7 +5562,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+          "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
@@ -5650,7 +5654,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+          "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
@@ -5742,7 +5746,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+          "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
@@ -5832,7 +5836,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+          "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
@@ -5915,7 +5919,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+          "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",
@@ -5998,7 +6002,7 @@
         },
         "required_custom_node_source_checksums": {
           "comfyui-krea2edit": "cae442e11b59bcba04ed82f4c01ffe3752531fe1",
-          "hoi4_portrait_project_nodes": "ebe8ff321334f1944fd65986870342b0e58d04599598f5c30d52ac89b37b41d8"
+          "hoi4_portrait_project_nodes": "be8d5cb6c0031dcd19bb173b46165350e40ac6df461dd40ae33b6b91bd5646fc"
         },
         "required_models": [
           "krea2_turbo_fp8_scaled.safetensors",

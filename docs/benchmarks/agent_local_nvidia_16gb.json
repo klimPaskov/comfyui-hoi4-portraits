@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "report_version": "runtime-capability-2026-07-26.1",
-  "created_at": "2026-07-29T08:18:45.361802+00:00",
+  "created_at": "2026-07-29T09:46:22.350833+00:00",
   "profile": "agent_local_nvidia_16gb",
   "status": "BLOCKED_RUNTIME_UNAVAILABLE",
   "status_reason": "The target local runtime is not installed or its accelerator capability is not verified.",
@@ -24,7 +24,7 @@
             "vm.swapusage"
           ],
           "returncode": 0,
-          "stdout": "vm.swapusage: total = 5120.00M  used = 4048.81M  free = 1071.19M  (encrypted)",
+          "stdout": "vm.swapusage: total = 5120.00M  used = 3848.81M  free = 1271.19M  (encrypted)",
           "stderr": ""
         },
         "vm_stat": {
@@ -32,7 +32,7 @@
             "/usr/bin/vm_stat"
           ],
           "returncode": 0,
-          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14414.\nPages active:                                 287158.\nPages inactive:                               281479.\nPages speculative:                              8184.\nPages throttled:                                   0.\nPages wired down:                             143715.\nPages purgeable:                                   6.\n\"Translation faults\":                      594056999.\nPages copy-on-write:                        29704221.\nPages zero filled:                         280321543.\nPages reactivated:                         195647991.\nPages purged:                                4388154.\nFile-backed pages:                            377617.\nAnonymous pages:                              199204.\nPages stored in compressor:                  1004257.\nPages occupied by compressor:                 270572.\nDecompressions:                            179398100.\nCompressions:                              251494440.\nPageins:                                  2484506947.\nPageouts:                                     203179.\nSwapins:                                    28443895.\nSwapouts:                                   39042018.\nPages tagged:                                  90463.\nPages tagged resident:                         53148.\nPages tagged compressed:                       37315.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4294.\nPages tag-storage free:                          563.\nPages tag-storage non-tag pageable:            27831.\nPages tag-storage non-tag wired:                  80.\nBytes of compressed tags:                    5917312.\nTagged compressions:                         2691425.\nTagged decompressions:                       2461528.",
+          "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    14989.\nPages active:                                 307171.\nPages inactive:                               312789.\nPages speculative:                              7247.\nPages throttled:                                   0.\nPages wired down:                             128541.\nPages purgeable:                                  11.\n\"Translation faults\":                      609310763.\nPages copy-on-write:                        30884467.\nPages zero filled:                         287083411.\nPages reactivated:                         197440754.\nPages purged:                                4676758.\nFile-backed pages:                            439863.\nAnonymous pages:                              187344.\nPages stored in compressor:                   875537.\nPages occupied by compressor:                 235169.\nDecompressions:                            181002064.\nCompressions:                              253235678.\nPageins:                                  2719481431.\nPageouts:                                     210397.\nSwapins:                                    28456868.\nSwapouts:                                   39042018.\nPages tagged:                                  90054.\nPages tagged resident:                         61329.\nPages tagged compressed:                       28725.\nPages tag-storage:                             32768.\nPages tag-storage holding tags:                 4302.\nPages tag-storage free:                          167.\nPages tag-storage non-tag pageable:            28218.\nPages tag-storage non-tag wired:                  81.\nBytes of compressed tags:                    4162112.\nTagged compressions:                         2753367.\nTagged decompressions:                       2527465.",
           "stderr": ""
         }
       },
@@ -51,7 +51,7 @@
           "<project-root>"
         ],
         "returncode": 0,
-        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   193Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
+        "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   194Gi   240Gi    45%    1.7M  2.5G    0%   /System/Volumes/Data",
         "stderr": ""
       }
     }
@@ -67,7 +67,7 @@
       "source_fixture_and_provenance": "PASS",
       "planning_package_checksums": "PASS",
       "model_artifact_preflight": "PASS",
-      "custom_node_preflight": "BLOCKED",
+      "custom_node_preflight": "PASS",
       "comfyui_runtime_dependency_lock": "PASS",
       "remote_topology_auth": "NOT_APPLICABLE",
       "repository_preflight": "PASS",
@@ -80,7 +80,6 @@
     },
     "blockers": [
       "The required CUDA runtime, Python floor, PyTorch capability, or ComfyUI installation is not verified; this profile cannot be claimed executable.",
-      "One or more required custom-node checkouts or class inventories are missing; workflow execution is blocked.",
       "Calibration evidence exists but does not yet demonstrate the required approved identity/style threshold set; no production candidate may be accepted.",
       "Krea 2 source-specific production acceptance and the immutable style-LoRA experiment matrix remain blocked: the default MPS route fails, the CPU fallback has one completed heavily-swapping run plus a newer interrupted canary, and calibrated audit thresholds plus independent audit evidence are still required."
     ]
@@ -107,10 +106,12 @@
         "name": "immutable_style_lora",
         "filename": "loras/hoi4_portrait_new_style_lora.safetensors",
         "size_bytes": 228587816,
-        "revision": "project-owned-immutable",
+        "repository": "Hoops-McCann/hoi4-portrait-new-style-lora",
+        "revision": "2eb855d3176908af4329640c8d966a1b26fc3d6b",
         "sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
         "actual_sha256": "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34dead1",
-        "source_url": null
+        "source_url": "https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora/resolve/2eb855d3176908af4329640c8d966a1b26fc3d6b/hoi4_portrait_new_style_lora.safetensors",
+        "source_visibility": "private"
       }
     ]
   },
