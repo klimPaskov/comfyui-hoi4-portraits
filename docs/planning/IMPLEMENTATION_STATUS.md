@@ -52,4 +52,5 @@ PNG, DDS, or mod wiring was created.
 The current automated suite is `39/39` passing. The RunPod route remains
 deferred by the project owner, and the generic/Chaos integration packages remain
 portable and fail-closed until the parent-owned live consumer validation and
-final mod wiring gates are completed.
+final mod wiring gates are completed. The read-only live-target audit is recorded
+in [`integration target validation`](../preflight/integration_target_validation_2026-07-29.md).

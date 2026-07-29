@@ -1,0 +1,569 @@
+{
+  "schema_version": "1.0.0",
+  "observed_at": "2026-07-29T00:33:28.751291+00:00",
+  "scope": "read_only_live_integration_target_validation",
+  "overall_status": "PORTABLE_VALIDATION_PASS_LIVE_APPLY_BLOCKED",
+  "source_project": "comfyui-hoi4-portraits",
+  "chaos_redux": {
+    "targets": [
+      {
+        "target_id": "chaos_redux_installed_game_mod",
+        "audit": {
+          "target_snapshot": {
+            "exists": true,
+            "is_git": true,
+            "target_path": "redacted",
+            "head": "420cfb326e8ec78ec5641b152f32fce2b2d94db6",
+            "branch": "master",
+            "origin": "git@github.com:klimPaskov/Chaos-Redux.git",
+            "status_entry_count": 2,
+            "staged_entry_count": 0,
+            "unstaged_entry_count": 0,
+            "untracked_entry_count": 2,
+            "status_sample": [
+              "?? docs/assets/",
+              "?? gfx/interface/ideas/test_icon.dds"
+            ],
+            "diff_check": "PASS"
+          },
+          "package_manifest": "integrations/chaos-redux/replacement_manifest.json",
+          "destination_comparisons": [
+            {
+              "path": "AGENTS.md",
+              "exists": true,
+              "sha256": "b56479d75b607bc1aae31525ec4a98168df22a53d4db583db946457d1d335148",
+              "size_bytes": 17462,
+              "source_sha256": "ed9cb54702589a3663273e96fb150259551394f0eed78ddf5d1889dad58c41fe",
+              "replacement_sha256": "fd3c73004c10eb26333d6c49f6c3afde65c6b1d47d87dcf7b114ee15125f020b",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".agents/skills/chaos-redux-event-assets/SKILL.md",
+              "exists": true,
+              "sha256": "8f22bfbe531e731841932b382cdc85062589958807a402cc11c29ed154951e9d",
+              "size_bytes": 20077,
+              "source_sha256": "2b7d63f1407d861c70b44f62b0ab82ad5a653253de87c7ac667e19a4e06a6941",
+              "replacement_sha256": "476be4c4335d5ba4463f69773faa03c6d97a14ed19db95a0fb8b4f2e55de90e9",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".agents/skills/chaos-redux-subagents/SKILL.md",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": "148d7311e488b75b645ebb218d14bf32386db580aee2cdb39b65a452ead621c2",
+              "replacement_sha256": "394c789e90bfb0fcd928e0192a7697da48a8a85cba0675c6a06a99a8ae8ab3b5",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".codex/agents/chaosx_asset_source_researcher.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": "ebbbd47ffb0b931575c4e37ba7a5cec434df09dc00d5fc5807509621d919ccf9",
+              "replacement_sha256": "bed9d44083d7939f678a3608daa24e13245d49324c935825054d7101282a6545",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".codex/agents/chaosx_generated_event_art.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": "fdc4610d1d17353ce9a3736a7aaf7f9c809d1a12634d4f238747945f60fe7b52",
+              "replacement_sha256": "1bd554b061f249789ee69d24a2c29116b38c24843b5eeaa4e44cbd94a6cd1e61",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".codex/agents/chaosx_country_package_auditor.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": "eb6564e92e1244c0e3396c1beaf2f81ad078fa50b885e9ca043b5d7f0bf0fe6b",
+              "replacement_sha256": "4250e469f45ad5d6de5a5c6c813c5b1bee9fe6607b5878f3df95bd79ade207b2",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".codex/agents/chaosx_skill_maintainer.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": "c6c431d50d070be8eec67ad400fd5caada97035071eb74d2907623c7fea2fc9d",
+              "replacement_sha256": "e303ebe9b7ea8010d571ff3aca71b9e3f8edc5e116d5391ee52faa31038f25a5",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".agents/skills/hoi4-portrait-pipeline/SKILL.md",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": null,
+              "replacement_sha256": "a2ab2a531bcfdd7b7689d58f667fea0b591f81efe5977859292d35f929405b8b",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".codex/agents/chaosx_hoi4_portrait_pipeline.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": null,
+              "replacement_sha256": "fdd3193d92b637f8de492541516d3ad3148b6e3b1a9d9a66cf4e79b16b6c8a4a",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".codex/agents/chaosx_portrait_identity_auditor.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": null,
+              "replacement_sha256": "d80ebe102f0fa7d5679880c9b6a4e22f4d8a25143f5042b526cbbc5b85fc6747",
+              "comparison": "MISSING"
+            }
+          ],
+          "comparison_counts": {
+            "LIVE_DIVERGED": 2,
+            "MISSING": 8
+          },
+          "consumer_surface": [
+            {
+              "path": "AGENTS.md",
+              "exists": true,
+              "sha256": "b56479d75b607bc1aae31525ec4a98168df22a53d4db583db946457d1d335148",
+              "size_bytes": 17462
+            },
+            {
+              "path": ".agents/skills/chaos-redux-event-assets/SKILL.md",
+              "exists": true,
+              "sha256": "8f22bfbe531e731841932b382cdc85062589958807a402cc11c29ed154951e9d",
+              "size_bytes": 20077
+            },
+            {
+              "path": ".agents/skills/chaos-redux-subagents/SKILL.md",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null
+            },
+            {
+              "path": ".codex/agents/chaosx_hoi4_portrait_pipeline.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null
+            },
+            {
+              "path": ".codex/agents/chaosx_portrait_identity_auditor.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null
+            },
+            {
+              "path": "interface/chaosx_characters.gfx",
+              "exists": true,
+              "sha256": "2fe9fd719408071f864b6580e61d8b73e9f9bc7ae6b3c926867533aa73636f5f",
+              "size_bytes": 4009
+            },
+            {
+              "path": ".tools/convert_to_dds.py",
+              "exists": true,
+              "sha256": "21175ab7233e998f059cb9d3ec18a3646bb166bb3784cad853d687db460fc5f2",
+              "size_bytes": 4946
+            },
+            {
+              "path": "gfx/leaders/portrait_leader_background.psd",
+              "exists": true,
+              "sha256": "4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6",
+              "size_bytes": 191777
+            }
+          ],
+          "direct_apply": "BLOCKED_READ_ONLY_AUDIT"
+        }
+      },
+      {
+        "target_id": "chaos_redux_project_checkout",
+        "audit": {
+          "target_snapshot": {
+            "exists": true,
+            "is_git": true,
+            "target_path": "redacted",
+            "head": "276ea88b959c0b1833c414476f3d9c69bf5a41ba",
+            "branch": "master",
+            "origin": "https://github.com/klimPaskov/Chaos-Redux.git",
+            "status_entry_count": 8821,
+            "staged_entry_count": 8809,
+            "unstaged_entry_count": 0,
+            "untracked_entry_count": 12,
+            "status_sample": [
+              "D  .agents/skills/chaos-redux-event-assets/SKILL.md",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/30_minutes_of_hel.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/achievement.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/achievement_grey.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/achievement_not_eligible.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/assuming_direct_control.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/britzkrieg.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/crusader_kings_2.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/overlay.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/achievements/the_revolution_triumphant.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/decisions/decision_border_war.png",
+              "D  .agents/skills/chaos-redux-event-assets/assets/decisions/decision_category_generic_arms_trade.png"
+            ],
+            "diff_check": "PASS"
+          },
+          "package_manifest": "integrations/chaos-redux/replacement_manifest.json",
+          "destination_comparisons": [
+            {
+              "path": "AGENTS.md",
+              "exists": true,
+              "sha256": "ffad6c294da461d1a6054c651751f2ff639a5689dff6fc0ce7d9ee653e8b7095",
+              "size_bytes": 31342,
+              "source_sha256": "ed9cb54702589a3663273e96fb150259551394f0eed78ddf5d1889dad58c41fe",
+              "replacement_sha256": "fd3c73004c10eb26333d6c49f6c3afde65c6b1d47d87dcf7b114ee15125f020b",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".agents/skills/chaos-redux-event-assets/SKILL.md",
+              "exists": true,
+              "sha256": "d145f4300dcba259c8a7a1e28fda36210287942544f41a0e25911bf0a6032f62",
+              "size_bytes": 56437,
+              "source_sha256": "2b7d63f1407d861c70b44f62b0ab82ad5a653253de87c7ac667e19a4e06a6941",
+              "replacement_sha256": "476be4c4335d5ba4463f69773faa03c6d97a14ed19db95a0fb8b4f2e55de90e9",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".agents/skills/chaos-redux-subagents/SKILL.md",
+              "exists": true,
+              "sha256": "41dc3575721c3a167cb3445fb1d7691ad3d9dd7ef23ef8d85ffc1ff7e5e7e3f6",
+              "size_bytes": 19490,
+              "source_sha256": "148d7311e488b75b645ebb218d14bf32386db580aee2cdb39b65a452ead621c2",
+              "replacement_sha256": "394c789e90bfb0fcd928e0192a7697da48a8a85cba0675c6a06a99a8ae8ab3b5",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".codex/agents/chaosx_asset_source_researcher.toml",
+              "exists": true,
+              "sha256": "7f313190c45020e62e09a3f66cc3e8ad2015be608e6a0872c2a4c476bc6d7ba3",
+              "size_bytes": 3768,
+              "source_sha256": "ebbbd47ffb0b931575c4e37ba7a5cec434df09dc00d5fc5807509621d919ccf9",
+              "replacement_sha256": "bed9d44083d7939f678a3608daa24e13245d49324c935825054d7101282a6545",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".codex/agents/chaosx_generated_event_art.toml",
+              "exists": true,
+              "sha256": "d11a171e599f51b934961126c788f841b5b60eaa4bd76d87f2d198541b2cc812",
+              "size_bytes": 5843,
+              "source_sha256": "fdc4610d1d17353ce9a3736a7aaf7f9c809d1a12634d4f238747945f60fe7b52",
+              "replacement_sha256": "1bd554b061f249789ee69d24a2c29116b38c24843b5eeaa4e44cbd94a6cd1e61",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".codex/agents/chaosx_country_package_auditor.toml",
+              "exists": true,
+              "sha256": "77bd4a05c781b059d496b6a4841ea57bdfc5fb905bb97f92bc42c4b1fbea5ea6",
+              "size_bytes": 6658,
+              "source_sha256": "eb6564e92e1244c0e3396c1beaf2f81ad078fa50b885e9ca043b5d7f0bf0fe6b",
+              "replacement_sha256": "4250e469f45ad5d6de5a5c6c813c5b1bee9fe6607b5878f3df95bd79ade207b2",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".codex/agents/chaosx_skill_maintainer.toml",
+              "exists": true,
+              "sha256": "56c8c3d4175e5a964bde58beffbd78affb6d02f6953c7ab2cd8b27b6c60d6491",
+              "size_bytes": 3191,
+              "source_sha256": "c6c431d50d070be8eec67ad400fd5caada97035071eb74d2907623c7fea2fc9d",
+              "replacement_sha256": "e303ebe9b7ea8010d571ff3aca71b9e3f8edc5e116d5391ee52faa31038f25a5",
+              "comparison": "LIVE_DIVERGED"
+            },
+            {
+              "path": ".agents/skills/hoi4-portrait-pipeline/SKILL.md",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": null,
+              "replacement_sha256": "a2ab2a531bcfdd7b7689d58f667fea0b591f81efe5977859292d35f929405b8b",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".codex/agents/chaosx_hoi4_portrait_pipeline.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": null,
+              "replacement_sha256": "fdd3193d92b637f8de492541516d3ad3148b6e3b1a9d9a66cf4e79b16b6c8a4a",
+              "comparison": "MISSING"
+            },
+            {
+              "path": ".codex/agents/chaosx_portrait_identity_auditor.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null,
+              "source_sha256": null,
+              "replacement_sha256": "d80ebe102f0fa7d5679880c9b6a4e22f4d8a25143f5042b526cbbc5b85fc6747",
+              "comparison": "MISSING"
+            }
+          ],
+          "comparison_counts": {
+            "LIVE_DIVERGED": 7,
+            "MISSING": 3
+          },
+          "consumer_surface": [
+            {
+              "path": "AGENTS.md",
+              "exists": true,
+              "sha256": "ffad6c294da461d1a6054c651751f2ff639a5689dff6fc0ce7d9ee653e8b7095",
+              "size_bytes": 31342
+            },
+            {
+              "path": ".agents/skills/chaos-redux-event-assets/SKILL.md",
+              "exists": true,
+              "sha256": "d145f4300dcba259c8a7a1e28fda36210287942544f41a0e25911bf0a6032f62",
+              "size_bytes": 56437
+            },
+            {
+              "path": ".agents/skills/chaos-redux-subagents/SKILL.md",
+              "exists": true,
+              "sha256": "41dc3575721c3a167cb3445fb1d7691ad3d9dd7ef23ef8d85ffc1ff7e5e7e3f6",
+              "size_bytes": 19490
+            },
+            {
+              "path": ".codex/agents/chaosx_hoi4_portrait_pipeline.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null
+            },
+            {
+              "path": ".codex/agents/chaosx_portrait_identity_auditor.toml",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null
+            },
+            {
+              "path": "interface/chaosx_characters.gfx",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null
+            },
+            {
+              "path": ".tools/convert_to_dds.py",
+              "exists": true,
+              "sha256": "d8aa0ba6a16ba8b6b698ccd6cf599b90e81db6f6c6132009f07115c728f6b8a0",
+              "size_bytes": 10086
+            },
+            {
+              "path": "gfx/leaders/portrait_leader_background.psd",
+              "exists": false,
+              "sha256": null,
+              "size_bytes": null
+            }
+          ],
+          "direct_apply": "BLOCKED_READ_ONLY_AUDIT"
+        }
+      }
+    ],
+    "installed_game_target_surface": "PRESENT",
+    "direct_apply": "BLOCKED_READ_ONLY_AUDIT"
+  },
+  "agentic_hoi4_modding": {
+    "target_snapshot": {
+      "exists": true,
+      "is_git": true,
+      "target_path": "redacted",
+      "head": "54da3e7a43cce43f15edc54ef80fb0099822b3e2",
+      "branch": "codex/portrait-pipeline",
+      "origin": "https://github.com/klimPaskov/Agentic-HOI4-Modding.git",
+      "status_entry_count": 8,
+      "staged_entry_count": 1,
+      "unstaged_entry_count": 3,
+      "untracked_entry_count": 4,
+      "status_sample": [
+        "M .codex/config.toml",
+        " M AGENTS_template.md",
+        " M README.md",
+        " M hoi4-mod-setup.manifest.json",
+        "?? .agents/skills/hoi4-portrait-pipeline/",
+        "?? .codex/agents/hoi4_portrait_identity_auditor.toml",
+        "?? .codex/agents/hoi4_portrait_pipeline.toml",
+        "?? docs/"
+      ],
+      "diff_check": "PASS"
+    },
+    "portrait_manifest_component": "workflow.hoi4_portrait_pipeline",
+    "portrait_expected_files": [
+      {
+        "path": ".agents/skills/hoi4-portrait-pipeline/SKILL.md",
+        "exists": true,
+        "sha256": "d977c51b2e0894f3455077630cf9cef911dc05419c7f560f1a7045f0a447ff06",
+        "size_bytes": 9836,
+        "expected_sha256": "d977c51b2e0894f3455077630cf9cef911dc05419c7f560f1a7045f0a447ff06",
+        "expected_size_bytes": 9836,
+        "match": true
+      },
+      {
+        "path": ".codex/agents/hoi4_portrait_pipeline.toml",
+        "exists": true,
+        "sha256": "911ad1158b48a6038e6fba5b34ad57b4b96539ddef7ae260bb81c767f87a400b",
+        "size_bytes": 3302,
+        "expected_sha256": "911ad1158b48a6038e6fba5b34ad57b4b96539ddef7ae260bb81c767f87a400b",
+        "expected_size_bytes": 3302,
+        "match": true
+      },
+      {
+        "path": ".codex/agents/hoi4_portrait_identity_auditor.toml",
+        "exists": true,
+        "sha256": "e25d4d91cf3d761f138955aadcc6cb10945b965df117cc2f709e48883dce332c",
+        "size_bytes": 2775,
+        "expected_sha256": "e25d4d91cf3d761f138955aadcc6cb10945b965df117cc2f709e48883dce332c",
+        "expected_size_bytes": 2775,
+        "match": true
+      },
+      {
+        "path": "docs/agentic-hoi4-portrait-pipeline.md",
+        "exists": true,
+        "sha256": "fc3ba759c1bf2aa50b5fe929c599ad6974e6c536c1273471e6f5e9754d117ca9",
+        "size_bytes": 2308,
+        "expected_sha256": "fc3ba759c1bf2aa50b5fe929c599ad6974e6c536c1273471e6f5e9754d117ca9",
+        "expected_size_bytes": 2308,
+        "match": true
+      }
+    ],
+    "portrait_manifest_status": "PASS",
+    "all_manifest_expected_file_count": 924,
+    "all_manifest_missing_count": 0,
+    "all_manifest_mismatch_count": 211,
+    "all_manifest_baseline_status": "BLOCKED_PREEXISTING_EXPECTED_FILE_DRIFT",
+    "toml_parse": {
+      "status": "PASS",
+      "files": [
+        {
+          "path": ".codex/agents/hoi4_3d_model_pipeline.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_asset_source_researcher.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_audio_researcher.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_country_package_auditor.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_decision_mission_auditor.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_documentation_curator.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_feature_completion_auditor.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_focus_tree_auditor.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_generated_feature_art.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_icon_artist.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_improvement_loop_planner.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_localisation_auditor.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_portrait_identity_auditor.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_portrait_pipeline.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_quote_remark_researcher.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_repo_explorer.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_scripted_system_architect.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_skill_maintainer.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        },
+        {
+          "path": ".codex/agents/hoi4_spreadsheet_doc_worker.toml",
+          "status": "PASS",
+          "fork_context_config_value": null
+        }
+      ]
+    },
+    "portrait_leak_and_spawn_policy": {
+      "status": "PASS",
+      "files": [
+        {
+          "path": ".agents/skills/hoi4-portrait-pipeline/SKILL.md",
+          "exists": true,
+          "forbidden_project_specific_text": false,
+          "fork_context_false_text": false
+        },
+        {
+          "path": ".codex/agents/hoi4_portrait_pipeline.toml",
+          "exists": true,
+          "forbidden_project_specific_text": false,
+          "fork_context_false_text": true
+        },
+        {
+          "path": ".codex/agents/hoi4_portrait_identity_auditor.toml",
+          "exists": true,
+          "forbidden_project_specific_text": false,
+          "fork_context_false_text": true
+        }
+      ],
+      "spawn_parameter_policy": "Parent must pass fork_context=false when spawning; config files record the requirement in developer instructions."
+    },
+    "target_live_consumer_validation": "NOT_RUN_PARENT_OWNED",
+    "direct_apply": "NOT_PERFORMED"
+  },
+  "blockers": [
+    "Chaos Redux direct application remains blocked until a clean, current target diff and parent-owned consumer validation exist.",
+    "The generic target has pre-existing setup-manifest expected-file drift and remains uncommitted/unpushed by owner instruction.",
+    "Parent-owned live consumer validation and final mod wiring were not run because no independently audited production candidate exists."
+  ],
+  "production_boundary": {
+    "final_png": "NOT_CREATED",
+    "final_dds": "NOT_CREATED",
+    "final_gfx_wiring": "NOT_CREATED",
+    "live_consumer_validation": "NOT_RUN"
+  }
+}

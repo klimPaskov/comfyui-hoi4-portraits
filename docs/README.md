@@ -8,6 +8,7 @@ Start here:
 - [Mac Krea precision qualification](preflight/krea_precision_options_2026-07-28.md)
 - [Mac MPS canary](preflight/mps_canary_2026-07-29.md)
 - [Mac CPU fallback canary](preflight/cpu_canary_2026-07-29.md)
+- [Live integration-target validation](preflight/integration_target_validation_2026-07-29.md)
 - [Identity calibration evidence](preflight/identity_calibration_2026-07-29.md)
 - [Geometry calibration evidence](preflight/geometry_calibration_2026-07-29.md)
 - [Identity/style matrix execution gate](preflight/identity_style_matrix_execution_2026-07-29.json)
