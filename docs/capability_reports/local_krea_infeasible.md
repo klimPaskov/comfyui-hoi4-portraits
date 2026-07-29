@@ -31,6 +31,12 @@ blocked before the first sampler step at approximately 1.02 GiB free RAM and
 263.81 MB free swap on a bounded 208×280 canary. See the
 [`staged-load barrier evidence`](../preflight/mps_barrier_canary_2026-07-29.md).
 
+A fresh retry through the same user-facing graph again submitted successfully,
+passed preprocessing and the autoprompter, and reached Krea model loading. The
+bounded run was safely interrupted at approximately 1.07 GiB free unified
+memory before the first sampler step; no candidate was produced. See the
+[`live retry evidence`](../preflight/mps_retry_canary_2026-07-29.md).
+
 The official artifacts were checksum-verified before testing. No repacked or
 unapproved model format was substituted into the production graph.
 

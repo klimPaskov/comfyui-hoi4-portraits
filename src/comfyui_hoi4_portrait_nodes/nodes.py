@@ -756,7 +756,30 @@ class HOI4ForegroundMask:
         if mask_image.size != source.size:
             _raise(ExitCode.MASK_AUDIT_FAILED, "mask service dimensions do not match the processed reference")
         mask_values = torch.frombuffer(bytearray(mask_image.tobytes()), dtype=torch.uint8).reshape(mask_image.height, mask_image.width).float().div(255.0).unsqueeze(0).to(device=image.device, dtype=image.dtype)
-        mask_record = {"model": model, "analysis_status": "PASS", "mask_path": "evidence/mask/foreground.png", "mask_sha256": _pixel_digest(mask_image), "reference_meta": reference_meta}
+        component_payload = response.get("component_masks")
+        contract = response.get("mask_contract")
+        required_components = {"person_alpha", "hard_interior", "face", "hair_hat_boundary", "accessory_attention", "background", "boundary_ring"}
+        if not isinstance(component_payload, dict) or not required_components.issubset(component_payload) or not isinstance(contract, dict) or contract.get("status") != "PASS_STRUCTURAL_COMPONENTS":
+            _raise(ExitCode.MASK_AUDIT_FAILED, "mask service did not return the complete component-mask contract")
+        component_records: dict[str, Any] = {}
+        for component_name in sorted(required_components):
+            descriptor = component_payload.get(component_name)
+            if not isinstance(descriptor, dict) or not isinstance(descriptor.get("png_base64"), str):
+                _raise(ExitCode.MASK_AUDIT_FAILED, f"mask service returned no encoded {component_name} component")
+            try:
+                component_bytes = base64.b64decode(descriptor["png_base64"], validate=True)
+                with Image.open(io.BytesIO(component_bytes)) as opened:
+                    component_image = opened.convert("L")
+                    component_image.load()
+            except (binascii.Error, ValueError, OSError) as exc:
+                _raise(ExitCode.MASK_AUDIT_FAILED, f"mask service returned an undecodable {component_name} component: {type(exc).__name__}")
+            if component_image.size != source.size:
+                _raise(ExitCode.MASK_AUDIT_FAILED, f"mask service {component_name} dimensions do not match the processed reference")
+            component_path = _job_root(job) / "evidence" / "mask" / "components" / f"{component_name}.png"
+            written = _write_image(component_path, component_image)
+            relative_component_path = str(component_path.relative_to(_job_root(job)))
+            component_records[component_name] = {"path": relative_component_path, "sha256": written["sha256"], "pixel_sha256": written["pixel_sha256"], "width": component_image.width, "height": component_image.height, "mode": component_image.mode, "binary": bool(descriptor.get("binary")), "semantics": descriptor.get("semantics")}
+        mask_record = {"model": model, "analysis_status": "PASS", "mask_path": "evidence/mask/foreground.png", "mask_sha256": _pixel_digest(mask_image), "reference_meta": reference_meta, "mask_contract": contract, "component_masks": component_records, "component_comparison_status": contract.get("alternative_matting_comparison", {}).get("status") if isinstance(contract.get("alternative_matting_comparison"), dict) else "UNKNOWN"}
         _write_image(_job_root(job) / "evidence" / "mask" / "foreground.png", mask_image)
         atomic_json_write(_job_root(job) / "evidence" / "mask" / "foreground.json", mask_record)
         return image, mask_values, mask_record
@@ -774,6 +797,20 @@ class HOI4MaskAndBackgroundGuard:
 
     def run(self, job: dict[str, Any], image: Any, mask: Any, mask_meta: dict[str, Any]):
         root = _project_from_job(job)
+        required_components = {"person_alpha", "hard_interior", "face", "hair_hat_boundary", "accessory_attention", "background", "boundary_ring"}
+        component_records = mask_meta.get("component_masks") if isinstance(mask_meta, dict) else None
+        if not isinstance(component_records, dict) or not required_components.issubset(component_records) or not isinstance(mask_meta.get("mask_contract"), dict) or mask_meta.get("mask_contract", {}).get("status") != "PASS_STRUCTURAL_COMPONENTS":
+            _raise(ExitCode.MASK_AUDIT_FAILED, "complete component-mask evidence is required before background compositing")
+        for component_name in required_components:
+            record = component_records.get(component_name)
+            if not isinstance(record, dict) or not isinstance(record.get("path"), str) or not isinstance(record.get("sha256"), str):
+                _raise(ExitCode.MASK_AUDIT_FAILED, f"component-mask evidence record is incomplete: {component_name}")
+            try:
+                component_path = relative_safe_path(_job_root(job), record["path"])
+            except ValueError:
+                _raise(ExitCode.MASK_AUDIT_FAILED, f"component-mask evidence path escapes the job root: {component_name}")
+            if not component_path.is_file() or sha256_file(component_path) != record["sha256"]:
+                _raise(ExitCode.MASK_AUDIT_FAILED, f"component-mask evidence checksum failed: {component_name}")
         registry_path = root / "config" / "background_registry.json"
         if not registry_path.is_file():
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "background registry is missing")

@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "observed_at": "2026-07-29T01:54:57Z",
+  "status": "INTERRUPTED_LOCAL_MEMORY_PRESSURE_DURING_KREA_MODEL_LOAD",
+  "scope": "private_user_fixture_live_user_facing_retry",
+  "execution_profile": "human_local_mac_16gb",
+  "workflow_id": "human_local_mac_16gb",
+  "workflow_ui_sha256": "aac57f39a8c149588c7734793e3ce9c668b884b28d95f403070244ebcc17340f",
+  "workflow_api_sha256": "c0266104531fb6358cf1429e2e1db68a5c210b54309bff1380be0657c98552d8",
+  "hardware": {
+    "os": "darwin",
+    "architecture": "arm64",
+    "ram_bytes": 17179869184,
+    "accelerator": "mps",
+    "comfyui_revision": "2a610155821d670a2d8047e654e5fce96b790eb5",
+    "comfyui_version": "0.25.0",
+    "pytorch_version": "2.11.0"
+  },
+  "runtime": {
+    "binding": "http://127.0.0.1:8188",
+    "raw_comfyui_loopback_only": true,
+    "argv": ["--lowvram", "--cpu-vae", "--preview-method", "auto", "--disable-smart-memory", "--cache-none"],
+    "preprocessing_health": "PASS",
+    "autoprompter_health": "PASS",
+    "graph_submission": "PASS",
+    "prompt_id": "3c882a60-39ba-48c6-9c96-d89d77fc2f54"
+  },
+  "attempt": {
+    "canvas": "208x280_canary_only",
+    "batch_size": 1,
+    "sampler_steps_requested": 1,
+    "sampler_steps_completed": 0,
+    "candidate_produced": false,
+    "stages_reached": [
+      "source_snapshot",
+      "subject_selection",
+      "crop_and_reference",
+      "mask_and_approved_background",
+      "autoprompter",
+      "qwen_text_encoder_load",
+      "krea_model_load_requested"
+    ],
+    "failure_stage": "Krea model loading/offload before first sampler step",
+    "safety_boundary": {
+      "free_unified_memory_bytes": 1068072960,
+      "free_swap_bytes": 1083902525,
+      "action": "POST /interrupt; ComfyUI restarted after the attempt"
+    },
+    "comfyui_log_observation": "Requested to load Krea2; no sampler completion or candidate output was recorded"
+  },
+  "model": {
+    "filename": "krea2_turbo_fp8_scaled.safetensors",
+    "official_revision": "952f49d49653cb42e7d6cf7cbfad74738073ec7d",
+    "sha256": "eb4dd8c612cfd10f64f25b057e6e6bbcb5737c94a7372177e456dbf7579502f1"
+  },
+  "production_authorization": {
+    "status": "BLOCKED",
+    "identity_style_audit": "NOT_RUN",
+    "dds_created": false,
+    "mod_integration_created": false
+  },
+  "post_recovery": {
+    "comfyui_status": "PASS",
+    "binding": "http://127.0.0.1:8188",
+    "ram_free_after_restart_bytes": 7475757056,
+    "remote_submission": "NOT_QUEUED_BY_LOCAL_ROUTE"
+  },
+  "conclusion": "The exact live human Mac workflow submitted successfully and passed preprocessing and autoprompter stages, but the pinned FP8 Krea route exhausted practical 16 GiB unified-memory headroom during model loading before the first sampler step. The attempt was safely interrupted, no candidate was produced, and ComfyUI was restarted successfully."
+}

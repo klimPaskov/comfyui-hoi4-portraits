@@ -381,6 +381,39 @@ def audit_candidate(
             reasons.append(f"mask-boundary audit failed closed: {type(exc).__name__}")
     else:
         reasons.append("source and candidate foreground masks are not both available for independent mask audit")
+    component_evidence_path = private_root / "evidence" / "mask" / "foreground.json"
+    required_components = {"person_alpha", "hard_interior", "face", "hair_hat_boundary", "accessory_attention", "background", "boundary_ring"}
+    if component_evidence_path.is_file():
+        try:
+            component_record = json.loads(component_evidence_path.read_text(encoding="utf-8"))
+            component_records = component_record.get("component_masks") if isinstance(component_record, dict) else None
+            contract = component_record.get("mask_contract") if isinstance(component_record, dict) else None
+            component_verified = isinstance(component_records, dict) and required_components.issubset(component_records) and isinstance(contract, dict) and contract.get("status") == "PASS_STRUCTURAL_COMPONENTS"
+            if component_verified:
+                for component_name in sorted(required_components):
+                    record = component_records[component_name]
+                    if not isinstance(record, dict) or not isinstance(record.get("path"), str) or not isinstance(record.get("sha256"), str):
+                        component_verified = False
+                        break
+                    component_path = relative_safe_path(private_root, record["path"])
+                    if not component_path.is_file() or sha256_file(component_path) != record["sha256"]:
+                        component_verified = False
+                        break
+            metrics["mask_component_contract_verified"] = component_verified
+            metrics["mask_component_count"] = len(component_records) if isinstance(component_records, dict) else 0
+            metrics["mask_alternative_comparison_status"] = str(contract.get("alternative_matting_comparison", {}).get("status", "UNKNOWN")) if isinstance(contract, dict) and isinstance(contract.get("alternative_matting_comparison"), dict) else "UNKNOWN"
+            if not component_verified:
+                reasons.append("component-mask contract or one of its private evidence checksums is incomplete")
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            metrics["mask_component_contract_verified"] = False
+            metrics["mask_component_count"] = 0
+            metrics["mask_alternative_comparison_status"] = "UNKNOWN"
+            reasons.append(f"component-mask audit evidence could not be verified: {type(exc).__name__}")
+    else:
+        metrics["mask_component_contract_verified"] = False
+        metrics["mask_component_count"] = 0
+        metrics["mask_alternative_comparison_status"] = "MISSING"
+        reasons.append("complete component-mask audit evidence is missing")
     if files_present and paths["manifest"].is_file():
         metrics["provenance_verified"] = True
         gates["provenance"] = "PASS"

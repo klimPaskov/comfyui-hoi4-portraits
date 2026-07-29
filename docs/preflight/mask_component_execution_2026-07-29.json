@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "observed_at": "2026-07-29T02:05:50Z",
+  "status": "PASS_STRUCTURAL_COMPONENTS_ALTERNATIVE_COMPARISON_BLOCKED",
+  "scope": "private_user_fixture_comfyui_prefix_qualification",
+  "workflow_id": "human_local_mac_16gb",
+  "workflow_ui_sha256": "aac57f39a8c149588c7734793e3ce9c668b884b28d95f403070244ebcc17340f",
+  "workflow_api_sha256": "c0266104531fb6358cf1429e2e1db68a5c210b54309bff1380be0657c98552d8",
+  "runtime": {
+    "comfyui_binding": "http://127.0.0.1:8188",
+    "preprocessing_binding": "http://127.0.0.1:8790",
+    "device": "mps",
+    "comfyui_prefix_prompt_id": "997dd872-ee3f-4839-802f-379eb0d9f016",
+    "executed_nodes": "job/source/subject/crop/prep/mask/background-prefix-through-node-8",
+    "krea_sampling": "NOT_RUN"
+  },
+  "mask_contract": {
+    "status": "PASS_STRUCTURAL_COMPONENTS",
+    "components": [
+      "person_alpha",
+      "hard_interior",
+      "face",
+      "hair_hat_boundary",
+      "accessory_attention",
+      "background",
+      "boundary_ring"
+    ],
+    "connected_component_count": 1,
+    "face_coverage": 0.9565040650406504,
+    "face_inside_person_ratio": 1.0,
+    "hard_mask_threshold": 0.5,
+    "semantics_policy": "hair_hat_boundary and accessory_attention are structural attention masks, not semantic classifiers"
+  },
+  "background_guard": {
+    "status": "PASS",
+    "hard_interior_pixels": 363271,
+    "interior_max_difference": 0.0,
+    "boundary_blend_only": true
+  },
+  "qualification_blocker": {
+    "status": "BLOCKED_UNTIL_APPROVED_ALTERNATIVE",
+    "primary_matte": "BiRefNet",
+    "reason": "The planning contract still requires comparison against an approved alternative matting route before production mask acceptance."
+  },
+  "production_authorization": {
+    "status": "BLOCKED",
+    "candidate_produced": false,
+    "dds_created": false,
+    "mod_integration_created": false
+  }
+}

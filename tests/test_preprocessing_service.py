@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from portrait_pipeline.preprocessing_service import PreprocessingBlocked, PreprocessingService, create_server
+from portrait_pipeline.preprocessing_service import LockedArtifact, PreprocessingBlocked, PreprocessingService, create_server
 from portrait_pipeline.util import project_root
 
 
@@ -23,6 +23,41 @@ class PreprocessingServiceTests(unittest.TestCase):
         report = PreprocessingService(self.root).health()
         self.assertEqual(report["status"], "PASS")
         self.assertFalse(report["blockers"])
+
+    def test_mask_returns_complete_structural_component_contract(self):
+        import cv2
+        import numpy as np
+
+        service = PreprocessingService(self.root)
+        image_buffer = io.BytesIO()
+        Image.new("RGB", (16, 16), (120, 120, 120)).save(image_buffer, format="PNG")
+        revisions = {
+            "BiRefNet": "birefnet-revision",
+            "YuNet": "yunet-revision",
+            "MediaPipe Face Landmarker": "landmarker-revision",
+        }
+
+        def fake_verify(name, **_kwargs):
+            return LockedArtifact(entry={"source_revision": revisions[name], "artifact_sha256": "a" * 64}, path=self.root / "README.md")
+
+        service._verify_artifact = fake_verify
+        service._segment = lambda _image: np.full((16, 16), 0.9, dtype=np.float32)
+        service._load_yunet = lambda: (object(), cv2)
+        service._load_landmarker = lambda: (object(), object())
+        service._detect_yunet = lambda *_args: [{"detector_index": 0, "bbox_xyxy": [4, 4, 12, 12], "confidence": 0.99, "landmarks": []}]
+        service._detect_mediapipe = lambda *_args: [{"landmark_index": 0, "bbox_xyxy": [4.0, 4.0, 12.0, 12.0], "landmarks": [{"x": 4.0, "y": 4.0}, {"x": 12.0, "y": 4.0}, {"x": 12.0, "y": 12.0}, {"x": 4.0, "y": 12.0}]}]
+        payload = {
+            "job_id": "component-contract-001",
+            "model": {"name": "BiRefNet", "source_revision": revisions["BiRefNet"], "artifact_sha256": "a" * 64},
+            "image_png_base64": base64.b64encode(image_buffer.getvalue()).decode("ascii"),
+        }
+        response = service.handle("/v1/mask", payload)
+        self.assertEqual(response["status"], "PASS")
+        self.assertEqual(response["mask_contract"]["status"], "PASS_STRUCTURAL_COMPONENTS")
+        self.assertEqual(set(response["component_masks"]), {"person_alpha", "hard_interior", "face", "hair_hat_boundary", "accessory_attention", "background", "boundary_ring"})
+        for descriptor in response["component_masks"].values():
+            with Image.open(io.BytesIO(base64.b64decode(descriptor["png_base64"]))) as component:
+                self.assertEqual(component.size, (16, 16))
 
     def test_endpoint_rejects_invalid_job_before_model_use(self):
         service = PreprocessingService(self.root)

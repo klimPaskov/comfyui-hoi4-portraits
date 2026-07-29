@@ -473,6 +473,175 @@ class PreprocessingService:
         x, y, component_width, component_height, _ = [int(value) for value in stats[label]]
         return [x, y, min(width, x + component_width), min(height, y + component_height)], face_coverage, center_score
 
+    @staticmethod
+    def _component_masks(mask: Any, face: dict[str, Any], cv2: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Derive auditable mask components from one locked person matte.
+
+        BiRefNet is the only semantic matting model in the current lock.  The
+        remaining masks are deterministic structural/attention masks derived
+        from the selected foreground component and MediaPipe face landmarks;
+        they are deliberately not presented as accessory classifiers.
+        """
+
+        import numpy as np
+
+        if not hasattr(mask, "shape") or len(mask.shape) != 2:
+            raise PreprocessingBlocked(ExitCode.MASK_AUDIT_FAILED, "BiRefNet matte has an unsupported shape")
+        height, width = [int(value) for value in mask.shape]
+        if height <= 0 or width <= 0 or not bool(np.isfinite(mask).all()):
+            raise PreprocessingBlocked(ExitCode.MASK_AUDIT_FAILED, "BiRefNet matte is empty or non-finite")
+        binary = (mask >= 0.5).astype(np.uint8)
+        face_bbox_value = face.get("bbox_xyxy") if isinstance(face, dict) else None
+        if not isinstance(face_bbox_value, list) or len(face_bbox_value) != 4:
+            raise PreprocessingBlocked(ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "mask analysis has no selected face box")
+        left, top, right, bottom = [int(round(float(value))) for value in face_bbox_value]
+        left = max(0, min(width - 1, left))
+        top = max(0, min(height - 1, top))
+        right = max(left + 1, min(width, right))
+        bottom = max(top + 1, min(height, bottom))
+        face_crop = mask[top:bottom, left:right]
+        center_x = max(0, min(width - 1, int(round((left + right - 1) / 2.0))))
+        center_y = max(0, min(height - 1, int(round((top + bottom - 1) / 2.0))))
+        face_coverage = float((face_crop >= 0.5).mean()) if face_crop.size else 0.0
+        center_score = float(mask[center_y, center_x])
+        if face_coverage < 0.55 or center_score < 0.35:
+            raise PreprocessingBlocked(
+                ExitCode.FACE_NOT_FOUND_OR_UNUSABLE,
+                "mask analysis cannot associate the selected face with a person component",
+                details={"face_coverage": face_coverage, "center_score": center_score},
+            )
+        labels_count, labels, stats, _ = cv2.connectedComponentsWithStats(binary, connectivity=8)
+        label = int(labels[center_y, center_x])
+        if label == 0:
+            region = binary[top:bottom, left:right]
+            overlaps = []
+            for candidate in range(1, labels_count):
+                overlap = int(((labels[top:bottom, left:right] == candidate) & (region == 1)).sum())
+                if overlap:
+                    overlaps.append((overlap, candidate))
+            if not overlaps:
+                raise PreprocessingBlocked(ExitCode.MASK_AUDIT_FAILED, "mask analysis found no foreground component for the selected face")
+            label = max(overlaps)[1]
+        person = labels == label
+        if int(person.sum()) <= 0:
+            raise PreprocessingBlocked(ExitCode.MASK_AUDIT_FAILED, "selected person component is empty")
+        component_x, component_y, component_width, component_height, _ = [int(value) for value in stats[label]]
+        component_bbox = [component_x, component_y, min(width, component_x + component_width), min(height, component_y + component_height)]
+
+        raw_points = face.get("landmarks") if isinstance(face, dict) else None
+        points: list[tuple[float, float]] = []
+        if isinstance(raw_points, list):
+            for point in raw_points:
+                if not isinstance(point, dict):
+                    continue
+                try:
+                    x_value = float(point["x"])
+                    y_value = float(point["y"])
+                except (KeyError, TypeError, ValueError):
+                    continue
+                if max(width, height) > 1 and 0.0 <= x_value <= 1.0 and 0.0 <= y_value <= 1.0:
+                    x_value *= width
+                    y_value *= height
+                points.append((max(0.0, min(width - 1.0, x_value)), max(0.0, min(height - 1.0, y_value))))
+        if len(points) < 3:
+            raise PreprocessingBlocked(ExitCode.MASK_AUDIT_FAILED, "MediaPipe did not provide enough landmarks for a face mask")
+
+        def hull_mask(values: list[tuple[float, float]]) -> Any:
+            canvas = np.zeros((height, width), dtype=np.uint8)
+            if len(values) >= 3:
+                polygon = cv2.convexHull(np.rint(np.asarray(values, dtype=np.float32)).astype(np.int32).reshape((-1, 1, 2)))
+                cv2.fillConvexPoly(canvas, polygon, 1)
+            elif values:
+                center = tuple(int(round(value)) for value in values[0])
+                cv2.circle(canvas, center, max(2, min(width, height) // 32), 1, -1)
+            return canvas.astype(bool)
+
+        face_mask = hull_mask(points)
+        if not bool(face_mask.any()):
+            raise PreprocessingBlocked(ExitCode.MASK_AUDIT_FAILED, "MediaPipe face landmarks produced an empty face mask")
+        face_inside_ratio = float((face_mask & person).sum() / max(1, face_mask.sum()))
+        if face_inside_ratio < 0.90:
+            raise PreprocessingBlocked(
+                ExitCode.MASK_AUDIT_FAILED,
+                "selected face is not contained by the person mask",
+                details={"face_inside_person_ratio": face_inside_ratio},
+            )
+
+        person_uint8 = person.astype(np.uint8)
+        erosion_kernel = np.ones((3, 3), dtype=np.uint8)
+        eroded = cv2.erode(person_uint8, erosion_kernel, iterations=1).astype(bool)
+        boundary_ring = person & ~eroded
+        person_alpha = np.asarray(mask, dtype=np.float32).clip(0.0, 1.0) * person.astype(np.float32)
+        background = 1.0 - person_alpha
+
+        face_left, face_top, face_right, face_bottom = left, top, right, bottom
+        face_width = max(1, face_right - face_left)
+        face_height = max(1, face_bottom - face_top)
+        head_region = np.zeros((height, width), dtype=np.uint8)
+        head_left = max(0, int(round(face_left - 0.85 * face_width)))
+        head_top = max(0, int(round(face_top - 1.25 * face_height)))
+        head_right = min(width, int(round(face_right + 0.85 * face_width)))
+        head_bottom = min(height, int(round(face_bottom + 0.55 * face_height)))
+        cv2.rectangle(head_region, (head_left, head_top), (max(head_left, head_right - 1), max(head_top, head_bottom - 1)), 1, -1)
+        face_dilated = cv2.dilate(face_mask.astype(np.uint8), np.ones((9, 9), dtype=np.uint8), iterations=1).astype(bool)
+        hair_hat_boundary = ((face_dilated & ~face_mask) | (boundary_ring & head_region.astype(bool))) & person & head_region.astype(bool)
+
+        def indexed_points(indices: list[int]) -> list[tuple[float, float]]:
+            return [points[index] for index in indices if 0 <= index < len(points)]
+
+        accessory_attention = np.zeros((height, width), dtype=np.uint8).astype(bool)
+        for indices in ([33, 133, 159, 145, 362, 263, 386, 374], [61, 291, 0, 17, 13, 14, 78, 308], [127, 356, 234, 454]):
+            zone_points = indexed_points(indices)
+            zone = hull_mask(zone_points)
+            if zone.any():
+                accessory_attention |= cv2.dilate(zone.astype(np.uint8), np.ones((11, 11), dtype=np.uint8), iterations=1).astype(bool)
+        shoulder_top = min(height - 1, max(face_bottom, int(round(face_bottom + 0.35 * face_height))))
+        shoulder_bottom = min(height, max(shoulder_top + 1, int(round(face_bottom + 2.2 * face_height))))
+        shoulder_left = max(0, int(round((face_left + face_right) / 2.0 - 1.7 * face_width)))
+        shoulder_right = min(width, int(round((face_left + face_right) / 2.0 + 1.7 * face_width)))
+        if shoulder_right > shoulder_left and shoulder_bottom > shoulder_top:
+            shoulder_mask = np.zeros((height, width), dtype=np.uint8)
+            cv2.rectangle(shoulder_mask, (shoulder_left, shoulder_top), (shoulder_right - 1, shoulder_bottom - 1), 1, -1)
+            accessory_attention |= shoulder_mask.astype(bool)
+        accessory_attention &= person
+
+        arrays = {
+            "person_alpha": np.rint(person_alpha * 255.0).astype(np.uint8),
+            "hard_interior": (eroded.astype(np.uint8) * 255),
+            "face": (face_mask.astype(np.uint8) * 255),
+            "hair_hat_boundary": (hair_hat_boundary.astype(np.uint8) * 255),
+            "accessory_attention": (accessory_attention.astype(np.uint8) * 255),
+            "background": np.rint(background * 255.0).astype(np.uint8),
+            "boundary_ring": (boundary_ring.astype(np.uint8) * 255),
+        }
+        metadata = {
+            "schema_version": "1.0.0",
+            "status": "PASS_STRUCTURAL_COMPONENTS",
+            "selected_face_bbox_xyxy": [left, top, right, bottom],
+            "selected_person_component_bbox_xyxy": component_bbox,
+            "connected_component_count": max(0, int(labels_count) - 1),
+            "face_coverage": face_coverage,
+            "face_center_mask_score": center_score,
+            "face_inside_person_ratio": face_inside_ratio,
+            "hard_mask_threshold": 0.5,
+            "erosion": "3x3_one_iteration",
+            "semantics": {
+                "person_alpha": "continuous BiRefNet matte restricted to selected person component",
+                "hard_interior": "eroded binary selected person component",
+                "face": "MediaPipe landmark convex hull",
+                "hair_hat_boundary": "structural boundary/attention mask; not a semantic hair-or-hat classifier",
+                "accessory_attention": "landmark corridor attention mask for glasses, facial hair, jewelry, medals, and insignia; not an accessory classifier",
+                "background": "inverse of restricted person alpha",
+                "boundary_ring": "selected person component minus one-pixel morphological interior",
+            },
+            "alternative_matting_comparison": {
+                "status": "BLOCKED_UNTIL_APPROVED_ALTERNATIVE",
+                "primary_model": "BiRefNet",
+                "policy": "component masks do not authorize production promotion until a qualified alternative comparison is recorded",
+            },
+        }
+        return arrays, metadata
+
     def _subject(self, payload: dict[str, Any]) -> dict[str, Any]:
         entry = self._verify_artifact("YuNet")
         self._check_model_identity(payload["model"], entry.entry, "YuNet")
@@ -535,19 +704,48 @@ class PreprocessingService:
         self._check_model_identity(payload["model"], artifact.entry, "BiRefNet")
         image = self._decode_png(payload.get("image_png_base64"))
         mask = self._segment(image)
+        yunet_artifact = self._verify_artifact("YuNet")
+        landmarker_artifact = self._verify_artifact("MediaPipe Face Landmarker")
+        yunet_model, cv2 = self._load_yunet()
+        landmarker_model, mp = self._load_landmarker()
+        with self._model_lock:
+            detections = self._detect_yunet(image, yunet_model, cv2)
+            landmark_faces = self._detect_mediapipe(image, landmarker_model, mp)
+        matched = self._match_landmarks(detections, landmark_faces, image)
+        if len(matched) != 1:
+            raise PreprocessingBlocked(ExitCode.AMBIGUOUS_SUBJECT if len(matched) > 1 else ExitCode.FACE_NOT_FOUND_OR_UNUSABLE, "mask analysis requires exactly one matched face", details={"matched_face_count": len(matched)})
+        face = matched[0]["mediapipe"]
+        components, contract = self._component_masks(mask, face, cv2)
         from PIL import Image
 
-        values = (mask * 255.0).round().astype("uint8")
+        values = components["person_alpha"]
         mask_image = Image.frombytes("L", (image.width, image.height), values.tobytes())
         output = io.BytesIO()
         mask_image.save(output, format="PNG", optimize=False)
+        encoded_components: dict[str, dict[str, Any]] = {}
+        for name, component in components.items():
+            component_image = Image.frombytes("L", (image.width, image.height), component.tobytes())
+            component_output = io.BytesIO()
+            component_image.save(component_output, format="PNG", optimize=False)
+            encoded_components[name] = {
+                "png_base64": base64.b64encode(component_output.getvalue()).decode("ascii"),
+                "width": image.width,
+                "height": image.height,
+                "minimum": int(component.min()),
+                "maximum": int(component.max()),
+                "mean": float(component.mean()),
+                "binary": name not in {"person_alpha", "background"},
+                "semantics": contract["semantics"][name],
+            }
         return {
             "status": "PASS",
             "analysis_status": "PASS",
             "model": {"name": "BiRefNet", "source_revision": artifact.entry.get("source_revision"), "artifact_sha256": artifact.entry.get("artifact_sha256")},
             "mask_png_base64": base64.b64encode(output.getvalue()).decode("ascii"),
             "mask_stats": {"width": image.width, "height": image.height, "minimum": float(values.min()), "maximum": float(values.max()), "mean": float(values.mean())},
-            "inference": {"device": str(self._birefnet[2]) if self._birefnet is not None else "unknown", "thresholding": "none; continuous grayscale matte returned"},
+            "component_masks": encoded_components,
+            "mask_contract": contract,
+            "inference": {"device": str(self._birefnet[2]) if self._birefnet is not None else "unknown", "thresholding": "selected component at 0.5; person alpha remains continuous", "face_model": {"name": "YuNet", "source_revision": yunet_artifact.entry.get("source_revision"), "artifact_sha256": yunet_artifact.entry.get("artifact_sha256")}, "landmark_model": {"name": "MediaPipe Face Landmarker", "source_revision": landmarker_artifact.entry.get("source_revision"), "artifact_sha256": landmarker_artifact.entry.get("artifact_sha256")}},
         }
 
     def health(self) -> dict[str, Any]:
