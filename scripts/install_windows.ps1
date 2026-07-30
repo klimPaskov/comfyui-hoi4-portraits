@@ -3,9 +3,7 @@ param(
     [string]$ComfyUIRoot,
 
     [ValidateSet("hoi4_portraits_local_nvidia_16gb", "hoi4_portraits_full_power_gpu")]
-    [string]$Profile = "hoi4_portraits_local_nvidia_16gb",
-
-    [string]$HOI4Root = ""
+    [string]$Profile = "hoi4_portraits_local_nvidia_16gb"
 )
 
 $ErrorActionPreference = "Stop"
@@ -26,9 +24,6 @@ $InstallArguments = @(
     "--comfyui-root", $ComfyUIRoot,
     "--profile", $Profile
 )
-if ($HOI4Root) {
-    $InstallArguments += @("--hoi4-root", $HOI4Root)
-}
 
 & $Python @InstallArguments
 

@@ -20,6 +20,9 @@ from typing import Any
 
 from portrait_pipeline.constants import (
     ExitCode,
+    HOI4_LEADER_BACKGROUND_REGISTRY_ID,
+    HOI4_LEADER_BACKGROUND_RUNTIME_PATH,
+    HOI4_LEADER_BACKGROUND_SHA256,
     HOI4_OPERATIVE_BACKGROUND_REGISTRY_ID,
     HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH,
     HOI4_OPERATIVE_BACKGROUND_SHA256,
@@ -474,7 +477,7 @@ class HOI4HumanControls:
             "crop_override_right": ("INT", {"default": 0, "min": 0}),
             "crop_override_bottom": ("INT", {"default": 0, "min": 0}),
             "approved_background_registry_id": ("STRING", {"default": "<from_job_contract>"}),
-            "background_choice": (["Keep current background", "Scientist laboratory", "Operative background"], {"default": "Keep current background"}),
+            "background_choice": (["Keep current background", "Scientist laboratory", "Operative background", "Leader"], {"default": "Keep current background"}),
             "seed_mode": (["fixed", "derived", "random_recorded"], {"default": "derived"}),
             "fixed_seed": ("INT", {"default": 0, "min": 0}),
             "candidate_count": ("INT", {"default": 1, "min": 1, "max": 6}),
@@ -523,7 +526,7 @@ class HOI4HumanControls:
             updated["seed_policy"] = {"mode": seed_mode}
         else:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown human seed mode")
-        if background_choice not in {"Keep current background", "Scientist laboratory", "Operative background"}:
+        if background_choice not in {"Keep current background", "Scientist laboratory", "Operative background", "Leader"}:
             _raise(ExitCode.INPUT_SCHEMA_INVALID, "unknown portrait background choice")
         if approved_background_registry_id not in {"", "<from_job_contract>"}:
             registry_path = root / "config" / "background_registry.json"
@@ -1154,6 +1157,11 @@ class HOI4BundledBackground:
                 "sha256": HOI4_OPERATIVE_BACKGROUND_SHA256,
                 "name": "operative",
             },
+            HOI4_LEADER_BACKGROUND_RUNTIME_PATH: {
+                "registry_id": HOI4_LEADER_BACKGROUND_REGISTRY_ID,
+                "sha256": HOI4_LEADER_BACKGROUND_SHA256,
+                "name": "leader",
+            },
         }
         selected = supported_assets.get(asset_path)
         if selected is None:
@@ -1198,6 +1206,8 @@ class HOI4MaskAndBackgroundGuard:
                 "scientist_background_meta": ("HOI4_META",),
                 "operative_background": ("IMAGE",),
                 "operative_background_meta": ("HOI4_META",),
+                "leader_background": ("IMAGE",),
+                "leader_background_meta": ("HOI4_META",),
             },
         }
 
@@ -1217,6 +1227,8 @@ class HOI4MaskAndBackgroundGuard:
         scientist_background_meta: dict[str, Any] | None = None,
         operative_background: Any = None,
         operative_background_meta: dict[str, Any] | None = None,
+        leader_background: Any = None,
+        leader_background_meta: dict[str, Any] | None = None,
     ):
         root = _project_from_job(job)
         required_components = {"person_alpha", "hard_interior", "face", "hair_hat_boundary", "accessory_attention", "background", "boundary_ring"}
@@ -1250,11 +1262,11 @@ class HOI4MaskAndBackgroundGuard:
         registry = json.loads(registry_path.read_text(encoding="utf-8"))
         requested = job.get("approved_background", {})
         selected_local_background: tuple[str, Any, dict[str, Any] | None] | None = None
-        if background_choice in {"Scientist laboratory", "Operative background"}:
+        if background_choice in {"Scientist laboratory", "Operative background", "Leader"}:
             selected_registry_id = (
                 HOI4_SCIENTIST_BACKGROUND_REGISTRY_ID
                 if background_choice == "Scientist laboratory"
-                else HOI4_OPERATIVE_BACKGROUND_REGISTRY_ID
+                else (HOI4_OPERATIVE_BACKGROUND_REGISTRY_ID if background_choice == "Operative background" else HOI4_LEADER_BACKGROUND_REGISTRY_ID)
             )
             local_matches = [
                 item for item in registry.get("backgrounds", [])
@@ -1272,9 +1284,13 @@ class HOI4MaskAndBackgroundGuard:
                 "scientist" if background_choice == "Scientist laboratory" else "operative",
                 scientist_background if background_choice == "Scientist laboratory" else operative_background,
                 scientist_background_meta if background_choice == "Scientist laboratory" else operative_background_meta,
+            ) if background_choice in {"Scientist laboratory", "Operative background"} else (
+                "leader",
+                leader_background,
+                leader_background_meta,
             )
         matches = [item for item in registry.get("backgrounds", []) if item.get("registry_id") == requested.get("registry_id")]
-        if not matches or matches[0].get("status") != "APPROVED_LOCAL_COPY_REQUIRED" or matches[0].get("sha256") != requested.get("sha256"):
+        if not matches or matches[0].get("status") not in {"APPROVED", "APPROVED_LOCAL_COPY_REQUIRED"} or matches[0].get("sha256") != requested.get("sha256"):
             _raise(ExitCode.BACKGROUND_UNRESOLVED, "requested background does not match an approved registry entry")
         if torch is None or Image is None:
             _raise(ExitCode.DEPENDENCY_MISSING, "PyTorch and Pillow are required for the background composite")

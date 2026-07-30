@@ -148,13 +148,14 @@ STYLE_LORA_SHA256 = "2ad94552d151d2dedf151cf7356cdd3ea07677607ff289fc0ac61534b34
 STYLE_LORA_REPOSITORY = "Hoops-McCann/hoi4-portrait-new-style-lora"
 STYLE_LORA_REVISION = "2eb855d3176908af4329640c8d966a1b26fc3d6b"
 HOI4_SCIENTIST_BACKGROUND_REGISTRY_ID = "hoi4_scientist_portrait_background"
-HOI4_SCIENTIST_BACKGROUND_SOURCE_PATH = "tools/art/scientists_BG.png"
-HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH = "backgrounds/local/hoi4_scientists_BG.png"
+HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH = "backgrounds/hoi4_scientists_BG.png"
 HOI4_SCIENTIST_BACKGROUND_SHA256 = "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e"
 HOI4_OPERATIVE_BACKGROUND_REGISTRY_ID = "hoi4_operative_portrait_background"
-HOI4_OPERATIVE_BACKGROUND_SOURCE_PATH = "tools/art/portrait_operative_background.png"
-HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH = "backgrounds/local/hoi4_operative_background.png"
+HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH = "backgrounds/hoi4_operative_background.png"
 HOI4_OPERATIVE_BACKGROUND_SHA256 = "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d"
+HOI4_LEADER_BACKGROUND_REGISTRY_ID = "hoi4_leader_portrait_background"
+HOI4_LEADER_BACKGROUND_RUNTIME_PATH = "backgrounds/hoi4_leader_portrait_background.png"
+HOI4_LEADER_BACKGROUND_SHA256 = "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e"
 # Calibration records may use either vocabulary used by the planning package
 # (`APPROVED`) or the registry vocabulary used by the runtime (`RESOLVED`).
 # Call sites still require a non-placeholder id, approver record, and

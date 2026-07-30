@@ -14,7 +14,13 @@ The source-portrait workflows use these visible stages:
 8. Portrait generation
 9. Large previews and save
 
-The background selector defaults to **Keep current background**. Choose **Scientist laboratory** or **Operative background** to use either local game background. Each option has its own preview.
+The background selector defaults to **Keep current background**. Choose one of:
+
+- **Scientist laboratory**
+- **Operative background**
+- **Leader**
+
+All three options are loaded from local `backgrounds/*` assets and each has a dedicated preview node in the workflow.
 
 In a human workflow, use **Create automatically** in the portrait-description node or switch it to **Use my description** and type the prompt below it.
 
@@ -30,7 +36,7 @@ Every source-image workflow automatically crops around the face and shoulders wh
 
 `hoi4_portraits_prepare_portrait_basic` is the lightweight alternative. It crops, resizes, and applies small contrast and sharpness adjustments without loading an enhancement model.
 
-The default choice keeps the source background. The optional scientist and operative choices use `tools/art/scientists_BG.png` and `tools/art/portrait_operative_background.png` from your installed copy of Hearts of Iron IV. The installer copies them locally when the game is found; the game assets are not included in the download.
+The default choice keeps the source background. The optional scientist, operative, and leader options use packaged assets from `backgrounds/*`, so no copy from an existing Hearts of Iron IV install is required.
 
 The complete preparation workflow has five stages:
 

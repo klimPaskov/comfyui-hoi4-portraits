@@ -8,8 +8,8 @@
       "display_name": "hoi4_portraits_local_nvidia_16gb",
       "workflow_json": "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.json",
       "api_json": "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.api.json",
-      "sha256": "56bdea31b6d7481b7c3820ec0a34a834afa7566daa76178f4a215179c797b953",
-      "api_sha256": "dbf7ff7b120c4472d03f3321ee4fd336190459f5e6369c84585fd74c05c922c0",
+      "sha256": "b4aa3a42deaa44f32e6a7cf4fb9d25aa8e114f5b4a32b67f33051ed6da15e37c",
+      "api_sha256": "034907d0b65dfb776ed04a15fed49386fb46090ebb386d3285dec22f1c8111d9",
       "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -73,7 +73,8 @@
         "Saved portrait preview",
         "Input portrait preview",
         "Scientist background preview",
-        "Operative background preview"
+        "Operative background preview",
+        "Leader background preview"
       ],
       "final_preview_save_pair": {
         "preview_node_id": 28,
@@ -106,8 +107,8 @@
       "display_name": "hoi4_portraits_full_power_gpu",
       "workflow_json": "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.json",
       "api_json": "workflows/human/full_power_gpu/hoi4_portraits_full_power_gpu.api.json",
-      "sha256": "a0b4df723691832582de097ac624e7761cd44eba71da1793e522d3395072f2da",
-      "api_sha256": "fdc02c95195d00662ae44c1919f95ced039f0970a13d79905334ac116a0edf43",
+      "sha256": "cab18f80f1ae071522690a895391a328c58817bf6b199d2844035baf1b3974b7",
+      "api_sha256": "e242656fa91d1e515726e59f6fc6fc822eaa48277ee7791c17bc9d7b0c829bbc",
       "graph_spec_version": "graph-spec-1.8.0",
       "comfyui_commit": "2a610155821d670a2d8047e654e5fce96b790eb5",
       "required_core_nodes": [
@@ -171,6 +172,7 @@
         "Input portrait preview",
         "Scientist background preview",
         "Operative background preview",
+        "Leader background preview",
         "Krea restoration preview"
       ],
       "final_preview_save_pair": {

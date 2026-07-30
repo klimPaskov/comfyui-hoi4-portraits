@@ -15,7 +15,7 @@ Turn portrait photos into Hearts of Iron IV-style leader portraits with ComfyUI.
 | [`hoi4_portraits_no_input_local_nvidia_16gb`](workflows/human/no_input_local_nvidia_16gb/hoi4_portraits_no_input_local_nvidia_16gb.json) | 12–16 GB NVIDIA GPU, no input image | Random builder or manual |
 | [`hoi4_portraits_no_input_full_power_gpu`](workflows/human/no_input_full_power_gpu/hoi4_portraits_no_input_full_power_gpu.json) | RunPod GPU, no input image | Random builder or manual |
 
-Every source-image workflow automatically finds the subject and crops to a head-and-shoulders portrait without cutting off the top of the head. Full-power workflows use a first Krea Edit pass to repair damage, recover detail, and colorize monochrome or sepia sources when needed, then reuse the same loaded Krea model for HOI4 styling. The 16 GB workflows use Real-ESRGAN preparation. Human workflows include large previews and can switch between automatic and manual descriptions.
+Every source-image workflow automatically finds the subject and crops to a head-and-shoulders portrait.
 
 Matching agent workflows are included for every workflow type, but they currently have no practical use because ComfyUI does not yet provide a reliable MCP connection for running them.
 

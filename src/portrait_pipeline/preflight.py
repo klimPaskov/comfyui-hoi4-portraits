@@ -637,7 +637,7 @@ def _background_preflight(root: Path, registry_path: Path, registry: dict[str, A
             candidate_status = json.loads(candidate_path.read_text(encoding="utf-8")).get("candidates", [])
         except json.JSONDecodeError:
             candidate_status = "INVALID_JSON"
-    resolved_statuses = {"RESOLVED", "RESOLVED_LOCAL_GAME_COPY"}
+    resolved_statuses = {"APPROVED", "RESOLVED", "RESOLVED_LOCAL_GAME_COPY"}
     return {"status": "PASS" if registry.get("registry_status") in resolved_statuses and any(item["status_check"] == "PASS" for item in entries) else "BLOCKED", "registry_path": str(registry_path), "registry_status": registry.get("registry_status"), "accepted_registry_statuses": sorted(resolved_statuses), "entries": entries, "candidate_evidence_path": str(candidate_path), "candidate_evidence": candidate_status}
 
 

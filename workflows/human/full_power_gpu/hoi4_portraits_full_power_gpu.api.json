@@ -262,15 +262,22 @@
   "34": {
     "class_type": "HOI4BundledBackground",
     "inputs": {
-      "asset_path": "backgrounds/local/hoi4_scientists_BG.png",
+      "asset_path": "backgrounds/hoi4_scientists_BG.png",
       "asset_sha256": "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e"
     }
   },
   "37": {
     "class_type": "HOI4BundledBackground",
     "inputs": {
-      "asset_path": "backgrounds/local/hoi4_operative_background.png",
+      "asset_path": "backgrounds/hoi4_operative_background.png",
       "asset_sha256": "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d"
+    }
+  },
+  "49": {
+    "class_type": "HOI4BundledBackground",
+    "inputs": {
+      "asset_path": "backgrounds/hoi4_leader_portrait_background.png",
+      "asset_sha256": "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e"
     }
   },
   "8": {
@@ -310,6 +317,14 @@
       ],
       "operative_background_meta": [
         "37",
+        1
+      ],
+      "leader_background": [
+        "49",
+        0
+      ],
+      "leader_background_meta": [
+        "49",
         1
       ]
     }
@@ -624,6 +639,15 @@
       ]
     }
   },
+  "50": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "49",
+        0
+      ]
+    }
+  },
   "54": {
     "class_type": "PreviewImage",
     "inputs": {
@@ -710,6 +734,10 @@
         "asset_sha256"
       ],
       "HOI4 operative portrait background": [
+        "asset_path",
+        "asset_sha256"
+      ],
+      "Leader": [
         "asset_path",
         "asset_sha256"
       ],
@@ -800,6 +828,7 @@
       "Input portrait preview",
       "Scientist background preview",
       "Operative background preview",
+      "Leader background preview",
       "Krea restoration preview"
     ],
     "final_preview_save_pair": {

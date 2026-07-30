@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "registry_status": "RESOLVED_LOCAL_GAME_COPY",
+  "registry_status": "RESOLVED",
   "backgrounds": [
     {
       "registry_id": "hoi4_scientist_portrait_background",
@@ -9,13 +9,13 @@
         "commander",
         "operative"
       ],
-      "source_class": "installed_game_private_copy",
-      "source_path": "tools/art/scientists_BG.png",
-      "runtime_path": "backgrounds/local/hoi4_scientists_BG.png",
+      "source_class": "packaged_project_asset",
+      "source_path": "backgrounds/hoi4_scientists_BG.png",
+      "runtime_path": "backgrounds/hoi4_scientists_BG.png",
       "source_definition": "Hearts of Iron IV scientist portrait background",
       "attribution": "Paradox Interactive / Hearts of Iron IV",
-      "license_or_rights": "Proprietary game asset; a local Hearts of Iron IV installation is required",
-      "redistribution_rule": "local_copy_only",
+      "license_or_rights": "Proprietary game asset; distributed in this package as an implementation asset",
+      "redistribution_rule": "packaged_with_repo",
       "width": 312,
       "height": 420,
       "sha256": "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e",
@@ -24,7 +24,7 @@
       "approved_by": [
         "project maintainer"
       ],
-      "status": "APPROVED_LOCAL_COPY_REQUIRED"
+      "status": "APPROVED"
     },
     {
       "registry_id": "hoi4_operative_portrait_background",
@@ -33,13 +33,13 @@
         "commander",
         "operative"
       ],
-      "source_class": "installed_game_private_copy",
-      "source_path": "tools/art/portrait_operative_background.png",
-      "runtime_path": "backgrounds/local/hoi4_operative_background.png",
+      "source_class": "packaged_project_asset",
+      "source_path": "backgrounds/hoi4_operative_background.png",
+      "runtime_path": "backgrounds/hoi4_operative_background.png",
       "source_definition": "Hearts of Iron IV operative portrait background",
       "attribution": "Paradox Interactive / Hearts of Iron IV",
-      "license_or_rights": "Proprietary game asset; a local Hearts of Iron IV installation is required",
-      "redistribution_rule": "local_copy_only",
+      "license_or_rights": "Proprietary game asset; distributed in this package as an implementation asset",
+      "redistribution_rule": "packaged_with_repo",
       "width": 312,
       "height": 420,
       "sha256": "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d",
@@ -48,7 +48,31 @@
       "approved_by": [
         "project maintainer"
       ],
-      "status": "APPROVED_LOCAL_COPY_REQUIRED"
+      "status": "APPROVED"
+    },
+    {
+      "registry_id": "hoi4_leader_portrait_background",
+      "role_scope": [
+        "country_leader",
+        "commander",
+        "operative"
+      ],
+      "source_class": "packaged_project_asset",
+      "source_path": "backgrounds/hoi4_leader_portrait_background.png",
+      "runtime_path": "backgrounds/hoi4_leader_portrait_background.png",
+      "source_definition": "Hearts of Iron IV leader portrait background",
+      "attribution": "Paradox Interactive / Hearts of Iron IV",
+      "license_or_rights": "Proprietary game asset; distributed in this package as an implementation asset",
+      "redistribution_rule": "packaged_with_repo",
+      "width": 156,
+      "height": 210,
+      "sha256": "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e",
+      "verified_game_version": "Case Green v1.18.0.0.858d (3bae)",
+      "verified_steam_build_id": "22891821",
+      "approved_by": [
+        "project maintainer"
+      ],
+      "status": "APPROVED"
     }
   ]
 }

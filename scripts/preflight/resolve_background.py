@@ -1,7 +1,7 @@
-"""Resolve the locally installed Chaos Redux portrait background privately.
+"""Resolve a local Chaos Redux portrait background into repository assets.
 
 This is a resolver, not an approval step. It copies/decode-converts only the
-locally available source into the ignored private background area and emits a
+locally available source into the project background area and emits a
 candidate record. If an exact owner-approved registry entry already exists,
 re-resolution preserves that approval; it never creates or broadens approval.
 """
@@ -20,7 +20,7 @@ from portrait_pipeline.util import atomic_json_write, project_root, sha256_file
 
 EXPECTED_SOURCE_SHA256 = "4c9f9ab945fda0d74912684d0ce17a777b0b08838528cdba53afd901134bc8d6"
 EXPECTED_SIZE = (156, 210)
-OUTPUT_RELATIVE = Path("backgrounds/private/chaos_redux_portrait_leader_background.png")
+OUTPUT_RELATIVE = Path("backgrounds/chaos_redux_portrait_leader_background.png")
 
 
 def _default_source() -> Path:
@@ -115,7 +115,7 @@ def resolve(root: Path, source: Path) -> dict[str, object]:
             "status": "APPROVED_LOCAL_COPY_ONLY",
             "checks": checks,
             "rights": {
-                "source_class": "installed_project_repository",
+                "source_class": "project_asset_candidate",
                 "source_repository": "Chaos Redux live checkout",
                 "source_license_record": "not found in live repository root",
                 "redistribution_rule": "local_copy_only",
@@ -139,13 +139,13 @@ def resolve(root: Path, source: Path) -> dict[str, object]:
         "created_at": datetime.now(timezone.utc).isoformat(),
         "status": "CANDIDATE_RUNTIME_READY_OWNER_APPROVAL_REQUIRED",
         "checks": checks,
-        "rights": {
-            "source_class": "installed_project_repository",
-            "source_repository": "Chaos Redux live checkout",
-            "source_license_record": "not found in live repository root",
-            "redistribution_rule": "local_copy_only_until_owner_approval",
-            "attribution": "owner must provide or confirm",
-        },
+            "rights": {
+                "source_class": "project_asset_candidate",
+                "source_repository": "Chaos Redux live checkout",
+                "source_license_record": "not found in live repository root",
+                "redistribution_rule": "local_copy_only_until_owner_approval",
+                "attribution": "owner must provide or confirm",
+            },
         "approval": {
             "status": "PENDING_PROJECT_OWNER_REVIEW",
             "approved_by": [],
@@ -162,7 +162,7 @@ def resolve(root: Path, source: Path) -> dict[str, object]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Resolve a private local HOI4 background candidate without approving it.")
+    parser = argparse.ArgumentParser(description="Resolve a local HOI4 background candidate without approving it.")
     parser.add_argument("--root", type=Path, default=None)
     parser.add_argument("--source", type=Path, default=None)
     args = parser.parse_args()

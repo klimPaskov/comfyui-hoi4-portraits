@@ -1,13 +1,9 @@
-# Optional HOI4 portrait backgrounds
+# HOI4 portrait backgrounds included in this package
 
-The source-image workflows can use the scientist and operative portrait backgrounds from an installed copy of Hearts of Iron IV.
+The source-image workflows can use three bundled backgrounds:
 
-The setup script looks for:
+- `hoi4_scientists_BG.png`
+- `hoi4_operative_background.png`
+- `hoi4_leader_portrait_background.png`
 
-`tools/art/scientists_BG.png`
-
-`tools/art/portrait_operative_background.png`
-
-and copies them into `backgrounds/local/`. The game assets are not included in this repository or its release downloads.
-
-Keeping the current source background is the default and does not require these files.
+Keeping the source background is the default and does not require any background selection.

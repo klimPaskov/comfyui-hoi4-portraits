@@ -257,7 +257,10 @@ class WorkflowAndGuardTests(unittest.TestCase):
     def test_human_source_workflows_offer_the_local_hoi4_backgrounds(self):
         expected_scientist_sha = "552ce50cd0f04327ebcc7dd20ac8be24141641451ef46595e3c0f4327153139e"
         expected_operative_sha = "b3ad16dae595837fc94376d6d27bf9d3d06776ca984695e107197ff74d66dd0d"
-        self.assertFalse((self.root / "backgrounds/bundled/scientist_laboratory_cc0.jpg").exists())
+        expected_leader_sha = "4840127434cd08fdd56825eaf68ac824909fe64e9d181be9e7071ed45cf96b3e"
+        self.assertTrue((self.root / "backgrounds/hoi4_scientists_BG.png").is_file())
+        self.assertTrue((self.root / "backgrounds/hoi4_operative_background.png").is_file())
+        self.assertTrue((self.root / "backgrounds/hoi4_leader_portrait_background.png").is_file())
         registry = json.loads((self.root / "config/background_registry.json").read_text(encoding="utf-8"))
         scientist = next(
             item
@@ -265,20 +268,30 @@ class WorkflowAndGuardTests(unittest.TestCase):
             if item["registry_id"] == "hoi4_scientist_portrait_background"
         )
         self.assertEqual(scientist["sha256"], expected_scientist_sha)
-        self.assertEqual(scientist["source_path"], "tools/art/scientists_BG.png")
-        self.assertEqual(scientist["runtime_path"], "backgrounds/local/hoi4_scientists_BG.png")
-        self.assertEqual(scientist["redistribution_rule"], "local_copy_only")
-        self.assertEqual(scientist["status"], "APPROVED_LOCAL_COPY_REQUIRED")
+        self.assertEqual(scientist["source_path"], "backgrounds/hoi4_scientists_BG.png")
+        self.assertEqual(scientist["runtime_path"], "backgrounds/hoi4_scientists_BG.png")
+        self.assertEqual(scientist["redistribution_rule"], "packaged_with_repo")
+        self.assertEqual(scientist["status"], "APPROVED")
         operative = next(
             item
             for item in registry["backgrounds"]
             if item["registry_id"] == "hoi4_operative_portrait_background"
         )
         self.assertEqual(operative["sha256"], expected_operative_sha)
-        self.assertEqual(operative["source_path"], "tools/art/portrait_operative_background.png")
-        self.assertEqual(operative["runtime_path"], "backgrounds/local/hoi4_operative_background.png")
-        self.assertEqual(operative["redistribution_rule"], "local_copy_only")
-        self.assertEqual(operative["status"], "APPROVED_LOCAL_COPY_REQUIRED")
+        self.assertEqual(operative["source_path"], "backgrounds/hoi4_operative_background.png")
+        self.assertEqual(operative["runtime_path"], "backgrounds/hoi4_operative_background.png")
+        self.assertEqual(operative["redistribution_rule"], "packaged_with_repo")
+        self.assertEqual(operative["status"], "APPROVED")
+        leader = next(
+            item
+            for item in registry["backgrounds"]
+            if item["registry_id"] == "hoi4_leader_portrait_background"
+        )
+        self.assertEqual(leader["sha256"], expected_leader_sha)
+        self.assertEqual(leader["source_path"], "backgrounds/hoi4_leader_portrait_background.png")
+        self.assertEqual(leader["runtime_path"], "backgrounds/hoi4_leader_portrait_background.png")
+        self.assertEqual(leader["redistribution_rule"], "packaged_with_repo")
+        self.assertEqual(leader["status"], "APPROVED")
 
         for path in (
             self.root / "workflows/human/local_nvidia_16gb/hoi4_portraits_local_nvidia_16gb.api.json",
@@ -290,12 +303,17 @@ class WorkflowAndGuardTests(unittest.TestCase):
             self.assertEqual(data["34"]["inputs"]["asset_sha256"], expected_scientist_sha)
             self.assertEqual(data["37"]["class_type"], "HOI4BundledBackground")
             self.assertEqual(data["37"]["inputs"]["asset_sha256"], expected_operative_sha)
+            self.assertEqual(data["49"]["class_type"], "HOI4BundledBackground")
+            self.assertEqual(data["49"]["inputs"]["asset_sha256"], expected_leader_sha)
             self.assertEqual(data["8"]["inputs"]["scientist_background"], ["34", 0])
             self.assertEqual(data["8"]["inputs"]["scientist_background_meta"], ["34", 1])
             self.assertEqual(data["8"]["inputs"]["operative_background"], ["37", 0])
             self.assertEqual(data["8"]["inputs"]["operative_background_meta"], ["37", 1])
+            self.assertEqual(data["8"]["inputs"]["leader_background"], ["49", 0])
+            self.assertEqual(data["8"]["inputs"]["leader_background_meta"], ["49", 1])
             self.assertEqual(data["35"]["inputs"]["images"], ["34", 0])
             self.assertEqual(data["38"]["inputs"]["images"], ["37", 0])
+            self.assertEqual(data["50"]["inputs"]["images"], ["49", 0])
 
     def test_every_source_workflow_includes_automatic_portrait_preparation(self):
         paths = (
@@ -989,7 +1007,7 @@ class WorkflowAndGuardTests(unittest.TestCase):
                 for path in relative
             )
         )
-        self.assertFalse(any(path.startswith("backgrounds/local/") for path in relative))
+        self.assertFalse(any(path.startswith("backgrounds/") for path in relative))
         self.assertFalse(any(path.startswith("backgrounds/bundled/") for path in relative))
         self.assertFalse(any(".egg-info/" in path for path in relative))
         self.assertNotIn("prompts/implementation_goal_prompt.md", relative)

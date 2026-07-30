@@ -9,6 +9,8 @@ from typing import Any
 from ..constants import (
     AUTOPROMPTER_PATH,
     GROUP_LABELS,
+    HOI4_LEADER_BACKGROUND_RUNTIME_PATH,
+    HOI4_LEADER_BACKGROUND_SHA256,
     HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH,
     HOI4_OPERATIVE_BACKGROUND_SHA256,
     HOI4_SCIENTIST_BACKGROUND_RUNTIME_PATH,
@@ -528,12 +530,25 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
             widgets=[HOI4_OPERATIVE_BACKGROUND_RUNTIME_PATH, HOI4_OPERATIVE_BACKGROUND_SHA256],
             locked=["asset_path", "asset_sha256"],
         ))
+        nodes.append(_node(
+            49, "HOI4BundledBackground", group["04 Choose background"], "Leader",
+            inputs={
+                "asset_path": HOI4_LEADER_BACKGROUND_RUNTIME_PATH,
+                "asset_sha256": HOI4_LEADER_BACKGROUND_SHA256,
+            },
+            input_types={"asset_path": "STRING", "asset_sha256": "STRING"},
+            outputs=["image", "background_details"], output_types=["IMAGE", "HOI4_META"],
+            widgets=[HOI4_LEADER_BACKGROUND_RUNTIME_PATH, HOI4_LEADER_BACKGROUND_SHA256],
+            locked=["asset_path", "asset_sha256"],
+        ))
     background_choice_inputs = {
         "control_meta": Link(24, 1),
         "scientist_background": Link(34, 0),
         "scientist_background_meta": Link(34, 1),
         "operative_background": Link(37, 0),
         "operative_background_meta": Link(37, 1),
+        "leader_background": Link(49, 0),
+        "leader_background_meta": Link(49, 1),
     } if is_human else {}
     background_choice_input_types = {
         "control_meta": "HOI4_META",
@@ -541,6 +556,8 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
         "scientist_background_meta": "HOI4_META",
         "operative_background": "IMAGE",
         "operative_background_meta": "HOI4_META",
+        "leader_background": "IMAGE",
+        "leader_background_meta": "HOI4_META",
     } if is_human else {}
     nodes.append(_node(
         8, "HOI4MaskAndBackgroundGuard", group["04 Choose background"], "Choose portrait background",
@@ -655,6 +672,10 @@ def build_graph(profile: str, root: str | Path | None = None) -> GraphSpec:
             _node(
                 38, PREVIEW_NODE, group["04 Choose background"], "Operative background preview",
                 inputs={"images": Link(37, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"],
+            ),
+            _node(
+                50, PREVIEW_NODE, group["04 Choose background"], "Leader background preview",
+                inputs={"images": Link(49, 0)}, input_types={"images": "IMAGE"}, outputs=["images"], output_types=["IMAGE"],
             ),
         ])
         if full_power:
@@ -1640,6 +1661,7 @@ def _apply_visual_layout(nodes: list[NodeSpec], *, is_human: bool, full_power: b
             36: (1980, 100), 39: (1980, 260), 6: (1980, 420), 26: (1980, 600),
             7: (2450, 100), 8: (2450, 320), 27: (2810, 300),
             34: (3170, 100), 35: (3170, 320), 37: (3530, 100), 38: (3530, 320),
+            49: (3890, 100), 50: (3890, 320),
             9: (340, 1080),
             10: (880, 1080), 11: (880, 1240), 12: (880, 1400), 13: (880, 1560),
             14: (1160, 1080), 15: (1160, 1240), 16: (1160, 1400), 17: (1160, 1560),

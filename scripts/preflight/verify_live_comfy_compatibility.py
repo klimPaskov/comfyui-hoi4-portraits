@@ -227,6 +227,7 @@ def verify(root: Path, base: str, profile: str | None = None) -> dict[str, Any]:
             registry = json.loads(background_registry.read_text(encoding="utf-8"))
             background_resolved = registry.get("registry_status") in {
                 "RESOLVED",
+                "APPROVED",
                 "RESOLVED_LOCAL_GAME_COPY",
             } and any(
                 item.get("status") in {"APPROVED", "APPROVED_LOCAL_COPY_REQUIRED"}
