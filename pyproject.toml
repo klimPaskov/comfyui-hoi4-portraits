@@ -1,24 +1,28 @@
 [build-system]
-requires = ["setuptools==80.9.0"]
+requires = ["setuptools>=70"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hoi4-portrait-pipeline"
-version = "0.1.0"
-description = "ComfyUI workflows for converting or generating Hearts of Iron IV-style leader portraits."
-requires-python = ">=3.10,<3.14"
-dependencies = [
-  "jsonschema==4.25.1",
-  "Pillow==11.3.0",
+name = "comfyui-hoi4-portraits"
+version = "2.0.0"
+description = "Core-node ComfyUI workflows for FLUX.2 Klein 9B HOI4-style portraits"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Klim Paskov" }]
+dependencies = []
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
 ]
 
-[project.scripts]
-hoi4-portrait-preflight = "portrait_pipeline.preflight:main"
-hoi4-portrait-build-workflows = "portrait_pipeline.graph_spec.builder:main"
-hoi4-portrait-acceptance = "portrait_pipeline.acceptance:main"
-hoi4-portrait-mcp = "portrait_pipeline.mcp.adapter:main"
-hoi4-portrait-preprocessing-service = "portrait_pipeline.preprocessing_service:main"
-hoi4-portrait-autoprompter = "portrait_pipeline.autoprompter_service:main"
+[project.urls]
+Homepage = "https://github.com/klimPaskov/comfyui-hoi4-portraits"
+Issues = "https://github.com/klimPaskov/comfyui-hoi4-portraits/issues"
+LoRA = "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[project.optional-dependencies]
+dds = ["Pillow>=10"]
+
+[tool.setuptools]
+py-modules = []

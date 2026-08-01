@@ -1,67 +1,65 @@
 # Workflow guide
 
-## Convert an existing portrait
+## Shared design
 
-The source-portrait workflows use these visible stages:
+Every current workflow is a flat graph made from core ComfyUI nodes. Groups
+are visual organization only; no subgraph or custom Python node is required.
 
-1. Job and source
-2. Subject selection
-3. Tight head-and-shoulders crop
-4. Krea restoration on full power, or Real-ESRGAN preparation on 16 GB
-5. Automatic description, manual description, or agent job-file prompt
-6. Krea 2 identity edit
-7. HOI4 style LoRA
-8. Portrait generation
-9. Large previews and save
+The shared model stack is:
 
-The background selector defaults to **Keep current background**. Choose one of:
+1. `UNETLoader` — FLUX.2 Klein base 9B FP8.
+2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
+3. `VAELoader` — FLUX.2 VAE.
+4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `1.0`.
+5. `CFGGuider`, Euler, `Flux2Scheduler`, 20 steps, CFG 5.
 
-- **Scientist laboratory**
-- **Operative background**
-- **Leader**
+## Full power
 
-All three options are loaded from local `backgrounds/*` assets and each has a dedicated preview node in the workflow.
+Groups run left to right:
 
-In a human workflow, use **Create automatically** in the portrait-description node or switch it to **Use my description** and type the prompt below it.
+1. **Source and ESRGAN** loads the portrait, applies RealESRGAN x2, then fits the result to 832 × 1120.
+2. **FLUX.2 Klein 9B models** loads the base model, encoder, VAE, and LoRA.
+3. **Optional FLUX.2 restoration** uses the ESRGAN result as a reference latent for a conservative restoration pass.
+4. The restoration `ComfySwitchNode` chooses the FLUX result when on and the direct ESRGAN result when off. It is a lazy switch, so the disabled FLUX branch is not evaluated.
+5. **HOI4 LoRA styling** uses the switch output as the sole portrait reference and the LoRA-patched model as the sampler model.
+6. **Optional background** receives the decoded styled image, creates its foreground mask with BiRefNet, and composites over the selected background.
+7. A second lazy switch keeps the styled image unchanged by default or selects the composite when enabled.
+8. **Preview and save** writes the 832 × 1120 master and a 156 × 210 PNG.
 
-Local workflows target 12–16 GB NVIDIA GPUs. The RunPod setup installs the source-photo, no-input, agent, and portrait-preparation workflows.
+To use ESRGAN only inside the full graph, set **Toggle FLUX restoration** to
+`false`. No links should be deleted or reconnected.
 
-The local graph includes visible 12 GB and 8 GB GGUF placeholders for users who want to add smaller compatible models.
+## ESRGAN only
 
-## Prepare a portrait
+This graph removes the entire FLUX restoration group. RealESRGAN output feeds
+the HOI4 reference-latent stage directly. Styling still uses FLUX.2 Klein 9B
+and the same project LoRA.
 
-Every source-image workflow automatically crops around the face and shoulders while reserving space above the detected face for hair and headwear. Full-power workflows use Krea Edit to repair damage, recover natural detail, and colorize monochrome or sepia photos when needed, then reuse the same Krea model for HOI4 styling. The 16 GB workflows use Real-ESRGAN preparation and preserve the source colors.
+## Text to image
 
-`hoi4_portraits_prepare_portrait_for_hoi4` offers the Krea restoration route as a separate utility and stops before the HOI4 style LoRA. It is the recommended preparation workflow on a full-power GPU.
+This graph has no source, VAE reference encode, RealESRGAN, or restoration
+pass. The positive prompt must begin with `hoi4_portrait`. It produces the
+same master and game-size outputs and uses the same final-only background
+branch.
 
-`hoi4_portraits_prepare_portrait_basic` is the lightweight alternative. It crops, resizes, and applies small contrast and sharpness adjustments without loading an enhancement model.
+## Background replacement invariant
 
-The default choice keeps the source background. The optional scientist, operative, and leader options use packaged assets from `backgrounds/*`, so no copy from an existing Hearts of Iron IV install is required.
+The background branch is deliberately downstream of `VAEDecode` for the HOI4
+LoRA sampler. In the API graphs:
 
-The complete preparation workflow has five stages:
+- node `63` masks the final styled image;
+- node `65` composites that same image over the chosen background;
+- node `66` selects either the unchanged final image or the composite;
+- no background node is an ancestor of the LoRA-styled `VAEDecode`.
 
-1. Choose and preview the photo.
-2. Find a face and crop to head and shoulders.
-3. Choose automatic color restoration, original-color restoration, or custom instructions.
-4. Restore and enlarge the crop with Krea Edit.
-5. Preview and save the prepared portrait.
+The validator enforces this dependency order. A workflow fails validation if
+background processing is connected before generation.
 
-The basic preparation workflow does not load Krea, Qwen, or Real-ESRGAN. It is useful when the source already has enough detail. The optional `hoi4_portraits_prepare_portrait_qwen` workflow can be added with the separate command in the [RunPod guide](runpod.md).
+## Editing safely
 
-The examples in the main README use a severely faded full-body portrait, a crowded group photograph, and a small newspaper image. Very damaged sources can still retain grain, printing patterns, or uncertain colors after preparation.
-
-## Generate a fictional leader
-
-The no-input workflows do not need an input image. The first node can create a varied prompt from an optional brief and the character controls, or use a complete prompt written by you.
-
-1. Choose random generation or write your own prompt
-2. Load Krea 2 Turbo
-3. Apply the HOI4 style LoRA
-4. Generate the portrait
-5. Preview and save
-
-The prompt builder is text-only and runs without a separate language or vision model.
-
-## Agent workflows
-
-Matching agent workflows are included for every workflow type, but they currently have no practical use because ComfyUI does not yet provide a reliable MCP connection for running them.
+- Change prompts, seeds, LoRA strength, and boolean switches freely.
+- Keep the exact model family and encoder type together.
+- Keep 832 and 1120 divisible by 16 if you change the work canvas.
+- Do not connect a background composite into a reference-latent encode.
+- Re-run `python scripts/validate_workflows.py` after structural edits.
+- Edit [`scripts/build_workflows.py`](../scripts/build_workflows.py), then regenerate, instead of hand-editing six JSON files independently.

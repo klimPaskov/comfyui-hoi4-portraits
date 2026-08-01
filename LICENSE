@@ -20,7 +20,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-This license covers project-owned source code, schemas, workflow definitions,
-and documentation only. It does not grant rights to third-party models,
-custom nodes, source portraits, generated portraits, Hearts of Iron IV assets,
-or any private LoRA referenced by the project.
+This license covers project-owned source code, workflow definitions,
+documentation, bundled background artwork, and the project-trained
+`hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors` adapter when it is
+distributed from the project's official Hugging Face or GitHub release pages.
+Use of that adapter with the FLUX.2 Klein 9B base model remains subject to the
+base model's FLUX Non-Commercial License and acceptable-use terms.
+
+It does not grant rights to third-party models, ComfyUI, source portraits,
+generated portraits, or Hearts of Iron IV game assets. Those retain their own
+licenses and terms. Hearts of Iron IV is a trademark of Paradox Interactive;
+this community project is not affiliated with or endorsed by Paradox
+Interactive.

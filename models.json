@@ -1,0 +1,77 @@
+{
+  "schema_version": "2.0.0",
+  "models": [
+    {
+      "name": "FLUX.2 Klein base 9B FP8",
+      "filename": "flux-2-klein-base-9b-fp8.safetensors",
+      "directory": "diffusion_models",
+      "source": "black-forest-labs/FLUX.2-klein-base-9B-fp8",
+      "revision": "9ecf2143d71542449960c5584340269c6d401449",
+      "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8/resolve/9ecf2143d71542449960c5584340269c6d401449/flux-2-klein-base-9b-fp8.safetensors",
+      "size_bytes": 9567278472,
+      "sha256": "a9f5028c24a7a96f4f45beb883aad287d9bccc246227a6803edc898ddda42cf4",
+      "license": "FLUX Non-Commercial License",
+      "requires_huggingface_auth": true
+    },
+    {
+      "name": "Qwen 3 8B FP8 mixed text encoder",
+      "filename": "qwen_3_8b_fp8mixed.safetensors",
+      "directory": "text_encoders",
+      "source": "Comfy-Org/flux2-klein-9B",
+      "revision": "23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83",
+      "url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
+      "size_bytes": 8664848742,
+      "sha256": "abad16806e0cbabc54e0325d6565847443fe396d5f0be38bb3cd3fe75a1201d6",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "FLUX.2 VAE",
+      "filename": "flux2-vae.safetensors",
+      "directory": "vae",
+      "source": "Comfy-Org/flux2-klein-9B",
+      "revision": "23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83",
+      "url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors",
+      "size_bytes": 336211292,
+      "sha256": "868fe7b343cc8f3a19dbcfcafbc3d5f888802be3f89bd81b65b3621a066ce8f3",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "HOI4 portraits FLUX.2 Klein 9B LoRA",
+      "filename": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
+      "directory": "loras",
+      "source": "Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora",
+      "revision": "567bdd03a4a93f7506453780285323fa10ed48aa",
+      "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/567bdd03a4a93f7506453780285323fa10ed48aa/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
+      "size_bytes": 331379656,
+      "sha256": "b7b1bcbf1231e14651afd80a7f9c39f5f962239ff41806c672d1b03282bebb4a",
+      "license": "MIT",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "RealESRGAN x2plus",
+      "filename": "RealESRGAN_x2plus.pth",
+      "directory": "upscale_models",
+      "source": "xinntao/Real-ESRGAN",
+      "revision": "64ad194ddaf9c4d8c4b0d1b98cac6d89d3ea0d11",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
+      "size_bytes": 67061725,
+      "sha256": "49fafd45f8fd7aa8d31ab2a22d14d91b536c34494a5cfe31eb5d89c2fa266abb",
+      "license": "BSD-3-Clause",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "BiRefNet background removal",
+      "filename": "birefnet.safetensors",
+      "directory": "background_removal",
+      "source": "Comfy-Org/BiRefNet",
+      "revision": "8fdc9d315889de96cc0c6269eeecd333e2727889",
+      "url": "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
+      "size_bytes": 444473596,
+      "sha256": "9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    }
+  ]
+}

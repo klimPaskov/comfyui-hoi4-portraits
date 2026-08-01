@@ -1,57 +1,70 @@
 # Getting started
 
-## Requirements
+## Choose a workflow
 
-- Current ComfyUI
-- NVIDIA GPU with 12–16 GB VRAM for the local profile, or a RunPod GPU
-- Python 3.12 or the Python environment bundled with ComfyUI
-- Git
-- Enough disk space for the selected workflow's models; the standard RunPod setup needs roughly 45 GB
+- Use **full power** when the source is faded, scratched, very small, or needs plausible color recovery. It runs RealESRGAN first and FLUX.2 restoration second.
+- Use **ESRGAN only** for a clean source or when you want a faster, less generative preparation stage.
+- Use **text to image** when no real person must be preserved.
 
-## Automated setup
+All three use the same FLUX.2 Klein base 9B model and HOI4 LoRA.
 
-```powershell
-git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
-cd comfyui-hoi4-portraits
-.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Profile hoi4_portraits_local_nvidia_16gb
-```
+## Prepare a source image
 
-Start ComfyUI:
+The previous automatic selection/cropping nodes were project-specific and
+have been removed for Comfy Cloud compatibility. Give the source workflows a
+single-person, head-and-shoulders image whenever possible.
 
-```powershell
-.\scripts\start_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Workflow hoi4_portraits_local_nvidia_16gb
-```
+Good input:
 
-Open `Workflows > hoi4_portraits`, then select `hoi4_portraits_local_nvidia_16gb`.
+- one clearly visible person;
+- top of the head and shoulders inside the frame;
+- face at least roughly 200 pixels tall before upscaling;
+- limited motion blur and obstruction;
+- historically accurate visible clothing if preservation matters.
 
-## Human workflow
+If the source is a group photograph, crop the person first with ComfyUI's
+built-in **Crop Image** node or any image editor. The workflow's 832 × 1120
+resize uses a center crop; it cannot decide which person is important.
 
-1. Create a job file based on [`job_input.example.json`](examples/job_input.example.json).
-2. Set the job file path in the first workflow node.
-3. Confirm the source portrait and background previews.
-4. In the portrait-description node, choose **Create automatically** or **Use my description**.
-5. Queue the workflow.
-6. Review the final preview beside the Save Image node.
+## Required model files
 
-## Prompt workflow
+| Folder under `ComfyUI/models/` | File |
+| --- | --- |
+| `diffusion_models/` | `flux-2-klein-base-9b-fp8.safetensors` |
+| `text_encoders/` | `qwen_3_8b_fp8mixed.safetensors` |
+| `vae/` | `flux2-vae.safetensors` |
+| `loras/` | `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors` |
+| `upscale_models/` | `RealESRGAN_x2plus.pth` |
+| `background_removal/` | `birefnet.safetensors` |
 
-Open `hoi4_portraits_no_input_local_nvidia_16gb` to create a leader without an input image. Leave the first node on **Create a random portrait** and add an optional brief, or choose **Use my prompt**. Change the seed to create another portrait.
+The filenames, pinned sources, sizes, and SHA-256 hashes are recorded in
+[`models.json`](../models.json).
 
-## Prepare an old photo
+## First run
 
-Source-image workflows prepare full-body, group, faded, and black-and-white photos automatically. Open `hoi4_portraits_prepare_portrait_for_hoi4` when you want Krea restoration and optional colorization without running portrait generation. Use `hoi4_portraits_prepare_portrait_basic` for cropping and simple adjustments without an enhancement model. Qwen restoration is available separately through the optional RunPod command in the [RunPod guide](runpod.md).
+1. Open the workflow JSON, not the `.api.json` file, in the ComfyUI editor.
+2. Check every model loader. A red loader means the named file has not been installed or imported.
+3. Select the source image and edit the positive prompt.
+4. Leave background replacement off for the first run.
+5. Queue once. If the full workflow is too heavy, turn the restoration switch off or use the ESRGAN-only graph.
+6. Inspect the 832 × 1120 master before using the 156 × 210 game-size file.
 
-1. Choose the image.
-2. Set the face number to `0` for the largest detected face, or try `1`, `2`, and so on for another person.
-3. Choose normal, wide, or tight framing.
-4. Review the tighter crop before continuing.
-5. Choose whether Krea should colorize monochrome sources or preserve the existing color treatment.
-6. Review the Krea restoration and final image beside the Save node.
+Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
 
-The full-power preparation workflow colorizes monochrome and sepia inputs by default. Switch the restoration node to **Restore without changing color** when you want to preserve black and white.
+## Identity-preserving prompt rules
 
-Matching agent workflows are included for future automation, but they currently have no practical use because ComfyUI does not yet provide a reliable MCP connection for running them.
+For a real person, explicitly preserve identity, facial geometry, expression,
+hair, visible clothing, pose, camera angle, and crop. Do not ask the model to
+invent medals or insignia. If identity drifts, lower LoRA strength slightly,
+use a cleaner crop, or reduce restoration rather than adding more style words.
 
-## Memory presets
+## Common problems
 
-The local workflow includes visible 16 GB, 12 GB, and 8 GB model options. The included 16 GB option is the default; the smaller options are placeholders for compatible GGUF models.
+| Symptom | Likely fix |
+| --- | --- |
+| Loader is red | Install/import the exact filename from `models.json`, then refresh ComfyUI. |
+| Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 32 GB+ GPU. |
+| Wrong person in a group photo | Crop to one person before loading the workflow. |
+| Background appears too early | Use the current v2 workflow; only nodes in group 05 may replace the background. |
+| Style is weak | Keep `hoi4_portrait` in the prompt and start with LoRA strength `1.0`. |
+| Identity changes | Use the source workflow, keep the preservation sentence, and avoid speculative traits. |

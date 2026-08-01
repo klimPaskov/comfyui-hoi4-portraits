@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+"""Mechanical and layout validation for every public workflow."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+
+ALLOWED_CORE_NODES = {
+    "CFGGuider",
+    "CLIPLoader",
+    "CLIPTextEncode",
+    "ComfySwitchNode",
+    "EmptyFlux2LatentImage",
+    "Flux2Scheduler",
+    "ImageCompositeMasked",
+    "ImageScale",
+    "ImageUpscaleWithModel",
+    "InvertMask",
+    "KSamplerSelect",
+    "LoadBackgroundRemovalModel",
+    "LoadImage",
+    "LoraLoaderModelOnly",
+    "PreviewImage",
+    "RandomNoise",
+    "ReferenceLatent",
+    "RemoveBackground",
+    "SamplerCustomAdvanced",
+    "SaveImage",
+    "UNETLoader",
+    "UpscaleModelLoader",
+    "VAEDecode",
+    "VAEEncode",
+    "VAELoader",
+}
+
+
+def _overlap(a: list[float], b: list[float], *, padding: float = 0) -> bool:
+    ax, ay, aw, ah = a
+    bx, by, bw, bh = b
+    return not (
+        ax + aw + padding <= bx
+        or bx + bw + padding <= ax
+        or ay + ah + padding <= by
+        or by + bh + padding <= ay
+    )
+
+
+def _ancestors(api: dict[str, Any], node_id: str) -> set[str]:
+    found: set[str] = set()
+    pending = [node_id]
+    while pending:
+        current = pending.pop()
+        node = api.get(current, {})
+        for value in node.get("inputs", {}).values():
+            if not (isinstance(value, list) and len(value) == 2 and isinstance(value[0], str)):
+                continue
+            source = value[0]
+            if source not in found:
+                found.add(source)
+                pending.append(source)
+    return found
+
+
+def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    nodes = ui.get("nodes")
+    links = ui.get("links")
+    groups = ui.get("groups")
+    if not isinstance(nodes, list) or not nodes:
+        return [f"{path}: nodes must be a non-empty list"]
+    if not isinstance(links, list):
+        return [f"{path}: links must be a list"]
+    if not isinstance(groups, list) or not groups:
+        return [f"{path}: groups must be a non-empty list"]
+    by_id = {node.get("id"): node for node in nodes}
+    if len(by_id) != len(nodes) or None in by_id:
+        errors.append(f"{path}: node ids must be present and unique")
+
+    link_by_id: dict[int, list[Any]] = {}
+    for link in links:
+        if not isinstance(link, list) or len(link) != 6:
+            errors.append(f"{path}: malformed link {link!r}")
+            continue
+        link_id, source_id, source_slot, target_id, target_slot, link_type = link
+        if link_id in link_by_id:
+            errors.append(f"{path}: duplicate link id {link_id}")
+        link_by_id[link_id] = link
+        source = by_id.get(source_id)
+        target = by_id.get(target_id)
+        if source is None or target is None:
+            errors.append(f"{path}: link {link_id} has a missing endpoint")
+            continue
+        source_outputs = source.get("outputs", [])
+        target_inputs = target.get("inputs", [])
+        if not 0 <= source_slot < len(source_outputs):
+            errors.append(f"{path}: link {link_id} has invalid source slot")
+        elif source_outputs[source_slot].get("type") != link_type:
+            errors.append(f"{path}: link {link_id} source type mismatch")
+        if not 0 <= target_slot < len(target_inputs):
+            errors.append(f"{path}: link {link_id} has invalid target slot")
+        elif target_inputs[target_slot].get("type") not in {link_type, "COMFY_MATCHTYPE_V3", "IMAGE"}:
+            errors.append(f"{path}: link {link_id} target type mismatch")
+
+    for node in nodes:
+        class_type = str(node.get("type", ""))
+        if class_type not in ALLOWED_CORE_NODES:
+            errors.append(f"{path}: non-core or unapproved node {class_type!r}")
+        if class_type.casefold().startswith("hoi4") or "krea" in class_type.casefold():
+            errors.append(f"{path}: forbidden custom/Krea node {class_type!r}")
+        if node.get("mode") != 0:
+            errors.append(f"{path}: node {node.get('id')} is unexpectedly bypassed or muted")
+        for input_item in node.get("inputs", []):
+            target_link = input_item.get("link")
+            if target_link is not None and target_link not in link_by_id:
+                errors.append(f"{path}: node {node.get('id')} references missing input link {target_link}")
+        for output in node.get("outputs", []):
+            for output_link in output.get("links") or []:
+                if output_link not in link_by_id:
+                    errors.append(f"{path}: node {node.get('id')} references missing output link {output_link}")
+
+    # Every node belongs to exactly one non-overlapping visual group.
+    group_bounds = {group.get("title"): group.get("bounding") for group in groups}
+    for index, group in enumerate(groups):
+        bounds = group.get("bounding")
+        if not (isinstance(bounds, list) and len(bounds) == 4):
+            errors.append(f"{path}: group {group.get('title')} has invalid bounds")
+            continue
+        for other in groups[index + 1 :]:
+            other_bounds = other.get("bounding")
+            if isinstance(other_bounds, list) and len(other_bounds) == 4 and _overlap(bounds, other_bounds):
+                errors.append(f"{path}: groups overlap: {group.get('title')} and {other.get('title')}")
+    for node in nodes:
+        group_name = node.get("properties", {}).get("hoi4_group")
+        bounds = group_bounds.get(group_name)
+        if bounds is None:
+            errors.append(f"{path}: node {node.get('id')} has no valid group")
+            continue
+        nx, ny = node.get("pos", [0, 0])
+        nw, nh = node.get("size", [0, 0])
+        gx, gy, gw, gh = bounds
+        if nx < gx or ny < gy or nx + nw > gx + gw or ny + nh > gy + gh:
+            errors.append(f"{path}: node {node.get('id')} extends outside group {group_name}")
+
+    for index, node in enumerate(nodes):
+        a = [*node.get("pos", [0, 0]), *node.get("size", [0, 0])]
+        for other in nodes[index + 1 :]:
+            if node.get("properties", {}).get("hoi4_group") != other.get("properties", {}).get("hoi4_group"):
+                continue
+            b = [*other.get("pos", [0, 0]), *other.get("size", [0, 0])]
+            if _overlap(a, b, padding=20):
+                errors.append(f"{path}: nodes overlap or are too close: {node.get('id')} and {other.get('id')}")
+    return errors
+
+
+def _validate_api(path: Path, api: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    if not api:
+        return [f"{path}: API graph is empty"]
+    for node_id, node in api.items():
+        if not node_id.isdigit() or not isinstance(node, dict):
+            errors.append(f"{path}: API graph contains a non-node key {node_id!r}")
+            continue
+        class_type = str(node.get("class_type", ""))
+        if class_type not in ALLOWED_CORE_NODES:
+            errors.append(f"{path}: API graph uses non-core or unapproved node {class_type!r}")
+        if class_type.casefold().startswith("hoi4") or "krea" in class_type.casefold():
+            errors.append(f"{path}: API graph contains forbidden custom/Krea node {class_type!r}")
+        inputs = node.get("inputs")
+        if not isinstance(inputs, dict):
+            errors.append(f"{path}: node {node_id} inputs must be an object")
+            continue
+        for name, value in inputs.items():
+            if isinstance(value, list) and len(value) == 2 and isinstance(value[0], str):
+                if value[0] not in api:
+                    errors.append(f"{path}: node {node_id}.{name} references missing node {value[0]}")
+                if not isinstance(value[1], int) or value[1] < 0:
+                    errors.append(f"{path}: node {node_id}.{name} has invalid output slot")
+    if not any(node.get("class_type") == "SaveImage" for node in api.values()):
+        errors.append(f"{path}: graph has no SaveImage output")
+    return errors
+
+
+def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    extra = ui.get("extra", {})
+    workflow_id = str(extra.get("workflow_id", ""))
+    if extra.get("base_model") != "flux-2-klein-base-9b-fp8.safetensors":
+        errors.append(f"{path}: incorrect FLUX.2 Klein 9B base model")
+    if extra.get("style_lora") != "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors":
+        errors.append(f"{path}: incorrect style LoRA")
+    if extra.get("core_nodes_only") is not True or extra.get("comfy_cloud_ready") is not True:
+        errors.append(f"{path}: Cloud/core-only metadata is missing")
+    if extra.get("background_order") != "after_final_lora_styled_decode":
+        errors.append(f"{path}: background policy is not final-stage-only")
+
+    lora_node = next((node_id for node_id, node in api.items() if node.get("class_type") == "LoraLoaderModelOnly"), None)
+    if lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
+        errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
+
+    composite = next((node_id for node_id, node in api.items() if node.get("class_type") == "ImageCompositeMasked"), None)
+    background_switch = next(
+        (node_id for node_id, node in api.items() if node.get("class_type") == "ComfySwitchNode" and node_id == "66"),
+        None,
+    )
+    if composite is None or background_switch is None:
+        errors.append(f"{path}: optional final background branch is incomplete")
+    else:
+        final_link = api[background_switch]["inputs"].get("on_false")
+        if not (isinstance(final_link, list) and final_link[0] in api):
+            errors.append(f"{path}: final unmodified portrait link is invalid")
+        else:
+            final_node_id = final_link[0]
+            if api[final_node_id].get("class_type") != "VAEDecode":
+                errors.append(f"{path}: background branch does not start from a decoded final portrait")
+            if api[composite]["inputs"].get("source") != final_link:
+                errors.append(f"{path}: composite source differs from the final styled portrait")
+            if lora_node not in _ancestors(api, final_node_id):
+                errors.append(f"{path}: final portrait was not generated with the LoRA model")
+            background_ancestors = _ancestors(api, final_node_id)
+            if any(node_id in background_ancestors for node_id in {"60", "61", "62", "63", "64", "65", "66"}):
+                errors.append(f"{path}: background processing occurs before final portrait generation")
+
+    if workflow_id.endswith("full_power"):
+        expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
+        if extra.get("restoration_order") != expected:
+            errors.append(f"{path}: full-power restoration order is wrong")
+        switch = api.get("32", {}).get("inputs", {})
+        if switch.get("switch") is not True or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["31", 0]:
+            errors.append(f"{path}: FLUX restoration toggle is not an ESRGAN-only bypass")
+        if api.get("22", {}).get("inputs", {}).get("pixels") != ["8", 0]:
+            errors.append(f"{path}: FLUX restoration does not consume ESRGAN output")
+        if api.get("42", {}).get("inputs", {}).get("pixels") != ["32", 0]:
+            errors.append(f"{path}: LoRA styling does not consume the restoration switch output")
+    elif workflow_id.endswith("esrgan_only"):
+        if extra.get("restoration_order") != ["RealESRGAN_x2plus"]:
+            errors.append(f"{path}: ESRGAN-only restoration metadata is wrong")
+        if api.get("42", {}).get("inputs", {}).get("pixels") != ["8", 0]:
+            errors.append(f"{path}: ESRGAN-only workflow does not style the ESRGAN result")
+    elif workflow_id.endswith("text_to_image"):
+        if any(node.get("class_type") in {"UpscaleModelLoader", "ImageUpscaleWithModel", "VAEEncode", "ReferenceLatent"} for node in api.values()):
+            errors.append(f"{path}: text-to-image workflow contains source/restoration nodes")
+    else:
+        errors.append(f"{path}: unexpected workflow id {workflow_id!r}")
+    return errors
+
+
+def validate_all(root: Path = ROOT) -> dict[str, Any]:
+    manifest_path = root / "workflows" / "manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {"status": "FAIL", "errors": [f"{manifest_path}: {exc}"], "workflows": []}
+    errors: list[str] = []
+    reports: list[dict[str, Any]] = []
+    items = manifest.get("workflows", [])
+    if len(items) != 3:
+        errors.append(f"{manifest_path}: exactly three public workflows are required")
+    for item in items:
+        ui_path = root / item["workflow_json"]
+        api_path = root / item["api_json"]
+        try:
+            ui = json.loads(ui_path.read_text(encoding="utf-8"))
+            api = json.loads(api_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            errors.append(f"{item.get('workflow_id')}: {exc}")
+            continue
+        workflow_errors = _validate_ui(ui_path, ui) + _validate_api(api_path, api) + _validate_policy(ui_path, ui, api)
+        errors.extend(workflow_errors)
+        reports.append(
+            {
+                "workflow_id": item["workflow_id"],
+                "node_count": len(ui.get("nodes", [])),
+                "link_count": len(ui.get("links", [])),
+                "status": "PASS" if not workflow_errors else "FAIL",
+                "errors": workflow_errors,
+            }
+        )
+    return {"status": "PASS" if not errors else "FAIL", "errors": errors, "workflows": reports}
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root", type=Path, default=ROOT)
+    args = parser.parse_args(argv)
+    result = validate_all(args.root.resolve())
+    print(json.dumps(result, indent=2))
+    return 0 if result["status"] == "PASS" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

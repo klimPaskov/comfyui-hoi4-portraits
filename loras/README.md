@@ -1,9 +1,11 @@
-# HOI4 style LoRA
+# FLUX.2 Klein 9B style LoRA
 
-The installer downloads `hoi4_portrait_new_style_lora.safetensors` automatically from:
+Download `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors` from the
+public [Hugging Face model repository](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
+and place it in `ComfyUI/models/loras/`.
 
-[`Hoops-McCann/hoi4-portrait-new-style-lora`](https://huggingface.co/Hoops-McCann/hoi4-portrait-new-style-lora)
+Comfy Cloud users should import the same Hugging Face file through
+**Models → Import**, select **LoRA**, and wait for the filename to appear in
+the `LoraLoaderModelOnly` dropdown.
 
-It is placed in this folder and appears in ComfyUI as `hoi4_portrait_new_style_lora.safetensors`. You do not need to download or move it manually.
-
-The model file is hosted separately from GitHub. Check the Hugging Face page before redistributing or modifying it.
+The trigger word is `hoi4_portrait`. Start with LoRA strength `1.0`.

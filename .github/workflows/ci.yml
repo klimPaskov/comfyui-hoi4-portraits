@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.13"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Rebuild workflows
+        run: python scripts/build_workflows.py
+
+      - name: Confirm generated files are current
+        run: git diff --exit-code -- workflows
+
+      - name: Validate graphs, layout, docs, and installer
+        run: |
+          python scripts/validate_workflows.py
+          python -m unittest discover -s tests -v
+
+      - name: Check whitespace
+        run: git diff --check
