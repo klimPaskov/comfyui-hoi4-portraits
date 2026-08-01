@@ -20,7 +20,6 @@ ALLOWED_CORE_NODES = {
     "ImageCompositeMasked",
     "ImageScale",
     "ImageUpscaleWithModel",
-    "InvertMask",
     "KSamplerSelect",
     "LoadBackgroundRemovalModel",
     "LoadImage",
@@ -219,10 +218,16 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 errors.append(f"{path}: background branch does not start from a decoded final portrait")
             if api[composite]["inputs"].get("source") != final_link:
                 errors.append(f"{path}: composite source differs from the final styled portrait")
+            if api[composite]["inputs"].get("mask") != ["63", 0]:
+                errors.append(f"{path}: composite must use RemoveBackground's foreground mask directly")
+            if api.get("63", {}).get("inputs", {}).get("image") != final_link:
+                errors.append(f"{path}: foreground mask is not derived from the final styled portrait")
+            if any(node.get("class_type") == "InvertMask" for node in api.values()):
+                errors.append(f"{path}: foreground mask must not be inverted")
             if lora_node not in _ancestors(api, final_node_id):
                 errors.append(f"{path}: final portrait was not generated with the LoRA model")
             background_ancestors = _ancestors(api, final_node_id)
-            if any(node_id in background_ancestors for node_id in {"60", "61", "62", "63", "64", "65", "66"}):
+            if any(node_id in background_ancestors for node_id in {"60", "61", "62", "63", "65", "66"}):
                 errors.append(f"{path}: background processing occurs before final portrait generation")
 
     if workflow_id.endswith("full_power"):

@@ -518,18 +518,6 @@
       "title": "Mask the final styled portrait"
     }
   },
-  "64": {
-    "class_type": "InvertMask",
-    "inputs": {
-      "mask": [
-        "63",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Convert background mask to foreground mask"
-    }
-  },
   "65": {
     "class_type": "ImageCompositeMasked",
     "inputs": {
@@ -545,7 +533,7 @@
       "y": 0,
       "resize_source": true,
       "mask": [
-        "64",
+        "63",
         0
       ]
     },

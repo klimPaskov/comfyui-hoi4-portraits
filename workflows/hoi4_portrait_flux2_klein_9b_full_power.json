@@ -1,6 +1,6 @@
 {
   "last_node_id": 73,
-  "last_link_id": 55,
+  "last_link_id": 54,
   "nodes": [
     {
       "id": 5,
@@ -1807,8 +1807,8 @@
           "type": "IMAGE",
           "links": [
             45,
-            48,
-            50
+            47,
+            49
           ]
         }
       ],
@@ -1933,7 +1933,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            47
+            46
           ]
         }
       ],
@@ -2037,53 +2037,12 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            46
+            48
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "RemoveBackground",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "05 Optional background - after generation"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 64,
-      "type": "InvertMask",
-      "title": "Convert background mask to foreground mask",
-      "pos": [
-        5620,
-        480
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#8d5b5b",
-      "bgcolor": "#8d5b5b",
-      "flags": {},
-      "order": 37,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 46
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            49
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "InvertMask",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
@@ -2105,18 +2064,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 38,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 47
+          "link": 46
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 48
+          "link": 47
         },
         {
           "name": "x",
@@ -2145,7 +2104,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 49
+          "link": 48
         }
       ],
       "outputs": [
@@ -2153,7 +2112,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            51
+            50
           ]
         }
       ],
@@ -2184,7 +2143,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 39,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
@@ -2198,12 +2157,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 50
+          "link": 49
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 51
+          "link": 50
         }
       ],
       "outputs": [
@@ -2211,9 +2170,9 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
+            51,
             52,
-            53,
-            54
+            53
           ]
         }
       ],
@@ -2242,13 +2201,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 40,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 52
+          "link": 51
         }
       ],
       "outputs": [
@@ -2281,13 +2240,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 41,
+      "order": 40,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 53
+          "link": 52
         },
         {
           "name": "filename_prefix",
@@ -2330,13 +2289,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 42,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 54
+          "link": 53
         },
         {
           "name": "upscale_method",
@@ -2376,7 +2335,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            55
+            54
           ]
         }
       ],
@@ -2408,13 +2367,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 43,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 55
+          "link": 54
         },
         {
           "name": "filename_prefix",
@@ -2806,14 +2765,6 @@
     ],
     [
       46,
-      63,
-      0,
-      64,
-      0,
-      "MASK"
-    ],
-    [
-      47,
       61,
       0,
       65,
@@ -2821,7 +2772,7 @@
       "IMAGE"
     ],
     [
-      48,
+      47,
       51,
       0,
       65,
@@ -2829,15 +2780,15 @@
       "IMAGE"
     ],
     [
-      49,
-      64,
+      48,
+      63,
       0,
       65,
       5,
       "MASK"
     ],
     [
-      50,
+      49,
       51,
       0,
       66,
@@ -2845,7 +2796,7 @@
       "IMAGE"
     ],
     [
-      51,
+      50,
       65,
       0,
       66,
@@ -2853,7 +2804,7 @@
       "IMAGE"
     ],
     [
-      52,
+      51,
       66,
       0,
       70,
@@ -2861,7 +2812,7 @@
       "IMAGE"
     ],
     [
-      53,
+      52,
       66,
       0,
       71,
@@ -2869,7 +2820,7 @@
       "IMAGE"
     ],
     [
-      54,
+      53,
       66,
       0,
       72,
@@ -2877,7 +2828,7 @@
       "IMAGE"
     ],
     [
-      55,
+      54,
       72,
       0,
       73,

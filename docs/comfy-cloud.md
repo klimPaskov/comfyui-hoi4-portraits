@@ -14,7 +14,7 @@ workflow. Import it from its hosted source:
 4. Select model type **LoRA** and target folder `loras`.
 5. Wait for the exact filename to appear in `LoraLoaderModelOnly`.
 
-Model import requires a Comfy Cloud plan that includes custom model imports.
+Model import currently requires a Comfy Cloud Creator or Pro plan.
 The base FLUX.2 Klein 9B stack, RealESRGAN, and BiRefNet are present in the
 Cloud catalog.
 
@@ -57,8 +57,11 @@ and subscription limits still apply.
 ## Current preflight evidence
 
 On 2026-08-01, all three API graphs passed Comfy Cloud MCP `dry_run` preflight.
-The only advisory was the newly published LoRA filename not yet being in the
-bundled catalog; this is resolved per workspace by importing the public model.
+Cloud GPU runs also completed the ESRGAN-only, full-power, text-to-image, and
+final background-compositing paths using a compatible catalog LoRA at zero
+strength. The project LoRA remains unavailable on plans without custom model
+imports and must be imported on Creator or Pro before style quality can be
+validated.
 
 Official references:
 

@@ -48,12 +48,16 @@ The background branch is deliberately downstream of `VAEDecode` for the HOI4
 LoRA sampler. In the API graphs:
 
 - node `63` masks the final styled image;
-- node `65` composites that same image over the chosen background;
+- node `65` composites that same image over the chosen background using node
+  `63`'s foreground mask directly;
 - node `66` selects either the unchanged final image or the composite;
 - no background node is an ancestor of the LoRA-styled `VAEDecode`.
 
 The validator enforces this dependency order. A workflow fails validation if
 background processing is connected before generation.
+
+`RemoveBackground` returns a foreground mask. Do not insert `InvertMask`
+between nodes `63` and `65`, or the foreground/background regions will swap.
 
 ## Editing safely
 

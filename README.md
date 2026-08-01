@@ -49,7 +49,7 @@ pass.
 
 ## Fastest start: Comfy Cloud
 
-1. In Comfy Cloud, open **Models → Import** and import the [public LoRA file](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors) as a LoRA.
+1. On a Comfy Cloud Creator or Pro plan, open **Models → Import** and import the [public LoRA file](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors) as a LoRA.
 2. Download and open one of the workflow JSON files from the table.
 3. For a source workflow, upload a head-and-shoulders photograph and select it in **Load source portrait**.
 4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then turn on the final background switch.
@@ -107,6 +107,8 @@ produced by the earlier vision autoprompter and expanded FLUX.2-ready versions.
 - Link endpoints, slot types, output nodes, visual groups, and node geometry are tested.
 - Node and group overlap checks pass with spacing margins.
 - Comfy Cloud MCP no-spend preflight passes for all three API graphs.
+- Cloud GPU mechanical runs pass for every workflow and the final background
+  branch using a compatible catalog LoRA at zero strength.
 - A full local inference run is not claimed: this checkout does not contain the gated 9B base model, and the available Mac has 16 GB unified memory. Resource-related inability to execute is documented separately from graph correctness.
 
 Run the same checks locally:

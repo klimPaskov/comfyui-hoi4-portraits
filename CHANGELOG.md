@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## 2.0.1 — 2026-08-01
+
+- Fixed optional background compositing to consume the foreground mask from
+  `RemoveBackground` directly. The previous inversion swapped the subject and
+  background regions.
+- Added a regression check that rejects inverted or indirect foreground-mask
+  wiring.
+- Recorded successful Comfy Cloud GPU execution of all three workflow shapes
+  with a zero-strength catalog LoRA used as a mechanical substitute.
+
 ## 2.0.0 — 2026-08-01
 
 - Rebuilt every default workflow around FLUX.2 Klein base 9B and the new

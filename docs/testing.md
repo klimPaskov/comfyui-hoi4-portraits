@@ -63,3 +63,10 @@ malformed link, or type error was reported. No sampler ran.
 
 Mechanical validation is separated from inference validation so resource
 limits cannot hide malformed nodes or connections.
+
+Cloud GPU testing later that day completed the ESRGAN-only and full-power
+graphs with a compatible catalog LoRA at zero strength, validating both
+restoration paths and all three output nodes. A text-to-image run with
+background replacement enabled exposed an inverted foreground mask. The
+inversion was removed, a direct-mask regression check was added, and the fixed
+background branch then completed successfully on Cloud.
