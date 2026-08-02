@@ -11,7 +11,7 @@ project fixtures. The tested archive contained 43 files and had SHA-256
 - ComfyUI 0.25.0;
 - Apple-silicon Mac with 16 GB unified memory and MPS low-VRAM offloading;
 - 416 × 560 evidence output; the public workflow canvas remains 832 × 1120;
-- LoRA strength `0.7`, Euler, six steps, CFG 5;
+- LoRA strength `0.7`, Euler, eight steps, CFG 5;
 - full restoration: adjustable crop → RealESRGAN → FLUX restoration → LoRA;
 - ESRGAN-only: adjustable crop → RealESRGAN → LoRA;
 - the processed image is encoded as the sampler's starting latent to keep the
@@ -34,7 +34,7 @@ final LoRA portrait.
 Validated autoprompter description:
 
 ```text
-hoi4_portrait, middle-aged man with short wavy hair, a moustache, wearing a suit and tie with a visible collar and lapels, looking slightly upward with a subtle smile, head tilted slightly to his right, shoulders squared, shown from the chest up.
+hoi4_portrait, a middle-aged man with a broad oval face, short dark wavy hair swept upward from a side part, a small neat dark moustache, softly rounded cheeks, a straight nose, and a faint asymmetric smile that lifts one corner of his closed mouth, his head turned slightly toward the viewer's left while his eyes look upward toward the viewer's left, his body angled slightly toward the viewer's right, wearing a dark three-piece suit with broad lapels, a light shirt, and a dark tie, shown from the chest up.
 ```
 
 ![Full restoration test 2](assets/test-runs/full-restoration-02.jpg)
@@ -42,7 +42,7 @@ hoi4_portrait, middle-aged man with short wavy hair, a moustache, wearing a suit
 Validated autoprompter description:
 
 ```text
-hoi4_portrait, young woman with short dark hair parted to the side, no glasses, wearing a high-collared garment with a visible round fastening, looking directly at the camera with a neutral expression, head slightly tilted, shown from the chest up in an oval crop.
+hoi4_portrait, a young woman with a softly heart-shaped face, dark hair swept back from a side part, gently arched brows, wide bright eyes looking directly at the viewer, a straight narrow nose, rounded cheeks, and a slight closed-mouth smile with subtly raised corners, her head held nearly level and turned only slightly toward the viewer's right, wearing a broad light collar over a dark garment, shown from the upper chest up.
 ```
 
 ![Full restoration test 3](assets/test-runs/full-restoration-03.jpg)
@@ -50,7 +50,7 @@ hoi4_portrait, young woman with short dark hair parted to the side, no glasses, 
 Validated autoprompter description:
 
 ```text
-hoi4_portrait, young man with dark hair parted on the left, clean-shaven, wearing a collared shirt and tie, looking upward and to his right with a slight smile, head tilted, shown from the shoulders up in three-quarter profile with a visible ear, nose, and chin.
+hoi4_portrait, a young man with a long narrow oval face, dark hair combed smoothly back from a side part, a high forehead, gently arched brows, a straight prominent nose, a defined chin, and a faint closed-mouth smile, his head turned slightly toward the viewer's right while his eyes look upward toward the viewer's right, wearing a dark suit jacket, light pointed collar, and dark tie, shown from the chest up.
 ```
 
 ## Three ESRGAN-only triptychs
@@ -63,7 +63,7 @@ portrait. No FLUX restoration node is evaluated in this path.
 Validated autoprompter description:
 
 ```text
-hoi4_portrait, middle-aged man with short dark hair, no facial hair, wearing a high-collared uniform with decorative cords and a visible medal, looking slightly to his right with a neutral expression, head tilted slightly and mouth closed, shown from the chest up.
+hoi4_portrait, a middle-aged man with a long angular face, a high receding hairline and short dark hair combed back, prominent ears, furrowed brows, narrow deep-set eyes, a straight prominent nose, lean cheeks with visible creases, and a restrained asymmetric half-smile, his head turned slightly toward the viewer's right while his gaze remains nearly forward, wearing a high-collared uniform with shoulder straps, braided cord, chest pockets, belt, and visible decorations, shown from the chest up.
 ```
 
 ![ESRGAN-only test 2](assets/test-runs/esrgan-only-02.jpg)
@@ -71,7 +71,7 @@ hoi4_portrait, middle-aged man with short dark hair, no facial hair, wearing a h
 Validated autoprompter description:
 
 ```text
-hoi4_portrait, a man with short dark hair, round-rimmed glasses, no facial hair, and a long narrow face, dressed in a dark suit with a white collared shirt and dark tie, looking directly at the camera with a neutral expression, his head and shoulders angled slightly to his right, shown from the chest up in three-quarter view.
+hoi4_portrait, a slender middle-aged man with a long narrow face, neatly parted dark hair combed close to the head, round wire-frame glasses, heavy-lidded eyes looking slightly toward the viewer's right, a long straight nose, hollow cheeks, and thin closed lips in a reserved unsmiling expression, his head and upper body turned in a clear three-quarter view toward the viewer's left, wearing a dark suit jacket, high light collar, and dark tie, shown from the chest up.
 ```
 
 ![ESRGAN-only test 3](assets/test-runs/esrgan-only-03.jpg)
@@ -79,7 +79,7 @@ hoi4_portrait, a man with short dark hair, round-rimmed glasses, no facial hair,
 Validated autoprompter description:
 
 ```text
-hoi4_portrait, middle-aged man with a receding hairline, no facial hair, a prominent nose, defined jaw and chin, wearing a high-collared garment with a decorative corded tie and buttoned front, looking directly at the camera with a neutral expression and a slight head tilt, shown from the chest up.
+hoi4_portrait, an older man with a long narrow face, a bald crown and sparse dark hair at the sides, gently arched dark eyebrows, heavy-lidded eyes with visible under-eye creases, a long prominent nose, hollow cheeks with fine cheek lines, thin compressed lips, a firm unsmiling expression, and faint horizontal forehead lines, facing nearly forward with his head held level and his gaze directed slightly toward the viewer's left, wearing a dark high-collared garment with a corded fastening, shown from the chest up.
 ```
 
 ## Three no-input portraits
@@ -91,43 +91,41 @@ lighting, palette, or rendering treatment.
 ![Three no-input portraits](assets/test-runs/random-portraits.jpg)
 
 ```text
-hoi4_portrait, an older man with a broad forehead, short silver hair, a neat grey moustache, deep-set eyes, and a reserved closed-mouth expression, wearing a dark double-breasted jacket and tie, shown from the chest up facing forward.
+hoi4_portrait, an older man with a broad rectangular face, a high forehead, short silver hair brushed back, thick straight brows, deep-set eyes with crow's-feet and under-eye creases, a broad nose, weathered cheeks with visible nasolabial folds, a neat grey moustache, and a reserved closed-mouth expression, facing forward with a level gaze, wearing a dark double-breasted jacket, light collared shirt, and dark tie, shown from the chest up.
 ```
 
 ```text
-hoi4_portrait, a middle-aged woman with dark hair pinned into a low bun, arched brows, a firm closed-mouth expression, and a direct gaze, wearing a high-necked dark jacket with a small round brooch, shown from the chest up at a slight angle.
+hoi4_portrait, a middle-aged woman with an oval face, dark hair parted at the center and pinned into a low bun, arched brows, slightly hooded eyes, a straight nose, fine lines beneath the eyes and at the corners of her closed mouth, and a firm composed expression, her head turned slightly toward the viewer's left while her eyes look directly toward the viewer, wearing a high-necked dark jacket with a small round brooch, shown from the chest up.
 ```
 
 ```text
-hoi4_portrait, a young man with close-cropped dark hair, a narrow face, prominent cheekbones, and a serious direct gaze, wearing a plain buttoned service tunic with no visible insignia, shown from the shoulders up facing slightly right.
+hoi4_portrait, a young man with a narrow angular face, close-cropped dark hair, straight low brows, deep-set eyes, prominent cheekbones, a straight nose, a defined jaw, and a serious closed-mouth expression, his head and body turned slightly toward the viewer's right while his gaze remains forward, wearing a plain buttoned service tunic without visible insignia, shown from the shoulders up.
 ```
 
-## Fixed-seed 6/8/10/20-step control
+## Fixed-seed 6/8/10/12/20/35-step control
 
-The fixed-seed sampler control compares Euler, DPM++ 2M, Heun, and CFG 4 at
-six steps. DPM++ 2M does not improve the result, Heun is slower without a
-visual gain, and CFG 4 is softer than CFG 5. The step-count comparison holds
-Euler and CFG 5 constant.
+The sampler control compared Euler, DPM++ 2M, Heun, and CFG 4. DPM++ 2M did
+not improve the result, Heun was slower without a visual gain, and CFG 4 was
+softer than CFG 5. The step-count comparison holds Euler and CFG 5 constant.
 
 Prompt, source, crop, seed, resolution, LoRA strength, CFG, and Euler sampler
 are held constant. Only `Flux2Scheduler.steps` changes.
 
-![Euler at 6, 8, 10, and 20 steps](assets/test-runs/step-comparison.jpg)
+![Euler at 6, 8, 10, 12, 20, and 35 steps](assets/test-runs/step-comparison.jpg)
 
-The six-step result best preserves the tight selected crop. Eight steps is the
-best refinement compromise: it adds suit structure while keeping the upward
-gaze better than 10 or 20. Ten and 20 make the head smaller and the torso more
-upright; 20 steps also does not remove the softness imposed by the 416-pixel
-evidence canvas. The higher counts are included for direct inspection rather
-than assumed to be better simply because they cost more compute.
+Eight steps is the selected production limit. It improves structure over six
+without the extra runtime and framing drift seen at 10, 12, 20, and 35. The
+higher counts do not recover detail missing from the 416-pixel evidence canvas
+and are retained only as a fixed-seed reference.
 
 ## Autoprompter validation
 
-The local Qwen vision model produces a first draft for each source image. The
-validated descriptions exclude unsupported lighting/color claims and use
-consistent pose wording. The displayed lines are the exact descriptions sent
-to the workflows. They describe the person only; the LoRA supplies the learned
-look and the workflow controls processing and background behavior.
+Each source was inspected at full resolution, then checked a second time for
+expression, separate head/body/gaze direction, facial proportions, and visible
+microtexture. The validated descriptions exclude unsupported lighting/color
+claims and use consistent viewer-relative pose wording. The displayed lines
+are the exact descriptions sent to the workflows. They describe the person
+only; the LoRA and workflow provide the learned treatment and processing.
 
 ## Post-final background test
 

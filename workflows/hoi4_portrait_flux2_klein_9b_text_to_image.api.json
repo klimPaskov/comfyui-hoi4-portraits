@@ -63,7 +63,7 @@
         "2",
         0
       ],
-      "text": "different person, changed facial geometry, altered expression, different hairstyle, different clothing, deformed face, asymmetrical eyes, extra limbs, invented insignia, invented medals, invented hat, invented glasses, invented facial hair, invented accessories"
+      "text": ""
     },
     "_meta": {
       "title": "Negative prompt"
@@ -122,12 +122,12 @@
   "26": {
     "class_type": "Flux2Scheduler",
     "inputs": {
-      "steps": 6,
+      "steps": 8,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 6 steps"
+      "title": "FLUX.2 schedule - 8 steps"
     }
   },
   "27": {
@@ -172,6 +172,18 @@
     },
     "_meta": {
       "title": "Decode final styled portrait"
+    }
+  },
+  "29": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "28",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview generated portrait before background replacement"
     }
   },
   "60": {

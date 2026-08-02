@@ -65,14 +65,16 @@ class WorkflowTests(unittest.TestCase):
 
     def test_selected_lora_and_sampling_defaults(self) -> None:
         self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 0.7)
-        self.assertEqual(build_workflows.DEFAULT_STEPS, 6)
+        self.assertEqual(build_workflows.DEFAULT_STEPS, 8)
         for workflow in (ROOT / "workflows").glob("*.api.json"):
             api = json.loads(workflow.read_text(encoding="utf-8"))
             lora = next(node for node in api.values() if node["class_type"] == "LoraLoaderModelOnly")
             self.assertEqual(lora["inputs"]["strength_model"], 0.7, workflow.name)
             schedules = [node for node in api.values() if node["class_type"] == "Flux2Scheduler"]
             self.assertTrue(schedules, workflow.name)
-            self.assertTrue(all(node["inputs"]["steps"] == 6 for node in schedules), workflow.name)
+            self.assertTrue(all(node["inputs"]["steps"] == 8 for node in schedules), workflow.name)
+            if workflow.name.endswith("full_power.api.json"):
+                self.assertIs(api["32"]["inputs"]["switch"], False)
 
     def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
         for name in ("full_power", "esrgan_only"):

@@ -33,10 +33,10 @@ workflows.
 2. `CLIPLoader`: `qwen_3_8b_fp8mixed.safetensors`, type `flux2`
 3. `VAELoader`: `flux2-vae.safetensors`
 4. `LoraLoaderModelOnly`: this LoRA at strength `0.7`
-5. Six steps, CFG 5, Euler sampler, `Flux2Scheduler`
+5. Eight steps, CFG 5, Euler sampler, `Flux2Scheduler`
 
-Try 8, 10, or 20 scheduler steps with the same seed if a source benefits from more
-refinement. In the positive prompt, describe only the visible person. Do not
+Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps selected eight as the
+practical limit. In the positive prompt, describe only the visible person. Do not
 request a game style, background, lighting, rendering, restoration,
 transformation, or preservation behavior.
 
@@ -48,7 +48,7 @@ when reference conditioning is present.
 ## Example prompt
 
 ```text
-hoi4_portrait, a middle-aged man with short dark hair, round wire-frame glasses, a long narrow face, a neat moustache, and a reserved expression, wearing a dark jacket over a light collared shirt and tie, shown from the shoulders up while looking slightly left.
+hoi4_portrait, a middle-aged man with a broad oval face, short dark wavy hair swept upward from a side part, a small neat dark moustache, softly rounded cheeks, a straight nose, and a faint asymmetric smile that lifts one corner of his closed mouth, his head turned slightly toward the viewer's left while his eyes look upward toward the viewer's left, his body angled slightly toward the viewer's right, wearing a dark three-piece suit with broad lapels, a light shirt, and a dark tie, shown from the chest up.
 ```
 
 The `hoi4_portrait` trigger and LoRA supply the learned look. Prompt text after

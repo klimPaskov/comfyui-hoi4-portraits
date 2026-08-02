@@ -11,12 +11,11 @@ The shared model stack is:
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
 3. `VAELoader` — FLUX.2 VAE.
 4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `0.7`.
-5. `CFGGuider`, Euler, `Flux2Scheduler`, six steps, CFG 5.
+5. `CFGGuider`, Euler, `Flux2Scheduler`, eight steps, CFG 5.
 
-The fixed-seed local control also tests 8, 10, and 20 steps. Six was selected as
-the default because it gave the preferred result and materially shorter runs;
-eight is the recommended first refinement option. Increase the scheduler when
-a particular source benefits from a different refinement/framing balance.
+The fixed-seed local control tests 6, 8, 10, 12, 20, and 35 steps. Eight was
+selected as the default and practical limit: higher counts cost substantially
+more without a useful improvement in the controlled source comparison.
 
 ## Full power
 
@@ -28,14 +27,15 @@ Groups run left to right:
 1. **Source and ESRGAN** loads the portrait, applies the adjustable built-in head-and-shoulders crop, previews it, runs RealESRGAN x2, then fits the result to 832 × 1120.
 2. **FLUX.2 Klein 9B models** loads the base model, encoder, VAE, and LoRA.
 3. **Optional FLUX.2 restoration** encodes the ESRGAN result as both its reference and starting latent for a conservative restoration pass. This keeps framing and pose anchored.
-4. The restoration `ComfySwitchNode` chooses the FLUX result when on and the direct ESRGAN result when off. It is a lazy switch, so the disabled FLUX branch is not evaluated.
+4. The restoration `ComfySwitchNode` is off by default and sends the direct ESRGAN result onward. Turn it on to select the FLUX result. It is a lazy switch, so the disabled FLUX branch is not evaluated.
 5. **HOI4 LoRA styling** encodes the selected processed image as both the reference and starting latent, then samples with the LoRA-patched model. This avoids the pose drift caused by starting image-to-image work from an empty latent.
 6. **Optional background** receives the decoded styled image, creates its foreground mask with BiRefNet, and composites over the selected background.
 7. A second lazy switch keeps the styled image unchanged by default or selects the composite when enabled.
 8. **Preview and save** writes the 832 × 1120 master and a 156 × 210 PNG.
 
-To use ESRGAN only inside the full graph, set **Toggle FLUX restoration** to
-`false`. No links should be deleted or reconnected.
+The full graph opens in ESRGAN-only mode with **Toggle FLUX restoration** set
+to `false`. Turn it on for the additional restoration pass. No links should be
+deleted or reconnected.
 
 ## ESRGAN only
 

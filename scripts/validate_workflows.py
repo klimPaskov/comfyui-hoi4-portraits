@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_STEPS = 8
 
 ALLOWED_CORE_NODES = {
     "CFGGuider",
@@ -231,8 +232,10 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         errors.append(f"{path}: style LoRA strength must default to 0.7")
 
     for node_id, node in api.items():
-        if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != 6:
-            errors.append(f"{path}: FLUX.2 scheduler node {node_id} must default to six steps")
+        if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != DEFAULT_STEPS:
+            errors.append(
+                f"{path}: FLUX.2 scheduler node {node_id} must default to {DEFAULT_STEPS} steps"
+            )
 
     person_prompt_node = "20" if workflow_id.endswith("text_to_image") else "40"
     person_prompt = str(api.get(person_prompt_node, {}).get("inputs", {}).get("text", ""))
@@ -241,6 +244,18 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     present_terms = _non_person_prompt_terms(person_prompt)
     if present_terms:
         errors.append(f"{path}: person prompt contains non-person instructions: {present_terms}")
+
+    preview_expectations = {"70": ["66", 0]}
+    if workflow_id.endswith("text_to_image"):
+        preview_expectations["29"] = ["28", 0]
+    else:
+        preview_expectations.update({"10": ["8", 0], "55": ["51", 0]})
+        if workflow_id.endswith("full_power"):
+            preview_expectations["35"] = ["31", 0]
+    for preview_id, expected_image in preview_expectations.items():
+        preview = api.get(preview_id, {})
+        if preview.get("class_type") != "PreviewImage" or preview.get("inputs", {}).get("images") != expected_image:
+            errors.append(f"{path}: required completed-stage preview node {preview_id} is missing or miswired")
 
     composite = next((node_id for node_id, node in api.items() if node.get("class_type") == "ImageCompositeMasked"), None)
     background_switch = next(
@@ -275,8 +290,10 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
         if extra.get("restoration_order") != expected:
             errors.append(f"{path}: full-power restoration order is wrong")
+        if extra.get("flux_restoration_default") is not False:
+            errors.append(f"{path}: FLUX restoration must be disabled by default")
         switch = api.get("32", {}).get("inputs", {})
-        if switch.get("switch") is not True or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["31", 0]:
+        if switch.get("switch") is not False or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["31", 0]:
             errors.append(f"{path}: FLUX restoration toggle is not an ESRGAN-only bypass")
         if api.get("22", {}).get("inputs", {}).get("pixels") != ["8", 0]:
             errors.append(f"{path}: FLUX restoration does not consume ESRGAN output")

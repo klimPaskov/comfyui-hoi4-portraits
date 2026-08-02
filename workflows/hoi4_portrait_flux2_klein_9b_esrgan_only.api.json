@@ -11,10 +11,10 @@
   "9": {
     "class_type": "PrimitiveBoundingBox",
     "inputs": {
-      "x": 0,
-      "y": 0,
-      "width": 532,
-      "height": 716
+      "x": 1550,
+      "y": 500,
+      "width": 1100,
+      "height": 1481
     },
     "_meta": {
       "title": "Adjust the head-and-shoulders crop rectangle"
@@ -140,7 +140,7 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, a middle-aged man with fair skin, dark wavy hair parted at the center, a neat moustache, round wire-frame glasses, a reserved closed-mouth expression and direct gaze, wearing a buttoned high-collared uniform with two chest pockets, shoulder straps, collar stars, and a small wing-shaped sleeve insignia, shown from the chest up at a slight angle."
+      "text": "hoi4_portrait, a middle-aged man with a broad oval face, short dark wavy hair swept upward from a side part, a small neat dark moustache, softly rounded cheeks, a straight nose, and a faint asymmetric smile that lifts one corner of his closed mouth, his head turned slightly toward the viewer's left while his eyes look upward toward the viewer's left, his body angled slightly toward the viewer's right, wearing a dark three-piece suit with broad lapels, a light shirt, and a dark tie, shown from the chest up."
     },
     "_meta": {
       "title": "Person-only LoRA instructions"
@@ -153,7 +153,7 @@
         "2",
         0
       ],
-      "text": "different person, changed facial geometry, altered expression, different hairstyle, different clothing, deformed face, asymmetrical eyes, extra limbs, invented insignia, invented medals, invented hat, invented glasses, invented facial hair, invented accessories"
+      "text": ""
     },
     "_meta": {
       "title": "Person-only LoRA negative"
@@ -249,12 +249,12 @@
   "49": {
     "class_type": "Flux2Scheduler",
     "inputs": {
-      "steps": 6,
+      "steps": 8,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 6 steps"
+      "title": "FLUX.2 schedule - 8 steps"
     }
   },
   "50": {
@@ -299,6 +299,18 @@
     },
     "_meta": {
       "title": "Decode person-only lora result"
+    }
+  },
+  "55": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "51",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview person-only lora result"
     }
   },
   "60": {

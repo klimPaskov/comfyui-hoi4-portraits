@@ -1,6 +1,6 @@
 {
   "last_node_id": 73,
-  "last_link_id": 37,
+  "last_link_id": 38,
   "nodes": [
     {
       "id": 5,
@@ -121,10 +121,10 @@
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
-        0,
-        0,
-        532,
-        716
+        1550,
+        500,
+        1100,
+        1481
       ]
     },
     {
@@ -693,7 +693,7 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        "hoi4_portrait, a middle-aged man with fair skin, dark wavy hair parted at the center, a neat moustache, round wire-frame glasses, a reserved closed-mouth expression and direct gaze, wearing a buttoned high-collared uniform with two chest pockets, shoulder straps, collar stars, and a small wing-shaped sleeve insignia, shown from the chest up at a slight angle."
+        "hoi4_portrait, a middle-aged man with a broad oval face, short dark wavy hair swept upward from a side part, a small neat dark moustache, softly rounded cheeks, a straight nose, and a faint asymmetric smile that lifts one corner of his closed mouth, his head turned slightly toward the viewer's left while his eyes look upward toward the viewer's left, his body angled slightly toward the viewer's right, wearing a dark three-piece suit with broad lapels, a light shirt, and a dark tie, shown from the chest up."
       ]
     },
     {
@@ -744,7 +744,7 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        "different person, changed facial geometry, altered expression, different hairstyle, different clothing, deformed face, asymmetrical eyes, extra limbs, invented insignia, invented medals, invented hat, invented glasses, invented facial hair, invented accessories"
+        ""
       ]
     },
     {
@@ -1044,7 +1044,7 @@
     {
       "id": 49,
       "type": "Flux2Scheduler",
-      "title": "FLUX.2 schedule - 6 steps",
+      "title": "FLUX.2 schedule - 8 steps",
       "pos": [
         2440,
         660
@@ -1100,7 +1100,7 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        6,
+        8,
         832,
         1120
       ]
@@ -1205,14 +1205,54 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            28,
-            30,
-            32
+            26,
+            29,
+            31,
+            33
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEDecode",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 55,
+      "type": "PreviewImage",
+      "title": "Preview person-only lora result",
+      "pos": [
+        2820,
+        650
+      ],
+      "size": [
+        300,
+        220
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
@@ -1234,7 +1274,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 22,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
@@ -1251,7 +1291,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            26
+            27
           ]
         },
         {
@@ -1286,13 +1326,13 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 23,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 26
+          "link": 27
         },
         {
           "name": "upscale_method",
@@ -1332,7 +1372,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            29
+            30
           ]
         }
       ],
@@ -1364,7 +1404,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 24,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -1381,7 +1421,7 @@
           "name": "BACKGROUND_REMOVAL",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            27
+            28
           ]
         }
       ],
@@ -1417,18 +1457,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 25,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 27
+          "link": 28
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 28
+          "link": 29
         }
       ],
       "outputs": [
@@ -1436,7 +1476,7 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            31
+            32
           ]
         }
       ],
@@ -1463,18 +1503,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 26,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 29
+          "link": 30
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 30
+          "link": 31
         },
         {
           "name": "x",
@@ -1503,7 +1543,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 31
+          "link": 32
         }
       ],
       "outputs": [
@@ -1511,7 +1551,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            33
+            34
           ]
         }
       ],
@@ -1542,7 +1582,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 27,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -1556,12 +1596,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 32
+          "link": 33
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 33
+          "link": 34
         }
       ],
       "outputs": [
@@ -1569,9 +1609,9 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            34,
             35,
-            36
+            36,
+            37
           ]
         }
       ],
@@ -1600,13 +1640,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 28,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 34
+          "link": 35
         }
       ],
       "outputs": [
@@ -1639,13 +1679,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 29,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 35
+          "link": 36
         },
         {
           "name": "filename_prefix",
@@ -1688,13 +1728,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 30,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 36
+          "link": 37
         },
         {
           "name": "upscale_method",
@@ -1734,7 +1774,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            37
+            38
           ]
         }
       ],
@@ -1766,13 +1806,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 31,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 37
+          "link": 38
         },
         {
           "name": "filename_prefix",
@@ -2004,6 +2044,14 @@
     ],
     [
       26,
+      51,
+      0,
+      55,
+      0,
+      "IMAGE"
+    ],
+    [
+      27,
       60,
       0,
       61,
@@ -2011,7 +2059,7 @@
       "IMAGE"
     ],
     [
-      27,
+      28,
       62,
       0,
       63,
@@ -2019,7 +2067,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      28,
+      29,
       51,
       0,
       63,
@@ -2027,7 +2075,7 @@
       "IMAGE"
     ],
     [
-      29,
+      30,
       61,
       0,
       65,
@@ -2035,7 +2083,7 @@
       "IMAGE"
     ],
     [
-      30,
+      31,
       51,
       0,
       65,
@@ -2043,7 +2091,7 @@
       "IMAGE"
     ],
     [
-      31,
+      32,
       63,
       0,
       65,
@@ -2051,7 +2099,7 @@
       "MASK"
     ],
     [
-      32,
+      33,
       51,
       0,
       66,
@@ -2059,7 +2107,7 @@
       "IMAGE"
     ],
     [
-      33,
+      34,
       65,
       0,
       66,
@@ -2067,7 +2115,7 @@
       "IMAGE"
     ],
     [
-      34,
+      35,
       66,
       0,
       70,
@@ -2075,7 +2123,7 @@
       "IMAGE"
     ],
     [
-      35,
+      36,
       66,
       0,
       71,
@@ -2083,7 +2131,7 @@
       "IMAGE"
     ],
     [
-      36,
+      37,
       66,
       0,
       72,
@@ -2091,7 +2139,7 @@
       "IMAGE"
     ],
     [
-      37,
+      38,
       72,
       0,
       73,

@@ -22,7 +22,7 @@ TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
 STYLE_LORA_STRENGTH = 0.7
-DEFAULT_STEPS = 6
+DEFAULT_STEPS = 8
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 
@@ -40,20 +40,14 @@ RESTORATION_PROMPT = (
     "Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. "
     "Keep period-authentic texture. Colorize monochrome or sepia material only when the colors can remain plausible. Do not stylize."
 )
-RESTORATION_NEGATIVE = (
-    "changed identity, changed face, altered expression, different hairstyle, different clothing, modern accessories, beauty retouching, "
-    "plastic skin, painterly style, fantasy details, text, watermark"
-)
+RESTORATION_NEGATIVE = ""
 STYLE_PROMPT = (
-    "hoi4_portrait, a middle-aged man with fair skin, dark wavy hair parted at the center, a neat moustache, round wire-frame glasses, "
-    "a reserved closed-mouth expression and direct gaze, wearing a buttoned high-collared uniform with two chest pockets, shoulder "
-    "straps, collar stars, and a small wing-shaped sleeve insignia, shown from the chest up at a slight angle."
+    "hoi4_portrait, a middle-aged man with a broad oval face, short dark wavy hair swept upward from a side part, a small neat dark "
+    "moustache, softly rounded cheeks, a straight nose, and a faint asymmetric smile that lifts one corner of his closed mouth, his "
+    "head turned slightly toward the viewer's left while his eyes look upward toward the viewer's left, his body angled slightly toward "
+    "the viewer's right, wearing a dark three-piece suit with broad lapels, a light shirt, and a dark tie, shown from the chest up."
 )
-STYLE_NEGATIVE = (
-    "different person, changed facial geometry, altered expression, different hairstyle, different clothing, deformed face, "
-    "asymmetrical eyes, extra limbs, invented insignia, invented medals, invented hat, invented glasses, invented facial hair, "
-    "invented accessories"
-)
+STYLE_NEGATIVE = ""
 TEXT_PROMPT = (
     "hoi4_portrait, a stern middle-aged man with light skin, neatly combed dark hair, straight brows, a closed mouth, and a direct gaze, "
     "wearing a plain dark high-collared service jacket, shown from the chest up while facing slightly left."
@@ -215,11 +209,11 @@ def _source_nodes() -> list[Node]:
             group,
             (520, 120),
             size=(360, 170),
-            inputs={"x": 0, "y": 0, "width": 532, "height": 716},
+            inputs={"x": 1550, "y": 500, "width": 1100, "height": 1481},
             input_types={"x": "INT", "y": "INT", "width": "INT", "height": "INT"},
             outputs=["BOUNDING_BOX"],
             output_types=["BOUNDING_BOX"],
-            widgets=[0, 0, 532, 716],
+            widgets=[1550, 500, 1100, 1481],
         ),
         _node(
             11,
@@ -435,6 +429,18 @@ def _edit_stage(
             outputs=["IMAGE"],
             output_types=["IMAGE"],
         ),
+        _node(
+            i + 15,
+            "PreviewImage",
+            f"Preview {title_prefix.lower()} result",
+            group,
+            (x + 1280, 650),
+            size=(300, 220),
+            inputs={"images": Link(i + 11)},
+            input_types={"images": "IMAGE"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+        ),
     ]
     return nodes, Link(i + 11)
 
@@ -547,6 +553,18 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             (x + 1280, 500),
             inputs={"samples": Link(27), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+        ),
+        _node(
+            29,
+            "PreviewImage",
+            "Preview generated portrait before background replacement",
+            group,
+            (x + 1280, 650),
+            size=(300, 220),
+            inputs={"images": Link(28)},
+            input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
         ),
@@ -722,13 +740,13 @@ def build_full_power() -> Graph:
             "ComfySwitchNode",
             "Toggle FLUX restoration (on: ESRGAN then FLUX; off: ESRGAN only)",
             "03 Optional FLUX.2 restoration",
-            (2820, 680),
+            (2040, 680),
             size=(330, 150),
-            inputs={"switch": True, "on_false": Link(8), "on_true": restored},
+            inputs={"switch": False, "on_false": Link(8), "on_true": restored},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
             outputs=["output"],
             output_types=["IMAGE"],
-            widgets=[True],
+            widgets=[False],
         )
     )
     style_nodes, styled = _edit_stage(
@@ -752,7 +770,7 @@ def build_full_power() -> Graph:
         groups=_groups(has_source=True, has_restoration=True),
         metadata={
             "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
-            "flux_restoration_default": True,
+            "flux_restoration_default": False,
             "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
             "background_order": "after_final_lora_styled_decode",

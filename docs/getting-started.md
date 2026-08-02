@@ -48,7 +48,7 @@ The filenames, pinned sources, sizes, and SHA-256 hashes are recorded in
 4. Edit the positive prompt. Keep the `hoi4_portrait,` trigger and describe
    only the visible person.
 5. Leave background replacement off for the first run.
-6. Queue once. If the full workflow is too heavy, turn the restoration switch off or use the ESRGAN-only graph.
+6. Queue once. The full workflow's restoration switch is off by default; turn it on only when the source needs the additional pass. Use the ESRGAN-only graph when you never need that branch.
 7. Inspect the 832 × 1120 master before using the 156 × 210 game-size file.
 
 Outputs are saved under `ComfyUI/output/hoi4_portraits/`.

@@ -10,9 +10,9 @@
       "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration second, HOI4 LoRA styling, then optional background replacement.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_full_power.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_full_power.api.json",
-      "sha256": "e1f61ed16f53310b0f034ecd60faa9ec83c7c79fe450352dcfa5743d5aded4fd",
-      "api_sha256": "5d4e6a757950c2b240eeffb4b955feeb6b46cccbb9b98657e6d75274440ac3a3",
-      "node_count": 44,
+      "sha256": "86fbe98b36c67f2ff5c5ccb205668786ca399dc36df5864b9e7cbacf87135baf",
+      "api_sha256": "b5c4f8a3091c3134dc5d420a37b65c68eb930aa1848825225b047eb2a3ae8406",
+      "node_count": 46,
       "core_nodes_only": true
     },
     {
@@ -20,9 +20,9 @@
       "description": "Source portrait workflow: RealESRGAN preparation, FLUX.2 Klein 9B HOI4 LoRA styling, then optional background replacement.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_esrgan_only.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_esrgan_only.api.json",
-      "sha256": "487a5d74e92812eeb97585a462f9246cbfc2a3cb055af88e40291ffd8f3102dd",
-      "api_sha256": "e0f3006e82142d518c2362700e48a88fb2c6cb1531303c23a7f083bb2e86dd63",
-      "node_count": 32,
+      "sha256": "1cae8e2671e7cbdc998f7db64b3918b391a0ee5ebcb343fca9ffb082f4d773f1",
+      "api_sha256": "aa451636007f8e04ab7b0a5da120adddcc07974607138c18f61343294d5b882b",
+      "node_count": 33,
       "core_nodes_only": true
     },
     {
@@ -30,9 +30,9 @@
       "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.api.json",
-      "sha256": "be6b4d8e3d5ba70da661b7668545dca49f1a6442717df76d062beadd9208e0b1",
-      "api_sha256": "a58809e144b5fbf060a0dc18bef307ef0e4deabf9b88c283b753f5dd1af392f3",
-      "node_count": 23,
+      "sha256": "d35bc98ce2953d9d7f5978ab5c6654604eae225c5e970016283065bb0386c543",
+      "api_sha256": "d1287d68b6b8ec12bcb7f8c84574839627c8b9714cf659b9b31448b383eb2003",
+      "node_count": 24,
       "core_nodes_only": true
     }
   ]
