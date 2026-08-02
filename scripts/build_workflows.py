@@ -21,6 +21,7 @@ BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
+STYLE_LORA_STRENGTH = 0.8
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 
@@ -43,19 +44,18 @@ RESTORATION_NEGATIVE = (
     "plastic skin, painterly style, fantasy details, text, watermark"
 )
 STYLE_PROMPT = (
-    "hoi4_portrait, transform the supplied person into a polished Hearts of Iron IV leader portrait. Preserve exact identity, facial "
-    "geometry, expression, hairstyle, visible clothing, pose, camera angle, and crop. Use a hand-painted 1930s-1940s grand-strategy "
-    "portrait finish, restrained brushwork, realistic skin, crisp eyes, soft directional studio light, muted historical colors, and a "
-    "formal head-and-shoulders composition. Do not invent medals, insignia, hats, glasses, facial hair, or accessories."
+    "hoi4_portrait, a middle-aged man with fair skin, dark wavy hair parted at the center, a neat moustache, round wire-frame glasses, "
+    "a reserved closed-mouth expression and direct gaze, wearing a buttoned high-collared uniform with two chest pockets, shoulder "
+    "straps, collar stars, and a small wing-shaped sleeve insignia, shown from the chest up at a slight angle."
 )
 STYLE_NEGATIVE = (
-    "changed identity, face swap, different person, deformed face, asymmetrical eyes, extra limbs, invented insignia, invented medals, "
-    "modern clothing, anime, cartoon, 3d render, glossy plastic skin, text, watermark"
+    "different person, changed facial geometry, altered expression, different hairstyle, different clothing, deformed face, "
+    "asymmetrical eyes, extra limbs, invented insignia, invented medals, invented hat, invented glasses, invented facial hair, "
+    "invented accessories"
 )
 TEXT_PROMPT = (
-    "hoi4_portrait, a stern middle-aged 1940s army officer in a plain dark service uniform, direct gaze, closed mouth, neatly combed hair, "
-    "formal head-and-shoulders composition, hand-painted grand-strategy portrait, restrained brushwork, realistic skin, crisp eyes, soft "
-    "directional studio light, muted olive and brown historical palette, no visible text."
+    "hoi4_portrait, a stern middle-aged man with light skin, neatly combed dark hair, straight brows, a closed mouth, and a direct gaze, "
+    "wearing a plain dark high-collared service jacket, shown from the chest up while facing slightly left."
 )
 
 
@@ -181,11 +181,11 @@ def _model_nodes() -> list[Node]:
             "Apply the HOI4 FLUX.2 Klein 9B LoRA",
             group,
             (1120, 620),
-            inputs={"model": Link(1), "lora_name": STYLE_LORA, "strength_model": 1.0},
+            inputs={"model": Link(1), "lora_name": STYLE_LORA, "strength_model": STYLE_LORA_STRENGTH},
             input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
             outputs=["MODEL"],
             output_types=["MODEL"],
-            widgets=[STYLE_LORA, 1.0],
+            widgets=[STYLE_LORA, STYLE_LORA_STRENGTH],
             models=_model(STYLE_LORA, "loras"),
         ),
     ]
@@ -418,7 +418,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
         _node(
             20,
             "CLIPTextEncode",
-            "Write the leader portrait prompt",
+            "Describe only the person",
             group,
             (x, 120),
             size=(450, 300),
@@ -714,7 +714,7 @@ def build_full_power() -> Graph:
         prompt=STYLE_PROMPT,
         negative=STYLE_NEGATIVE,
         seed=42,
-        title_prefix="HOI4 LoRA styling",
+        title_prefix="Person-only LoRA",
     )
     nodes.extend(style_nodes)
     nodes.extend(_background_and_outputs(final_image=styled, x=5200))
@@ -743,7 +743,7 @@ def build_esrgan_only() -> Graph:
         prompt=STYLE_PROMPT,
         negative=STYLE_NEGATIVE,
         seed=42,
-        title_prefix="HOI4 LoRA styling",
+        title_prefix="Person-only LoRA",
     )
     nodes.extend(style_nodes)
     nodes.extend(_background_and_outputs(final_image=styled, x=3420))
@@ -863,7 +863,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             "description": graph.description,
             "workflow_kind": graph.kind,
             "project": "comfyui-hoi4-portraits",
-            "graph_version": "2.0.0",
+            "graph_version": "2.1.0",
             "base_model": BASE_MODEL,
             "style_lora": STYLE_LORA,
             "core_nodes_only": True,
@@ -902,7 +902,7 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
             }
         )
     manifest = {
-        "schema_version": "2.0.0",
+        "schema_version": "2.1.0",
         "base_model": BASE_MODEL,
         "text_encoder": TEXT_ENCODER,
         "vae": VAE_MODEL,

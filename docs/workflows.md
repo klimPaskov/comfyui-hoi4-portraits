@@ -10,8 +10,13 @@ The shared model stack is:
 1. `UNETLoader` — FLUX.2 Klein base 9B FP8.
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
 3. `VAELoader` — FLUX.2 VAE.
-4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `1.0`.
+4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `0.8`.
 5. `CFGGuider`, Euler, `Flux2Scheduler`, 20 steps, CFG 5.
+
+These sampling defaults match ComfyUI's native FLUX.2 Klein 9B Base template.
+The local settings pilot found no visual advantage from DPM++ 2M or Heun at
+six steps; Heun was slower. Strength `0.7` is the recommended lighter option
+when source identity matters more than maximum LoRA influence.
 
 ## Full power
 
@@ -41,6 +46,14 @@ This graph has no source, VAE reference encode, RealESRGAN, or restoration
 pass. The positive prompt must begin with `hoi4_portrait`. It produces the
 same master and game-size outputs and uses the same final-only background
 branch.
+
+## Positive prompt invariant
+
+After the `hoi4_portrait,` trigger, positive prompts describe only the person.
+They may describe face, hair, expression, clothing, pose, gaze, and crop. They
+must not request a game/style, background, lighting, palette, rendering,
+restoration, transformation, or preservation behavior. The validator rejects
+common violations in every generated API graph.
 
 ## Background replacement invariant
 

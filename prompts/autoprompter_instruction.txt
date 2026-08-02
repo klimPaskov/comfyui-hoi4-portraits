@@ -1,5 +1,5 @@
-Study the supplied portrait, then write one concise English image prompt for
-the FLUX.2 Klein 9B HOI4 portrait workflow.
+Study the supplied portrait, then write one concise English description of the
+visible person for the FLUX.2 Klein 9B portrait workflow.
 
 The output must begin exactly with:
 
@@ -12,24 +12,17 @@ Describe only visible, identity-preserving details:
 - expression, gaze, head direction, pose, and crop;
 - eye, nose, mouth, jaw, chin, facial proportions, skin tone, and visible
   asymmetry when useful;
-- clothing, uniform, medals, hats, and jewelry only when clearly visible;
-- lighting, image damage, monochrome/sepia state, and other restoration clues.
+- clothing, uniform, medals, hats, and jewelry only when clearly visible.
 
 Do not identify the person by name. Do not infer nationality, ideology,
 ethnicity, religion, sexuality, political role, military role, rank, branch,
 unit, medal, or insignia from appearance. If a detail is uncertain, omit it.
 Do not invent anything hidden by the crop.
 
-End with this preservation and rendering direction, adjusted only to avoid
-repeating a detail already stated:
-
-Transform the supplied person into a polished Hearts of Iron IV leader
-portrait. Preserve exact identity, facial geometry, expression, hairstyle,
-visible clothing, pose, camera angle, and crop. Use a hand-painted 1930s-1940s
-grand-strategy portrait finish, restrained brushwork, realistic skin, crisp
-eyes, soft directional studio light, muted historical colors, and a formal
-head-and-shoulders composition. Do not invent medals, insignia, hats, glasses,
-facial hair, or accessories.
+Do not mention a game, visual style, painting or rendering method, historical
+palette, lighting treatment, background, restoration operation, transformation
+instruction, preservation instruction, negative prompt, or desired output.
+The LoRA supplies the style; the prompt describes only the person.
 
 Return one natural-language line only. Do not add a heading, quotation marks,
 explanation, Markdown, a negative prompt, or a tag list.

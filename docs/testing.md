@@ -25,10 +25,13 @@ The validator checks:
 - every node contained inside its declared group;
 - no overlapping groups;
 - no overlapping/too-close nodes within a group;
+- one group per node and no node extending beyond its group;
 - RealESRGAN → optional FLUX restoration order;
 - restoration switch bypass to direct ESRGAN output;
 - LoRA-patched model ancestry for the final styled decode;
 - final-only background replacement dependency order.
+- LoRA strength `0.8` in all default graphs;
+- person-only positive prompts after the required `hoi4_portrait,` trigger.
 
 ## Unit tests
 
@@ -47,21 +50,35 @@ passed without creating a job or spending credits. The new LoRA filename is a
 non-blocking advisory until it is imported into the user's Cloud model
 library.
 
-## Local execution boundary
+## Local inference evidence
 
-The local checkout has RealESRGAN and the LoRA but not the gated FLUX.2 Klein
-9B base model, Qwen 3 8B encoder, FLUX.2 VAE, or ComfyUI BiRefNet package. The
-test Mac also has 16 GB unified memory. A full local image run would therefore
-stop at model availability/resources; that is not reported as a graph failure.
+On 2026-08-01, all six pinned model files were downloaded and checksum-
+verified. ComfyUI 0.25.0 then ran on a 16 GB Apple-silicon Mac with MPS,
+low-VRAM offloading, split cross-attention, no previews, and
+`--disable-all-custom-nodes`.
 
-On 2026-08-01, ComfyUI 0.25.0 was started locally in CPU and
-`--disable-all-custom-nodes` mode. Its live `/object_info` endpoint contained
-all 25 node classes used by the workflows. All three API graphs were then sent
-to the native `/prompt` validator. Each reached model selection and stopped
-only for the four absent files listed above; no unknown class, bad input,
-malformed link, or type error was reported. No sampler ran.
+The public graphs remain 832 × 1120, Euler, 20 steps, CFG 5. To complete a
+broad local functional suite within the machine's resource limit, test copies
+were overridden to 416 × 560. FLUX restoration used two steps; final LoRA
+generation used six steps, CFG 5, Euler, and LoRA strength `0.8`.
 
-Mechanical validation is separated from inference validation so resource
+Successful runs:
+
+- five source portraits through RealESRGAN → FLUX restoration → final LoRA;
+- five different source portraits through RealESRGAN → final LoRA;
+- five no-input text-to-image portraits;
+- one final-image-only BiRefNet background replacement run;
+- seven controlled setting variants using a fixed prompt and seed.
+
+The background test replaced the final decode with a completed saved image,
+then evaluated only BiRefNet, compositing, and the final switch. It completed
+in 7.73 seconds and proves that background work is downstream of generation.
+
+The reduced previews are evidence of executable nodes and connections, not a
+claim that six steps match public 20-step quality. See [the rendered results
+and setting analysis](test-results.md).
+
+Mechanical validation remains separate from inference validation so resource
 limits cannot hide malformed nodes or connections.
 
 Cloud GPU testing later that day completed the ESRGAN-only and full-power

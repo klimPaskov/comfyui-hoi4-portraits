@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0.0",
+  "schema_version": "2.1.0",
   "base_model": "flux-2-klein-base-9b-fp8.safetensors",
   "text_encoder": "qwen_3_8b_fp8mixed.safetensors",
   "vae": "flux2-vae.safetensors",
@@ -10,8 +10,8 @@
       "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration second, HOI4 LoRA styling, then optional background replacement.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_full_power.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_full_power.api.json",
-      "sha256": "9499c424af58586da1c3f921e75e78339508232b738552af5a06166b642b71e1",
-      "api_sha256": "cca23163ac964b009a388d0cd2b8b17a891d3b988703c4109b42136d79c0ae9c",
+      "sha256": "56cbbde29157b73cd1f50ab82334536e926c30bc5fc494a4092c774c0deb41a2",
+      "api_sha256": "b9dc7bd7a874e7409c96ab2969ebef7cee62b83e90068237854ef3fd41c84b5e",
       "node_count": 43,
       "core_nodes_only": true
     },
@@ -20,8 +20,8 @@
       "description": "Source portrait workflow: RealESRGAN preparation, FLUX.2 Klein 9B HOI4 LoRA styling, then optional background replacement.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_esrgan_only.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_esrgan_only.api.json",
-      "sha256": "1cf4200a24e340c16f2712bd084ddbf8e9cd44583c34c03abef10a464704a768",
-      "api_sha256": "bd3c5e8c981d3ea639557daa32285386d423c57c01afbb4665bfc25c0a40101c",
+      "sha256": "a0b67c89f6751f12ce37ca6872760cc58cc656ffff9b19f63e555983f0dac8e1",
+      "api_sha256": "b3e9005785e7a62b7e782a88fddc3f05cd6e903887515a1e24285b7f81861d6f",
       "node_count": 30,
       "core_nodes_only": true
     },
@@ -30,8 +30,8 @@
       "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.api.json",
-      "sha256": "1aee77d28bce308803363f6e8ccf8c2c59893def6208da34bba0ce42f7d98ae1",
-      "api_sha256": "c0b249e65d8386714b75ed2fb9d2471ac4d5320f3cf4ed3345bf0b3e3fc14da4",
+      "sha256": "87f0e3b2750266aa6ac7a92989f6a9856ef6dfffde5329e7a871f6bb5e2b63e7",
+      "api_sha256": "9f60f2ee9c9d34823b4d144c52f4d7f0252410ec68df5d97bc2ed0c1cd5671d9",
       "node_count": 23,
       "core_nodes_only": true
     }

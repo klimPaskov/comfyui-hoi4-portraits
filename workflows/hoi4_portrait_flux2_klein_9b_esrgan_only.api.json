@@ -87,7 +87,7 @@
         0
       ],
       "lora_name": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-      "strength_model": 1.0
+      "strength_model": 0.8
     },
     "_meta": {
       "title": "Apply the HOI4 FLUX.2 Klein 9B LoRA"
@@ -100,10 +100,10 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, transform the supplied person into a polished Hearts of Iron IV leader portrait. Preserve exact identity, facial geometry, expression, hairstyle, visible clothing, pose, camera angle, and crop. Use a hand-painted 1930s-1940s grand-strategy portrait finish, restrained brushwork, realistic skin, crisp eyes, soft directional studio light, muted historical colors, and a formal head-and-shoulders composition. Do not invent medals, insignia, hats, glasses, facial hair, or accessories."
+      "text": "hoi4_portrait, a middle-aged man with fair skin, dark wavy hair parted at the center, a neat moustache, round wire-frame glasses, a reserved closed-mouth expression and direct gaze, wearing a buttoned high-collared uniform with two chest pockets, shoulder straps, collar stars, and a small wing-shaped sleeve insignia, shown from the chest up at a slight angle."
     },
     "_meta": {
-      "title": "HOI4 LoRA styling instructions"
+      "title": "Person-only LoRA instructions"
     }
   },
   "41": {
@@ -113,10 +113,10 @@
         "2",
         0
       ],
-      "text": "changed identity, face swap, different person, deformed face, asymmetrical eyes, extra limbs, invented insignia, invented medals, modern clothing, anime, cartoon, 3d render, glossy plastic skin, text, watermark"
+      "text": "different person, changed facial geometry, altered expression, different hairstyle, different clothing, deformed face, asymmetrical eyes, extra limbs, invented insignia, invented medals, invented hat, invented glasses, invented facial hair, invented accessories"
     },
     "_meta": {
-      "title": "HOI4 LoRA styling negative"
+      "title": "Person-only LoRA negative"
     }
   },
   "42": {
@@ -132,7 +132,7 @@
       ]
     },
     "_meta": {
-      "title": "Encode hoi4 lora styling reference"
+      "title": "Encode person-only lora reference"
     }
   },
   "43": {
@@ -196,7 +196,7 @@
       "cfg": 5.0
     },
     "_meta": {
-      "title": "Guide hoi4 lora styling pass"
+      "title": "Guide person-only lora pass"
     }
   },
   "47": {
@@ -205,7 +205,7 @@
       "noise_seed": 42
     },
     "_meta": {
-      "title": "HOI4 LoRA styling seed"
+      "title": "Person-only LoRA seed"
     }
   },
   "48": {
@@ -253,7 +253,7 @@
       ]
     },
     "_meta": {
-      "title": "Run hoi4 lora styling pass"
+      "title": "Run person-only lora pass"
     }
   },
   "51": {
@@ -269,7 +269,7 @@
       ]
     },
     "_meta": {
-      "title": "Decode hoi4 lora styling result"
+      "title": "Decode person-only lora result"
     }
   },
   "60": {

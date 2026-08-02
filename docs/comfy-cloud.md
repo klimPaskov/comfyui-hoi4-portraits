@@ -1,6 +1,6 @@
 # Comfy Cloud and MCP
 
-The v2 workflows were designed against Comfy Cloud's live model and node
+The current workflows were designed against Comfy Cloud's live model and node
 catalog. They use no repository-specific custom nodes.
 
 ## Import the custom LoRA
@@ -30,6 +30,10 @@ For source workflows, upload:
 
 Background replacement is off by default, so a missing background asset does
 not need to execute on the default lazy branch.
+
+Keep the LoRA loader at strength `0.8` for the documented default. Every
+positive prompt must begin with `hoi4_portrait,` and then describe only the
+person; do not add game/style, background, lighting, or rendering language.
 
 ## MCP validation
 

@@ -25,25 +25,29 @@ workflows.
 - Base: `black-forest-labs/FLUX.2-klein-base-9B-fp8`
 - Training step: 2,500 (epoch 5)
 - ComfyUI loader: `LoraLoaderModelOnly`
-- Suggested starting strength: `1.0`
+- Suggested starting strength: `0.8`
 
 ## Recommended ComfyUI stack
 
 1. `UNETLoader`: `flux-2-klein-base-9b-fp8.safetensors`
 2. `CLIPLoader`: `qwen_3_8b_fp8mixed.safetensors`, type `flux2`
 3. `VAELoader`: `flux2-vae.safetensors`
-4. `LoraLoaderModelOnly`: this LoRA at strength `1.0`
+4. `LoraLoaderModelOnly`: this LoRA at strength `0.8`
 5. 20 steps, CFG 5, Euler sampler, `Flux2Scheduler`
 
-For source portraits, use FLUX.2 reference-latent conditioning and explicitly
-ask the model to preserve identity, facial geometry, expression, hairstyle,
-clothing, pose, camera angle, and crop.
+Use `0.7` when a source portrait needs a lighter LoRA influence. In the
+positive prompt, describe only the visible person. Do not request a game
+style, background, lighting, rendering, restoration, transformation, or
+preservation behavior.
 
 ## Example prompt
 
 ```text
-hoi4_portrait, transform the supplied person into a polished Hearts of Iron IV leader portrait. Preserve exact identity, facial geometry, expression, hairstyle, visible clothing, pose, camera angle, and crop. Use a hand-painted 1930s-1940s grand-strategy portrait finish, restrained brushwork, realistic skin, crisp eyes, soft directional studio light, muted historical colors, and a formal head-and-shoulders composition.
+hoi4_portrait, a middle-aged man with short dark hair, round wire-frame glasses, a long narrow face, a neat moustache, and a reserved expression, wearing a dark jacket over a light collared shirt and tie, shown from the shoulders up while looking slightly left.
 ```
+
+The `hoi4_portrait` trigger and LoRA supply the learned look. Prompt text after
+the trigger should describe the person, not the desired treatment.
 
 ## License and model terms
 

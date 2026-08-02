@@ -90,16 +90,30 @@ Windows users can run:
 
 ## Prompting
 
-Keep `hoi4_portrait` at the start of the positive prompt. Describe visible,
-period-appropriate traits in natural language. For image-to-image use, state
-what must not change:
+Keep `hoi4_portrait` at the start of the positive prompt, then describe only
+the visible person: face, hair, expression, clothing, pose, gaze, and crop.
+Do not describe the game, desired style, background, lighting, rendering,
+restoration, or transformation. The LoRA and workflow supply those parts.
 
 ```text
-hoi4_portrait, transform the supplied person into a polished Hearts of Iron IV leader portrait. Preserve exact identity, facial geometry, expression, hairstyle, visible clothing, pose, camera angle, and crop. Use a hand-painted 1930s-1940s grand-strategy portrait finish, restrained brushwork, realistic skin, crisp eyes, soft directional studio light, muted historical colors, and a formal head-and-shoulders composition.
+hoi4_portrait, a middle-aged man with short dark hair, round wire-frame glasses, a long narrow face, a neat moustache, and a reserved expression, wearing a dark jacket over a light collared shirt and tie, shown from the shoulders up while looking slightly left.
 ```
 
-See [autoprompter examples](docs/autoprompter-examples.md) for real prompts
-produced by the earlier vision autoprompter and expanded FLUX.2-ready versions.
+The workflows default to LoRA strength `0.8`. Use `0.7` when identity or small
+source details need a lighter touch. See [autoprompter
+examples](docs/autoprompter-examples.md) for more person-only prompts.
+
+## Verified examples
+
+These are real reduced-resolution local runs with the published LoRA, not
+mockups. Full-quality public graphs remain at Euler, 20 steps, CFG 5.
+
+![Full restoration: source, ESRGAN plus FLUX restoration, and final LoRA portrait](docs/assets/test-runs/full-restoration-01.jpg)
+
+![Five no-input portraits generated from person-only prompts](docs/assets/test-runs/random-portraits.jpg)
+
+See [all ten triptychs, the settings matrix, and exact test
+conditions](docs/test-results.md).
 
 ## Validation status
 
@@ -109,7 +123,10 @@ produced by the earlier vision autoprompter and expanded FLUX.2-ready versions.
 - Comfy Cloud MCP no-spend preflight passes for all three API graphs.
 - Cloud GPU mechanical runs pass for every workflow and the final background
   branch using a compatible catalog LoRA at zero strength.
-- A full local inference run is not claimed: this checkout does not contain the gated 9B base model, and the available Mac has 16 GB unified memory. Resource-related inability to execute is documented separately from graph correctness.
+- Actual local inference with the project LoRA passes for five full-restoration
+  portraits, five ESRGAN-only portraits, five text-to-image portraits, and the
+  post-final background branch. Reduced 416 × 560, six-step previews were used
+  on a 16 GB Apple-silicon Mac; they are not presented as 20-step quality runs.
 
 Run the same checks locally:
 
@@ -126,6 +143,7 @@ python -m unittest discover -s tests -v
 - [Comfy Cloud and MCP](docs/comfy-cloud.md)
 - [Local and RunPod installation](docs/local-install.md)
 - [Autoprompter prompt examples](docs/autoprompter-examples.md)
+- [Local test results and before/afters](docs/test-results.md)
 - [Testing](docs/testing.md)
 - [Contributing](CONTRIBUTING.md)
 - [Third-party model terms](THIRD_PARTY_LICENSES.md)

@@ -1,69 +1,61 @@
 # Autoprompter examples
 
 The earlier project used a Qwen vision sidecar. That custom node/service is no
-longer embedded in the v2 workflows because it cannot be imported into Comfy
-Cloud. The instruction file remains available at
+longer embedded because it cannot be imported into Comfy Cloud. The current
+instruction remains at
 [`prompts/autoprompter_instruction.txt`](../prompts/autoprompter_instruction.txt)
-for use with any external vision-language model.
+for use with an external vision-language model.
 
-## Prompts the autoprompter produced
+## Required output contract
 
-These lines are copied from successful local evidence records from the earlier
-pipeline:
+Output one English line that begins with `hoi4_portrait,` and describes only
+the visible person. Include useful facial features, hair, expression, visible
+clothing, pose, gaze, and crop. Omit uncertain details.
+
+Never add the game name, a style request, background, lighting, palette,
+rendering language, restoration instructions, transformation instructions, or
+preservation commands. The trigger and LoRA supply the learned look; the
+reference-latent workflow supplies the source image.
+
+## Person-only examples
 
 ```text
-hoi4_portrait, an adult man in a formal uniform, neutral expression, direct gaze
+hoi4_portrait, a middle-aged man with short dark hair brushed back, a small neat moustache, a calm closed-mouth expression and gaze angled slightly upward, wearing a dark three-piece suit, white shirt, and tie, seated at a slight angle with his hands folded and shown from the waist up.
 ```
 
 ```text
-hoi4_portrait, an adult man in formal military clothing, neutral expression, direct gaze
+hoi4_portrait, a middle-aged man with short dark hair, round dark-rimmed glasses, a long narrow face, a slightly open mouth, and a gaze turned to his left, wearing a dark jacket over a light collared shirt and tie, shown from the shoulders up.
 ```
 
 ```text
-hoi4_portrait, an older man with a reserved expression, direct gaze, close-cropped hair and a moustache
+hoi4_portrait, a young woman with light skin, dark wavy hair swept back from a side part, wide eyes, a small closed mouth, and a calm direct gaze, wearing a dark dress with a broad light sailor collar and a round pendant, shown from the chest up.
 ```
 
 ```text
-hoi4_portrait, middle-aged man, military officer, wearing glasses, dark curly hair, mustache, uniform with four stars on collar, aviator wings on sleeve, serious expression, head slightly turned, eyes slightly apart, straight nose, closed lips, defined jawline and chin, fair skin, symmetrical face, uniform with buttons and pockets, no visible jewelry
+hoi4_portrait, an older man with light skin, receding short light hair combed back, deep-set eyes, a long narrow face, a slightly open mouth, and a gaze angled upward, wearing a dark overcoat, white shirt, and dark tie, shown from the chest up at a slight angle.
 ```
-
-Treat role, rank, branch, insignia, and color claims as observations to verify,
-not facts to invent. Remove any uncertain detail before using a real person's
-portrait.
-
-## FLUX.2-ready expansion pattern
-
-Append a preservation and style instruction to the observed traits:
 
 ```text
-hoi4_portrait, [visible subject traits]. Transform the supplied person into a polished Hearts of Iron IV leader portrait. Preserve exact identity, facial geometry, expression, hairstyle, visible clothing, pose, camera angle, and crop. Use a hand-painted 1930s-1940s grand-strategy portrait finish, restrained brushwork, realistic skin, crisp eyes, soft directional studio light, muted historical colors, and a formal head-and-shoulders composition. Do not invent medals, insignia, hats, glasses, facial hair, or accessories.
+hoi4_portrait, a middle-aged man with a bald crown and short dark hair at the sides, straight brows, a long face, a closed mouth, and a direct gaze, wearing a dark clerical cassock with a piped collar and shoulder cape, shown from the chest up.
 ```
-
-## Example expanded prompts
-
-Historical officer:
 
 ```text
-hoi4_portrait, a middle-aged man in a plain period military tunic, wire-frame glasses, dark curly hair, a neat moustache, serious expression, and a slightly turned head. Transform the supplied person into a polished Hearts of Iron IV leader portrait. Preserve exact identity, facial geometry, expression, hairstyle, glasses, moustache, visible clothing, pose, camera angle, and crop. Use restrained brushwork, realistic skin, crisp eyes, soft directional studio light, and muted olive-brown historical colors. Do not invent medals or insignia.
+hoi4_portrait, a middle-aged woman with dark hair pinned into a low bun, arched brows, a firm closed-mouth expression, and a direct gaze, wearing a high-necked dark jacket with a small round brooch, shown from the chest up at a slight angle.
 ```
 
-Civilian politician:
+## What to remove
 
-```text
-hoi4_portrait, an older civilian statesman in a dark 1940s suit and tie, reserved expression, direct gaze, close-cropped hair, and a small moustache. Preserve exact identity and all visible features. Render a formal hand-painted grand-strategy head-and-shoulders portrait with realistic skin, crisp eyes, soft studio light, and a muted neutral palette. No uniform, medals, insignia, text, or modern accessories.
-```
+Reject any output that describes a desired image treatment instead of the
+person. In particular, remove game/style labels, historical-color requests,
+studio-lighting requests, background instructions, and game-ready rendering
+language. Replace them with observable person traits only.
 
-Fictional leader without a source:
+## Safety and uncertainty rules
 
-```text
-hoi4_portrait, a stern middle-aged 1940s army logistics officer in a plain dark service uniform, direct gaze, closed mouth, neatly combed hair, formal head-and-shoulders composition, hand-painted grand-strategy portrait, restrained brushwork, realistic skin, crisp eyes, soft directional studio light, muted olive and brown historical palette, no visible text.
-```
-
-## Output rules for an external autoprompter
-
-- Output one English line beginning with `hoi4_portrait,`.
-- Describe only visible identity and composition traits.
-- Use `uncertain` internally for ambiguous details, then omit them from the final prompt.
 - Do not identify the person by name unless the user supplies it.
-- Do not infer nationality, politics, religion, ethnicity, or sexuality from appearance.
-- Never invent a role, rank, unit, medal, insignia, or organization.
+- Do not infer nationality, politics, religion, ethnicity, sexuality, role,
+  rank, unit, or organization from appearance.
+- Do not invent a medal, insignia, hat, glasses, facial hair, accessory, or
+  clothing detail.
+- Use uncertainty internally, then omit the uncertain claim from the final
+  one-line output.

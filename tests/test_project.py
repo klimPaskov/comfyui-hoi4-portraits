@@ -49,6 +49,21 @@ class WorkflowTests(unittest.TestCase):
         for workflow in (ROOT / "workflows").glob("*.json"):
             self.assertNotIn("/resolve/main/", workflow.read_text(encoding="utf-8"), workflow.name)
 
+    def test_autoprompter_output_contract_is_person_only(self) -> None:
+        instruction = (ROOT / "prompts" / "autoprompter_instruction.txt").read_text(encoding="utf-8").casefold()
+        self.assertIn("the prompt describes only the person", instruction)
+        for forbidden in (
+            "transform the supplied",
+            "grand-strategy portrait",
+            "hand-painted 1930s",
+            "background description",
+        ):
+            self.assertNotIn(forbidden, instruction)
+
+    def test_person_prompt_policy_allows_hairstyle_but_rejects_style(self) -> None:
+        self.assertEqual(validate_workflows._non_person_prompt_terms("a different hairstyle"), [])
+        self.assertEqual(validate_workflows._non_person_prompt_terms("use a painted style"), ["style"])
+
 
 class InstallerAndModelTests(unittest.TestCase):
     def test_installer_copies_three_workflows_without_custom_nodes(self) -> None:
@@ -84,6 +99,7 @@ class InstallerAndModelTests(unittest.TestCase):
 
 class DocumentationTests(unittest.TestCase):
     LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
+    CODE_BLOCK = re.compile(r"```(?:text)?\n(.*?)```", re.DOTALL)
 
     def test_internal_markdown_links_exist(self) -> None:
         failures: list[str] = []
@@ -104,6 +120,26 @@ class DocumentationTests(unittest.TestCase):
         table = "\n".join(line for line in section.splitlines() if line.startswith("|"))
         self.assertEqual(table.count("workflows/hoi4_portrait_flux2_klein_9b_"), 3)
         self.assertNotIn("krea", table.casefold())
+
+    def test_documented_positive_prompt_examples_are_person_only(self) -> None:
+        documents = [
+            ROOT / "README.md",
+            ROOT / "docs" / "autoprompter-examples.md",
+            ROOT / "loras" / "HUGGINGFACE_MODEL_CARD.md",
+        ]
+        forbidden = re.compile(
+            r"\b(hearts of iron|grand-strategy|hand-painted|background|lighting|"
+            r"render(?:ing|ed)?|transform(?:ation|ed)?|preserv(?:e|ation)|style)\b",
+            re.IGNORECASE,
+        )
+        examples = []
+        for document in documents:
+            for block in self.CODE_BLOCK.findall(document.read_text(encoding="utf-8")):
+                if "hoi4_portrait," in block:
+                    examples.append((document, block.strip()))
+        self.assertGreaterEqual(len(examples), 3)
+        for document, example in examples:
+            self.assertIsNone(forbidden.search(example), f"{document.name}: {example}")
 
 
 if __name__ == "__main__":

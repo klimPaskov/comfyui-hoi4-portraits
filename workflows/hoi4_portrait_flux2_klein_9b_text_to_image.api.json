@@ -37,7 +37,7 @@
         0
       ],
       "lora_name": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-      "strength_model": 1.0
+      "strength_model": 0.8
     },
     "_meta": {
       "title": "Apply the HOI4 FLUX.2 Klein 9B LoRA"
@@ -50,10 +50,10 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, a stern middle-aged 1940s army officer in a plain dark service uniform, direct gaze, closed mouth, neatly combed hair, formal head-and-shoulders composition, hand-painted grand-strategy portrait, restrained brushwork, realistic skin, crisp eyes, soft directional studio light, muted olive and brown historical palette, no visible text."
+      "text": "hoi4_portrait, a stern middle-aged man with light skin, neatly combed dark hair, straight brows, a closed mouth, and a direct gaze, wearing a plain dark high-collared service jacket, shown from the chest up while facing slightly left."
     },
     "_meta": {
-      "title": "Write the leader portrait prompt"
+      "title": "Describe only the person"
     }
   },
   "21": {
@@ -63,7 +63,7 @@
         "2",
         0
       ],
-      "text": "changed identity, face swap, different person, deformed face, asymmetrical eyes, extra limbs, invented insignia, invented medals, modern clothing, anime, cartoon, 3d render, glossy plastic skin, text, watermark"
+      "text": "different person, changed facial geometry, altered expression, different hairstyle, different clothing, deformed face, asymmetrical eyes, extra limbs, invented insignia, invented medals, invented hat, invented glasses, invented facial hair, invented accessories"
     },
     "_meta": {
       "title": "Negative prompt"

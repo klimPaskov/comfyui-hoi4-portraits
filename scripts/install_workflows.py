@@ -35,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
         installed.append(str(destination))
     for background in sorted((ROOT / "backgrounds").glob("*.png")):
         _copy(background, comfy_root / "input" / background.name)
-    _copy(ROOT / "docs" / "assets" / "examples" / "inference_01_before.jpg", comfy_root / "input" / "source_portrait.jpg")
+    _copy(ROOT / "docs" / "assets" / "examples" / "source_portrait.jpg", comfy_root / "input" / "source_portrait.jpg")
     print(json.dumps({"status": "PASS", "workflows": installed, "custom_nodes_installed": False}, indent=2))
     return 0
 

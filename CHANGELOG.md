@@ -2,6 +2,22 @@
 
 All notable project changes are recorded here.
 
+## 2.1.0 — 2026-08-01
+
+- Changed every default LoRA strength to `0.8`, with `0.7` documented as the
+  lighter identity-preserving option.
+- Replaced style/game/background/rendering prompt examples with a strict
+  person-only positive-prompt contract after the `hoi4_portrait,` trigger.
+- Added validator and unit-test regressions for LoRA strength and forbidden
+  positive-prompt language.
+- Completed actual local inference with the project LoRA: five full-
+  restoration portraits, five ESRGAN-only portraits, five no-input portraits,
+  seven controlled setting variants, and a post-final background run.
+- Added ten three-stage comparison boards, a five-portrait text-to-image board,
+  a settings matrix, and documented reduced-resource test conditions.
+- Confirmed Euler / 20 steps / CFG 5 matches ComfyUI's native FLUX.2 Klein 9B
+  Base workflow; DPM++ 2M and Heun brought no gain in the reduced local pilot.
+
 ## 2.0.1 — 2026-08-01
 
 - Fixed optional background compositing to consume the foreground mask from

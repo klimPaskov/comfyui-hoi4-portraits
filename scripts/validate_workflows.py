@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,30 @@ ALLOWED_CORE_NODES = {
     "VAEEncode",
     "VAELoader",
 }
+
+FORBIDDEN_PERSON_PROMPT_PATTERNS = {
+    "hearts of iron": r"\bhearts of iron\b",
+    "grand-strategy": r"\bgrand-strategy\b",
+    "hand-painted": r"\bhand-painted\b",
+    "style": r"\bstyle\b",
+    "background": r"\bbackground\b",
+    "palette": r"\bpalette\b",
+    "render": r"\brender(?:ing|ed)?\b",
+    "lighting": r"\blighting\b",
+    "studio light": r"\bstudio light(?:ing)?\b",
+    "transform": r"\btransform(?:ation|ed)?\b",
+    "preserve": r"\bpreserv(?:e|ation)\b",
+    "do not": r"\bdo not\b",
+}
+
+
+def _non_person_prompt_terms(prompt: str) -> list[str]:
+    prompt_lower = prompt.casefold()
+    return sorted(
+        label
+        for label, pattern in FORBIDDEN_PERSON_PROMPT_PATTERNS.items()
+        if re.search(pattern, prompt_lower)
+    )
 
 
 def _overlap(a: list[float], b: list[float], *, padding: float = 0) -> bool:
@@ -200,6 +225,16 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     lora_node = next((node_id for node_id, node in api.items() if node.get("class_type") == "LoraLoaderModelOnly"), None)
     if lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
+    elif api[lora_node]["inputs"].get("strength_model") != 0.8:
+        errors.append(f"{path}: style LoRA strength must default to 0.8")
+
+    person_prompt_node = "20" if workflow_id.endswith("text_to_image") else "40"
+    person_prompt = str(api.get(person_prompt_node, {}).get("inputs", {}).get("text", ""))
+    if not person_prompt.startswith("hoi4_portrait,"):
+        errors.append(f"{path}: person prompt must begin with the LoRA trigger")
+    present_terms = _non_person_prompt_terms(person_prompt)
+    if present_terms:
+        errors.append(f"{path}: person prompt contains non-person instructions: {present_terms}")
 
     composite = next((node_id for node_id, node in api.items() if node.get("class_type") == "ImageCompositeMasked"), None)
     background_switch = next(
