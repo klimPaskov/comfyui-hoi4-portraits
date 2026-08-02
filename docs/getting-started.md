@@ -10,10 +10,8 @@ All three use the same FLUX.2 Klein base 9B model and HOI4 LoRA.
 
 ## Prepare a source image
 
-Both source workflows use ComfyUI's built-in `PrimitiveBoundingBox` and
-`ImageCropV2` nodes. Set `x`, `y`, `width`, and `height` around one person's
-head and shoulders. Confirm the crop preview before running RealESRGAN or
-FLUX; no project-specific custom node is required.
+In either source workflow, set the crop box around one person's head and
+shoulders. Confirm the crop preview before running RealESRGAN or FLUX.
 
 Good input:
 

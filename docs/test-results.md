@@ -8,7 +8,7 @@ project fixtures. The tested archive contained 43 files and had SHA-256
 
 ## Test conditions
 
-- ComfyUI 0.25.0, built-in nodes only;
+- ComfyUI 0.25.0;
 - Apple-silicon Mac with 16 GB unified memory and MPS low-VRAM offloading;
 - 416 × 560 evidence output; the public workflow canvas remains 832 × 1120;
 - LoRA strength `0.7`, Euler, six steps, CFG 5;

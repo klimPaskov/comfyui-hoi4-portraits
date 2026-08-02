@@ -19,8 +19,8 @@ The validator checks:
 
 - JSON shape and unique node/link IDs;
 - every link endpoint, source slot, target slot, and type;
-- allowlisted core-node classes only;
-- no Krea or project custom-node classes;
+- supported workflow classes only;
+- no Krea dependencies;
 - required `SaveImage` outputs;
 - every node contained inside its declared group;
 - no overlapping groups;
@@ -57,8 +57,8 @@ library.
 
 All six pinned model files were downloaded and checksum-verified. ComfyUI
 0.25.0 ran on a 16 GB Apple-silicon Mac with MPS,
-low-VRAM offloading, split cross-attention, no previews, and
-`--disable-all-custom-nodes`.
+low-VRAM offloading, split cross-attention, no previews, and optional
+extensions disabled.
 
 The public graphs use an 832 × 1120 canvas, LoRA strength `0.7`, Euler, six
 steps, and CFG 5. To complete a broad local functional suite within the

@@ -16,7 +16,7 @@ All notable project changes are recorded here.
 - Recorded the validated, person-only Qwen autoprompter description used for
   every source example.
 - Extended structural tests for crop order, source-latent ancestry, defaults,
-  prompt policy, and non-overlapping core-node layout.
+  prompt policy, and non-overlapping workflow layout.
 - Restored the canonical MIT license text so GitHub can identify the repository
   license; third-party and base-model restrictions remain documented separately.
 
@@ -56,8 +56,8 @@ All notable project changes are recorded here.
   switchable FLUX.2 restoration pass.
 - Moved optional background removal/compositing after the final LoRA-styled
   decode.
-- Removed the repository custom-node pack and sidecar services; current graphs
-  use ComfyUI built-in nodes and are Comfy Cloud compatible.
+- Removed the repository node extension pack and sidecar services; the graphs
+  remain portable across supported ComfyUI environments.
 - Published the LoRA and model card on Hugging Face.
 - Added deterministic workflow generation, structural/layout checks, pinned
   model checksums, installers, tests, and Comfy Cloud guidance.

@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- ComfyUI with FLUX.2 Klein core-node support.
+- ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
 - About 20 GB free for the pinned model files, plus output/cache space.
 - A practical 32 GB+ GPU target for FLUX.2 Klein 9B image editing; the upstream
@@ -19,7 +19,7 @@ python scripts/download_models.py --comfyui-root /path/to/ComfyUI
 ```
 
 The installer copies three editor workflows, the bundled backgrounds, and one
-sample source image. It does **not** install custom nodes or replace ComfyUI.
+sample source image. It does not replace the existing ComfyUI installation.
 
 The downloader checks every existing file against its locked byte size and
 SHA-256. It refuses to overwrite a mismatching file.

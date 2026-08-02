@@ -12,9 +12,8 @@ documentation improvements, and reproducible quality comparisons are welcome.
    documented.
 3. Edit `scripts/build_workflows.py` instead of hand-editing generated workflow
    JSON. Rebuild afterward.
-4. Keep public workflows on the approved built-in ComfyUI node set. A new
-   custom-node dependency needs a clear portability reason and maintainer
-   approval.
+4. Keep public workflows portable across the supported ComfyUI environments.
+   Any new dependency needs a clear portability reason and maintainer approval.
 
 ## Verify the change
 

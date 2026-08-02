@@ -12,9 +12,7 @@ with an external vision-language model.
 2. Confirm that its one-line answer starts with `hoi4_portrait,` and contains
    no treatment or unsupported identity claims.
 3. Remove uncertain color/lighting language and any contradictory pose words.
-4. Paste the validated line into the source workflow's positive
-   `CLIPTextEncode` node. The workflow itself remains core-node-only and can be
-   imported into Comfy Cloud.
+4. Paste the validated line into the source workflow's positive prompt field.
 
 ## Required output contract
 

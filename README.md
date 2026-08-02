@@ -8,9 +8,9 @@ Clean ComfyUI workflows for generating Hearts of Iron IV-style leader portraits
 from photographs or written character descriptions. The default model stack
 is **FLUX.2 Klein base 9B** plus the project’s `hoi4_portrait` LoRA.
 
-All workflows use built-in ComfyUI nodes only. There is no project custom-node
-pack, Krea dependency, or hidden sidecar service, so the same graphs open
-locally and in Comfy Cloud.
+The same workflows open locally and in Comfy Cloud. Start with a source photo
+or a written character description, then choose the restoration path that fits
+the image and available hardware.
 
 ## Workflows
 

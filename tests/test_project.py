@@ -173,6 +173,15 @@ class DocumentationTests(unittest.TestCase):
         for document in documents:
             self.assertIsNone(forbidden.search(document.read_text(encoding="utf-8")), document.name)
 
+        cloud_only_terms = re.compile(
+            r"\b(core[- ]node|built-in (?:ComfyUI )?nodes?|custom[- ]nodes?)\b",
+            re.IGNORECASE,
+        )
+        general_guides = [ROOT / "README.md", *(ROOT / "docs").glob("*.md")]
+        for document in general_guides:
+            if document.name != "comfy-cloud.md":
+                self.assertIsNone(cloud_only_terms.search(document.read_text(encoding="utf-8")), document.name)
+
     def test_documented_positive_prompt_examples_are_person_only(self) -> None:
         documents = [
             ROOT / "README.md",
