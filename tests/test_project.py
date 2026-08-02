@@ -164,7 +164,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_user_guides_use_present_state_language(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertFalse(readme.splitlines()[6].startswith("Clean ComfyUI"))
+        self.assertTrue(readme.splitlines()[6].startswith("Clean ComfyUI workflows"))
         documents = [ROOT / "README.md", *(ROOT / "docs").glob("*.md"), *(ROOT / "loras").glob("*.md")]
         forbidden = re.compile(
             r"\b(earlier project|previously verified|current workflows|newly trained|now use|what changed)\b",
