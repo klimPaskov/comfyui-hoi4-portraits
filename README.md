@@ -4,14 +4,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
 
-Clean ComfyUI workflows for turning portrait photographs—or a written
-character description—into Hearts of Iron IV-style leader portraits. The
-default model stack is **FLUX.2 Klein base 9B** plus the project’s newly
-trained `hoi4_portrait` LoRA.
+ComfyUI workflows for generating Hearts of Iron IV-style leader portraits
+from photographs or written character descriptions. The default model stack
+is **FLUX.2 Klein base 9B** plus the project’s `hoi4_portrait` LoRA.
 
-The current workflows use built-in ComfyUI nodes only. There is no project
-custom-node pack, no Krea dependency, and no hidden sidecar service, so the
-same graphs can be opened locally or in Comfy Cloud.
+All workflows use built-in ComfyUI nodes only. There is no project custom-node
+pack, Krea dependency, or hidden sidecar service, so the same graphs open
+locally and in Comfy Cloud.
 
 ## Workflows
 
@@ -24,10 +23,9 @@ same graphs can be opened locally or in Comfy Cloud.
 Matching [API-format graphs](workflows/) are included for Comfy Cloud MCP,
 the Comfy Cloud API, and local `/prompt` submission.
 
-The earlier Krea 2 and Krea Edit workflows are kept only as an alternative in
-the archived [v1.0.0 release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/tag/v1.0.0).
-They are intentionally excluded from the default workflow table and current
-package.
+Krea 2 and Krea Edit variants are available as optional alternatives in the
+[Krea workflow release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/tag/v1.0.0).
+They are not part of the default workflow table or package.
 
 ## What the full workflow does
 
@@ -187,9 +185,9 @@ See [the three random prompts, exact test conditions, and findings](docs/test-re
 - All three editor graphs and API graphs are generated from one deterministic source.
 - Link endpoints, slot types, output nodes, visual groups, and node geometry are tested.
 - Node and group overlap checks pass with spacing margins.
-- Comfy Cloud MCP no-spend preflight passes for all three v2.2.0 API graphs;
+- Comfy Cloud MCP no-spend preflight passes for all three API graphs;
   the only advisory is the expected project LoRA import.
-- Earlier Cloud GPU mechanical runs passed every workflow shape and the final
+- Cloud GPU mechanical tests pass every workflow shape and the final
   background branch using a compatible catalog LoRA at zero strength.
 - Actual local inference with the project LoRA passes for three full-restoration
   portraits, three ESRGAN-only portraits, three text-to-image portraits, and

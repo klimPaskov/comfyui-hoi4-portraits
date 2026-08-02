@@ -104,10 +104,10 @@ hoi4_portrait, a young man with close-cropped dark hair, a narrow face, prominen
 
 ## Fixed-seed 6/8/10/20-step control
 
-An earlier fixed-seed six-step control also compared Euler, DPM++ 2M, Heun,
-and CFG 4. DPM++ 2M did not improve the result, Heun was slower without a
-visual gain, and CFG 4 was softer than CFG 5. Euler with CFG 5 was therefore
-held constant for the step-count comparison.
+The fixed-seed sampler control compares Euler, DPM++ 2M, Heun, and CFG 4 at
+six steps. DPM++ 2M does not improve the result, Heun is slower without a
+visual gain, and CFG 4 is softer than CFG 5. The step-count comparison holds
+Euler and CFG 5 constant.
 
 Prompt, source, crop, seed, resolution, LoRA strength, CFG, and Euler sampler
 are held constant. Only `Flux2Scheduler.steps` changes.
@@ -123,16 +123,15 @@ than assumed to be better simply because they cost more compute.
 
 ## Autoprompter validation
 
-The local Qwen vision model produced a first draft for each of the six source
-images. A prompt-contract pass then removed unsupported lighting/color claims
-and corrected contradictory pose wording. The displayed lines are the exact
-validated descriptions sent to the workflows. They describe the person only;
-the LoRA supplies the learned look and the workflow controls processing and
-background behavior.
+The local Qwen vision model produces a first draft for each source image. The
+validated descriptions exclude unsupported lighting/color claims and use
+consistent pose wording. The displayed lines are the exact descriptions sent
+to the workflows. They describe the person only; the LoRA supplies the learned
+look and the workflow controls processing and background behavior.
 
 ## Post-final background test
 
-The previously verified test loads a completed LoRA portrait directly into
+The background test loads a completed LoRA portrait directly into
 the background group. Only BiRefNet, image scaling, mask compositing, and the
 final switch are evaluated, proving that background work remains downstream
 of final image creation.

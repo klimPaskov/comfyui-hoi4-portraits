@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Current ComfyUI with FLUX.2 Klein core-node support.
+- ComfyUI with FLUX.2 Klein core-node support.
 - Python 3.10 or newer for the helper scripts.
 - About 20 GB free for the pinned model files, plus output/cache space.
 - A practical 32 GB+ GPU target for FLUX.2 Klein 9B image editing; the upstream

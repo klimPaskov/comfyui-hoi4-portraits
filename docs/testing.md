@@ -49,14 +49,14 @@ lock, and check internal documentation links.
 ## Comfy Cloud preflight
 
 The API files were submitted to Comfy Cloud MCP with `dry_run: true`. All
-passed without creating a job or spending credits. The new LoRA filename is a
+passed without creating a job or spending credits. The project LoRA filename is a
 non-blocking advisory until it is imported into the user's Cloud model
 library.
 
 ## Local inference evidence
 
-On 2026-08-02, all six pinned model files were downloaded and checksum-
-verified. ComfyUI 0.25.0 then ran on a 16 GB Apple-silicon Mac with MPS,
+All six pinned model files were downloaded and checksum-verified. ComfyUI
+0.25.0 ran on a 16 GB Apple-silicon Mac with MPS,
 low-VRAM offloading, split cross-attention, no previews, and
 `--disable-all-custom-nodes`.
 
@@ -72,8 +72,8 @@ Successful runs:
 - three no-input text-to-image portraits;
 - one fixed-source, fixed-seed Euler comparison at 6, 8, 10, and 20 steps.
 
-The background test replaced the final decode with a completed saved image,
-then evaluated only BiRefNet, compositing, and the final switch. It completed
+The background test uses a completed saved image in place of the final decode,
+then evaluates only BiRefNet, compositing, and the final switch. It completes
 in 7.73 seconds and proves that background work is downstream of generation.
 
 The reduced previews are evidence of executable nodes and connections. They
@@ -84,9 +84,7 @@ analysis](test-results.md).
 Mechanical validation remains separate from inference validation so resource
 limits cannot hide malformed nodes or connections.
 
-Cloud GPU testing later that day completed the ESRGAN-only and full-power
-graphs with a compatible catalog LoRA at zero strength, validating both
-restoration paths and all three output nodes. A text-to-image run with
-background replacement enabled exposed an inverted foreground mask. The
-inversion was removed, a direct-mask regression check was added, and the fixed
-background branch then completed successfully on Cloud.
+Cloud GPU tests complete the ESRGAN-only and full-power graphs with a
+compatible catalog LoRA at zero strength, validating both restoration paths
+and all three output nodes. The text-to-image background test also completes
+successfully and is covered by a direct foreground-mask regression check.

@@ -2,7 +2,7 @@
 
 ## Shared design
 
-Every current workflow is a flat graph made from core ComfyUI nodes. Groups
+Every workflow is a flat graph made from core ComfyUI nodes. Groups
 are visual organization only; no subgraph or custom Python node is required.
 
 The shared model stack is:
@@ -16,7 +16,7 @@ The shared model stack is:
 The fixed-seed local control also tests 8, 10, and 20 steps. Six was selected as
 the default because it gave the preferred result and materially shorter runs;
 eight is the recommended first refinement option. Increase the scheduler when
-a particular source benefits from the changed balance.
+a particular source benefits from a different refinement/framing balance.
 
 ## Full power
 

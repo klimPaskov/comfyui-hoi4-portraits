@@ -3,14 +3,14 @@
 ## Choose a workflow
 
 - Use **full power** when the source is faded, scratched, very small, or needs plausible color recovery. It runs RealESRGAN first and FLUX.2 restoration second.
-- Use **ESRGAN only** for a clean source or when you want a faster, less generative preparation stage.
+- Use **ESRGAN only** for a well-preserved source or when you want a faster, less generative preparation stage.
 - Use **text to image** when no real person must be preserved.
 
 All three use the same FLUX.2 Klein base 9B model and HOI4 LoRA.
 
 ## Prepare a source image
 
-Both source workflows now use ComfyUI's built-in `PrimitiveBoundingBox` and
+Both source workflows use ComfyUI's built-in `PrimitiveBoundingBox` and
 `ImageCropV2` nodes. Set `x`, `y`, `width`, and `height` around one person's
 head and shoulders. Confirm the crop preview before running RealESRGAN or
 FLUX; no project-specific custom node is required.
@@ -71,7 +71,7 @@ optional FLUX restoration pass.
 | Loader is red | Install/import the exact filename from `models.json`, then refresh ComfyUI. |
 | Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 32 GB+ GPU. |
 | Wrong person or full-body framing | Adjust the source bounding box until the crop preview is head-and-shoulders. |
-| Background appears too early | Use the current workflow; only the post-generation background group may replace it. |
+| Background appears too early | Only the post-generation background group may replace it; reload the packaged workflow if the graph was rewired. |
 | Style is weak | Keep `hoi4_portrait` in the prompt; increase LoRA strength cautiously from the `0.7` default. |
 | Identity or position changes | Confirm the crop, keep the encoded-source sampler connection, disable optional restoration if needed, and remove speculative traits. |
 | Final looks too smooth | Try 10 or 20 scheduler steps and compare against the six-step default with the same seed. |

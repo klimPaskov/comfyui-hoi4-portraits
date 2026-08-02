@@ -1,7 +1,7 @@
 # Comfy Cloud and MCP
 
-The current workflows were designed against Comfy Cloud's live model and node
-catalog. They use no repository-specific custom nodes.
+The workflows target Comfy Cloud's model and node catalog and use no
+repository-specific custom nodes.
 
 ## Import the custom LoRA
 
@@ -14,7 +14,7 @@ workflow. Import it from its hosted source:
 4. Select model type **LoRA** and target folder `loras`.
 5. Wait for the exact filename to appear in `LoraLoaderModelOnly`.
 
-Model import currently requires a Comfy Cloud Creator or Pro plan.
+Model import requires a Comfy Cloud Creator or Pro plan.
 The base FLUX.2 Klein 9B stack, RealESRGAN, and BiRefNet are present in the
 Cloud catalog.
 
@@ -62,11 +62,10 @@ select the exact file in the loader and save the workflow.
 The workflows contain no paid partner/API nodes. Normal Comfy Cloud compute
 and subscription limits still apply.
 
-## Current preflight evidence
+## Preflight evidence
 
-On 2026-08-02, all three v2.2.0 API graphs passed Comfy Cloud MCP `dry_run`
-preflight. The only advisory was the expected project-LoRA catalog miss before
-custom import.
+All three API graphs pass Comfy Cloud MCP `dry_run` preflight. The only
+advisory is the expected project-LoRA catalog miss before custom import.
 Cloud GPU runs also completed the ESRGAN-only, full-power, text-to-image, and
 final background-compositing paths using a compatible catalog LoRA at zero
 strength. The project LoRA remains unavailable on plans without custom model

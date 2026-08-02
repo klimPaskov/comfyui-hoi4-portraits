@@ -14,5 +14,5 @@ more refinement. After the trigger, describe only the person—not the
 game/style, background, lighting, or rendering.
 
 For source portraits, crop to head and shoulders before RealESRGAN and use the
-encoded processed portrait as the sampler starting latent. The current project
-workflows already wire this correctly.
+encoded processed portrait as the sampler starting latent. The packaged
+workflows provide this connection.

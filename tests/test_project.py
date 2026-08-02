@@ -162,6 +162,17 @@ class DocumentationTests(unittest.TestCase):
         ):
             self.assertFalse((ROOT / "docs" / "assets" / "test-runs" / obsolete).exists(), obsolete)
 
+    def test_user_guides_use_present_state_language(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertFalse(readme.splitlines()[6].startswith("Clean ComfyUI"))
+        documents = [ROOT / "README.md", *(ROOT / "docs").glob("*.md"), *(ROOT / "loras").glob("*.md")]
+        forbidden = re.compile(
+            r"\b(earlier project|previously verified|current workflows|newly trained|now use|what changed)\b",
+            re.IGNORECASE,
+        )
+        for document in documents:
+            self.assertIsNone(forbidden.search(document.read_text(encoding="utf-8")), document.name)
+
     def test_documented_positive_prompt_examples_are_person_only(self) -> None:
         documents = [
             ROOT / "README.md",

@@ -1,10 +1,9 @@
 # Autoprompter examples
 
-The earlier project used a Qwen vision sidecar. That custom node/service is no
-longer embedded because it cannot be imported into Comfy Cloud. The current
-instruction remains at
+The Qwen vision instruction is provided as an external prompting resource
+because an embedded sidecar cannot be imported into Comfy Cloud. Use
 [`prompts/autoprompter_instruction.txt`](../prompts/autoprompter_instruction.txt)
-for use with an external vision-language model.
+with an external vision-language model.
 
 ## Use it with the Cloud-compatible workflows
 
@@ -30,11 +29,10 @@ reference-latent workflow supplies the source image.
 
 ## Validated outputs used in the gallery
 
-Qwen generated these from the six latest source portraits. We then applied the
-prompt contract: unsupported color or lighting claims were removed and
-contradictions were corrected before sending the line to FLUX.2. These exact
-validated descriptions are printed beside the matching images in the main
-README.
+Qwen generated these from the six supplied source portraits. The validated
+outputs exclude unsupported color or lighting claims and use consistent pose
+wording. These exact descriptions are printed beside the matching images in
+the main README.
 
 ```text
 hoi4_portrait, middle-aged man with short wavy hair, a moustache, wearing a suit and tie with a visible collar and lapels, looking slightly upward with a subtle smile, head tilted slightly to his right, shoulders squared, shown from the chest up.
