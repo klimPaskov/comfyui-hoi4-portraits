@@ -2,8 +2,8 @@
 
 ## Shared design
 
-Every workflow is a flat graph made from core ComfyUI nodes. Groups
-are visual organization only; no subgraph or custom Python node is required.
+Each workflow is arranged in clearly labeled groups that run from left to
+right. The groups are visual organization and do not change execution order.
 
 The shared model stack is:
 
@@ -19,6 +19,9 @@ eight is the recommended first refinement option. Increase the scheduler when
 a particular source benefits from a different refinement/framing balance.
 
 ## Full power
+
+The main README includes a [complete visual walkthrough](../README.md#what-the-full-workflow-does)
+with one full-graph screenshot and a readable close-up of every group.
 
 Groups run left to right:
 

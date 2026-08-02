@@ -162,6 +162,22 @@ class DocumentationTests(unittest.TestCase):
         ):
             self.assertFalse((ROOT / "docs" / "assets" / "test-runs" / obsolete).exists(), obsolete)
 
+    def test_readme_contains_full_workflow_visual_walkthrough(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        screenshots = (
+            "full-power-overview.png",
+            "step-1-source-processing.png",
+            "step-2-model-setup.png",
+            "step-3-flux-restoration.png",
+            "step-4-lora-styling.png",
+            "step-5-background-replacement.png",
+            "step-6-preview-and-save.png",
+        )
+        for screenshot in screenshots:
+            asset = ROOT / "docs" / "assets" / "workflows" / screenshot
+            self.assertTrue(asset.is_file(), screenshot)
+            self.assertIn(f"docs/assets/workflows/{screenshot}", readme)
+
     def test_user_guides_use_present_state_language(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertTrue(readme.splitlines()[6].startswith("Generate Hearts of Iron IV-style"))

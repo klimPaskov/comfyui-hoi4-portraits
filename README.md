@@ -42,6 +42,54 @@ flowchart LR
     F -->|Yes| H["BiRefNet mask + composite"] --> G
 ```
 
+![Full-power workflow overview](docs/assets/workflows/full-power-overview.png)
+
+### 1. Crop and restore the source
+
+Load the portrait, set the crop box around the head and shoulders, and confirm
+the preview. The cropped image goes through RealESRGAN before it is fitted to
+the 832 × 1120 working canvas.
+
+![Source crop and RealESRGAN processing](docs/assets/workflows/step-1-source-processing.png)
+
+### 2. Load FLUX.2 and the portrait LoRA
+
+This group loads the FLUX.2 Klein 9B base model, Qwen text encoder, VAE, and
+the portrait LoRA. The documented LoRA strength is `0.70`.
+
+![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.png)
+
+### 3. Optionally restore with FLUX.2
+
+Full power uses the ESRGAN result as the reference and starting image for a
+conservative FLUX.2 restoration pass. Turn the restoration switch off to skip
+this stage and continue with the ESRGAN image.
+
+![Optional FLUX.2 restoration stage](docs/assets/workflows/step-3-flux-restoration.png)
+
+### 4. Apply the portrait LoRA
+
+The selected processed portrait becomes the reference and starting image for
+LoRA styling. Describe only the person in the positive prompt. Euler, six
+steps, and CFG 5 are the documented defaults.
+
+![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
+
+### 5. Optionally replace the background
+
+Background masking and compositing receive the decoded final portrait. This
+stage is off by default and cannot affect the earlier crop, restoration, or
+LoRA generation stages.
+
+![Final-image background replacement stage](docs/assets/workflows/step-5-background-replacement.png)
+
+### 6. Preview and save
+
+Preview the result, save the 832 × 1120 master PNG, and create the 156 × 210
+game-size portrait.
+
+![Preview and output stage](docs/assets/workflows/step-6-preview-and-save.png)
+
 Background removal and compositing consume the **decoded final LoRA-styled
 image**. They do not run on the source, the ESRGAN image, or the restoration
 pass.
