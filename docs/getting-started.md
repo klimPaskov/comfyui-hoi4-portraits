@@ -10,9 +10,10 @@ All three use the same FLUX.2 Klein base 9B model and HOI4 LoRA.
 
 ## Prepare a source image
 
-The previous automatic selection/cropping nodes were project-specific and
-have been removed for Comfy Cloud compatibility. Give the source workflows a
-single-person, head-and-shoulders image whenever possible.
+Both source workflows now use ComfyUI's built-in `PrimitiveBoundingBox` and
+`ImageCropV2` nodes. Set `x`, `y`, `width`, and `height` around one person's
+head and shoulders. Confirm the crop preview before running RealESRGAN or
+FLUX; no project-specific custom node is required.
 
 Good input:
 
@@ -22,9 +23,9 @@ Good input:
 - limited motion blur and obstruction;
 - historically accurate visible clothing if preservation matters.
 
-If the source is a group photograph, crop the person first with ComfyUI's
-built-in **Crop Image** node or any image editor. The workflow's 832 × 1120
-resize uses a center crop; it cannot decide which person is important.
+For a group photograph, use the same bounding box to select one person. The
+later 832 × 1120 scale is not a subject detector, so the crop box is the step
+that determines the portrait framing.
 
 ## Required model files
 
@@ -44,11 +45,13 @@ The filenames, pinned sources, sizes, and SHA-256 hashes are recorded in
 
 1. Open the workflow JSON, not the `.api.json` file, in the ComfyUI editor.
 2. Check every model loader. A red loader means the named file has not been installed or imported.
-3. Select the source image and edit the positive prompt. Keep the
-   `hoi4_portrait,` trigger and describe only the visible person.
-4. Leave background replacement off for the first run.
-5. Queue once. If the full workflow is too heavy, turn the restoration switch off or use the ESRGAN-only graph.
-6. Inspect the 832 × 1120 master before using the 156 × 210 game-size file.
+3. Select the source image, set the crop box around the head and shoulders,
+   and confirm the crop preview.
+4. Edit the positive prompt. Keep the `hoi4_portrait,` trigger and describe
+   only the visible person.
+5. Leave background replacement off for the first run.
+6. Queue once. If the full workflow is too heavy, turn the restoration switch off or use the ESRGAN-only graph.
+7. Inspect the 832 × 1120 master before using the 156 × 210 game-size file.
 
 Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
 
@@ -67,8 +70,8 @@ optional FLUX restoration pass.
 | --- | --- |
 | Loader is red | Install/import the exact filename from `models.json`, then refresh ComfyUI. |
 | Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 32 GB+ GPU. |
-| Wrong person in a group photo | Crop to one person before loading the workflow. |
+| Wrong person or full-body framing | Adjust the source bounding box until the crop preview is head-and-shoulders. |
 | Background appears too early | Use the current workflow; only the post-generation background group may replace it. |
-| Style is weak | Keep `hoi4_portrait` in the prompt and use the default LoRA strength `0.8`. |
-| Identity changes | Use the source workflow, try strength `0.7`, disable optional FLUX restoration, and remove speculative traits. |
-| Final looks too smooth | Use the public 20-step preset; six-step local previews are for reduced-resource validation. |
+| Style is weak | Keep `hoi4_portrait` in the prompt; increase LoRA strength cautiously from the `0.7` default. |
+| Identity or position changes | Confirm the crop, keep the encoded-source sampler connection, disable optional restoration if needed, and remove speculative traits. |
+| Final looks too smooth | Try 10 or 20 scheduler steps and compare against the six-step default with the same seed. |

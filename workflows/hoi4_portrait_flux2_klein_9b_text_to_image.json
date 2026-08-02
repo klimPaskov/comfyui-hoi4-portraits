@@ -253,7 +253,7 @@
       },
       "widgets_values": [
         "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-        0.8
+        0.7
       ]
     },
     {
@@ -579,7 +579,7 @@
     {
       "id": 26,
       "type": "Flux2Scheduler",
-      "title": "FLUX.2 schedule - 20 steps",
+      "title": "FLUX.2 schedule - 6 steps",
       "pos": [
         2440,
         300
@@ -635,7 +635,7 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        20,
+        6,
         832,
         1120
       ]
@@ -1601,7 +1601,7 @@
     "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
     "workflow_kind": "text_to_image",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.1.0",
+    "graph_version": "2.2.0",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
     "core_nodes_only": true,

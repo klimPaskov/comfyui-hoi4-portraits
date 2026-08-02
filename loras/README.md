@@ -8,6 +8,11 @@ Comfy Cloud users should import the same Hugging Face file through
 **Models → Import**, select **LoRA**, and wait for the filename to appear in
 the `LoraLoaderModelOnly` dropdown.
 
-The trigger word is `hoi4_portrait`. Start with LoRA strength `0.8`; try `0.7`
-when a source portrait needs a lighter influence. After the trigger, describe
-only the person—not the game/style, background, lighting, or rendering.
+The trigger word is `hoi4_portrait`. Start with LoRA strength `0.7`, Euler,
+six steps, and CFG 5. Try 8, 10, or 20 steps with the same seed when a source needs
+more refinement. After the trigger, describe only the person—not the
+game/style, background, lighting, or rendering.
+
+For source portraits, crop to head and shoulders before RealESRGAN and use the
+encoded processed portrait as the sampler starting latent. The current project
+workflows already wire this correctly.

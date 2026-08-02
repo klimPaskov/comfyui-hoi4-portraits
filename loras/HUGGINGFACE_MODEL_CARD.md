@@ -25,20 +25,25 @@ workflows.
 - Base: `black-forest-labs/FLUX.2-klein-base-9B-fp8`
 - Training step: 2,500 (epoch 5)
 - ComfyUI loader: `LoraLoaderModelOnly`
-- Suggested starting strength: `0.8`
+- Suggested starting strength: `0.7`
 
 ## Recommended ComfyUI stack
 
 1. `UNETLoader`: `flux-2-klein-base-9b-fp8.safetensors`
 2. `CLIPLoader`: `qwen_3_8b_fp8mixed.safetensors`, type `flux2`
 3. `VAELoader`: `flux2-vae.safetensors`
-4. `LoraLoaderModelOnly`: this LoRA at strength `0.8`
-5. 20 steps, CFG 5, Euler sampler, `Flux2Scheduler`
+4. `LoraLoaderModelOnly`: this LoRA at strength `0.7`
+5. Six steps, CFG 5, Euler sampler, `Flux2Scheduler`
 
-Use `0.7` when a source portrait needs a lighter LoRA influence. In the
-positive prompt, describe only the visible person. Do not request a game
-style, background, lighting, rendering, restoration, transformation, or
-preservation behavior.
+Try 8, 10, or 20 scheduler steps with the same seed if a source benefits from more
+refinement. In the positive prompt, describe only the visible person. Do not
+request a game style, background, lighting, rendering, restoration,
+transformation, or preservation behavior.
+
+For image-to-image use, crop the source to head and shoulders before ESRGAN,
+then encode that processed image as both the FLUX.2 reference and the sampler
+starting latent. Starting from an empty latent can change pose and framing even
+when reference conditioning is present.
 
 ## Example prompt
 

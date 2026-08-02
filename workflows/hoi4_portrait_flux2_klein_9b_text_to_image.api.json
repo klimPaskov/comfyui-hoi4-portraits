@@ -37,7 +37,7 @@
         0
       ],
       "lora_name": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-      "strength_model": 0.8
+      "strength_model": 0.7
     },
     "_meta": {
       "title": "Apply the HOI4 FLUX.2 Klein 9B LoRA"
@@ -122,12 +122,12 @@
   "26": {
     "class_type": "Flux2Scheduler",
     "inputs": {
-      "steps": 20,
+      "steps": 6,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 20 steps"
+      "title": "FLUX.2 schedule - 6 steps"
     }
   },
   "27": {

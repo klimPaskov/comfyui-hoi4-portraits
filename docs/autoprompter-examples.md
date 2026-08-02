@@ -6,6 +6,17 @@ instruction remains at
 [`prompts/autoprompter_instruction.txt`](../prompts/autoprompter_instruction.txt)
 for use with an external vision-language model.
 
+## Use it with the Cloud-compatible workflows
+
+1. Send the portrait and the complete instruction file to your vision-language
+   model outside ComfyUI.
+2. Confirm that its one-line answer starts with `hoi4_portrait,` and contains
+   no treatment or unsupported identity claims.
+3. Remove uncertain color/lighting language and any contradictory pose words.
+4. Paste the validated line into the source workflow's positive
+   `CLIPTextEncode` node. The workflow itself remains core-node-only and can be
+   imported into Comfy Cloud.
+
 ## Required output contract
 
 Output one English line that begins with `hoi4_portrait,` and describes only
@@ -17,30 +28,36 @@ rendering language, restoration instructions, transformation instructions, or
 preservation commands. The trigger and LoRA supply the learned look; the
 reference-latent workflow supplies the source image.
 
-## Person-only examples
+## Validated outputs used in the gallery
+
+Qwen generated these from the six latest source portraits. We then applied the
+prompt contract: unsupported color or lighting claims were removed and
+contradictions were corrected before sending the line to FLUX.2. These exact
+validated descriptions are printed beside the matching images in the main
+README.
 
 ```text
-hoi4_portrait, a middle-aged man with short dark hair brushed back, a small neat moustache, a calm closed-mouth expression and gaze angled slightly upward, wearing a dark three-piece suit, white shirt, and tie, seated at a slight angle with his hands folded and shown from the waist up.
+hoi4_portrait, middle-aged man with short wavy hair, a moustache, wearing a suit and tie with a visible collar and lapels, looking slightly upward with a subtle smile, head tilted slightly to his right, shoulders squared, shown from the chest up.
 ```
 
 ```text
-hoi4_portrait, a middle-aged man with short dark hair, round dark-rimmed glasses, a long narrow face, a slightly open mouth, and a gaze turned to his left, wearing a dark jacket over a light collared shirt and tie, shown from the shoulders up.
+hoi4_portrait, young woman with short dark hair parted to the side, no glasses, wearing a high-collared garment with a visible round fastening, looking directly at the camera with a neutral expression, head slightly tilted, shown from the chest up in an oval crop.
 ```
 
 ```text
-hoi4_portrait, a young woman with light skin, dark wavy hair swept back from a side part, wide eyes, a small closed mouth, and a calm direct gaze, wearing a dark dress with a broad light sailor collar and a round pendant, shown from the chest up.
+hoi4_portrait, young man with dark hair parted on the left, clean-shaven, wearing a collared shirt and tie, looking upward and to his right with a slight smile, head tilted, shown from the shoulders up in three-quarter profile with a visible ear, nose, and chin.
 ```
 
 ```text
-hoi4_portrait, an older man with light skin, receding short light hair combed back, deep-set eyes, a long narrow face, a slightly open mouth, and a gaze angled upward, wearing a dark overcoat, white shirt, and dark tie, shown from the chest up at a slight angle.
+hoi4_portrait, middle-aged man with short dark hair, no facial hair, wearing a high-collared uniform with decorative cords and a visible medal, looking slightly to his right with a neutral expression, head tilted slightly and mouth closed, shown from the chest up.
 ```
 
 ```text
-hoi4_portrait, a middle-aged man with a bald crown and short dark hair at the sides, straight brows, a long face, a closed mouth, and a direct gaze, wearing a dark clerical cassock with a piped collar and shoulder cape, shown from the chest up.
+hoi4_portrait, a man with short dark hair, round-rimmed glasses, no facial hair, and a long narrow face, dressed in a dark suit with a white collared shirt and dark tie, looking directly at the camera with a neutral expression, his head and shoulders angled slightly to his right, shown from the chest up in three-quarter view.
 ```
 
 ```text
-hoi4_portrait, a middle-aged woman with dark hair pinned into a low bun, arched brows, a firm closed-mouth expression, and a direct gaze, wearing a high-necked dark jacket with a small round brooch, shown from the chest up at a slight angle.
+hoi4_portrait, middle-aged man with a receding hairline, no facial hair, a prominent nose, defined jaw and chin, wearing a high-collared garment with a decorative corded tie and buttoned front, looking directly at the camera with a neutral expression and a slight head tilt, shown from the chest up.
 ```
 
 ## What to remove

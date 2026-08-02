@@ -2,6 +2,24 @@
 
 All notable project changes are recorded here.
 
+## 2.2.0 — 2026-08-02
+
+- Added an adjustable, built-in head-and-shoulders crop before RealESRGAN in
+  both source workflows, with a preview checkpoint before FLUX runs.
+- Changed image-to-image sampling to start from the encoded processed source
+  instead of an empty latent, substantially reducing pose and framing drift.
+- Set the selected defaults to LoRA strength `0.7`, Euler, six steps, and CFG 5;
+  added fixed-seed 6/8/10/20-step comparison evidence.
+- Replaced the prior gallery with three full-restoration triptychs, three
+  ESRGAN-only triptychs, and three no-input portraits made from the latest
+  supplied sources.
+- Recorded the validated, person-only Qwen autoprompter description used for
+  every source example.
+- Extended structural tests for crop order, source-latent ancestry, defaults,
+  prompt policy, and non-overlapping core-node layout.
+- Restored the canonical MIT license text so GitHub can identify the repository
+  license; third-party and base-model restrictions remain documented separately.
+
 ## 2.1.0 — 2026-08-01
 
 - Changed every default LoRA strength to `0.8`, with `0.7` documented as the

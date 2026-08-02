@@ -21,7 +21,8 @@ BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
-STYLE_LORA_STRENGTH = 0.8
+STYLE_LORA_STRENGTH = 0.7
+DEFAULT_STEPS = 6
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 
@@ -208,11 +209,36 @@ def _source_nodes() -> list[Node]:
             widgets=["source_portrait.jpg", "image"],
         ),
         _node(
+            9,
+            "PrimitiveBoundingBox",
+            "Adjust the head-and-shoulders crop rectangle",
+            group,
+            (520, 120),
+            size=(360, 170),
+            inputs={"x": 0, "y": 0, "width": 532, "height": 716},
+            input_types={"x": "INT", "y": "INT", "width": "INT", "height": "INT"},
+            outputs=["BOUNDING_BOX"],
+            output_types=["BOUNDING_BOX"],
+            widgets=[0, 0, 532, 716],
+        ),
+        _node(
+            11,
+            "ImageCropV2",
+            "Crop source to head and shoulders before processing",
+            group,
+            (520, 350),
+            size=(360, 100),
+            inputs={"image": Link(5), "crop_region": Link(9)},
+            input_types={"image": "IMAGE", "crop_region": "BOUNDING_BOX"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+        ),
+        _node(
             6,
             "UpscaleModelLoader",
             "Load RealESRGAN x2",
             group,
-            (520, 120),
+            (100, 500),
             inputs={"model_name": ESRGAN_MODEL},
             input_types={"model_name": "COMBO"},
             outputs=["UPSCALE_MODEL"],
@@ -225,8 +251,8 @@ def _source_nodes() -> list[Node]:
             "ImageUpscaleWithModel",
             "Restore and upscale with ESRGAN",
             group,
-            (520, 300),
-            inputs={"upscale_model": Link(6), "image": Link(5)},
+            (520, 510),
+            inputs={"upscale_model": Link(6), "image": Link(11)},
             input_types={"upscale_model": "UPSCALE_MODEL", "image": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
@@ -236,13 +262,25 @@ def _source_nodes() -> list[Node]:
             "ImageScale",
             "Fit portrait to the 832 x 1120 work canvas",
             group,
-            (520, 480),
+            (520, 680),
             size=(360, 150),
             inputs={"image": Link(7), "upscale_method": "lanczos", "width": 832, "height": 1120, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
             widgets=["lanczos", 832, 1120, "center"],
+        ),
+        _node(
+            10,
+            "PreviewImage",
+            "Confirm head-and-shoulders processing before FLUX",
+            group,
+            (100, 680),
+            size=(360, 330),
+            inputs={"images": Link(8)},
+            input_types={"images": "IMAGE"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
         ),
     ]
 
@@ -321,18 +359,6 @@ def _edit_stage(
             output_types=["CONDITIONING"],
         ),
         _node(
-            i + 5,
-            "EmptyFlux2LatentImage",
-            "Set 832 x 1120 generation canvas",
-            group,
-            (x + 500, 660),
-            inputs={"width": 832, "height": 1120, "batch_size": 1},
-            input_types={"width": "INT", "height": "INT", "batch_size": "INT"},
-            outputs=["LATENT"],
-            output_types=["LATENT"],
-            widgets=[832, 1120, 1],
-        ),
-        _node(
             i + 6,
             "CFGGuider",
             f"Guide {title_prefix.lower()} pass",
@@ -371,14 +397,14 @@ def _edit_stage(
         _node(
             i + 9,
             "Flux2Scheduler",
-            "FLUX.2 schedule - 20 steps",
+            f"FLUX.2 schedule - {DEFAULT_STEPS} steps",
             group,
             (x + 900, 660),
-            inputs={"steps": 20, "width": 832, "height": 1120},
+            inputs={"steps": DEFAULT_STEPS, "width": 832, "height": 1120},
             input_types={"steps": "INT", "width": "INT", "height": "INT"},
             outputs=["SIGMAS"],
             output_types=["SIGMAS"],
-            widgets=[20, 832, 1120],
+            widgets=[DEFAULT_STEPS, 832, 1120],
         ),
         _node(
             i + 10,
@@ -392,7 +418,7 @@ def _edit_stage(
                 "guider": Link(i + 6),
                 "sampler": Link(i + 8),
                 "sigmas": Link(i + 9),
-                "latent_image": Link(i + 5),
+                "latent_image": Link(i + 2),
             },
             input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
             outputs=["output", "denoised_output"],
@@ -492,14 +518,14 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
         _node(
             26,
             "Flux2Scheduler",
-            "FLUX.2 schedule - 20 steps",
+            f"FLUX.2 schedule - {DEFAULT_STEPS} steps",
             group,
             (x + 900, 300),
-            inputs={"steps": 20, "width": 832, "height": 1120},
+            inputs={"steps": DEFAULT_STEPS, "width": 832, "height": 1120},
             input_types={"steps": "INT", "width": "INT", "height": "INT"},
             outputs=["SIGMAS"],
             output_types=["SIGMAS"],
-            widgets=[20, 832, 1120],
+            widgets=[DEFAULT_STEPS, 832, 1120],
         ),
         _node(
             27,
@@ -663,7 +689,7 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
 def _groups(*, has_source: bool, has_restoration: bool) -> list[Group]:
     groups: list[Group] = []
     if has_source:
-        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 720), "#557a46"))
+        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 1040), "#557a46"))
     groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 390, 760), "#3f789e"))
     if has_restoration:
         groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1700, 860), "#8b6f47"))
@@ -727,6 +753,8 @@ def build_full_power() -> Graph:
         metadata={
             "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
             "flux_restoration_default": True,
+            "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
+            "pose_preservation": "encoded_source_latent_is_sampler_start",
             "background_order": "after_final_lora_styled_decode",
         },
     )
@@ -756,6 +784,8 @@ def build_esrgan_only() -> Graph:
         metadata={
             "restoration_order": ["RealESRGAN_x2plus"],
             "flux_restoration_default": False,
+            "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
+            "pose_preservation": "encoded_source_latent_is_sampler_start",
             "background_order": "after_final_lora_styled_decode",
         },
     )
@@ -863,7 +893,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             "description": graph.description,
             "workflow_kind": graph.kind,
             "project": "comfyui-hoi4-portraits",
-            "graph_version": "2.1.0",
+            "graph_version": "2.2.0",
             "base_model": BASE_MODEL,
             "style_lora": STYLE_LORA,
             "core_nodes_only": True,
@@ -902,7 +932,7 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
             }
         )
     manifest = {
-        "schema_version": "2.1.0",
+        "schema_version": "2.2.0",
         "base_model": BASE_MODEL,
         "text_encoder": TEXT_ENCODER,
         "vae": VAE_MODEL,

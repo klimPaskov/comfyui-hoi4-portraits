@@ -29,8 +29,11 @@ The validator checks:
 - RealESRGAN → optional FLUX restoration order;
 - restoration switch bypass to direct ESRGAN output;
 - LoRA-patched model ancestry for the final styled decode;
-- final-only background replacement dependency order.
-- LoRA strength `0.8` in all default graphs;
+- final-only background replacement dependency order;
+- adjustable crop → RealESRGAN order in both source graphs;
+- the encoded processed source as the sampler's starting latent, with no empty
+  latent in either image-to-image graph;
+- LoRA strength `0.7` and six scheduler steps in all default graphs;
 - person-only positive prompts after the required `hoi4_portrait,` trigger.
 
 ## Unit tests
@@ -52,31 +55,31 @@ library.
 
 ## Local inference evidence
 
-On 2026-08-01, all six pinned model files were downloaded and checksum-
+On 2026-08-02, all six pinned model files were downloaded and checksum-
 verified. ComfyUI 0.25.0 then ran on a 16 GB Apple-silicon Mac with MPS,
 low-VRAM offloading, split cross-attention, no previews, and
 `--disable-all-custom-nodes`.
 
-The public graphs remain 832 × 1120, Euler, 20 steps, CFG 5. To complete a
-broad local functional suite within the machine's resource limit, test copies
-were overridden to 416 × 560. FLUX restoration used two steps; final LoRA
-generation used six steps, CFG 5, Euler, and LoRA strength `0.8`.
+The public graphs use an 832 × 1120 canvas, LoRA strength `0.7`, Euler, six
+steps, and CFG 5. To complete a broad local functional suite within the
+machine's resource limit, test copies were overridden to 416 × 560. A fixed-
+seed control also ran the same source for 8, 10, and 20 steps.
 
 Successful runs:
 
-- five source portraits through RealESRGAN → FLUX restoration → final LoRA;
-- five different source portraits through RealESRGAN → final LoRA;
-- five no-input text-to-image portraits;
-- one final-image-only BiRefNet background replacement run;
-- seven controlled setting variants using a fixed prompt and seed.
+- three source portraits through crop → RealESRGAN → FLUX restoration → final LoRA;
+- three source portraits through crop → RealESRGAN → final LoRA;
+- three no-input text-to-image portraits;
+- one fixed-source, fixed-seed Euler comparison at 6, 8, 10, and 20 steps.
 
 The background test replaced the final decode with a completed saved image,
 then evaluated only BiRefNet, compositing, and the final switch. It completed
 in 7.73 seconds and proves that background work is downstream of generation.
 
-The reduced previews are evidence of executable nodes and connections, not a
-claim that six steps match public 20-step quality. See [the rendered results
-and setting analysis](test-results.md).
+The reduced previews are evidence of executable nodes and connections. They
+also make the runtime and visual differences between 6, 8, 10, and 20 steps
+directly inspectable. See [the rendered results and setting
+analysis](test-results.md).
 
 Mechanical validation remains separate from inference validation so resource
 limits cannot hide malformed nodes or connections.

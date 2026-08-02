@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DIST = ROOT / "dist"
-FIXED_ZIP_TIME = (2026, 8, 1, 0, 0, 0)
+FIXED_ZIP_TIME = (2026, 8, 2, 0, 0, 0)
 ROOT_FILES = {
     "CHANGELOG.md",
     "CONTRIBUTING.md",
@@ -65,7 +65,7 @@ def _build_zip(path: Path, files: list[Path], version: str) -> dict[str, str]:
             archive.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
         manifest = json.dumps(
             {
-                "schema_version": "2.1.0",
+                "schema_version": "2.2.0",
                 "version": version,
                 "models_bundled": False,
                 "custom_nodes_bundled": False,

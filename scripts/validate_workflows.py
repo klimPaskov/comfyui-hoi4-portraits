@@ -19,6 +19,7 @@ ALLOWED_CORE_NODES = {
     "EmptyFlux2LatentImage",
     "Flux2Scheduler",
     "ImageCompositeMasked",
+    "ImageCropV2",
     "ImageScale",
     "ImageUpscaleWithModel",
     "KSamplerSelect",
@@ -26,6 +27,7 @@ ALLOWED_CORE_NODES = {
     "LoadImage",
     "LoraLoaderModelOnly",
     "PreviewImage",
+    "PrimitiveBoundingBox",
     "RandomNoise",
     "ReferenceLatent",
     "RemoveBackground",
@@ -225,8 +227,12 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     lora_node = next((node_id for node_id, node in api.items() if node.get("class_type") == "LoraLoaderModelOnly"), None)
     if lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
-    elif api[lora_node]["inputs"].get("strength_model") != 0.8:
-        errors.append(f"{path}: style LoRA strength must default to 0.8")
+    elif api[lora_node]["inputs"].get("strength_model") != 0.7:
+        errors.append(f"{path}: style LoRA strength must default to 0.7")
+
+    for node_id, node in api.items():
+        if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != 6:
+            errors.append(f"{path}: FLUX.2 scheduler node {node_id} must default to six steps")
 
     person_prompt_node = "20" if workflow_id.endswith("text_to_image") else "40"
     person_prompt = str(api.get(person_prompt_node, {}).get("inputs", {}).get("text", ""))
@@ -276,16 +282,38 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: FLUX restoration does not consume ESRGAN output")
         if api.get("42", {}).get("inputs", {}).get("pixels") != ["32", 0]:
             errors.append(f"{path}: LoRA styling does not consume the restoration switch output")
+        if api.get("30", {}).get("inputs", {}).get("latent_image") != ["22", 0]:
+            errors.append(f"{path}: FLUX restoration does not start from the encoded cropped portrait")
+        if api.get("50", {}).get("inputs", {}).get("latent_image") != ["42", 0]:
+            errors.append(f"{path}: LoRA styling does not start from the encoded restored portrait")
     elif workflow_id.endswith("esrgan_only"):
         if extra.get("restoration_order") != ["RealESRGAN_x2plus"]:
             errors.append(f"{path}: ESRGAN-only restoration metadata is wrong")
         if api.get("42", {}).get("inputs", {}).get("pixels") != ["8", 0]:
             errors.append(f"{path}: ESRGAN-only workflow does not style the ESRGAN result")
+        if api.get("50", {}).get("inputs", {}).get("latent_image") != ["42", 0]:
+            errors.append(f"{path}: LoRA styling does not start from the encoded cropped ESRGAN portrait")
     elif workflow_id.endswith("text_to_image"):
         if any(node.get("class_type") in {"UpscaleModelLoader", "ImageUpscaleWithModel", "VAEEncode", "ReferenceLatent"} for node in api.values()):
             errors.append(f"{path}: text-to-image workflow contains source/restoration nodes")
     else:
         errors.append(f"{path}: unexpected workflow id {workflow_id!r}")
+
+    if not workflow_id.endswith("text_to_image"):
+        if any(node.get("class_type") == "EmptyFlux2LatentImage" for node in api.values()):
+            errors.append(f"{path}: source workflow must not start sampling from an empty latent")
+        crop_box = api.get("9", {})
+        crop = api.get("11", {})
+        if crop_box.get("class_type") != "PrimitiveBoundingBox":
+            errors.append(f"{path}: source crop must use the current native bounding-box control")
+        if crop.get("class_type") != "ImageCropV2" or crop.get("inputs", {}).get("image") != ["5", 0] or crop.get("inputs", {}).get("crop_region") != ["9", 0]:
+            errors.append(f"{path}: source must enter an adjustable native crop before processing")
+        if api.get("7", {}).get("inputs", {}).get("image") != ["11", 0]:
+            errors.append(f"{path}: ESRGAN must consume the explicit head-and-shoulders crop")
+        if extra.get("source_crop") != "native_adjustable_head_and_shoulders_before_esrgan":
+            errors.append(f"{path}: source crop metadata is missing")
+        if extra.get("pose_preservation") != "encoded_source_latent_is_sampler_start":
+            errors.append(f"{path}: pose-preservation metadata is missing")
     return errors
 
 

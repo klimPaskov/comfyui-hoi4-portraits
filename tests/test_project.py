@@ -40,6 +40,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_hashes_match_files(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
+        self.assertEqual(manifest["schema_version"], "2.2.0")
         for item in manifest["workflows"]:
             for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
                 data = (ROOT / item[path_key]).read_bytes()
@@ -59,6 +60,30 @@ class WorkflowTests(unittest.TestCase):
             "background description",
         ):
             self.assertNotIn(forbidden, instruction)
+        self.assertIn("for monochrome or sepia sources, do not infer skin tone", instruction)
+        self.assertIn("do not contradict yourself", instruction)
+
+    def test_selected_lora_and_sampling_defaults(self) -> None:
+        self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 0.7)
+        self.assertEqual(build_workflows.DEFAULT_STEPS, 6)
+        for workflow in (ROOT / "workflows").glob("*.api.json"):
+            api = json.loads(workflow.read_text(encoding="utf-8"))
+            lora = next(node for node in api.values() if node["class_type"] == "LoraLoaderModelOnly")
+            self.assertEqual(lora["inputs"]["strength_model"], 0.7, workflow.name)
+            schedules = [node for node in api.values() if node["class_type"] == "Flux2Scheduler"]
+            self.assertTrue(schedules, workflow.name)
+            self.assertTrue(all(node["inputs"]["steps"] == 6 for node in schedules), workflow.name)
+
+    def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
+        for name in ("full_power", "esrgan_only"):
+            path = ROOT / "workflows" / f"hoi4_portrait_flux2_klein_9b_{name}.api.json"
+            api = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(api["11"]["class_type"], "ImageCropV2")
+            self.assertEqual(api["11"]["inputs"]["image"], ["5", 0])
+            self.assertEqual(api["11"]["inputs"]["crop_region"], ["9", 0])
+            self.assertEqual(api["7"]["inputs"]["image"], ["11", 0])
+            self.assertNotIn("EmptyFlux2LatentImage", {node["class_type"] for node in api.values()})
+            self.assertEqual(api["50"]["inputs"]["latent_image"], ["42", 0])
 
     def test_person_prompt_policy_allows_hairstyle_but_rejects_style(self) -> None:
         self.assertEqual(validate_workflows._non_person_prompt_terms("a different hairstyle"), [])
@@ -120,6 +145,22 @@ class DocumentationTests(unittest.TestCase):
         table = "\n".join(line for line in section.splitlines() if line.startswith("|"))
         self.assertEqual(table.count("workflows/hoi4_portrait_flux2_klein_9b_"), 3)
         self.assertNotIn("krea", table.casefold())
+
+    def test_readme_contains_new_gallery_and_autoprompter_descriptions(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertEqual(readme.count("docs/assets/test-runs/full-restoration-"), 3)
+        self.assertEqual(readme.count("docs/assets/test-runs/esrgan-only-"), 3)
+        self.assertIn("docs/assets/test-runs/random-portraits.jpg", readme)
+        self.assertIn("docs/assets/test-runs/step-comparison.jpg", readme)
+        self.assertEqual(readme.count("Autoprompter description:"), 6)
+        for obsolete in (
+            "full-restoration-04.jpg",
+            "full-restoration-05.jpg",
+            "esrgan-only-04.jpg",
+            "esrgan-only-05.jpg",
+            "settings-matrix.jpg",
+        ):
+            self.assertFalse((ROOT / "docs" / "assets" / "test-runs" / obsolete).exists(), obsolete)
 
     def test_documented_positive_prompt_examples_are_person_only(self) -> None:
         documents = [

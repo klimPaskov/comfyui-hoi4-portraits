@@ -31,9 +31,13 @@ For source workflows, upload:
 Background replacement is off by default, so a missing background asset does
 not need to execute on the default lazy branch.
 
-Keep the LoRA loader at strength `0.8` for the documented default. Every
+Keep the LoRA loader at strength `0.7` for the documented default. Every
 positive prompt must begin with `hoi4_portrait,` and then describe only the
 person; do not add game/style, background, lighting, or rendering language.
+
+In either source workflow, set the built-in bounding box around the head and
+shoulders and check the crop preview before queueing. The crop nodes are in
+Comfy Cloud's core catalog.
 
 ## MCP validation
 
@@ -60,7 +64,9 @@ and subscription limits still apply.
 
 ## Current preflight evidence
 
-On 2026-08-01, all three API graphs passed Comfy Cloud MCP `dry_run` preflight.
+On 2026-08-02, all three v2.2.0 API graphs passed Comfy Cloud MCP `dry_run`
+preflight. The only advisory was the expected project-LoRA catalog miss before
+custom import.
 Cloud GPU runs also completed the ESRGAN-only, full-power, text-to-image, and
 final background-compositing paths using a compatible catalog LoRA at zero
 strength. The project LoRA remains unavailable on plans without custom model

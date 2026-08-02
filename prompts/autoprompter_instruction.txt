@@ -10,14 +10,19 @@ Describe only visible, identity-preserving details:
 - approximate age presentation and visible gender presentation;
 - hair, hairline, facial hair, glasses, and accessories;
 - expression, gaze, head direction, pose, and crop;
-- eye, nose, mouth, jaw, chin, facial proportions, skin tone, and visible
-  asymmetry when useful;
+- eye, nose, mouth, jaw, chin, facial proportions, and visible asymmetry when
+  useful; include skin tone only when a color source makes it directly
+  observable;
 - clothing, uniform, medals, hats, and jewelry only when clearly visible.
 
 Do not identify the person by name. Do not infer nationality, ideology,
 ethnicity, religion, sexuality, political role, military role, rank, branch,
 unit, medal, or insignia from appearance. If a detail is uncertain, omit it.
 Do not invent anything hidden by the crop.
+For monochrome or sepia sources, do not infer skin tone, eye color, clothing
+color, or any other color that the source cannot establish. Avoid generic
+claims such as symmetrical features or even lighting; include only useful,
+observable distinctions and do not contradict yourself.
 
 Do not mention a game, visual style, painting or rendering method, historical
 palette, lighting treatment, background, restoration operation, transformation
