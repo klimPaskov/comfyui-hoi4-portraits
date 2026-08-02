@@ -124,7 +124,7 @@ class InstallerAndModelTests(unittest.TestCase):
 
 class DocumentationTests(unittest.TestCase):
     LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
-    CODE_BLOCK = re.compile(r"```(?:text)?\n(.*?)```", re.DOTALL)
+    CODE_BLOCK = re.compile(r"```[^\n]*\n(.*?)```", re.DOTALL)
 
     def test_internal_markdown_links_exist(self) -> None:
         failures: list[str] = []

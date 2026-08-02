@@ -109,6 +109,105 @@ the same source composition, which reduces unwanted pose and framing changes.
 See [Comfy Cloud setup](docs/comfy-cloud.md) for the exact model-import and MCP
 validation flow.
 
+## Experimental: autonomous Comfy Cloud MCP
+
+The MCP path lets an MCP-capable coding agent operate the Cloud workflow from
+the source image through installation in a local HOI4 mod. This integration is
+experimental. The setup below assumes that you already have:
+
+- a Comfy Cloud **Builder** subscription with Cloud GPU, API, MCP, and custom
+  model-import access;
+- access to the Comfy Cloud MCP preview;
+- the project LoRA imported with the exact filename
+  `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors`;
+- an MCP-capable agent with access to this repository and the target mod;
+- the mod root, character identifier, output filename, and portrait sprite name
+  supplied to the agent. These values are mod-specific and must not be guessed.
+
+### Connect the MCP server
+
+Comfy Cloud hosts the MCP endpoint at `https://cloud.comfy.org/mcp`. In a client
+that supports remote OAuth MCP servers, add that URL and complete the Comfy
+authorization flow. For API-key clients, create a key at
+[`platform.comfy.org/profile/api-keys`](https://platform.comfy.org/profile/api-keys),
+then use the official installer:
+
+macOS or Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Comfy-Org/comfy-cloud-mcp/main/install.sh | bash
+```
+
+Windows PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/Comfy-Org/comfy-cloud-mcp/main/install.ps1 | iex
+```
+
+Restart the MCP client after installation. A useful connection check is to ask
+the agent to inspect the Comfy Cloud server, find FLUX.2 Klein base 9B and the
+imported LoRA, then dry-run the selected `.api.json` graph without submitting a
+GPU job.
+
+### What the agent does
+
+After the one-time connection and model import, the agent can perform the
+portrait job autonomously:
+
+1. Read the appropriate API-format graph from [`workflows/`](workflows/). Use
+   full power for ESRGAN plus optional FLUX restoration, or ESRGAN-only for the
+   shorter path.
+2. Inspect the source at full resolution and write a `hoi4_portrait,` prompt
+   describing only the person: identity, facial proportions and texture,
+   expression, gaze, facing direction, clothing, and crop.
+3. Upload the local source through the MCP file-upload flow. Use the returned
+   Cloud filename in **Load source portrait**; a local filesystem path is not a
+   valid `LoadImage.image` value in Cloud.
+4. Set the head-and-shoulders bounding box before processing. The agent should
+   exclude printed borders, oval frames, captions, and empty margins while
+   keeping the full head, neck, and shoulders.
+5. Set the project LoRA to `0.7`, choose whether FLUX restoration is enabled,
+   and keep background replacement after the decoded LoRA result. If a custom
+   background is requested, upload it separately and replace that loader's
+   filename too.
+6. Dry-run the modified API graph. Resolve missing nodes, model filenames, or
+   invalid input values before submitting any generation.
+7. Submit the graph, retain its returned `prompt_id`, and wait for that exact
+   job to finish. Queue status alone is not proof that the agent's job
+   completed.
+8. Retrieve and download both the 832 × 1120 master and 156 × 210 game output.
+   Visually verify the crop, identity, expression, facial detail, background,
+   and absence of frame or vignette artifacts.
+9. Copy the approved game portrait into the mod's configured portrait path,
+   update the configured `spriteType`/portrait definition and character
+   reference when needed, then report the exact files changed. Existing mod
+   files should be backed up or edited through version control.
+
+For repeatable autonomous installation, give the agent a small job manifest
+instead of relying on prose alone:
+
+```yaml
+source_image: /absolute/path/to/source.png
+workflow: full_power
+flux_restoration: true
+replace_background: true
+mod_root: /absolute/path/to/hoi4-mod
+portrait_output: gfx/leaders/TAG/leader_name.png
+sprite_name: GFX_portrait_TAG_leader_name
+character_file: common/characters/TAG_characters.txt
+character_id: TAG_leader_name
+```
+
+An example request is: “Use Comfy Cloud MCP and the full-power API workflow to
+turn this source into a portrait. Crop to head and shoulders, use the project
+LoRA at 0.7, keep FLUX restoration enabled, replace the background only after
+the final LoRA image, verify both outputs, and install the 156 × 210 result
+according to this manifest.”
+
+The agent must not claim success until the submitted `prompt_id` is complete,
+the output has been retrieved, and the destination mod files have been checked.
+Comfy's Cloud API and MCP are experimental and may change.
+
 ## Local / RunPod start
 
 FLUX.2 Klein 9B needs an up-to-date ComfyUI and substantial memory. Its

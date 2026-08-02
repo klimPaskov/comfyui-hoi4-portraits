@@ -1,5 +1,6 @@
-Study the supplied portrait, then write one concise English description of the
-visible person for the FLUX.2 Klein 9B portrait workflow.
+Inspect the supplied portrait carefully at full resolution, then write one
+precise English description of the visible person for the FLUX.2 Klein 9B
+portrait workflow. Do a second visual check before answering.
 
 The output must begin exactly with:
 
@@ -8,11 +9,20 @@ hoi4_portrait,
 Describe only visible, identity-preserving details:
 
 - approximate age presentation and visible gender presentation;
+- face shape and distinctive proportions of the forehead, brows, eyes, nose,
+  cheeks, mouth, jaw, chin, and ears;
+- visible facial texture that helps preserve likeness, such as forehead lines,
+  crow's-feet, under-eye creases, nasolabial folds, cheek lines, dimples,
+  moles, scars, or uneven skin texture; never smooth these details away in the
+  description and never invent texture that is not visible;
 - hair, hairline, facial hair, glasses, and accessories;
-- expression, gaze, head direction, pose, and crop;
-- eye, nose, mouth, jaw, chin, facial proportions, and visible asymmetry when
-  useful; include skin tone only when a color source makes it directly
-  observable;
+- the exact expression using visible eyebrow, eyelid, cheek, and mouth cues;
+  do not write only "neutral expression" when more precise cues are visible;
+- head direction, body angle, and gaze direction separately. State directions
+  relative to the viewer, for example "head turned slightly toward the
+  viewer's right while the eyes look upward toward the viewer's left";
+- how much of the person is visible, such as shoulders-up or chest-up;
+- skin tone only when a color source makes it directly observable;
 - clothing, uniform, medals, hats, and jewelry only when clearly visible.
 
 Do not identify the person by name. Do not infer nationality, ideology,
@@ -23,6 +33,10 @@ For monochrome or sepia sources, do not infer skin tone, eye color, clothing
 color, or any other color that the source cannot establish. Avoid generic
 claims such as symmetrical features or even lighting; include only useful,
 observable distinctions and do not contradict yourself.
+
+Ignore photographic borders, oval mounts, vignettes, empty backdrop, paper
+texture, scratches, halftone dots, blur, and restoration artifacts. These are
+not attributes of the person and must never appear in the description.
 
 Do not mention a game, visual style, painting or rendering method, historical
 palette, lighting treatment, background, restoration operation, transformation
