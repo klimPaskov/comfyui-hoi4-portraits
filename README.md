@@ -4,9 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
 
-Clean ComfyUI workflows for generating Hearts of Iron IV-style leader portraits
-from photographs or written character descriptions. The default model stack
-is **FLUX.2 Klein base 9B** plus the project’s `hoi4_portrait` LoRA.
+Generate Hearts of Iron IV-style leader portraits from photographs or written
+character descriptions with ComfyUI. The workflows use **FLUX.2 Klein base
+9B** plus the project’s `hoi4_portrait` LoRA.
 
 The same workflows open locally and in Comfy Cloud. Start with a source photo
 or a written character description, then choose the restoration path that fits
