@@ -1,33 +1,26 @@
-# HOI4 portraits with FLUX.2 Klein 9B
+# Identity-preserving HOI4 portraits with FLUX.2 Klein 9B
 
 [![CI](https://github.com/klimPaskov/comfyui-hoi4-portraits/actions/workflows/ci.yml/badge.svg)](https://github.com/klimPaskov/comfyui-hoi4-portraits/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
 
-Generate Hearts of Iron IV-style leader portraits from photographs or written
-character descriptions with ComfyUI. The source and text-to-image workflows
-use **FLUX.2 Klein base 9B** plus the project’s `hoi4_portrait` LoRA. The
-processing workflow uses the base model for optional restoration and omits the
-LoRA.
+Create identity-preserving Hearts of Iron IV-style leader portraits from source
+photographs with ComfyUI. The source workflow keeps the person’s crop, pose,
+framing, and facial identity anchored while FLUX.2 Klein 9B prepares and styles
+the final portrait.
 
-The workflows open locally and in Comfy Cloud. Use the source workflow for a
-final styled portrait, the processing workflow for an intermediate restored
-image without LoRA styling, or text-to-image for a portrait without a source
-photo.
+The same workflow opens locally, on RunPod, and in Comfy Cloud.
 
 ## Workflows
 
 | Workflow | Best for | Restoration path |
 | --- | --- | --- |
-| [`hoi4_portrait_flux2_klein_9b_source`](workflows/hoi4_portrait_flux2_klein_9b_source.json) | Source-photo conversion; 24 GB GPU with offloading or Comfy Cloud | RealESRGAN first, then switchable FLUX.2 restoration; LoRA styling follows |
-| [`hoi4_portrait_flux2_klein_9b_text_to_image`](workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json) | Creating a fictional leader without a source image | No restoration pass |
-| [`hoi4_portrait_processing_only`](workflows/hoi4_portrait_processing_only.json) | Crop, upscale, and restoration without style transfer | RealESRGAN first, then optional FLUX.2 restoration |
+| [`hoi4_portrait_flux2_klein_9b_source`](workflows/hoi4_portrait_flux2_klein_9b_source.json) | Identity-preserving portrait from a source photo | RealESRGAN, optional FLUX.2 restoration, then LoRA styling |
+| [`hoi4_portrait_flux2_klein_9b_text_to_image`](workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json) | Fictional portrait without a source photo | No restoration pass |
+| [`hoi4_portrait_processing_only`](workflows/hoi4_portrait_processing_only.json) | Prepare a source image before styling | RealESRGAN, then optional FLUX.2 restoration |
 
 Matching [API-format graphs](workflows/) are included for Comfy Cloud MCP,
 the Comfy Cloud API, and local `/prompt` submission.
-
-The processing workflow stops after the selected ESRGAN/restoration result and
-saves processed master and game-size PNGs. It does not load the portrait LoRA.
 
 The [latest GitHub release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest)
 contains a model-free ZIP, a Windows x64 self-extractor, and SHA-256 checksums.

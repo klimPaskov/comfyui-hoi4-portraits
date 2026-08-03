@@ -2,16 +2,13 @@
 
 ## Choose a workflow
 
-- Use **source** for a finished portrait. It runs RealESRGAN first, then
-  applies the HOI4 LoRA; optional FLUX.2 restoration sits between those stages
-  and is off by default.
+- Use **source** for an identity-preserving portrait from a reference image.
+  It keeps the crop and source composition anchored while preparing and styling
+  the final portrait; optional FLUX.2 restoration is off by default.
 - Use **processing** when you need a crop, upscale, and optional restoration
   result without LoRA styling.
-- Use **text to image** when no real person must be preserved.
-
-The source and text-to-image workflows use the FLUX.2 Klein base 9B model and
-HOI4 LoRA. The processing workflow uses the base model for its optional
-restoration pass and does not load the LoRA.
+- The separate **text to image** workflow is for fictional portraits without a
+  reference image.
 
 ## Prepare a source image
 
