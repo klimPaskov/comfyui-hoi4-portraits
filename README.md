@@ -25,15 +25,15 @@ the Comfy Cloud API, and local `/prompt` submission.
 
 Krea 2 and Krea Edit variants are available as optional alternatives in the
 [Krea workflow release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/tag/v1.0.0).
-They are not part of the default workflow table or package.
+They are separate alternatives; the table above contains the default FLUX.2
+workflows.
 
 ## What the full workflow does
 
-The screenshots below come from a completed local ComfyUI queue run and show
-the source, crop + ESRGAN, optional restoration, pre-background LoRA, and final
-portrait checkpoints. The downloaded full-power workflow still opens with
-FLUX restoration disabled; the screenshot run enables the branch only to make
-every checkpoint visible in one canvas.
+These screenshots show the source, crop + ESRGAN, optional restoration,
+pre-background LoRA, and final portrait checkpoints from a local ComfyUI queue
+run. The full-power workflow opens with FLUX restoration disabled. The example
+run enables the switch so every checkpoint appears on one canvas.
 
 ```mermaid
 flowchart LR
@@ -61,31 +61,31 @@ the 832 × 1120 working canvas.
 ### 2. Load FLUX.2 and the portrait LoRA
 
 This group loads the FLUX.2 Klein 9B base model, Qwen text encoder, VAE, and
-the portrait LoRA. The documented LoRA strength is `0.75`.
+the portrait LoRA. Set the LoRA strength to `0.75`.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.png)
 
 ### 3. Optionally restore with FLUX.2
 
-Full power keeps a conservative FLUX.2 restoration pass connected after
-ESRGAN. It is disabled by default, so the branch is not evaluated. Turn the
-restoration switch on when a damaged source needs the additional pass.
+Full power includes a conservative FLUX.2 restoration pass after ESRGAN. The
+restoration switch is off by default, so that pass does not run. Turn it on
+when a damaged source needs the additional pass.
 
 ![Optional FLUX.2 restoration stage](docs/assets/workflows/step-3-flux-restoration.png)
 
 ### 4. Apply the portrait LoRA
 
 The selected processed portrait becomes the reference and starting image for
-LoRA styling. Describe only the person in the positive prompt. Euler, eight
-steps, and CFG 5 are the documented defaults.
+LoRA styling. Describe only the person in the positive prompt. The defaults are
+Euler, eight steps, and CFG 5.
 
 ![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
 
 ### 5. Optionally replace the background
 
 Background masking and compositing receive the decoded final portrait. This
-stage is off by default and cannot affect the earlier crop, restoration, or
-LoRA generation stages.
+stage is off by default and runs only after crop, restoration, and LoRA
+generation.
 
 ![Final-image background replacement stage](docs/assets/workflows/step-5-background-replacement.png)
 
@@ -110,7 +110,8 @@ the same source composition, which reduces unwanted pose and framing changes.
 2. Download and open one of the workflow JSON files from the table.
 3. For a source workflow, upload a portrait and select it in **Load source portrait**. Set the built-in crop box around the head and shoulders, then check its preview.
 4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then turn on the final background switch.
-5. Queue the workflow. In full power, FLUX restoration is off by default; turn **Toggle FLUX restoration** on only when the source needs it. No rewiring is required.
+5. Queue the workflow. In full power, FLUX restoration is off by default; turn
+   **Toggle FLUX restoration** on only when the source needs it.
 
 See [Comfy Cloud setup](docs/comfy-cloud.md) for the exact model-import and MCP
 validation flow.
@@ -157,7 +158,7 @@ GPU job.
 
 ### What the agent does
 
-After the one-time connection and model import, the agent can perform the
+With the connection and model import in place, the agent can perform the
 portrait job autonomously:
 
 1. Read the appropriate API-format graph from [`workflows/`](workflows/). Use
@@ -180,15 +181,14 @@ portrait job autonomously:
 6. Dry-run the modified API graph. Resolve missing nodes, model filenames, or
    invalid input values before submitting any generation.
 7. Submit the graph, retain its returned `prompt_id`, and wait for that exact
-   job to finish. Queue status alone is not proof that the agent's job
-   completed.
+   job to finish. Queue status alone does not confirm completion.
 8. Retrieve and download both the 832 × 1120 master and 156 × 210 game output.
    Visually verify the crop, identity, expression, facial detail, background,
    and absence of frame or vignette artifacts.
 9. Copy the approved game portrait into the mod's configured portrait path,
    update the configured `spriteType`/portrait definition and character
-   reference when needed, then report the exact files changed. Existing mod
-   files should be backed up or edited through version control.
+   reference when needed, and report the files you edited. Back up existing mod
+   files or edit them through version control.
 
 For repeatable autonomous installation, give the agent a small job manifest
 instead of relying on prose alone:
@@ -211,8 +211,8 @@ LoRA at 0.75, keep FLUX restoration enabled, replace the background only after
 the final LoRA image, verify both outputs, and install the 156 × 210 result
 according to this manifest.”
 
-The agent must not claim success until the submitted `prompt_id` is complete,
-the output has been retrieved, and the destination mod files have been checked.
+The agent should claim success only after the submitted `prompt_id` is complete,
+the output is retrieved, and the destination mod files are checked.
 Comfy's Cloud API and MCP are experimental and may change.
 
 ## Local / RunPod start
@@ -248,9 +248,9 @@ test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portra
 "$P/scripts/install_runpod.sh" /workspace/ComfyUI
 ```
 
-The installer verifies the final files against [`models.json`](models.json)
-and refuses to use a partial or mismatched download. It never writes the token
-to the repository.
+The installer checks the final files against [`models.json`](models.json) and
+refuses partial or mismatched downloads. It never writes the token to the
+repository.
 
 Windows users can run:
 
@@ -304,23 +304,22 @@ Return only the single prompt line. Do not add a heading, explanation,
 quotation marks, Markdown, a negative prompt, or a tag list.
 ```
 
-The workflows default to the selected `0.75` LoRA strength, Euler sampler, eight
-steps, and CFG 5. Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps found eight
-to be the useful limit for this workflow. See [autoprompter
+The workflows use `0.75` LoRA strength, Euler, eight steps, and CFG 5 by
+default. The step comparison at 6, 8, 10, 12, 20, and 35 steps supports eight
+as the practical setting for this workflow. See [autoprompter
 examples](docs/autoprompter-examples.md) for concise person-only prompts.
 
-## Verified examples
+## Examples
 
-These are real local runs with the published LoRA, not mockups. Every source
-board is initial source → processed crop → final portrait. A concise
-person-only prompt was checked against the source before inference; expression,
-pose, gaze, and facing direction were left to the reference. The six source
-boards record LoRA `0.7` / Euler / 8 steps; the packaged workflows default to
-LoRA `0.75` / Euler / 8 steps. Any grayscale, blur, crop failure, or pose drift
-is rejected rather than documented as a successful result.
+These examples are local runs with the published LoRA. Every source board is
+initial source → processed crop → final portrait. The prompts describe only the
+person; expression, pose, gaze, and facing direction come from the reference.
+The six source boards use LoRA `0.7` / Euler / 8 steps. The workflows use LoRA
+`0.75` / Euler / 8 steps by default. The examples exclude grayscale, blur, crop
+failures, and pose drift.
 
 The evidence boards use 416 × 560 because the test Mac has 16 GB unified
-memory. That reduction is the main source of preview softness; the committed
+memory. That reduction is the main source of preview softness; the published
 workflows keep an 832 × 1120 canvas. More steps can refine a result but cannot
 replace missing spatial resolution, which is why the step control is shown
 separately.
@@ -385,21 +384,20 @@ hoi4_portrait, an Irish older man with sparse dark hair at the sides, wearing da
 
 See [the three random prompts, exact test conditions, and findings](docs/test-results.md).
 
-## Validation status
+## Checks
 
 - All three editor graphs and API graphs are generated from one deterministic source.
 - Link endpoints, slot types, output nodes, visual groups, and node geometry are tested.
 - Node and group overlap checks pass with spacing margins.
-- Comfy Cloud MCP no-spend preflight passes for all three API graphs;
-  the only advisory is the expected project LoRA import.
+- Comfy Cloud MCP no-spend preflight passes for all three API graphs. The
+  project LoRA must be imported into the Cloud model library before generation.
 - Cloud GPU mechanical tests pass every workflow shape and the final
-  background branch using a compatible catalog LoRA at zero strength.
+  background path with a compatible catalog LoRA at zero strength.
 - Local functional evidence covers three full-power restoration source
   portraits, three ESRGAN-only source portraits, three text-to-image
-  portraits, and fixed-seed 6/8/10/12/20/35-step controls. Reduced 416 × 560
-  evidence was used on a 16 GB Apple-silicon Mac; 832 × 1120 remains the
-  workflow canvas. The gallery boards record LoRA `0.7`; the packaged graphs
-  use `0.75`.
+  portraits, and fixed-seed 6/8/10/12/20/35-step controls. The evidence uses
+  416 × 560 on a 16 GB Apple-silicon Mac; the workflow canvas is 832 × 1120.
+  The gallery boards use LoRA `0.7`; the workflows use `0.75` by default.
 
 Run the same checks locally:
 

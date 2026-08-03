@@ -13,9 +13,9 @@ The shared model stack is:
 4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `0.75`.
 5. `CFGGuider`, Euler, `Flux2Scheduler`, eight steps, CFG 5.
 
-The fixed-seed local control tests 6, 8, 10, 12, 20, and 35 steps. Eight was
-selected as the default and practical limit: higher counts cost substantially
-more without a useful improvement in the controlled source comparison.
+Use Euler with eight steps by default. The local step comparison covers 6, 8,
+10, 12, 20, and 35 steps; higher counts add runtime without a useful gain in
+the controlled source comparison.
 
 ## Full power
 
@@ -27,15 +27,18 @@ Groups run left to right:
 1. **Source and ESRGAN** loads the portrait, applies the adjustable built-in head-and-shoulders crop, previews it, runs RealESRGAN x2, then fits the result to 832 × 1120.
 2. **FLUX.2 Klein 9B models** loads the base model, encoder, VAE, and LoRA.
 3. **Optional FLUX.2 restoration** encodes the ESRGAN result as both its reference and starting latent for a conservative restoration pass. This keeps framing and pose anchored.
-4. The restoration `ComfySwitchNode` is off by default and sends the direct ESRGAN result onward. Turn it on to select the FLUX result. It is a lazy switch, so the disabled FLUX branch is not evaluated.
+4. The restoration switch is off by default and sends the direct ESRGAN result
+   onward. Turn it on to select the FLUX result. The disabled restoration pass
+   does not run.
 5. **HOI4 LoRA styling** encodes the selected processed image as both the reference and starting latent, then samples with the LoRA-patched model. This avoids the pose drift caused by starting image-to-image work from an empty latent.
 6. **Optional background** receives the decoded styled image, creates its foreground mask with BiRefNet, and composites over the selected background.
-7. A second lazy switch keeps the styled image unchanged by default or selects the composite when enabled.
+7. A second switch keeps the styled image unchanged by default or selects the
+   composite when enabled.
 8. **Preview and save** writes the 832 × 1120 master and a 156 × 210 PNG.
 
 The full graph opens in ESRGAN-only mode with **Toggle FLUX restoration** set
-to `false`. Turn it on for the additional restoration pass. No links should be
-deleted or reconnected.
+to `false`. Turn it on for the additional restoration pass. Keep the supplied
+connections intact.
 
 ## ESRGAN only
 
@@ -70,8 +73,8 @@ LoRA sampler. In the API graphs:
 - node `66` selects either the unchanged final image or the composite;
 - no background node is an ancestor of the LoRA-styled `VAEDecode`.
 
-The validator enforces this dependency order. A workflow fails validation if
-background processing is connected before generation.
+The project checks this dependency order. Background processing belongs after
+portrait generation.
 
 `RemoveBackground` returns a foreground mask. Do not insert `InvertMask`
 between nodes `63` and `65`, or the foreground/background regions will swap.

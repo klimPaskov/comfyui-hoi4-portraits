@@ -14,5 +14,5 @@ no useful gain above eight. After the trigger, describe only the person—not th
 game/style, background, lighting, or rendering.
 
 For source portraits, crop to head and shoulders before RealESRGAN and use the
-encoded processed portrait as the sampler starting latent. The packaged
-workflows provide this connection.
+encoded processed portrait as the sampler starting latent. The source
+workflows include this connection.

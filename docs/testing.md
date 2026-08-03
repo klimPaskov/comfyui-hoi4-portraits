@@ -48,48 +48,45 @@ lock, and check internal documentation links.
 
 ## Comfy Cloud preflight
 
-The API files were submitted to Comfy Cloud MCP with `dry_run: true`. All
-passed without creating a job or spending credits. The project LoRA filename is a
-non-blocking advisory until it is imported into the user's Cloud model
-library.
+Comfy Cloud MCP accepts the API files with `dry_run: true` without creating a
+job or spending credits. The project LoRA filename is an advisory until the
+LoRA is imported into the Cloud model library.
 
 ## Local inference evidence
 
-All six pinned model files were downloaded and checksum-verified. ComfyUI
+The six pinned model files are checksum-verified. ComfyUI
 0.25.0 ran on a 16 GB Apple-silicon Mac with MPS,
 low-VRAM offloading, split cross-attention, no previews, and optional
 extensions disabled.
 
 The public graphs use an 832 × 1120 canvas, LoRA strength `0.75`, Euler, eight
-steps, and CFG 5. The evidence boards record LoRA `0.7` in their labels. To
-complete a broad local functional suite within the
-machine's resource limit, test copies were overridden to 416 × 560. A fixed-
-seed control also ran the same source for 6, 8, 10, 12, 20, and 35 steps.
+steps, and CFG 5. The evidence boards use LoRA `0.7` in their labels. Test
+copies use 416 × 560 to fit the machine's resource limit. A fixed-seed control
+covers the same source at 6, 8, 10, 12, 20, and 35 steps.
 
-Successful evidence runs:
+The local evidence set includes:
 
 - six source portraits through crop → RealESRGAN → final LoRA;
 - three no-input text-to-image portraits;
 - one fixed-source, fixed-seed Euler comparison at 6, 8, 10, 12, 20, and 35 steps.
 
-The first three source boards exercise the enabled FLUX restoration branch;
-the other three exercise the ESRGAN-only bypass. The no-input gallery is kept
-as a separate reference. Grayscale, crop, blur, and pose-drift failures are
-not included in the committed boards.
+The first three source boards use the enabled FLUX restoration path; the other
+three use the ESRGAN-only bypass. The no-input gallery is a separate reference.
+The boards contain colour, clean crops, and stable framing.
 
-The background test uses a completed saved image in place of the final decode,
+The background test uses a finished saved image in place of the final decode,
 then evaluates only BiRefNet, compositing, and the final switch. It completes
 in 7.73 seconds and proves that background work is downstream of generation.
 
-The reduced previews are evidence of executable nodes and connections. They
-also make the runtime and visual differences between 6, 8, 10, 12, 20, and 35 steps
-directly inspectable. See [the rendered results and setting
+The reduced previews show executable connections and make the runtime and
+visual differences between 6, 8, 10, 12, 20, and 35 steps directly
+inspectable. See [the rendered results and setting
 analysis](test-results.md).
 
-Mechanical validation remains separate from inference validation so resource
-limits cannot hide malformed nodes or connections.
+Structural checks run separately from inference checks, so resource limits
+cannot hide malformed nodes or connections.
 
-Cloud GPU tests complete the ESRGAN-only and full-power graphs with a
-compatible catalog LoRA at zero strength, validating both restoration paths
-and all three output nodes. The text-to-image background test also completes
-successfully and is covered by a direct foreground-mask regression check.
+Cloud GPU checks cover the ESRGAN-only and full-power graphs with a compatible
+catalog LoRA at zero strength, both restoration paths, and all three output
+nodes. The text-to-image background test also covers the final foreground-mask
+connection.

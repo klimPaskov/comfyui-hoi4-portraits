@@ -36,7 +36,7 @@ that determines the portrait framing.
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
 
-The filenames, pinned sources, sizes, and SHA-256 hashes are recorded in
+Find the filenames, pinned sources, sizes, and SHA-256 hashes in
 [`models.json`](../models.json).
 
 ## First run
@@ -48,7 +48,9 @@ The filenames, pinned sources, sizes, and SHA-256 hashes are recorded in
 4. Edit the positive prompt. Keep the `hoi4_portrait,` trigger and describe
    only the visible person.
 5. Leave background replacement off for the first run.
-6. Queue once. The full workflow's restoration switch is off by default; turn it on only when the source needs the additional pass. Use the ESRGAN-only graph when you never need that branch.
+6. Queue once. The full workflow's restoration switch is off by default; turn
+   it on only when the source needs the additional pass. Use the ESRGAN-only
+   graph when you do not need FLUX restoration.
 7. Inspect the 832 × 1120 master before using the 156 × 210 game-size file.
 
 Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
@@ -70,7 +72,7 @@ optional FLUX restoration pass.
 | Loader is red | Install/import the exact filename from `models.json`, then refresh ComfyUI. |
 | Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 24 GB GPU. |
 | Wrong person or full-body framing | Adjust the source bounding box until the crop preview is head-and-shoulders. |
-| Background appears too early | Only the post-generation background group may replace it; reload the packaged workflow if the graph was rewired. |
+| Background appears too early | Background replacement runs after portrait generation; reopen the published workflow if the graph has been edited. |
 | Style is weak | Keep `hoi4_portrait` in the prompt; use the `0.75` default and keep the crop clean. |
 | Identity or position changes | Confirm the crop, keep the encoded-source sampler connection, disable optional restoration if needed, and remove speculative traits. |
-| Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Eight Euler steps is the documented default; the optional FLUX restoration branch can soften identity, so disable it first. |
+| Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Use Euler with eight steps; optional FLUX restoration can soften identity, so disable it first. |

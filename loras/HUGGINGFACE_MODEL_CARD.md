@@ -35,7 +35,7 @@ workflows.
 4. `LoraLoaderModelOnly`: this LoRA at strength `0.75`
 5. Eight steps, CFG 5, Euler sampler, `Flux2Scheduler`
 
-Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps selected eight as the
+Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps support eight as the
 practical limit. In the positive prompt, describe only the visible person. Use
 a few distinctive identity cues. Leave emotion, expression, pose, gaze, and
 facing direction to the input reference; adding them to the text can make the

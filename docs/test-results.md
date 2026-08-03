@@ -11,7 +11,7 @@ portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
 - Apple-silicon Mac with 16 GB unified memory and MPS offloading;
 - 416 × 560 evidence output; the public workflow canvas remains 832 × 1120;
 - LoRA strength `0.7` for the evidence boards, Euler, eight steps, CFG 5;
-- packaged workflows default to LoRA strength `0.75` with the same sampler;
+- the workflows use LoRA strength `0.75` by default with the same sampler;
 - source path: adjustable crop → RealESRGAN → optional FLUX restoration → FLUX.2 Klein 9B LoRA;
 - the three `source-processing` boards use the optional FLUX restoration path;
 - the three `esrgan-only` boards use the direct ESRGAN bypass; the no-input
@@ -19,13 +19,11 @@ portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
 - the processed image is encoded as the sampler's starting latent to keep the
   original pose and composition anchored.
 
-The reduced size is a local resource compromise, not a mechanical shortcut:
-the same committed node/connectivity structure is used, with ordinary input
-widgets overridden for each source, seed, prompt, crop, and evidence size.
-The first three source boards use the full-power graph with FLUX restoration
-enabled to recover colour and detail from aged material. The other three use
-the ESRGAN-only graph. Any grayscale, crop, blur, or pose-drift result was
-discarded before the boards were assembled.
+The reduced size is a local resource compromise. The same workflow connections
+are used for each source, seed, prompt, crop, and evidence size. The first
+three source boards use full power with FLUX restoration enabled to recover
+colour and detail from aged material. The other three use ESRGAN only. The
+boards show colour, clean crops, and stable framing.
 
 ## Six source triptychs
 
@@ -96,14 +94,13 @@ softer than CFG 5. The step-count comparison holds Euler and CFG 5 constant.
 
 ![Euler at 6, 8, 10, 12, 20, and 35 steps](assets/test-runs/step-comparison.jpg)
 
-Eight steps is the selected production limit. It improves structure over six
-without the extra runtime and framing drift seen at 10, 12, 20, and 35.
+Use eight steps for production. It improves structure over six without the
+extra runtime and framing drift seen at 10, 12, 20, and 35.
 
 ## Post-final background test
 
-The background test loads a completed LoRA portrait directly into the
-background group. Only BiRefNet, image scaling, mask compositing, and the final
-switch are evaluated, proving that background work remains downstream of final
-image creation.
+The background test loads a finished LoRA portrait directly into the background
+stage. It uses BiRefNet, image scaling, mask compositing, and the final switch;
+background work remains downstream of final image creation.
 
 ![Post-final background replacement test](assets/test-runs/post-final-background.png)

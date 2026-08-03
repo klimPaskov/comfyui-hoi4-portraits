@@ -1,7 +1,7 @@
 # Comfy Cloud and MCP
 
-The workflows target Comfy Cloud's model and node catalog and use no
-repository-specific custom nodes.
+The workflows use Comfy Cloud's available model and node catalog. No project
+installation is required beyond the workflow files and the LoRA.
 
 ## Import the custom LoRA
 
@@ -28,19 +28,19 @@ For source workflows, upload:
 - a source named `source_portrait.jpg`, or select your uploaded filename in the loader;
 - one background from [`backgrounds/`](../backgrounds/) if replacement is enabled.
 
-Background replacement is off by default, so a missing background asset does
-not need to execute on the default lazy branch.
+Background replacement is off by default, so a background file is optional
+unless you enable that switch.
 
-Keep the LoRA loader at strength `0.75` for the documented default. Every
+Keep the LoRA loader at strength `0.75`. Every
 positive prompt must begin with `hoi4_portrait,` and then describe only the
 person. Keep the description concise: supported ethnicity, approximate age,
 hair, and general clothing classification. Leave expression, pose, gaze, and facing direction to the
 input reference. Do not add game/style, background, lighting, or rendering
 language.
 
-In either source workflow, set the built-in bounding box around the head and
-shoulders and check the crop preview before queueing. The crop nodes are in
-Comfy Cloud's core catalog.
+In either source workflow, set the bounding box around the head and shoulders
+and check the crop preview before queueing. The crop controls are available in
+Comfy Cloud.
 
 ## MCP validation
 
@@ -50,9 +50,9 @@ The included API graphs can be checked without creating a GPU job:
 Use Comfy Cloud MCP to dry-run workflows/hoi4_portrait_flux2_klein_9b_full_power.api.json. Do not submit a generation and do not spend credits.
 ```
 
-Expected result before LoRA import: structural validation passes and the LoRA
-filename may be reported as a non-blocking catalog advisory. After import,
-select the exact file in the loader and save the workflow.
+Before LoRA import, the preflight can report the filename as a catalog
+advisory. Import the LoRA, select the exact file in the loader, and save the
+workflow before generating.
 
 ## MCP execution
 
@@ -65,15 +65,13 @@ select the exact file in the loader and save the workflow.
 The workflows contain no paid partner/API nodes. Normal Comfy Cloud compute
 and subscription limits still apply.
 
-## Preflight evidence
+## Cloud checks
 
-All three API graphs pass Comfy Cloud MCP `dry_run` preflight. The only
-advisory is the expected project-LoRA catalog miss before custom import.
-Cloud GPU runs also completed the ESRGAN-only, full-power, text-to-image, and
-final background-compositing paths using a compatible catalog LoRA at zero
-strength. The project LoRA remains unavailable on plans without custom model
-imports and must be imported on Creator or Pro before style quality can be
-validated.
+All three API graphs pass Comfy Cloud MCP `dry_run` preflight. The project LoRA
+must be imported into the Cloud model library before generation. Cloud GPU
+checks cover the ESRGAN-only, full-power, text-to-image, and final background
+paths with a compatible catalog LoRA at zero strength. A Creator or Pro plan is
+required for the project LoRA import.
 
 Official references:
 

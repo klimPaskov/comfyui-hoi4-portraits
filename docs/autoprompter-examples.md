@@ -28,13 +28,11 @@ rendering language, restoration instructions, transformation instructions, or
 preservation commands. The trigger and LoRA supply the learned look; the
 reference-latent workflow supplies the source image.
 
-## Validated outputs used in the gallery
+## Examples used in the gallery
 
-These were generated from full-resolution inspection of the six supplied
-source portraits, followed by a second check for unsupported treatment
-language. The prompts are intentionally concise and leave pose and expression
-to the source reference. These exact descriptions are printed beside the
-matching images in the main README.
+The six supplied source portraits use concise person-only prompts. Pose and
+expression come from the source reference. These exact descriptions appear
+beside the matching images in the main README.
 
 ```text
 hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit.
