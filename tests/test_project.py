@@ -52,7 +52,9 @@ class WorkflowTests(unittest.TestCase):
 
     def test_autoprompter_output_contract_is_person_only(self) -> None:
         instruction = (ROOT / "prompts" / "autoprompter_instruction.txt").read_text(encoding="utf-8").casefold()
-        self.assertIn("the prompt describes only the person", instruction)
+        self.assertIn("describe only broad", instruction)
+        self.assertNotIn("workflow", instruction)
+        self.assertNotIn("comfyui", instruction)
         for forbidden in (
             "transform the supplied",
             "grand-strategy portrait",
@@ -60,16 +62,15 @@ class WorkflowTests(unittest.TestCase):
             "background description",
         ):
             self.assertNotIn(forbidden, instruction)
-        self.assertIn("for monochrome or sepia sources, do not infer skin tone", instruction)
-        self.assertIn("do not contradict yourself", instruction)
+        self.assertIn("monochrome or sepia sources, do not invent colors", instruction)
 
     def test_selected_lora_and_sampling_defaults(self) -> None:
-        self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 0.7)
+        self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 0.75)
         self.assertEqual(build_workflows.DEFAULT_STEPS, 8)
         for workflow in (ROOT / "workflows").glob("*.api.json"):
             api = json.loads(workflow.read_text(encoding="utf-8"))
             lora = next(node for node in api.values() if node["class_type"] == "LoraLoaderModelOnly")
-            self.assertEqual(lora["inputs"]["strength_model"], 0.7, workflow.name)
+            self.assertEqual(lora["inputs"]["strength_model"], 0.75, workflow.name)
             schedules = [node for node in api.values() if node["class_type"] == "Flux2Scheduler"]
             self.assertTrue(schedules, workflow.name)
             self.assertTrue(all(node["inputs"]["steps"] == 8 for node in schedules), workflow.name)
@@ -150,12 +151,15 @@ class DocumentationTests(unittest.TestCase):
 
     def test_readme_contains_new_gallery_and_autoprompter_descriptions(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertEqual(readme.count("docs/assets/test-runs/full-restoration-"), 3)
+        self.assertEqual(readme.count("docs/assets/test-runs/source-processing-"), 3)
         self.assertEqual(readme.count("docs/assets/test-runs/esrgan-only-"), 3)
         self.assertIn("docs/assets/test-runs/random-portraits.jpg", readme)
         self.assertIn("docs/assets/test-runs/step-comparison.jpg", readme)
         self.assertEqual(readme.count("Autoprompter description:"), 6)
         for obsolete in (
+            "full-restoration-01.jpg",
+            "full-restoration-02.jpg",
+            "full-restoration-03.jpg",
             "full-restoration-04.jpg",
             "full-restoration-05.jpg",
             "esrgan-only-04.jpg",
@@ -163,6 +167,12 @@ class DocumentationTests(unittest.TestCase):
             "settings-matrix.jpg",
         ):
             self.assertFalse((ROOT / "docs" / "assets" / "test-runs" / obsolete).exists(), obsolete)
+        for current in (
+            "source-processing-01.jpg",
+            "source-processing-02.jpg",
+            "source-processing-03.jpg",
+        ):
+            self.assertTrue((ROOT / "docs" / "assets" / "test-runs" / current).is_file(), current)
 
     def test_readme_contains_full_workflow_visual_walkthrough(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -215,11 +225,15 @@ class DocumentationTests(unittest.TestCase):
         examples = []
         for document in documents:
             for block in self.CODE_BLOCK.findall(document.read_text(encoding="utf-8")):
-                if "hoi4_portrait," in block:
+                if block.lstrip().startswith("hoi4_portrait,"):
                     examples.append((document, block.strip()))
         self.assertGreaterEqual(len(examples), 3)
         for document, example in examples:
             self.assertIsNone(forbidden.search(example), f"{document.name}: {example}")
+            self.assertIsNone(
+                re.search(r"\b(crop|chest up|shoulders up|head-and-shoulders)\b", example, re.IGNORECASE),
+                f"{document.name}: prompt must not repeat workflow framing",
+            )
 
 
 if __name__ == "__main__":

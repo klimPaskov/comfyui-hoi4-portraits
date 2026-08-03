@@ -10,7 +10,13 @@ if [[ ! -f "${COMFY_ROOT}/main.py" ]]; then
 fi
 
 PYTHON_BIN=""
-for candidate in "${COMFY_ROOT}/.venv/bin/python" "${COMFY_ROOT}/venv/bin/python" /workspace/venv/bin/python; do
+for candidate in \
+  "${COMFY_ROOT}/.venv/bin/python" \
+  "${COMFY_ROOT}/venv/bin/python" \
+  "${COMFY_ROOT}/python_embeded/python" \
+  /workspace/venv/bin/python \
+  /workspace/.venv/bin/python \
+  /opt/pyvenv/bin/python; do
   if [[ -x "${candidate}" ]]; then
     PYTHON_BIN="${candidate}"
     break
@@ -24,7 +30,9 @@ fi
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/validate_workflows.py"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_workflows.py" --comfyui-root "${COMFY_ROOT}"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}"
+"${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}" --verify-only
 
 echo
-echo "Installed the FLUX.2 Klein 9B workflows with core ComfyUI nodes only."
+echo "Installed three FLUX.2 Klein 9B workflows and all six pinned model files."
+echo "Models are under ${COMFY_ROOT}/models/{diffusion_models,text_encoders,vae,loras,upscale_models,background_removal}."
 echo "Open Workflows > hoi4_portraits after restarting ComfyUI."

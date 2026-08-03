@@ -4,9 +4,15 @@
 
 - ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
-- About 20 GB free for the pinned model files, plus output/cache space.
-- A practical 32 GB+ GPU target for FLUX.2 Klein 9B image editing; the upstream
-  model card reports roughly 29 GB VRAM for the base model.
+- The six pinned model files occupy 19.41 GB decimal (18.08 GiB). A 30 GB
+  RunPod volume is sufficient for the repository, ComfyUI files, normal caches,
+  and outputs. The downloader writes directly to the ComfyUI model folders and
+  does not create a second model copy.
+- A 24 GB GPU is a sufficient practical target for the FP8 workflows with
+  normal offloading. An 18 GB GPU may work with more aggressive offloading and
+  a reduced test canvas; 16 GB can work similarly but is slow.
+  The upstream model card's roughly 29 GB figure is a conservative
+  full-resolution/no-offload guideline, not a hard minimum for this FP8 graph.
 - A Hugging Face account that has accepted the gated FLUX.2 Klein agreement.
 
 ## Install into an existing ComfyUI
@@ -36,13 +42,25 @@ No token is written into this repository or a workflow.
 
 ## RunPod
 
-On a RunPod image that already contains ComfyUI:
+On a RunPod image that already contains ComfyUI, the installer places the
+workflows in `user/default/workflows/hoi4_portraits`, copies the backgrounds
+and sample input into `input/`, and downloads every entry in `models.json` to
+the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
+`loras`, `upscale_models`, and `background_removal`):
 
 ```bash
-bash -lc 'P=/workspace/comfyui-hoi4-portraits; test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"; "$P/scripts/install_runpod.sh" /workspace/ComfyUI'
+export HF_TOKEN="hf_..."
+P=/workspace/comfyui-hoi4-portraits
+test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
+"$P/scripts/install_runpod.sh" /workspace/ComfyUI
 ```
 
-Start ComfyUI:
+The final verification pass checks the locked size and SHA-256 for all six
+files. If a download is interrupted or a file was placed in the wrong folder,
+the installer stops instead of silently using it. `HF_TOKEN` is read only from
+the process environment and is never printed or saved.
+
+Start ComfyUI after installation:
 
 ```bash
 /workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh /workspace/ComfyUI

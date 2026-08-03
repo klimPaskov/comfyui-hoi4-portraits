@@ -16,7 +16,7 @@ the image and available hardware.
 
 | Workflow | Best for | Restoration path |
 | --- | --- | --- |
-| [`hoi4_portrait_flux2_klein_9b_full_power`](workflows/hoi4_portrait_flux2_klein_9b_full_power.json) | Best source-photo quality; 32 GB+ GPU or Comfy Cloud | RealESRGAN first, then switchable FLUX.2 restoration |
+| [`hoi4_portrait_flux2_klein_9b_full_power`](workflows/hoi4_portrait_flux2_klein_9b_full_power.json) | Best source-photo quality; 24 GB GPU with offloading or Comfy Cloud | RealESRGAN first, then switchable FLUX.2 restoration |
 | [`hoi4_portrait_flux2_klein_9b_esrgan_only`](workflows/hoi4_portrait_flux2_klein_9b_esrgan_only.json) | Faster source-photo conversion | RealESRGAN only, then FLUX.2 LoRA styling |
 | [`hoi4_portrait_flux2_klein_9b_text_to_image`](workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json) | Creating a fictional leader without a source image | No restoration pass |
 
@@ -31,9 +31,9 @@ They are not part of the default workflow table or package.
 
 The screenshots below come from a completed local ComfyUI queue run and show
 the source, crop + ESRGAN, optional restoration, pre-background LoRA, and final
-portrait checkpoints. The restoration branch was enabled for this visual
-walkthrough; the downloaded full-power workflow still opens with restoration
-disabled.
+portrait checkpoints. The downloaded full-power workflow still opens with
+FLUX restoration disabled; the screenshot run enables the branch only to make
+every checkpoint visible in one canvas.
 
 ```mermaid
 flowchart LR
@@ -61,7 +61,7 @@ the 832 × 1120 working canvas.
 ### 2. Load FLUX.2 and the portrait LoRA
 
 This group loads the FLUX.2 Klein 9B base model, Qwen text encoder, VAE, and
-the portrait LoRA. The documented LoRA strength is `0.70`.
+the portrait LoRA. The documented LoRA strength is `0.75`.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.png)
 
@@ -163,16 +163,17 @@ portrait job autonomously:
 1. Read the appropriate API-format graph from [`workflows/`](workflows/). Use
    full power for ESRGAN plus optional FLUX restoration, or ESRGAN-only for the
    shorter path.
-2. Inspect the source at full resolution and write a `hoi4_portrait,` prompt
-   describing only the person: identity, facial proportions and texture,
-   expression, gaze, facing direction, clothing, and crop.
+2. Inspect the source at full resolution and write a short `hoi4_portrait,`
+   prompt describing only the person: broad hair or facial-hair cues,
+   ethnicity when supported, and general clothing classification. Leave expression, pose, gaze, and facing
+   direction to the input reference.
 3. Upload the local source through the MCP file-upload flow. Use the returned
    Cloud filename in **Load source portrait**; a local filesystem path is not a
    valid `LoadImage.image` value in Cloud.
 4. Set the head-and-shoulders bounding box before processing. The agent should
    exclude printed borders, oval frames, captions, and empty margins while
    keeping the full head, neck, and shoulders.
-5. Set the project LoRA to `0.7`, choose whether FLUX restoration is enabled,
+5. Set the project LoRA to `0.75`, choose whether FLUX restoration is enabled,
    and keep background replacement after the decoded LoRA result. If a custom
    background is requested, upload it separately and replace that loader's
    filename too.
@@ -206,7 +207,7 @@ character_id: TAG_leader_name
 
 An example request is: “Use Comfy Cloud MCP and the full-power API workflow to
 turn this source into a portrait. Crop to head and shoulders, use the project
-LoRA at 0.7, keep FLUX restoration enabled, replace the background only after
+LoRA at 0.75, keep FLUX restoration enabled, replace the background only after
 the final LoRA image, verify both outputs, and install the 156 × 210 result
 according to this manifest.”
 
@@ -216,11 +217,14 @@ Comfy's Cloud API and MCP are experimental and may change.
 
 ## Local / RunPod start
 
-FLUX.2 Klein 9B needs an up-to-date ComfyUI and substantial memory. Its
-upstream model card says the base fits in roughly 29 GB VRAM, so a 32 GB GPU is
-the practical local target. Lower-memory systems may require model offloading
-and will be slow. The model files use about 19 GB of disk before ComfyUI caches
-or outputs.
+FLUX.2 Klein 9B needs an up-to-date ComfyUI and substantial memory. The FP8
+workflow is practical on a 24 GB GPU with offloading. An 18 GB GPU may also run
+it with more aggressive offloading and a reduced test canvas; 16 GB systems can
+run the same kind of reduced-resolution test but will be slower. The upstream model card's roughly
+29 GB figure is a conservative full-resolution/no-offload guideline. The six
+pinned model files use 19.41 GB decimal (18.08 GiB) before ComfyUI caches or
+outputs. For RunPod, a 30 GB volume is sufficient for this project and its
+normal outputs.
 
 ```bash
 git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
@@ -232,11 +236,21 @@ python scripts/download_models.py --comfyui-root /path/to/ComfyUI
 The FLUX.2 base model is gated. Accept its Hugging Face agreement and run
 `hf auth login` (or set `HF_TOKEN`) before the model download command.
 
-For a RunPod ComfyUI template:
+For a RunPod ComfyUI template, this command installs the three workflows, the
+bundled backgrounds and sample input, and all six pinned model files into the
+standard `ComfyUI/models/` subfolders. Set `HF_TOKEN` in the pod environment
+first so the gated FLUX.2 base can download:
 
 ```bash
-bash -lc 'P=/workspace/comfyui-hoi4-portraits; test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"; "$P/scripts/install_runpod.sh" /workspace/ComfyUI'
+export HF_TOKEN="hf_..."
+P=/workspace/comfyui-hoi4-portraits
+test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
+"$P/scripts/install_runpod.sh" /workspace/ComfyUI
 ```
+
+The installer verifies the final files against [`models.json`](models.json)
+and refuses to use a partial or mismatched download. It never writes the token
+to the repository.
 
 Windows users can run:
 
@@ -247,26 +261,63 @@ Windows users can run:
 ## Prompting
 
 Keep `hoi4_portrait` at the start of the positive prompt, then describe only
-the visible person: face, hair, expression, clothing, pose, gaze, and crop.
+the visible person: broad hair or facial-hair cues, supported ethnicity, and
+general clothing classification. Leave expression, pose, gaze, and facing direction to the input portrait.
 Do not describe the game, desired style, background, lighting, rendering,
 restoration, or transformation. The LoRA and workflow supply those parts.
 
 ```text
-hoi4_portrait, a middle-aged man with short dark hair, round wire-frame glasses, a long narrow face, a neat moustache, and a reserved expression, wearing a dark jacket over a light collared shirt and tie, shown from the shoulders up while looking slightly left.
+hoi4_portrait, an Irish middle-aged man with short dark hair and a moustache, wearing a dark civilian suit.
 ```
 
-The workflows default to the selected `0.7` LoRA strength, Euler sampler, eight
+The workflow default positive prompt is:
+
+```text
+hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit.
+```
+
+The autoprompter instruction shown to an external vision model is:
+
+```text
+Inspect the portrait and return one clear, concise English prompt line.
+
+The line must begin exactly with:
+
+hoi4_portrait,
+
+Describe only broad, visible person cues: ethnicity or nationality when the
+source context supports it, approximate age, general hair or facial hair,
+broad civilian, military, clerical, or other visible clothing classification,
+and general clothing. Keep it short.
+
+Do not mention cropping, framing, camera angle, pose, gaze, facing direction,
+emotion, or expression. Do not name the person or invent ethnicity,
+nationality, role, rank, branch, unit, medals, or insignia. Use a broad
+military/civilian classification only when the clothing clearly supports it.
+
+Do not describe the background, border, vignette, lighting, game, style,
+palette, rendering, restoration, transformation, or preservation. For
+monochrome or sepia sources, do not invent colors. Ignore scratches, paper
+texture, blur, and other photographic artifacts.
+
+Return only the single prompt line. Do not add a heading, explanation,
+quotation marks, Markdown, a negative prompt, or a tag list.
+```
+
+The workflows default to the selected `0.75` LoRA strength, Euler sampler, eight
 steps, and CFG 5. Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps found eight
 to be the useful limit for this workflow. See [autoprompter
-examples](docs/autoprompter-examples.md) for more person-only prompts.
+examples](docs/autoprompter-examples.md) for concise person-only prompts.
 
 ## Verified examples
 
 These are real local runs with the published LoRA, not mockups. Every source
-board is initial source → processed crop → final portrait. A full-resolution
-vision pass generated each description, followed by a second visual check for
-expression, head/body/gaze direction, facial detail, and forbidden treatment
-language before inference.
+board is initial source → processed crop → final portrait. A concise
+person-only prompt was checked against the source before inference; expression,
+pose, gaze, and facing direction were left to the reference. The six source
+boards record LoRA `0.7` / Euler / 8 steps; the packaged workflows default to
+LoRA `0.75` / Euler / 8 steps. Any grayscale, blur, crop failure, or pose drift
+is rejected rather than documented as a successful result.
 
 The evidence boards use 416 × 560 because the test Mac has 16 GB unified
 memory. That reduction is the main source of preview softness; the committed
@@ -274,30 +325,30 @@ workflows keep an 832 × 1120 canvas. More steps can refine a result but cannot
 replace missing spatial resolution, which is why the step control is shown
 separately.
 
-### Full restoration
+### Source processing (ESRGAN + FLUX restoration + LoRA)
 
-![Full restoration example 1](docs/assets/test-runs/full-restoration-01.jpg)
+![Source processing example 1](docs/assets/test-runs/source-processing-01.jpg)
 
 Autoprompter description:
 
 ```text
-hoi4_portrait, a middle-aged man with a broad oval face, short dark wavy hair swept upward from a side part, a small neat dark moustache, softly rounded cheeks, a straight nose, and a faint asymmetric smile that lifts one corner of his closed mouth, his head turned slightly toward the viewer's left while his eyes look upward toward the viewer's left, his body angled slightly toward the viewer's right, wearing a dark three-piece suit with broad lapels, a light shirt, and a dark tie, shown from the chest up.
+hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit.
 ```
 
-![Full restoration example 2](docs/assets/test-runs/full-restoration-02.jpg)
+![Source processing example 2](docs/assets/test-runs/source-processing-02.jpg)
 
 Autoprompter description:
 
 ```text
-hoi4_portrait, a young woman with a softly heart-shaped face, dark hair swept back from a side part, gently arched brows, wide bright eyes looking directly at the viewer, a straight narrow nose, rounded cheeks, and a slight closed-mouth smile with subtly raised corners, her head held nearly level and turned only slightly toward the viewer's right, wearing a broad light collar over a dark garment, shown from the upper chest up.
+hoi4_portrait, an Irish young woman with dark hair swept back, wearing a dark civilian dress with a light collar.
 ```
 
-![Full restoration example 3](docs/assets/test-runs/full-restoration-03.jpg)
+![Source processing example 3](docs/assets/test-runs/source-processing-03.jpg)
 
 Autoprompter description:
 
 ```text
-hoi4_portrait, a young man with a long narrow oval face, dark hair combed smoothly back from a side part, a high forehead, gently arched brows, a straight prominent nose, a defined chin, and a faint closed-mouth smile, his head turned slightly toward the viewer's right while his eyes look upward toward the viewer's right, wearing a dark suit jacket, light pointed collar, and dark tie, shown from the chest up.
+hoi4_portrait, an Irish young man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
 ```
 
 ### ESRGAN only
@@ -307,7 +358,7 @@ hoi4_portrait, a young man with a long narrow oval face, dark hair combed smooth
 Autoprompter description:
 
 ```text
-hoi4_portrait, a middle-aged man with a long angular face, a high receding hairline and short dark hair combed back, prominent ears, furrowed brows, narrow deep-set eyes, a straight prominent nose, lean cheeks with visible creases, and a restrained asymmetric half-smile, his head turned slightly toward the viewer's right while his gaze remains nearly forward, wearing a high-collared uniform with shoulder straps, braided cord, chest pockets, belt, and visible decorations, shown from the chest up.
+hoi4_portrait, an Irish middle-aged man with receding dark hair and prominent ears, wearing a military uniform.
 ```
 
 ![ESRGAN-only example 2](docs/assets/test-runs/esrgan-only-02.jpg)
@@ -315,7 +366,7 @@ hoi4_portrait, a middle-aged man with a long angular face, a high receding hairl
 Autoprompter description:
 
 ```text
-hoi4_portrait, a slender middle-aged man with a long narrow face, neatly parted dark hair combed close to the head, round wire-frame glasses, heavy-lidded eyes looking slightly toward the viewer's right, a long straight nose, hollow cheeks, and thin closed lips in a reserved unsmiling expression, his head and upper body turned in a clear three-quarter view toward the viewer's left, wearing a dark suit jacket, high light collar, and dark tie, shown from the chest up.
+hoi4_portrait, an Irish slender middle-aged man with neatly parted dark hair and round wire-frame glasses, wearing a dark civilian suit.
 ```
 
 ![ESRGAN-only example 3](docs/assets/test-runs/esrgan-only-03.jpg)
@@ -323,7 +374,7 @@ hoi4_portrait, a slender middle-aged man with a long narrow face, neatly parted 
 Autoprompter description:
 
 ```text
-hoi4_portrait, an older man with a long narrow face, a bald crown and sparse dark hair at the sides, gently arched dark eyebrows, heavy-lidded eyes with visible under-eye creases, a long prominent nose, hollow cheeks with fine cheek lines, thin compressed lips, a firm unsmiling expression, and faint horizontal forehead lines, facing nearly forward with his head held level and his gaze directed slightly toward the viewer's left, wearing a dark high-collared garment with a corded fastening, shown from the chest up.
+hoi4_portrait, an Irish older man with sparse dark hair at the sides, wearing dark clerical clothing.
 ```
 
 ### No-input portraits and step control
@@ -343,10 +394,12 @@ See [the three random prompts, exact test conditions, and findings](docs/test-re
   the only advisory is the expected project LoRA import.
 - Cloud GPU mechanical tests pass every workflow shape and the final
   background branch using a compatible catalog LoRA at zero strength.
-- Actual local inference with the project LoRA passes for three full-restoration
-  portraits, three ESRGAN-only portraits, three text-to-image portraits, and
-  fixed-seed 6/8/10/12/20/35-step controls. Reduced 416 × 560 evidence was used on a
-  16 GB Apple-silicon Mac; 832 × 1120 remains the workflow canvas.
+- Local functional evidence covers three full-power restoration source
+  portraits, three ESRGAN-only source portraits, three text-to-image
+  portraits, and fixed-seed 6/8/10/12/20/35-step controls. Reduced 416 × 560
+  evidence was used on a 16 GB Apple-silicon Mac; 832 × 1120 remains the
+  workflow canvas. The gallery boards record LoRA `0.7`; the packaged graphs
+  use `0.75`.
 
 Run the same checks locally:
 

@@ -8,7 +8,7 @@ Comfy Cloud users should import the same Hugging Face file through
 **Models → Import**, select **LoRA**, and wait for the filename to appear in
 the `LoraLoaderModelOnly` dropdown.
 
-The trigger word is `hoi4_portrait`. Start with LoRA strength `0.7`, Euler,
+The trigger word is `hoi4_portrait`. Start with LoRA strength `0.75`, Euler,
 eight steps, and CFG 5. Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps found
 no useful gain above eight. After the trigger, describe only the person—not the
 game/style, background, lighting, or rendering.

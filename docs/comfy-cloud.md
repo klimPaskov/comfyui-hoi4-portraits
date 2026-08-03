@@ -31,9 +31,12 @@ For source workflows, upload:
 Background replacement is off by default, so a missing background asset does
 not need to execute on the default lazy branch.
 
-Keep the LoRA loader at strength `0.7` for the documented default. Every
+Keep the LoRA loader at strength `0.75` for the documented default. Every
 positive prompt must begin with `hoi4_portrait,` and then describe only the
-person; do not add game/style, background, lighting, or rendering language.
+person. Keep the description concise: supported ethnicity, approximate age,
+hair, and general clothing classification. Leave expression, pose, gaze, and facing direction to the
+input reference. Do not add game/style, background, lighting, or rendering
+language.
 
 In either source workflow, set the built-in bounding box around the head and
 shoulders and check the crop preview before queueing. The crop nodes are in

@@ -1,47 +1,23 @@
-Inspect the supplied portrait carefully at full resolution, then write one
-precise English description of the visible person for the FLUX.2 Klein 9B
-portrait workflow. Do a second visual check before answering.
+Inspect the portrait and return one clear, concise English prompt line.
 
-The output must begin exactly with:
+The line must begin exactly with:
 
 hoi4_portrait,
 
-Describe only visible, identity-preserving details:
+Describe only broad, visible person cues: ethnicity or nationality when the
+source context supports it, approximate age, general hair or facial hair,
+broad civilian, military, clerical, or other visible clothing classification,
+and general clothing. Keep it short.
 
-- approximate age presentation and visible gender presentation;
-- face shape and distinctive proportions of the forehead, brows, eyes, nose,
-  cheeks, mouth, jaw, chin, and ears;
-- visible facial texture that helps preserve likeness, such as forehead lines,
-  crow's-feet, under-eye creases, nasolabial folds, cheek lines, dimples,
-  moles, scars, or uneven skin texture; never smooth these details away in the
-  description and never invent texture that is not visible;
-- hair, hairline, facial hair, glasses, and accessories;
-- the exact expression using visible eyebrow, eyelid, cheek, and mouth cues;
-  do not write only "neutral expression" when more precise cues are visible;
-- head direction, body angle, and gaze direction separately. State directions
-  relative to the viewer, for example "head turned slightly toward the
-  viewer's right while the eyes look upward toward the viewer's left";
-- how much of the person is visible, such as shoulders-up or chest-up;
-- skin tone only when a color source makes it directly observable;
-- clothing, uniform, medals, hats, and jewelry only when clearly visible.
+Do not mention cropping, framing, camera angle, pose, gaze, facing direction,
+emotion, or expression. Do not name the person or invent ethnicity,
+nationality, role, rank, branch, unit, medals, or insignia. Use a broad
+military/civilian classification only when the clothing clearly supports it.
 
-Do not identify the person by name. Do not infer nationality, ideology,
-ethnicity, religion, sexuality, political role, military role, rank, branch,
-unit, medal, or insignia from appearance. If a detail is uncertain, omit it.
-Do not invent anything hidden by the crop.
-For monochrome or sepia sources, do not infer skin tone, eye color, clothing
-color, or any other color that the source cannot establish. Avoid generic
-claims such as symmetrical features or even lighting; include only useful,
-observable distinctions and do not contradict yourself.
+Do not describe the background, border, vignette, lighting, game, style,
+palette, rendering, restoration, transformation, or preservation. For
+monochrome or sepia sources, do not invent colors. Ignore scratches, paper
+texture, blur, and other photographic artifacts.
 
-Ignore photographic borders, oval mounts, vignettes, empty backdrop, paper
-texture, scratches, halftone dots, blur, and restoration artifacts. These are
-not attributes of the person and must never appear in the description.
-
-Do not mention a game, visual style, painting or rendering method, historical
-palette, lighting treatment, background, restoration operation, transformation
-instruction, preservation instruction, negative prompt, or desired output.
-The LoRA supplies the style; the prompt describes only the person.
-
-Return one natural-language line only. Do not add a heading, quotation marks,
-explanation, Markdown, a negative prompt, or a tag list.
+Return only the single prompt line. Do not add a heading, explanation,
+quotation marks, Markdown, a negative prompt, or a tag list.

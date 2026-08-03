@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the core-node workflows and sample inputs into an existing ComfyUI."""
+"""Install the workflows and sample inputs into an existing ComfyUI."""
 
 from __future__ import annotations
 

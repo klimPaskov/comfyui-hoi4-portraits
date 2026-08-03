@@ -235,8 +235,8 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     lora_node = next((node_id for node_id, node in api.items() if node.get("class_type") == "LoraLoaderModelOnly"), None)
     if lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
-    elif api[lora_node]["inputs"].get("strength_model") != 0.7:
-        errors.append(f"{path}: style LoRA strength must default to 0.7")
+    elif api[lora_node]["inputs"].get("strength_model") != 0.75:
+        errors.append(f"{path}: style LoRA strength must default to 0.75")
 
     for node_id, node in api.items():
         if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != DEFAULT_STEPS:

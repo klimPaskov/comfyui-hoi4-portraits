@@ -29,4 +29,4 @@ if (-not $SkipModels) {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-Write-Host "Installed the core-node FLUX.2 Klein 9B workflows. Restart ComfyUI, then open Workflows > hoi4_portraits."
+Write-Host "Installed the FLUX.2 Klein 9B workflows. Restart ComfyUI, then open Workflows > hoi4_portraits."

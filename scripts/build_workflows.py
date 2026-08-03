@@ -21,7 +21,7 @@ BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
-STYLE_LORA_STRENGTH = 0.7
+STYLE_LORA_STRENGTH = 0.75
 DEFAULT_STEPS = 8
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
@@ -42,15 +42,13 @@ RESTORATION_PROMPT = (
 )
 RESTORATION_NEGATIVE = ""
 STYLE_PROMPT = (
-    "hoi4_portrait, a middle-aged man with a broad oval face, short dark wavy hair swept upward from a side part, a small neat dark "
-    "moustache, softly rounded cheeks, a straight nose, and a faint asymmetric smile that lifts one corner of his closed mouth, his "
-    "head turned slightly toward the viewer's left while his eyes look upward toward the viewer's left, his body angled slightly toward "
-    "the viewer's right, wearing a dark three-piece suit with broad lapels, a light shirt, and a dark tie, shown from the chest up."
+    "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, "
+    "wearing a dark civilian suit."
 )
 STYLE_NEGATIVE = ""
 TEXT_PROMPT = (
-    "hoi4_portrait, a stern middle-aged man with light skin, neatly combed dark hair, straight brows, a closed mouth, and a direct gaze, "
-    "wearing a plain dark high-collared service jacket, shown from the chest up while facing slightly left."
+    "hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, "
+    "wearing a plain civilian jacket."
 )
 
 

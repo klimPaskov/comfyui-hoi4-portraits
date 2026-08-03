@@ -55,11 +55,12 @@ Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
 
 ## Person-only prompt rules
 
-For a real person, describe the visible face, hair, expression, clothing, pose,
-gaze, and crop accurately. Do not put style, game, background, lighting,
+For a real person, describe only supported ethnicity, approximate age, broad
+hair or facial-hair cues, and general clothing classification. Let the source reference carry expression, pose, gaze, and facing
+direction. Do not put style, game, background, lighting,
 rendering, transformation, restoration, or preservation instructions in the
 positive prompt. Do not ask the model to invent medals or insignia. If
-identity drifts, try LoRA strength `0.7`, use a cleaner crop, or disable the
+identity drifts, try LoRA strength `0.75`, use a cleaner crop, or disable the
 optional FLUX restoration pass.
 
 ## Common problems
@@ -67,9 +68,9 @@ optional FLUX restoration pass.
 | Symptom | Likely fix |
 | --- | --- |
 | Loader is red | Install/import the exact filename from `models.json`, then refresh ComfyUI. |
-| Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 32 GB+ GPU. |
+| Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 24 GB GPU. |
 | Wrong person or full-body framing | Adjust the source bounding box until the crop preview is head-and-shoulders. |
 | Background appears too early | Only the post-generation background group may replace it; reload the packaged workflow if the graph was rewired. |
-| Style is weak | Keep `hoi4_portrait` in the prompt; increase LoRA strength cautiously from the `0.7` default. |
+| Style is weak | Keep `hoi4_portrait` in the prompt; use the `0.75` default and keep the crop clean. |
 | Identity or position changes | Confirm the crop, keep the encoded-source sampler connection, disable optional restoration if needed, and remove speculative traits. |
-| Final looks too smooth | Try 10 or 20 scheduler steps and compare against the six-step default with the same seed. |
+| Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Eight Euler steps is the documented default; the optional FLUX restoration branch can soften identity, so disable it first. |

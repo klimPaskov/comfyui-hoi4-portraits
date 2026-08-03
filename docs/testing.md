@@ -33,7 +33,7 @@ The validator checks:
 - adjustable crop → RealESRGAN order in both source graphs;
 - the encoded processed source as the sampler's starting latent, with no empty
   latent in either image-to-image graph;
-- LoRA strength `0.7` and eight scheduler steps in all default graphs;
+- LoRA strength `0.75` and eight scheduler steps in all default graphs;
 - person-only positive prompts after the required `hoi4_portrait,` trigger.
 
 ## Unit tests
@@ -60,17 +60,22 @@ All six pinned model files were downloaded and checksum-verified. ComfyUI
 low-VRAM offloading, split cross-attention, no previews, and optional
 extensions disabled.
 
-The public graphs use an 832 × 1120 canvas, LoRA strength `0.7`, Euler, eight
-steps, and CFG 5. To complete a broad local functional suite within the
+The public graphs use an 832 × 1120 canvas, LoRA strength `0.75`, Euler, eight
+steps, and CFG 5. The evidence boards record LoRA `0.7` in their labels. To
+complete a broad local functional suite within the
 machine's resource limit, test copies were overridden to 416 × 560. A fixed-
 seed control also ran the same source for 6, 8, 10, 12, 20, and 35 steps.
 
-Successful runs:
+Successful evidence runs:
 
-- three source portraits through crop → RealESRGAN → FLUX restoration → final LoRA;
-- three source portraits through crop → RealESRGAN → final LoRA;
+- six source portraits through crop → RealESRGAN → final LoRA;
 - three no-input text-to-image portraits;
 - one fixed-source, fixed-seed Euler comparison at 6, 8, 10, 12, 20, and 35 steps.
+
+The first three source boards exercise the enabled FLUX restoration branch;
+the other three exercise the ESRGAN-only bypass. The no-input gallery is kept
+as a separate reference. Grayscale, crop, blur, and pose-drift failures are
+not included in the committed boards.
 
 The background test uses a completed saved image in place of the final decode,
 then evaluates only BiRefNet, compositing, and the final switch. It completes

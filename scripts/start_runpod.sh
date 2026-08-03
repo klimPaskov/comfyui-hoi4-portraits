@@ -8,7 +8,13 @@ if [[ ! -f "${COMFY_ROOT}/main.py" ]]; then
 fi
 
 PYTHON_BIN=""
-for candidate in "${COMFY_ROOT}/.venv/bin/python" "${COMFY_ROOT}/venv/bin/python" /workspace/venv/bin/python; do
+for candidate in \
+  "${COMFY_ROOT}/.venv/bin/python" \
+  "${COMFY_ROOT}/venv/bin/python" \
+  "${COMFY_ROOT}/python_embeded/python" \
+  /workspace/venv/bin/python \
+  /workspace/.venv/bin/python \
+  /opt/pyvenv/bin/python; do
   if [[ -x "${candidate}" ]]; then
     PYTHON_BIN="${candidate}"
     break

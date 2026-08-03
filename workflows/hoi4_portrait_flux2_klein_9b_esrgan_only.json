@@ -642,7 +642,7 @@
       },
       "widgets_values": [
         "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-        0.7
+        0.75
       ]
     },
     {
@@ -693,7 +693,7 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        "hoi4_portrait, a middle-aged man with a broad oval face, short dark wavy hair swept upward from a side part, a small neat dark moustache, softly rounded cheeks, a straight nose, and a faint asymmetric smile that lifts one corner of his closed mouth, his head turned slightly toward the viewer's left while his eyes look upward toward the viewer's left, his body angled slightly toward the viewer's right, wearing a dark three-piece suit with broad lapels, a light shirt, and a dark tie, shown from the chest up."
+        "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit."
       ]
     },
     {
