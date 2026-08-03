@@ -59,8 +59,9 @@ Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
 
 ## Person-only prompt rules
 
-For a real person, describe only supported ethnicity, approximate age, broad
-hair or facial-hair cues, and general clothing classification. Let the source reference carry expression, pose, gaze, and facing
+For a real person, describe only supported ethnicity, broad hair or facial-hair
+cues, and general clothing classification. Mention approximate age only when
+the person clearly appears older; otherwise omit age. Let the source reference carry expression, pose, gaze, and facing
 direction. Do not put style, game, background, lighting,
 rendering, transformation, restoration, or preservation instructions in the
 positive prompt. Do not ask the model to invent medals or insignia. If

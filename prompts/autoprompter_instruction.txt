@@ -5,9 +5,10 @@ The line must begin exactly with:
 hoi4_portrait,
 
 Describe only broad, visible person cues: ethnicity or nationality when the
-source context supports it, approximate age, general hair or facial hair,
-broad civilian, military, clerical, or other visible clothing classification,
-and general clothing. Keep it short.
+source context supports it, general hair or facial hair, broad civilian,
+military, clerical, or other visible clothing classification, and general
+clothing. Mention approximate age only when the person clearly appears older;
+otherwise omit age completely. Keep it short.
 
 Do not mention cropping, framing, camera angle, pose, gaze, facing direction,
 emotion, or expression. Do not name the person or invent ethnicity,

@@ -316,9 +316,10 @@ The line must begin exactly with:
 hoi4_portrait,
 
 Describe only broad, visible person cues: ethnicity or nationality when the
-source context supports it, approximate age, general hair or facial hair,
-broad civilian, military, clerical, or other visible clothing classification,
-and general clothing. Keep it short.
+source context supports it, general hair or facial hair, broad civilian,
+military, clerical, or other visible clothing classification, and general
+clothing. Mention approximate age only when the person clearly appears older;
+otherwise omit age completely. Keep it short.
 
 Do not mention cropping, framing, camera angle, pose, gaze, facing direction,
 emotion, or expression. Do not name the person or invent ethnicity,
@@ -344,9 +345,9 @@ examples](docs/autoprompter-examples.md) for concise person-only prompts.
 These examples are local runs with the published LoRA. Every source board is
 initial source → processed crop → final portrait. The prompts describe only the
 person; expression, pose, gaze, and facing direction come from the reference.
-The six source boards use LoRA `0.7` / Euler / 6 steps. The workflows use LoRA
-`0.7` / Euler / 8 steps by default. The examples exclude grayscale, blur, crop
-failures, and pose drift.
+Each final panel prints the setting used for that accepted color run. The
+published workflows use LoRA `0.7` / Euler / 8 steps by default. The examples
+exclude grayscale finals, blur, crop failures, and pose drift.
 
 The evidence boards use 416 × 560 because the test Mac has 16 GB unified
 memory. That reduction is the main source of preview softness; the published
@@ -369,7 +370,7 @@ hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustach
 Autoprompter description:
 
 ```text
-hoi4_portrait, an Irish young woman with dark hair swept back, wearing a dark civilian dress with a light collar.
+hoi4_portrait, an Irish woman with dark hair swept back, wearing a dark civilian dress with a light collar.
 ```
 
 ![Source processing example 3](docs/assets/test-runs/source-processing-03.jpg)
@@ -377,7 +378,7 @@ hoi4_portrait, an Irish young woman with dark hair swept back, wearing a dark ci
 Autoprompter description:
 
 ```text
-hoi4_portrait, an Irish young man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
+hoi4_portrait, an Irish man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
 ```
 
 ### Source processing with restoration disabled
@@ -406,11 +407,21 @@ Autoprompter description:
 hoi4_portrait, an Irish older man with sparse dark hair at the sides, wearing dark clerical clothing.
 ```
 
+### Post-final background replacement
+
+Background replacement receives the decoded final portrait, so it can be
+switched on after LoRA styling. This example uses the bundled scientist
+background.
+
+![Final portrait over the scientist background](docs/assets/test-runs/post-final-scientist-background.png)
+
 ### No-input portraits and step control
 
 ![Three no-input portraits generated from person-only prompts](docs/assets/test-runs/random-portraits.jpg)
 
 ![Fixed-seed Euler comparison at 6, 8, 10, 12, 20, and 35 steps](docs/assets/test-runs/step-comparison.jpg)
+
+![Sampler and conditioning comparison](docs/assets/test-runs/sampler-comparison.png)
 
 See [the three random prompts, exact test conditions, and findings](docs/test-results.md).
 

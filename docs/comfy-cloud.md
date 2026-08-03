@@ -36,10 +36,11 @@ unless you enable that switch.
 
 Keep the LoRA loader at strength `0.7`. Every
 positive prompt must begin with `hoi4_portrait,` and then describe only the
-person. Keep the description concise: supported ethnicity, approximate age,
-hair, and general clothing classification. Leave expression, pose, gaze, and facing direction to the
-input reference. Do not add game/style, background, lighting, or rendering
-language.
+person. Keep the description concise: supported ethnicity, hair, and general
+clothing classification. Mention approximate age only when the person clearly
+appears older; otherwise omit age. Leave expression, pose, gaze, and facing
+direction to the input reference. Do not add game/style, background, lighting,
+or rendering language.
 
 In either source workflow, set the bounding box around the head and shoulders
 and check the crop preview before queueing. The crop controls are available in

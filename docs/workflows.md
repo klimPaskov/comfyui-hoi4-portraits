@@ -58,8 +58,9 @@ master and game-size outputs and uses the same final-only background branch.
 ## Positive prompt invariant
 
 After the `hoi4_portrait,` trigger, positive prompts describe only the person.
-They should describe only supported ethnicity, approximate age, broad hair or
-facial-hair cues, and general clothing classification. Expression, pose, gaze, and facing direction should be left to the
+They should describe only supported ethnicity, broad hair or facial-hair cues,
+and general clothing classification. Mention approximate age only when the
+person clearly appears older; otherwise omit age. Expression, pose, gaze, and facing direction should be left to the
 source reference. They must not request a game/style, background, lighting, palette, rendering,
 restoration, transformation, or preservation behavior. The validator rejects
 common violations in every generated API graph.

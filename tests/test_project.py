@@ -53,6 +53,8 @@ class WorkflowTests(unittest.TestCase):
     def test_autoprompter_output_contract_is_person_only(self) -> None:
         instruction = (ROOT / "prompts" / "autoprompter_instruction.txt").read_text(encoding="utf-8").casefold()
         self.assertIn("describe only broad", instruction)
+        self.assertNotIn("young", instruction)
+        self.assertIn("otherwise omit age completely", instruction)
         self.assertNotIn("workflow", instruction)
         self.assertNotIn("comfyui", instruction)
         for forbidden in (
@@ -183,6 +185,7 @@ class DocumentationTests(unittest.TestCase):
         self.assertEqual(readme.count("docs/assets/test-runs/source-processing-restoration-off-"), 3)
         self.assertIn("docs/assets/test-runs/random-portraits.jpg", readme)
         self.assertIn("docs/assets/test-runs/step-comparison.jpg", readme)
+        self.assertIn("docs/assets/test-runs/sampler-comparison.png", readme)
         self.assertEqual(readme.count("Autoprompter description:"), 6)
         for obsolete in (
             "full-restoration-01.jpg",
@@ -200,14 +203,14 @@ class DocumentationTests(unittest.TestCase):
         ):
             self.assertTrue((ROOT / "docs" / "assets" / "test-runs" / current).is_file(), current)
 
-    def test_readme_gallery_uses_the_requested_older_boards(self) -> None:
+    def test_readme_gallery_uses_the_requested_color_safe_generations(self) -> None:
         expected = {
-            "source-processing-01.jpg": "9f6c3f8c4de1",
-            "source-processing-02.jpg": "b4a09d4407f6",
-            "source-processing-03.jpg": "077dfb9c9579",
-            "source-processing-restoration-off-01.jpg": "8c1ea1da97e4",
-            "source-processing-restoration-off-02.jpg": "c7e62859880b",
-            "source-processing-restoration-off-03.jpg": "5e6b1e1ea456",
+            "source-processing-01.jpg": "0bbbe0a2142b",
+            "source-processing-02.jpg": "8ca1e75f1fb3",
+            "source-processing-03.jpg": "4b86bca0ec54",
+            "source-processing-restoration-off-01.jpg": "6fdedc7fee71",
+            "source-processing-restoration-off-02.jpg": "ad97673a1454",
+            "source-processing-restoration-off-03.jpg": "7da73d2632d9",
         }
         for filename, prefix in expected.items():
             digest = hashlib.sha256((ROOT / "docs/assets/test-runs" / filename).read_bytes()).hexdigest()

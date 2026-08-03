@@ -10,8 +10,8 @@ portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
 - ComfyUI 0.25.0;
 - Apple-silicon Mac with 16 GB unified memory and MPS offloading;
 - 416 × 560 evidence output; the public workflow canvas remains 832 × 1120;
-- LoRA strength `0.7` for the evidence boards, Euler, six steps, CFG 5;
-- the workflows use LoRA strength `0.7` by default with the same sampler;
+- accepted color boards retain the LoRA strength printed in each final panel;
+- the workflows use LoRA strength `0.7` by default, Euler, eight steps, CFG 5;
 - source path: adjustable crop → RealESRGAN → optional FLUX restoration → FLUX.2 Klein 9B LoRA;
 - the first three `source-processing` boards use the optional FLUX restoration
   path;
@@ -24,8 +24,8 @@ The reduced size is a local resource compromise. The same workflow connections
 are used for each source, seed, prompt, crop, and evidence size. The first
 three source boards use the source workflow with FLUX restoration enabled to
 recover colour and detail from aged material. The other three use the same
-workflow with restoration disabled. The boards show colour, clean crops, and
-stable framing.
+workflow with restoration disabled. Only color finals with clean crops and
+stable framing are included.
 
 ## Six source triptychs
 
@@ -42,13 +42,13 @@ hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustach
 ![Source processing test 2](assets/test-runs/source-processing-02.jpg)
 
 ```text
-hoi4_portrait, an Irish young woman with dark hair swept back, wearing a dark civilian dress with a light collar.
+hoi4_portrait, an Irish woman with dark hair swept back, wearing a dark civilian dress with a light collar.
 ```
 
 ![Source processing test 3](assets/test-runs/source-processing-03.jpg)
 
 ```text
-hoi4_portrait, an Irish young man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
+hoi4_portrait, an Irish man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
 ```
 
 ![Source processing without FLUX restoration, test 1](assets/test-runs/source-processing-restoration-off-01.jpg)
@@ -86,7 +86,7 @@ hoi4_portrait, an Irish middle-aged woman with dark hair pinned into a low bun, 
 ```
 
 ```text
-hoi4_portrait, an Irish young man with close-cropped dark hair, wearing a plain military service tunic.
+hoi4_portrait, an Irish man with close-cropped dark hair, wearing a plain military service tunic.
 ```
 
 ## Fixed-seed 6/8/10/12/20/35-step control
@@ -96,6 +96,8 @@ not improve the result, Heun was slower without a visual gain, and CFG 4 was
 softer than CFG 5. The step-count comparison holds Euler and CFG 5 constant.
 
 ![Euler at 6, 8, 10, 12, 20, and 35 steps](assets/test-runs/step-comparison.jpg)
+
+![Sampler and conditioning comparison](assets/test-runs/sampler-comparison.png)
 
 Use eight steps for production. It improves structure over six without the
 extra runtime and framing drift seen at 10, 12, 20, and 35.
@@ -107,3 +109,7 @@ stage. It uses BiRefNet, image scaling, mask compositing, and the final switch;
 background work remains downstream of final image creation.
 
 ![Post-final background replacement test](assets/test-runs/post-final-background.png)
+
+The same post-final branch can use the bundled scientist background:
+
+![Post-final portrait over the scientist background](assets/test-runs/post-final-scientist-background.png)

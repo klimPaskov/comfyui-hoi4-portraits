@@ -17,9 +17,10 @@ with an external vision-language model.
 ## Required output contract
 
 Output one concise English line that begins with `hoi4_portrait,` and describes
-only the visible person. Include broad age, hair or facial hair, supported
-ethnicity, and general clothing classification. Do not repeat crop or framing
-controls. Leave emotion, expression, pose, gaze, and facing direction
+only the visible person. Include hair or facial hair, supported ethnicity, and
+general clothing classification. Mention approximate age only when the person
+clearly appears older; otherwise omit age completely. Do not repeat crop or
+framing controls. Leave emotion, expression, pose, gaze, and facing direction
 out of the line: the input portrait is the authority for them, and repeating
 them in text can make the final face drift.
 
@@ -39,11 +40,11 @@ hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustach
 ```
 
 ```text
-hoi4_portrait, an Irish young woman with dark hair swept back, wearing a dark civilian dress with a light collar.
+hoi4_portrait, an Irish woman with dark hair swept back, wearing a dark civilian dress with a light collar.
 ```
 
 ```text
-hoi4_portrait, an Irish young man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
+hoi4_portrait, an Irish man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
 ```
 
 ```text
