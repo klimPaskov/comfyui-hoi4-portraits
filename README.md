@@ -349,12 +349,6 @@ Each final panel prints the setting used for that accepted color run. The
 published workflows use LoRA `0.7` / Euler / 8 steps by default. The examples
 exclude grayscale finals, blur, crop failures, and pose drift.
 
-The evidence boards use 416 × 560 because the test Mac has 16 GB unified
-memory. That reduction is the main source of preview softness; the published
-workflows keep an 832 × 1120 canvas. More steps can refine a result but cannot
-replace missing spatial resolution, which is why the step control is shown
-separately.
-
 ### Source processing with FLUX restoration
 
 ![Source processing example 1](docs/assets/test-runs/source-processing-01.jpg)
@@ -411,7 +405,7 @@ hoi4_portrait, an Irish older man with sparse dark hair at the sides, wearing da
 
 Background replacement receives the decoded final portrait, so it can be
 switched on after LoRA styling. This example uses the bundled scientist
-background.
+background with a completed FLUX portrait.
 
 ![Final portrait over the scientist background](docs/assets/test-runs/post-final-scientist-background.png)
 
@@ -420,8 +414,6 @@ background.
 ![Three no-input portraits generated from person-only prompts](docs/assets/test-runs/random-portraits.jpg)
 
 ![Fixed-seed Euler comparison at 6, 8, 10, 12, 20, and 35 steps](docs/assets/test-runs/step-comparison.jpg)
-
-![Sampler and conditioning comparison](docs/assets/test-runs/sampler-comparison.png)
 
 See [the three random prompts, exact test conditions, and findings](docs/test-results.md).
 
@@ -436,9 +428,8 @@ See [the three random prompts, exact test conditions, and findings](docs/test-re
   background path with a compatible catalog LoRA at zero strength.
 - Local functional evidence covers three source portraits with restoration,
   three source portraits with restoration disabled, three text-to-image
-  portraits, and fixed-seed 6/8/10/12/20/35-step controls. The evidence uses
-  416 × 560 on a 16 GB Apple-silicon Mac; the workflow canvas is 832 × 1120.
-  The gallery boards and workflows use LoRA `0.7` by default.
+  portraits, and fixed-seed 6/8/10/12/20/35-step controls. The gallery boards
+  and workflows use LoRA `0.7` by default.
 
 Run the same checks locally:
 

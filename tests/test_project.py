@@ -185,7 +185,7 @@ class DocumentationTests(unittest.TestCase):
         self.assertEqual(readme.count("docs/assets/test-runs/source-processing-restoration-off-"), 3)
         self.assertIn("docs/assets/test-runs/random-portraits.jpg", readme)
         self.assertIn("docs/assets/test-runs/step-comparison.jpg", readme)
-        self.assertIn("docs/assets/test-runs/sampler-comparison.png", readme)
+        self.assertNotIn("docs/assets/test-runs/sampler-comparison.png", readme)
         self.assertEqual(readme.count("Autoprompter description:"), 6)
         for obsolete in (
             "full-restoration-01.jpg",
@@ -205,8 +205,8 @@ class DocumentationTests(unittest.TestCase):
 
     def test_readme_gallery_uses_the_requested_color_safe_generations(self) -> None:
         expected = {
-            "source-processing-01.jpg": "0bbbe0a2142b",
-            "source-processing-02.jpg": "8ca1e75f1fb3",
+            "source-processing-01.jpg": "9f6c3f8c4de1",
+            "source-processing-02.jpg": "ebb6e4d72834",
             "source-processing-03.jpg": "4b86bca0ec54",
             "source-processing-restoration-off-01.jpg": "6fdedc7fee71",
             "source-processing-restoration-off-02.jpg": "ad97673a1454",

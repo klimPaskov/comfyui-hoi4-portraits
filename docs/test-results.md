@@ -8,8 +8,6 @@ portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
 ## Test conditions
 
 - ComfyUI 0.25.0;
-- Apple-silicon Mac with 16 GB unified memory and MPS offloading;
-- 416 × 560 evidence output; the public workflow canvas remains 832 × 1120;
 - accepted color boards retain the LoRA strength printed in each final panel;
 - the workflows use LoRA strength `0.7` by default, Euler, eight steps, CFG 5;
 - source path: adjustable crop → RealESRGAN → optional FLUX restoration → FLUX.2 Klein 9B LoRA;
@@ -91,13 +89,9 @@ hoi4_portrait, an Irish man with close-cropped dark hair, wearing a plain milita
 
 ## Fixed-seed 6/8/10/12/20/35-step control
 
-The sampler control compared Euler, DPM++ 2M, Heun, and CFG 4. DPM++ 2M did
-not improve the result, Heun was slower without a visual gain, and CFG 4 was
-softer than CFG 5. The step-count comparison holds Euler and CFG 5 constant.
+The step-count comparison holds Euler and CFG 5 constant.
 
 ![Euler at 6, 8, 10, 12, 20, and 35 steps](assets/test-runs/step-comparison.jpg)
-
-![Sampler and conditioning comparison](assets/test-runs/sampler-comparison.png)
 
 Use eight steps for production. It improves structure over six without the
 extra runtime and framing drift seen at 10, 12, 20, and 35.
@@ -110,6 +104,7 @@ background work remains downstream of final image creation.
 
 ![Post-final background replacement test](assets/test-runs/post-final-background.png)
 
-The same post-final branch can use the bundled scientist background:
+The same post-final branch can use the bundled scientist background with the
+completed FLUX portrait:
 
 ![Post-final portrait over the scientist background](assets/test-runs/post-final-scientist-background.png)

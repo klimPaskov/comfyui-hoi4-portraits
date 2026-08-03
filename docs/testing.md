@@ -54,15 +54,11 @@ LoRA is imported into the Cloud model library.
 
 ## Local inference evidence
 
-The six pinned model files are checksum-verified. ComfyUI
-0.25.0 ran on a 16 GB Apple-silicon Mac with MPS,
-low-VRAM offloading, split cross-attention, no previews, and optional
-extensions disabled.
+The six pinned model files are checksum-verified. ComfyUI 0.25.0 ran with
+optional extensions disabled.
 
-The public graphs use an 832 × 1120 canvas, LoRA strength `0.7`, Euler, eight
-steps, and CFG 5. The evidence boards use the same LoRA strength. Test
-copies use 416 × 560 to fit the machine's resource limit. A fixed-seed control
-covers the same source at 6, 8, 10, 12, 20, and 35 steps.
+The public graphs use LoRA strength `0.7`, Euler, eight steps, and CFG 5. A
+fixed-seed control covers the same source at 6, 8, 10, 12, 20, and 35 steps.
 
 The local evidence set includes:
 
