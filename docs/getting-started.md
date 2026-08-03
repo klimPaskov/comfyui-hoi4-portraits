@@ -2,11 +2,16 @@
 
 ## Choose a workflow
 
-- Use **full power** when the source is faded, scratched, very small, or needs plausible color recovery. It runs RealESRGAN first and FLUX.2 restoration second.
-- Use **ESRGAN only** for a well-preserved source or when you want a faster, less generative preparation stage.
+- Use **source** for a finished portrait. It runs RealESRGAN first, then
+  applies the HOI4 LoRA; optional FLUX.2 restoration sits between those stages
+  and is off by default.
+- Use **processing** when you need a crop, upscale, and optional restoration
+  result without LoRA styling.
 - Use **text to image** when no real person must be preserved.
 
-All three use the same FLUX.2 Klein base 9B model and HOI4 LoRA.
+The source and text-to-image workflows use the FLUX.2 Klein base 9B model and
+HOI4 LoRA. The processing workflow uses the base model for its optional
+restoration pass and does not load the LoRA.
 
 ## Prepare a source image
 
@@ -48,9 +53,9 @@ Find the filenames, pinned sources, sizes, and SHA-256 hashes in
 4. Edit the positive prompt. Keep the `hoi4_portrait,` trigger and describe
    only the visible person.
 5. Leave background replacement off for the first run.
-6. Queue once. The full workflow's restoration switch is off by default; turn
-   it on only when the source needs the additional pass. Use the ESRGAN-only
-   graph when you do not need FLUX restoration.
+6. Queue once. The source workflow's restoration switch is off by default; turn
+   it on only when the source needs the additional pass. Use the processing
+   workflow when you need the processed image without LoRA styling.
 7. Inspect the 832 × 1120 master before using the 156 × 210 game-size file.
 
 Outputs are saved under `ComfyUI/output/hoi4_portraits/`.

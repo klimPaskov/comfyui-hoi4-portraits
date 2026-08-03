@@ -13,22 +13,25 @@ portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
 - LoRA strength `0.7` for the evidence boards, Euler, eight steps, CFG 5;
 - the workflows use LoRA strength `0.75` by default with the same sampler;
 - source path: adjustable crop → RealESRGAN → optional FLUX restoration → FLUX.2 Klein 9B LoRA;
-- the three `source-processing` boards use the optional FLUX restoration path;
-- the three `esrgan-only` boards use the direct ESRGAN bypass; the no-input
-  gallery remains a separate reference;
+- the first three `source-processing` boards use the optional FLUX restoration
+  path;
+- the three `source-processing-restoration-off` boards use the direct ESRGAN
+  path; the no-input gallery remains a separate reference;
 - the processed image is encoded as the sampler's starting latent to keep the
   original pose and composition anchored.
 
 The reduced size is a local resource compromise. The same workflow connections
 are used for each source, seed, prompt, crop, and evidence size. The first
-three source boards use full power with FLUX restoration enabled to recover
-colour and detail from aged material. The other three use ESRGAN only. The
-boards show colour, clean crops, and stable framing.
+three source boards use the source workflow with FLUX restoration enabled to
+recover colour and detail from aged material. The other three use the same
+workflow with restoration disabled. The boards show colour, clean crops, and
+stable framing.
 
 ## Six source triptychs
 
 Each board shows initial source → processed image → final LoRA portrait. The
-first three use the FLUX restoration pass; the second three use ESRGAN only.
+first three use the FLUX restoration pass; the second three use the same source
+workflow with that pass disabled.
 
 ![Source processing test 1](assets/test-runs/source-processing-01.jpg)
 
@@ -48,19 +51,19 @@ hoi4_portrait, an Irish young woman with dark hair swept back, wearing a dark ci
 hoi4_portrait, an Irish young man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
 ```
 
-![ESRGAN-only test 1](assets/test-runs/esrgan-only-01.jpg)
+![Source processing without FLUX restoration, test 1](assets/test-runs/source-processing-restoration-off-01.jpg)
 
 ```text
 hoi4_portrait, an Irish middle-aged man with receding dark hair and prominent ears, wearing a military uniform.
 ```
 
-![ESRGAN-only test 2](assets/test-runs/esrgan-only-02.jpg)
+![Source processing without FLUX restoration, test 2](assets/test-runs/source-processing-restoration-off-02.jpg)
 
 ```text
 hoi4_portrait, an Irish slender middle-aged man with neatly parted dark hair and round wire-frame glasses, wearing a dark civilian suit.
 ```
 
-![ESRGAN-only test 3](assets/test-runs/esrgan-only-03.jpg)
+![Source processing without FLUX restoration, test 3](assets/test-runs/source-processing-restoration-off-03.jpg)
 
 ```text
 hoi4_portrait, an Irish older man with sparse dark hair at the sides, wearing dark clerical clothing.

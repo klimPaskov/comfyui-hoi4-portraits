@@ -1,6 +1,7 @@
 # Bundled portrait backgrounds
 
-All three workflows can optionally use these project-owned backgrounds:
+The source and text-to-image workflows can optionally use these project-owned
+backgrounds:
 
 - `hoi4_scientists_BG.png`
 - `hoi4_operative_background.png`

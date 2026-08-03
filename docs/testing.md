@@ -70,8 +70,9 @@ The local evidence set includes:
 - three no-input text-to-image portraits;
 - one fixed-source, fixed-seed Euler comparison at 6, 8, 10, 12, 20, and 35 steps.
 
-The first three source boards use the enabled FLUX restoration path; the other
-three use the ESRGAN-only bypass. The no-input gallery is a separate reference.
+The first three source boards use the source workflow with FLUX restoration
+enabled; the other three use the same workflow with restoration disabled. The
+no-input gallery is a separate reference.
 The boards contain colour, clean crops, and stable framing.
 
 The background test uses a finished saved image in place of the final decode,
@@ -86,7 +87,7 @@ analysis](test-results.md).
 Structural checks run separately from inference checks, so resource limits
 cannot hide malformed nodes or connections.
 
-Cloud GPU checks cover the ESRGAN-only and full-power graphs with a compatible
-catalog LoRA at zero strength, both restoration paths, and all three output
-nodes. The text-to-image background test also covers the final foreground-mask
-connection.
+Cloud GPU checks cover the source, processing, and text-to-image graphs with a
+compatible catalog LoRA at zero strength, both restoration paths, and all three
+output nodes. The text-to-image background test also covers the final
+foreground-mask connection.

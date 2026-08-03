@@ -5,35 +5,41 @@
 [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
 
 Generate Hearts of Iron IV-style leader portraits from photographs or written
-character descriptions with ComfyUI. The workflows use **FLUX.2 Klein base
-9B** plus the project’s `hoi4_portrait` LoRA.
+character descriptions with ComfyUI. The source and text-to-image workflows
+use **FLUX.2 Klein base 9B** plus the project’s `hoi4_portrait` LoRA. The
+processing workflow uses the base model for optional restoration and omits the
+LoRA.
 
-The same workflows open locally and in Comfy Cloud. Start with a source photo
-or a written character description, then choose the restoration path that fits
-the image and available hardware.
+The workflows open locally and in Comfy Cloud. Use the source workflow for a
+final styled portrait, the processing workflow for an intermediate restored
+image without LoRA styling, or text-to-image for a portrait without a source
+photo.
 
 ## Workflows
 
 | Workflow | Best for | Restoration path |
 | --- | --- | --- |
-| [`hoi4_portrait_flux2_klein_9b_full_power`](workflows/hoi4_portrait_flux2_klein_9b_full_power.json) | Best source-photo quality; 24 GB GPU with offloading or Comfy Cloud | RealESRGAN first, then switchable FLUX.2 restoration |
-| [`hoi4_portrait_flux2_klein_9b_esrgan_only`](workflows/hoi4_portrait_flux2_klein_9b_esrgan_only.json) | Faster source-photo conversion | RealESRGAN only, then FLUX.2 LoRA styling |
+| [`hoi4_portrait_flux2_klein_9b_source`](workflows/hoi4_portrait_flux2_klein_9b_source.json) | Source-photo conversion; 24 GB GPU with offloading or Comfy Cloud | RealESRGAN first, then switchable FLUX.2 restoration; LoRA styling follows |
+| [`hoi4_portrait_flux2_klein_9b_processing`](workflows/hoi4_portrait_flux2_klein_9b_processing.json) | Crop, upscale, and restoration without style transfer | RealESRGAN first, then optional FLUX.2 restoration |
 | [`hoi4_portrait_flux2_klein_9b_text_to_image`](workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json) | Creating a fictional leader without a source image | No restoration pass |
 
 Matching [API-format graphs](workflows/) are included for Comfy Cloud MCP,
 the Comfy Cloud API, and local `/prompt` submission.
+
+The processing workflow stops after the selected ESRGAN/restoration result and
+saves processed master and game-size PNGs. It does not load the portrait LoRA.
 
 Krea 2 and Krea Edit variants are available as optional alternatives in the
 [Krea workflow release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/tag/v1.0.0).
 They are separate alternatives; the table above contains the default FLUX.2
 workflows.
 
-## What the full workflow does
+## What the source workflow does
 
 These screenshots show the source, crop + ESRGAN, optional restoration,
 pre-background LoRA, and final portrait checkpoints from a local ComfyUI queue
-run. The full-power workflow opens with FLUX restoration disabled. The example
-run enables the switch so every checkpoint appears on one canvas.
+run. The source workflow opens with FLUX restoration disabled. The example run
+enables the switch so every checkpoint appears on one canvas.
 
 ```mermaid
 flowchart LR
@@ -48,7 +54,7 @@ flowchart LR
     F -->|Yes| H["BiRefNet mask + composite"] --> G
 ```
 
-![Full-power workflow overview](docs/assets/workflows/full-power-overview.png)
+![Source workflow overview](docs/assets/workflows/source-workflow-overview.png)
 
 ### 1. Crop and restore the source
 
@@ -67,9 +73,9 @@ the portrait LoRA. Set the LoRA strength to `0.75`.
 
 ### 3. Optionally restore with FLUX.2
 
-Full power includes a conservative FLUX.2 restoration pass after ESRGAN. The
-restoration switch is off by default, so that pass does not run. Turn it on
-when a damaged source needs the additional pass.
+The source workflow includes a conservative FLUX.2 restoration pass after
+ESRGAN. The restoration switch is off by default, so that pass does not run.
+Turn it on when a damaged source needs the additional pass.
 
 ![Optional FLUX.2 restoration stage](docs/assets/workflows/step-3-flux-restoration.png)
 
@@ -104,14 +110,32 @@ Both image-to-image stages start from the encoded processed portrait, not an
 empty latent canvas. The reference conditioning and sampler therefore share
 the same source composition, which reduces unwanted pose and framing changes.
 
+## Processing workflow
+
+The processing workflow uses the same crop and RealESRGAN preparation as the
+source workflow, then offers the same FLUX restoration switch. It stops before
+LoRA styling and saves the selected processed image as both 832 × 1120 and
+156 × 210 PNG files.
+
+```mermaid
+flowchart LR
+    A["Source portrait"] --> B["Head-and-shoulders crop"]
+    B --> C["RealESRGAN x2"]
+    C --> D{"FLUX restoration enabled?"}
+    D -->|No| E["Processed portrait"]
+    D -->|Yes| F["FLUX.2 restoration"] --> E
+    E --> G["Save 832 × 1120 + 156 × 210"]
+```
+
 ## Fastest start: Comfy Cloud
 
-1. On a Comfy Cloud Creator or Pro plan, open **Models → Import** and import the [public LoRA file](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors) as a LoRA.
+1. For the source or text-to-image workflow, use a Comfy Cloud Creator or Pro
+   plan, open **Models → Import**, and import the [public LoRA file](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors) as a LoRA.
 2. Download and open one of the workflow JSON files from the table.
 3. For a source workflow, upload a portrait and select it in **Load source portrait**. Set the built-in crop box around the head and shoulders, then check its preview.
 4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then turn on the final background switch.
-5. Queue the workflow. In full power, FLUX restoration is off by default; turn
-   **Toggle FLUX restoration** on only when the source needs it.
+5. Queue the workflow. In the source workflow, FLUX restoration is off by
+   default; turn **Toggle FLUX restoration** on only when the source needs it.
 
 See [Comfy Cloud setup](docs/comfy-cloud.md) for the exact model-import and MCP
 validation flow.
@@ -162,8 +186,8 @@ With the connection and model import in place, the agent can perform the
 portrait job autonomously:
 
 1. Read the appropriate API-format graph from [`workflows/`](workflows/). Use
-   full power for ESRGAN plus optional FLUX restoration, or ESRGAN-only for the
-   shorter path.
+   source processing with optional FLUX restoration, or processing-only when
+   you want an image without LoRA styling.
 2. Inspect the source at full resolution and write a short `hoi4_portrait,`
    prompt describing only the person: broad hair or facial-hair cues,
    ethnicity when supported, and general clothing classification. Leave expression, pose, gaze, and facing
@@ -195,7 +219,7 @@ instead of relying on prose alone:
 
 ```yaml
 source_image: /absolute/path/to/source.png
-workflow: full_power
+workflow: source
 flux_restoration: true
 replace_background: true
 mod_root: /absolute/path/to/hoi4-mod
@@ -205,7 +229,7 @@ character_file: common/characters/TAG_characters.txt
 character_id: TAG_leader_name
 ```
 
-An example request is: “Use Comfy Cloud MCP and the full-power API workflow to
+An example request is: “Use Comfy Cloud MCP and the source API workflow to
 turn this source into a portrait. Crop to head and shoulders, use the project
 LoRA at 0.75, keep FLUX restoration enabled, replace the background only after
 the final LoRA image, verify both outputs, and install the 156 × 210 result
@@ -324,7 +348,7 @@ workflows keep an 832 × 1120 canvas. More steps can refine a result but cannot
 replace missing spatial resolution, which is why the step control is shown
 separately.
 
-### Source processing (ESRGAN + FLUX restoration + LoRA)
+### Source processing with FLUX restoration
 
 ![Source processing example 1](docs/assets/test-runs/source-processing-01.jpg)
 
@@ -350,9 +374,9 @@ Autoprompter description:
 hoi4_portrait, an Irish young man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
 ```
 
-### ESRGAN only
+### Source processing with restoration disabled
 
-![ESRGAN-only example 1](docs/assets/test-runs/esrgan-only-01.jpg)
+![Source processing without FLUX restoration, example 1](docs/assets/test-runs/source-processing-restoration-off-01.jpg)
 
 Autoprompter description:
 
@@ -360,7 +384,7 @@ Autoprompter description:
 hoi4_portrait, an Irish middle-aged man with receding dark hair and prominent ears, wearing a military uniform.
 ```
 
-![ESRGAN-only example 2](docs/assets/test-runs/esrgan-only-02.jpg)
+![Source processing without FLUX restoration, example 2](docs/assets/test-runs/source-processing-restoration-off-02.jpg)
 
 Autoprompter description:
 
@@ -368,7 +392,7 @@ Autoprompter description:
 hoi4_portrait, an Irish slender middle-aged man with neatly parted dark hair and round wire-frame glasses, wearing a dark civilian suit.
 ```
 
-![ESRGAN-only example 3](docs/assets/test-runs/esrgan-only-03.jpg)
+![Source processing without FLUX restoration, example 3](docs/assets/test-runs/source-processing-restoration-off-03.jpg)
 
 Autoprompter description:
 
@@ -393,8 +417,8 @@ See [the three random prompts, exact test conditions, and findings](docs/test-re
   project LoRA must be imported into the Cloud model library before generation.
 - Cloud GPU mechanical tests pass every workflow shape and the final
   background path with a compatible catalog LoRA at zero strength.
-- Local functional evidence covers three full-power restoration source
-  portraits, three ESRGAN-only source portraits, three text-to-image
+- Local functional evidence covers three source portraits with restoration,
+  three source portraits with restoration disabled, three text-to-image
   portraits, and fixed-seed 6/8/10/12/20/35-step controls. The evidence uses
   416 × 560 on a 16 GB Apple-silicon Mac; the workflow canvas is 832 × 1120.
   The gallery boards use LoRA `0.7`; the workflows use `0.75` by default.

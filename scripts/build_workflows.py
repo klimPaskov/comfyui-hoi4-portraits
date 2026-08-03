@@ -126,9 +126,9 @@ def _node(
     )
 
 
-def _model_nodes() -> list[Node]:
+def _model_nodes(*, include_lora: bool = True) -> list[Node]:
     group = "02 FLUX.2 Klein 9B models"
-    return [
+    nodes = [
         _node(
             1,
             "UNETLoader",
@@ -168,20 +168,24 @@ def _model_nodes() -> list[Node]:
             widgets=[VAE_MODEL],
             models=_model(VAE_MODEL, "vae"),
         ),
-        _node(
-            4,
-            "LoraLoaderModelOnly",
-            "Apply the HOI4 FLUX.2 Klein 9B LoRA",
-            group,
-            (1120, 620),
-            inputs={"model": Link(1), "lora_name": STYLE_LORA, "strength_model": STYLE_LORA_STRENGTH},
-            input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
-            outputs=["MODEL"],
-            output_types=["MODEL"],
-            widgets=[STYLE_LORA, STYLE_LORA_STRENGTH],
-            models=_model(STYLE_LORA, "loras"),
-        ),
     ]
+    if include_lora:
+        nodes.append(
+            _node(
+                4,
+                "LoraLoaderModelOnly",
+                "Apply the HOI4 FLUX.2 Klein 9B LoRA",
+                group,
+                (1120, 620),
+                inputs={"model": Link(1), "lora_name": STYLE_LORA, "strength_model": STYLE_LORA_STRENGTH},
+                input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
+                outputs=["MODEL"],
+                output_types=["MODEL"],
+                widgets=[STYLE_LORA, STYLE_LORA_STRENGTH],
+                models=_model(STYLE_LORA, "loras"),
+            )
+        )
+    return nodes
 
 
 def _source_nodes() -> list[Node]:
@@ -702,6 +706,61 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
     ]
 
 
+def _processing_outputs(*, processed_image: Link) -> list[Node]:
+    output_group = "04 Processed portrait output"
+    return [
+        _node(
+            70,
+            "PreviewImage",
+            "Preview processed portrait",
+            output_group,
+            (3500, 120),
+            size=(420, 420),
+            inputs={"images": processed_image},
+            input_types={"images": "IMAGE"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+        ),
+        _node(
+            71,
+            "SaveImage",
+            "Save 832 x 1120 processed PNG",
+            output_group,
+            (4000, 120),
+            inputs={"images": processed_image, "filename_prefix": "hoi4_portraits/processed_master"},
+            input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["hoi4_portraits/processed_master"],
+        ),
+        _node(
+            72,
+            "ImageScale",
+            "Resize to HOI4 156 x 210",
+            output_group,
+            (4000, 320),
+            size=(340, 150),
+            inputs={"image": processed_image, "upscale_method": "lanczos", "width": 156, "height": 210, "crop": "center"},
+            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["lanczos", 156, 210, "center"],
+        ),
+        _node(
+            73,
+            "SaveImage",
+            "Save processed game-size PNG",
+            output_group,
+            (4000, 540),
+            inputs={"images": Link(72), "filename_prefix": "hoi4_portraits/processed_156x210"},
+            input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["hoi4_portraits/processed_156x210"],
+        ),
+    ]
+
+
 def _groups(*, has_source: bool, has_restoration: bool) -> list[Group]:
     groups: list[Group] = []
     if has_source:
@@ -718,7 +777,16 @@ def _groups(*, has_source: bool, has_restoration: bool) -> list[Group]:
     return groups
 
 
-def build_full_power() -> Graph:
+def _processing_groups() -> list[Group]:
+    return [
+        Group("01 Source and ESRGAN", (40, 40, 930, 1100), "#557a46"),
+        Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"),
+        Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"),
+        Group("04 Processed portrait output", (3340, 40, 1100, 720), "#596b82"),
+    ]
+
+
+def build_source() -> Graph:
     nodes = _source_nodes() + _model_nodes()
     restoration_nodes, restored = _edit_stage(
         id_start=20,
@@ -736,7 +804,7 @@ def build_full_power() -> Graph:
         _node(
             32,
             "ComfySwitchNode",
-            "Toggle FLUX restoration (on: ESRGAN then FLUX; off: ESRGAN only)",
+            "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)",
             "03 Optional FLUX.2 restoration",
             (2040, 680),
             size=(330, 150),
@@ -761,9 +829,9 @@ def build_full_power() -> Graph:
     nodes.extend(style_nodes)
     nodes.extend(_background_and_outputs(final_image=styled, x=5600))
     return Graph(
-        workflow_id="hoi4_portrait_flux2_klein_9b_full_power",
+        workflow_id="hoi4_portrait_flux2_klein_9b_source",
         description="Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration second, HOI4 LoRA styling, then optional background replacement.",
-        kind="image_to_image_full_power",
+        kind="image_to_image",
         nodes=nodes,
         groups=_groups(has_source=True, has_restoration=True),
         metadata={
@@ -776,33 +844,48 @@ def build_full_power() -> Graph:
     )
 
 
-def build_esrgan_only() -> Graph:
-    nodes = _source_nodes() + _model_nodes()
-    style_nodes, styled = _edit_stage(
-        id_start=40,
-        group="04 HOI4 LoRA styling",
+def build_processing() -> Graph:
+    nodes = _source_nodes() + _model_nodes(include_lora=False)
+    restoration_nodes, restored = _edit_stage(
+        id_start=20,
+        group="03 Optional FLUX.2 restoration",
         x=1540,
         image=Link(8),
-        model=Link(4),
-        prompt=STYLE_PROMPT,
-        negative=STYLE_NEGATIVE,
-        seed=42,
-        title_prefix="Person-only LoRA",
+        model=Link(1),
+        prompt=RESTORATION_PROMPT,
+        negative=RESTORATION_NEGATIVE,
+        seed=17,
+        title_prefix="Conservative restoration",
     )
-    nodes.extend(style_nodes)
-    nodes.extend(_background_and_outputs(final_image=styled, x=3600))
+    nodes.extend(restoration_nodes)
+    nodes.append(
+        _node(
+            32,
+            "ComfySwitchNode",
+            "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)",
+            "03 Optional FLUX.2 restoration",
+            (2040, 680),
+            size=(330, 150),
+            inputs={"switch": False, "on_false": Link(8), "on_true": restored},
+            input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
+            outputs=["output"],
+            output_types=["IMAGE"],
+            widgets=[False],
+        )
+    )
+    nodes.extend(_processing_outputs(processed_image=Link(32)))
     return Graph(
-        workflow_id="hoi4_portrait_flux2_klein_9b_esrgan_only",
-        description="Source portrait workflow: RealESRGAN preparation, FLUX.2 Klein 9B HOI4 LoRA styling, then optional background replacement.",
-        kind="image_to_image_esrgan_only",
+        workflow_id="hoi4_portrait_flux2_klein_9b_processing",
+        description="Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
+        kind="image_processing",
         nodes=nodes,
-        groups=_groups(has_source=True, has_restoration=False),
+        groups=_processing_groups(),
         metadata={
-            "restoration_order": ["RealESRGAN_x2plus"],
+            "style_lora": None,
+            "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
             "flux_restoration_default": False,
             "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
-            "pose_preservation": "encoded_source_latent_is_sampler_start",
-            "background_order": "after_final_lora_styled_decode",
+            "background_order": "not_applicable_processing_only",
         },
     )
 
@@ -928,7 +1011,7 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
 def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
     workflow_dir = root / "workflows"
     workflow_dir.mkdir(parents=True, exist_ok=True)
-    graphs = [build_full_power(), build_esrgan_only(), build_text_to_image()]
+    graphs = [build_source(), build_processing(), build_text_to_image()]
     manifest_items: list[dict[str, Any]] = []
     for graph in graphs:
         ui_path = workflow_dir / f"{graph.workflow_id}.json"

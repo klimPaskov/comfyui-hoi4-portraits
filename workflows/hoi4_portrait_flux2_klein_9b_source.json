@@ -1,6 +1,6 @@
 {
   "last_node_id": 73,
-  "last_link_id": 38,
+  "last_link_id": 59,
   "nodes": [
     {
       "id": 5,
@@ -334,7 +334,8 @@
           "type": "IMAGE",
           "links": [
             6,
-            10
+            10,
+            27
           ]
         }
       ],
@@ -430,7 +431,8 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            7
+            7,
+            16
           ]
         }
       ],
@@ -501,7 +503,9 @@
           "type": "CLIP",
           "links": [
             8,
-            9
+            9,
+            29,
+            30
           ]
         }
       ],
@@ -557,7 +561,9 @@
           "type": "VAE",
           "links": [
             11,
-            25
+            25,
+            32,
+            46
           ]
         }
       ],
@@ -623,7 +629,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            16
+            37
           ]
         }
       ],
@@ -646,9 +652,9 @@
       ]
     },
     {
-      "id": 40,
+      "id": 20,
       "type": "CLIPTextEncode",
-      "title": "Person-only LoRA instructions",
+      "title": "Conservative restoration instructions",
       "pos": [
         1540,
         120
@@ -657,8 +663,8 @@
         430,
         250
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 11,
       "mode": 0,
@@ -690,16 +696,16 @@
         "Node name for S&R": "CLIPTextEncode",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
-        "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit."
+        "Restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. Colorize monochrome or sepia material only when the colors can remain plausible. Do not stylize."
       ]
     },
     {
-      "id": 41,
+      "id": 21,
       "type": "CLIPTextEncode",
-      "title": "Person-only LoRA negative",
+      "title": "Conservative restoration negative",
       "pos": [
         1540,
         450
@@ -708,8 +714,8 @@
         430,
         180
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 12,
       "mode": 0,
@@ -741,16 +747,16 @@
         "Node name for S&R": "CLIPTextEncode",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
         ""
       ]
     },
     {
-      "id": 42,
+      "id": 22,
       "type": "VAEEncode",
-      "title": "Encode person-only lora reference",
+      "title": "Encode conservative restoration reference",
       "pos": [
         2040,
         120
@@ -759,8 +765,8 @@
         300,
         100
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 13,
       "mode": 0,
@@ -791,12 +797,12 @@
         "Node name for S&R": "VAEEncode",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
     },
     {
-      "id": 43,
+      "id": 23,
       "type": "ReferenceLatent",
       "title": "Attach reference to positive conditioning",
       "pos": [
@@ -807,8 +813,8 @@
         300,
         100
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 14,
       "mode": 0,
@@ -837,12 +843,12 @@
         "Node name for S&R": "ReferenceLatent",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
     },
     {
-      "id": 44,
+      "id": 24,
       "type": "ReferenceLatent",
       "title": "Attach reference to negative conditioning",
       "pos": [
@@ -853,8 +859,8 @@
         300,
         100
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 15,
       "mode": 0,
@@ -883,14 +889,14 @@
         "Node name for S&R": "ReferenceLatent",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
     },
     {
-      "id": 46,
+      "id": 26,
       "type": "CFGGuider",
-      "title": "Guide person-only lora pass",
+      "title": "Guide conservative restoration pass",
       "pos": [
         2440,
         120
@@ -899,8 +905,8 @@
         300,
         100
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 16,
       "mode": 0,
@@ -942,16 +948,16 @@
         "Node name for S&R": "CFGGuider",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
         5.0
       ]
     },
     {
-      "id": 47,
+      "id": 27,
       "type": "RandomNoise",
-      "title": "Person-only LoRA seed",
+      "title": "Conservative restoration seed",
       "pos": [
         2440,
         320
@@ -960,8 +966,8 @@
         300,
         100
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 17,
       "mode": 0,
@@ -988,15 +994,15 @@
         "Node name for S&R": "RandomNoise",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
-        42,
+        17,
         "randomize"
       ]
     },
     {
-      "id": 48,
+      "id": 28,
       "type": "KSamplerSelect",
       "title": "Use Euler sampler",
       "pos": [
@@ -1007,8 +1013,8 @@
         300,
         100
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 18,
       "mode": 0,
@@ -1035,14 +1041,14 @@
         "Node name for S&R": "KSamplerSelect",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
         "euler"
       ]
     },
     {
-      "id": 49,
+      "id": 29,
       "type": "Flux2Scheduler",
       "title": "FLUX.2 schedule - 8 steps",
       "pos": [
@@ -1053,8 +1059,8 @@
         300,
         100
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 19,
       "mode": 0,
@@ -1097,7 +1103,7 @@
         "Node name for S&R": "Flux2Scheduler",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
         8,
@@ -1106,9 +1112,9 @@
       ]
     },
     {
-      "id": 50,
+      "id": 30,
       "type": "SamplerCustomAdvanced",
-      "title": "Run person-only lora pass",
+      "title": "Run conservative restoration pass",
       "pos": [
         2860,
         260
@@ -1117,8 +1123,8 @@
         300,
         150
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 20,
       "mode": 0,
@@ -1167,14 +1173,14 @@
         "Node name for S&R": "SamplerCustomAdvanced",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
     },
     {
-      "id": 51,
+      "id": 31,
       "type": "VAEDecode",
-      "title": "Decode person-only lora result",
+      "title": "Decode conservative restoration result",
       "pos": [
         2860,
         500
@@ -1183,8 +1189,8 @@
         300,
         100
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
       "flags": {},
       "order": 21,
       "mode": 0,
@@ -1206,9 +1212,677 @@
           "type": "IMAGE",
           "links": [
             26,
-            29,
-            31,
+            28
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 35,
+      "type": "PreviewImage",
+      "title": "Preview conservative restoration result",
+      "pos": [
+        2860,
+        680
+      ],
+      "size": [
+        300,
+        220
+      ],
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 32,
+      "type": "ComfySwitchNode",
+      "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)",
+      "pos": [
+        2040,
+        680
+      ],
+      "size": [
+        330,
+        150
+      ],
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "switch"
+          }
+        },
+        {
+          "name": "on_false",
+          "type": "IMAGE",
+          "link": 27
+        },
+        {
+          "name": "on_true",
+          "type": "IMAGE",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "IMAGE",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ComfySwitchNode",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": [
+        false
+      ]
+    },
+    {
+      "id": 40,
+      "type": "CLIPTextEncode",
+      "title": "Person-only LoRA instructions",
+      "pos": [
+        3440,
+        120
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 29
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
             33
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": [
+        "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit."
+      ]
+    },
+    {
+      "id": 41,
+      "type": "CLIPTextEncode",
+      "title": "Person-only LoRA negative",
+      "pos": [
+        3440,
+        450
+      ],
+      "size": [
+        430,
+        180
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 30
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": [
+        ""
+      ]
+    },
+    {
+      "id": 42,
+      "type": "VAEEncode",
+      "title": "Encode person-only lora reference",
+      "pos": [
+        3940,
+        120
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 31
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            34,
+            36,
+            44
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 43,
+      "type": "ReferenceLatent",
+      "title": "Attach reference to positive conditioning",
+      "pos": [
+        3940,
+        320
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 33
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 44,
+      "type": "ReferenceLatent",
+      "title": "Attach reference to negative conditioning",
+      "pos": [
+        3940,
+        520
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 35
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 46,
+      "type": "CFGGuider",
+      "title": "Guide person-only lora pass",
+      "pos": [
+        4340,
+        120
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 37
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 38
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 39
+        },
+        {
+          "name": "cfg",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "cfg"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFGGuider",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": [
+        5.0
+      ]
+    },
+    {
+      "id": 47,
+      "type": "RandomNoise",
+      "title": "Person-only LoRA seed",
+      "pos": [
+        4340,
+        320
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise_seed",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "noise_seed"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RandomNoise",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": [
+        42,
+        "randomize"
+      ]
+    },
+    {
+      "id": 48,
+      "type": "KSamplerSelect",
+      "title": "Use Euler sampler",
+      "pos": [
+        4340,
+        520
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "sampler_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "sampler_name"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerSelect",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": [
+        "euler"
+      ]
+    },
+    {
+      "id": 49,
+      "type": "Flux2Scheduler",
+      "title": "FLUX.2 schedule - 8 steps",
+      "pos": [
+        4340,
+        700
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "steps",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "steps"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Flux2Scheduler",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": [
+        8,
+        832,
+        1120
+      ]
+    },
+    {
+      "id": 50,
+      "type": "SamplerCustomAdvanced",
+      "title": "Run person-only lora pass",
+      "pos": [
+        4760,
+        260
+      ],
+      "size": [
+        300,
+        150
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 40
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": 41
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 42
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 43
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            45
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SamplerCustomAdvanced",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 51,
+      "type": "VAEDecode",
+      "title": "Decode person-only lora result",
+      "pos": [
+        4760,
+        500
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 45
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            47,
+            50,
+            52,
+            54
           ]
         }
       ],
@@ -1225,7 +1899,7 @@
       "type": "PreviewImage",
       "title": "Preview person-only lora result",
       "pos": [
-        2860,
+        4760,
         680
       ],
       "size": [
@@ -1235,13 +1909,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 22,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 26
+          "link": 47
         }
       ],
       "outputs": [
@@ -1264,7 +1938,7 @@
       "type": "LoadImage",
       "title": "Load replacement background",
       "pos": [
-        3600,
+        5600,
         120
       ],
       "size": [
@@ -1274,7 +1948,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 23,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
@@ -1291,7 +1965,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            27
+            48
           ]
         },
         {
@@ -1316,7 +1990,7 @@
       "type": "ImageScale",
       "title": "Fit background to final master canvas",
       "pos": [
-        3600,
+        5600,
         500
       ],
       "size": [
@@ -1326,13 +2000,13 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 24,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 27
+          "link": 48
         },
         {
           "name": "upscale_method",
@@ -1372,7 +2046,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            30
+            51
           ]
         }
       ],
@@ -1394,7 +2068,7 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet foreground model",
       "pos": [
-        4020,
+        6020,
         120
       ],
       "size": [
@@ -1404,7 +2078,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 25,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
@@ -1421,7 +2095,7 @@
           "name": "BACKGROUND_REMOVAL",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            28
+            49
           ]
         }
       ],
@@ -1447,7 +2121,7 @@
       "type": "RemoveBackground",
       "title": "Mask the final styled portrait",
       "pos": [
-        4020,
+        6020,
         300
       ],
       "size": [
@@ -1457,18 +2131,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 26,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 28
+          "link": 49
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 29
+          "link": 50
         }
       ],
       "outputs": [
@@ -1476,7 +2150,7 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            32
+            53
           ]
         }
       ],
@@ -1493,7 +2167,7 @@
       "type": "ImageCompositeMasked",
       "title": "Composite only after the styled portrait exists",
       "pos": [
-        4400,
+        6400,
         250
       ],
       "size": [
@@ -1503,18 +2177,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 27,
+      "order": 40,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 30
+          "link": 51
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 31
+          "link": 52
         },
         {
           "name": "x",
@@ -1543,7 +2217,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 32
+          "link": 53
         }
       ],
       "outputs": [
@@ -1551,7 +2225,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            34
+            55
           ]
         }
       ],
@@ -1572,7 +2246,7 @@
       "type": "ComfySwitchNode",
       "title": "Toggle replacement background (off by default)",
       "pos": [
-        4400,
+        6400,
         520
       ],
       "size": [
@@ -1582,7 +2256,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 28,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
@@ -1596,12 +2270,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 33
+          "link": 54
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 34
+          "link": 55
         }
       ],
       "outputs": [
@@ -1609,9 +2283,9 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            35,
-            36,
-            37
+            56,
+            57,
+            58
           ]
         }
       ],
@@ -1630,7 +2304,7 @@
       "type": "PreviewImage",
       "title": "Preview final portrait",
       "pos": [
-        4980,
+        6980,
         120
       ],
       "size": [
@@ -1640,13 +2314,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 29,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 35
+          "link": 56
         }
       ],
       "outputs": [
@@ -1669,7 +2343,7 @@
       "type": "SaveImage",
       "title": "Save 832 x 1120 master PNG",
       "pos": [
-        5480,
+        7480,
         120
       ],
       "size": [
@@ -1679,13 +2353,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 30,
+      "order": 43,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 36
+          "link": 57
         },
         {
           "name": "filename_prefix",
@@ -1718,7 +2392,7 @@
       "type": "ImageScale",
       "title": "Resize to HOI4 156 x 210",
       "pos": [
-        5480,
+        7480,
         320
       ],
       "size": [
@@ -1728,13 +2402,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 31,
+      "order": 44,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 37
+          "link": 58
         },
         {
           "name": "upscale_method",
@@ -1774,7 +2448,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            38
+            59
           ]
         }
       ],
@@ -1796,7 +2470,7 @@
       "type": "SaveImage",
       "title": "Save game-size portrait PNG",
       "pos": [
-        5480,
+        7480,
         540
       ],
       "size": [
@@ -1806,13 +2480,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 32,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 38
+          "link": 59
         },
         {
           "name": "filename_prefix",
@@ -1902,7 +2576,7 @@
       8,
       2,
       0,
-      40,
+      20,
       0,
       "CLIP"
     ],
@@ -1910,7 +2584,7 @@
       9,
       2,
       0,
-      41,
+      21,
       0,
       "CLIP"
     ],
@@ -1918,7 +2592,7 @@
       10,
       8,
       0,
-      42,
+      22,
       0,
       "IMAGE"
     ],
@@ -1926,111 +2600,111 @@
       11,
       3,
       0,
-      42,
+      22,
       1,
       "VAE"
     ],
     [
       12,
-      40,
+      20,
       0,
-      43,
+      23,
       0,
       "CONDITIONING"
     ],
     [
       13,
-      42,
+      22,
       0,
-      43,
+      23,
       1,
       "LATENT"
     ],
     [
       14,
-      41,
+      21,
       0,
-      44,
+      24,
       0,
       "CONDITIONING"
     ],
     [
       15,
-      42,
+      22,
       0,
-      44,
+      24,
       1,
       "LATENT"
     ],
     [
       16,
-      4,
+      1,
       0,
-      46,
+      26,
       0,
       "MODEL"
     ],
     [
       17,
-      43,
+      23,
       0,
-      46,
+      26,
       1,
       "CONDITIONING"
     ],
     [
       18,
-      44,
+      24,
       0,
-      46,
+      26,
       2,
       "CONDITIONING"
     ],
     [
       19,
-      47,
+      27,
       0,
-      50,
+      30,
       0,
       "NOISE"
     ],
     [
       20,
-      46,
+      26,
       0,
-      50,
+      30,
       1,
       "GUIDER"
     ],
     [
       21,
-      48,
+      28,
       0,
-      50,
+      30,
       2,
       "SAMPLER"
     ],
     [
       22,
-      49,
+      29,
       0,
-      50,
+      30,
       3,
       "SIGMAS"
     ],
     [
       23,
-      42,
+      22,
       0,
-      50,
+      30,
       4,
       "LATENT"
     ],
     [
       24,
-      50,
+      30,
       0,
-      51,
+      31,
       0,
       "LATENT"
     ],
@@ -2038,12 +2712,180 @@
       25,
       3,
       0,
-      51,
+      31,
       1,
       "VAE"
     ],
     [
       26,
+      31,
+      0,
+      35,
+      0,
+      "IMAGE"
+    ],
+    [
+      27,
+      8,
+      0,
+      32,
+      1,
+      "IMAGE"
+    ],
+    [
+      28,
+      31,
+      0,
+      32,
+      2,
+      "IMAGE"
+    ],
+    [
+      29,
+      2,
+      0,
+      40,
+      0,
+      "CLIP"
+    ],
+    [
+      30,
+      2,
+      0,
+      41,
+      0,
+      "CLIP"
+    ],
+    [
+      31,
+      32,
+      0,
+      42,
+      0,
+      "IMAGE"
+    ],
+    [
+      32,
+      3,
+      0,
+      42,
+      1,
+      "VAE"
+    ],
+    [
+      33,
+      40,
+      0,
+      43,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      34,
+      42,
+      0,
+      43,
+      1,
+      "LATENT"
+    ],
+    [
+      35,
+      41,
+      0,
+      44,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      36,
+      42,
+      0,
+      44,
+      1,
+      "LATENT"
+    ],
+    [
+      37,
+      4,
+      0,
+      46,
+      0,
+      "MODEL"
+    ],
+    [
+      38,
+      43,
+      0,
+      46,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      39,
+      44,
+      0,
+      46,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      40,
+      47,
+      0,
+      50,
+      0,
+      "NOISE"
+    ],
+    [
+      41,
+      46,
+      0,
+      50,
+      1,
+      "GUIDER"
+    ],
+    [
+      42,
+      48,
+      0,
+      50,
+      2,
+      "SAMPLER"
+    ],
+    [
+      43,
+      49,
+      0,
+      50,
+      3,
+      "SIGMAS"
+    ],
+    [
+      44,
+      42,
+      0,
+      50,
+      4,
+      "LATENT"
+    ],
+    [
+      45,
+      50,
+      0,
+      51,
+      0,
+      "LATENT"
+    ],
+    [
+      46,
+      3,
+      0,
+      51,
+      1,
+      "VAE"
+    ],
+    [
+      47,
       51,
       0,
       55,
@@ -2051,7 +2893,7 @@
       "IMAGE"
     ],
     [
-      27,
+      48,
       60,
       0,
       61,
@@ -2059,7 +2901,7 @@
       "IMAGE"
     ],
     [
-      28,
+      49,
       62,
       0,
       63,
@@ -2067,7 +2909,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      29,
+      50,
       51,
       0,
       63,
@@ -2075,7 +2917,7 @@
       "IMAGE"
     ],
     [
-      30,
+      51,
       61,
       0,
       65,
@@ -2083,7 +2925,7 @@
       "IMAGE"
     ],
     [
-      31,
+      52,
       51,
       0,
       65,
@@ -2091,7 +2933,7 @@
       "IMAGE"
     ],
     [
-      32,
+      53,
       63,
       0,
       65,
@@ -2099,7 +2941,7 @@
       "MASK"
     ],
     [
-      33,
+      54,
       51,
       0,
       66,
@@ -2107,7 +2949,7 @@
       "IMAGE"
     ],
     [
-      34,
+      55,
       65,
       0,
       66,
@@ -2115,7 +2957,7 @@
       "IMAGE"
     ],
     [
-      35,
+      56,
       66,
       0,
       70,
@@ -2123,7 +2965,7 @@
       "IMAGE"
     ],
     [
-      36,
+      57,
       66,
       0,
       71,
@@ -2131,7 +2973,7 @@
       "IMAGE"
     ],
     [
-      37,
+      58,
       66,
       0,
       72,
@@ -2139,7 +2981,7 @@
       "IMAGE"
     ],
     [
-      38,
+      59,
       72,
       0,
       73,
@@ -2173,9 +3015,21 @@
       "flags": {}
     },
     {
-      "title": "04 HOI4 LoRA styling",
+      "title": "03 Optional FLUX.2 restoration",
       "bounding": [
         1500,
+        40,
+        1800,
+        980
+      ],
+      "color": "#8b6f47",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "title": "04 HOI4 LoRA styling",
+      "bounding": [
+        3400,
         40,
         1800,
         980
@@ -2187,7 +3041,7 @@
     {
       "title": "05 Optional background - after generation",
       "bounding": [
-        3520,
+        5520,
         40,
         1300,
         720
@@ -2199,7 +3053,7 @@
     {
       "title": "06 Preview and save",
       "bounding": [
-        4900,
+        6900,
         40,
         1100,
         720
@@ -2218,9 +3072,9 @@
         120
       ]
     },
-    "workflow_id": "hoi4_portrait_flux2_klein_9b_esrgan_only",
-    "description": "Source portrait workflow: RealESRGAN preparation, FLUX.2 Klein 9B HOI4 LoRA styling, then optional background replacement.",
-    "workflow_kind": "image_to_image_esrgan_only",
+    "workflow_id": "hoi4_portrait_flux2_klein_9b_source",
+    "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration second, HOI4 LoRA styling, then optional background replacement.",
+    "workflow_kind": "image_to_image",
     "project": "comfyui-hoi4-portraits",
     "graph_version": "2.2.0",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
@@ -2228,7 +3082,8 @@
     "core_nodes_only": true,
     "comfy_cloud_ready": true,
     "restoration_order": [
-      "RealESRGAN_x2plus"
+      "RealESRGAN_x2plus",
+      "optional_flux2_klein_9b"
     ],
     "flux_restoration_default": false,
     "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",

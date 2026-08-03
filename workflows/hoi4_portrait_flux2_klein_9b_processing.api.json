@@ -119,20 +119,6 @@
       "title": "Load FLUX.2 VAE"
     }
   },
-  "4": {
-    "class_type": "LoraLoaderModelOnly",
-    "inputs": {
-      "model": [
-        "1",
-        0
-      ],
-      "lora_name": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-      "strength_model": 0.75
-    },
-    "_meta": {
-      "title": "Apply the HOI4 FLUX.2 Klein 9B LoRA"
-    }
-  },
   "20": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -327,309 +313,39 @@
       ]
     },
     "_meta": {
-      "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: ESRGAN only)"
-    }
-  },
-  "40": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "2",
-        0
-      ],
-      "text": "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit."
-    },
-    "_meta": {
-      "title": "Person-only LoRA instructions"
-    }
-  },
-  "41": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "2",
-        0
-      ],
-      "text": ""
-    },
-    "_meta": {
-      "title": "Person-only LoRA negative"
-    }
-  },
-  "42": {
-    "class_type": "VAEEncode",
-    "inputs": {
-      "pixels": [
-        "32",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Encode person-only lora reference"
-    }
-  },
-  "43": {
-    "class_type": "ReferenceLatent",
-    "inputs": {
-      "conditioning": [
-        "40",
-        0
-      ],
-      "latent": [
-        "42",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Attach reference to positive conditioning"
-    }
-  },
-  "44": {
-    "class_type": "ReferenceLatent",
-    "inputs": {
-      "conditioning": [
-        "41",
-        0
-      ],
-      "latent": [
-        "42",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Attach reference to negative conditioning"
-    }
-  },
-  "46": {
-    "class_type": "CFGGuider",
-    "inputs": {
-      "model": [
-        "4",
-        0
-      ],
-      "positive": [
-        "43",
-        0
-      ],
-      "negative": [
-        "44",
-        0
-      ],
-      "cfg": 5.0
-    },
-    "_meta": {
-      "title": "Guide person-only lora pass"
-    }
-  },
-  "47": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 42
-    },
-    "_meta": {
-      "title": "Person-only LoRA seed"
-    }
-  },
-  "48": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "euler"
-    },
-    "_meta": {
-      "title": "Use Euler sampler"
-    }
-  },
-  "49": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
-      "steps": 8,
-      "width": 832,
-      "height": 1120
-    },
-    "_meta": {
-      "title": "FLUX.2 schedule - 8 steps"
-    }
-  },
-  "50": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "47",
-        0
-      ],
-      "guider": [
-        "46",
-        0
-      ],
-      "sampler": [
-        "48",
-        0
-      ],
-      "sigmas": [
-        "49",
-        0
-      ],
-      "latent_image": [
-        "42",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Run person-only lora pass"
-    }
-  },
-  "51": {
-    "class_type": "VAEDecode",
-    "inputs": {
-      "samples": [
-        "50",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Decode person-only lora result"
-    }
-  },
-  "55": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "51",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview person-only lora result"
-    }
-  },
-  "60": {
-    "class_type": "LoadImage",
-    "inputs": {
-      "image": "hoi4_leader_portrait_background.png"
-    },
-    "_meta": {
-      "title": "Load replacement background"
-    }
-  },
-  "61": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "60",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 832,
-      "height": 1120,
-      "crop": "center"
-    },
-    "_meta": {
-      "title": "Fit background to final master canvas"
-    }
-  },
-  "62": {
-    "class_type": "LoadBackgroundRemovalModel",
-    "inputs": {
-      "bg_removal_name": "birefnet.safetensors"
-    },
-    "_meta": {
-      "title": "Load BiRefNet foreground model"
-    }
-  },
-  "63": {
-    "class_type": "RemoveBackground",
-    "inputs": {
-      "bg_removal_model": [
-        "62",
-        0
-      ],
-      "image": [
-        "51",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Mask the final styled portrait"
-    }
-  },
-  "65": {
-    "class_type": "ImageCompositeMasked",
-    "inputs": {
-      "destination": [
-        "61",
-        0
-      ],
-      "source": [
-        "51",
-        0
-      ],
-      "x": 0,
-      "y": 0,
-      "resize_source": true,
-      "mask": [
-        "63",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Composite only after the styled portrait exists"
-    }
-  },
-  "66": {
-    "class_type": "ComfySwitchNode",
-    "inputs": {
-      "switch": false,
-      "on_false": [
-        "51",
-        0
-      ],
-      "on_true": [
-        "65",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Toggle replacement background (off by default)"
+      "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)"
     }
   },
   "70": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "66",
+        "32",
         0
       ]
     },
     "_meta": {
-      "title": "Preview final portrait"
+      "title": "Preview processed portrait"
     }
   },
   "71": {
     "class_type": "SaveImage",
     "inputs": {
       "images": [
-        "66",
+        "32",
         0
       ],
-      "filename_prefix": "hoi4_portraits/master"
+      "filename_prefix": "hoi4_portraits/processed_master"
     },
     "_meta": {
-      "title": "Save 832 x 1120 master PNG"
+      "title": "Save 832 x 1120 processed PNG"
     }
   },
   "72": {
     "class_type": "ImageScale",
     "inputs": {
       "image": [
-        "66",
+        "32",
         0
       ],
       "upscale_method": "lanczos",
@@ -648,10 +364,10 @@
         "72",
         0
       ],
-      "filename_prefix": "hoi4_portraits/portrait_156x210"
+      "filename_prefix": "hoi4_portraits/processed_156x210"
     },
     "_meta": {
-      "title": "Save game-size portrait PNG"
+      "title": "Save processed game-size PNG"
     }
   }
 }

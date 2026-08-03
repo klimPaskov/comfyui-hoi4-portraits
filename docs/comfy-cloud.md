@@ -18,6 +18,9 @@ Model import requires a Comfy Cloud Creator or Pro plan.
 The base FLUX.2 Klein 9B stack, RealESRGAN, and BiRefNet are present in the
 Cloud catalog.
 
+The processing workflow does not use the project LoRA, so this import is only
+needed for the source and text-to-image workflows.
+
 ## Open a workflow
 
 Use the editor-format `.json` file when opening or dragging a workflow into
@@ -47,7 +50,7 @@ Comfy Cloud.
 The included API graphs can be checked without creating a GPU job:
 
 ```text
-Use Comfy Cloud MCP to dry-run workflows/hoi4_portrait_flux2_klein_9b_full_power.api.json. Do not submit a generation and do not spend credits.
+Use Comfy Cloud MCP to dry-run workflows/hoi4_portrait_flux2_klein_9b_source.api.json. Do not submit a generation and do not spend credits.
 ```
 
 Before LoRA import, the preflight can report the filename as a catalog
@@ -69,8 +72,8 @@ and subscription limits still apply.
 
 All three API graphs pass Comfy Cloud MCP `dry_run` preflight. The project LoRA
 must be imported into the Cloud model library before generation. Cloud GPU
-checks cover the ESRGAN-only, full-power, text-to-image, and final background
-paths with a compatible catalog LoRA at zero strength. A Creator or Pro plan is
+checks cover the source, processing, text-to-image, and final background paths
+with a compatible catalog LoRA at zero strength. A Creator or Pro plan is
 required for the project LoRA import.
 
 Official references:

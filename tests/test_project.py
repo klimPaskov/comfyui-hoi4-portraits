@@ -69,16 +69,20 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(build_workflows.DEFAULT_STEPS, 8)
         for workflow in (ROOT / "workflows").glob("*.api.json"):
             api = json.loads(workflow.read_text(encoding="utf-8"))
-            lora = next(node for node in api.values() if node["class_type"] == "LoraLoaderModelOnly")
-            self.assertEqual(lora["inputs"]["strength_model"], 0.75, workflow.name)
+            loras = [node for node in api.values() if node["class_type"] == "LoraLoaderModelOnly"]
+            if workflow.name.endswith("processing.api.json"):
+                self.assertEqual(loras, [], workflow.name)
+            else:
+                self.assertEqual(len(loras), 1, workflow.name)
+                self.assertEqual(loras[0]["inputs"]["strength_model"], 0.75, workflow.name)
             schedules = [node for node in api.values() if node["class_type"] == "Flux2Scheduler"]
             self.assertTrue(schedules, workflow.name)
             self.assertTrue(all(node["inputs"]["steps"] == 8 for node in schedules), workflow.name)
-            if workflow.name.endswith("full_power.api.json"):
+            if workflow.name.endswith("source.api.json"):
                 self.assertIs(api["32"]["inputs"]["switch"], False)
 
     def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
-        for name in ("full_power", "esrgan_only"):
+        for name in ("source", "processing"):
             path = ROOT / "workflows" / f"hoi4_portrait_flux2_klein_9b_{name}.api.json"
             api = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(api["11"]["class_type"], "ImageCropV2")
@@ -86,7 +90,11 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(api["11"]["inputs"]["crop_region"], ["9", 0])
             self.assertEqual(api["7"]["inputs"]["image"], ["11", 0])
             self.assertNotIn("EmptyFlux2LatentImage", {node["class_type"] for node in api.values()})
-            self.assertEqual(api["50"]["inputs"]["latent_image"], ["42", 0])
+            if name == "source":
+                self.assertEqual(api["50"]["inputs"]["latent_image"], ["42", 0])
+            else:
+                self.assertNotIn("4", api)
+                self.assertEqual(api["30"]["inputs"]["latent_image"], ["22", 0])
 
     def test_person_prompt_policy_allows_hairstyle_but_rejects_style(self) -> None:
         self.assertEqual(validate_workflows._non_person_prompt_terms("a different hairstyle"), [])
@@ -151,8 +159,13 @@ class DocumentationTests(unittest.TestCase):
 
     def test_readme_contains_new_gallery_and_autoprompter_descriptions(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertEqual(readme.count("docs/assets/test-runs/source-processing-"), 3)
-        self.assertEqual(readme.count("docs/assets/test-runs/esrgan-only-"), 3)
+        for filename in (
+            "source-processing-01.jpg",
+            "source-processing-02.jpg",
+            "source-processing-03.jpg",
+        ):
+            self.assertEqual(readme.count(f"docs/assets/test-runs/{filename}"), 1)
+        self.assertEqual(readme.count("docs/assets/test-runs/source-processing-restoration-off-"), 3)
         self.assertIn("docs/assets/test-runs/random-portraits.jpg", readme)
         self.assertIn("docs/assets/test-runs/step-comparison.jpg", readme)
         self.assertEqual(readme.count("Autoprompter description:"), 6)
@@ -162,8 +175,6 @@ class DocumentationTests(unittest.TestCase):
             "full-restoration-03.jpg",
             "full-restoration-04.jpg",
             "full-restoration-05.jpg",
-            "esrgan-only-04.jpg",
-            "esrgan-only-05.jpg",
             "settings-matrix.jpg",
         ):
             self.assertFalse((ROOT / "docs" / "assets" / "test-runs" / obsolete).exists(), obsolete)
@@ -174,10 +185,10 @@ class DocumentationTests(unittest.TestCase):
         ):
             self.assertTrue((ROOT / "docs" / "assets" / "test-runs" / current).is_file(), current)
 
-    def test_readme_contains_full_workflow_visual_walkthrough(self) -> None:
+    def test_readme_contains_source_workflow_visual_walkthrough(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         screenshots = (
-            "full-power-overview.png",
+            "source-workflow-overview.png",
             "step-1-source-processing.png",
             "step-2-model-setup.png",
             "step-3-flux-restoration.png",

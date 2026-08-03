@@ -133,6 +133,203 @@
       "title": "Apply the HOI4 FLUX.2 Klein 9B LoRA"
     }
   },
+  "20": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "Restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. Colorize monochrome or sepia material only when the colors can remain plausible. Do not stylize."
+    },
+    "_meta": {
+      "title": "Conservative restoration instructions"
+    }
+  },
+  "21": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Conservative restoration negative"
+    }
+  },
+  "22": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "8",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode conservative restoration reference"
+    }
+  },
+  "23": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "20",
+        0
+      ],
+      "latent": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Attach reference to positive conditioning"
+    }
+  },
+  "24": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "21",
+        0
+      ],
+      "latent": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Attach reference to negative conditioning"
+    }
+  },
+  "26": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "23",
+        0
+      ],
+      "negative": [
+        "24",
+        0
+      ],
+      "cfg": 5.0
+    },
+    "_meta": {
+      "title": "Guide conservative restoration pass"
+    }
+  },
+  "27": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 17
+    },
+    "_meta": {
+      "title": "Conservative restoration seed"
+    }
+  },
+  "28": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Use Euler sampler"
+    }
+  },
+  "29": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 8,
+      "width": 832,
+      "height": 1120
+    },
+    "_meta": {
+      "title": "FLUX.2 schedule - 8 steps"
+    }
+  },
+  "30": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "27",
+        0
+      ],
+      "guider": [
+        "26",
+        0
+      ],
+      "sampler": [
+        "28",
+        0
+      ],
+      "sigmas": [
+        "29",
+        0
+      ],
+      "latent_image": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Run conservative restoration pass"
+    }
+  },
+  "31": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "30",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode conservative restoration result"
+    }
+  },
+  "35": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "31",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview conservative restoration result"
+    }
+  },
+  "32": {
+    "class_type": "ComfySwitchNode",
+    "inputs": {
+      "switch": false,
+      "on_false": [
+        "8",
+        0
+      ],
+      "on_true": [
+        "31",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)"
+    }
+  },
   "40": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -163,7 +360,7 @@
     "class_type": "VAEEncode",
     "inputs": {
       "pixels": [
-        "8",
+        "32",
         0
       ],
       "vae": [

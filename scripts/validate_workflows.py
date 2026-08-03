@@ -223,17 +223,26 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     errors: list[str] = []
     extra = ui.get("extra", {})
     workflow_id = str(extra.get("workflow_id", ""))
+    is_source = workflow_id.endswith("source")
+    is_processing = workflow_id.endswith("processing")
+    is_text_to_image = workflow_id.endswith("text_to_image")
     if extra.get("base_model") != "flux-2-klein-base-9b-fp8.safetensors":
         errors.append(f"{path}: incorrect FLUX.2 Klein 9B base model")
-    if extra.get("style_lora") != "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors":
+    if is_processing and extra.get("style_lora") is not None:
+        errors.append(f"{path}: processing workflow must not advertise a style LoRA")
+    elif not is_processing and extra.get("style_lora") != "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors":
         errors.append(f"{path}: incorrect style LoRA")
     if extra.get("core_nodes_only") is not True or extra.get("comfy_cloud_ready") is not True:
         errors.append(f"{path}: Cloud/core-only metadata is missing")
-    if extra.get("background_order") != "after_final_lora_styled_decode":
+    expected_background_order = "not_applicable_processing_only" if is_processing else "after_final_lora_styled_decode"
+    if extra.get("background_order") != expected_background_order:
         errors.append(f"{path}: background policy is not final-stage-only")
 
     lora_node = next((node_id for node_id, node in api.items() if node.get("class_type") == "LoraLoaderModelOnly"), None)
-    if lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
+    if is_processing:
+        if lora_node is not None:
+            errors.append(f"{path}: processing workflow must not contain a style LoRA")
+    elif lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
     elif api[lora_node]["inputs"].get("strength_model") != 0.75:
         errors.append(f"{path}: style LoRA strength must default to 0.75")
@@ -244,64 +253,67 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 f"{path}: FLUX.2 scheduler node {node_id} must default to {DEFAULT_STEPS} steps"
             )
 
-    person_prompt_node = "20" if workflow_id.endswith("text_to_image") else "40"
-    person_prompt = str(api.get(person_prompt_node, {}).get("inputs", {}).get("text", ""))
-    if not person_prompt.startswith("hoi4_portrait,"):
-        errors.append(f"{path}: person prompt must begin with the LoRA trigger")
-    present_terms = _non_person_prompt_terms(person_prompt)
-    if present_terms:
-        errors.append(f"{path}: person prompt contains non-person instructions: {present_terms}")
+    if not is_processing:
+        person_prompt_node = "20" if is_text_to_image else "40"
+        person_prompt = str(api.get(person_prompt_node, {}).get("inputs", {}).get("text", ""))
+        if not person_prompt.startswith("hoi4_portrait,"):
+            errors.append(f"{path}: person prompt must begin with the LoRA trigger")
+        present_terms = _non_person_prompt_terms(person_prompt)
+        if present_terms:
+            errors.append(f"{path}: person prompt contains non-person instructions: {present_terms}")
 
-    preview_expectations = {"70": ["66", 0]}
-    if workflow_id.endswith("text_to_image"):
+    preview_expectations: dict[str, list[Any]] = {}
+    if is_text_to_image:
+        preview_expectations["70"] = ["66", 0]
         preview_expectations["29"] = ["28", 0]
+    elif is_processing:
+        preview_expectations.update({"10": ["8", 0], "35": ["31", 0], "70": ["32", 0]})
     else:
-        preview_expectations.update({"10": ["8", 0], "55": ["51", 0]})
-        if workflow_id.endswith("full_power"):
-            preview_expectations["35"] = ["31", 0]
+        preview_expectations.update({"10": ["8", 0], "35": ["31", 0], "55": ["51", 0], "70": ["66", 0]})
     for preview_id, expected_image in preview_expectations.items():
         preview = api.get(preview_id, {})
         if preview.get("class_type") != "PreviewImage" or preview.get("inputs", {}).get("images") != expected_image:
             errors.append(f"{path}: required completed-stage preview node {preview_id} is missing or miswired")
 
-    composite = next((node_id for node_id, node in api.items() if node.get("class_type") == "ImageCompositeMasked"), None)
-    background_switch = next(
-        (node_id for node_id, node in api.items() if node.get("class_type") == "ComfySwitchNode" and node_id == "66"),
-        None,
-    )
-    if composite is None or background_switch is None:
-        errors.append(f"{path}: optional final background branch is incomplete")
-    else:
-        final_link = api[background_switch]["inputs"].get("on_false")
-        if not (isinstance(final_link, list) and final_link[0] in api):
-            errors.append(f"{path}: final unmodified portrait link is invalid")
+    if not is_processing:
+        composite = next((node_id for node_id, node in api.items() if node.get("class_type") == "ImageCompositeMasked"), None)
+        background_switch = next(
+            (node_id for node_id, node in api.items() if node.get("class_type") == "ComfySwitchNode" and node_id == "66"),
+            None,
+        )
+        if composite is None or background_switch is None:
+            errors.append(f"{path}: optional final background branch is incomplete")
         else:
-            final_node_id = final_link[0]
-            if api[final_node_id].get("class_type") != "VAEDecode":
-                errors.append(f"{path}: background branch does not start from a decoded final portrait")
-            if api[composite]["inputs"].get("source") != final_link:
-                errors.append(f"{path}: composite source differs from the final styled portrait")
-            if api[composite]["inputs"].get("mask") != ["63", 0]:
-                errors.append(f"{path}: composite must use RemoveBackground's foreground mask directly")
-            if api.get("63", {}).get("inputs", {}).get("image") != final_link:
-                errors.append(f"{path}: foreground mask is not derived from the final styled portrait")
-            if any(node.get("class_type") == "InvertMask" for node in api.values()):
-                errors.append(f"{path}: foreground mask must not be inverted")
-            if lora_node not in _ancestors(api, final_node_id):
-                errors.append(f"{path}: final portrait was not generated with the LoRA model")
-            background_ancestors = _ancestors(api, final_node_id)
-            if any(node_id in background_ancestors for node_id in {"60", "61", "62", "63", "65", "66"}):
-                errors.append(f"{path}: background processing occurs before final portrait generation")
+            final_link = api[background_switch]["inputs"].get("on_false")
+            if not (isinstance(final_link, list) and final_link[0] in api):
+                errors.append(f"{path}: final unmodified portrait link is invalid")
+            else:
+                final_node_id = final_link[0]
+                if api[final_node_id].get("class_type") != "VAEDecode":
+                    errors.append(f"{path}: background branch does not start from a decoded final portrait")
+                if api[composite]["inputs"].get("source") != final_link:
+                    errors.append(f"{path}: composite source differs from the final styled portrait")
+                if api[composite]["inputs"].get("mask") != ["63", 0]:
+                    errors.append(f"{path}: composite must use RemoveBackground's foreground mask directly")
+                if api.get("63", {}).get("inputs", {}).get("image") != final_link:
+                    errors.append(f"{path}: foreground mask is not derived from the final styled portrait")
+                if any(node.get("class_type") == "InvertMask" for node in api.values()):
+                    errors.append(f"{path}: foreground mask must not be inverted")
+                if lora_node not in _ancestors(api, final_node_id):
+                    errors.append(f"{path}: final portrait was not generated with the LoRA model")
+                background_ancestors = _ancestors(api, final_node_id)
+                if any(node_id in background_ancestors for node_id in {"60", "61", "62", "63", "65", "66"}):
+                    errors.append(f"{path}: background processing occurs before final portrait generation")
 
-    if workflow_id.endswith("full_power"):
+    if is_source:
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
         if extra.get("restoration_order") != expected:
-            errors.append(f"{path}: full-power restoration order is wrong")
+            errors.append(f"{path}: source restoration order is wrong")
         if extra.get("flux_restoration_default") is not False:
             errors.append(f"{path}: FLUX restoration must be disabled by default")
         switch = api.get("32", {}).get("inputs", {})
         if switch.get("switch") is not False or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["31", 0]:
-            errors.append(f"{path}: FLUX restoration toggle is not an ESRGAN-only bypass")
+            errors.append(f"{path}: FLUX restoration toggle does not keep the direct ESRGAN output")
         if api.get("22", {}).get("inputs", {}).get("pixels") != ["8", 0]:
             errors.append(f"{path}: FLUX restoration does not consume ESRGAN output")
         if api.get("42", {}).get("inputs", {}).get("pixels") != ["32", 0]:
@@ -310,14 +322,20 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: FLUX restoration does not start from the encoded cropped portrait")
         if api.get("50", {}).get("inputs", {}).get("latent_image") != ["42", 0]:
             errors.append(f"{path}: LoRA styling does not start from the encoded restored portrait")
-    elif workflow_id.endswith("esrgan_only"):
-        if extra.get("restoration_order") != ["RealESRGAN_x2plus"]:
-            errors.append(f"{path}: ESRGAN-only restoration metadata is wrong")
-        if api.get("42", {}).get("inputs", {}).get("pixels") != ["8", 0]:
-            errors.append(f"{path}: ESRGAN-only workflow does not style the ESRGAN result")
-        if api.get("50", {}).get("inputs", {}).get("latent_image") != ["42", 0]:
-            errors.append(f"{path}: LoRA styling does not start from the encoded cropped ESRGAN portrait")
-    elif workflow_id.endswith("text_to_image"):
+    elif is_processing:
+        expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
+        if extra.get("restoration_order") != expected:
+            errors.append(f"{path}: processing restoration order is wrong")
+        if extra.get("flux_restoration_default") is not False:
+            errors.append(f"{path}: FLUX restoration must be disabled by default")
+        switch = api.get("32", {}).get("inputs", {})
+        if switch.get("switch") is not False or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["31", 0]:
+            errors.append(f"{path}: processing restoration toggle does not keep the direct ESRGAN output")
+        if api.get("22", {}).get("inputs", {}).get("pixels") != ["8", 0]:
+            errors.append(f"{path}: FLUX restoration does not consume ESRGAN output")
+        if api.get("30", {}).get("inputs", {}).get("latent_image") != ["22", 0]:
+            errors.append(f"{path}: FLUX restoration does not start from the encoded cropped portrait")
+    elif is_text_to_image:
         if any(node.get("class_type") in {"UpscaleModelLoader", "ImageUpscaleWithModel", "VAEEncode", "ReferenceLatent"} for node in api.values()):
             errors.append(f"{path}: text-to-image workflow contains source/restoration nodes")
     else:
@@ -336,7 +354,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: ESRGAN must consume the explicit head-and-shoulders crop")
         if extra.get("source_crop") != "native_adjustable_head_and_shoulders_before_esrgan":
             errors.append(f"{path}: source crop metadata is missing")
-        if extra.get("pose_preservation") != "encoded_source_latent_is_sampler_start":
+        if is_source and extra.get("pose_preservation") != "encoded_source_latent_is_sampler_start":
             errors.append(f"{path}: pose-preservation metadata is missing")
     return errors
 

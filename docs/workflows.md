@@ -5,7 +5,7 @@
 Each workflow is arranged in clearly labeled groups that run from left to
 right. The groups are visual organization and do not change execution order.
 
-The shared model stack is:
+The source and text-to-image model stack is:
 
 1. `UNETLoader` — FLUX.2 Klein base 9B FP8.
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
@@ -13,13 +13,16 @@ The shared model stack is:
 4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `0.75`.
 5. `CFGGuider`, Euler, `Flux2Scheduler`, eight steps, CFG 5.
 
+The processing workflow loads the base model, text encoder, and VAE for its
+optional restoration pass. It does not load the LoRA or run a style pass.
+
 Use Euler with eight steps by default. The local step comparison covers 6, 8,
 10, 12, 20, and 35 steps; higher counts add runtime without a useful gain in
 the controlled source comparison.
 
-## Full power
+## Source workflow
 
-The main README includes a [complete visual walkthrough](../README.md#what-the-full-workflow-does)
+The main README includes a [complete visual walkthrough](../README.md#what-the-source-workflow-does)
 with one full-graph screenshot and a readable close-up of every group.
 
 Groups run left to right:
@@ -36,22 +39,21 @@ Groups run left to right:
    composite when enabled.
 8. **Preview and save** writes the 832 × 1120 master and a 156 × 210 PNG.
 
-The full graph opens in ESRGAN-only mode with **Toggle FLUX restoration** set
-to `false`. Turn it on for the additional restoration pass. Keep the supplied
-connections intact.
+The source graph opens with **Toggle FLUX restoration** set to `false`. Turn it
+on for the additional restoration pass. Keep the supplied connections intact.
 
-## ESRGAN only
+## Processing workflow
 
-This graph removes the entire FLUX restoration group. The cropped RealESRGAN
-output feeds the HOI4 reference and starting latent directly. Styling still
-uses FLUX.2 Klein 9B and the same project LoRA.
+This graph ends after source processing. It contains the adjustable crop,
+RealESRGAN, and optional FLUX.2 restoration pass, with the restoration switch
+off by default. It saves the processed 832 × 1120 image and the 156 × 210
+game-size image. It does not load or apply the project LoRA.
 
 ## Text to image
 
 This graph has no source, VAE reference encode, RealESRGAN, or restoration
 pass. The positive prompt must begin with `hoi4_portrait`. It produces the
-same master and game-size outputs and uses the same final-only background
-branch.
+master and game-size outputs and uses the same final-only background branch.
 
 ## Positive prompt invariant
 
