@@ -489,7 +489,7 @@
       "title": "Portrait seed",
       "pos": [
         2060,
-        480
+        520
       ],
       "size": [
         300,
@@ -536,7 +536,7 @@
       "title": "Use Euler sampler",
       "pos": [
         2440,
-        120
+        140
       ],
       "size": [
         300,
@@ -582,7 +582,7 @@
       "title": "FLUX.2 schedule - 8 steps",
       "pos": [
         2440,
-        300
+        340
       ],
       "size": [
         300,
@@ -646,7 +646,7 @@
       "title": "Generate the HOI4 portrait",
       "pos": [
         2440,
-        500
+        540
       ],
       "size": [
         320,
@@ -711,8 +711,8 @@
       "type": "VAEDecode",
       "title": "Decode final styled portrait",
       "pos": [
-        2820,
-        500
+        2860,
+        540
       ],
       "size": [
         300,
@@ -760,8 +760,8 @@
       "type": "PreviewImage",
       "title": "Preview generated portrait before background replacement",
       "pos": [
-        2820,
-        650
+        2860,
+        700
       ],
       "size": [
         300,
@@ -799,7 +799,7 @@
       "type": "LoadImage",
       "title": "Load replacement background",
       "pos": [
-        3420,
+        3600,
         120
       ],
       "size": [
@@ -851,7 +851,7 @@
       "type": "ImageScale",
       "title": "Fit background to final master canvas",
       "pos": [
-        3420,
+        3600,
         500
       ],
       "size": [
@@ -929,7 +929,7 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet foreground model",
       "pos": [
-        3840,
+        4020,
         120
       ],
       "size": [
@@ -982,7 +982,7 @@
       "type": "RemoveBackground",
       "title": "Mask the final styled portrait",
       "pos": [
-        3840,
+        4020,
         300
       ],
       "size": [
@@ -1028,7 +1028,7 @@
       "type": "ImageCompositeMasked",
       "title": "Composite only after the styled portrait exists",
       "pos": [
-        4220,
+        4400,
         250
       ],
       "size": [
@@ -1107,7 +1107,7 @@
       "type": "ComfySwitchNode",
       "title": "Toggle replacement background (off by default)",
       "pos": [
-        4220,
+        4400,
         520
       ],
       "size": [
@@ -1165,7 +1165,7 @@
       "type": "PreviewImage",
       "title": "Preview final portrait",
       "pos": [
-        4740,
+        4980,
         120
       ],
       "size": [
@@ -1204,7 +1204,7 @@
       "type": "SaveImage",
       "title": "Save 832 x 1120 master PNG",
       "pos": [
-        5240,
+        5480,
         120
       ],
       "size": [
@@ -1253,7 +1253,7 @@
       "type": "ImageScale",
       "title": "Resize to HOI4 156 x 210",
       "pos": [
-        5240,
+        5480,
         320
       ],
       "size": [
@@ -1331,7 +1331,7 @@
       "type": "SaveImage",
       "title": "Save game-size portrait PNG",
       "pos": [
-        5240,
+        5480,
         540
       ],
       "size": [
@@ -1592,8 +1592,8 @@
       "bounding": [
         1040,
         40,
-        390,
-        760
+        430,
+        800
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -1604,8 +1604,8 @@
       "bounding": [
         1500,
         40,
-        1700,
-        860
+        1800,
+        980
       ],
       "color": "#7a568e",
       "font_size": 24,
@@ -1614,9 +1614,9 @@
     {
       "title": "05 Optional background - after generation",
       "bounding": [
-        3340,
+        3520,
         40,
-        1260,
+        1300,
         720
       ],
       "color": "#8d5b5b",
@@ -1626,9 +1626,9 @@
     {
       "title": "06 Preview and save",
       "bounding": [
-        4660,
+        4900,
         40,
-        960,
+        1100,
         720
       ],
       "color": "#596b82",

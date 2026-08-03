@@ -702,7 +702,7 @@
       "title": "Person-only LoRA negative",
       "pos": [
         1540,
-        430
+        450
       ],
       "size": [
         430,
@@ -801,7 +801,7 @@
       "title": "Attach reference to positive conditioning",
       "pos": [
         2040,
-        300
+        320
       ],
       "size": [
         300,
@@ -847,7 +847,7 @@
       "title": "Attach reference to negative conditioning",
       "pos": [
         2040,
-        480
+        520
       ],
       "size": [
         300,
@@ -954,7 +954,7 @@
       "title": "Person-only LoRA seed",
       "pos": [
         2440,
-        300
+        320
       ],
       "size": [
         300,
@@ -1001,7 +1001,7 @@
       "title": "Use Euler sampler",
       "pos": [
         2440,
-        480
+        520
       ],
       "size": [
         300,
@@ -1047,7 +1047,7 @@
       "title": "FLUX.2 schedule - 8 steps",
       "pos": [
         2440,
-        660
+        700
       ],
       "size": [
         300,
@@ -1110,7 +1110,7 @@
       "type": "SamplerCustomAdvanced",
       "title": "Run person-only lora pass",
       "pos": [
-        2820,
+        2860,
         260
       ],
       "size": [
@@ -1176,7 +1176,7 @@
       "type": "VAEDecode",
       "title": "Decode person-only lora result",
       "pos": [
-        2820,
+        2860,
         500
       ],
       "size": [
@@ -1225,8 +1225,8 @@
       "type": "PreviewImage",
       "title": "Preview person-only lora result",
       "pos": [
-        2820,
-        650
+        2860,
+        680
       ],
       "size": [
         300,
@@ -1264,7 +1264,7 @@
       "type": "LoadImage",
       "title": "Load replacement background",
       "pos": [
-        3420,
+        3600,
         120
       ],
       "size": [
@@ -1316,7 +1316,7 @@
       "type": "ImageScale",
       "title": "Fit background to final master canvas",
       "pos": [
-        3420,
+        3600,
         500
       ],
       "size": [
@@ -1394,7 +1394,7 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet foreground model",
       "pos": [
-        3840,
+        4020,
         120
       ],
       "size": [
@@ -1447,7 +1447,7 @@
       "type": "RemoveBackground",
       "title": "Mask the final styled portrait",
       "pos": [
-        3840,
+        4020,
         300
       ],
       "size": [
@@ -1493,7 +1493,7 @@
       "type": "ImageCompositeMasked",
       "title": "Composite only after the styled portrait exists",
       "pos": [
-        4220,
+        4400,
         250
       ],
       "size": [
@@ -1572,7 +1572,7 @@
       "type": "ComfySwitchNode",
       "title": "Toggle replacement background (off by default)",
       "pos": [
-        4220,
+        4400,
         520
       ],
       "size": [
@@ -1630,7 +1630,7 @@
       "type": "PreviewImage",
       "title": "Preview final portrait",
       "pos": [
-        4740,
+        4980,
         120
       ],
       "size": [
@@ -1669,7 +1669,7 @@
       "type": "SaveImage",
       "title": "Save 832 x 1120 master PNG",
       "pos": [
-        5240,
+        5480,
         120
       ],
       "size": [
@@ -1718,7 +1718,7 @@
       "type": "ImageScale",
       "title": "Resize to HOI4 156 x 210",
       "pos": [
-        5240,
+        5480,
         320
       ],
       "size": [
@@ -1796,7 +1796,7 @@
       "type": "SaveImage",
       "title": "Save game-size portrait PNG",
       "pos": [
-        5240,
+        5480,
         540
       ],
       "size": [
@@ -2154,7 +2154,7 @@
         40,
         40,
         930,
-        1040
+        1100
       ],
       "color": "#557a46",
       "font_size": 24,
@@ -2165,8 +2165,8 @@
       "bounding": [
         1040,
         40,
-        390,
-        760
+        430,
+        800
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -2177,8 +2177,8 @@
       "bounding": [
         1500,
         40,
-        1700,
-        860
+        1800,
+        980
       ],
       "color": "#7a568e",
       "font_size": 24,
@@ -2187,9 +2187,9 @@
     {
       "title": "05 Optional background - after generation",
       "bounding": [
-        3340,
+        3520,
         40,
-        1260,
+        1300,
         720
       ],
       "color": "#8d5b5b",
@@ -2199,9 +2199,9 @@
     {
       "title": "06 Preview and save",
       "bounding": [
-        4660,
+        4900,
         40,
-        960,
+        1100,
         720
       ],
       "color": "#596b82",

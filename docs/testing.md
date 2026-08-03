@@ -24,7 +24,7 @@ The validator checks:
 - required `SaveImage` outputs;
 - every node contained inside its declared group;
 - no overlapping groups;
-- no overlapping/too-close nodes within a group;
+- no overlapping/too-close nodes across the entire canvas, including group boundaries;
 - one group per node and no node extending beyond its group;
 - RealESRGAN → optional FLUX restoration order;
 - restoration switch bypass to direct ESRGAN output;

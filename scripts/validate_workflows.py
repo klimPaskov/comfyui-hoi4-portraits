@@ -11,6 +11,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_STEPS = 8
+LAYOUT_NODE_PADDING = 24
+GROUP_NODE_PADDING = 24
 
 ALLOWED_CORE_NODES = {
     "CFGGuider",
@@ -170,16 +172,21 @@ def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
         nx, ny = node.get("pos", [0, 0])
         nw, nh = node.get("size", [0, 0])
         gx, gy, gw, gh = bounds
-        if nx < gx or ny < gy or nx + nw > gx + gw or ny + nh > gy + gh:
+        if (
+            nx < gx + GROUP_NODE_PADDING
+            or ny < gy + GROUP_NODE_PADDING
+            or nx + nw > gx + gw - GROUP_NODE_PADDING
+            or ny + nh > gy + gh - GROUP_NODE_PADDING
+        ):
             errors.append(f"{path}: node {node.get('id')} extends outside group {group_name}")
 
+    # Rendered nodes from adjacent groups can still collide even when their
+    # group rectangles are separate. Keep one layout-wide safety margin.
     for index, node in enumerate(nodes):
         a = [*node.get("pos", [0, 0]), *node.get("size", [0, 0])]
         for other in nodes[index + 1 :]:
-            if node.get("properties", {}).get("hoi4_group") != other.get("properties", {}).get("hoi4_group"):
-                continue
             b = [*other.get("pos", [0, 0]), *other.get("size", [0, 0])]
-            if _overlap(a, b, padding=20):
+            if _overlap(a, b, padding=LAYOUT_NODE_PADDING):
                 errors.append(f"{path}: nodes overlap or are too close: {node.get('id')} and {other.get('id')}")
     return errors
 

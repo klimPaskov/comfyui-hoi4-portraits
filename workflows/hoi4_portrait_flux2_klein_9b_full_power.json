@@ -708,7 +708,7 @@
       "title": "Conservative restoration negative",
       "pos": [
         1540,
-        430
+        450
       ],
       "size": [
         430,
@@ -807,7 +807,7 @@
       "title": "Attach reference to positive conditioning",
       "pos": [
         2040,
-        300
+        320
       ],
       "size": [
         300,
@@ -853,7 +853,7 @@
       "title": "Attach reference to negative conditioning",
       "pos": [
         2040,
-        480
+        520
       ],
       "size": [
         300,
@@ -960,7 +960,7 @@
       "title": "Conservative restoration seed",
       "pos": [
         2440,
-        300
+        320
       ],
       "size": [
         300,
@@ -1007,7 +1007,7 @@
       "title": "Use Euler sampler",
       "pos": [
         2440,
-        480
+        520
       ],
       "size": [
         300,
@@ -1053,7 +1053,7 @@
       "title": "FLUX.2 schedule - 8 steps",
       "pos": [
         2440,
-        660
+        700
       ],
       "size": [
         300,
@@ -1116,7 +1116,7 @@
       "type": "SamplerCustomAdvanced",
       "title": "Run conservative restoration pass",
       "pos": [
-        2820,
+        2860,
         260
       ],
       "size": [
@@ -1182,7 +1182,7 @@
       "type": "VAEDecode",
       "title": "Decode conservative restoration result",
       "pos": [
-        2820,
+        2860,
         500
       ],
       "size": [
@@ -1229,8 +1229,8 @@
       "type": "PreviewImage",
       "title": "Preview conservative restoration result",
       "pos": [
-        2820,
-        650
+        2860,
+        680
       ],
       "size": [
         300,
@@ -1324,7 +1324,7 @@
       "type": "CLIPTextEncode",
       "title": "Person-only LoRA instructions",
       "pos": [
-        3320,
+        3440,
         120
       ],
       "size": [
@@ -1375,8 +1375,8 @@
       "type": "CLIPTextEncode",
       "title": "Person-only LoRA negative",
       "pos": [
-        3320,
-        430
+        3440,
+        450
       ],
       "size": [
         430,
@@ -1426,7 +1426,7 @@
       "type": "VAEEncode",
       "title": "Encode person-only lora reference",
       "pos": [
-        3820,
+        3940,
         120
       ],
       "size": [
@@ -1474,8 +1474,8 @@
       "type": "ReferenceLatent",
       "title": "Attach reference to positive conditioning",
       "pos": [
-        3820,
-        300
+        3940,
+        320
       ],
       "size": [
         300,
@@ -1520,8 +1520,8 @@
       "type": "ReferenceLatent",
       "title": "Attach reference to negative conditioning",
       "pos": [
-        3820,
-        480
+        3940,
+        520
       ],
       "size": [
         300,
@@ -1566,7 +1566,7 @@
       "type": "CFGGuider",
       "title": "Guide person-only lora pass",
       "pos": [
-        4220,
+        4340,
         120
       ],
       "size": [
@@ -1627,8 +1627,8 @@
       "type": "RandomNoise",
       "title": "Person-only LoRA seed",
       "pos": [
-        4220,
-        300
+        4340,
+        320
       ],
       "size": [
         300,
@@ -1674,8 +1674,8 @@
       "type": "KSamplerSelect",
       "title": "Use Euler sampler",
       "pos": [
-        4220,
-        480
+        4340,
+        520
       ],
       "size": [
         300,
@@ -1720,8 +1720,8 @@
       "type": "Flux2Scheduler",
       "title": "FLUX.2 schedule - 8 steps",
       "pos": [
-        4220,
-        660
+        4340,
+        700
       ],
       "size": [
         300,
@@ -1784,7 +1784,7 @@
       "type": "SamplerCustomAdvanced",
       "title": "Run person-only lora pass",
       "pos": [
-        4600,
+        4760,
         260
       ],
       "size": [
@@ -1850,7 +1850,7 @@
       "type": "VAEDecode",
       "title": "Decode person-only lora result",
       "pos": [
-        4600,
+        4760,
         500
       ],
       "size": [
@@ -1899,8 +1899,8 @@
       "type": "PreviewImage",
       "title": "Preview person-only lora result",
       "pos": [
-        4600,
-        650
+        4760,
+        680
       ],
       "size": [
         300,
@@ -1938,7 +1938,7 @@
       "type": "LoadImage",
       "title": "Load replacement background",
       "pos": [
-        5200,
+        5600,
         120
       ],
       "size": [
@@ -1990,7 +1990,7 @@
       "type": "ImageScale",
       "title": "Fit background to final master canvas",
       "pos": [
-        5200,
+        5600,
         500
       ],
       "size": [
@@ -2068,7 +2068,7 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet foreground model",
       "pos": [
-        5620,
+        6020,
         120
       ],
       "size": [
@@ -2121,7 +2121,7 @@
       "type": "RemoveBackground",
       "title": "Mask the final styled portrait",
       "pos": [
-        5620,
+        6020,
         300
       ],
       "size": [
@@ -2167,7 +2167,7 @@
       "type": "ImageCompositeMasked",
       "title": "Composite only after the styled portrait exists",
       "pos": [
-        6000,
+        6400,
         250
       ],
       "size": [
@@ -2246,7 +2246,7 @@
       "type": "ComfySwitchNode",
       "title": "Toggle replacement background (off by default)",
       "pos": [
-        6000,
+        6400,
         520
       ],
       "size": [
@@ -2304,7 +2304,7 @@
       "type": "PreviewImage",
       "title": "Preview final portrait",
       "pos": [
-        6520,
+        6980,
         120
       ],
       "size": [
@@ -2343,7 +2343,7 @@
       "type": "SaveImage",
       "title": "Save 832 x 1120 master PNG",
       "pos": [
-        7020,
+        7480,
         120
       ],
       "size": [
@@ -2392,7 +2392,7 @@
       "type": "ImageScale",
       "title": "Resize to HOI4 156 x 210",
       "pos": [
-        7020,
+        7480,
         320
       ],
       "size": [
@@ -2470,7 +2470,7 @@
       "type": "SaveImage",
       "title": "Save game-size portrait PNG",
       "pos": [
-        7020,
+        7480,
         540
       ],
       "size": [
@@ -2996,7 +2996,7 @@
         40,
         40,
         930,
-        1040
+        1100
       ],
       "color": "#557a46",
       "font_size": 24,
@@ -3007,8 +3007,8 @@
       "bounding": [
         1040,
         40,
-        390,
-        760
+        430,
+        800
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -3019,8 +3019,8 @@
       "bounding": [
         1500,
         40,
-        1700,
-        860
+        1800,
+        980
       ],
       "color": "#8b6f47",
       "font_size": 24,
@@ -3029,10 +3029,10 @@
     {
       "title": "04 HOI4 LoRA styling",
       "bounding": [
-        3280,
+        3400,
         40,
-        1700,
-        860
+        1800,
+        980
       ],
       "color": "#7a568e",
       "font_size": 24,
@@ -3041,9 +3041,9 @@
     {
       "title": "05 Optional background - after generation",
       "bounding": [
-        5120,
+        5520,
         40,
-        1260,
+        1300,
         720
       ],
       "color": "#8d5b5b",
@@ -3053,9 +3053,9 @@
     {
       "title": "06 Preview and save",
       "bounding": [
-        6440,
+        6900,
         40,
-        960,
+        1100,
         720
       ],
       "color": "#596b82",

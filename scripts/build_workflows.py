@@ -311,7 +311,7 @@ def _edit_stage(
             "CLIPTextEncode",
             f"{title_prefix} negative",
             group,
-            (x, 430),
+            (x, 450),
             size=(430, 180),
             inputs={"clip": Link(2), "text": negative},
             input_types={"clip": "CLIP", "text": "STRING"},
@@ -335,7 +335,7 @@ def _edit_stage(
             "ReferenceLatent",
             "Attach reference to positive conditioning",
             group,
-            (x + 500, 300),
+            (x + 500, 320),
             inputs={"conditioning": Link(i), "latent": Link(i + 2)},
             input_types={"conditioning": "CONDITIONING", "latent": "LATENT"},
             outputs=["CONDITIONING"],
@@ -346,7 +346,7 @@ def _edit_stage(
             "ReferenceLatent",
             "Attach reference to negative conditioning",
             group,
-            (x + 500, 480),
+            (x + 500, 520),
             inputs={"conditioning": Link(i + 1), "latent": Link(i + 2)},
             input_types={"conditioning": "CONDITIONING", "latent": "LATENT"},
             outputs=["CONDITIONING"],
@@ -369,7 +369,7 @@ def _edit_stage(
             "RandomNoise",
             f"{title_prefix} seed",
             group,
-            (x + 900, 300),
+            (x + 900, 320),
             inputs={"noise_seed": seed},
             input_types={"noise_seed": "INT"},
             outputs=["NOISE"],
@@ -381,7 +381,7 @@ def _edit_stage(
             "KSamplerSelect",
             "Use Euler sampler",
             group,
-            (x + 900, 480),
+            (x + 900, 520),
             inputs={"sampler_name": "euler"},
             input_types={"sampler_name": "COMBO"},
             outputs=["SAMPLER"],
@@ -393,7 +393,7 @@ def _edit_stage(
             "Flux2Scheduler",
             f"FLUX.2 schedule - {DEFAULT_STEPS} steps",
             group,
-            (x + 900, 660),
+            (x + 900, 700),
             inputs={"steps": DEFAULT_STEPS, "width": 832, "height": 1120},
             input_types={"steps": "INT", "width": "INT", "height": "INT"},
             outputs=["SIGMAS"],
@@ -405,7 +405,7 @@ def _edit_stage(
             "SamplerCustomAdvanced",
             f"Run {title_prefix.lower()} pass",
             group,
-            (x + 1280, 260),
+            (x + 1320, 260),
             size=(300, 150),
             inputs={
                 "noise": Link(i + 7),
@@ -423,7 +423,7 @@ def _edit_stage(
             "VAEDecode",
             f"Decode {title_prefix.lower()} result",
             group,
-            (x + 1280, 500),
+            (x + 1320, 500),
             inputs={"samples": Link(i + 10), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -434,7 +434,7 @@ def _edit_stage(
             "PreviewImage",
             f"Preview {title_prefix.lower()} result",
             group,
-            (x + 1280, 650),
+            (x + 1320, 680),
             size=(300, 220),
             inputs={"images": Link(i + 11)},
             input_types={"images": "IMAGE"},
@@ -502,7 +502,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "RandomNoise",
             "Portrait seed",
             group,
-            (x + 520, 480),
+            (x + 520, 520),
             inputs={"noise_seed": 42},
             input_types={"noise_seed": "INT"},
             outputs=["NOISE"],
@@ -514,7 +514,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "KSamplerSelect",
             "Use Euler sampler",
             group,
-            (x + 900, 120),
+            (x + 900, 140),
             inputs={"sampler_name": "euler"},
             input_types={"sampler_name": "COMBO"},
             outputs=["SAMPLER"],
@@ -526,7 +526,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "Flux2Scheduler",
             f"FLUX.2 schedule - {DEFAULT_STEPS} steps",
             group,
-            (x + 900, 300),
+            (x + 900, 340),
             inputs={"steps": DEFAULT_STEPS, "width": 832, "height": 1120},
             input_types={"steps": "INT", "width": "INT", "height": "INT"},
             outputs=["SIGMAS"],
@@ -538,7 +538,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "SamplerCustomAdvanced",
             "Generate the HOI4 portrait",
             group,
-            (x + 900, 500),
+            (x + 900, 540),
             size=(320, 150),
             inputs={"noise": Link(24), "guider": Link(23), "sampler": Link(25), "sigmas": Link(26), "latent_image": Link(22)},
             input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
@@ -550,7 +550,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "VAEDecode",
             "Decode final styled portrait",
             group,
-            (x + 1280, 500),
+            (x + 1320, 540),
             inputs={"samples": Link(27), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -561,7 +561,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "PreviewImage",
             "Preview generated portrait before background replacement",
             group,
-            (x + 1280, 650),
+            (x + 1320, 700),
             size=(300, 220),
             inputs={"images": Link(28)},
             input_types={"images": "IMAGE"},
@@ -657,7 +657,7 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             "PreviewImage",
             "Preview final portrait",
             output_group,
-            (x + 1320, 120),
+            (x + 1380, 120),
             size=(420, 420),
             inputs={"images": Link(66)},
             input_types={"images": "IMAGE"},
@@ -669,7 +669,7 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             "SaveImage",
             "Save 832 x 1120 master PNG",
             output_group,
-            (x + 1820, 120),
+            (x + 1880, 120),
             inputs={"images": Link(66), "filename_prefix": "hoi4_portraits/master"},
             input_types={"images": "IMAGE", "filename_prefix": "STRING"},
             outputs=["IMAGE"],
@@ -681,7 +681,7 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             "ImageScale",
             "Resize to HOI4 156 x 210",
             output_group,
-            (x + 1820, 320),
+            (x + 1880, 320),
             size=(340, 150),
             inputs={"image": Link(66), "upscale_method": "lanczos", "width": 156, "height": 210, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
@@ -694,7 +694,7 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             "SaveImage",
             "Save game-size portrait PNG",
             output_group,
-            (x + 1820, 540),
+            (x + 1880, 540),
             inputs={"images": Link(72), "filename_prefix": "hoi4_portraits/portrait_156x210"},
             input_types={"images": "IMAGE", "filename_prefix": "STRING"},
             outputs=["IMAGE"],
@@ -707,16 +707,16 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
 def _groups(*, has_source: bool, has_restoration: bool) -> list[Group]:
     groups: list[Group] = []
     if has_source:
-        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 1040), "#557a46"))
-    groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 390, 760), "#3f789e"))
+        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 1100), "#557a46"))
+    groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"))
     if has_restoration:
-        groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1700, 860), "#8b6f47"))
-        groups.append(Group("04 HOI4 LoRA styling", (3280, 40, 1700, 860), "#7a568e"))
+        groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"))
+        groups.append(Group("04 HOI4 LoRA styling", (3400, 40, 1800, 980), "#7a568e"))
     else:
-        groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1700, 860), "#7a568e"))
-    background_x = 5200 if has_restoration else 3420
-    groups.append(Group("05 Optional background - after generation", (background_x - 80, 40, 1260, 720), "#8d5b5b"))
-    groups.append(Group("06 Preview and save", (background_x + 1240, 40, 960, 720), "#596b82"))
+        groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1800, 980), "#7a568e"))
+    background_x = 5600 if has_restoration else 3600
+    groups.append(Group("05 Optional background - after generation", (background_x - 80, 40, 1300, 720), "#8d5b5b"))
+    groups.append(Group("06 Preview and save", (background_x + 1300, 40, 1100, 720), "#596b82"))
     return groups
 
 
@@ -752,7 +752,7 @@ def build_full_power() -> Graph:
     style_nodes, styled = _edit_stage(
         id_start=40,
         group="04 HOI4 LoRA styling",
-        x=3320,
+        x=3440,
         image=Link(32),
         model=Link(4),
         prompt=STYLE_PROMPT,
@@ -761,7 +761,7 @@ def build_full_power() -> Graph:
         title_prefix="Person-only LoRA",
     )
     nodes.extend(style_nodes)
-    nodes.extend(_background_and_outputs(final_image=styled, x=5200))
+    nodes.extend(_background_and_outputs(final_image=styled, x=5600))
     return Graph(
         workflow_id="hoi4_portrait_flux2_klein_9b_full_power",
         description="Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration second, HOI4 LoRA styling, then optional background replacement.",
@@ -792,7 +792,7 @@ def build_esrgan_only() -> Graph:
         title_prefix="Person-only LoRA",
     )
     nodes.extend(style_nodes)
-    nodes.extend(_background_and_outputs(final_image=styled, x=3420))
+    nodes.extend(_background_and_outputs(final_image=styled, x=3600))
     return Graph(
         workflow_id="hoi4_portrait_flux2_klein_9b_esrgan_only",
         description="Source portrait workflow: RealESRGAN preparation, FLUX.2 Klein 9B HOI4 LoRA styling, then optional background replacement.",
@@ -813,7 +813,7 @@ def build_text_to_image() -> Graph:
     nodes = _model_nodes()
     text_nodes, styled = _text_stage(group="04 HOI4 LoRA styling", x=1540)
     nodes.extend(text_nodes)
-    nodes.extend(_background_and_outputs(final_image=styled, x=3420))
+    nodes.extend(_background_and_outputs(final_image=styled, x=3600))
     groups = [group for group in _groups(has_source=False, has_restoration=False) if group.title != "01 Source and ESRGAN"]
     return Graph(
         workflow_id="hoi4_portrait_flux2_klein_9b_text_to_image",
