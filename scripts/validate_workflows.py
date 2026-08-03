@@ -224,7 +224,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     extra = ui.get("extra", {})
     workflow_id = str(extra.get("workflow_id", ""))
     is_source = workflow_id.endswith("source")
-    is_processing = workflow_id.endswith("processing")
+    is_processing = workflow_id.endswith("processing_only")
     is_text_to_image = workflow_id.endswith("text_to_image")
     if extra.get("base_model") != "flux-2-klein-base-9b-fp8.safetensors":
         errors.append(f"{path}: incorrect FLUX.2 Klein 9B base model")

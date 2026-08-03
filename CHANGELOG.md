@@ -2,6 +2,18 @@
 
 All notable project changes are recorded here.
 
+## 2.3.0 — 2026-08-03
+
+- Published the three-workflow set as source, text-to-image, and
+  `hoi4_portrait_processing_only`; the processing-only graph is last in the
+  README table and does not load the LoRA.
+- Updated the RunPod, Windows PowerShell, and Windows self-extractor paths to
+  install the current workflows and pinned model files without custom nodes.
+- Added a model-free ZIP, Windows x64 executable, and checksums to the release
+  package.
+- Refreshed release metadata and documentation for the current filenames,
+  model defaults, and portable core-node graph design.
+
 ## 2.2.0 — 2026-08-02
 
 - Added an adjustable, built-in head-and-shoulders crop before RealESRGAN in

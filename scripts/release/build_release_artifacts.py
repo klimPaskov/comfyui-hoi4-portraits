@@ -6,12 +6,17 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import shutil
+import subprocess
 import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DIST = ROOT / "dist"
-FIXED_ZIP_TIME = (2026, 8, 2, 0, 0, 0)
+WINDOWS_SOURCE = ROOT / "packaging" / "windows"
+RELEASE_SCHEMA_VERSION = "2.3.0"
+FIXED_ZIP_TIME = (2026, 8, 3, 0, 0, 0)
 ROOT_FILES = {
     "CHANGELOG.md",
     "CONTRIBUTING.md",
@@ -27,7 +32,9 @@ IGNORED_PARTS = {"__pycache__", ".DS_Store"}
 MODEL_SUFFIXES = {".bin", ".ckpt", ".gguf", ".onnx", ".pt", ".pth", ".safetensors"}
 
 
-def _sha256(data: bytes) -> str:
+def _sha256(data: bytes | Path) -> str:
+    if isinstance(data, Path):
+        data = data.read_bytes()
     return hashlib.sha256(data).hexdigest()
 
 
@@ -65,7 +72,7 @@ def _build_zip(path: Path, files: list[Path], version: str) -> dict[str, str]:
             archive.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
         manifest = json.dumps(
             {
-                "schema_version": "2.2.0",
+                "schema_version": RELEASE_SCHEMA_VERSION,
                 "version": version,
                 "models_bundled": False,
                 "custom_nodes_bundled": False,
@@ -81,6 +88,36 @@ def _build_zip(path: Path, files: list[Path], version: str) -> dict[str, str]:
     return checksums
 
 
+def _build_windows(zip_path: Path, version: str) -> Path:
+    """Cross-compile the model-free ZIP extractor for Windows x64."""
+    payload = WINDOWS_SOURCE / "payload.zip"
+    shutil.copy2(zip_path, payload)
+    output = DIST / f"HOI4-Portrait-Workflows-{version}-windows-x64.exe"
+    environment = os.environ.copy()
+    environment.update({"GOOS": "windows", "GOARCH": "amd64", "CGO_ENABLED": "0"})
+    try:
+        subprocess.run(
+            [
+                "go",
+                "build",
+                "-trimpath",
+                "-ldflags",
+                f"-s -w -X main.version={version}",
+                "-o",
+                str(output),
+                ".",
+            ],
+            cwd=WINDOWS_SOURCE,
+            env=environment,
+            check=True,
+        )
+    finally:
+        payload.unlink(missing_ok=True)
+    if output.read_bytes()[:2] != b"MZ":
+        raise RuntimeError("Windows release is not a PE executable")
+    return output
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", required=True)
@@ -89,11 +126,20 @@ def main(argv: list[str] | None = None) -> int:
     if not version or not all(character.isalnum() or character in "._-" for character in version):
         parser.error("version contains unsupported characters")
     DIST.mkdir(exist_ok=True)
+    for stale in DIST.iterdir():
+        if stale.is_file() and (
+            stale.name.startswith("HOI4-Portrait-Workflows-") or stale.name == "SHA256SUMS.txt"
+        ):
+            stale.unlink()
     zip_path = DIST / f"HOI4-Portrait-Workflows-{version}.zip"
     checksums = _build_zip(zip_path, _selected_files(), version)
-    digest = _sha256(zip_path.read_bytes())
+    windows_path = _build_windows(zip_path, version)
     sums_path = DIST / "SHA256SUMS.txt"
-    sums_path.write_text(f"{digest}  {zip_path.name}\n", encoding="utf-8")
+    artifacts = [zip_path, windows_path]
+    sums_path.write_text(
+        "".join(f"{_sha256(path)}  {path.name}\n" for path in artifacts),
+        encoding="utf-8",
+    )
     print(
         json.dumps(
             {
@@ -101,7 +147,10 @@ def main(argv: list[str] | None = None) -> int:
                 "version": version,
                 "file_count": len(checksums),
                 "artifacts": [
-                    {"path": str(zip_path), "size_bytes": zip_path.stat().st_size, "sha256": digest},
+                    *[
+                        {"path": str(path), "size_bytes": path.stat().st_size, "sha256": _sha256(path)}
+                        for path in artifacts
+                    ],
                     {"path": str(sums_path), "size_bytes": sums_path.stat().st_size},
                 ],
             },

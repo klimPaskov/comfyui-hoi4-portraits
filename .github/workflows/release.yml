@@ -19,12 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.13"
+
+      - name: Set up Go for the Windows installer
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.x"
 
       - name: Validate public workflows
         run: |
@@ -33,7 +38,7 @@ jobs:
           python scripts/validate_workflows.py
           python -m unittest discover -s tests -v
 
-      - name: Build model-free package
+      - name: Build model-free ZIP and Windows installer
         env:
           RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
         run: python scripts/release/build_release_artifacts.py --version "$RELEASE_VERSION"
@@ -43,6 +48,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
         run: |
-          gh release view "$RELEASE_VERSION" >/dev/null 2>&1 || \
-            gh release create "$RELEASE_VERSION" --title "HOI4 Portrait Workflows $RELEASE_VERSION" --generate-notes
+          NOTES_FILE=".github/release-notes/${RELEASE_VERSION}.md"
+          if gh release view "$RELEASE_VERSION" >/dev/null 2>&1; then
+            if [ -f "$NOTES_FILE" ]; then
+              gh release edit "$RELEASE_VERSION" --title "HOI4 Portrait Workflows $RELEASE_VERSION" --notes-file "$NOTES_FILE"
+            fi
+          elif [ -f "$NOTES_FILE" ]; then
+            gh release create "$RELEASE_VERSION" --title "HOI4 Portrait Workflows $RELEASE_VERSION" --notes-file "$NOTES_FILE" --target "$GITHUB_SHA"
+          else
+            gh release create "$RELEASE_VERSION" --title "HOI4 Portrait Workflows $RELEASE_VERSION" --generate-notes --target "$GITHUB_SHA"
+          fi
           gh release upload "$RELEASE_VERSION" dist/* --clobber

@@ -40,7 +40,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_hashes_match_files(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.2.0")
+        self.assertEqual(manifest["schema_version"], "2.3.0")
         for item in manifest["workflows"]:
             for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
                 data = (ROOT / item[path_key]).read_bytes()
@@ -70,7 +70,7 @@ class WorkflowTests(unittest.TestCase):
         for workflow in (ROOT / "workflows").glob("*.api.json"):
             api = json.loads(workflow.read_text(encoding="utf-8"))
             loras = [node for node in api.values() if node["class_type"] == "LoraLoaderModelOnly"]
-            if workflow.name.endswith("processing.api.json"):
+            if workflow.name.endswith("processing_only.api.json"):
                 self.assertEqual(loras, [], workflow.name)
             else:
                 self.assertEqual(len(loras), 1, workflow.name)
@@ -82,8 +82,10 @@ class WorkflowTests(unittest.TestCase):
                 self.assertIs(api["32"]["inputs"]["switch"], False)
 
     def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
-        for name in ("source", "processing"):
-            path = ROOT / "workflows" / f"hoi4_portrait_flux2_klein_9b_{name}.api.json"
+        for name, path in (
+            ("source", ROOT / "workflows" / "hoi4_portrait_flux2_klein_9b_source.api.json"),
+            ("processing", ROOT / "workflows" / "hoi4_portrait_processing_only.api.json"),
+        ):
             api = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(api["11"]["class_type"], "ImageCropV2")
             self.assertEqual(api["11"]["inputs"]["image"], ["5", 0])
@@ -132,6 +134,14 @@ class InstallerAndModelTests(unittest.TestCase):
         forbidden = build_release_artifacts.MODEL_SUFFIXES
         self.assertFalse(any(path.suffix.casefold() in forbidden for path in selected))
 
+    def test_windows_release_extractor_sources_are_current(self) -> None:
+        source = ROOT / "packaging" / "windows" / "main.go"
+        self.assertTrue((ROOT / "packaging" / "windows" / "go.mod").is_file())
+        contents = source.read_text(encoding="utf-8")
+        self.assertIn('"docs", "local-install.md"', contents)
+        self.assertIn("it installs no custom nodes", contents)
+        self.assertNotIn("setup-with-coding-agent.md", contents)
+
 
 class DocumentationTests(unittest.TestCase):
     LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
@@ -153,8 +163,13 @@ class DocumentationTests(unittest.TestCase):
     def test_readme_default_table_contains_only_current_workflows(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         section = readme.split("## Workflows", 1)[1]
-        table = "\n".join(line for line in section.splitlines() if line.startswith("|"))
-        self.assertEqual(table.count("workflows/hoi4_portrait_flux2_klein_9b_"), 3)
+        table_rows = [line for line in section.splitlines() if line.startswith("|")]
+        table = "\n".join(table_rows)
+        self.assertEqual(len(table_rows), 5)  # header, separator, and three workflow rows
+        self.assertIn("workflows/hoi4_portrait_flux2_klein_9b_source.json", table_rows[2])
+        self.assertIn("workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json", table_rows[3])
+        self.assertIn("workflows/hoi4_portrait_processing_only.json", table_rows[4])
+        self.assertEqual(table.count("workflows/"), 3)
         self.assertNotIn("krea", table.casefold())
 
     def test_readme_contains_new_gallery_and_autoprompter_descriptions(self) -> None:

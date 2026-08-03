@@ -26,6 +26,12 @@ python scripts/download_models.py --comfyui-root /path/to/ComfyUI
 
 The installer copies three editor workflows, the bundled backgrounds, and one
 sample source image. It does not replace the existing ComfyUI installation.
+It only adds the project workflows and sample assets to that installation.
+
+The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest)
+also includes a model-free ZIP, a Windows x64 self-extractor, and
+`SHA256SUMS.txt`. The executable only unpacks the project; ComfyUI and model
+weights remain separate.
 
 The downloader checks every existing file against its locked byte size and
 SHA-256. It refuses to overwrite a mismatching file.
@@ -51,7 +57,7 @@ the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
 ```bash
 export HF_TOKEN="hf_..."
 P=/workspace/comfyui-hoi4-portraits
-test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
+test -d "$P/.git" || git clone --depth 1 https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
 "$P/scripts/install_runpod.sh" /workspace/ComfyUI
 ```
 
@@ -75,6 +81,12 @@ From PowerShell:
 
 ```powershell
 .\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI"
+```
+
+The release self-extractor accepts an empty destination directory:
+
+```powershell
+.\HOI4-Portrait-Workflows-v2.3.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.3.0"
 ```
 
 Use `-SkipModels` if the model files are already installed. Start with:

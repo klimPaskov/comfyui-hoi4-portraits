@@ -20,14 +20,19 @@ photo.
 | Workflow | Best for | Restoration path |
 | --- | --- | --- |
 | [`hoi4_portrait_flux2_klein_9b_source`](workflows/hoi4_portrait_flux2_klein_9b_source.json) | Source-photo conversion; 24 GB GPU with offloading or Comfy Cloud | RealESRGAN first, then switchable FLUX.2 restoration; LoRA styling follows |
-| [`hoi4_portrait_flux2_klein_9b_processing`](workflows/hoi4_portrait_flux2_klein_9b_processing.json) | Crop, upscale, and restoration without style transfer | RealESRGAN first, then optional FLUX.2 restoration |
 | [`hoi4_portrait_flux2_klein_9b_text_to_image`](workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json) | Creating a fictional leader without a source image | No restoration pass |
+| [`hoi4_portrait_processing_only`](workflows/hoi4_portrait_processing_only.json) | Crop, upscale, and restoration without style transfer | RealESRGAN first, then optional FLUX.2 restoration |
 
 Matching [API-format graphs](workflows/) are included for Comfy Cloud MCP,
 the Comfy Cloud API, and local `/prompt` submission.
 
 The processing workflow stops after the selected ESRGAN/restoration result and
 saves processed master and game-size PNGs. It does not load the portrait LoRA.
+
+The [latest GitHub release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest)
+contains a model-free ZIP, a Windows x64 self-extractor, and SHA-256 checksums.
+The Windows executable only unpacks this project; it does not bundle ComfyUI or
+model weights.
 
 Krea 2 and Krea Edit variants are available as optional alternatives in the
 [Krea workflow release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/tag/v1.0.0).
@@ -268,7 +273,7 @@ first so the gated FLUX.2 base can download:
 ```bash
 export HF_TOKEN="hf_..."
 P=/workspace/comfyui-hoi4-portraits
-test -d "$P/.git" || git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
+test -d "$P/.git" || git clone --depth 1 https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
 "$P/scripts/install_runpod.sh" /workspace/ComfyUI
 ```
 
@@ -276,10 +281,18 @@ The installer checks the final files against [`models.json`](models.json) and
 refuses partial or mismatched downloads. It never writes the token to the
 repository.
 
-Windows users can run:
+Windows users can run the checked-in installer script:
 
 ```powershell
 .\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI"
+```
+
+The Windows release executable extracts the same package. Run it from
+PowerShell with an empty destination, then follow `docs/local-install.md` in
+the extracted folder:
+
+```powershell
+.\HOI4-Portrait-Workflows-v2.3.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.3.0"
 ```
 
 ## Prompting

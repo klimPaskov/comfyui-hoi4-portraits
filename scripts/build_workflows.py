@@ -23,6 +23,7 @@ VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
 STYLE_LORA_STRENGTH = 0.75
 DEFAULT_STEPS = 8
+WORKFLOW_SCHEMA_VERSION = "2.3.0"
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 
@@ -875,7 +876,7 @@ def build_processing() -> Graph:
     )
     nodes.extend(_processing_outputs(processed_image=Link(32)))
     return Graph(
-        workflow_id="hoi4_portrait_flux2_klein_9b_processing",
+        workflow_id="hoi4_portrait_processing_only",
         description="Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
         kind="image_processing",
         nodes=nodes,
@@ -992,7 +993,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             "description": graph.description,
             "workflow_kind": graph.kind,
             "project": "comfyui-hoi4-portraits",
-            "graph_version": "2.2.0",
+            "graph_version": WORKFLOW_SCHEMA_VERSION,
             "base_model": BASE_MODEL,
             "style_lora": STYLE_LORA,
             "core_nodes_only": True,
@@ -1031,7 +1032,7 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
             }
         )
     manifest = {
-        "schema_version": "2.2.0",
+        "schema_version": WORKFLOW_SCHEMA_VERSION,
         "base_model": BASE_MODEL,
         "text_encoder": TEXT_ENCODER,
         "vae": VAE_MODEL,

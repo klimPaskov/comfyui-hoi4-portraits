@@ -1774,11 +1774,11 @@
         120
       ]
     },
-    "workflow_id": "hoi4_portrait_flux2_klein_9b_processing",
+    "workflow_id": "hoi4_portrait_processing_only",
     "description": "Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
     "workflow_kind": "image_processing",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.2.0",
+    "graph_version": "2.3.0",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": null,
     "core_nodes_only": true,
