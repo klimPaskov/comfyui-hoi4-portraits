@@ -11,7 +11,7 @@ portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
 - Apple-silicon Mac with 16 GB unified memory and MPS offloading;
 - 416 × 560 evidence output; the public workflow canvas remains 832 × 1120;
 - LoRA strength `0.7` for the evidence boards, Euler, six steps, CFG 5;
-- the workflows use LoRA strength `0.75` by default with the same sampler;
+- the workflows use LoRA strength `0.7` by default with the same sampler;
 - source path: adjustable crop → RealESRGAN → optional FLUX restoration → FLUX.2 Klein 9B LoRA;
 - the first three `source-processing` boards use the optional FLUX restoration
   path;

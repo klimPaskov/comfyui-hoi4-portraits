@@ -33,7 +33,7 @@ The validator checks:
 - adjustable crop → RealESRGAN order in both source graphs;
 - the encoded processed source as the sampler's starting latent, with no empty
   latent in either image-to-image graph;
-- LoRA strength `0.75` and eight scheduler steps in all default graphs;
+- LoRA strength `0.7` and eight scheduler steps in all default graphs;
 - person-only positive prompts after the required `hoi4_portrait,` trigger.
 
 ## Unit tests
@@ -59,8 +59,8 @@ The six pinned model files are checksum-verified. ComfyUI
 low-VRAM offloading, split cross-attention, no previews, and optional
 extensions disabled.
 
-The public graphs use an 832 × 1120 canvas, LoRA strength `0.75`, Euler, eight
-steps, and CFG 5. The evidence boards use LoRA `0.7` in their labels. Test
+The public graphs use an 832 × 1120 canvas, LoRA strength `0.7`, Euler, eight
+steps, and CFG 5. The evidence boards use the same LoRA strength. Test
 copies use 416 × 560 to fit the machine's resource limit. A fixed-seed control
 covers the same source at 6, 8, 10, 12, 20, and 35 steps.
 

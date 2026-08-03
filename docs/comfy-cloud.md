@@ -34,7 +34,7 @@ For source workflows, upload:
 Background replacement is off by default, so a background file is optional
 unless you enable that switch.
 
-Keep the LoRA loader at strength `0.75`. Every
+Keep the LoRA loader at strength `0.7`. Every
 positive prompt must begin with `hoi4_portrait,` and then describe only the
 person. Keep the description concise: supported ethnicity, approximate age,
 hair, and general clothing classification. Leave expression, pose, gaze, and facing direction to the

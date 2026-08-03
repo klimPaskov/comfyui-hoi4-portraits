@@ -10,8 +10,8 @@
       "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration second, HOI4 LoRA styling, then optional background replacement.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_source.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_source.api.json",
-      "sha256": "9522eacfc61d46efade2d594162c3847eb204d396aaea356a4f716cc95621d6f",
-      "api_sha256": "fac4bb9dda30b12bef74ffd529f4dfa451add5d05fc2068d5251fb1875a5dd3c",
+      "sha256": "2e3d4824f9cc4cc34922640ef12985c9fbd11443c3fdb057a754d07212a3cd8a",
+      "api_sha256": "327b2dffb95fe402cbc69d5bfa104810978b4b8a50978a389f2b96984999f2fc",
       "node_count": 46,
       "core_nodes_only": true
     },
@@ -30,8 +30,8 @@
       "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.api.json",
-      "sha256": "3e41056fe7f83dad384d4a20c221738507378ef080a165b3098abada30170dcd",
-      "api_sha256": "25aff72e57eadf43311cf849d2ff3dca9499f52b461b90a9126738312ca6733c",
+      "sha256": "ca0420eee7f42be905251c29c7d9d92e5d5984f2a5a24631b6ceb6626e24a2ed",
+      "api_sha256": "0ebfb793a1d7871a7b42569173625d088788e430626d3bc564f20522ebab00d1",
       "node_count": 24,
       "core_nodes_only": true
     }

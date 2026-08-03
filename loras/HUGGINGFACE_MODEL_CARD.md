@@ -25,14 +25,14 @@ workflows.
 - Base: `black-forest-labs/FLUX.2-klein-base-9B-fp8`
 - Training step: 2,500 (epoch 5)
 - ComfyUI loader: `LoraLoaderModelOnly`
-- Suggested starting strength: `0.75`
+- Suggested starting strength: `0.7`
 
 ## Recommended ComfyUI stack
 
 1. `UNETLoader`: `flux-2-klein-base-9b-fp8.safetensors`
 2. `CLIPLoader`: `qwen_3_8b_fp8mixed.safetensors`, type `flux2`
 3. `VAELoader`: `flux2-vae.safetensors`
-4. `LoraLoaderModelOnly`: this LoRA at strength `0.75`
+4. `LoraLoaderModelOnly`: this LoRA at strength `0.7`
 5. Eight steps, CFG 5, Euler sampler, `Flux2Scheduler`
 
 Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps support eight as the

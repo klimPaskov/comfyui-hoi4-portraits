@@ -10,7 +10,7 @@ The source and text-to-image model stack is:
 1. `UNETLoader` — FLUX.2 Klein base 9B FP8.
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
 3. `VAELoader` — FLUX.2 VAE.
-4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `0.75`.
+4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `0.7`.
 5. `CFGGuider`, Euler, `Flux2Scheduler`, eight steps, CFG 5.
 
 The processing workflow loads the base model, text encoder, and VAE for its

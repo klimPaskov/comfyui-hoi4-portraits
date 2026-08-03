@@ -244,8 +244,8 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: processing workflow must not contain a style LoRA")
     elif lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
-    elif api[lora_node]["inputs"].get("strength_model") != 0.75:
-        errors.append(f"{path}: style LoRA strength must default to 0.75")
+    elif api[lora_node]["inputs"].get("strength_model") != 0.7:
+        errors.append(f"{path}: style LoRA strength must default to 0.7")
 
     for node_id, node in api.items():
         if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != DEFAULT_STEPS:

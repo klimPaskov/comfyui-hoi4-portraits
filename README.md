@@ -65,7 +65,7 @@ the 832 × 1120 working canvas.
 ### 2. Load FLUX.2 and the portrait LoRA
 
 This group loads the FLUX.2 Klein 9B base model, Qwen text encoder, VAE, and
-the portrait LoRA. Set the LoRA strength to `0.75`.
+the portrait LoRA. Set the LoRA strength to `0.7`.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.png)
 
@@ -196,7 +196,7 @@ portrait job autonomously:
 4. Set the head-and-shoulders bounding box before processing. The agent should
    exclude printed borders, oval frames, captions, and empty margins while
    keeping the full head, neck, and shoulders.
-5. Set the project LoRA to `0.75`, choose whether FLUX restoration is enabled,
+5. Set the project LoRA to `0.7`, choose whether FLUX restoration is enabled,
    and keep background replacement after the decoded LoRA result. If a custom
    background is requested, upload it separately and replace that loader's
    filename too.
@@ -229,7 +229,7 @@ character_id: TAG_leader_name
 
 An example request is: “Use Comfy Cloud MCP and the source API workflow to
 turn this source into a portrait. Crop to head and shoulders, use the project
-LoRA at 0.75, keep FLUX restoration enabled, replace the background only after
+LoRA at 0.7, keep FLUX restoration enabled, replace the background only after
 the final LoRA image, verify both outputs, and install the 156 × 210 result
 according to this manifest.”
 
@@ -334,7 +334,7 @@ Return only the single prompt line. Do not add a heading, explanation,
 quotation marks, Markdown, a negative prompt, or a tag list.
 ```
 
-The workflows use `0.75` LoRA strength, Euler, eight steps, and CFG 5 by
+The workflows use `0.7` LoRA strength, Euler, eight steps, and CFG 5 by
 default. The step comparison at 6, 8, 10, 12, 20, and 35 steps supports eight
 as the practical setting for this workflow. See [autoprompter
 examples](docs/autoprompter-examples.md) for concise person-only prompts.
@@ -345,7 +345,7 @@ These examples are local runs with the published LoRA. Every source board is
 initial source → processed crop → final portrait. The prompts describe only the
 person; expression, pose, gaze, and facing direction come from the reference.
 The six source boards use LoRA `0.7` / Euler / 6 steps. The workflows use LoRA
-`0.75` / Euler / 8 steps by default. The examples exclude grayscale, blur, crop
+`0.7` / Euler / 8 steps by default. The examples exclude grayscale, blur, crop
 failures, and pose drift.
 
 The evidence boards use 416 × 560 because the test Mac has 16 GB unified
@@ -427,7 +427,7 @@ See [the three random prompts, exact test conditions, and findings](docs/test-re
   three source portraits with restoration disabled, three text-to-image
   portraits, and fixed-seed 6/8/10/12/20/35-step controls. The evidence uses
   416 × 560 on a 16 GB Apple-silicon Mac; the workflow canvas is 832 × 1120.
-  The gallery boards use LoRA `0.7`; the workflows use `0.75` by default.
+  The gallery boards and workflows use LoRA `0.7` by default.
 
 Run the same checks locally:
 

@@ -65,7 +65,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("monochrome or sepia sources, do not invent colors", instruction)
 
     def test_selected_lora_and_sampling_defaults(self) -> None:
-        self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 0.75)
+        self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 0.7)
         self.assertEqual(build_workflows.DEFAULT_STEPS, 8)
         for workflow in (ROOT / "workflows").glob("*.api.json"):
             api = json.loads(workflow.read_text(encoding="utf-8"))
@@ -74,7 +74,7 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(loras, [], workflow.name)
             else:
                 self.assertEqual(len(loras), 1, workflow.name)
-                self.assertEqual(loras[0]["inputs"]["strength_model"], 0.75, workflow.name)
+                self.assertEqual(loras[0]["inputs"]["strength_model"], 0.7, workflow.name)
             schedules = [node for node in api.values() if node["class_type"] == "Flux2Scheduler"]
             self.assertTrue(schedules, workflow.name)
             self.assertTrue(all(node["inputs"]["steps"] == 8 for node in schedules), workflow.name)
