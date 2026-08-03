@@ -344,7 +344,7 @@ examples](docs/autoprompter-examples.md) for concise person-only prompts.
 These examples are local runs with the published LoRA. Every source board is
 initial source → processed crop → final portrait. The prompts describe only the
 person; expression, pose, gaze, and facing direction come from the reference.
-The six source boards use LoRA `0.7` / Euler / 8 steps. The workflows use LoRA
+The six source boards use LoRA `0.7` / Euler / 6 steps. The workflows use LoRA
 `0.75` / Euler / 8 steps by default. The examples exclude grayscale, blur, crop
 failures, and pose drift.
 

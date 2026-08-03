@@ -200,6 +200,19 @@ class DocumentationTests(unittest.TestCase):
         ):
             self.assertTrue((ROOT / "docs" / "assets" / "test-runs" / current).is_file(), current)
 
+    def test_readme_gallery_uses_the_requested_older_boards(self) -> None:
+        expected = {
+            "source-processing-01.jpg": "9f6c3f8c4de1",
+            "source-processing-02.jpg": "b4a09d4407f6",
+            "source-processing-03.jpg": "077dfb9c9579",
+            "source-processing-restoration-off-01.jpg": "8c1ea1da97e4",
+            "source-processing-restoration-off-02.jpg": "c7e62859880b",
+            "source-processing-restoration-off-03.jpg": "5e6b1e1ea456",
+        }
+        for filename, prefix in expected.items():
+            digest = hashlib.sha256((ROOT / "docs/assets/test-runs" / filename).read_bytes()).hexdigest()
+            self.assertTrue(digest.startswith(prefix), filename)
+
     def test_readme_contains_source_workflow_visual_walkthrough(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         screenshots = (
