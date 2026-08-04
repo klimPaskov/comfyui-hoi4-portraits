@@ -42,9 +42,11 @@ Before downloading the gated base model:
 
 1. Open the [FLUX.2 Klein base 9B FP8 page](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8).
 2. Accept the model agreement.
-3. Run `hf auth login`, or set `HF_TOKEN` in the shell that runs the downloader.
+3. Create a [read-only Hugging Face token](https://huggingface.co/settings/tokens/new?tokenType=read).
+4. Run `hf auth login`, or set `HF_TOKEN` in the shell that runs the downloader.
 
-No token is written into this repository or a workflow.
+See the [Hugging Face guide](hugging-face.md) for local and RunPod setup. No
+token is written into this repository or a workflow.
 
 ## RunPod
 

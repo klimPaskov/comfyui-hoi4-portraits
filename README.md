@@ -35,6 +35,7 @@ workflows.
 ## Guides
 
 - [Getting started](docs/getting-started.md)
+- [Hugging Face model access and read-only token](docs/hugging-face.md)
 - [Workflow controls and graph structure](docs/workflows.md)
 - [Comfy Cloud and MCP](docs/comfy-cloud.md)
 - [Local and RunPod installation](docs/local-install.md)
@@ -42,6 +43,11 @@ workflows.
 - [Testing](docs/testing.md)
 - [Contributing](CONTRIBUTING.md)
 - [Third-party model terms](THIRD_PARTY_LICENSES.md)
+
+The installer downloads a gated FLUX.2 model. Before installing, accept the
+[FLUX.2 Klein base 9B FP8 agreement](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9b-fp8)
+and create a [read-only Hugging Face token](https://huggingface.co/settings/tokens/new?tokenType=read).
+The [Hugging Face guide](docs/hugging-face.md) shows the complete setup.
 
 ## What the source workflow does
 
