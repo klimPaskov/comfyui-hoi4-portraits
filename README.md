@@ -94,7 +94,8 @@ Turn it on when a damaged source needs the additional pass.
 The selected processed portrait becomes the reference and starting image for
 three independent LoRA styling passes. Each pass uses a different seed, so one
 queue produces three candidates from the same input. Describe only the person
-in the positive prompt. The defaults are Euler, eight steps, and CFG 5.
+in the positive prompt. Each pass limits denoising to `0.45` so the source face
+remains the starting point. The defaults are Euler, eight steps, and CFG 5.
 
 ![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
 

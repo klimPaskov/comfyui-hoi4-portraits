@@ -470,8 +470,8 @@
         0
       ],
       "sigmas": [
-        "49",
-        0
+        "52",
+        1
       ],
       "latent_image": [
         "42",
@@ -508,6 +508,19 @@
     },
     "_meta": {
       "title": "Preview candidate 1 person-only lora result"
+    }
+  },
+  "52": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "49",
+        0
+      ],
+      "denoise": 0.45
+    },
+    "_meta": {
+      "title": "Limit denoise to preserve source identity"
     }
   },
   "60": {
@@ -650,8 +663,8 @@
         0
       ],
       "sigmas": [
-        "69",
-        0
+        "72",
+        1
       ],
       "latent_image": [
         "62",
@@ -688,6 +701,19 @@
     },
     "_meta": {
       "title": "Preview candidate 2 person-only lora result"
+    }
+  },
+  "72": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "69",
+        0
+      ],
+      "denoise": 0.45
+    },
+    "_meta": {
+      "title": "Limit denoise to preserve source identity"
     }
   },
   "80": {
@@ -830,8 +856,8 @@
         0
       ],
       "sigmas": [
-        "89",
-        0
+        "92",
+        1
       ],
       "latent_image": [
         "82",
@@ -868,6 +894,19 @@
     },
     "_meta": {
       "title": "Preview candidate 3 person-only lora result"
+    }
+  },
+  "92": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "89",
+        0
+      ],
+      "denoise": 0.45
+    },
+    "_meta": {
+      "title": "Limit denoise to preserve source identity"
     }
   },
   "119": {

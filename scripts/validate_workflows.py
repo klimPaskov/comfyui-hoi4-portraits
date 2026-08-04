@@ -37,6 +37,7 @@ ALLOWED_CORE_NODES = {
     "RemoveBackground",
     "SamplerCustomAdvanced",
     "SaveImage",
+    "SplitSigmasDenoise",
     "UNETLoader",
     "UpscaleModelLoader",
     "VAEDecode",
@@ -253,6 +254,15 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(
                 f"{path}: FLUX.2 scheduler node {node_id} must default to {DEFAULT_STEPS} steps"
             )
+
+    if is_source:
+        identity_splits = [
+            node for node in api.values() if node.get("class_type") == "SplitSigmasDenoise"
+        ]
+        if len(identity_splits) != 3 or any(
+            node.get("inputs", {}).get("denoise") != 0.45 for node in identity_splits
+        ):
+            errors.append(f"{path}: source candidates must use three 0.45 identity-preserving denoise splits")
 
     if not is_processing:
         person_prompt_node = "20" if is_text_to_image else "40"

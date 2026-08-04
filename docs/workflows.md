@@ -35,8 +35,9 @@ Groups run left to right:
    does not run.
 5. **HOI4 LoRA styling** runs three independent seed passes. Each pass encodes
    the selected processed image as both the reference and starting latent, then
-   samples with the LoRA-patched model. This keeps all three candidates tied to
-   the same crop and pose while giving the user a choice of final seed.
+   samples the low-denoise `0.45` portion of the schedule with the LoRA-patched
+   model. This keeps all three candidates tied to the same face, crop, and pose
+   while giving the user a choice of final seed.
 6. **Optional background** receives each decoded styled image, creates its
    foreground mask with BiRefNet, and composites each candidate over the same
    selected background.

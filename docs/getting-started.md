@@ -79,5 +79,5 @@ optional FLUX restoration pass.
 | Wrong person or full-body framing | Adjust the source bounding box until the crop preview is head-and-shoulders. |
 | Background appears too early | Background replacement runs after portrait generation; reopen the published workflow if the graph has been edited. |
 | Style is weak | Keep `hoi4_portrait` in the prompt; use the `0.7` default and keep the crop clean. |
-| Identity or position changes | Confirm the crop, keep the encoded-source sampler connection, disable optional restoration if needed, and remove speculative traits. |
+| Identity or position changes | Confirm the crop, keep the `0.45` identity-preserving denoise nodes connected, disable optional restoration if needed, and remove speculative traits. |
 | Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Use Euler with eight steps; optional FLUX restoration can soften identity, so disable it first. |

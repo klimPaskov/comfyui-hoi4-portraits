@@ -26,6 +26,7 @@ DEFAULT_STEPS = 8
 WORKFLOW_SCHEMA_VERSION = "2.3.0"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
+SOURCE_STYLE_DENOISE = 0.45
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 
@@ -296,6 +297,7 @@ def _edit_stage(
     seed: int,
     title_prefix: str,
     y: int = 120,
+    denoise: float | None = None,
 ) -> tuple[list[Node], Link]:
     i = id_start
     nodes = [
@@ -417,7 +419,7 @@ def _edit_stage(
                 "noise": Link(i + 7),
                 "guider": Link(i + 6),
                 "sampler": Link(i + 8),
-                "sigmas": Link(i + 9),
+                "sigmas": Link(i + 12, 1) if denoise is not None else Link(i + 9),
                 "latent_image": Link(i + 2),
             },
             input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
@@ -448,6 +450,21 @@ def _edit_stage(
             output_types=["IMAGE"],
         ),
     ]
+    if denoise is not None:
+        nodes.append(
+            _node(
+                i + 12,
+                "SplitSigmasDenoise",
+                "Limit denoise to preserve source identity",
+                group,
+                (x + 900, y + 740),
+                inputs={"sigmas": Link(i + 9), "denoise": denoise},
+                input_types={"sigmas": "SIGMAS", "denoise": "FLOAT"},
+                outputs=["high_sigmas", "low_sigmas"],
+                output_types=["SIGMAS", "SIGMAS"],
+                widgets=[denoise],
+            )
+        )
     return nodes, Link(i + 11)
 
 
@@ -946,7 +963,7 @@ def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1
     groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"))
     if has_restoration:
         groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"))
-        style_height = 2700 if candidate_count > 1 else 980
+        style_height = 2760 if candidate_count > 1 else 980
         groups.append(Group("04 HOI4 LoRA styling", (3400, 40, 1800, style_height), "#7a568e"))
     else:
         groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1800, 980), "#7a568e"))
@@ -1008,6 +1025,7 @@ def build_source() -> Graph:
             negative=STYLE_NEGATIVE,
             seed=seed,
             title_prefix=f"Candidate {index} person-only LoRA",
+            denoise=SOURCE_STYLE_DENOISE,
         )
         nodes.extend(style_nodes)
         styled_images.append(styled)
@@ -1023,6 +1041,7 @@ def build_source() -> Graph:
             "flux_restoration_default": False,
             "candidate_count": SOURCE_CANDIDATE_COUNT,
             "candidate_seed_count": SOURCE_CANDIDATE_COUNT,
+            "source_style_denoise": SOURCE_STYLE_DENOISE,
             "background_candidate_count": SOURCE_CANDIDATE_COUNT,
             "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
