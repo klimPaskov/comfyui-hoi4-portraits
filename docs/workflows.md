@@ -11,12 +11,13 @@ The source and text-to-image model stack is:
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
 3. `VAELoader` — FLUX.2 VAE.
 4. `PrimitiveFloat` and `LoraLoaderModelOnly` — the visible LoRA strength control, defaulting to `1.00`, followed by the HOI4 adapter.
-5. `FluxGuidance`, `CFGGuider`, Euler, and `Flux2Scheduler`: guidance 1, CFG 1, and six steps.
+5. `FluxGuidance`, `CFGGuider`, `KSamplerSelect`, and `Flux2Scheduler`: guidance 1 and CFG 1, with the branch-specific sampler and step count.
 
 The processing workflow loads the base model, text encoder, and VAE for its
 optional restoration pass. It does not load the LoRA or run a style pass.
 
-Use Euler with six steps, CFG 1, and FLUX guidance 1 by default.
+Restoration and text-to-image use Euler with six steps. The three source
+candidates use Euler/6 steps, `res_2s`/4 steps, and `res_2m`/8 steps.
 
 ## Source workflow
 
@@ -34,8 +35,9 @@ Groups run left to right:
 5. **HOI4 LoRA styling** runs three independent seed passes. Each pass encodes
    the selected processed image as both the reference and starting latent and
    uses a separate editable identity prompt in each branch with the LoRA-patched
-   model. This keeps all three candidates tied to the same face, crop, and pose
-   while giving the user a choice of final seed.
+   model. Candidate 1 uses Euler/6 steps, candidate 2 uses `res_2s`/4 steps,
+   and candidate 3 uses `res_2m`/8 steps. This keeps all three candidates tied
+   to the same face, crop, and pose while also comparing sampling behavior.
 6. **Optional background** receives each decoded styled image, creates its
    foreground mask with BiRefNet, and composites each candidate over the same
    selected background.

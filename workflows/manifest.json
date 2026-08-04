@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.4.6",
+  "schema_version": "2.4.7",
   "base_model": "flux-2-klein-base-9b-fp8.safetensors",
   "text_encoder": "qwen_3_8b_fp8mixed.safetensors",
   "vae": "flux2-vae.safetensors",
@@ -10,8 +10,8 @@
       "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_source.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_source.api.json",
-      "sha256": "67e67243cb21dd999bd3526e8c7343fa03649903425a619bedeccafafb3f1803",
-      "api_sha256": "5bb2bd67c0554451b7b13fa9ed4f1b17db4bbcbc2c3067f19674c0b9986d35f9",
+      "sha256": "0d87fab3003c3d07b94d564730093e1860f79b0f38e973649527703d528ebb21",
+      "api_sha256": "e4d926f7a9ce5bac4ec8c9cb173589c1124a22a5464d93ef1f0dadd8730cce38",
       "node_count": 98,
       "core_nodes_only": false
     },
@@ -20,8 +20,8 @@
       "description": "Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
       "workflow_json": "workflows/hoi4_portrait_processing_only.json",
       "api_json": "workflows/hoi4_portrait_processing_only.api.json",
-      "sha256": "ab9cf5e92934d531565759af4d7e96d855b441bcbe08e1307a68f55b08d6b17a",
-      "api_sha256": "2ee57fd50c3ef387d81ce1daf78c932ace2a86ac113b71e97d36c43b6d5731f8",
+      "sha256": "a8f5957fd575c8ed8ff37fcd1281ca6d9c2d6acfd2553c8f4d6ed42ae164ed53",
+      "api_sha256": "d69862908d8705185abd5e6b55222f3d7fa4d637dff2505e7e8172f953a63ae8",
       "node_count": 37,
       "core_nodes_only": false
     },
@@ -30,7 +30,7 @@
       "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.api.json",
-      "sha256": "96f1de5cdd9867f57f5d6a178f37a4d6f42d400806b6d929c56e9e0cf765b029",
+      "sha256": "ff2a0709d4424affd10e39eebafee11a40e2bd3023fb122dc680d0fdd4346fd5",
       "api_sha256": "6ef1f8f91b5c34d9441a5697e571bfab27276bfe5faa8ea6e8cebb3eb99e5541",
       "node_count": 26,
       "core_nodes_only": true

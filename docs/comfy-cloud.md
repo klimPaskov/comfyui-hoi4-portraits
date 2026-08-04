@@ -1,9 +1,12 @@
 # Comfy Cloud and MCP
 
 The workflows use Comfy Cloud's model catalog. Source and processing workflows
-also require the bundled `adaptive_portrait_crop` folder in the Builder custom
-node environment. Restart that environment before opening the workflow. The
-text-to-image workflow does not require it.
+require the bundled `adaptive_portrait_crop` folder in the Builder custom-node
+environment. The source workflow also requires
+[RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) for its `res_2s` and
+`res_2m` candidate samplers. Import both custom-node folders and restart the
+Builder environment before opening the workflow. The text-to-image workflow
+does not require either extension.
 
 ## Import the custom LoRA
 
@@ -36,8 +39,10 @@ For source workflows, upload:
 Background replacement is off by default, so a background file is optional
 unless you enable background replacement.
 
-Start with denoise `1.00`, LoRA strength `1.00`, CFG 1, FLUX guidance 1, and six steps. Each source candidate begins with
-the identity default shown in the workflow. Keep it unchanged or append one
+Start with denoise `1.00`, LoRA strength `1.00`, CFG 1, and FLUX guidance 1.
+The three source candidates use Euler/6 steps, `res_2s`/4 steps, and
+`res_2m`/8 steps. Each source candidate begins with the identity default shown
+in the workflow. Keep it unchanged or append one
 deliberate requested edit; editing one candidate prompt does not affect the
 other two. For text-to-image, begin with `hoi4_portrait,` and use a concise
 general person description. Do not add game/style, background, lighting, or

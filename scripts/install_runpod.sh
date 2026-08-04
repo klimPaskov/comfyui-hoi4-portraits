@@ -26,6 +26,8 @@ if [[ -z "${PYTHON_BIN}" ]]; then
   PYTHON_BIN="$(command -v python3)"
 fi
 
+"${PROJECT_ROOT}/scripts/install_res4lyf.sh" "${COMFY_ROOT}" "${PYTHON_BIN}"
+
 if ! "${PYTHON_BIN}" -c "import cv2, scipy" >/dev/null 2>&1; then
   if command -v uv >/dev/null 2>&1; then
     uv pip install --python "${PYTHON_BIN}" -r "${PROJECT_ROOT}/custom_nodes/adaptive_portrait_crop/requirements.txt"
@@ -48,6 +50,6 @@ fi
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}"
 
 echo
-echo "Installed three FLUX.2 Klein 9B workflows, the adaptive crop, and all 15 pinned model files, including every LoRA test checkpoint."
+echo "Installed three FLUX.2 Klein 9B workflows, the adaptive crop, RES4LYF samplers, and all 15 pinned model files, including every LoRA test checkpoint."
 echo "Models are under ${COMFY_ROOT}/models/{diffusion_models,text_encoders,vae,loras,upscale_models,background_removal,detection}."
 echo "Open Workflows > hoi4_portraits after restarting ComfyUI."

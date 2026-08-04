@@ -2,6 +2,13 @@
 
 All notable project changes are recorded here.
 
+## 2.4.7 — 2026-08-05
+
+- Set the three source candidates to Euler/6 steps, `res_2s`/4 steps, and
+  `res_2m`/8 steps.
+- Added the pinned RES4LYF sampler extension to the RunPod and Windows
+  installers.
+
 ## 2.4.6 — 2026-08-04
 
 - Set restoration and LoRA styling to denoise 1.00, six steps, CFG 1, and FLUX

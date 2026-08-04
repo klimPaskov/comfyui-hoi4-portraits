@@ -94,4 +94,4 @@ visual style, background, lighting, framing, or rendering.
 | Style is weak | Keep `hoi4_portrait` in the prompt, confirm **LoRA strength** is `1.00`, and keep the crop clean. |
 | Monochrome result | Enable **FLUX restoration** so natural color is restored before LoRA styling. |
 | Identity or position changes | Confirm the crop, restore the fixed identity instruction if it was edited, and disable optional FLUX restoration. |
-| Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Use Euler with six steps; optional FLUX restoration can soften identity, so disable it first. |
+| Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Compare the three candidate branches; optional FLUX restoration can soften identity, so disable it first. |

@@ -12,8 +12,9 @@ the `LoraLoaderModelOnly` dropdown.
 
 The source and text-to-image workflows initially select the 1500-step
 checkpoint. Choose another checkpoint in `LoraLoaderModelOnly` to compare it
-under the same prompt and seed. The trigger word is `hoi4_portrait`. Start with LoRA strength `1.00`, Euler,
-six steps, CFG 1, and FLUX guidance 1. Source candidates default to `hoi4_portrait,
+under the same prompt and seed. The trigger word is `hoi4_portrait`. Start with
+LoRA strength `1.00`, CFG 1, and FLUX guidance 1. The three source candidates
+use Euler/6 steps, `res_2s`/4 steps, and `res_2m`/8 steps. Source candidates default to `hoi4_portrait,
 maintain the exact identity, facing direction, and expression of the person,
 including every object they are holding or wearing.` Text-to-image
 prompts describe only the person—not the game/style, background, lighting, or

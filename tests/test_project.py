@@ -40,7 +40,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_hashes_match_files(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.6")
+        self.assertEqual(manifest["schema_version"], "2.4.7")
         for item in manifest["workflows"]:
             for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
                 data = (ROOT / item[path_key]).read_bytes()
@@ -66,9 +66,29 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(loras[0]["inputs"]["strength_model"], ["19", 0], workflow.name)
                 self.assertEqual(api["19"]["class_type"], "PrimitiveFloat", workflow.name)
                 self.assertEqual(api["19"]["inputs"]["value"], 1.0, workflow.name)
-            schedules = [node for node in api.values() if node["class_type"] == "Flux2Scheduler"]
-            self.assertTrue(schedules, workflow.name)
-            self.assertTrue(all(node["inputs"]["steps"] == 6 for node in schedules), workflow.name)
+            schedules = {
+                node_id: node["inputs"]["steps"]
+                for node_id, node in api.items()
+                if node["class_type"] == "Flux2Scheduler"
+            }
+            samplers = {
+                node_id: node["inputs"]["sampler_name"]
+                for node_id, node in api.items()
+                if node["class_type"] == "KSamplerSelect"
+            }
+            if workflow.name.endswith("source.api.json"):
+                self.assertEqual(schedules, {"29": 6, "49": 6, "69": 4, "89": 8}, workflow.name)
+                self.assertEqual(
+                    samplers,
+                    {"28": "euler", "48": "euler", "68": "res_2s", "88": "res_2m"},
+                    workflow.name,
+                )
+            elif workflow.name.endswith("text_to_image.api.json"):
+                self.assertEqual(schedules, {"26": 6}, workflow.name)
+                self.assertEqual(samplers, {"25": "euler"}, workflow.name)
+            else:
+                self.assertEqual(schedules, {"29": 6}, workflow.name)
+                self.assertEqual(samplers, {"28": "euler"}, workflow.name)
             guiders = [node for node in api.values() if node["class_type"] == "CFGGuider"]
             self.assertTrue(guiders, workflow.name)
             self.assertTrue(all(node["inputs"]["cfg"] == 1.0 for node in guiders), workflow.name)
@@ -217,6 +237,16 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertIn('"docs", "local-install.md"', contents)
         self.assertIn("adaptive portrait crop", contents.casefold())
         self.assertNotIn("setup-with-coding-agent.md", contents)
+
+    def test_sampler_extension_is_pinned_in_installers(self) -> None:
+        revision = "e716cd1cb2c5cff90131bf4914b75b75a0489d48"
+        shell = (ROOT / "scripts" / "install_res4lyf.sh").read_text(encoding="utf-8")
+        runpod = (ROOT / "scripts" / "install_runpod.sh").read_text(encoding="utf-8")
+        windows = (ROOT / "scripts" / "install_windows.ps1").read_text(encoding="utf-8")
+        self.assertIn("https://github.com/ClownsharkBatwing/RES4LYF.git", shell)
+        self.assertIn(revision, shell)
+        self.assertIn("install_res4lyf.sh", runpod)
+        self.assertIn(revision, windows)
 
 
 class DocumentationTests(unittest.TestCase):

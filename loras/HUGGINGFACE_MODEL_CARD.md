@@ -14,41 +14,36 @@ tags:
 
 # HOI4 portraits — FLUX.2 Klein 9B LoRA
 
-Style adapter used by the public
+FLUX.2 Klein 9B portrait adapter for the public
 [`comfyui-hoi4-portraits`](https://github.com/klimPaskov/comfyui-hoi4-portraits)
-workflows.
+ComfyUI workflows. Trigger: `hoi4_portrait`.
 
 ## Checkpoints
 
-- `hoi4_portrait_flux2_klein9b_lora_000001500.safetensors`
-- `hoi4_portrait_flux2_klein9b_lora_000002000.safetensors`
-- `hoi4_portrait_flux2_klein9b_lora_000002250.safetensors`
-- `hoi4_portrait_flux2_klein9b_lora_000002500.safetensors`
-- `hoi4_portrait_flux2_klein9b_lora_000003000.safetensors`
-- `hoi4_portrait_flux2_klein9b_lora_000003500.safetensors`
-- `hoi4_portrait_flux2_klein9b_lora_000004000.safetensors`
-- Trigger word: `hoi4_portrait`
-- Base: `black-forest-labs/FLUX.2-klein-base-9B-fp8`
-- ComfyUI loader: `LoraLoaderModelOnly`
-- Suggested starting strength: `1.00`
+Files are available at training steps 1500, 2000, 2250, 2500, 3000, 3500,
+and 4000. The workflow initially selects
+`hoi4_portrait_flux2_klein9b_lora_000001500.safetensors`.
 
-## Recommended ComfyUI stack
+## Workflow settings
 
 1. `UNETLoader`: `flux-2-klein-base-9b-fp8.safetensors`
 2. `CLIPLoader`: `qwen_3_8b_fp8mixed.safetensors`, type `flux2`
 3. `VAELoader`: `flux2-vae.safetensors`
-4. `LoraLoaderModelOnly`: start with the 1500-step checkpoint at strength `1.00`, then compare checkpoints under the same seed
-5. Six steps, CFG 1, FLUX guidance 1, Euler sampler, `Flux2Scheduler`
+4. `LoraLoaderModelOnly`: strength `1.00`
+5. `CFGGuider`: CFG 1; `FluxGuidance`: 1; denoise `1.00`
+6. Candidate 1: Euler, 6 steps
+7. Candidate 2: `res_2s`, 4 steps
+8. Candidate 3: `res_2m`, 8 steps
 
-Source workflows use a concise identity prompt for each
-candidate; append deliberate edits only to the branch that should test them.
-Text-to-image prompts describe only the visible person. Do not request a game
-style, background, lighting, or rendering behavior.
+`res_2s` and `res_2m` require
+[RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF). The repository
+installers add the pinned extension automatically.
 
-For image-to-image use, crop the source to head and shoulders before ESRGAN,
-then encode that processed image as both the FLUX.2 reference and the sampler
-starting latent. Starting from an empty latent can change pose and framing even
-when reference conditioning is present.
+For source portraits, the graph crops to 832 × 1120 head-and-shoulders,
+applies RealESRGAN, and optionally runs FLUX restoration. It then encodes the
+processed image as both reference conditioning and sampler starting latent.
+Restoration uses a fixed seed and is off by default; the three styling branches
+use independent randomized seeds and separate prompts.
 
 ## Source prompt
 
@@ -56,9 +51,8 @@ when reference conditioning is present.
 hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing.
 ```
 
-Each source candidate has its own prompt. Keep the identity sentence and append
-requested changes, such as `Add a military hat.` Editing one prompt affects
-only that candidate.
+Keep the identity sentence. Append an intentional edit only to the candidate
+that should test it.
 
 ## Text-to-image example
 
@@ -66,8 +60,8 @@ only that candidate.
 hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit.
 ```
 
-The `hoi4_portrait` trigger and LoRA supply the learned look. Prompt text after
-the trigger should describe the person, not the desired treatment.
+Text-to-image prompts should describe the person only—not style, background,
+lighting, framing, or rendering.
 
 ## License and model terms
 

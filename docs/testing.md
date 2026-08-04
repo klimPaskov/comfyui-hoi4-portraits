@@ -57,8 +57,10 @@ LoRA is imported into the Cloud model library.
 The 15 pinned model files are checksum-verified. ComfyUI 0.25.0 ran with
 optional extensions disabled.
 
-The public graphs use LoRA strength `1.00`, Euler, six steps, CFG 1, and FLUX guidance 1. A
-fixed-seed control covers the same source at 6, 8, 10, 12, 20, and 35 steps.
+The public graphs use LoRA strength `1.00`, CFG 1, and FLUX guidance 1. Source
+candidates use Euler/6 steps, `res_2s`/4 steps, and `res_2m`/8 steps;
+restoration and text-to-image use Euler/6 steps. A fixed-seed control covers
+the same source at 6, 8, 10, 12, 20, and 35 Euler steps.
 
 The local evidence set includes:
 

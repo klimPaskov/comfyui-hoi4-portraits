@@ -275,11 +275,31 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     elif any(node.get("inputs", {}).get("guidance") != DEFAULT_GUIDANCE for node in guidance_nodes):
         errors.append(f"{path}: every FLUX guidance control must default to {DEFAULT_GUIDANCE:g}")
 
-    for node_id, node in api.items():
-        if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != DEFAULT_STEPS:
-            errors.append(
-                f"{path}: FLUX.2 scheduler node {node_id} must default to {DEFAULT_STEPS} steps"
-            )
+    expected_sampling = {"29": ("28", "euler", DEFAULT_STEPS)}
+    if is_source:
+        expected_sampling.update(
+            {
+                "49": ("48", "euler", 6),
+                "69": ("68", "res_2s", 4),
+                "89": ("88", "res_2m", 8),
+            }
+        )
+    elif is_text_to_image:
+        expected_sampling = {"26": ("25", "euler", DEFAULT_STEPS)}
+    scheduler_nodes = {
+        node_id: node for node_id, node in api.items() if node.get("class_type") == "Flux2Scheduler"
+    }
+    if set(scheduler_nodes) != set(expected_sampling):
+        errors.append(f"{path}: FLUX.2 scheduler nodes do not match the workflow sampling policy")
+    for scheduler_id, (sampler_id, sampler_name, steps) in expected_sampling.items():
+        if scheduler_nodes.get(scheduler_id, {}).get("inputs", {}).get("steps") != steps:
+            errors.append(f"{path}: scheduler node {scheduler_id} must default to {steps} steps")
+        sampler = api.get(sampler_id, {})
+        if (
+            sampler.get("class_type") != "KSamplerSelect"
+            or sampler.get("inputs", {}).get("sampler_name") != sampler_name
+        ):
+            errors.append(f"{path}: sampler node {sampler_id} must default to {sampler_name}")
 
     if not is_text_to_image:
         denoise_nodes = {

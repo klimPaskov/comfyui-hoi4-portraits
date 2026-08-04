@@ -26,9 +26,10 @@ SOURCE_STYLE_DENOISE = 1.0
 DEFAULT_STEPS = 6
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
-WORKFLOW_SCHEMA_VERSION = "2.4.6"
+WORKFLOW_SCHEMA_VERSION = "2.4.7"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
+SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 FACE_DETECTION_MODEL = "mediapipe_face_fp32.safetensors"
@@ -468,6 +469,8 @@ def _edit_stage(
     seed_mode: str = "randomize",
     y: int = 120,
     prompt_node_title: str | None = None,
+    sampler_name: str = "euler",
+    steps: int = DEFAULT_STEPS,
 ) -> tuple[list[Node], Link]:
     i = id_start
     guidance_y_offset = 560 if id_start == 20 else 730
@@ -558,26 +561,26 @@ def _edit_stage(
         _node(
             i + 8,
             "KSamplerSelect",
-            "Use Euler sampler",
+            f"Use {sampler_name} sampler",
             group,
             (x + 900, y + 400),
-            inputs={"sampler_name": "euler"},
+            inputs={"sampler_name": sampler_name},
             input_types={"sampler_name": "COMBO"},
             outputs=["SAMPLER"],
             output_types=["SAMPLER"],
-            widgets=["euler"],
+            widgets=[sampler_name],
         ),
         _node(
             i + 9,
             "Flux2Scheduler",
-            f"FLUX.2 schedule - {DEFAULT_STEPS} steps",
+            f"FLUX.2 schedule - {steps} steps",
             group,
             (x + 900, y + 580),
-            inputs={"steps": DEFAULT_STEPS, "width": 832, "height": 1120},
+            inputs={"steps": steps, "width": 832, "height": 1120},
             input_types={"steps": "INT", "width": "INT", "height": "INT"},
             outputs=["SIGMAS"],
             output_types=["SIGMAS"],
-            widgets=[DEFAULT_STEPS, 832, 1120],
+            widgets=[steps, 832, 1120],
         ),
         _node(
             i + 5,
@@ -1200,7 +1203,11 @@ def build_source() -> Graph:
     restoration_preview.title = "Preview selected processed portrait"
     restoration_preview.inputs["images"] = Link(32)
     styled_images: list[Link] = []
-    for index, seed in enumerate(SOURCE_STYLE_SEEDS, start=1):
+    if len(SOURCE_STYLE_SEEDS) != len(SOURCE_CANDIDATE_SAMPLING):
+        raise ValueError("source seeds and sampling presets must have the same length")
+    for index, (seed, (sampler_name, steps)) in enumerate(
+        zip(SOURCE_STYLE_SEEDS, SOURCE_CANDIDATE_SAMPLING), start=1
+    ):
         style_nodes, styled = _edit_stage(
             id_start=40 + (index - 1) * 20,
             group="04 HOI4 LoRA styling",
@@ -1214,6 +1221,8 @@ def build_source() -> Graph:
             title_prefix=f"Candidate {index} identity LoRA",
             denoise=SOURCE_STYLE_DENOISE,
             prompt_node_title=f"Editable candidate {index} prompt — edits affect only candidate {index}",
+            sampler_name=sampler_name,
+            steps=steps,
         )
         nodes.extend(style_nodes)
         styled_images.append(styled)

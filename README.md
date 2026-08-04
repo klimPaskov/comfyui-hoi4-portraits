@@ -104,8 +104,10 @@ The selected processed portrait becomes the reference and starting image for
 three independent LoRA styling passes. Each pass uses a different seed, so one
 queue produces three candidates from the same input. Each branch has its own
 editable identity prompt. Keep its identity text and add only deliberate
-changes, such as `wearing a military hat`, to the candidate you want to test. The
-defaults are denoise `1.00`, LoRA strength `1.00`, Euler, six steps, CFG 1, and FLUX guidance 1.
+changes, such as `wearing a military hat`, to the candidate you want to test.
+Candidate 1 uses Euler with 6 steps, candidate 2 uses `res_2s` with 4 steps,
+and candidate 3 uses `res_2m` with 8 steps. All three default to denoise
+`1.00`, LoRA strength `1.00`, CFG 1, and FLUX guidance 1.
 
 ![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
 
@@ -316,7 +318,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.6-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.6"
+.\HOI4-Portrait-Workflows-v2.4.7-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.7"
 ```
 
 ## Prompting
@@ -343,8 +345,9 @@ background, lighting, framing, or rendering.
 hoi4_portrait, an Irish man with dark hair and a moustache, wearing a civilian suit.
 ```
 
-The source workflow uses denoise `1.00` and LoRA strength `1.00` by default.
-Sampling defaults are Euler, six steps, CFG 1, and FLUX guidance 1.
+The source workflow uses denoise `1.00`, LoRA strength `1.00`, CFG 1, and FLUX
+guidance 1 by default. Its three candidates use Euler/6 steps, `res_2s`/4
+steps, and `res_2m`/8 steps.
 
 For monochrome or sepia sources, enable **FLUX restoration** so natural color
 is restored before LoRA styling. LoRA strength controls style intensity; it is
