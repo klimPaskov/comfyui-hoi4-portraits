@@ -54,7 +54,7 @@ LoRA is imported into the Cloud model library.
 
 ## Local inference evidence
 
-The seven pinned model files are checksum-verified. ComfyUI 0.25.0 ran with
+The eight pinned model files are checksum-verified. ComfyUI 0.25.0 ran with
 optional extensions disabled.
 
 The public graphs use LoRA strength `1.00`, Euler, eight steps, and CFG 5. A

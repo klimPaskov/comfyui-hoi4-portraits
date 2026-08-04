@@ -11,8 +11,10 @@ the `LoraLoaderModelOnly` dropdown.
 The trigger word is `hoi4_portrait`. Start with LoRA strength `1.00`, Euler,
 eight steps, and CFG 5. Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps found
 no useful gain above eight. Source candidates default to `hoi4_portrait,
-maintain the identity of the person in the portrait.` Text-to-image prompts
-describe only the person—not the game/style, background, lighting, or rendering.
+maintain the identity, facing direction, and expression of the person in the
+portrait, including any objects they are holding or wearing.` Text-to-image
+prompts describe only the person—not the game/style, background, lighting, or
+rendering.
 
 For source portraits, crop to head and shoulders before RealESRGAN and use the
 encoded processed portrait as the sampler starting latent. The source

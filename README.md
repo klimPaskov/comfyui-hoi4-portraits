@@ -279,7 +279,7 @@ The FLUX.2 base model is gated. Accept its Hugging Face agreement and run
 `hf auth login` (or set `HF_TOKEN`) before the model download command.
 
 For a RunPod ComfyUI template, this command installs the three workflows, the
-bundled backgrounds and sample input, and all seven pinned model files into the
+bundled backgrounds and sample input, and all eight pinned model files into the
 standard `ComfyUI/models/` subfolders. Set `HF_TOKEN` in the pod environment
 first so the gated FLUX.2 base can download:
 
@@ -288,7 +288,7 @@ export HF_TOKEN="hf_..."
 P=/workspace/comfyui-hoi4-portraits
 COMFY_ROOT=/workspace/runpod-slim/ComfyUI
 test -f "$COMFY_ROOT/main.py" || { echo "ComfyUI not found at $COMFY_ROOT; set COMFY_ROOT to the folder containing main.py."; exit 1; }
-test -d "$P/.git" || git clone --depth 1 https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
+if test -d "$P/.git"; then git -C "$P" pull --ff-only; else git clone --depth 1 https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"; fi
 "$P/scripts/install_runpod.sh" "$COMFY_ROOT"
 ```
 
