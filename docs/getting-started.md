@@ -89,6 +89,7 @@ visual style, background, lighting, framing, or rendering.
 | Wrong person | Turn on **Use manual crop for difficult sources**, adjust its box, and confirm the crop preview. |
 | Too much body | Increase **Face zoom**; `0.90` is the default and `1.00` is the closest safe framing. |
 | Background appears too early | Background replacement runs after portrait generation; reopen the published workflow if the graph has been edited. |
-| Style is weak | Keep `hoi4_portrait` in the prompt, use the `1.00` LoRA default, and keep the crop clean. |
+| Style is weak | Keep `hoi4_portrait` in the prompt, raise **LoRA strength** gradually from the `0.70` default, and keep the crop clean. |
+| Monochrome result | Enable **FLUX restoration** so natural color is restored before LoRA styling. |
 | Identity or position changes | Confirm the crop, restore the fixed identity instruction if it was edited, and disable optional FLUX restoration. |
 | Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Use Euler with eight steps; optional FLUX restoration can soften identity, so disable it first. |

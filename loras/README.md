@@ -8,11 +8,11 @@ Comfy Cloud users should import the same Hugging Face file through
 **Models → Import**, select **LoRA**, and wait for the filename to appear in
 the `LoraLoaderModelOnly` dropdown.
 
-The trigger word is `hoi4_portrait`. Start with LoRA strength `1.00`, Euler,
+The trigger word is `hoi4_portrait`. Start with LoRA strength `0.70`, Euler,
 eight steps, and CFG 5. Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps found
 no useful gain above eight. Source candidates default to `hoi4_portrait,
-maintain the identity, facing direction, and expression of the person in the
-portrait, including any objects they are holding or wearing.` Text-to-image
+maintain the exact identity, facing direction, and expression of the person,
+including every object they are holding or wearing.` Text-to-image
 prompts describe only the person—not the game/style, background, lighting, or
 rendering.
 

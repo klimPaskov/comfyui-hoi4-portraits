@@ -21,9 +21,10 @@ BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
-STYLE_LORA_STRENGTH = 1.0
+STYLE_LORA_STRENGTH = 0.7
+SOURCE_STYLE_DENOISE = 0.8
 DEFAULT_STEPS = 8
-WORKFLOW_SCHEMA_VERSION = "2.4.2"
+WORKFLOW_SCHEMA_VERSION = "2.4.3"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
@@ -45,10 +46,13 @@ MODEL_URLS = {
 RESTORATION_PROMPT = (
     "Restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, and lost fine detail. "
     "Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. "
-    "Keep period-authentic texture. Colorize monochrome or sepia material only when the colors can remain plausible. Do not stylize."
+    "Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
 )
 RESTORATION_NEGATIVE = ""
-STYLE_PROMPT = "hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing."
+STYLE_PROMPT = (
+    "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, "
+    "including every object they are holding or wearing."
+)
 STYLE_NEGATIVE = ""
 TEXT_PROMPT = (
     "hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, "
@@ -174,20 +178,34 @@ def _model_nodes(*, include_lora: bool = True) -> list[Node]:
         ),
     ]
     if include_lora:
-        nodes.append(
-            _node(
-                4,
-                "LoraLoaderModelOnly",
-                "Apply the HOI4 FLUX.2 Klein 9B LoRA",
-                group,
-                (1120, 620),
-                inputs={"model": Link(1), "lora_name": STYLE_LORA, "strength_model": STYLE_LORA_STRENGTH},
-                input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
-                outputs=["MODEL"],
-                output_types=["MODEL"],
-                widgets=[STYLE_LORA, STYLE_LORA_STRENGTH],
-                models=_model(STYLE_LORA, "loras"),
-            )
+        nodes.extend(
+            [
+                _node(
+                    19,
+                    "PrimitiveFloat",
+                    "LoRA strength 0.70 (editable)",
+                    group,
+                    (1120, 620),
+                    inputs={"value": STYLE_LORA_STRENGTH},
+                    input_types={"value": "FLOAT"},
+                    outputs=["value"],
+                    output_types=["FLOAT"],
+                    widgets=[STYLE_LORA_STRENGTH],
+                ),
+                _node(
+                    4,
+                    "LoraLoaderModelOnly",
+                    "Apply the HOI4 FLUX.2 Klein 9B LoRA",
+                    group,
+                    (1120, 780),
+                    inputs={"model": Link(1), "lora_name": STYLE_LORA, "strength_model": Link(19)},
+                    input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
+                    outputs=["MODEL"],
+                    output_types=["MODEL"],
+                    widgets=[STYLE_LORA, STYLE_LORA_STRENGTH],
+                    models=_model(STYLE_LORA, "loras"),
+                ),
+            ]
         )
     return nodes
 
@@ -444,6 +462,8 @@ def _edit_stage(
     negative: str,
     seed: int,
     title_prefix: str,
+    denoise: float = 1.0,
+    seed_mode: str = "randomize",
     y: int = 120,
     prompt_node_title: str | None = None,
 ) -> tuple[list[Node], Link]:
@@ -530,7 +550,7 @@ def _edit_stage(
             input_types={"noise_seed": "INT"},
             outputs=["NOISE"],
             output_types=["NOISE"],
-            widgets=[seed, "randomize"],
+            widgets=[seed, seed_mode],
         ),
         _node(
             i + 8,
@@ -559,14 +579,14 @@ def _edit_stage(
         _node(
             i + 5,
             "SplitSigmasDenoise",
-            "Denoise 1.00 (editable)",
+            f"Denoise {denoise:.2f} (editable)",
             group,
             (x + 900, y + 720),
-            inputs={"sigmas": Link(i + 9), "denoise": 1.0},
+            inputs={"sigmas": Link(i + 9), "denoise": denoise},
             input_types={"sigmas": "SIGMAS", "denoise": "FLOAT"},
             outputs=["high_sigmas", "low_sigmas"],
             output_types=["SIGMAS", "SIGMAS"],
-            widgets=[1.0],
+            widgets=[denoise],
         ),
         _node(
             i + 10,
@@ -1095,7 +1115,7 @@ def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1
     groups: list[Group] = []
     if has_source:
         groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"))
-    groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"))
+    groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 980), "#3f789e"))
     if has_restoration:
         groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"))
         style_height = 2700 if candidate_count > 1 else 980
@@ -1112,7 +1132,7 @@ def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1
 def _processing_groups() -> list[Group]:
     return [
         Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"),
-        Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"),
+        Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 980), "#3f789e"),
         Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"),
         Group("04 Processed portrait output", (3340, 40, 1100, 720), "#596b82"),
     ]
@@ -1130,6 +1150,7 @@ def build_source() -> Graph:
         negative=RESTORATION_NEGATIVE,
         seed=17,
         title_prefix="Conservative restoration",
+        seed_mode="fixed",
     )
     nodes.extend(restoration_nodes)
     nodes.append(
@@ -1163,6 +1184,7 @@ def build_source() -> Graph:
             negative=STYLE_NEGATIVE,
             seed=seed,
             title_prefix=f"Candidate {index} identity LoRA",
+            denoise=SOURCE_STYLE_DENOISE,
             prompt_node_title=f"Editable candidate {index} prompt — edits affect only candidate {index}",
         )
         nodes.extend(style_nodes)
@@ -1199,6 +1221,7 @@ def build_processing() -> Graph:
         negative=RESTORATION_NEGATIVE,
         seed=17,
         title_prefix="Conservative restoration",
+        seed_mode="fixed",
     )
     nodes.extend(restoration_nodes)
     nodes.append(

@@ -37,6 +37,7 @@ ALLOWED_CORE_NODES = {
     "PreviewImage",
     "PrimitiveBoolean",
     "PrimitiveBoundingBox",
+    "PrimitiveFloat",
     "RandomNoise",
     "ReferenceLatent",
     "RemoveBackground",
@@ -252,8 +253,14 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: processing workflow must not contain a style LoRA")
     elif lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
-    elif api[lora_node]["inputs"].get("strength_model") != 1.0:
-        errors.append(f"{path}: style LoRA strength must default to 1.0")
+    elif api[lora_node]["inputs"].get("strength_model") != ["19", 0]:
+        errors.append(f"{path}: style LoRA must use the visible strength control")
+    strength_control = api.get("19", {})
+    if not is_processing and (
+        strength_control.get("class_type") != "PrimitiveFloat"
+        or strength_control.get("inputs", {}).get("value") != 0.7
+    ):
+        errors.append(f"{path}: visible LoRA strength control must default to 0.70")
 
     for node_id, node in api.items():
         if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != DEFAULT_STEPS:
@@ -268,9 +275,12 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         expected_denoise_count = 4 if is_source else 1
         if len(denoise_nodes) != expected_denoise_count:
             errors.append(f"{path}: expected {expected_denoise_count} editable denoise controls")
+        expected_denoise = {"25": 1.0}
+        if is_source:
+            expected_denoise.update({"45": 0.8, "65": 0.8, "85": 0.8})
         for node_id, node in denoise_nodes.items():
-            if node.get("inputs", {}).get("denoise") != 1.0:
-                errors.append(f"{path}: denoise node {node_id} must default to 1.0")
+            if node.get("inputs", {}).get("denoise") != expected_denoise.get(node_id):
+                errors.append(f"{path}: denoise node {node_id} has the wrong default")
         for node_id, node in api.items():
             if node.get("class_type") != "SamplerCustomAdvanced":
                 continue
@@ -289,7 +299,10 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         if present_terms:
             errors.append(f"{path}: person prompt contains non-person instructions: {present_terms}")
         if is_source:
-            expected = "hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing."
+            expected = (
+                "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, "
+                "including every object they are holding or wearing."
+            )
             if person_prompt != expected:
                 errors.append(f"{path}: source identity prompt must use the concise editable default")
             for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):

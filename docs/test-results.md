@@ -9,7 +9,7 @@ portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
 
 - ComfyUI 0.25.0;
 - accepted color boards retain the LoRA strength printed in each final panel;
-- accepted boards retain the settings printed in each image; the source workflow defaults are LoRA `1.00` and denoise `1.00`;
+- accepted boards retain the settings printed in each image; source workflow controls remain editable;
 - source path: adjustable crop → RealESRGAN → optional FLUX restoration → FLUX.2 Klein 9B LoRA;
 - the first three `source-processing` boards use the optional FLUX restoration
   path;

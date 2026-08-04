@@ -25,14 +25,14 @@ workflows.
 - Base: `black-forest-labs/FLUX.2-klein-base-9B-fp8`
 - Training step: 2,500 (epoch 5)
 - ComfyUI loader: `LoraLoaderModelOnly`
-- Suggested starting strength: `1.00`
+- Suggested starting strength: `0.70`
 
 ## Recommended ComfyUI stack
 
 1. `UNETLoader`: `flux-2-klein-base-9b-fp8.safetensors`
 2. `CLIPLoader`: `qwen_3_8b_fp8mixed.safetensors`, type `flux2`
 3. `VAELoader`: `flux2-vae.safetensors`
-4. `LoraLoaderModelOnly`: this LoRA at strength `1.00`
+4. `LoraLoaderModelOnly`: this LoRA at strength `0.70`
 5. Eight steps, CFG 5, Euler sampler, `Flux2Scheduler`
 
 Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps support eight as the
@@ -49,7 +49,7 @@ when reference conditioning is present.
 ## Source prompt
 
 ```text
-hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing.
+hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing.
 ```
 
 Each source candidate has its own prompt. Keep the identity sentence and append

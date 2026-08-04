@@ -85,7 +85,7 @@ RealESRGAN.
 ### 2. Load FLUX.2 and the portrait LoRA
 
 This group loads the FLUX.2 Klein 9B base model, Qwen text encoder, VAE, and
-the portrait LoRA. Its default strength is `1.00`.
+the portrait LoRA. The visible **LoRA strength** control defaults to `0.70`.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.png)
 
@@ -105,7 +105,7 @@ three independent LoRA styling passes. Each pass uses a different seed, so one
 queue produces three candidates from the same input. Each branch has its own
 editable identity prompt. Keep its identity text and add only deliberate
 changes, such as `wearing a military hat`, to the candidate you want to test. The
-defaults are denoise `1.00`, LoRA strength `1.00`, Euler, eight steps, and CFG 5.
+defaults are denoise `0.80`, LoRA strength `0.70`, Euler, eight steps, and CFG 5.
 
 ![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
 
@@ -222,7 +222,7 @@ portrait job autonomously:
 4. Confirm the `0.90` automatic face zoom before processing. The agent should
    exclude printed borders, oval frames, captions, and empty margins while
    keeping the full head, neck, and shoulders.
-5. Set denoise and the project LoRA to `1.00`, choose whether FLUX restoration is enabled,
+5. Start with denoise `0.80` and LoRA strength `0.70`, choose whether FLUX restoration is enabled,
    and keep background replacement after the decoded LoRA result. If a custom
    background is requested, upload it separately and replace that loader's
    filename too.
@@ -255,7 +255,7 @@ character_id: TAG_leader_name
 
 An example request is: “Use Comfy Cloud MCP and the source API workflow to
 turn this source into a portrait. Crop to head and shoulders, use the project
-LoRA at 1.00, keep FLUX restoration enabled, replace the background only after
+LoRA at 0.70, keep FLUX restoration enabled, replace the background only after
 the final LoRA image, verify both outputs, and install the 156 × 210 result
 according to this manifest.”
 
@@ -315,7 +315,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.2-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.2"
+.\HOI4-Portrait-Workflows-v2.4.3-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.3"
 ```
 
 ## Prompting
@@ -325,7 +325,7 @@ from the reference image. Each candidate has its own editable prompt with this
 default:
 
 ```text
-hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing.
+hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing.
 ```
 
 Keep that identity sentence in place. Add requested changes after it, for
@@ -342,8 +342,12 @@ background, lighting, framing, or rendering.
 hoi4_portrait, an Irish man with dark hair and a moustache, wearing a civilian suit.
 ```
 
-The source workflow uses denoise `1.00` and LoRA strength `1.00` by default.
+The source workflow uses denoise `0.80` and LoRA strength `0.70` by default.
 Sampling defaults are Euler, eight steps, and CFG 5.
+
+For monochrome or sepia sources, enable **FLUX restoration** so natural color
+is restored before LoRA styling. LoRA strength controls style intensity; it is
+not a colorization control.
 
 ## Examples
 

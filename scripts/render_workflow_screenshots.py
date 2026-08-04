@@ -71,7 +71,6 @@ def render(
     def point(x: float, y: float) -> tuple[int, int]:
         return round((x - left) * scale), round((y - top) * scale)
 
-    title_font = _font(max(14, round(28 * scale)))
     group_font = _font(max(12, round(24 * scale)))
     node_font = _font(max(10, round(20 * scale)))
     small_font = _font(max(8, round(16 * scale)))
@@ -134,10 +133,6 @@ def render(
             value = _short(node["widgets_values"][0], 42)
             draw.text((x0 + round(9 * scale), y1 - round(25 * scale)), value, fill=(218, 225, 236), font=small_font)
 
-    if focus_group is None:
-        draw.text((round(22 * scale), round(12 * scale)), "HOI4 portrait source workflow · three candidates · background toggle applies to all", fill=(239, 244, 250), font=title_font)
-    else:
-        draw.text((round(22 * scale), round(12 * scale)), f"HOI4 portrait workflow · {focus_group}", fill=(239, 244, 250), font=title_font)
     OUT.mkdir(parents=True, exist_ok=True)
     image.save(OUT / filename, optimize=True)
 

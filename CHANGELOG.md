@@ -2,6 +2,12 @@
 
 All notable project changes are recorded here.
 
+## 2.4.3 — 2026-08-04
+
+- Added a visible LoRA strength control with a `0.70` starting value.
+- Set source styling denoise to `0.80` for stronger identity preservation without starving the eight-step style pass.
+- Kept color restoration in the optional pre-styling restoration pass.
+
 ## 2.4.2 — 2026-08-04
 
 - Corrected every image-edit sampler to use the active denoise sigma schedule.

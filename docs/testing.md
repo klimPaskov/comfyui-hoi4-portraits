@@ -33,7 +33,7 @@ The validator checks:
 - adjustable crop → RealESRGAN order in both source graphs;
 - the encoded processed source as the sampler's starting latent, with no empty
   latent in either image-to-image graph;
-- LoRA strength `1.00`, denoise `1.00`, and eight scheduler steps in the source graphs;
+- visible LoRA strength `0.70`, source styling denoise `0.80`, and eight scheduler steps;
 - person-only positive prompts after the required `hoi4_portrait,` trigger.
 
 ## Unit tests
@@ -57,7 +57,7 @@ LoRA is imported into the Cloud model library.
 The eight pinned model files are checksum-verified. ComfyUI 0.25.0 ran with
 optional extensions disabled.
 
-The public graphs use LoRA strength `1.00`, Euler, eight steps, and CFG 5. A
+The public graphs use LoRA strength `0.70`, Euler, eight steps, and CFG 5. A
 fixed-seed control covers the same source at 6, 8, 10, 12, 20, and 35 steps.
 
 The local evidence set includes:
