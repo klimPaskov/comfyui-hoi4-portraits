@@ -125,7 +125,11 @@ def _frame_box(
                 silhouette_top = (ry1 + int(ys.min())) / scale_y
                 silhouette_left = (rx1 + int(xs.min())) / scale_x
                 silhouette_right = (rx1 + int(xs.max()) + 1) / scale_x
-                head_top = min(head_top, max(0.0, silhouette_top - 0.10 * face_height))
+                # A reliable subject silhouette gives us the real top of hair
+                # or headwear. Use it directly with a small visible margin;
+                # the larger face-box allowance above remains the fallback
+                # only when the silhouette cannot be trusted.
+                head_top = max(0.0, silhouette_top - 0.08 * face_height)
                 head_left = min(head_left, max(0.0, silhouette_left - 0.08 * face_height))
                 head_right = max(head_right, min(float(width), silhouette_right + 0.08 * face_height))
 
