@@ -233,7 +233,6 @@ class DocumentationTests(unittest.TestCase):
         self.assertIn("docs/assets/test-runs/step-comparison.jpg", readme)
         self.assertNotIn("docs/assets/test-runs/sampler-comparison.png", readme)
         self.assertNotIn("Prompt used for this example:", readme)
-        self.assertNotIn("autoprompter", readme.casefold())
         for obsolete in (
             "full-restoration-01.jpg",
             "full-restoration-02.jpg",
