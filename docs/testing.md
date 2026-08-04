@@ -33,7 +33,7 @@ The validator checks:
 - adjustable crop → RealESRGAN order in both source graphs;
 - the encoded processed source as the sampler's starting latent, with no empty
   latent in either image-to-image graph;
-- visible LoRA strength `0.70`, source styling denoise `0.80`, and eight scheduler steps;
+- visible LoRA strength `0.70`, source styling denoise `1.00`, and eight scheduler steps;
 - person-only positive prompts after the required `hoi4_portrait,` trigger.
 
 ## Unit tests

@@ -52,7 +52,7 @@ Each source prompt defaults to `hoi4_portrait, maintain the exact identity,
 facing direction, and expression of the person, including every object they
 are holding or wearing.` Keep that sentence and append deliberate requested
 changes. Each prompt affects only its own candidate. Denoise defaults to
-`0.80`; the shared visible LoRA strength control defaults to `0.70`.
+`1.00`; the shared visible LoRA strength control defaults to `0.70`.
 
 Enable FLUX restoration for monochrome or sepia inputs. It restores plausible
 natural color before the three LoRA candidates are generated.

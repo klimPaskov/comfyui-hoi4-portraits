@@ -105,7 +105,7 @@ three independent LoRA styling passes. Each pass uses a different seed, so one
 queue produces three candidates from the same input. Each branch has its own
 editable identity prompt. Keep its identity text and add only deliberate
 changes, such as `wearing a military hat`, to the candidate you want to test. The
-defaults are denoise `0.80`, LoRA strength `0.70`, Euler, eight steps, and CFG 5.
+defaults are denoise `1.00`, LoRA strength `0.70`, Euler, eight steps, and CFG 5.
 
 ![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
 
@@ -222,7 +222,7 @@ portrait job autonomously:
 4. Confirm the `0.90` automatic face zoom before processing. The agent should
    exclude printed borders, oval frames, captions, and empty margins while
    keeping the full head, neck, and shoulders.
-5. Start with denoise `0.80` and LoRA strength `0.70`, choose whether FLUX restoration is enabled,
+5. Start with denoise `1.00` and LoRA strength `0.70`, choose whether FLUX restoration is enabled,
    and keep background replacement after the decoded LoRA result. If a custom
    background is requested, upload it separately and replace that loader's
    filename too.
@@ -315,7 +315,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.3-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.3"
+.\HOI4-Portrait-Workflows-v2.4.4-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.4"
 ```
 
 ## Prompting
@@ -342,7 +342,7 @@ background, lighting, framing, or rendering.
 hoi4_portrait, an Irish man with dark hair and a moustache, wearing a civilian suit.
 ```
 
-The source workflow uses denoise `0.80` and LoRA strength `0.70` by default.
+The source workflow uses denoise `1.00` and LoRA strength `0.70` by default.
 Sampling defaults are Euler, eight steps, and CFG 5.
 
 For monochrome or sepia sources, enable **FLUX restoration** so natural color

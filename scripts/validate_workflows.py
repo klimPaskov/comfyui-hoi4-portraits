@@ -277,7 +277,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: expected {expected_denoise_count} editable denoise controls")
         expected_denoise = {"25": 1.0}
         if is_source:
-            expected_denoise.update({"45": 0.8, "65": 0.8, "85": 0.8})
+            expected_denoise.update({"45": 1.0, "65": 1.0, "85": 1.0})
         for node_id, node in denoise_nodes.items():
             if node.get("inputs", {}).get("denoise") != expected_denoise.get(node_id):
                 errors.append(f"{path}: denoise node {node_id} has the wrong default")

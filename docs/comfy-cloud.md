@@ -36,7 +36,7 @@ For source workflows, upload:
 Background replacement is off by default, so a background file is optional
 unless you enable background replacement.
 
-Start with denoise `0.80` and the visible LoRA strength control at `0.70`. Each source candidate begins with
+Start with denoise `1.00` and the visible LoRA strength control at `0.70`. Each source candidate begins with
 the identity default shown in the workflow. Keep it unchanged or append one
 deliberate requested edit; editing one candidate prompt does not affect the
 other two. For text-to-image, begin with `hoi4_portrait,` and use a concise

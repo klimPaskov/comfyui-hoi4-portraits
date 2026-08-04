@@ -2,6 +2,11 @@
 
 All notable project changes are recorded here.
 
+## 2.4.4 — 2026-08-04
+
+- Set all three source styling passes to full denoise `1.00`, matching the
+  sampling schedule used for the accepted gallery examples.
+
 ## 2.4.3 — 2026-08-04
 
 - Added a visible LoRA strength control with a `0.70` starting value.

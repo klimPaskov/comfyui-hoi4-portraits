@@ -596,10 +596,10 @@
         "49",
         0
       ],
-      "denoise": 0.8
+      "denoise": 1.0
     },
     "_meta": {
-      "title": "Denoise 0.80 (editable)"
+      "title": "Denoise 1.00 (editable)"
     }
   },
   "50": {
@@ -789,10 +789,10 @@
         "69",
         0
       ],
-      "denoise": 0.8
+      "denoise": 1.0
     },
     "_meta": {
-      "title": "Denoise 0.80 (editable)"
+      "title": "Denoise 1.00 (editable)"
     }
   },
   "70": {
@@ -982,10 +982,10 @@
         "89",
         0
       ],
-      "denoise": 0.8
+      "denoise": 1.0
     },
     "_meta": {
-      "title": "Denoise 0.80 (editable)"
+      "title": "Denoise 1.00 (editable)"
     }
   },
   "90": {
