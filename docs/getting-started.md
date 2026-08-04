@@ -51,7 +51,9 @@ Find the filenames, pinned sources, sizes, and SHA-256 hashes in
 3. Select the source image and confirm the automatic crop preview. If it chose
    the wrong person or framing, turn on the manual-crop toggle and adjust its
    box.
-4. Keep the source workflow's identity-preservation instruction intact.
+4. Keep each candidate's identity sentence intact. Append deliberate requested
+   changes, such as adding a military hat, only to the candidate that should
+   test that change.
 5. Leave background replacement off for the first run.
 6. Queue once. The source workflow creates three final candidates from the
    same input. Its restoration switch is off by default; turn it on only when
@@ -64,9 +66,9 @@ Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
 
 ## Prompt rules
 
-The source workflow uses its reference image and a fixed instruction to retain
-the same person, facial structure, expression, pose, gaze, hairstyle, and
-clothing. Do not replace that instruction with a generated person description.
+Each source candidate uses its reference image and its own editable identity
+prompt. Keep the default identity sentence, then append only deliberate
+changes. Editing one prompt affects only that candidate.
 
 For text-to-image, begin with `hoi4_portrait,` and use a short, general person
 description: supported ethnicity or nationality, broad hair or facial-hair
@@ -81,6 +83,6 @@ visual style, background, lighting, framing, or rendering.
 | Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 24 GB GPU. |
 | Wrong person or full-body framing | Turn on **Use manual crop for difficult sources**, adjust its box, and confirm the crop preview. |
 | Background appears too early | Background replacement runs after portrait generation; reopen the published workflow if the graph has been edited. |
-| Style is weak | Keep `hoi4_portrait` in the prompt; use the `0.7` default and keep the crop clean. |
+| Style is weak | Keep `hoi4_portrait` in the prompt, use the `1.00` LoRA default, and keep the crop clean. |
 | Identity or position changes | Confirm the crop, restore the fixed identity instruction if it was edited, and disable optional FLUX restoration. |
 | Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Use Euler with eight steps; optional FLUX restoration can soften identity, so disable it first. |

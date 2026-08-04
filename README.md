@@ -77,7 +77,7 @@ through RealESRGAN before it is fitted to the 832 × 1120 working canvas.
 ### 2. Load FLUX.2 and the portrait LoRA
 
 This group loads the FLUX.2 Klein 9B base model, Qwen text encoder, VAE, and
-the portrait LoRA. Set the LoRA strength to `0.7`.
+the portrait LoRA. Its default strength is `1.00`.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.png)
 
@@ -94,9 +94,10 @@ additional pass.
 
 The selected processed portrait becomes the reference and starting image for
 three independent LoRA styling passes. Each pass uses a different seed, so one
-queue produces three candidates from the same input. The source workflow uses
-a fixed identity-preservation instruction rather than a generated description
-of the person. The defaults are Euler, eight steps, and CFG 5.
+queue produces three candidates from the same input. Each branch has its own
+editable identity prompt. Keep its identity text and add only deliberate
+changes, such as `wearing a military hat`, to the candidate you want to test. The
+defaults are denoise `1.00`, LoRA strength `1.00`, Euler, eight steps, and CFG 5.
 
 ![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
 
@@ -204,17 +205,16 @@ portrait job autonomously:
 1. Read the appropriate API-format graph from [`workflows/`](workflows/). Use
    source processing with optional FLUX restoration, or processing-only when
    you want an image without LoRA styling.
-2. Inspect the source at full resolution and write a short `hoi4_portrait,`
-   prompt describing only the person: broad hair or facial-hair cues,
-   ethnicity when supported, and general clothing classification. Leave expression, pose, gaze, and facing
-   direction to the input reference.
+2. Keep each candidate's identity prompt unchanged unless the request calls
+   for a deliberate edit. Append requested features, such as a military hat,
+   only to the candidate branch that should test that change.
 3. Upload the local source through the MCP file-upload flow. Use the returned
    Cloud filename in **Load source portrait**; a local filesystem path is not a
    valid `LoadImage.image` value in Cloud.
 4. Set the head-and-shoulders bounding box before processing. The agent should
    exclude printed borders, oval frames, captions, and empty margins while
    keeping the full head, neck, and shoulders.
-5. Set the project LoRA to `0.7`, choose whether FLUX restoration is enabled,
+5. Set denoise and the project LoRA to `1.00`, choose whether FLUX restoration is enabled,
    and keep background replacement after the decoded LoRA result. If a custom
    background is requested, upload it separately and replace that loader's
    filename too.
@@ -247,7 +247,7 @@ character_id: TAG_leader_name
 
 An example request is: “Use Comfy Cloud MCP and the source API workflow to
 turn this source into a portrait. Crop to head and shoulders, use the project
-LoRA at 0.7, keep FLUX restoration enabled, replace the background only after
+LoRA at 1.00, keep FLUX restoration enabled, replace the background only after
 the final LoRA image, verify both outputs, and install the 156 × 210 result
 according to this manifest.”
 
@@ -306,17 +306,22 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.0"
+.\HOI4-Portrait-Workflows-v2.4.1-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.1"
 ```
 
 ## Prompting
 
 The source workflow reads identity, pose, expression, gaze, hair, and clothing
-from the reference image. Its fixed edit instruction is:
+from the reference image. Each candidate has its own editable prompt with this
+default:
 
 ```text
-hoi4_portrait. Apply the learned portrait treatment to the person in the reference image. Keep the same person and facial identity. Keep facial structure, expression, pose, gaze, hairstyle, and clothing unchanged.
+hoi4_portrait, maintain the identity of the person in the portrait.
 ```
+
+Keep that identity sentence in place. Add requested changes after it, for
+example: `Add a military hat.` Editing one prompt affects only that candidate,
+so the three branches can test different instructions in the same run.
 
 The text-to-image workflow has no reference person. Start its prompt with
 `hoi4_portrait,` and add a short, general description such as supported
@@ -328,69 +333,31 @@ background, lighting, framing, or rendering.
 hoi4_portrait, an Irish man with dark hair and a moustache, wearing a civilian suit.
 ```
 
-The workflows use `0.7` LoRA strength, Euler, eight steps, and CFG 5 by
-default.
+The source workflow uses denoise `1.00` and LoRA strength `1.00` by default.
+Sampling defaults are Euler, eight steps, and CFG 5.
 
 ## Examples
 
 These examples are local runs with the published LoRA. Every source board is
-initial source → processed crop → final portrait. The prompts describe only the
-person; expression, pose, gaze, and facing direction come from the reference.
-Each final panel prints the setting used for that accepted color run. The
-published workflows use LoRA `0.7` / Euler / 8 steps by default. The examples
-exclude grayscale finals, blur, crop failures, and pose drift.
+initial source → processed crop → final portrait. Each final panel prints the
+settings used for that accepted color run. The examples exclude grayscale
+finals, blur, crop failures, and pose drift.
 
 ### Source processing with FLUX restoration
 
 ![Source processing example 1](docs/assets/test-runs/source-processing-01.jpg)
 
-Prompt used for this example:
-
-```text
-hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit.
-```
-
 ![Source processing example 2](docs/assets/test-runs/source-processing-02.jpg)
 
-Prompt used for this example:
-
-```text
-hoi4_portrait, an Irish woman with dark hair swept back, wearing a dark civilian dress with a light collar.
-```
-
 ![Source processing example 3](docs/assets/test-runs/source-processing-03.jpg)
-
-Prompt used for this example:
-
-```text
-hoi4_portrait, an Irish man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
-```
 
 ### Source processing with restoration disabled
 
 ![Source processing without FLUX restoration, example 1](docs/assets/test-runs/source-processing-restoration-off-01.jpg)
 
-Prompt used for this example:
-
-```text
-hoi4_portrait, an Irish middle-aged man with receding dark hair and prominent ears, wearing a military uniform.
-```
-
 ![Source processing without FLUX restoration, example 2](docs/assets/test-runs/source-processing-restoration-off-02.jpg)
 
-Prompt used for this example:
-
-```text
-hoi4_portrait, an Irish slender middle-aged man with neatly parted dark hair and round wire-frame glasses, wearing a dark civilian suit.
-```
-
 ![Source processing without FLUX restoration, example 3](docs/assets/test-runs/source-processing-restoration-off-03.jpg)
-
-Prompt used for this example:
-
-```text
-hoi4_portrait, an Irish older man with sparse dark hair at the sides, wearing dark clerical clothing.
-```
 
 ### Post-final background replacement
 
@@ -420,7 +387,7 @@ See [the three random prompts, exact test conditions, and findings](docs/test-re
 - Local functional evidence covers three source portraits with restoration,
   three source portraits with restoration disabled, three text-to-image
   portraits, and fixed-seed 6/8/10/12/20/35-step controls. The gallery boards
-  and workflows use LoRA `0.7` by default.
+  with their settings printed on each board.
 
 Run the same checks locally:
 

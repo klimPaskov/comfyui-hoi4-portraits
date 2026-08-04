@@ -1,6 +1,6 @@
 {
   "last_node_id": 73,
-  "last_link_id": 40,
+  "last_link_id": 41,
   "nodes": [
     {
       "id": 5,
@@ -833,7 +833,7 @@
           "links": [
             15,
             18,
-            35
+            36
           ]
         }
       ],
@@ -1056,7 +1056,7 @@
           "type": "VAE",
           "links": [
             19,
-            33
+            34
           ]
         }
       ],
@@ -1215,7 +1215,7 @@
           "links": [
             21,
             23,
-            31
+            32
           ]
         }
       ],
@@ -1366,7 +1366,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            28
+            29
           ]
         }
       ],
@@ -1412,7 +1412,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            27
+            28
           ]
         }
       ],
@@ -1459,7 +1459,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            29
+            30
           ]
         }
       ],
@@ -1521,7 +1521,7 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            30
+            27
           ]
         }
       ],
@@ -1535,6 +1535,62 @@
         8,
         832,
         1120
+      ]
+    },
+    {
+      "id": 25,
+      "type": "SplitSigmasDenoise",
+      "title": "Denoise 1.00 (editable)",
+      "pos": [
+        2440,
+        840
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 27
+        },
+        {
+          "name": "denoise",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "denoise"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "high_sigmas",
+          "type": "SIGMAS",
+          "links": [
+            31
+          ]
+        },
+        {
+          "name": "low_sigmas",
+          "type": "SIGMAS",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SplitSigmasDenoise",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": [
+        1.0
       ]
     },
     {
@@ -1552,33 +1608,33 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 26,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 27
+          "link": 28
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 28
+          "link": 29
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 29
+          "link": 30
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 30
+          "link": 31
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 31
+          "link": 32
         }
       ],
       "outputs": [
@@ -1586,7 +1642,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            32
+            33
           ]
         },
         {
@@ -1618,18 +1674,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 27,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 32
+          "link": 33
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 33
+          "link": 34
         }
       ],
       "outputs": [
@@ -1637,7 +1693,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            36
+            37
           ]
         }
       ],
@@ -1664,13 +1720,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 28,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 34
+          "link": 35
         }
       ],
       "outputs": [
@@ -1703,7 +1759,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 29,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
@@ -1717,12 +1773,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 35
+          "link": 36
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 36
+          "link": 37
         }
       ],
       "outputs": [
@@ -1730,10 +1786,10 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            34,
-            37,
+            35,
             38,
-            39
+            39,
+            40
           ]
         }
       ],
@@ -1762,13 +1818,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 30,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 37
+          "link": 38
         }
       ],
       "outputs": [
@@ -1801,13 +1857,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 31,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 38
+          "link": 39
         },
         {
           "name": "filename_prefix",
@@ -1850,13 +1906,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 32,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 39
+          "link": 40
         },
         {
           "name": "upscale_method",
@@ -1896,7 +1952,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            40
+            41
           ]
         }
       ],
@@ -1928,13 +1984,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 33,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 40
+          "link": 41
         },
         {
           "name": "filename_prefix",
@@ -2174,6 +2230,14 @@
     ],
     [
       27,
+      29,
+      0,
+      25,
+      0,
+      "SIGMAS"
+    ],
+    [
+      28,
       27,
       0,
       30,
@@ -2181,7 +2245,7 @@
       "NOISE"
     ],
     [
-      28,
+      29,
       26,
       0,
       30,
@@ -2189,7 +2253,7 @@
       "GUIDER"
     ],
     [
-      29,
+      30,
       28,
       0,
       30,
@@ -2197,15 +2261,15 @@
       "SAMPLER"
     ],
     [
-      30,
-      29,
+      31,
+      25,
       0,
       30,
       3,
       "SIGMAS"
     ],
     [
-      31,
+      32,
       22,
       0,
       30,
@@ -2213,7 +2277,7 @@
       "LATENT"
     ],
     [
-      32,
+      33,
       30,
       0,
       31,
@@ -2221,7 +2285,7 @@
       "LATENT"
     ],
     [
-      33,
+      34,
       3,
       0,
       31,
@@ -2229,7 +2293,7 @@
       "VAE"
     ],
     [
-      34,
+      35,
       32,
       0,
       35,
@@ -2237,7 +2301,7 @@
       "IMAGE"
     ],
     [
-      35,
+      36,
       8,
       0,
       32,
@@ -2245,7 +2309,7 @@
       "IMAGE"
     ],
     [
-      36,
+      37,
       31,
       0,
       32,
@@ -2253,7 +2317,7 @@
       "IMAGE"
     ],
     [
-      37,
+      38,
       32,
       0,
       70,
@@ -2261,7 +2325,7 @@
       "IMAGE"
     ],
     [
-      38,
+      39,
       32,
       0,
       71,
@@ -2269,7 +2333,7 @@
       "IMAGE"
     ],
     [
-      39,
+      40,
       32,
       0,
       72,
@@ -2277,7 +2341,7 @@
       "IMAGE"
     ],
     [
-      40,
+      41,
       72,
       0,
       73,
@@ -2348,7 +2412,7 @@
     "description": "Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
     "workflow_kind": "image_processing",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.0",
+    "graph_version": "2.4.1",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": null,
     "core_nodes_only": true,

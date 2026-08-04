@@ -37,7 +37,7 @@
         0
       ],
       "lora_name": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-      "strength_model": 0.7
+      "strength_model": 1.0
     },
     "_meta": {
       "title": "Apply the HOI4 FLUX.2 Klein 9B LoRA"

@@ -10,7 +10,7 @@ The source and text-to-image model stack is:
 1. `UNETLoader` — FLUX.2 Klein base 9B FP8.
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
 3. `VAELoader` — FLUX.2 VAE.
-4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `0.7`.
+4. `LoraLoaderModelOnly` — the HOI4 adapter at strength `1.00`.
 5. `CFGGuider`, Euler, `Flux2Scheduler`, eight steps, CFG 5.
 
 The processing workflow loads the base model, text encoder, and VAE for its
@@ -35,7 +35,7 @@ Groups run left to right:
    does not run.
 5. **HOI4 LoRA styling** runs three independent seed passes. Each pass encodes
    the selected processed image as both the reference and starting latent and
-   uses the fixed identity-preservation instruction with the LoRA-patched
+   uses a separate editable identity prompt in each branch with the LoRA-patched
    model. This keeps all three candidates tied to the same face, crop, and pose
    while giving the user a choice of final seed.
 6. **Optional background** receives each decoded styled image, creates its
@@ -47,6 +47,11 @@ Groups run left to right:
 The source graph opens with **Toggle FLUX restoration** set to `false`. Turn it
 on for the single additional restoration pass. Keep the supplied connections
 intact.
+
+Each source prompt defaults to `hoi4_portrait, maintain the identity of the
+person in the portrait.` Keep that sentence and append deliberate requested
+changes. Each prompt affects only its own candidate. Denoise and LoRA strength
+both default to `1.00`.
 
 ## Processing workflow
 
@@ -64,13 +69,10 @@ master and game-size outputs and uses the same final-only background branch.
 
 ## Positive prompt invariant
 
-After the `hoi4_portrait,` trigger, positive prompts describe only the person.
-They should describe only supported ethnicity, broad hair or facial-hair cues,
-and general clothing classification. Mention approximate age only when the
-person clearly appears older; otherwise omit age. Expression, pose, gaze, and facing direction should be left to the
-source reference. They must not request a game/style, background, lighting, palette, rendering,
-restoration, transformation, or preservation behavior. The validator rejects
-common violations in every generated API graph.
+The source workflow uses three independent editable identity prompts, one per
+candidate. The text-to-image prompt begins with `hoi4_portrait,` and uses a
+short general person description. Neither prompt should request a game/style,
+background, lighting, palette, or rendering behavior.
 
 ## Background replacement invariant
 

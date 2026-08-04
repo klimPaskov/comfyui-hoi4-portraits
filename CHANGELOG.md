@@ -2,6 +2,12 @@
 
 All notable project changes are recorded here.
 
+## 2.4.1 — 2026-08-04
+
+- Set source LoRA strength and editable denoise controls to `1.00`.
+- Added three independent candidate prompts with the concise identity default;
+  editing one prompt affects only its own candidate branch.
+
 ## 2.4.0 — 2026-08-04
 
 - Added automatic face detection with a one-click manual crop override for

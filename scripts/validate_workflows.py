@@ -250,14 +250,31 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: processing workflow must not contain a style LoRA")
     elif lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
-    elif api[lora_node]["inputs"].get("strength_model") != 0.7:
-        errors.append(f"{path}: style LoRA strength must default to 0.7")
+    elif api[lora_node]["inputs"].get("strength_model") != 1.0:
+        errors.append(f"{path}: style LoRA strength must default to 1.0")
 
     for node_id, node in api.items():
         if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != DEFAULT_STEPS:
             errors.append(
                 f"{path}: FLUX.2 scheduler node {node_id} must default to {DEFAULT_STEPS} steps"
             )
+
+    if not is_text_to_image:
+        denoise_nodes = {
+            node_id: node for node_id, node in api.items() if node.get("class_type") == "SplitSigmasDenoise"
+        }
+        expected_denoise_count = 4 if is_source else 1
+        if len(denoise_nodes) != expected_denoise_count:
+            errors.append(f"{path}: expected {expected_denoise_count} editable denoise controls")
+        for node_id, node in denoise_nodes.items():
+            if node.get("inputs", {}).get("denoise") != 1.0:
+                errors.append(f"{path}: denoise node {node_id} must default to 1.0")
+        for node_id, node in api.items():
+            if node.get("class_type") != "SamplerCustomAdvanced":
+                continue
+            sigmas = node.get("inputs", {}).get("sigmas")
+            if not (isinstance(sigmas, list) and sigmas[0] in denoise_nodes and sigmas[1] == 0):
+                errors.append(f"{path}: image-edit sampler {node_id} must use its 1.0 denoise control")
 
     if not is_processing:
         person_prompt_node = "20" if is_text_to_image else "40"
@@ -267,6 +284,15 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         present_terms = _non_person_prompt_terms(person_prompt)
         if present_terms:
             errors.append(f"{path}: person prompt contains non-person instructions: {present_terms}")
+        if is_source:
+            expected = "hoi4_portrait, maintain the identity of the person in the portrait."
+            if person_prompt != expected:
+                errors.append(f"{path}: source identity prompt must use the concise editable default")
+            for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
+                if api.get(prompt_id, {}).get("inputs", {}).get("text") != expected:
+                    errors.append(f"{path}: candidate prompt {prompt_id} must use the concise editable default")
+                if api.get(reference_id, {}).get("inputs", {}).get("conditioning") != [prompt_id, 0]:
+                    errors.append(f"{path}: candidate prompt {prompt_id} must affect only its own branch")
 
     preview_expectations: dict[str, list[Any]] = {}
     if is_text_to_image:

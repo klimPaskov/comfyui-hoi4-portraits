@@ -355,6 +355,19 @@
       "title": "FLUX.2 schedule - 8 steps"
     }
   },
+  "25": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "29",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Denoise 1.00 (editable)"
+    }
+  },
   "30": {
     "class_type": "SamplerCustomAdvanced",
     "inputs": {
@@ -371,7 +384,7 @@
         0
       ],
       "sigmas": [
-        "29",
+        "25",
         0
       ],
       "latent_image": [

@@ -22,9 +22,9 @@ BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
-STYLE_LORA_STRENGTH = 0.7
+STYLE_LORA_STRENGTH = 1.0
 DEFAULT_STEPS = 8
-WORKFLOW_SCHEMA_VERSION = "2.4.0"
+WORKFLOW_SCHEMA_VERSION = "2.4.1"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
@@ -47,11 +47,7 @@ RESTORATION_PROMPT = (
     "Keep period-authentic texture. Colorize monochrome or sepia material only when the colors can remain plausible. Do not stylize."
 )
 RESTORATION_NEGATIVE = ""
-STYLE_PROMPT = (
-    "hoi4_portrait. Apply the learned portrait treatment to the person in the reference image. "
-    "Keep the same person and facial identity. Keep facial structure, expression, pose, gaze, "
-    "hairstyle, and clothing unchanged."
-)
+STYLE_PROMPT = "hoi4_portrait, maintain the identity of the person in the portrait."
 STYLE_NEGATIVE = ""
 TEXT_PROMPT = (
     "hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, "
@@ -438,13 +434,14 @@ def _edit_stage(
     seed: int,
     title_prefix: str,
     y: int = 120,
+    prompt_node_title: str | None = None,
 ) -> tuple[list[Node], Link]:
     i = id_start
-    nodes = [
+    nodes: list[Node] = [
         _node(
             i,
             "CLIPTextEncode",
-            f"{title_prefix} instructions",
+            prompt_node_title or f"{title_prefix} instructions",
             group,
             (x, y),
             size=(430, 250),
@@ -549,6 +546,18 @@ def _edit_stage(
             widgets=[DEFAULT_STEPS, 832, 1120],
         ),
         _node(
+            i + 5,
+            "SplitSigmasDenoise",
+            "Denoise 1.00 (editable)",
+            group,
+            (x + 900, y + 720),
+            inputs={"sigmas": Link(i + 9), "denoise": 1.0},
+            input_types={"sigmas": "SIGMAS", "denoise": "FLOAT"},
+            outputs=["high_sigmas", "low_sigmas"],
+            output_types=["SIGMAS", "SIGMAS"],
+            widgets=[1.0],
+        ),
+        _node(
             i + 10,
             "SamplerCustomAdvanced",
             f"Run {title_prefix.lower()} pass",
@@ -559,7 +568,7 @@ def _edit_stage(
                 "noise": Link(i + 7),
                 "guider": Link(i + 6),
                 "sampler": Link(i + 8),
-                "sigmas": Link(i + 9),
+                "sigmas": Link(i + 5),
                 "latent_image": Link(i + 2),
             },
             input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
@@ -1140,7 +1149,8 @@ def build_source() -> Graph:
             prompt=STYLE_PROMPT,
             negative=STYLE_NEGATIVE,
             seed=seed,
-            title_prefix=f"Candidate {index} person-only LoRA",
+            title_prefix=f"Candidate {index} identity LoRA",
+            prompt_node_title=f"Editable candidate {index} prompt — edits affect only candidate {index}",
         )
         nodes.extend(style_nodes)
         styled_images.append(styled)

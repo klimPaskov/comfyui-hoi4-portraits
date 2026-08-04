@@ -34,13 +34,12 @@ For source workflows, upload:
 Background replacement is off by default, so a background file is optional
 unless you enable background replacement.
 
-Keep the LoRA loader at strength `0.7`. Every
-positive prompt must begin with `hoi4_portrait,` and then describe only the
-person. Keep the description concise: supported ethnicity, hair, and general
-clothing classification. Mention approximate age only when the person clearly
-appears older; otherwise omit age. Leave expression, pose, gaze, and facing
-direction to the input reference. Do not add game/style, background, lighting,
-or rendering language.
+Keep denoise and the LoRA loader at `1.00`. Each source candidate begins with
+the identity default shown in the workflow. Keep it unchanged or append one
+deliberate requested edit; editing one candidate prompt does not affect the
+other two. For text-to-image, begin with `hoi4_portrait,` and use a concise
+general person description. Do not add game/style, background, lighting, or
+rendering language.
 
 In either source workflow, set the bounding box around the head and shoulders
 and check the crop preview before queueing. The crop controls are available in

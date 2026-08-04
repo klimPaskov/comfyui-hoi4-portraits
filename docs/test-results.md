@@ -9,7 +9,7 @@ portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
 
 - ComfyUI 0.25.0;
 - accepted color boards retain the LoRA strength printed in each final panel;
-- the workflows use LoRA strength `0.7` by default, Euler, eight steps, CFG 5;
+- accepted boards retain the settings printed in each image; the source workflow defaults are LoRA `1.00` and denoise `1.00`;
 - source path: adjustable crop → RealESRGAN → optional FLUX restoration → FLUX.2 Klein 9B LoRA;
 - the first three `source-processing` boards use the optional FLUX restoration
   path;
@@ -33,39 +33,15 @@ workflow with that pass disabled.
 
 ![Source processing test 1](assets/test-runs/source-processing-01.jpg)
 
-```text
-hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit.
-```
-
 ![Source processing test 2](assets/test-runs/source-processing-02.jpg)
-
-```text
-hoi4_portrait, an Irish woman with dark hair swept back, wearing a dark civilian dress with a light collar.
-```
 
 ![Source processing test 3](assets/test-runs/source-processing-03.jpg)
 
-```text
-hoi4_portrait, an Irish man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
-```
-
 ![Source processing without FLUX restoration, test 1](assets/test-runs/source-processing-restoration-off-01.jpg)
-
-```text
-hoi4_portrait, an Irish middle-aged man with receding dark hair and prominent ears, wearing a military uniform.
-```
 
 ![Source processing without FLUX restoration, test 2](assets/test-runs/source-processing-restoration-off-02.jpg)
 
-```text
-hoi4_portrait, an Irish slender middle-aged man with neatly parted dark hair and round wire-frame glasses, wearing a dark civilian suit.
-```
-
 ![Source processing without FLUX restoration, test 3](assets/test-runs/source-processing-restoration-off-03.jpg)
-
-```text
-hoi4_portrait, an Irish older man with sparse dark hair at the sides, wearing dark clerical clothing.
-```
 
 ## Three no-input portraits
 
