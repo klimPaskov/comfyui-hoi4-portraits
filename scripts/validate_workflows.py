@@ -19,16 +19,20 @@ ALLOWED_CORE_NODES = {
     "CLIPLoader",
     "CLIPTextEncode",
     "ComfySwitchNode",
+    "CropByBBoxes",
     "EmptyFlux2LatentImage",
     "Flux2Scheduler",
     "ImageCompositeMasked",
     "ImageCropV2",
     "ImageScale",
+    "ImageScaleToMaxDimension",
     "ImageUpscaleWithModel",
     "KSamplerSelect",
     "LoadBackgroundRemovalModel",
     "LoadImage",
+    "LoadMediaPipeFaceLandmarker",
     "LoraLoaderModelOnly",
+    "MediaPipeFaceLandmarker",
     "PreviewImage",
     "PrimitiveBoolean",
     "PrimitiveBoundingBox",
@@ -255,19 +259,10 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 f"{path}: FLUX.2 scheduler node {node_id} must default to {DEFAULT_STEPS} steps"
             )
 
-    if is_source:
-        identity_splits = [
-            node for node in api.values() if node.get("class_type") == "SplitSigmasDenoise"
-        ]
-        if len(identity_splits) != 3 or any(
-            node.get("inputs", {}).get("denoise") != 0.45 for node in identity_splits
-        ):
-            errors.append(f"{path}: source candidates must use three 0.45 identity-preserving denoise splits")
-
     if not is_processing:
         person_prompt_node = "20" if is_text_to_image else "40"
         person_prompt = str(api.get(person_prompt_node, {}).get("inputs", {}).get("text", ""))
-        if not person_prompt.startswith("hoi4_portrait,"):
+        if not re.match(r"^hoi4_portrait[,.]", person_prompt):
             errors.append(f"{path}: person prompt must begin with the LoRA trigger")
         present_terms = _non_person_prompt_terms(person_prompt)
         if present_terms:
@@ -278,13 +273,11 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         preview_expectations["70"] = ["66", 0]
         preview_expectations["29"] = ["28", 0]
     elif is_processing:
-        preview_expectations.update({"10": ["8", 0], "35": ["31", 0], "70": ["32", 0]})
+        preview_expectations.update({"10": ["8", 0], "35": ["32", 0], "70": ["32", 0]})
     elif is_source:
-        preview_expectations.update({"10": ["8", 0], "35": ["31", 0]})
+        preview_expectations["35"] = ["32", 0]
         for preview_id, decode_id in (("55", "51"), ("75", "71"), ("95", "91")):
             preview_expectations[preview_id] = [decode_id, 0]
-        for preview_id, switch_id in (("126", "125"), ("136", "135"), ("146", "145")):
-            preview_expectations[preview_id] = [switch_id, 0]
     else:
         preview_expectations.update({"10": ["8", 0], "35": ["31", 0], "55": ["51", 0], "70": ["66", 0]})
     for preview_id, expected_image in preview_expectations.items():
@@ -393,14 +386,36 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     if not workflow_id.endswith("text_to_image"):
         if any(node.get("class_type") == "EmptyFlux2LatentImage" for node in api.values()):
             errors.append(f"{path}: source workflow must not start sampling from an empty latent")
-        crop_box = api.get("9", {})
+        normalized = api.get("9", {})
+        detector = api.get("13", {})
         crop = api.get("11", {})
-        if crop_box.get("class_type") != "PrimitiveBoundingBox":
-            errors.append(f"{path}: source crop must use the current native bounding-box control")
-        if crop.get("class_type") != "ImageCropV2" or crop.get("inputs", {}).get("image") != ["5", 0] or crop.get("inputs", {}).get("crop_region") != ["9", 0]:
-            errors.append(f"{path}: source must enter an adjustable native crop before processing")
-        if api.get("7", {}).get("inputs", {}).get("image") != ["11", 0]:
-            errors.append(f"{path}: ESRGAN must consume the explicit head-and-shoulders crop")
+        portrait_fit = api.get("14", {})
+        manual_box = api.get("15", {})
+        manual_crop = api.get("16", {})
+        manual_toggle = api.get("17", {})
+        crop_switch = api.get("18", {})
+        if normalized.get("class_type") != "ImageScaleToMaxDimension" or normalized.get("inputs", {}).get("image") != ["5", 0] or normalized.get("inputs", {}).get("largest_size") != 1024:
+            errors.append(f"{path}: source must be normalized to 1024 before face detection")
+        detector_inputs = detector.get("inputs", {})
+        if detector.get("class_type") != "MediaPipeFaceLandmarker" or detector_inputs.get("image") != ["9", 0] or detector_inputs.get("detector_variant") != "both" or detector_inputs.get("num_faces") != 1 or detector_inputs.get("min_confidence") != 0.3:
+            errors.append(f"{path}: source must use the tested single-face MediaPipe detection settings")
+        crop_inputs = crop.get("inputs", {})
+        if crop.get("class_type") != "CropByBBoxes" or crop_inputs.get("image") != ["9", 0] or crop_inputs.get("bboxes") != ["13", 1] or crop_inputs.get("padding") != 200:
+            errors.append(f"{path}: source must use the tested automatic head-and-shoulders crop")
+        if portrait_fit.get("class_type") != "ImageScale" or portrait_fit.get("inputs", {}).get("image") != ["11", 0] or portrait_fit.get("inputs", {}).get("width") != 832 or portrait_fit.get("inputs", {}).get("height") != 1120:
+            errors.append(f"{path}: detected crop must be fitted to the portrait canvas")
+        if manual_box.get("class_type") != "PrimitiveBoundingBox":
+            errors.append(f"{path}: difficult sources require a core-node manual bounding-box override")
+        manual_inputs = manual_crop.get("inputs", {})
+        if manual_crop.get("class_type") != "CropByBBoxes" or manual_inputs.get("image") != ["9", 0] or manual_inputs.get("bboxes") != ["15", 0] or manual_inputs.get("output_width") != 832 or manual_inputs.get("output_height") != 1120:
+            errors.append(f"{path}: manual crop override is not connected to the normalized source")
+        if manual_toggle.get("class_type") != "PrimitiveBoolean" or manual_toggle.get("inputs", {}).get("value") is not False:
+            errors.append(f"{path}: manual crop override must be a one-click toggle that is off by default")
+        switch_inputs = crop_switch.get("inputs", {})
+        if crop_switch.get("class_type") != "ComfySwitchNode" or switch_inputs.get("switch") != ["17", 0] or switch_inputs.get("on_false") != ["14", 0] or switch_inputs.get("on_true") != ["16", 0]:
+            errors.append(f"{path}: automatic/manual crop switch is wired incorrectly")
+        if api.get("7", {}).get("inputs", {}).get("image") != ["18", 0]:
+            errors.append(f"{path}: ESRGAN must consume the selected head-and-shoulders crop")
         if extra.get("source_crop") != "native_adjustable_head_and_shoulders_before_esrgan":
             errors.append(f"{path}: source crop metadata is missing")
         if is_source and extra.get("pose_preservation") != "encoded_source_latent_is_sampler_start":

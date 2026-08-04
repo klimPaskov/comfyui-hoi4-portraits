@@ -9,31 +9,143 @@
     }
   },
   "9": {
-    "class_type": "PrimitiveBoundingBox",
-    "inputs": {
-      "x": 1550,
-      "y": 500,
-      "width": 1100,
-      "height": 1481
-    },
-    "_meta": {
-      "title": "Adjust the head-and-shoulders crop rectangle"
-    }
-  },
-  "11": {
-    "class_type": "ImageCropV2",
+    "class_type": "ImageScaleToMaxDimension",
     "inputs": {
       "image": [
         "5",
         0
       ],
-      "crop_region": [
+      "upscale_method": "lanczos",
+      "largest_size": 1024
+    },
+    "_meta": {
+      "title": "Normalize source for face detection"
+    }
+  },
+  "12": {
+    "class_type": "LoadMediaPipeFaceLandmarker",
+    "inputs": {
+      "model_name": "mediapipe_face_fp32.safetensors"
+    },
+    "_meta": {
+      "title": "Load MediaPipe face detector"
+    }
+  },
+  "13": {
+    "class_type": "MediaPipeFaceLandmarker",
+    "inputs": {
+      "face_detection_model": [
+        "12",
+        0
+      ],
+      "image": [
         "9",
+        0
+      ],
+      "detector_variant": "both",
+      "num_faces": 1,
+      "min_confidence": 0.3,
+      "missing_frame_fallback": "empty"
+    },
+    "_meta": {
+      "title": "Find the portrait subject"
+    }
+  },
+  "11": {
+    "class_type": "CropByBBoxes",
+    "inputs": {
+      "image": [
+        "9",
+        0
+      ],
+      "bboxes": [
+        "13",
+        1
+      ],
+      "output_width": 1024,
+      "output_height": 1024,
+      "padding": 200,
+      "keep_aspect": "stretch"
+    },
+    "_meta": {
+      "title": "Crop detected face with head-and-shoulders margin"
+    }
+  },
+  "14": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "11",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 832,
+      "height": 1120,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Fit detected crop to portrait aspect"
+    }
+  },
+  "15": {
+    "class_type": "PrimitiveBoundingBox",
+    "inputs": {
+      "x": 128,
+      "y": 0,
+      "width": 768,
+      "height": 1024
+    },
+    "_meta": {
+      "title": "Manual crop box for difficult sources"
+    }
+  },
+  "16": {
+    "class_type": "CropByBBoxes",
+    "inputs": {
+      "image": [
+        "9",
+        0
+      ],
+      "bboxes": [
+        "15",
+        0
+      ],
+      "output_width": 832,
+      "output_height": 1120,
+      "padding": 0,
+      "keep_aspect": "stretch"
+    },
+    "_meta": {
+      "title": "Apply manual head-and-shoulders crop"
+    }
+  },
+  "17": {
+    "class_type": "PrimitiveBoolean",
+    "inputs": {
+      "value": false
+    },
+    "_meta": {
+      "title": "Use manual crop for difficult sources"
+    }
+  },
+  "18": {
+    "class_type": "ComfySwitchNode",
+    "inputs": {
+      "switch": [
+        "17",
+        0
+      ],
+      "on_false": [
+        "14",
+        0
+      ],
+      "on_true": [
+        "16",
         0
       ]
     },
     "_meta": {
-      "title": "Crop source to head and shoulders before processing"
+      "title": "Choose automatic or manual crop"
     }
   },
   "6": {
@@ -53,7 +165,7 @@
         0
       ],
       "image": [
-        "11",
+        "18",
         0
       ]
     },
@@ -75,18 +187,6 @@
     },
     "_meta": {
       "title": "Fit portrait to the 832 x 1120 work canvas"
-    }
-  },
-  "10": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "8",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Confirm head-and-shoulders processing before FLUX"
     }
   },
   "1": {
@@ -305,12 +405,12 @@
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "31",
+        "32",
         0
       ]
     },
     "_meta": {
-      "title": "Preview conservative restoration result"
+      "title": "Preview selected processed portrait"
     }
   },
   "32": {
@@ -337,7 +437,7 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit."
+      "text": "hoi4_portrait. Apply the learned portrait treatment to the person in the reference image. Keep the same person and facial identity. Keep facial structure, expression, pose, gaze, hairstyle, and clothing unchanged."
     },
     "_meta": {
       "title": "Candidate 1 person-only LoRA instructions"
@@ -470,8 +570,8 @@
         0
       ],
       "sigmas": [
-        "52",
-        1
+        "49",
+        0
       ],
       "latent_image": [
         "42",
@@ -510,19 +610,6 @@
       "title": "Preview candidate 1 person-only lora result"
     }
   },
-  "52": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "49",
-        0
-      ],
-      "denoise": 0.45
-    },
-    "_meta": {
-      "title": "Limit denoise to preserve source identity"
-    }
-  },
   "60": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -530,7 +617,7 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit."
+      "text": "hoi4_portrait. Apply the learned portrait treatment to the person in the reference image. Keep the same person and facial identity. Keep facial structure, expression, pose, gaze, hairstyle, and clothing unchanged."
     },
     "_meta": {
       "title": "Candidate 2 person-only LoRA instructions"
@@ -663,8 +750,8 @@
         0
       ],
       "sigmas": [
-        "72",
-        1
+        "69",
+        0
       ],
       "latent_image": [
         "62",
@@ -703,19 +790,6 @@
       "title": "Preview candidate 2 person-only lora result"
     }
   },
-  "72": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "69",
-        0
-      ],
-      "denoise": 0.45
-    },
-    "_meta": {
-      "title": "Limit denoise to preserve source identity"
-    }
-  },
   "80": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -723,7 +797,7 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit."
+      "text": "hoi4_portrait. Apply the learned portrait treatment to the person in the reference image. Keep the same person and facial identity. Keep facial structure, expression, pose, gaze, hairstyle, and clothing unchanged."
     },
     "_meta": {
       "title": "Candidate 3 person-only LoRA instructions"
@@ -856,8 +930,8 @@
         0
       ],
       "sigmas": [
-        "92",
-        1
+        "89",
+        0
       ],
       "latent_image": [
         "82",
@@ -894,19 +968,6 @@
     },
     "_meta": {
       "title": "Preview candidate 3 person-only lora result"
-    }
-  },
-  "92": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "89",
-        0
-      ],
-      "denoise": 0.45
-    },
-    "_meta": {
-      "title": "Limit denoise to preserve source identity"
     }
   },
   "119": {
@@ -1011,18 +1072,6 @@
       "title": "Toggle background for candidate 1 (off by default)"
     }
   },
-  "126": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "125",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview candidate 1"
-    }
-  },
   "127": {
     "class_type": "SaveImage",
     "inputs": {
@@ -1124,18 +1173,6 @@
       "title": "Toggle background for candidate 2 (off by default)"
     }
   },
-  "136": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "135",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview candidate 2"
-    }
-  },
   "137": {
     "class_type": "SaveImage",
     "inputs": {
@@ -1235,18 +1272,6 @@
     },
     "_meta": {
       "title": "Toggle background for candidate 3 (off by default)"
-    }
-  },
-  "146": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "145",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview candidate 3"
     }
   },
   "147": {

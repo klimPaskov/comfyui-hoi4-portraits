@@ -16,6 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_DIR = ROOT / "workflows"
+SOURCE_LAYOUT_PATH = ROOT / "scripts" / "layouts" / "hoi4_portrait_flux2_klein_9b_source.json"
 
 BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
@@ -23,12 +24,12 @@ VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
 STYLE_LORA_STRENGTH = 0.7
 DEFAULT_STEPS = 8
-WORKFLOW_SCHEMA_VERSION = "2.3.0"
+WORKFLOW_SCHEMA_VERSION = "2.4.0"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
-SOURCE_STYLE_DENOISE = 0.45
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
+FACE_DETECTION_MODEL = "mediapipe_face_fp32.safetensors"
 
 MODEL_URLS = {
     BASE_MODEL: "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8/resolve/9ecf2143d71542449960c5584340269c6d401449/flux-2-klein-base-9b-fp8.safetensors",
@@ -37,6 +38,7 @@ MODEL_URLS = {
     STYLE_LORA: "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/567bdd03a4a93f7506453780285323fa10ed48aa/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
     ESRGAN_MODEL: "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
     BACKGROUND_MODEL: "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
+    FACE_DETECTION_MODEL: "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",
 }
 
 RESTORATION_PROMPT = (
@@ -46,8 +48,9 @@ RESTORATION_PROMPT = (
 )
 RESTORATION_NEGATIVE = ""
 STYLE_PROMPT = (
-    "hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, "
-    "wearing a dark civilian suit."
+    "hoi4_portrait. Apply the learned portrait treatment to the person in the reference image. "
+    "Keep the same person and facial identity. Keep facial structure, expression, pose, gaze, "
+    "hairstyle, and clothing unchanged."
 )
 STYLE_NEGATIVE = ""
 TEXT_PROMPT = (
@@ -192,9 +195,9 @@ def _model_nodes(*, include_lora: bool = True) -> list[Node]:
     return nodes
 
 
-def _source_nodes() -> list[Node]:
+def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
     group = "01 Source and ESRGAN"
-    return [
+    nodes = [
         _node(
             5,
             "LoadImage",
@@ -210,26 +213,159 @@ def _source_nodes() -> list[Node]:
         ),
         _node(
             9,
-            "PrimitiveBoundingBox",
-            "Adjust the head-and-shoulders crop rectangle",
+            "ImageScaleToMaxDimension",
+            "Normalize source for face detection",
             group,
             (520, 120),
-            size=(360, 170),
-            inputs={"x": 1550, "y": 500, "width": 1100, "height": 1481},
-            input_types={"x": "INT", "y": "INT", "width": "INT", "height": "INT"},
-            outputs=["BOUNDING_BOX"],
-            output_types=["BOUNDING_BOX"],
-            widgets=[1550, 500, 1100, 1481],
+            size=(360, 120),
+            inputs={"image": Link(5), "upscale_method": "lanczos", "largest_size": 1024},
+            input_types={"image": "IMAGE", "upscale_method": "COMBO", "largest_size": "INT"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["lanczos", 1024],
+        ),
+        _node(
+            12,
+            "LoadMediaPipeFaceLandmarker",
+            "Load MediaPipe face detector",
+            group,
+            (100, 500),
+            inputs={"model_name": FACE_DETECTION_MODEL},
+            input_types={"model_name": "COMBO"},
+            outputs=["FACE_DETECTION_MODEL"],
+            output_types=["FACE_DETECTION_MODEL"],
+            widgets=[FACE_DETECTION_MODEL],
+            models=_model(FACE_DETECTION_MODEL, "detection"),
+        ),
+        _node(
+            13,
+            "MediaPipeFaceLandmarker",
+            "Find the portrait subject",
+            group,
+            (520, 300),
+            size=(360, 220),
+            inputs={
+                "face_detection_model": Link(12),
+                "image": Link(9),
+                "detector_variant": "both",
+                "num_faces": 1,
+                "min_confidence": 0.3,
+                "missing_frame_fallback": "empty",
+            },
+            input_types={
+                "face_detection_model": "FACE_DETECTION_MODEL",
+                "image": "IMAGE",
+                "detector_variant": "COMBO",
+                "num_faces": "INT",
+                "min_confidence": "FLOAT",
+                "missing_frame_fallback": "COMBO",
+            },
+            outputs=["face_landmarks", "bboxes"],
+            output_types=["FACE_LANDMARKS", "BOUNDING_BOX"],
+            widgets=["both", 1, 0.3, "empty"],
         ),
         _node(
             11,
-            "ImageCropV2",
-            "Crop source to head and shoulders before processing",
+            "CropByBBoxes",
+            "Crop detected face with head-and-shoulders margin",
             group,
-            (520, 350),
-            size=(360, 100),
-            inputs={"image": Link(5), "crop_region": Link(9)},
-            input_types={"image": "IMAGE", "crop_region": "BOUNDING_BOX"},
+            (520, 580),
+            size=(360, 180),
+            inputs={
+                "image": Link(9),
+                "bboxes": Link(13, 1),
+                "output_width": 1024,
+                "output_height": 1024,
+                "padding": 200,
+                "keep_aspect": "stretch",
+            },
+            input_types={
+                "image": "IMAGE",
+                "bboxes": "BOUNDING_BOX",
+                "output_width": "INT",
+                "output_height": "INT",
+                "padding": "INT",
+                "keep_aspect": "COMBO",
+            },
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=[1024, 1024, 200, "stretch"],
+        ),
+        _node(
+            14,
+            "ImageScale",
+            "Fit detected crop to portrait aspect",
+            group,
+            (520, 820),
+            size=(360, 150),
+            inputs={"image": Link(11), "upscale_method": "lanczos", "width": 832, "height": 1120, "crop": "center"},
+            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["lanczos", 832, 1120, "center"],
+        ),
+        _node(
+            15,
+            "PrimitiveBoundingBox",
+            "Manual crop box for difficult sources",
+            group,
+            (100, 980),
+            size=(320, 190),
+            inputs={"x": 128, "y": 0, "width": 768, "height": 1024},
+            input_types={"x": "INT", "y": "INT", "width": "INT", "height": "INT"},
+            outputs=["BOUNDING_BOX"],
+            output_types=["BOUNDING_BOX"],
+            widgets=[128, 0, 768, 1024],
+        ),
+        _node(
+            16,
+            "CropByBBoxes",
+            "Apply manual head-and-shoulders crop",
+            group,
+            (520, 1030),
+            size=(360, 180),
+            inputs={
+                "image": Link(9),
+                "bboxes": Link(15),
+                "output_width": 832,
+                "output_height": 1120,
+                "padding": 0,
+                "keep_aspect": "stretch",
+            },
+            input_types={
+                "image": "IMAGE",
+                "bboxes": "BOUNDING_BOX",
+                "output_width": "INT",
+                "output_height": "INT",
+                "padding": "INT",
+                "keep_aspect": "COMBO",
+            },
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=[832, 1120, 0, "stretch"],
+        ),
+        _node(
+            17,
+            "PrimitiveBoolean",
+            "Use manual crop for difficult sources",
+            group,
+            (100, 1220),
+            size=(320, 90),
+            inputs={"value": False},
+            input_types={"value": "BOOLEAN"},
+            outputs=["BOOLEAN"],
+            output_types=["BOOLEAN"],
+            widgets=[False],
+        ),
+        _node(
+            18,
+            "ComfySwitchNode",
+            "Choose automatic or manual crop",
+            group,
+            (520, 1270),
+            size=(360, 130),
+            inputs={"switch": Link(17), "on_false": Link(14), "on_true": Link(16)},
+            input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
         ),
@@ -238,7 +374,7 @@ def _source_nodes() -> list[Node]:
             "UpscaleModelLoader",
             "Load RealESRGAN x2",
             group,
-            (100, 500),
+            (100, 1430),
             inputs={"model_name": ESRGAN_MODEL},
             input_types={"model_name": "COMBO"},
             outputs=["UPSCALE_MODEL"],
@@ -251,8 +387,9 @@ def _source_nodes() -> list[Node]:
             "ImageUpscaleWithModel",
             "Restore and upscale with ESRGAN",
             group,
-            (520, 510),
-            inputs={"upscale_model": Link(6), "image": Link(11)},
+            (520, 1430),
+            size=(267, 46),
+            inputs={"upscale_model": Link(6), "image": Link(18)},
             input_types={"upscale_model": "UPSCALE_MODEL", "image": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
@@ -262,7 +399,7 @@ def _source_nodes() -> list[Node]:
             "ImageScale",
             "Fit portrait to the 832 x 1120 work canvas",
             group,
-            (520, 680),
+            (520, 1550),
             size=(360, 150),
             inputs={"image": Link(7), "upscale_method": "lanczos", "width": 832, "height": 1120, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
@@ -270,19 +407,23 @@ def _source_nodes() -> list[Node]:
             output_types=["IMAGE"],
             widgets=["lanczos", 832, 1120, "center"],
         ),
-        _node(
-            10,
-            "PreviewImage",
-            "Confirm head-and-shoulders processing before FLUX",
-            group,
-            (100, 680),
-            size=(360, 330),
-            inputs={"images": Link(8)},
-            input_types={"images": "IMAGE"},
-            outputs=["IMAGE"],
-            output_types=["IMAGE"],
-        ),
     ]
+    if include_processed_preview:
+        nodes.append(
+            _node(
+                10,
+                "PreviewImage",
+                "Confirm head-and-shoulders processing before FLUX",
+                group,
+                (100, 1600),
+                size=(360, 430),
+                inputs={"images": Link(8)},
+                input_types={"images": "IMAGE"},
+                outputs=["IMAGE"],
+                output_types=["IMAGE"],
+            )
+        )
+    return nodes
 
 
 def _edit_stage(
@@ -297,7 +438,6 @@ def _edit_stage(
     seed: int,
     title_prefix: str,
     y: int = 120,
-    denoise: float | None = None,
 ) -> tuple[list[Node], Link]:
     i = id_start
     nodes = [
@@ -419,7 +559,7 @@ def _edit_stage(
                 "noise": Link(i + 7),
                 "guider": Link(i + 6),
                 "sampler": Link(i + 8),
-                "sigmas": Link(i + 12, 1) if denoise is not None else Link(i + 9),
+                "sigmas": Link(i + 9),
                 "latent_image": Link(i + 2),
             },
             input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
@@ -450,21 +590,6 @@ def _edit_stage(
             output_types=["IMAGE"],
         ),
     ]
-    if denoise is not None:
-        nodes.append(
-            _node(
-                i + 12,
-                "SplitSigmasDenoise",
-                "Limit denoise to preserve source identity",
-                group,
-                (x + 900, y + 740),
-                inputs={"sigmas": Link(i + 9), "denoise": denoise},
-                input_types={"sigmas": "SIGMAS", "denoise": "FLOAT"},
-                outputs=["high_sigmas", "low_sigmas"],
-                output_types=["SIGMAS", "SIGMAS"],
-                widgets=[denoise],
-            )
-        )
     return nodes, Link(i + 11)
 
 
@@ -848,18 +973,6 @@ def _background_and_outputs_multi(
                     widgets=[],
                 ),
                 _node(
-                    branch + 3,
-                    "PreviewImage",
-                    f"Preview {label}",
-                    output_group,
-                    (x + 1380, row_y),
-                    size=(420, 420),
-                    inputs={"images": Link(branch + 2)},
-                    input_types={"images": "IMAGE"},
-                    outputs=["IMAGE"],
-                    output_types=["IMAGE"],
-                ),
-                _node(
                     branch + 4,
                     "SaveImage",
                     f"Save {label} 832 x 1120 master PNG",
@@ -959,11 +1072,11 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
 def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1) -> list[Group]:
     groups: list[Group] = []
     if has_source:
-        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 1100), "#557a46"))
+        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 2040), "#557a46"))
     groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"))
     if has_restoration:
         groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"))
-        style_height = 2760 if candidate_count > 1 else 980
+        style_height = 2700 if candidate_count > 1 else 980
         groups.append(Group("04 HOI4 LoRA styling", (3400, 40, 1800, style_height), "#7a568e"))
     else:
         groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1800, 980), "#7a568e"))
@@ -976,7 +1089,7 @@ def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1
 
 def _processing_groups() -> list[Group]:
     return [
-        Group("01 Source and ESRGAN", (40, 40, 930, 1100), "#557a46"),
+        Group("01 Source and ESRGAN", (40, 40, 930, 2040), "#557a46"),
         Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"),
         Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"),
         Group("04 Processed portrait output", (3340, 40, 1100, 720), "#596b82"),
@@ -984,7 +1097,7 @@ def _processing_groups() -> list[Group]:
 
 
 def build_source() -> Graph:
-    nodes = _source_nodes() + _model_nodes()
+    nodes = _source_nodes(include_processed_preview=False) + _model_nodes()
     restoration_nodes, restored = _edit_stage(
         id_start=20,
         group="03 Optional FLUX.2 restoration",
@@ -1012,6 +1125,9 @@ def build_source() -> Graph:
             widgets=[False],
         )
     )
+    restoration_preview = next(node for node in nodes if node.node_id == 35)
+    restoration_preview.title = "Preview selected processed portrait"
+    restoration_preview.inputs["images"] = Link(32)
     styled_images: list[Link] = []
     for index, seed in enumerate(SOURCE_STYLE_SEEDS, start=1):
         style_nodes, styled = _edit_stage(
@@ -1025,7 +1141,6 @@ def build_source() -> Graph:
             negative=STYLE_NEGATIVE,
             seed=seed,
             title_prefix=f"Candidate {index} person-only LoRA",
-            denoise=SOURCE_STYLE_DENOISE,
         )
         nodes.extend(style_nodes)
         styled_images.append(styled)
@@ -1041,7 +1156,6 @@ def build_source() -> Graph:
             "flux_restoration_default": False,
             "candidate_count": SOURCE_CANDIDATE_COUNT,
             "candidate_seed_count": SOURCE_CANDIDATE_COUNT,
-            "source_style_denoise": SOURCE_STYLE_DENOISE,
             "background_candidate_count": SOURCE_CANDIDATE_COUNT,
             "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
@@ -1079,6 +1193,9 @@ def build_processing() -> Graph:
             widgets=[False],
         )
     )
+    restoration_preview = next(node for node in nodes if node.node_id == 35)
+    restoration_preview.title = "Preview selected processed portrait"
+    restoration_preview.inputs["images"] = Link(32)
     nodes.extend(_processing_outputs(processed_image=Link(32)))
     return Graph(
         workflow_id="hoi4_portrait_processing_only",
@@ -1127,6 +1244,19 @@ def _api_json(graph: Graph) -> dict[str, Any]:
 
 
 def _ui_json(graph: Graph) -> dict[str, Any]:
+    viewport = {"scale": 0.45, "offset": [120, 120]}
+    if graph.workflow_id == "hoi4_portrait_flux2_klein_9b_source":
+        layout = json.loads(SOURCE_LAYOUT_PATH.read_text(encoding="utf-8"))
+        geometry = layout["nodes"]
+        for node in graph.nodes:
+            if node.node_id in {5, 6, 7, 8, 9, 11, 12, 13, 14}:
+                continue
+            saved = geometry.get(str(node.node_id))
+            if saved:
+                node.pos = tuple(saved["pos"])
+                node.size = tuple(saved["size"])
+        viewport = layout["viewport"]
+
     node_by_id = {node.node_id: node for node in graph.nodes}
     link_id = 1
     links: list[list[Any]] = []
@@ -1164,6 +1294,11 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         }
         if node.models:
             properties["models"] = node.models
+        is_feature_toggle = node.title.startswith("Toggle FLUX restoration") or node.title.startswith(
+            "Toggle replacement background"
+        )
+        node_color = "#b91c1c" if is_feature_toggle else colors.get(node.group, "#3f789e")
+        node_background = "#7f1d1d" if is_feature_toggle else colors.get(node.group, "#3f789e")
         ui_nodes.append(
             {
                 "id": node.node_id,
@@ -1171,8 +1306,8 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
                 "title": node.title,
                 "pos": list(node.pos),
                 "size": list(node.size),
-                "color": colors.get(node.group, "#3f789e"),
-                "bgcolor": colors.get(node.group, "#3f789e"),
+                "color": node_color,
+                "bgcolor": node_background,
                 "flags": {},
                 "order": order,
                 "mode": 0,
@@ -1193,7 +1328,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         ],
         "config": {},
         "extra": {
-            "ds": {"scale": 0.45, "offset": [120, 120]},
+            "ds": viewport,
             "workflow_id": graph.workflow_id,
             "description": graph.description,
             "workflow_kind": graph.kind,

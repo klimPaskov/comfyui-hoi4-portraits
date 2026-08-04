@@ -12,8 +12,10 @@
 
 ## Prepare a source image
 
-In either source workflow, set the crop box around one person's head and
-shoulders. Confirm the crop preview before running RealESRGAN or FLUX.
+In either source workflow, confirm that the automatic crop contains one
+person's head and shoulders. For a blurry, distant, or multi-person image,
+turn on **Use manual crop for difficult sources**, adjust the bounding box,
+and confirm its preview before running RealESRGAN or FLUX.
 
 Good input:
 
@@ -37,6 +39,7 @@ that determines the portrait framing.
 | `loras/` | `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors` |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
+| `detection/` | `mediapipe_face_fp32.safetensors` |
 
 Find the filenames, pinned sources, sizes, and SHA-256 hashes in
 [`models.json`](../models.json).
@@ -45,10 +48,10 @@ Find the filenames, pinned sources, sizes, and SHA-256 hashes in
 
 1. Open the workflow JSON, not the `.api.json` file, in the ComfyUI editor.
 2. Check every model loader. A red loader means the named file has not been installed or imported.
-3. Select the source image, set the crop box around the head and shoulders,
-   and confirm the crop preview.
-4. Edit the positive prompt. Keep the `hoi4_portrait,` trigger and describe
-   only the visible person.
+3. Select the source image and confirm the automatic crop preview. If it chose
+   the wrong person or framing, turn on the manual-crop toggle and adjust its
+   box.
+4. Keep the source workflow's identity-preservation instruction intact.
 5. Leave background replacement off for the first run.
 6. Queue once. The source workflow creates three final candidates from the
    same input. Its restoration switch is off by default; turn it on only when
@@ -59,16 +62,16 @@ Find the filenames, pinned sources, sizes, and SHA-256 hashes in
 
 Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
 
-## Person-only prompt rules
+## Prompt rules
 
-For a real person, describe only supported ethnicity, broad hair or facial-hair
-cues, and general clothing classification. Mention approximate age only when
-the person clearly appears older; otherwise omit age. Let the source reference carry expression, pose, gaze, and facing
-direction. Do not put style, game, background, lighting,
-rendering, transformation, restoration, or preservation instructions in the
-positive prompt. Do not ask the model to invent medals or insignia. If
-identity drifts, try LoRA strength `0.7`, use a cleaner crop, or disable the
-optional FLUX restoration pass.
+The source workflow uses its reference image and a fixed instruction to retain
+the same person, facial structure, expression, pose, gaze, hairstyle, and
+clothing. Do not replace that instruction with a generated person description.
+
+For text-to-image, begin with `hoi4_portrait,` and use a short, general person
+description: supported ethnicity or nationality, broad hair or facial-hair
+cues, and civilian, military, or clerical clothing. Do not describe the game,
+visual style, background, lighting, framing, or rendering.
 
 ## Common problems
 
@@ -76,8 +79,8 @@ optional FLUX restoration pass.
 | --- | --- |
 | Loader is red | Install/import the exact filename from `models.json`, then refresh ComfyUI. |
 | Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 24 GB GPU. |
-| Wrong person or full-body framing | Adjust the source bounding box until the crop preview is head-and-shoulders. |
+| Wrong person or full-body framing | Turn on **Use manual crop for difficult sources**, adjust its box, and confirm the crop preview. |
 | Background appears too early | Background replacement runs after portrait generation; reopen the published workflow if the graph has been edited. |
 | Style is weak | Keep `hoi4_portrait` in the prompt; use the `0.7` default and keep the crop clean. |
-| Identity or position changes | Confirm the crop, keep the `0.45` identity-preserving denoise nodes connected, disable optional restoration if needed, and remove speculative traits. |
+| Identity or position changes | Confirm the crop, restore the fixed identity instruction if it was edited, and disable optional FLUX restoration. |
 | Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Use Euler with eight steps; optional FLUX restoration can soften identity, so disable it first. |

@@ -7,12 +7,18 @@ import json
 from pathlib import Path
 from typing import Any
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "workflows" / "hoi4_portrait_flux2_klein_9b_source.json"
 OUT = ROOT / "docs" / "assets" / "workflows"
+PREVIEW_ASSETS = {
+    35: ROOT / "comfyui" / "input" / "screenshot_stage_processed.png",
+    55: ROOT / "comfyui" / "input" / "screenshot_stage_styled.png",
+    75: ROOT / "comfyui" / "input" / "screenshot_stage_final.png",
+    95: ROOT / "comfyui" / "input" / "screenshot_stage_styled.png",
+}
 
 
 def _font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -108,14 +114,22 @@ def render(
         x0, y0 = point(x, y)
         x1, y1 = point(x + w, y + h)
         group = next((item for item in groups if item["title"] == node["properties"].get("hoi4_group")), None)
-        color = group["color"] if group else "#64748b"
-        draw.rounded_rectangle((x0, y0, x1, y1), radius=max(3, round(10 * scale)), fill=_mix(color, 0.74), outline=_rgb(color), width=max(1, round(3 * scale)))
+        color = node.get("color") or (group["color"] if group else "#64748b")
+        background = node.get("bgcolor") or color
+        draw.rounded_rectangle((x0, y0, x1, y1), radius=max(3, round(10 * scale)), fill=_mix(background, 0.74), outline=_rgb(color), width=max(1, round(3 * scale)))
         draw.text((x0 + round(9 * scale), y0 + round(7 * scale)), _short(node.get("title", node["type"]), 38), fill=(250, 250, 252), font=node_font)
         draw.text((x0 + round(9 * scale), y0 + round(30 * scale)), f"#{node_id}  {node['type']}", fill=(196, 210, 226), font=small_font)
         if node["type"] == "PreviewImage":
             preview_top = y0 + round(58 * scale)
             draw.rectangle((x0 + round(10 * scale), preview_top, x1 - round(10 * scale), y1 - round(10 * scale)), fill=(28, 34, 44), outline=(175, 185, 198), width=max(1, round(2 * scale)))
-            draw.text((x0 + round(18 * scale), preview_top + round(14 * scale)), "preview after queue", fill=(160, 174, 190), font=small_font)
+            preview_path = PREVIEW_ASSETS.get(node_id)
+            if preview_path and preview_path.is_file():
+                inner = (x0 + round(12 * scale), preview_top + round(2 * scale), x1 - round(12 * scale), y1 - round(12 * scale))
+                preview = Image.open(preview_path).convert("RGB")
+                preview = ImageOps.fit(preview, (max(1, inner[2] - inner[0]), max(1, inner[3] - inner[1])), method=Image.Resampling.LANCZOS)
+                image.paste(preview, (inner[0], inner[1]))
+            else:
+                draw.text((x0 + round(18 * scale), preview_top + round(14 * scale)), "preview after queue", fill=(160, 174, 190), font=small_font)
         elif node.get("widgets_values"):
             value = _short(node["widgets_values"][0], 42)
             draw.text((x0 + round(9 * scale), y1 - round(25 * scale)), value, fill=(218, 225, 236), font=small_font)

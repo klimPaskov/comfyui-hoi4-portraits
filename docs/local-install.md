@@ -4,7 +4,7 @@
 
 - ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
-- The six pinned model files occupy 19.41 GB decimal (18.08 GiB). A 30 GB
+- The seven pinned model files occupy 19.42 GB decimal (18.08 GiB). A 30 GB
   RunPod volume is sufficient for the repository, ComfyUI files, normal caches,
   and outputs. The downloader writes directly to the ComfyUI model folders and
   does not create a second model copy.
@@ -63,7 +63,7 @@ test -d "$P/.git" || git clone --depth 1 https://github.com/klimPaskov/comfyui-h
 "$P/scripts/install_runpod.sh" "$COMFY_ROOT"
 ```
 
-The final verification pass checks the locked size and SHA-256 for all six
+The final verification pass checks the locked size and SHA-256 for all seven
 files. If a download is interrupted or a file was placed in the wrong folder,
 the installer stops instead of silently using it. `HF_TOKEN` is read only from
 the process environment and is never printed or saved. Confirm that
@@ -90,7 +90,7 @@ From PowerShell:
 The release self-extractor accepts an empty destination directory:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.3.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.3.0"
+.\HOI4-Portrait-Workflows-v2.4.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.0"
 ```
 
 Use `-SkipModels` if the model files are already installed. Start with:

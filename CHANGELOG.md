@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## 2.4.0 — 2026-08-04
+
+- Added automatic face detection with a one-click manual crop override for
+  blurry, distant, and multi-person source images.
+- Added the pinned MediaPipe detector to the model installer and RunPod paths.
+- Replaced generated source descriptions with a fixed identity-preservation
+  instruction; text-to-image keeps concise manual prompting guidance.
+- Made FLUX restoration and background replacement controls red and kept both
+  disabled by default.
+- Regenerated the workflow diagrams and extended structural and crop tests.
+
 ## 2.3.0 — 2026-08-03
 
 - Published the three-workflow set as source, text-to-image, and
@@ -25,8 +36,6 @@ All notable project changes are recorded here.
 - Replaced the prior gallery with three full-restoration triptychs, three
   ESRGAN-only triptychs, and three no-input portraits made from the latest
   supplied sources.
-- Recorded the validated, person-only Qwen autoprompter description used for
-  every source example.
 - Extended structural tests for crop order, source-latent ancestry, defaults,
   prompt policy, and non-overlapping workflow layout.
 - Restored the canonical MIT license text so GitHub can identify the repository

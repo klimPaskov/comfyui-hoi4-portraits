@@ -54,7 +54,7 @@ LoRA is imported into the Cloud model library.
 
 ## Local inference evidence
 
-The six pinned model files are checksum-verified. ComfyUI 0.25.0 ran with
+The seven pinned model files are checksum-verified. ComfyUI 0.25.0 ran with
 optional extensions disabled.
 
 The public graphs use LoRA strength `0.7`, Euler, eight steps, and CFG 5. A
@@ -62,6 +62,9 @@ fixed-seed control covers the same source at 6, 8, 10, 12, 20, and 35 steps.
 
 The local evidence set includes:
 
+- automatic crop-only runs across all 43 supplied source files;
+- ten visually reviewed manual-override crops covering washed-out, dark,
+  blurred, full-body, and multi-person sources;
 - six source portraits through crop → RealESRGAN → final LoRA;
 - three no-input text-to-image portraits;
 - one fixed-source, fixed-seed Euler comparison at 6, 8, 10, 12, 20, and 35 steps.

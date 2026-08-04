@@ -33,6 +33,6 @@ fi
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}" --verify-only
 
 echo
-echo "Installed three FLUX.2 Klein 9B workflows, all six pinned model files, and no custom nodes."
-echo "Models are under ${COMFY_ROOT}/models/{diffusion_models,text_encoders,vae,loras,upscale_models,background_removal}."
+echo "Installed three FLUX.2 Klein 9B workflows and all seven pinned model files."
+echo "Models are under ${COMFY_ROOT}/models/{diffusion_models,text_encoders,vae,loras,upscale_models,background_removal,detection}."
 echo "Open Workflows > hoi4_portraits after restarting ComfyUI."

@@ -38,7 +38,6 @@ workflows.
 - [Workflow controls and graph structure](docs/workflows.md)
 - [Comfy Cloud and MCP](docs/comfy-cloud.md)
 - [Local and RunPod installation](docs/local-install.md)
-- [Autoprompter prompt examples](docs/autoprompter-examples.md)
 - [Local test results and before/afters](docs/test-results.md)
 - [Testing](docs/testing.md)
 - [Contributing](CONTRIBUTING.md)
@@ -68,9 +67,10 @@ flowchart LR
 
 ### 1. Crop and restore the source
 
-Load the portrait, set the crop box around the head and shoulders, and confirm
-the preview. The cropped image goes through RealESRGAN before it is fitted to
-the 832 × 1120 working canvas.
+Load the portrait and confirm the automatic head-and-shoulders preview. For a
+blurry, distant, or multi-person source, turn on **Use manual crop for difficult
+sources** and set its box around the intended person. The selected crop goes
+through RealESRGAN before it is fitted to the 832 × 1120 working canvas.
 
 ![Source crop and RealESRGAN processing](docs/assets/workflows/step-1-source-processing.png)
 
@@ -85,7 +85,8 @@ the portrait LoRA. Set the LoRA strength to `0.7`.
 
 The source workflow includes a conservative FLUX.2 restoration pass after
 ESRGAN. The restoration switch is off by default, so that pass does not run.
-Turn it on when a damaged source needs the additional pass.
+The red toggle opens at `false`; turn it on when a damaged source needs the
+additional pass.
 
 ![Optional FLUX.2 restoration stage](docs/assets/workflows/step-3-flux-restoration.png)
 
@@ -93,9 +94,9 @@ Turn it on when a damaged source needs the additional pass.
 
 The selected processed portrait becomes the reference and starting image for
 three independent LoRA styling passes. Each pass uses a different seed, so one
-queue produces three candidates from the same input. Describe only the person
-in the positive prompt. Each pass limits denoising to `0.45` so the source face
-remains the starting point. The defaults are Euler, eight steps, and CFG 5.
+queue produces three candidates from the same input. The source workflow uses
+a fixed identity-preservation instruction rather than a generated description
+of the person. The defaults are Euler, eight steps, and CFG 5.
 
 ![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
 
@@ -103,7 +104,8 @@ remains the starting point. The defaults are Euler, eight steps, and CFG 5.
 
 Background masking and compositing receive each decoded final portrait. One
 shared switch controls all three candidate branches; it is off by default and
-runs only after crop, restoration, and LoRA generation.
+runs only after crop, restoration, and LoRA generation. Its red toggle also
+opens at `false`.
 
 ![Final-image background replacement stage](docs/assets/workflows/step-5-background-replacement.png)
 
@@ -260,7 +262,7 @@ workflow is practical on a 24 GB GPU with offloading. An 18 GB GPU may also run
 it with more aggressive offloading and a reduced test canvas; 16 GB systems can
 run the same kind of reduced-resolution test but will be slower. The upstream model card's roughly
 29 GB figure is a conservative full-resolution/no-offload guideline. The six
-pinned model files use 19.41 GB decimal (18.08 GiB) before ComfyUI caches or
+pinned model files use 19.42 GB decimal (18.08 GiB) before ComfyUI caches or
 outputs. For RunPod, a 30 GB volume is sufficient for this project and its
 normal outputs.
 
@@ -275,7 +277,7 @@ The FLUX.2 base model is gated. Accept its Hugging Face agreement and run
 `hf auth login` (or set `HF_TOKEN`) before the model download command.
 
 For a RunPod ComfyUI template, this command installs the three workflows, the
-bundled backgrounds and sample input, and all six pinned model files into the
+bundled backgrounds and sample input, and all seven pinned model files into the
 standard `ComfyUI/models/` subfolders. Set `HF_TOKEN` in the pod environment
 first so the gated FLUX.2 base can download:
 
@@ -304,60 +306,30 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.3.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.3.0"
+.\HOI4-Portrait-Workflows-v2.4.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.0"
 ```
 
 ## Prompting
 
-Keep `hoi4_portrait` at the start of the positive prompt, then describe only
-the visible person: broad hair or facial-hair cues, supported ethnicity, and
-general clothing classification. Leave expression, pose, gaze, and facing direction to the input portrait.
-Do not describe the game, desired style, background, lighting, rendering,
-restoration, or transformation. The LoRA and workflow supply those parts.
+The source workflow reads identity, pose, expression, gaze, hair, and clothing
+from the reference image. Its fixed edit instruction is:
 
 ```text
-hoi4_portrait, an Irish middle-aged man with short dark hair and a moustache, wearing a dark civilian suit.
+hoi4_portrait. Apply the learned portrait treatment to the person in the reference image. Keep the same person and facial identity. Keep facial structure, expression, pose, gaze, hairstyle, and clothing unchanged.
 ```
 
-The workflow default positive prompt is:
+The text-to-image workflow has no reference person. Start its prompt with
+`hoi4_portrait,` and add a short, general description such as supported
+ethnicity or nationality, broad hair or facial hair, and a civilian, military,
+or clerical clothing classification. Do not describe the game, visual style,
+background, lighting, framing, or rendering.
 
 ```text
-hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit.
-```
-
-The autoprompter instruction shown to an external vision model is:
-
-```text
-Inspect the portrait and return one clear, concise English prompt line.
-
-The line must begin exactly with:
-
-hoi4_portrait,
-
-Describe only broad, visible person cues: ethnicity or nationality when the
-source context supports it, general hair or facial hair, broad civilian,
-military, clerical, or other visible clothing classification, and general
-clothing. Mention approximate age only when the person clearly appears older;
-otherwise omit age completely. Keep it short.
-
-Do not mention cropping, framing, camera angle, pose, gaze, facing direction,
-emotion, or expression. Do not name the person or invent ethnicity,
-nationality, role, rank, branch, unit, medals, or insignia. Use a broad
-military/civilian classification only when the clothing clearly supports it.
-
-Do not describe the background, border, vignette, lighting, game, style,
-palette, rendering, restoration, transformation, or preservation. For
-monochrome or sepia sources, do not invent colors. Ignore scratches, paper
-texture, blur, and other photographic artifacts.
-
-Return only the single prompt line. Do not add a heading, explanation,
-quotation marks, Markdown, a negative prompt, or a tag list.
+hoi4_portrait, an Irish man with dark hair and a moustache, wearing a civilian suit.
 ```
 
 The workflows use `0.7` LoRA strength, Euler, eight steps, and CFG 5 by
-default. The step comparison at 6, 8, 10, 12, 20, and 35 steps supports eight
-as the practical setting for this workflow. See [autoprompter
-examples](docs/autoprompter-examples.md) for concise person-only prompts.
+default.
 
 ## Examples
 
@@ -372,7 +344,7 @@ exclude grayscale finals, blur, crop failures, and pose drift.
 
 ![Source processing example 1](docs/assets/test-runs/source-processing-01.jpg)
 
-Autoprompter description:
+Prompt used for this example:
 
 ```text
 hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustache, wearing a dark civilian suit.
@@ -380,7 +352,7 @@ hoi4_portrait, an Irish middle-aged man with short wavy dark hair and a moustach
 
 ![Source processing example 2](docs/assets/test-runs/source-processing-02.jpg)
 
-Autoprompter description:
+Prompt used for this example:
 
 ```text
 hoi4_portrait, an Irish woman with dark hair swept back, wearing a dark civilian dress with a light collar.
@@ -388,7 +360,7 @@ hoi4_portrait, an Irish woman with dark hair swept back, wearing a dark civilian
 
 ![Source processing example 3](docs/assets/test-runs/source-processing-03.jpg)
 
-Autoprompter description:
+Prompt used for this example:
 
 ```text
 hoi4_portrait, an Irish man with dark hair combed back, wearing a dark civilian suit with a light collar and tie.
@@ -398,7 +370,7 @@ hoi4_portrait, an Irish man with dark hair combed back, wearing a dark civilian 
 
 ![Source processing without FLUX restoration, example 1](docs/assets/test-runs/source-processing-restoration-off-01.jpg)
 
-Autoprompter description:
+Prompt used for this example:
 
 ```text
 hoi4_portrait, an Irish middle-aged man with receding dark hair and prominent ears, wearing a military uniform.
@@ -406,7 +378,7 @@ hoi4_portrait, an Irish middle-aged man with receding dark hair and prominent ea
 
 ![Source processing without FLUX restoration, example 2](docs/assets/test-runs/source-processing-restoration-off-02.jpg)
 
-Autoprompter description:
+Prompt used for this example:
 
 ```text
 hoi4_portrait, an Irish slender middle-aged man with neatly parted dark hair and round wire-frame glasses, wearing a dark civilian suit.
@@ -414,7 +386,7 @@ hoi4_portrait, an Irish slender middle-aged man with neatly parted dark hair and
 
 ![Source processing without FLUX restoration, example 3](docs/assets/test-runs/source-processing-restoration-off-03.jpg)
 
-Autoprompter description:
+Prompt used for this example:
 
 ```text
 hoi4_portrait, an Irish older man with sparse dark hair at the sides, wearing dark clerical clothing.

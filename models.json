@@ -72,6 +72,18 @@
       "sha256": "9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154",
       "license": "See upstream repository",
       "requires_huggingface_auth": false
+    },
+    {
+      "name": "MediaPipe face detector",
+      "filename": "mediapipe_face_fp32.safetensors",
+      "directory": "detection",
+      "source": "Comfy-Org/mediapipe",
+      "revision": "b98d050e8bf406f14f063bdba697e5b5391bbbf5",
+      "url": "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",
+      "size_bytes": 5423900,
+      "sha256": "a98c4806081d40eba35102a0f6dc0000c2e1388b72cf24e691703d0605bd888a",
+      "license": "Apache-2.0",
+      "requires_huggingface_auth": false
     }
   ]
 }

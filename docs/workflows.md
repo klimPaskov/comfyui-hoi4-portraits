@@ -27,15 +27,15 @@ with one full-graph screenshot and a readable close-up of every group.
 
 Groups run left to right:
 
-1. **Source and ESRGAN** loads the portrait, applies the adjustable built-in head-and-shoulders crop, previews it, runs RealESRGAN x2, then fits the result to 832 × 1120.
+1. **Source and ESRGAN** loads the portrait, detects a face, previews a head-and-shoulders crop, and provides a one-click manual bounding-box override for blurry, distant, or multi-person sources. The selected crop runs through RealESRGAN x2 and is fitted to 832 × 1120.
 2. **FLUX.2 Klein 9B models** loads the base model, encoder, VAE, and LoRA.
 3. **Optional FLUX.2 restoration** encodes the ESRGAN result as both its reference and starting latent for a conservative restoration pass. This keeps framing and pose anchored.
 4. The restoration switch is off by default and sends the direct ESRGAN result
    onward. Turn it on to select the FLUX result. The disabled restoration pass
    does not run.
 5. **HOI4 LoRA styling** runs three independent seed passes. Each pass encodes
-   the selected processed image as both the reference and starting latent, then
-   samples the low-denoise `0.45` portion of the schedule with the LoRA-patched
+   the selected processed image as both the reference and starting latent and
+   uses the fixed identity-preservation instruction with the LoRA-patched
    model. This keeps all three candidates tied to the same face, crop, and pose
    while giving the user a choice of final seed.
 6. **Optional background** receives each decoded styled image, creates its
@@ -50,7 +50,8 @@ intact.
 
 ## Processing workflow
 
-This graph ends after source processing. It contains the adjustable crop,
+This graph ends after source processing. It contains automatic cropping with
+a manual override,
 RealESRGAN, and optional FLUX.2 restoration pass, with the restoration switch
 off by default. It saves the processed 832 × 1120 image and the 156 × 210
 game-size image. It does not load or apply the project LoRA.

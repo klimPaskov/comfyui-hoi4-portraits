@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "comfyui-hoi4-portraits"
-version = "2.3.0"
+version = "2.4.0"
 description = "Core-node ComfyUI workflows for FLUX.2 Klein 9B HOI4-style portraits"
 readme = "README.md"
 requires-python = ">=3.10"

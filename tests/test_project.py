@@ -40,7 +40,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_hashes_match_files(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.3.0")
+        self.assertEqual(manifest["schema_version"], "2.4.0")
         for item in manifest["workflows"]:
             for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
                 data = (ROOT / item[path_key]).read_bytes()
@@ -49,22 +49,6 @@ class WorkflowTests(unittest.TestCase):
     def test_editor_model_urls_are_revision_pinned(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
             self.assertNotIn("/resolve/main/", workflow.read_text(encoding="utf-8"), workflow.name)
-
-    def test_autoprompter_output_contract_is_person_only(self) -> None:
-        instruction = (ROOT / "prompts" / "autoprompter_instruction.txt").read_text(encoding="utf-8").casefold()
-        self.assertIn("describe only broad", instruction)
-        self.assertNotIn("young", instruction)
-        self.assertIn("otherwise omit age completely", instruction)
-        self.assertNotIn("workflow", instruction)
-        self.assertNotIn("comfyui", instruction)
-        for forbidden in (
-            "transform the supplied",
-            "grand-strategy portrait",
-            "hand-painted 1930s",
-            "background description",
-        ):
-            self.assertNotIn(forbidden, instruction)
-        self.assertIn("monochrome or sepia sources, do not invent colors", instruction)
 
     def test_selected_lora_and_sampling_defaults(self) -> None:
         self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 0.7)
@@ -83,16 +67,46 @@ class WorkflowTests(unittest.TestCase):
             if workflow.name.endswith("source.api.json"):
                 self.assertIs(api["32"]["inputs"]["switch"], False)
 
+    def test_feature_toggle_nodes_are_red_and_off_by_default(self) -> None:
+        for workflow in (ROOT / "workflows").glob("*.json"):
+            if workflow.name.endswith(".api.json"):
+                continue
+            ui = json.loads(workflow.read_text(encoding="utf-8"))
+            if "nodes" not in ui:
+                continue
+            toggles = [
+                node
+                for node in ui["nodes"]
+                if node["title"].startswith("Toggle FLUX restoration")
+                or node["title"].startswith("Toggle replacement background")
+            ]
+            self.assertTrue(toggles, workflow.name)
+            for node in toggles:
+                self.assertEqual(node["color"], "#b91c1c", f"{workflow.name}: {node['title']}")
+                self.assertEqual(node["bgcolor"], "#7f1d1d", f"{workflow.name}: {node['title']}")
+                self.assertIs(node["widgets_values"][0], False, f"{workflow.name}: {node['title']}")
+
     def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
         for name, path in (
             ("source", ROOT / "workflows" / "hoi4_portrait_flux2_klein_9b_source.api.json"),
             ("processing", ROOT / "workflows" / "hoi4_portrait_processing_only.api.json"),
         ):
             api = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(api["11"]["class_type"], "ImageCropV2")
-            self.assertEqual(api["11"]["inputs"]["image"], ["5", 0])
-            self.assertEqual(api["11"]["inputs"]["crop_region"], ["9", 0])
-            self.assertEqual(api["7"]["inputs"]["image"], ["11", 0])
+            self.assertEqual(api["9"]["class_type"], "ImageScaleToMaxDimension")
+            self.assertEqual(api["9"]["inputs"]["image"], ["5", 0])
+            self.assertEqual(api["13"]["class_type"], "MediaPipeFaceLandmarker")
+            self.assertEqual(api["13"]["inputs"]["image"], ["9", 0])
+            self.assertEqual(api["13"]["inputs"]["detector_variant"], "both")
+            self.assertEqual(api["11"]["class_type"], "CropByBBoxes")
+            self.assertEqual(api["11"]["inputs"]["bboxes"], ["13", 1])
+            self.assertEqual(api["11"]["inputs"]["padding"], 200)
+            self.assertEqual(api["14"]["inputs"]["image"], ["11", 0])
+            self.assertEqual(api["15"]["class_type"], "PrimitiveBoundingBox")
+            self.assertEqual(api["16"]["inputs"]["bboxes"], ["15", 0])
+            self.assertFalse(api["17"]["inputs"]["value"])
+            self.assertEqual(api["18"]["inputs"]["on_false"], ["14", 0])
+            self.assertEqual(api["18"]["inputs"]["on_true"], ["16", 0])
+            self.assertEqual(api["7"]["inputs"]["image"], ["18", 0])
             self.assertNotIn("EmptyFlux2LatentImage", {node["class_type"] for node in api.values()})
             if name == "source":
                 for latent_id, sampler_id in (("42", "50"), ("62", "70"), ("82", "90")):
@@ -140,7 +154,7 @@ class InstallerAndModelTests(unittest.TestCase):
         data = json.loads((ROOT / "models.json").read_text())
         self.assertEqual(data["schema_version"], "2.0.0")
         models = data["models"]
-        self.assertEqual(len(models), 6)
+        self.assertEqual(len(models), 7)
         filenames = [entry["filename"] for entry in models]
         self.assertEqual(len(filenames), len(set(filenames)))
         for entry in models:
@@ -192,7 +206,7 @@ class DocumentationTests(unittest.TestCase):
         self.assertEqual(table.count("workflows/"), 3)
         self.assertNotIn("krea", table.casefold())
 
-    def test_readme_contains_new_gallery_and_autoprompter_descriptions(self) -> None:
+    def test_readme_contains_current_gallery_and_example_prompts(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         for filename in (
             "source-processing-01.jpg",
@@ -204,7 +218,8 @@ class DocumentationTests(unittest.TestCase):
         self.assertIn("docs/assets/test-runs/random-portraits.jpg", readme)
         self.assertIn("docs/assets/test-runs/step-comparison.jpg", readme)
         self.assertNotIn("docs/assets/test-runs/sampler-comparison.png", readme)
-        self.assertEqual(readme.count("Autoprompter description:"), 6)
+        self.assertEqual(readme.count("Prompt used for this example:"), 6)
+        self.assertNotIn("autoprompter", readme.casefold())
         for obsolete in (
             "full-restoration-01.jpg",
             "full-restoration-02.jpg",
@@ -274,7 +289,6 @@ class DocumentationTests(unittest.TestCase):
     def test_documented_positive_prompt_examples_are_person_only(self) -> None:
         documents = [
             ROOT / "README.md",
-            ROOT / "docs" / "autoprompter-examples.md",
             ROOT / "loras" / "HUGGINGFACE_MODEL_CARD.md",
         ]
         forbidden = re.compile(
