@@ -40,15 +40,12 @@ Groups run left to right:
 6. **Optional background** receives each decoded styled image, creates its
    foreground mask with BiRefNet, and composites each candidate over the same
    selected background.
-7. One shared boolean switch controls all three background branches. It is off
-   by default, so each candidate remains unchanged unless the switch is enabled.
-8. **Preview and save** writes three 832 × 1120 masters and three 156 × 210
+7. **Preview and save** writes three 832 × 1120 masters and three 156 × 210
    PNGs, using `candidate_1`, `candidate_2`, and `candidate_3` prefixes.
 
 The source graph opens with **Toggle FLUX restoration** set to `false`. Turn it
-on for the single additional restoration pass. The separate shared background
-toggle is also false by default; enable it to replace the background on all
-three candidates. Keep the supplied connections intact.
+on for the single additional restoration pass. Keep the supplied connections
+intact.
 
 ## Processing workflow
 

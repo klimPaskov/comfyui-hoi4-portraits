@@ -47,7 +47,7 @@ flowchart LR
     C -->|No| D["HOI4 LoRA styling ×3 seeds"]
     C -->|Yes| R["FLUX.2 conservative restoration"] --> D
     D --> E["Three final candidates"]
-    E --> F{"Replace background for all 3?"}
+    E --> F{"Replace background?"}
     F -->|No| G["Save 3 masters + 3 game PNGs"]
     F -->|Yes| H["BiRefNet mask + composite each candidate"] --> G
 ```
@@ -103,8 +103,7 @@ Preview all three results, save three 832 × 1120 master PNGs, and create three
 ![Preview and output stage](docs/assets/workflows/step-6-preview-and-save.png)
 
 Background removal and compositing consume the **decoded final LoRA-styled
-images**. When enabled, the shared switch applies the replacement to all three
-candidates. They do not run on the source, the ESRGAN image, or the restoration
+images**. They do not run on the source, the ESRGAN image, or the restoration
 pass.
 
 Both image-to-image stages start from the encoded processed portrait, not an
@@ -134,7 +133,7 @@ flowchart LR
    plan, open **Models → Import**, and import the [public LoRA file](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors) as a LoRA.
 2. Download and open one of the workflow JSON files from the table.
 3. For a source workflow, upload a portrait and select it in **Load source portrait**. Set the built-in crop box around the head and shoulders, then check its preview.
-4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then turn on the shared background switch.
+4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then enable background replacement.
 5. Queue the workflow. A source run creates three candidate portraits. FLUX
    restoration is off by default; turn **Toggle FLUX restoration** on only when
    the source needs it.
