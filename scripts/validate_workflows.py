@@ -275,8 +275,10 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             if node.get("class_type") != "SamplerCustomAdvanced":
                 continue
             sigmas = node.get("inputs", {}).get("sigmas")
-            if not (isinstance(sigmas, list) and sigmas[0] in denoise_nodes and sigmas[1] == 0):
-                errors.append(f"{path}: image-edit sampler {node_id} must use its 1.0 denoise control")
+            if not (isinstance(sigmas, list) and sigmas[0] in denoise_nodes and sigmas[1] == 1):
+                errors.append(
+                    f"{path}: image-edit sampler {node_id} must use the low-sigmas output of its denoise control"
+                )
 
     if not is_processing:
         person_prompt_node = "20" if is_text_to_image else "40"

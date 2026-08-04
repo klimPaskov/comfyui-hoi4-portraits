@@ -23,6 +23,14 @@ if ($LASTEXITCODE -ne 0) {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
+if (-not $SkipModels) {
+    & $Python -c "import huggingface_hub, hf_xet" 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        & $Python -m pip install -r (Join-Path $ProjectRoot "scripts\requirements-download.txt")
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    }
+}
+
 & $Python (Join-Path $ProjectRoot "scripts\build_workflows.py")
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & $Python (Join-Path $ProjectRoot "scripts\validate_workflows.py")

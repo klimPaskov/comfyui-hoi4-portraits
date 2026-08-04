@@ -1580,14 +1580,14 @@
         {
           "name": "high_sigmas",
           "type": "SIGMAS",
-          "links": [
-            33
-          ]
+          "links": null
         },
         {
           "name": "low_sigmas",
           "type": "SIGMAS",
-          "links": null
+          "links": [
+            33
+          ]
         }
       ],
       "properties": {
@@ -2286,7 +2286,7 @@
     [
       33,
       25,
-      0,
+      1,
       30,
       3,
       "SIGMAS"
@@ -2435,7 +2435,7 @@
     "description": "Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
     "workflow_kind": "image_processing",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.1",
+    "graph_version": "2.4.2",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": null,
     "core_nodes_only": false,

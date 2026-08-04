@@ -33,8 +33,9 @@ also includes a model-free ZIP, a Windows x64 self-extractor, and
 `SHA256SUMS.txt`. The executable only unpacks the project; ComfyUI and model
 weights remain separate.
 
-The downloader checks every existing file against its locked byte size and
-SHA-256. It refuses to overwrite a mismatching file.
+The downloader transfers independent model files in parallel, uses Hugging
+Face's accelerated resumable transport, and checks every final file against
+its locked byte size and SHA-256. It refuses to overwrite a mismatching file.
 
 ## Hugging Face authentication
 
@@ -93,7 +94,7 @@ From PowerShell:
 The release self-extractor accepts an empty destination directory:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.1-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.1"
+.\HOI4-Portrait-Workflows-v2.4.2-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.2"
 ```
 
 Use `-SkipModels` if the model files are already installed. Start with:

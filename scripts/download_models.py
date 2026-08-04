@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import hashlib
 import json
 import os
@@ -60,21 +61,52 @@ def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) ->
         headers["Authorization"] = f"Bearer {token}"
     destination.parent.mkdir(parents=True, exist_ok=True)
     partial = destination.with_name(f".{destination.name}.part")
-    request = urllib.request.Request(entry["url"], headers=headers)
     try:
-        with urllib.request.urlopen(request, timeout=120) as response, partial.open("wb") as output:
-            downloaded = 0
+        if "huggingface.co" in entry["url"]:
+            try:
+                from huggingface_hub import hf_hub_download
+            except ImportError:
+                pass
+            else:
+                marker = f"/resolve/{entry['revision']}/"
+                remote_filename = entry["url"].split(marker, 1)[1]
+                try:
+                    downloaded_path = Path(
+                        hf_hub_download(
+                            repo_id=entry["source"],
+                            filename=remote_filename,
+                            revision=entry["revision"],
+                            token=token,
+                            local_dir=destination.parent,
+                        )
+                    )
+                except Exception as exc:
+                    raise RuntimeError(f"failed to download {entry['filename']}: {exc}") from exc
+                if downloaded_path != destination:
+                    downloaded_path.replace(destination)
+                if not _verify(destination, entry):
+                    raise RuntimeError(f"downloaded file failed checksum verification: {entry['filename']}")
+                return "downloaded"
+
+        offset = partial.stat().st_size if partial.exists() else 0
+        if offset:
+            headers["Range"] = f"bytes={offset}-"
+        request = urllib.request.Request(entry["url"], headers=headers)
+        with urllib.request.urlopen(request, timeout=120) as response:
+            resumed = offset > 0 and getattr(response, "status", None) == 206
+            downloaded = offset if resumed else 0
+            mode = "ab" if resumed else "wb"
             total = int(entry["size_bytes"])
-            while chunk := response.read(8 * 1024 * 1024):
-                output.write(chunk)
-                downloaded += len(chunk)
-                if downloaded % (256 * 1024 * 1024) < len(chunk):
-                    print(f"  {entry['filename']}: {downloaded / total:.0%}", flush=True)
+            with partial.open(mode) as output:
+                while chunk := response.read(8 * 1024 * 1024):
+                    output.write(chunk)
+                    downloaded += len(chunk)
+                    if downloaded % (256 * 1024 * 1024) < len(chunk):
+                        print(f"  {entry['filename']}: {downloaded / total:.0%}", flush=True)
         if partial.stat().st_size != int(entry["size_bytes"]) or _sha256(partial) != entry["sha256"]:
             raise RuntimeError(f"downloaded file failed checksum verification: {entry['filename']}")
         partial.replace(destination)
     except (OSError, urllib.error.URLError) as exc:
-        partial.unlink(missing_ok=True)
         raise RuntimeError(f"failed to download {entry['filename']}: {exc}") from exc
     return "downloaded"
 
@@ -84,21 +116,32 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--comfyui-root", required=True, type=Path)
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument("--only", action="append", help="Download only this exact filename; repeat as needed")
+    parser.add_argument("--workers", type=int, default=4, help="Parallel model checks/downloads (default: 4)")
     args = parser.parse_args(argv)
     comfy_root = args.comfyui_root.expanduser().resolve()
     if not (comfy_root / "main.py").is_file():
         parser.error("--comfyui-root must point to a ComfyUI checkout containing main.py")
     manifest = json.loads((ROOT / "models.json").read_text(encoding="utf-8"))
     selected = set(args.only or [])
-    results = []
+    if args.workers < 1:
+        parser.error("--workers must be at least 1")
+    jobs = []
+    for entry in manifest["models"]:
+        if selected and entry["filename"] not in selected:
+            continue
+        destination = comfy_root / "models" / entry["directory"] / entry["filename"]
+        jobs.append((entry, destination))
+
+    results: list[dict[str, str]] = []
     try:
-        for entry in manifest["models"]:
-            if selected and entry["filename"] not in selected:
-                continue
-            destination = comfy_root / "models" / entry["directory"] / entry["filename"]
-            print(f"Checking {entry['name']}...")
+        def run(job: tuple[dict[str, Any], Path]) -> dict[str, str]:
+            entry, destination = job
+            print(f"Checking {entry['name']}...", flush=True)
             status = _download(entry, destination, verify_only=args.verify_only)
-            results.append({"filename": entry["filename"], "path": str(destination), "status": status})
+            return {"filename": entry["filename"], "path": str(destination), "status": status}
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(args.workers, len(jobs) or 1)) as executor:
+            results = list(executor.map(run, jobs))
     except RuntimeError as exc:
         print(json.dumps({"status": "FAIL", "error": str(exc), "completed": results}, indent=2), file=sys.stderr)
         return 1

@@ -268,11 +268,11 @@ Comfy's Cloud API and MCP are experimental and may change.
 FLUX.2 Klein 9B needs an up-to-date ComfyUI and substantial memory. The FP8
 workflow is practical on a 24 GB GPU with offloading. An 18 GB GPU may also run
 it with more aggressive offloading and a reduced test canvas; 16 GB systems can
-run the same kind of reduced-resolution test but will be slower. The upstream model card's roughly
-29 GB figure is a conservative full-resolution/no-offload guideline. The six
-pinned model files use 19.42 GB decimal (18.08 GiB) before ComfyUI caches or
-outputs. For RunPod, a 30 GB volume is sufficient for this project and its
-normal outputs.
+run the same kind of reduced-resolution test but will be slower. The upstream
+model card's roughly 29 GB figure is a conservative full-resolution/no-offload
+guideline. The eight pinned model files use 19.42 GB decimal (18.08 GiB) before
+ComfyUI caches or outputs. For RunPod, a 30 GB volume is sufficient for this
+project and its normal outputs.
 
 ```bash
 git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
@@ -298,9 +298,10 @@ if test -d "$P/.git"; then git -C "$P" pull --ff-only; else git clone --depth 1 
 "$P/scripts/install_runpod.sh" "$COMFY_ROOT"
 ```
 
-The installer checks the final files against [`models.json`](models.json) and
-refuses partial or mismatched downloads. It never writes the token to the
-repository. Confirm that `COMFY_ROOT` points to the folder containing
+The installer uses accelerated resumable Hugging Face transfers, checks the
+final files against [`models.json`](models.json), and refuses partial or
+mismatched downloads. It never writes the token to the repository. Confirm
+that `COMFY_ROOT` points to the folder containing
 `main.py`; the `runpod-slim` template uses `/workspace/runpod-slim/ComfyUI`.
 
 Windows users can run the checked-in installer script:
@@ -314,7 +315,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.1-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.1"
+.\HOI4-Portrait-Workflows-v2.4.2-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.2"
 ```
 
 ## Prompting

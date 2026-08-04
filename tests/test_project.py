@@ -40,7 +40,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_hashes_match_files(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.1")
+        self.assertEqual(manifest["schema_version"], "2.4.2")
         for item in manifest["workflows"]:
             for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
                 data = (ROOT / item[path_key]).read_bytes()
@@ -76,10 +76,10 @@ class WorkflowTests(unittest.TestCase):
                 for denoise_id, sampler_id in (("25", "30"), ("45", "50"), ("65", "70"), ("85", "90")):
                     self.assertEqual(api[denoise_id]["class_type"], "SplitSigmasDenoise")
                     self.assertEqual(api[denoise_id]["inputs"]["denoise"], 1.0)
-                    self.assertEqual(api[sampler_id]["inputs"]["sigmas"], [denoise_id, 0])
+                    self.assertEqual(api[sampler_id]["inputs"]["sigmas"], [denoise_id, 1])
             elif workflow.name.endswith("processing_only.api.json"):
                 self.assertEqual(api["25"]["inputs"]["denoise"], 1.0)
-                self.assertEqual(api["30"]["inputs"]["sigmas"], ["25", 0])
+                self.assertEqual(api["30"]["inputs"]["sigmas"], ["25", 1])
 
     def test_feature_toggle_nodes_are_red_and_off_by_default(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):

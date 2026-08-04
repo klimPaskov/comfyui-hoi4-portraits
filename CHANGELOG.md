@@ -2,6 +2,11 @@
 
 All notable project changes are recorded here.
 
+## 2.4.2 — 2026-08-04
+
+- Corrected every image-edit sampler to use the active denoise sigma schedule.
+- Added parallel, resumable Hugging Face/Xet model transfers to the installers.
+
 ## 2.4.1 — 2026-08-04
 
 - Set source LoRA strength and editable denoise controls to `1.00`.

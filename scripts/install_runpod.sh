@@ -34,11 +34,18 @@ if ! "${PYTHON_BIN}" -c "import cv2, scipy" >/dev/null 2>&1; then
   fi
 fi
 
+if ! "${PYTHON_BIN}" -c "import huggingface_hub, hf_xet" >/dev/null 2>&1; then
+  if command -v uv >/dev/null 2>&1; then
+    uv pip install --python "${PYTHON_BIN}" -r "${PROJECT_ROOT}/scripts/requirements-download.txt"
+  else
+    "${PYTHON_BIN}" -m pip install -r "${PROJECT_ROOT}/scripts/requirements-download.txt"
+  fi
+fi
+
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/build_workflows.py"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/validate_workflows.py"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_workflows.py" --comfyui-root "${COMFY_ROOT}"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}"
-"${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}" --verify-only
 
 echo
 echo "Installed three FLUX.2 Klein 9B workflows, the adaptive crop, and all eight pinned model files."

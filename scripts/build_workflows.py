@@ -23,7 +23,7 @@ VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
 STYLE_LORA_STRENGTH = 1.0
 DEFAULT_STEPS = 8
-WORKFLOW_SCHEMA_VERSION = "2.4.1"
+WORKFLOW_SCHEMA_VERSION = "2.4.2"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
@@ -579,7 +579,9 @@ def _edit_stage(
                 "noise": Link(i + 7),
                 "guider": Link(i + 6),
                 "sampler": Link(i + 8),
-                "sigmas": Link(i + 5),
+                # SplitSigmasDenoise output 0 is the discarded high-sigma
+                # prefix. Output 1 is the schedule that must be sampled.
+                "sigmas": Link(i + 5, 1),
                 "latent_image": Link(i + 2),
             },
             input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},

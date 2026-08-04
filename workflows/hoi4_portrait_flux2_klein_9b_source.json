@@ -1622,14 +1622,14 @@
         {
           "name": "high_sigmas",
           "type": "SIGMAS",
-          "links": [
-            33
-          ]
+          "links": null
         },
         {
           "name": "low_sigmas",
           "type": "SIGMAS",
-          "links": null
+          "links": [
+            33
+          ]
         }
       ],
       "properties": {
@@ -2348,14 +2348,14 @@
         {
           "name": "high_sigmas",
           "type": "SIGMAS",
-          "links": [
-            55
-          ]
+          "links": null
         },
         {
           "name": "low_sigmas",
           "type": "SIGMAS",
-          "links": null
+          "links": [
+            55
+          ]
         }
       ],
       "properties": {
@@ -3018,14 +3018,14 @@
         {
           "name": "high_sigmas",
           "type": "SIGMAS",
-          "links": [
-            75
-          ]
+          "links": null
         },
         {
           "name": "low_sigmas",
           "type": "SIGMAS",
-          "links": null
+          "links": [
+            75
+          ]
         }
       ],
       "properties": {
@@ -3688,14 +3688,14 @@
         {
           "name": "high_sigmas",
           "type": "SIGMAS",
-          "links": [
-            95
-          ]
+          "links": null
         },
         {
           "name": "low_sigmas",
           "type": "SIGMAS",
-          "links": null
+          "links": [
+            95
+          ]
         }
       ],
       "properties": {
@@ -5417,7 +5417,7 @@
     [
       33,
       25,
-      0,
+      1,
       30,
       3,
       "SIGMAS"
@@ -5593,7 +5593,7 @@
     [
       55,
       45,
-      0,
+      1,
       50,
       3,
       "SIGMAS"
@@ -5753,7 +5753,7 @@
     [
       75,
       65,
-      0,
+      1,
       70,
       3,
       "SIGMAS"
@@ -5913,7 +5913,7 @@
     [
       95,
       85,
-      0,
+      1,
       90,
       3,
       "SIGMAS"
@@ -6310,7 +6310,7 @@
     "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
     "workflow_kind": "image_to_image",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.1",
+    "graph_version": "2.4.2",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
     "core_nodes_only": false,
