@@ -1,6 +1,6 @@
 {
   "last_node_id": 156,
-  "last_link_id": 43,
+  "last_link_id": 44,
   "nodes": [
     {
       "id": 5,
@@ -840,7 +840,7 @@
           "links": [
             17,
             20,
-            38
+            39
           ]
         }
       ],
@@ -1063,7 +1063,7 @@
           "type": "VAE",
           "links": [
             21,
-            36
+            37
           ]
         }
       ],
@@ -1121,7 +1121,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            22
+            30
           ]
         }
       ],
@@ -1222,7 +1222,7 @@
           "links": [
             23,
             25,
-            34
+            35
           ]
         }
       ],
@@ -1373,7 +1373,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            31
+            32
           ]
         }
       ],
@@ -1384,7 +1384,7 @@
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
-        5.0
+        1.0
       ]
     },
     {
@@ -1419,7 +1419,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            30
+            31
           ]
         }
       ],
@@ -1466,7 +1466,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            32
+            33
           ]
         }
       ],
@@ -1483,7 +1483,7 @@
     {
       "id": 29,
       "type": "Flux2Scheduler",
-      "title": "FLUX.2 schedule - 8 steps",
+      "title": "FLUX.2 schedule - 6 steps",
       "pos": [
         2440,
         700
@@ -1539,7 +1539,7 @@
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
-        8,
+        6,
         832,
         1120
       ]
@@ -1586,12 +1586,63 @@
           "name": "low_sigmas",
           "type": "SIGMAS",
           "links": [
-            33
+            34
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "SplitSigmasDenoise",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": [
+        1.0
+      ]
+    },
+    {
+      "id": 33,
+      "type": "FluxGuidance",
+      "title": "Conservative restoration guidance 1",
+      "pos": [
+        1540,
+        680
+      ],
+      "size": [
+        250,
+        100
+      ],
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 30
+        },
+        {
+          "name": "guidance",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "guidance"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "FluxGuidance",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
@@ -1615,33 +1666,33 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 28,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 30
+          "link": 31
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 31
+          "link": 32
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 32
+          "link": 33
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 33
+          "link": 34
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 34
+          "link": 35
         }
       ],
       "outputs": [
@@ -1649,7 +1700,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            35
+            36
           ]
         },
         {
@@ -1681,18 +1732,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 29,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 35
+          "link": 36
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 36
+          "link": 37
         }
       ],
       "outputs": [
@@ -1700,7 +1751,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            39
+            40
           ]
         }
       ],
@@ -1727,13 +1778,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 30,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 37
+          "link": 38
         }
       ],
       "outputs": [
@@ -1766,7 +1817,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 31,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
@@ -1780,12 +1831,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 38
+          "link": 39
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 39
+          "link": 40
         }
       ],
       "outputs": [
@@ -1793,10 +1844,10 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            37,
-            40,
+            38,
             41,
-            42
+            42,
+            43
           ]
         }
       ],
@@ -1825,13 +1876,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 32,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 40
+          "link": 41
         }
       ],
       "outputs": [
@@ -1864,13 +1915,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 33,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 41
+          "link": 42
         },
         {
           "name": "filename_prefix",
@@ -1913,13 +1964,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 34,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 42
+          "link": 43
         },
         {
           "name": "upscale_method",
@@ -1959,7 +2010,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            43
+            44
           ]
         }
       ],
@@ -1991,13 +2042,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 35,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 43
+          "link": 44
         },
         {
           "name": "filename_prefix",
@@ -2197,7 +2248,7 @@
     ],
     [
       22,
-      20,
+      33,
       0,
       23,
       0,
@@ -2261,6 +2312,14 @@
     ],
     [
       30,
+      20,
+      0,
+      33,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      31,
       27,
       0,
       30,
@@ -2268,7 +2327,7 @@
       "NOISE"
     ],
     [
-      31,
+      32,
       26,
       0,
       30,
@@ -2276,7 +2335,7 @@
       "GUIDER"
     ],
     [
-      32,
+      33,
       28,
       0,
       30,
@@ -2284,7 +2343,7 @@
       "SAMPLER"
     ],
     [
-      33,
+      34,
       25,
       1,
       30,
@@ -2292,7 +2351,7 @@
       "SIGMAS"
     ],
     [
-      34,
+      35,
       22,
       0,
       30,
@@ -2300,7 +2359,7 @@
       "LATENT"
     ],
     [
-      35,
+      36,
       30,
       0,
       31,
@@ -2308,7 +2367,7 @@
       "LATENT"
     ],
     [
-      36,
+      37,
       3,
       0,
       31,
@@ -2316,7 +2375,7 @@
       "VAE"
     ],
     [
-      37,
+      38,
       32,
       0,
       35,
@@ -2324,7 +2383,7 @@
       "IMAGE"
     ],
     [
-      38,
+      39,
       8,
       0,
       32,
@@ -2332,7 +2391,7 @@
       "IMAGE"
     ],
     [
-      39,
+      40,
       31,
       0,
       32,
@@ -2340,7 +2399,7 @@
       "IMAGE"
     ],
     [
-      40,
+      41,
       32,
       0,
       70,
@@ -2348,7 +2407,7 @@
       "IMAGE"
     ],
     [
-      41,
+      42,
       32,
       0,
       71,
@@ -2356,7 +2415,7 @@
       "IMAGE"
     ],
     [
-      42,
+      43,
       32,
       0,
       72,
@@ -2364,7 +2423,7 @@
       "IMAGE"
     ],
     [
-      43,
+      44,
       72,
       0,
       73,
@@ -2435,7 +2494,7 @@
     "description": "Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
     "workflow_kind": "image_processing",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.5",
+    "graph_version": "2.4.6",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": null,
     "core_nodes_only": false,

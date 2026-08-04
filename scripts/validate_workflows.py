@@ -10,7 +10,9 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_STEPS = 8
+DEFAULT_STEPS = 6
+DEFAULT_CFG = 1.0
+DEFAULT_GUIDANCE = 1.0
 LAYOUT_NODE_PADDING = 24
 GROUP_NODE_PADDING = 24
 
@@ -23,6 +25,7 @@ ALLOWED_CORE_NODES = {
     "CropByBBoxes",
     "EmptyFlux2LatentImage",
     "Flux2Scheduler",
+    "FluxGuidance",
     "ImageCompositeMasked",
     "ImageCropV2",
     "ImageScale",
@@ -258,9 +261,19 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     strength_control = api.get("19", {})
     if not is_processing and (
         strength_control.get("class_type") != "PrimitiveFloat"
-        or strength_control.get("inputs", {}).get("value") != 0.7
+        or strength_control.get("inputs", {}).get("value") != 1.0
     ):
-        errors.append(f"{path}: visible LoRA strength control must default to 0.70")
+        errors.append(f"{path}: visible LoRA strength control must default to 1.00")
+
+    cfg_nodes = [node for node in api.values() if node.get("class_type") == "CFGGuider"]
+    if not cfg_nodes or any(node.get("inputs", {}).get("cfg") != DEFAULT_CFG for node in cfg_nodes):
+        errors.append(f"{path}: every CFG guider must default to {DEFAULT_CFG:g}")
+    guidance_nodes = [node for node in api.values() if node.get("class_type") == "FluxGuidance"]
+    expected_guidance_count = 4 if is_source else 1
+    if len(guidance_nodes) != expected_guidance_count:
+        errors.append(f"{path}: expected {expected_guidance_count} FLUX guidance controls")
+    elif any(node.get("inputs", {}).get("guidance") != DEFAULT_GUIDANCE for node in guidance_nodes):
+        errors.append(f"{path}: every FLUX guidance control must default to {DEFAULT_GUIDANCE:g}")
 
     for node_id, node in api.items():
         if node.get("class_type") == "Flux2Scheduler" and node.get("inputs", {}).get("steps") != DEFAULT_STEPS:
@@ -305,10 +318,12 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             )
             if person_prompt != expected:
                 errors.append(f"{path}: source identity prompt must use the concise editable default")
-            for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
+            for prompt_id, guidance_id, reference_id in (("40", "53", "43"), ("60", "73", "63"), ("80", "93", "83")):
                 if api.get(prompt_id, {}).get("inputs", {}).get("text") != expected:
                     errors.append(f"{path}: candidate prompt {prompt_id} must use the concise editable default")
-                if api.get(reference_id, {}).get("inputs", {}).get("conditioning") != [prompt_id, 0]:
+                if api.get(guidance_id, {}).get("inputs", {}).get("conditioning") != [prompt_id, 0]:
+                    errors.append(f"{path}: candidate prompt {prompt_id} must feed its own guidance control")
+                if api.get(reference_id, {}).get("inputs", {}).get("conditioning") != [guidance_id, 0]:
                     errors.append(f"{path}: candidate prompt {prompt_id} must affect only its own branch")
 
     preview_expectations: dict[str, list[Any]] = {}

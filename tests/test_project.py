@@ -40,7 +40,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_hashes_match_files(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.5")
+        self.assertEqual(manifest["schema_version"], "2.4.6")
         for item in manifest["workflows"]:
             for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
                 data = (ROOT / item[path_key]).read_bytes()
@@ -51,9 +51,11 @@ class WorkflowTests(unittest.TestCase):
             self.assertNotIn("/resolve/main/", workflow.read_text(encoding="utf-8"), workflow.name)
 
     def test_selected_lora_and_sampling_defaults(self) -> None:
-        self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 0.7)
+        self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 1.0)
         self.assertEqual(build_workflows.SOURCE_STYLE_DENOISE, 1.0)
-        self.assertEqual(build_workflows.DEFAULT_STEPS, 8)
+        self.assertEqual(build_workflows.DEFAULT_STEPS, 6)
+        self.assertEqual(build_workflows.DEFAULT_CFG, 1.0)
+        self.assertEqual(build_workflows.DEFAULT_GUIDANCE, 1.0)
         for workflow in (ROOT / "workflows").glob("*.api.json"):
             api = json.loads(workflow.read_text(encoding="utf-8"))
             loras = [node for node in api.values() if node["class_type"] == "LoraLoaderModelOnly"]
@@ -63,19 +65,26 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(len(loras), 1, workflow.name)
                 self.assertEqual(loras[0]["inputs"]["strength_model"], ["19", 0], workflow.name)
                 self.assertEqual(api["19"]["class_type"], "PrimitiveFloat", workflow.name)
-                self.assertEqual(api["19"]["inputs"]["value"], 0.7, workflow.name)
+                self.assertEqual(api["19"]["inputs"]["value"], 1.0, workflow.name)
             schedules = [node for node in api.values() if node["class_type"] == "Flux2Scheduler"]
             self.assertTrue(schedules, workflow.name)
-            self.assertTrue(all(node["inputs"]["steps"] == 8 for node in schedules), workflow.name)
+            self.assertTrue(all(node["inputs"]["steps"] == 6 for node in schedules), workflow.name)
+            guiders = [node for node in api.values() if node["class_type"] == "CFGGuider"]
+            self.assertTrue(guiders, workflow.name)
+            self.assertTrue(all(node["inputs"]["cfg"] == 1.0 for node in guiders), workflow.name)
+            flux_guidance = [node for node in api.values() if node["class_type"] == "FluxGuidance"]
+            self.assertTrue(flux_guidance, workflow.name)
+            self.assertTrue(all(node["inputs"]["guidance"] == 1.0 for node in flux_guidance), workflow.name)
             if workflow.name.endswith("source.api.json"):
                 self.assertIs(api["32"]["inputs"]["switch"], False)
                 self.assertEqual(
                     api["40"]["inputs"]["text"],
                     "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing.",
                 )
-                for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
+                for prompt_id, guidance_id, reference_id in (("40", "53", "43"), ("60", "73", "63"), ("80", "93", "83")):
                     self.assertEqual(api[prompt_id]["inputs"]["text"], build_workflows.STYLE_PROMPT)
-                    self.assertEqual(api[reference_id]["inputs"]["conditioning"], [prompt_id, 0])
+                    self.assertEqual(api[guidance_id]["inputs"]["conditioning"], [prompt_id, 0])
+                    self.assertEqual(api[reference_id]["inputs"]["conditioning"], [guidance_id, 0])
                 for denoise_id, sampler_id in (("25", "30"), ("45", "50"), ("65", "70"), ("85", "90")):
                     self.assertEqual(api[denoise_id]["class_type"], "SplitSigmasDenoise")
                     self.assertEqual(api[denoise_id]["inputs"]["denoise"], 1.0)

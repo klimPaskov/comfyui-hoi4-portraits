@@ -30,18 +30,17 @@ workflows.
 - Trigger word: `hoi4_portrait`
 - Base: `black-forest-labs/FLUX.2-klein-base-9B-fp8`
 - ComfyUI loader: `LoraLoaderModelOnly`
-- Suggested starting strength: `0.70`
+- Suggested starting strength: `1.00`
 
 ## Recommended ComfyUI stack
 
 1. `UNETLoader`: `flux-2-klein-base-9b-fp8.safetensors`
 2. `CLIPLoader`: `qwen_3_8b_fp8mixed.safetensors`, type `flux2`
 3. `VAELoader`: `flux2-vae.safetensors`
-4. `LoraLoaderModelOnly`: start with the 1500-step checkpoint at strength `0.70`, then compare checkpoints under the same seed
-5. Eight steps, CFG 5, Euler sampler, `Flux2Scheduler`
+4. `LoraLoaderModelOnly`: start with the 1500-step checkpoint at strength `1.00`, then compare checkpoints under the same seed
+5. Six steps, CFG 1, FLUX guidance 1, Euler sampler, `Flux2Scheduler`
 
-Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps support eight as the
-practical limit. Source workflows use a concise identity prompt for each
+Source workflows use a concise identity prompt for each
 candidate; append deliberate edits only to the branch that should test them.
 Text-to-image prompts describe only the visible person. Do not request a game
 style, background, lighting, or rendering behavior.

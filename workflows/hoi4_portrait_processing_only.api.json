@@ -287,7 +287,7 @@
     "class_type": "ReferenceLatent",
     "inputs": {
       "conditioning": [
-        "20",
+        "33",
         0
       ],
       "latent": [
@@ -330,7 +330,7 @@
         "24",
         0
       ],
-      "cfg": 5.0
+      "cfg": 1.0
     },
     "_meta": {
       "title": "Guide conservative restoration pass"
@@ -357,12 +357,12 @@
   "29": {
     "class_type": "Flux2Scheduler",
     "inputs": {
-      "steps": 8,
+      "steps": 6,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 8 steps"
+      "title": "FLUX.2 schedule - 6 steps"
     }
   },
   "25": {
@@ -376,6 +376,19 @@
     },
     "_meta": {
       "title": "Denoise 1.00 (editable)"
+    }
+  },
+  "33": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "20",
+        0
+      ],
+      "guidance": 1.0
+    },
+    "_meta": {
+      "title": "Conservative restoration guidance 1"
     }
   },
   "30": {

@@ -2,6 +2,12 @@
 
 All notable project changes are recorded here.
 
+## 2.4.6 — 2026-08-04
+
+- Set restoration and LoRA styling to denoise 1.00, six steps, CFG 1, and FLUX
+  guidance 1.
+- Set the visible LoRA strength default to 1.00.
+
 ## 2.4.5 — 2026-08-04
 
 - Added all seven retrained LoRA checkpoints to the RunPod and local model

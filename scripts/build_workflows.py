@@ -21,10 +21,12 @@ BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors"
-STYLE_LORA_STRENGTH = 0.7
+STYLE_LORA_STRENGTH = 1.0
 SOURCE_STYLE_DENOISE = 1.0
-DEFAULT_STEPS = 8
-WORKFLOW_SCHEMA_VERSION = "2.4.5"
+DEFAULT_STEPS = 6
+DEFAULT_CFG = 1.0
+DEFAULT_GUIDANCE = 1.0
+WORKFLOW_SCHEMA_VERSION = "2.4.6"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
@@ -183,7 +185,7 @@ def _model_nodes(*, include_lora: bool = True) -> list[Node]:
                 _node(
                     19,
                     "PrimitiveFloat",
-                    "LoRA strength 0.70 (editable)",
+                    "LoRA strength 1.00 (editable)",
                     group,
                     (1120, 620),
                     inputs={"value": STYLE_LORA_STRENGTH},
@@ -468,6 +470,7 @@ def _edit_stage(
     prompt_node_title: str | None = None,
 ) -> tuple[list[Node], Link]:
     i = id_start
+    guidance_y_offset = 560 if id_start == 20 else 730
     nodes: list[Node] = [
         _node(
             i,
@@ -512,7 +515,7 @@ def _edit_stage(
             "Attach reference to positive conditioning",
             group,
             (x + 500, y + 200),
-            inputs={"conditioning": Link(i), "latent": Link(i + 2)},
+            inputs={"conditioning": Link(i + 13), "latent": Link(i + 2)},
             input_types={"conditioning": "CONDITIONING", "latent": "LATENT"},
             outputs=["CONDITIONING"],
             output_types=["CONDITIONING"],
@@ -534,11 +537,11 @@ def _edit_stage(
             f"Guide {title_prefix.lower()} pass",
             group,
             (x + 900, y),
-            inputs={"model": model, "positive": Link(i + 3), "negative": Link(i + 4), "cfg": 5.0},
+            inputs={"model": model, "positive": Link(i + 3), "negative": Link(i + 4), "cfg": DEFAULT_CFG},
             input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "cfg": "FLOAT"},
             outputs=["GUIDER"],
             output_types=["GUIDER"],
-            widgets=[5.0],
+            widgets=[DEFAULT_CFG],
         ),
         _node(
             i + 7,
@@ -587,6 +590,19 @@ def _edit_stage(
             outputs=["high_sigmas", "low_sigmas"],
             output_types=["SIGMAS", "SIGMAS"],
             widgets=[denoise],
+        ),
+        _node(
+            i + 13,
+            "FluxGuidance",
+            f"{title_prefix} guidance {DEFAULT_GUIDANCE:g}",
+            group,
+            (x, y + guidance_y_offset),
+            size=(250, 100),
+            inputs={"conditioning": Link(i), "guidance": DEFAULT_GUIDANCE},
+            input_types={"conditioning": "CONDITIONING", "guidance": "FLOAT"},
+            outputs=["CONDITIONING"],
+            output_types=["CONDITIONING"],
+            widgets=[DEFAULT_GUIDANCE],
         ),
         _node(
             i + 10,
@@ -676,16 +692,28 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             widgets=[832, 1120, 1],
         ),
         _node(
+            30,
+            "FluxGuidance",
+            f"FLUX guidance {DEFAULT_GUIDANCE:g}",
+            group,
+            (x + 520, 740),
+            inputs={"conditioning": Link(20), "guidance": DEFAULT_GUIDANCE},
+            input_types={"conditioning": "CONDITIONING", "guidance": "FLOAT"},
+            outputs=["CONDITIONING"],
+            output_types=["CONDITIONING"],
+            widgets=[DEFAULT_GUIDANCE],
+        ),
+        _node(
             23,
             "CFGGuider",
             "Guide the HOI4 LoRA generation",
             group,
             (x + 520, 300),
-            inputs={"model": Link(4), "positive": Link(20), "negative": Link(21), "cfg": 5.0},
+            inputs={"model": Link(4), "positive": Link(30), "negative": Link(21), "cfg": DEFAULT_CFG},
             input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "cfg": "FLOAT"},
             outputs=["GUIDER"],
             output_types=["GUIDER"],
-            widgets=[5.0],
+            widgets=[DEFAULT_CFG],
         ),
         _node(
             24,
