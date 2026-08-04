@@ -11,6 +11,7 @@ hosting, or using them, read the current upstream terms for your use case.
 | Qwen 3 8B FP8 mixed encoder and FLUX.2 VAE | [Comfy-Org/flux2-klein-9B](https://huggingface.co/Comfy-Org/flux2-klein-9B) | Follow the source model cards and file-specific upstream terms. |
 | RealESRGAN x2plus | [xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | Model and code terms are maintained upstream. |
 | BiRefNet | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet) | Follow the model repository and original BiRefNet terms. |
+| OpenCV and YuNet | [opencv/opencv](https://github.com/opencv/opencv), [opencv/opencv_zoo](https://github.com/opencv/opencv_zoo) | Apache-2.0 software and model. |
 
 Exact source revisions, filenames, byte sizes, and SHA-256 checksums are pinned
 in [`models.json`](models.json). No third-party weights are committed to this

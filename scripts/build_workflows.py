@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Build the public ComfyUI workflows from one deterministic graph source.
 
-Only built-in ComfyUI nodes are used.  The generated ``*.json`` files are
-editor/save format; the matching ``*.api.json`` files are ready for
-``/prompt`` or the Comfy Cloud workflow API.
+The generated ``*.json`` files are editor/save format; the matching
+``*.api.json`` files are ready for ``/prompt`` or the Comfy Cloud workflow API.
 """
 
 from __future__ import annotations
@@ -30,6 +29,7 @@ SOURCE_STYLE_SEEDS = (42, 43, 44)
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 FACE_DETECTION_MODEL = "mediapipe_face_fp32.safetensors"
+YUNET_MODEL = "face_detection_yunet_2023mar.onnx"
 
 MODEL_URLS = {
     BASE_MODEL: "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8/resolve/9ecf2143d71542449960c5584340269c6d401449/flux-2-klein-base-9b-fp8.safetensors",
@@ -39,6 +39,7 @@ MODEL_URLS = {
     ESRGAN_MODEL: "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
     BACKGROUND_MODEL: "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
     FACE_DETECTION_MODEL: "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",
+    YUNET_MODEL: "https://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
 }
 
 RESTORATION_PROMPT = (
@@ -47,7 +48,7 @@ RESTORATION_PROMPT = (
     "Keep period-authentic texture. Colorize monochrome or sepia material only when the colors can remain plausible. Do not stylize."
 )
 RESTORATION_NEGATIVE = ""
-STYLE_PROMPT = "hoi4_portrait, maintain the identity of the person in the portrait."
+STYLE_PROMPT = "hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing."
 STYLE_NEGATIVE = ""
 TEXT_PROMPT = (
     "hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, "
@@ -262,50 +263,60 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
         ),
         _node(
             11,
-            "CropByBBoxes",
-            "Crop detected face with head-and-shoulders margin",
+            "AdaptivePortraitCrop",
+            "Face zoom 0.90 — full head and headwear protected",
             group,
             (520, 580),
-            size=(360, 180),
+            size=(360, 190),
             inputs={
                 "image": Link(9),
-                "bboxes": Link(13, 1),
-                "output_width": 1024,
-                "output_height": 1024,
-                "padding": 200,
-                "keep_aspect": "stretch",
+                "face_bboxes": Link(13, 1),
+                "subject_mask": Link(156),
+                "zoom": 0.90,
             },
             input_types={
                 "image": "IMAGE",
-                "bboxes": "BOUNDING_BOX",
-                "output_width": "INT",
-                "output_height": "INT",
-                "padding": "INT",
-                "keep_aspect": "COMBO",
+                "face_bboxes": "BOUNDING_BOX",
+                "subject_mask": "MASK",
+                "zoom": "FLOAT",
             },
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=[1024, 1024, 200, "stretch"],
+            widgets=[0.90],
+            models=_model(YUNET_MODEL, "detection"),
         ),
         _node(
-            14,
-            "ImageScale",
-            "Fit detected crop to portrait aspect",
+            155,
+            "LoadBackgroundRemovalModel",
+            "Load subject silhouette model",
             group,
-            (520, 820),
-            size=(360, 150),
-            inputs={"image": Link(11), "upscale_method": "lanczos", "width": 832, "height": 1120, "crop": "center"},
-            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
-            outputs=["IMAGE"],
-            output_types=["IMAGE"],
-            widgets=["lanczos", 832, 1120, "center"],
+            (100, 760),
+            size=(320, 100),
+            inputs={"bg_removal_name": BACKGROUND_MODEL},
+            input_types={"bg_removal_name": "COMBO"},
+            outputs=["BACKGROUND_REMOVAL"],
+            output_types=["BACKGROUND_REMOVAL"],
+            widgets=[BACKGROUND_MODEL],
+            models=_model(BACKGROUND_MODEL, "background_removal"),
+        ),
+        _node(
+            156,
+            "RemoveBackground",
+            "Measure the complete head and headwear silhouette",
+            group,
+            (100, 920),
+            size=(320, 100),
+            inputs={"bg_removal_model": Link(155), "image": Link(9)},
+            input_types={"bg_removal_model": "BACKGROUND_REMOVAL", "image": "IMAGE"},
+            outputs=["MASK"],
+            output_types=["MASK"],
         ),
         _node(
             15,
             "PrimitiveBoundingBox",
             "Manual crop box for difficult sources",
             group,
-            (100, 980),
+            (100, 1080),
             size=(320, 190),
             inputs={"x": 128, "y": 0, "width": 768, "height": 1024},
             input_types={"x": "INT", "y": "INT", "width": "INT", "height": "INT"},
@@ -318,7 +329,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "CropByBBoxes",
             "Apply manual head-and-shoulders crop",
             group,
-            (520, 1030),
+            (520, 850),
             size=(360, 180),
             inputs={
                 "image": Link(9),
@@ -345,7 +356,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "PrimitiveBoolean",
             "Use manual crop for difficult sources",
             group,
-            (100, 1220),
+            (100, 1330),
             size=(320, 90),
             inputs={"value": False},
             input_types={"value": "BOOLEAN"},
@@ -358,9 +369,9 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "ComfySwitchNode",
             "Choose automatic or manual crop",
             group,
-            (520, 1270),
+            (520, 1120),
             size=(360, 130),
-            inputs={"switch": Link(17), "on_false": Link(14), "on_true": Link(16)},
+            inputs={"switch": Link(17), "on_false": Link(11), "on_true": Link(16)},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
@@ -370,7 +381,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "UpscaleModelLoader",
             "Load RealESRGAN x2",
             group,
-            (100, 1430),
+            (100, 1480),
             inputs={"model_name": ESRGAN_MODEL},
             input_types={"model_name": "COMBO"},
             outputs=["UPSCALE_MODEL"],
@@ -383,7 +394,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "ImageUpscaleWithModel",
             "Restore and upscale with ESRGAN",
             group,
-            (520, 1430),
+            (520, 1460),
             size=(267, 46),
             inputs={"upscale_model": Link(6), "image": Link(18)},
             input_types={"upscale_model": "UPSCALE_MODEL", "image": "IMAGE"},
@@ -395,7 +406,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "ImageScale",
             "Fit portrait to the 832 x 1120 work canvas",
             group,
-            (520, 1550),
+            (520, 1600),
             size=(360, 150),
             inputs={"image": Link(7), "upscale_method": "lanczos", "width": 832, "height": 1120, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
@@ -411,7 +422,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
                 "PreviewImage",
                 "Confirm head-and-shoulders processing before FLUX",
                 group,
-                (100, 1600),
+                (100, 1620),
                 size=(360, 430),
                 inputs={"images": Link(8)},
                 input_types={"images": "IMAGE"},
@@ -1081,7 +1092,7 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
 def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1) -> list[Group]:
     groups: list[Group] = []
     if has_source:
-        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 2040), "#557a46"))
+        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"))
     groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"))
     if has_restoration:
         groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"))
@@ -1098,7 +1109,7 @@ def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1
 
 def _processing_groups() -> list[Group]:
     return [
-        Group("01 Source and ESRGAN", (40, 40, 930, 2040), "#557a46"),
+        Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"),
         Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"),
         Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"),
         Group("04 Processed portrait output", (3340, 40, 1100, 720), "#596b82"),
@@ -1167,7 +1178,7 @@ def build_source() -> Graph:
             "candidate_count": SOURCE_CANDIDATE_COUNT,
             "candidate_seed_count": SOURCE_CANDIDATE_COUNT,
             "background_candidate_count": SOURCE_CANDIDATE_COUNT,
-            "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
+            "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
             "background_order": "after_final_lora_styled_decode",
         },
@@ -1217,7 +1228,7 @@ def build_processing() -> Graph:
             "style_lora": None,
             "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
             "flux_restoration_default": False,
-            "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
+            "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
             "background_order": "not_applicable_processing_only",
         },
     )
@@ -1296,9 +1307,10 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         for slot, name in enumerate(node.outputs):
             outgoing = output_links.get((node.node_id, slot))
             outputs.append({"name": name, "type": node.output_types[slot], "links": outgoing or None})
+        is_adaptive_crop = node.class_type == "AdaptivePortraitCrop"
         properties: dict[str, Any] = {
             "Node name for S&R": node.class_type,
-            "cnr_id": "comfy-core",
+            "cnr_id": "adaptive-portrait-crop" if is_adaptive_crop else "comfy-core",
             "ver": "0.8.2",
             "hoi4_group": node.group,
         }
@@ -1346,7 +1358,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             "graph_version": WORKFLOW_SCHEMA_VERSION,
             "base_model": BASE_MODEL,
             "style_lora": STYLE_LORA,
-            "core_nodes_only": True,
+            "core_nodes_only": not any(node.class_type == "AdaptivePortraitCrop" for node in graph.nodes),
             "comfy_cloud_ready": True,
             **graph.metadata,
         },
@@ -1378,7 +1390,7 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
                 "sha256": hashlib.sha256(ui_path.read_bytes()).hexdigest(),
                 "api_sha256": hashlib.sha256(api_path.read_bytes()).hexdigest(),
                 "node_count": len(graph.nodes),
-                "core_nodes_only": True,
+                "core_nodes_only": not any(node.class_type == "AdaptivePortraitCrop" for node in graph.nodes),
             }
         )
     manifest = {

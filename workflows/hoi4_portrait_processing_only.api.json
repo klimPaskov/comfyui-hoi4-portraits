@@ -52,39 +52,49 @@
     }
   },
   "11": {
-    "class_type": "CropByBBoxes",
+    "class_type": "AdaptivePortraitCrop",
     "inputs": {
       "image": [
         "9",
         0
       ],
-      "bboxes": [
+      "face_bboxes": [
         "13",
         1
       ],
-      "output_width": 1024,
-      "output_height": 1024,
-      "padding": 200,
-      "keep_aspect": "stretch"
-    },
-    "_meta": {
-      "title": "Crop detected face with head-and-shoulders margin"
-    }
-  },
-  "14": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "11",
+      "subject_mask": [
+        "156",
         0
       ],
-      "upscale_method": "lanczos",
-      "width": 832,
-      "height": 1120,
-      "crop": "center"
+      "zoom": 0.9
     },
     "_meta": {
-      "title": "Fit detected crop to portrait aspect"
+      "title": "Face zoom 0.90 — full head and headwear protected"
+    }
+  },
+  "155": {
+    "class_type": "LoadBackgroundRemovalModel",
+    "inputs": {
+      "bg_removal_name": "birefnet.safetensors"
+    },
+    "_meta": {
+      "title": "Load subject silhouette model"
+    }
+  },
+  "156": {
+    "class_type": "RemoveBackground",
+    "inputs": {
+      "bg_removal_model": [
+        "155",
+        0
+      ],
+      "image": [
+        "9",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Measure the complete head and headwear silhouette"
     }
   },
   "15": {
@@ -136,7 +146,7 @@
         0
       ],
       "on_false": [
-        "14",
+        "11",
         0
       ],
       "on_true": [

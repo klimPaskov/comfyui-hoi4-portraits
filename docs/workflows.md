@@ -27,7 +27,7 @@ with one full-graph screenshot and a readable close-up of every group.
 
 Groups run left to right:
 
-1. **Source and ESRGAN** loads the portrait, detects a face, previews a head-and-shoulders crop, and provides a one-click manual bounding-box override for blurry, distant, or multi-person sources. The selected crop runs through RealESRGAN x2 and is fitted to 832 × 1120.
+1. **Source and ESRGAN** loads the portrait, detects the face and subject silhouette, and produces an 832 × 1120 head-and-shoulders crop. **Face zoom** accepts `0.0–1.0` and defaults to `0.90`; larger values remove more body space while the complete head, headwear, and a safety margin remain protected. A one-click manual bounding-box override is available for ambiguous multi-person sources. The selected crop then runs through RealESRGAN x2.
 2. **FLUX.2 Klein 9B models** loads the base model, encoder, VAE, and LoRA.
 3. **Optional FLUX.2 restoration** encodes the ESRGAN result as both its reference and starting latent for a conservative restoration pass. This keeps framing and pose anchored.
 4. The restoration switch is off by default and sends the direct ESRGAN result
@@ -48,10 +48,11 @@ The source graph opens with **Toggle FLUX restoration** set to `false`. Turn it
 on for the single additional restoration pass. Keep the supplied connections
 intact.
 
-Each source prompt defaults to `hoi4_portrait, maintain the identity of the
-person in the portrait.` Keep that sentence and append deliberate requested
-changes. Each prompt affects only its own candidate. Denoise and LoRA strength
-both default to `1.00`.
+Each source prompt defaults to `hoi4_portrait, maintain the identity, facing
+direction, and expression of the person in the portrait, including any objects
+they are holding or wearing.` Keep that sentence and append deliberate
+requested changes. Each prompt affects only its own candidate. Denoise and
+LoRA strength both default to `1.00`.
 
 ## Processing workflow
 
@@ -94,8 +95,9 @@ any of the candidate branches, or the foreground/background regions will swap.
 ## Editing safely
 
 - Change prompts, seeds, LoRA strength, and boolean switches freely.
-- Set the crop bounding box around the head and shoulders and confirm node
-  `10`'s preview before queueing the expensive FLUX stages.
+- Adjust **Face zoom** when needed and confirm node `10`'s preview before
+  queueing the expensive FLUX stages. Use the manual crop only when the source
+  contains multiple plausible subjects.
 - Keep the exact model family and encoder type together.
 - Keep 832 and 1120 divisible by 16 if you change the work canvas.
 - Do not connect a background composite into a reference-latent encode.

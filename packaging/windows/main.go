@@ -94,7 +94,7 @@ func main() {
 	extract(absolute)
 	instructions := filepath.Join(absolute, "docs", "local-install.md")
 	fmt.Printf("HOI4 portrait workflow package %s extracted to:\n%s\n\n", version, absolute)
-	fmt.Println("ComfyUI is not included. The package contains portable workflows, scripts, and documentation; it installs no custom nodes.")
+	fmt.Println("ComfyUI is not included. The installer adds the bundled adaptive portrait crop when you follow docs/local-install.md.")
 	fmt.Println("Open docs/local-install.md for model installation and RunPod/Windows commands.")
 	_ = exec.Command("cmd", "/C", "start", "", instructions).Start()
 }

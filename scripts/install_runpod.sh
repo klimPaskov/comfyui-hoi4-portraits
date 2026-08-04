@@ -26,6 +26,14 @@ if [[ -z "${PYTHON_BIN}" ]]; then
   PYTHON_BIN="$(command -v python3)"
 fi
 
+if ! "${PYTHON_BIN}" -c "import cv2, scipy" >/dev/null 2>&1; then
+  if command -v uv >/dev/null 2>&1; then
+    uv pip install --python "${PYTHON_BIN}" -r "${PROJECT_ROOT}/custom_nodes/adaptive_portrait_crop/requirements.txt"
+  else
+    "${PYTHON_BIN}" -m pip install -r "${PROJECT_ROOT}/custom_nodes/adaptive_portrait_crop/requirements.txt"
+  fi
+fi
+
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/build_workflows.py"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/validate_workflows.py"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_workflows.py" --comfyui-root "${COMFY_ROOT}"
@@ -33,6 +41,6 @@ fi
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}" --verify-only
 
 echo
-echo "Installed three FLUX.2 Klein 9B workflows and all seven pinned model files."
+echo "Installed three FLUX.2 Klein 9B workflows, the adaptive crop, and all eight pinned model files."
 echo "Models are under ${COMFY_ROOT}/models/{diffusion_models,text_encoders,vae,loras,upscale_models,background_removal,detection}."
 echo "Open Workflows > hoi4_portraits after restarting ComfyUI."

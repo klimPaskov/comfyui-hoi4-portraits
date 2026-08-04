@@ -1,6 +1,6 @@
 {
-  "last_node_id": 73,
-  "last_link_id": 41,
+  "last_node_id": 156,
+  "last_link_id": 43,
   "nodes": [
     {
       "id": 5,
@@ -101,7 +101,8 @@
           "links": [
             3,
             4,
-            7
+            8,
+            9
           ]
         }
       ],
@@ -259,15 +260,15 @@
     },
     {
       "id": 11,
-      "type": "CropByBBoxes",
-      "title": "Crop detected face with head-and-shoulders margin",
+      "type": "AdaptivePortraitCrop",
+      "title": "Face zoom 0.90 — full head and headwear protected",
       "pos": [
         520,
         580
       ],
       "size": [
         360,
-        180
+        190
       ],
       "color": "#557a46",
       "bgcolor": "#557a46",
@@ -281,40 +282,21 @@
           "link": 4
         },
         {
-          "name": "bboxes",
+          "name": "face_bboxes",
           "type": "BOUNDING_BOX",
           "link": 5
         },
         {
-          "name": "output_width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "output_width"
-          }
+          "name": "subject_mask",
+          "type": "MASK",
+          "link": 6
         },
         {
-          "name": "output_height",
-          "type": "INT",
+          "name": "zoom",
+          "type": "FLOAT",
           "link": null,
           "widget": {
-            "name": "output_height"
-          }
-        },
-        {
-          "name": "padding",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "padding"
-          }
-        },
-        {
-          "name": "keep_aspect",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "keep_aspect"
+            "name": "zoom"
           }
         }
       ],
@@ -323,34 +305,38 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            6
+            12
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "CropByBBoxes",
-        "cnr_id": "comfy-core",
+        "Node name for S&R": "AdaptivePortraitCrop",
+        "cnr_id": "adaptive-portrait-crop",
         "ver": "0.8.2",
-        "hoi4_group": "01 Source and ESRGAN"
+        "hoi4_group": "01 Source and ESRGAN",
+        "models": [
+          {
+            "name": "face_detection_yunet_2023mar.onnx",
+            "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+            "directory": "detection"
+          }
+        ]
       },
       "widgets_values": [
-        1024,
-        1024,
-        200,
-        "stretch"
+        0.9
       ]
     },
     {
-      "id": 14,
-      "type": "ImageScale",
-      "title": "Fit detected crop to portrait aspect",
+      "id": 155,
+      "type": "LoadBackgroundRemovalModel",
+      "title": "Load subject silhouette model",
       "pos": [
-        520,
-        820
+        100,
+        760
       ],
       "size": [
-        360,
-        150
+        320,
+        100
       ],
       "color": "#557a46",
       "bgcolor": "#557a46",
@@ -359,64 +345,85 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 6
-        },
-        {
-          "name": "upscale_method",
+          "name": "bg_removal_name",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
+            "name": "bg_removal_name"
           }
         }
       ],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
+          "name": "BACKGROUND_REMOVAL",
+          "type": "BACKGROUND_REMOVAL",
           "links": [
-            10
+            7
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ImageScale",
+        "Node name for S&R": "LoadBackgroundRemovalModel",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "01 Source and ESRGAN",
+        "models": [
+          {
+            "name": "birefnet.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
+            "directory": "background_removal"
+          }
+        ]
+      },
+      "widgets_values": [
+        "birefnet.safetensors"
+      ]
+    },
+    {
+      "id": 156,
+      "type": "RemoveBackground",
+      "title": "Measure the complete head and headwear silhouette",
+      "pos": [
+        100,
+        920
+      ],
+      "size": [
+        320,
+        100
+      ],
+      "color": "#557a46",
+      "bgcolor": "#557a46",
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bg_removal_model",
+          "type": "BACKGROUND_REMOVAL",
+          "link": 7
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RemoveBackground",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
-      "widgets_values": [
-        "lanczos",
-        832,
-        1120,
-        "center"
-      ]
+      "widgets_values": []
     },
     {
       "id": 15,
@@ -424,7 +431,7 @@
       "title": "Manual crop box for difficult sources",
       "pos": [
         100,
-        980
+        1080
       ],
       "size": [
         320,
@@ -433,7 +440,7 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 6,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -474,7 +481,7 @@
           "name": "BOUNDING_BOX",
           "type": "BOUNDING_BOX",
           "links": [
-            8
+            10
           ]
         }
       ],
@@ -497,7 +504,7 @@
       "title": "Apply manual head-and-shoulders crop",
       "pos": [
         520,
-        1030
+        850
       ],
       "size": [
         360,
@@ -506,18 +513,18 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 7
+          "link": 9
         },
         {
           "name": "bboxes",
           "type": "BOUNDING_BOX",
-          "link": 8
+          "link": 10
         },
         {
           "name": "output_width",
@@ -557,7 +564,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            11
+            13
           ]
         }
       ],
@@ -580,7 +587,7 @@
       "title": "Use manual crop for difficult sources",
       "pos": [
         100,
-        1220
+        1330
       ],
       "size": [
         320,
@@ -589,7 +596,7 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 8,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -606,7 +613,7 @@
           "name": "BOOLEAN",
           "type": "BOOLEAN",
           "links": [
-            9
+            11
           ]
         }
       ],
@@ -626,7 +633,7 @@
       "title": "Choose automatic or manual crop",
       "pos": [
         520,
-        1270
+        1120
       ],
       "size": [
         360,
@@ -635,23 +642,23 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 9,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
           "name": "switch",
           "type": "BOOLEAN",
-          "link": 9
+          "link": 11
         },
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 10
+          "link": 12
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 11
+          "link": 13
         }
       ],
       "outputs": [
@@ -659,7 +666,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            13
+            15
           ]
         }
       ],
@@ -677,7 +684,7 @@
       "title": "Load RealESRGAN x2",
       "pos": [
         100,
-        1430
+        1480
       ],
       "size": [
         300,
@@ -686,7 +693,7 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -703,7 +710,7 @@
           "name": "UPSCALE_MODEL",
           "type": "UPSCALE_MODEL",
           "links": [
-            12
+            14
           ]
         }
       ],
@@ -730,7 +737,7 @@
       "title": "Restore and upscale with ESRGAN",
       "pos": [
         520,
-        1430
+        1460
       ],
       "size": [
         267,
@@ -739,18 +746,18 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "upscale_model",
           "type": "UPSCALE_MODEL",
-          "link": 12
+          "link": 14
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 13
+          "link": 15
         }
       ],
       "outputs": [
@@ -758,7 +765,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            14
+            16
           ]
         }
       ],
@@ -776,7 +783,7 @@
       "title": "Fit portrait to the 832 x 1120 work canvas",
       "pos": [
         520,
-        1550
+        1600
       ],
       "size": [
         360,
@@ -785,13 +792,13 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 14
+          "link": 16
         },
         {
           "name": "upscale_method",
@@ -831,9 +838,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            15,
-            18,
-            36
+            17,
+            20,
+            38
           ]
         }
       ],
@@ -856,7 +863,7 @@
       "title": "Confirm head-and-shoulders processing before FLUX",
       "pos": [
         100,
-        1600
+        1620
       ],
       "size": [
         360,
@@ -865,13 +872,13 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 15
+          "link": 17
         }
       ],
       "outputs": [
@@ -904,7 +911,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -929,7 +936,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            24
+            26
           ]
         }
       ],
@@ -966,7 +973,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -999,8 +1006,8 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            16,
-            17
+            18,
+            19
           ]
         }
       ],
@@ -1038,7 +1045,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -1055,8 +1062,8 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            19,
-            34
+            21,
+            36
           ]
         }
       ],
@@ -1092,13 +1099,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 16
+          "link": 18
         },
         {
           "name": "text",
@@ -1114,7 +1121,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            20
+            22
           ]
         }
       ],
@@ -1143,13 +1150,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 17
+          "link": 19
         },
         {
           "name": "text",
@@ -1165,7 +1172,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            22
+            24
           ]
         }
       ],
@@ -1194,18 +1201,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 18
+          "link": 20
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 19
+          "link": 21
         }
       ],
       "outputs": [
@@ -1213,9 +1220,9 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            21,
             23,
-            32
+            25,
+            34
           ]
         }
       ],
@@ -1234,52 +1241,6 @@
       "pos": [
         2040,
         320
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#8b6f47",
-      "bgcolor": "#8b6f47",
-      "flags": {},
-      "order": 20,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "link": 20
-        },
-        {
-          "name": "latent",
-          "type": "LATENT",
-          "link": 21
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            25
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "03 Optional FLUX.2 restoration"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 24,
-      "type": "ReferenceLatent",
-      "title": "Attach reference to negative conditioning",
-      "pos": [
-        2040,
-        520
       ],
       "size": [
         300,
@@ -1307,7 +1268,53 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            26
+            27
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "ReferenceLatent",
+      "title": "Attach reference to negative conditioning",
+      "pos": [
+        2040,
+        520
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 24
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            28
           ]
         }
       ],
@@ -1334,23 +1341,23 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 22,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 24
+          "link": 26
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 25
+          "link": 27
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 26
+          "link": 28
         },
         {
           "name": "cfg",
@@ -1366,7 +1373,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            29
+            31
           ]
         }
       ],
@@ -1395,7 +1402,7 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 23,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
@@ -1412,7 +1419,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            28
+            30
           ]
         }
       ],
@@ -1442,7 +1449,7 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 24,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -1459,7 +1466,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            30
+            32
           ]
         }
       ],
@@ -1488,7 +1495,7 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 25,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -1521,7 +1528,7 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            27
+            29
           ]
         }
       ],
@@ -1552,13 +1559,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 26,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 27
+          "link": 29
         },
         {
           "name": "denoise",
@@ -1574,7 +1581,7 @@
           "name": "high_sigmas",
           "type": "SIGMAS",
           "links": [
-            31
+            33
           ]
         },
         {
@@ -1608,33 +1615,33 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 27,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 28
+          "link": 30
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 29
+          "link": 31
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 30
+          "link": 32
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 31
+          "link": 33
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 32
+          "link": 34
         }
       ],
       "outputs": [
@@ -1642,7 +1649,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            33
+            35
           ]
         },
         {
@@ -1674,18 +1681,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 28,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 33
+          "link": 35
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 34
+          "link": 36
         }
       ],
       "outputs": [
@@ -1693,7 +1700,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            37
+            39
           ]
         }
       ],
@@ -1720,13 +1727,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 29,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 35
+          "link": 37
         }
       ],
       "outputs": [
@@ -1759,7 +1766,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 30,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
@@ -1773,12 +1780,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 36
+          "link": 38
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 37
+          "link": 39
         }
       ],
       "outputs": [
@@ -1786,10 +1793,10 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            35,
-            38,
-            39,
-            40
+            37,
+            40,
+            41,
+            42
           ]
         }
       ],
@@ -1818,13 +1825,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 31,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 38
+          "link": 40
         }
       ],
       "outputs": [
@@ -1857,13 +1864,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 32,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 39
+          "link": 41
         },
         {
           "name": "filename_prefix",
@@ -1906,13 +1913,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 33,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 40
+          "link": 42
         },
         {
           "name": "upscale_method",
@@ -1952,7 +1959,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            41
+            43
           ]
         }
       ],
@@ -1984,13 +1991,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 34,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 41
+          "link": 43
         },
         {
           "name": "filename_prefix",
@@ -2062,14 +2069,30 @@
     ],
     [
       6,
+      156,
+      0,
       11,
-      0,
-      14,
-      0,
-      "IMAGE"
+      2,
+      "MASK"
     ],
     [
       7,
+      155,
+      0,
+      156,
+      0,
+      "BACKGROUND_REMOVAL"
+    ],
+    [
+      8,
+      9,
+      0,
+      156,
+      1,
+      "IMAGE"
+    ],
+    [
+      9,
       9,
       0,
       16,
@@ -2077,7 +2100,7 @@
       "IMAGE"
     ],
     [
-      8,
+      10,
       15,
       0,
       16,
@@ -2085,7 +2108,7 @@
       "BOUNDING_BOX"
     ],
     [
-      9,
+      11,
       17,
       0,
       18,
@@ -2093,15 +2116,15 @@
       "BOOLEAN"
     ],
     [
-      10,
-      14,
+      12,
+      11,
       0,
       18,
       1,
       "IMAGE"
     ],
     [
-      11,
+      13,
       16,
       0,
       18,
@@ -2109,7 +2132,7 @@
       "IMAGE"
     ],
     [
-      12,
+      14,
       6,
       0,
       7,
@@ -2117,7 +2140,7 @@
       "UPSCALE_MODEL"
     ],
     [
-      13,
+      15,
       18,
       0,
       7,
@@ -2125,7 +2148,7 @@
       "IMAGE"
     ],
     [
-      14,
+      16,
       7,
       0,
       8,
@@ -2133,7 +2156,7 @@
       "IMAGE"
     ],
     [
-      15,
+      17,
       8,
       0,
       10,
@@ -2141,7 +2164,7 @@
       "IMAGE"
     ],
     [
-      16,
+      18,
       2,
       0,
       20,
@@ -2149,7 +2172,7 @@
       "CLIP"
     ],
     [
-      17,
+      19,
       2,
       0,
       21,
@@ -2157,7 +2180,7 @@
       "CLIP"
     ],
     [
-      18,
+      20,
       8,
       0,
       22,
@@ -2165,7 +2188,7 @@
       "IMAGE"
     ],
     [
-      19,
+      21,
       3,
       0,
       22,
@@ -2173,7 +2196,7 @@
       "VAE"
     ],
     [
-      20,
+      22,
       20,
       0,
       23,
@@ -2181,7 +2204,7 @@
       "CONDITIONING"
     ],
     [
-      21,
+      23,
       22,
       0,
       23,
@@ -2189,7 +2212,7 @@
       "LATENT"
     ],
     [
-      22,
+      24,
       21,
       0,
       24,
@@ -2197,7 +2220,7 @@
       "CONDITIONING"
     ],
     [
-      23,
+      25,
       22,
       0,
       24,
@@ -2205,7 +2228,7 @@
       "LATENT"
     ],
     [
-      24,
+      26,
       1,
       0,
       26,
@@ -2213,7 +2236,7 @@
       "MODEL"
     ],
     [
-      25,
+      27,
       23,
       0,
       26,
@@ -2221,7 +2244,7 @@
       "CONDITIONING"
     ],
     [
-      26,
+      28,
       24,
       0,
       26,
@@ -2229,7 +2252,7 @@
       "CONDITIONING"
     ],
     [
-      27,
+      29,
       29,
       0,
       25,
@@ -2237,7 +2260,7 @@
       "SIGMAS"
     ],
     [
-      28,
+      30,
       27,
       0,
       30,
@@ -2245,7 +2268,7 @@
       "NOISE"
     ],
     [
-      29,
+      31,
       26,
       0,
       30,
@@ -2253,7 +2276,7 @@
       "GUIDER"
     ],
     [
-      30,
+      32,
       28,
       0,
       30,
@@ -2261,7 +2284,7 @@
       "SAMPLER"
     ],
     [
-      31,
+      33,
       25,
       0,
       30,
@@ -2269,7 +2292,7 @@
       "SIGMAS"
     ],
     [
-      32,
+      34,
       22,
       0,
       30,
@@ -2277,7 +2300,7 @@
       "LATENT"
     ],
     [
-      33,
+      35,
       30,
       0,
       31,
@@ -2285,7 +2308,7 @@
       "LATENT"
     ],
     [
-      34,
+      36,
       3,
       0,
       31,
@@ -2293,7 +2316,7 @@
       "VAE"
     ],
     [
-      35,
+      37,
       32,
       0,
       35,
@@ -2301,7 +2324,7 @@
       "IMAGE"
     ],
     [
-      36,
+      38,
       8,
       0,
       32,
@@ -2309,7 +2332,7 @@
       "IMAGE"
     ],
     [
-      37,
+      39,
       31,
       0,
       32,
@@ -2317,7 +2340,7 @@
       "IMAGE"
     ],
     [
-      38,
+      40,
       32,
       0,
       70,
@@ -2325,7 +2348,7 @@
       "IMAGE"
     ],
     [
-      39,
+      41,
       32,
       0,
       71,
@@ -2333,7 +2356,7 @@
       "IMAGE"
     ],
     [
-      40,
+      42,
       32,
       0,
       72,
@@ -2341,7 +2364,7 @@
       "IMAGE"
     ],
     [
-      41,
+      43,
       72,
       0,
       73,
@@ -2356,7 +2379,7 @@
         40,
         40,
         930,
-        2040
+        2150
       ],
       "color": "#557a46",
       "font_size": 24,
@@ -2415,14 +2438,14 @@
     "graph_version": "2.4.1",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": null,
-    "core_nodes_only": true,
+    "core_nodes_only": false,
     "comfy_cloud_ready": true,
     "restoration_order": [
       "RealESRGAN_x2plus",
       "optional_flux2_klein_9b"
     ],
     "flux_restoration_default": false,
-    "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
+    "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
     "background_order": "not_applicable_processing_only"
   },
   "version": 0.4

@@ -27,7 +27,7 @@ ROOT_FILES = {
     "models.json",
     "pyproject.toml",
 }
-INCLUDED_TREES = {"backgrounds", "docs", "loras", "prompts", "scripts", "tests", "workflows"}
+INCLUDED_TREES = {"backgrounds", "custom_nodes", "docs", "loras", "prompts", "scripts", "tests", "workflows"}
 IGNORED_PARTS = {"__pycache__", ".DS_Store"}
 MODEL_SUFFIXES = {".bin", ".ckpt", ".gguf", ".onnx", ".pt", ".pth", ".safetensors"}
 
@@ -75,7 +75,7 @@ def _build_zip(path: Path, files: list[Path], version: str) -> dict[str, str]:
                 "schema_version": RELEASE_SCHEMA_VERSION,
                 "version": version,
                 "models_bundled": False,
-                "custom_nodes_bundled": False,
+                "custom_nodes_bundled": True,
                 "files": checksums,
             },
             indent=2,

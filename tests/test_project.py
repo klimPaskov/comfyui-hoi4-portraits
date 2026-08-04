@@ -68,7 +68,7 @@ class WorkflowTests(unittest.TestCase):
                 self.assertIs(api["32"]["inputs"]["switch"], False)
                 self.assertEqual(
                     api["40"]["inputs"]["text"],
-                    "hoi4_portrait, maintain the identity of the person in the portrait.",
+                    "hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing.",
                 )
                 for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
                     self.assertEqual(api[prompt_id]["inputs"]["text"], build_workflows.STYLE_PROMPT)
@@ -111,14 +111,15 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(api["13"]["class_type"], "MediaPipeFaceLandmarker")
             self.assertEqual(api["13"]["inputs"]["image"], ["9", 0])
             self.assertEqual(api["13"]["inputs"]["detector_variant"], "both")
-            self.assertEqual(api["11"]["class_type"], "CropByBBoxes")
-            self.assertEqual(api["11"]["inputs"]["bboxes"], ["13", 1])
-            self.assertEqual(api["11"]["inputs"]["padding"], 200)
-            self.assertEqual(api["14"]["inputs"]["image"], ["11", 0])
+            self.assertEqual(api["11"]["class_type"], "AdaptivePortraitCrop")
+            self.assertEqual(api["11"]["inputs"]["face_bboxes"], ["13", 1])
+            self.assertEqual(api["11"]["inputs"]["subject_mask"], ["156", 0])
+            self.assertEqual(api["11"]["inputs"]["zoom"], 0.9)
+            self.assertEqual(api["156"]["inputs"]["image"], ["9", 0])
             self.assertEqual(api["15"]["class_type"], "PrimitiveBoundingBox")
             self.assertEqual(api["16"]["inputs"]["bboxes"], ["15", 0])
             self.assertFalse(api["17"]["inputs"]["value"])
-            self.assertEqual(api["18"]["inputs"]["on_false"], ["14", 0])
+            self.assertEqual(api["18"]["inputs"]["on_false"], ["11", 0])
             self.assertEqual(api["18"]["inputs"]["on_true"], ["16", 0])
             self.assertEqual(api["7"]["inputs"]["image"], ["18", 0])
             self.assertNotIn("EmptyFlux2LatentImage", {node["class_type"] for node in api.values()})
@@ -143,7 +144,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual([api[node_id]["inputs"]["noise_seed"] for node_id in ("47", "67", "87")], [42, 43, 44])
         self.assertEqual(sum(node["class_type"] == "SamplerCustomAdvanced" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "VAEDecode" for node in api.values()), 4)
-        self.assertEqual(sum(node["class_type"] == "RemoveBackground" for node in api.values()), 3)
+        self.assertEqual(sum(node["class_type"] == "RemoveBackground" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 6)
 
     def test_person_prompt_policy_allows_hairstyle_but_rejects_style(self) -> None:
@@ -152,7 +153,7 @@ class WorkflowTests(unittest.TestCase):
 
 
 class InstallerAndModelTests(unittest.TestCase):
-    def test_installer_copies_three_workflows_without_custom_nodes(self) -> None:
+    def test_installer_copies_three_workflows_and_adaptive_crop(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             comfy_root = Path(directory)
             (comfy_root / "main.py").touch()
@@ -162,13 +163,14 @@ class InstallerAndModelTests(unittest.TestCase):
             installed = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
             self.assertEqual(len(installed), 3)
             self.assertTrue((comfy_root / "input/source_portrait.jpg").is_file())
-            self.assertFalse((comfy_root / "custom_nodes").exists())
+            self.assertTrue((comfy_root / "custom_nodes/adaptive_portrait_crop/__init__.py").is_file())
+            self.assertTrue((comfy_root / "custom_nodes/adaptive_portrait_crop/requirements.txt").is_file())
 
     def test_model_manifest_is_pinned_and_unique(self) -> None:
         data = json.loads((ROOT / "models.json").read_text())
         self.assertEqual(data["schema_version"], "2.0.0")
         models = data["models"]
-        self.assertEqual(len(models), 7)
+        self.assertEqual(len(models), 8)
         filenames = [entry["filename"] for entry in models]
         self.assertEqual(len(filenames), len(set(filenames)))
         for entry in models:
@@ -187,7 +189,7 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertTrue((ROOT / "packaging" / "windows" / "go.mod").is_file())
         contents = source.read_text(encoding="utf-8")
         self.assertIn('"docs", "local-install.md"', contents)
-        self.assertIn("it installs no custom nodes", contents)
+        self.assertIn("adaptive portrait crop", contents.casefold())
         self.assertNotIn("setup-with-coding-agent.md", contents)
 
 

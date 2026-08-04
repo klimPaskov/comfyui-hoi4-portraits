@@ -13,9 +13,11 @@
 ## Prepare a source image
 
 In either source workflow, confirm that the automatic crop contains one
-person's head and shoulders. For a blurry, distant, or multi-person image,
-turn on **Use manual crop for difficult sources**, adjust the bounding box,
-and confirm its preview before running RealESRGAN or FLUX.
+person's complete head and shoulders. **Face zoom** defaults to `0.90`; lower
+it to retain more body. Hair, hats, and a small top margin remain protected at
+every value. For an ambiguous multi-person image, turn on **Use manual crop for
+difficult sources**, adjust the bounding box, and confirm its preview before
+running RealESRGAN or FLUX.
 
 Good input:
 
@@ -25,9 +27,8 @@ Good input:
 - limited motion blur and obstruction;
 - historically accurate visible clothing if preservation matters.
 
-For a group photograph, use the same bounding box to select one person. The
-later 832 × 1120 scale is not a subject detector, so the crop box is the step
-that determines the portrait framing.
+For a group photograph, use the manual bounding box only when the automatic
+detector selects the wrong person.
 
 ## Required model files
 
@@ -48,9 +49,9 @@ Find the filenames, pinned sources, sizes, and SHA-256 hashes in
 
 1. Open the workflow JSON, not the `.api.json` file, in the ComfyUI editor.
 2. Check every model loader. A red loader means the named file has not been installed or imported.
-3. Select the source image and confirm the automatic crop preview. If it chose
-   the wrong person or framing, turn on the manual-crop toggle and adjust its
-   box.
+3. Select the source image and confirm the automatic crop preview. Adjust
+   **Face zoom** if needed. If it chose the wrong person, turn on the
+   manual-crop toggle and adjust its box.
 4. Keep each candidate's identity sentence intact. Append deliberate requested
    changes, such as adding a military hat, only to the candidate that should
    test that change.
@@ -81,7 +82,8 @@ visual style, background, lighting, framing, or rendering.
 | --- | --- |
 | Loader is red | Install/import the exact filename from `models.json`, then refresh ComfyUI. |
 | Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 24 GB GPU. |
-| Wrong person or full-body framing | Turn on **Use manual crop for difficult sources**, adjust its box, and confirm the crop preview. |
+| Wrong person | Turn on **Use manual crop for difficult sources**, adjust its box, and confirm the crop preview. |
+| Too much body | Increase **Face zoom**; `0.90` is the default and `1.00` is the closest safe framing. |
 | Background appears too early | Background replacement runs after portrait generation; reopen the published workflow if the graph has been edited. |
 | Style is weak | Keep `hoi4_portrait` in the prompt, use the `1.00` LoRA default, and keep the crop clean. |
 | Identity or position changes | Confirm the crop, restore the fixed identity instruction if it was edited, and disable optional FLUX restoration. |

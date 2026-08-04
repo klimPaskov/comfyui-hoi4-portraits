@@ -1,7 +1,9 @@
 # Comfy Cloud and MCP
 
-The workflows use Comfy Cloud's available model and node catalog. No project
-installation is required beyond the workflow files and the LoRA.
+The workflows use Comfy Cloud's model catalog. Source and processing workflows
+also require the bundled `adaptive_portrait_crop` folder in the Builder custom
+node environment. Restart that environment before opening the workflow. The
+text-to-image workflow does not require it.
 
 ## Import the custom LoRA
 
@@ -41,9 +43,10 @@ other two. For text-to-image, begin with `hoi4_portrait,` and use a concise
 general person description. Do not add game/style, background, lighting, or
 rendering language.
 
-In either source workflow, set the bounding box around the head and shoulders
-and check the crop preview before queueing. The crop controls are available in
-Comfy Cloud.
+In either source workflow, **Face zoom** defaults to `0.90`. Lower values retain
+more of the body. The complete head, headwear, and a safety margin remain
+protected across the entire `0.0–1.0` range. Check the crop preview before
+queueing.
 
 ## MCP validation
 

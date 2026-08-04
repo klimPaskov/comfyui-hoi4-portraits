@@ -36,7 +36,21 @@ def main(argv: list[str] | None = None) -> int:
     for background in sorted((ROOT / "backgrounds").glob("*.png")):
         _copy(background, comfy_root / "input" / background.name)
     _copy(ROOT / "docs" / "assets" / "examples" / "source_portrait.jpg", comfy_root / "input" / "source_portrait.jpg")
-    print(json.dumps({"status": "PASS", "workflows": installed, "custom_nodes_installed": False}, indent=2))
+    custom_node_source = ROOT / "custom_nodes" / "adaptive_portrait_crop"
+    custom_node_destination = comfy_root / "custom_nodes" / "adaptive_portrait_crop"
+    for source in sorted(custom_node_source.iterdir()):
+        if source.is_file():
+            _copy(source, custom_node_destination / source.name)
+    print(
+        json.dumps(
+            {
+                "status": "PASS",
+                "workflows": installed,
+                "custom_nodes_installed": [str(custom_node_destination)],
+            },
+            indent=2,
+        )
+    )
     return 0
 
 

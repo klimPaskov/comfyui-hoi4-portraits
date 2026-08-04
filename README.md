@@ -67,10 +67,12 @@ flowchart LR
 
 ### 1. Crop and restore the source
 
-Load the portrait and confirm the automatic head-and-shoulders preview. For a
-blurry, distant, or multi-person source, turn on **Use manual crop for difficult
-sources** and set its box around the intended person. The selected crop goes
-through RealESRGAN before it is fitted to the 832 × 1120 working canvas.
+Load the portrait and confirm the automatic head-and-shoulders preview. **Face
+zoom** defaults to `0.90`; lower values retain more body while the complete
+head, headwear, and top safety margin remain protected. For an ambiguous
+multi-person source, turn on **Use manual crop for difficult sources** and set
+its box around the intended person. The selected crop then goes through
+RealESRGAN.
 
 ![Source crop and RealESRGAN processing](docs/assets/workflows/step-1-source-processing.png)
 
@@ -148,7 +150,7 @@ flowchart LR
 1. For the source or text-to-image workflow, use a Comfy Cloud Creator or Pro
    plan, open **Models → Import**, and import the [public LoRA file](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors) as a LoRA.
 2. Download and open one of the workflow JSON files from the table.
-3. For a source workflow, upload a portrait and select it in **Load source portrait**. Set the built-in crop box around the head and shoulders, then check its preview.
+3. For a source workflow, upload a portrait and select it in **Load source portrait**. **Face zoom** defaults to `0.90`; lower it to include more of the body. The complete head and headwear remain protected at every value. Check the crop preview before generating.
 4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then enable background replacement.
 5. Queue the workflow. A source run creates three candidate portraits. FLUX
    restoration is off by default; turn **Toggle FLUX restoration** on only when
@@ -211,7 +213,7 @@ portrait job autonomously:
 3. Upload the local source through the MCP file-upload flow. Use the returned
    Cloud filename in **Load source portrait**; a local filesystem path is not a
    valid `LoadImage.image` value in Cloud.
-4. Set the head-and-shoulders bounding box before processing. The agent should
+4. Confirm the `0.90` automatic face zoom before processing. The agent should
    exclude printed borders, oval frames, captions, and empty margins while
    keeping the full head, neck, and shoulders.
 5. Set denoise and the project LoRA to `1.00`, choose whether FLUX restoration is enabled,
@@ -316,7 +318,7 @@ from the reference image. Each candidate has its own editable prompt with this
 default:
 
 ```text
-hoi4_portrait, maintain the identity of the person in the portrait.
+hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing.
 ```
 
 Keep that identity sentence in place. Add requested changes after it, for

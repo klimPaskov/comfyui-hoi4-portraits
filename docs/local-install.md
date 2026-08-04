@@ -4,7 +4,7 @@
 
 - ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
-- The seven pinned model files occupy 19.42 GB decimal (18.08 GiB). A 30 GB
+- The eight pinned model files occupy 19.42 GB decimal (18.08 GiB). A 30 GB
   RunPod volume is sufficient for the repository, ComfyUI files, normal caches,
   and outputs. The downloader writes directly to the ComfyUI model folders and
   does not create a second model copy.
@@ -24,9 +24,9 @@ python scripts/install_workflows.py --comfyui-root /path/to/ComfyUI
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI
 ```
 
-The installer copies three editor workflows, the bundled backgrounds, and one
-sample source image. It does not replace the existing ComfyUI installation.
-It only adds the project workflows and sample assets to that installation.
+The installer copies three editor workflows, the adaptive portrait crop, the
+bundled backgrounds, and one sample source image. It does not replace the
+existing ComfyUI installation.
 
 The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest)
 also includes a model-free ZIP, a Windows x64 self-extractor, and
@@ -49,8 +49,9 @@ No token is written into this repository or a workflow.
 ## RunPod
 
 On a RunPod image that already contains ComfyUI, the installer places the
-workflows in `user/default/workflows/hoi4_portraits`, copies the backgrounds
-and sample input into `input/`, and downloads every entry in `models.json` to
+workflows in `user/default/workflows/hoi4_portraits`, installs the adaptive
+crop in `custom_nodes/adaptive_portrait_crop`, copies the backgrounds and
+sample input into `input/`, and downloads every entry in `models.json` to
 the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
 `loras`, `upscale_models`, and `background_removal`):
 
@@ -63,7 +64,7 @@ test -d "$P/.git" || git clone --depth 1 https://github.com/klimPaskov/comfyui-h
 "$P/scripts/install_runpod.sh" "$COMFY_ROOT"
 ```
 
-The final verification pass checks the locked size and SHA-256 for all seven
+The final verification pass checks the locked size and SHA-256 for all eight
 files. If a download is interrupted or a file was placed in the wrong folder,
 the installer stops instead of silently using it. `HF_TOKEN` is read only from
 the process environment and is never printed or saved. Confirm that

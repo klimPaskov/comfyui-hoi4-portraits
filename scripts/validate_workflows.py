@@ -15,6 +15,7 @@ LAYOUT_NODE_PADDING = 24
 GROUP_NODE_PADDING = 24
 
 ALLOWED_CORE_NODES = {
+    "AdaptivePortraitCrop",
     "CFGGuider",
     "CLIPLoader",
     "CLIPTextEncode",
@@ -238,8 +239,9 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         errors.append(f"{path}: processing workflow must not advertise a style LoRA")
     elif not is_processing and extra.get("style_lora") != "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors":
         errors.append(f"{path}: incorrect style LoRA")
-    if extra.get("core_nodes_only") is not True or extra.get("comfy_cloud_ready") is not True:
-        errors.append(f"{path}: Cloud/core-only metadata is missing")
+    expected_core_only = is_text_to_image
+    if extra.get("core_nodes_only") is not expected_core_only or extra.get("comfy_cloud_ready") is not True:
+        errors.append(f"{path}: workflow compatibility metadata is incorrect")
     expected_background_order = "not_applicable_processing_only" if is_processing else "after_final_lora_styled_decode"
     if extra.get("background_order") != expected_background_order:
         errors.append(f"{path}: background policy is not final-stage-only")
@@ -285,7 +287,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         if present_terms:
             errors.append(f"{path}: person prompt contains non-person instructions: {present_terms}")
         if is_source:
-            expected = "hoi4_portrait, maintain the identity of the person in the portrait."
+            expected = "hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing."
             if person_prompt != expected:
                 errors.append(f"{path}: source identity prompt must use the concise editable default")
             for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
@@ -415,7 +417,8 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         normalized = api.get("9", {})
         detector = api.get("13", {})
         crop = api.get("11", {})
-        portrait_fit = api.get("14", {})
+        silhouette_loader = api.get("155", {})
+        silhouette_mask = api.get("156", {})
         manual_box = api.get("15", {})
         manual_crop = api.get("16", {})
         manual_toggle = api.get("17", {})
@@ -426,23 +429,29 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         if detector.get("class_type") != "MediaPipeFaceLandmarker" or detector_inputs.get("image") != ["9", 0] or detector_inputs.get("detector_variant") != "both" or detector_inputs.get("num_faces") != 1 or detector_inputs.get("min_confidence") != 0.3:
             errors.append(f"{path}: source must use the tested single-face MediaPipe detection settings")
         crop_inputs = crop.get("inputs", {})
-        if crop.get("class_type") != "CropByBBoxes" or crop_inputs.get("image") != ["9", 0] or crop_inputs.get("bboxes") != ["13", 1] or crop_inputs.get("padding") != 200:
-            errors.append(f"{path}: source must use the tested automatic head-and-shoulders crop")
-        if portrait_fit.get("class_type") != "ImageScale" or portrait_fit.get("inputs", {}).get("image") != ["11", 0] or portrait_fit.get("inputs", {}).get("width") != 832 or portrait_fit.get("inputs", {}).get("height") != 1120:
-            errors.append(f"{path}: detected crop must be fitted to the portrait canvas")
+        if (
+            crop.get("class_type") != "AdaptivePortraitCrop"
+            or crop_inputs.get("image") != ["9", 0]
+            or crop_inputs.get("face_bboxes") != ["13", 1]
+            or crop_inputs.get("subject_mask") != ["156", 0]
+            or crop_inputs.get("zoom") != 0.9
+        ):
+            errors.append(f"{path}: source must use the 0.90 adaptive head-and-headwear crop")
+        if silhouette_loader.get("class_type") != "LoadBackgroundRemovalModel" or silhouette_mask.get("inputs", {}).get("image") != ["9", 0] or silhouette_mask.get("inputs", {}).get("bg_removal_model") != ["155", 0]:
+            errors.append(f"{path}: source silhouette measurement is missing or miswired")
         if manual_box.get("class_type") != "PrimitiveBoundingBox":
-            errors.append(f"{path}: difficult sources require a core-node manual bounding-box override")
+            errors.append(f"{path}: difficult sources require a manual bounding-box override")
         manual_inputs = manual_crop.get("inputs", {})
         if manual_crop.get("class_type") != "CropByBBoxes" or manual_inputs.get("image") != ["9", 0] or manual_inputs.get("bboxes") != ["15", 0] or manual_inputs.get("output_width") != 832 or manual_inputs.get("output_height") != 1120:
             errors.append(f"{path}: manual crop override is not connected to the normalized source")
         if manual_toggle.get("class_type") != "PrimitiveBoolean" or manual_toggle.get("inputs", {}).get("value") is not False:
             errors.append(f"{path}: manual crop override must be a one-click toggle that is off by default")
         switch_inputs = crop_switch.get("inputs", {})
-        if crop_switch.get("class_type") != "ComfySwitchNode" or switch_inputs.get("switch") != ["17", 0] or switch_inputs.get("on_false") != ["14", 0] or switch_inputs.get("on_true") != ["16", 0]:
+        if crop_switch.get("class_type") != "ComfySwitchNode" or switch_inputs.get("switch") != ["17", 0] or switch_inputs.get("on_false") != ["11", 0] or switch_inputs.get("on_true") != ["16", 0]:
             errors.append(f"{path}: automatic/manual crop switch is wired incorrectly")
         if api.get("7", {}).get("inputs", {}).get("image") != ["18", 0]:
             errors.append(f"{path}: ESRGAN must consume the selected head-and-shoulders crop")
-        if extra.get("source_crop") != "native_adjustable_head_and_shoulders_before_esrgan":
+        if extra.get("source_crop") != "adaptive_head_and_shoulders_zoom_0.90_before_esrgan":
             errors.append(f"{path}: source crop metadata is missing")
         if is_source and extra.get("pose_preservation") != "encoded_source_latent_is_sampler_start":
             errors.append(f"{path}: pose-preservation metadata is missing")

@@ -1,6 +1,6 @@
 {
-  "last_node_id": 149,
-  "last_link_id": 131,
+  "last_node_id": 156,
+  "last_link_id": 133,
   "nodes": [
     {
       "id": 5,
@@ -101,7 +101,8 @@
           "links": [
             3,
             4,
-            7
+            8,
+            9
           ]
         }
       ],
@@ -259,15 +260,15 @@
     },
     {
       "id": 11,
-      "type": "CropByBBoxes",
-      "title": "Crop detected face with head-and-shoulders margin",
+      "type": "AdaptivePortraitCrop",
+      "title": "Face zoom 0.90 — full head and headwear protected",
       "pos": [
         520,
         580
       ],
       "size": [
         360,
-        180
+        190
       ],
       "color": "#557a46",
       "bgcolor": "#557a46",
@@ -281,40 +282,21 @@
           "link": 4
         },
         {
-          "name": "bboxes",
+          "name": "face_bboxes",
           "type": "BOUNDING_BOX",
           "link": 5
         },
         {
-          "name": "output_width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "output_width"
-          }
+          "name": "subject_mask",
+          "type": "MASK",
+          "link": 6
         },
         {
-          "name": "output_height",
-          "type": "INT",
+          "name": "zoom",
+          "type": "FLOAT",
           "link": null,
           "widget": {
-            "name": "output_height"
-          }
-        },
-        {
-          "name": "padding",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "padding"
-          }
-        },
-        {
-          "name": "keep_aspect",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "keep_aspect"
+            "name": "zoom"
           }
         }
       ],
@@ -323,34 +305,38 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            6
+            12
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "CropByBBoxes",
-        "cnr_id": "comfy-core",
+        "Node name for S&R": "AdaptivePortraitCrop",
+        "cnr_id": "adaptive-portrait-crop",
         "ver": "0.8.2",
-        "hoi4_group": "01 Source and ESRGAN"
+        "hoi4_group": "01 Source and ESRGAN",
+        "models": [
+          {
+            "name": "face_detection_yunet_2023mar.onnx",
+            "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+            "directory": "detection"
+          }
+        ]
       },
       "widgets_values": [
-        1024,
-        1024,
-        200,
-        "stretch"
+        0.9
       ]
     },
     {
-      "id": 14,
-      "type": "ImageScale",
-      "title": "Fit detected crop to portrait aspect",
+      "id": 155,
+      "type": "LoadBackgroundRemovalModel",
+      "title": "Load subject silhouette model",
       "pos": [
-        520,
-        820
+        100,
+        760
       ],
       "size": [
-        360,
-        150
+        320,
+        100
       ],
       "color": "#557a46",
       "bgcolor": "#557a46",
@@ -359,64 +345,85 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 6
-        },
-        {
-          "name": "upscale_method",
+          "name": "bg_removal_name",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
+            "name": "bg_removal_name"
           }
         }
       ],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
+          "name": "BACKGROUND_REMOVAL",
+          "type": "BACKGROUND_REMOVAL",
           "links": [
-            10
+            7
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ImageScale",
+        "Node name for S&R": "LoadBackgroundRemovalModel",
+        "cnr_id": "comfy-core",
+        "ver": "0.8.2",
+        "hoi4_group": "01 Source and ESRGAN",
+        "models": [
+          {
+            "name": "birefnet.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
+            "directory": "background_removal"
+          }
+        ]
+      },
+      "widgets_values": [
+        "birefnet.safetensors"
+      ]
+    },
+    {
+      "id": 156,
+      "type": "RemoveBackground",
+      "title": "Measure the complete head and headwear silhouette",
+      "pos": [
+        100,
+        920
+      ],
+      "size": [
+        320,
+        100
+      ],
+      "color": "#557a46",
+      "bgcolor": "#557a46",
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bg_removal_model",
+          "type": "BACKGROUND_REMOVAL",
+          "link": 7
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RemoveBackground",
         "cnr_id": "comfy-core",
         "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
-      "widgets_values": [
-        "lanczos",
-        832,
-        1120,
-        "center"
-      ]
+      "widgets_values": []
     },
     {
       "id": 15,
@@ -424,7 +431,7 @@
       "title": "Manual crop box for difficult sources",
       "pos": [
         100,
-        980
+        1080
       ],
       "size": [
         320,
@@ -433,7 +440,7 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 6,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -474,7 +481,7 @@
           "name": "BOUNDING_BOX",
           "type": "BOUNDING_BOX",
           "links": [
-            8
+            10
           ]
         }
       ],
@@ -497,7 +504,7 @@
       "title": "Apply manual head-and-shoulders crop",
       "pos": [
         520,
-        1030
+        850
       ],
       "size": [
         360,
@@ -506,18 +513,18 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 7
+          "link": 9
         },
         {
           "name": "bboxes",
           "type": "BOUNDING_BOX",
-          "link": 8
+          "link": 10
         },
         {
           "name": "output_width",
@@ -557,7 +564,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            11
+            13
           ]
         }
       ],
@@ -580,7 +587,7 @@
       "title": "Use manual crop for difficult sources",
       "pos": [
         100,
-        1220
+        1330
       ],
       "size": [
         320,
@@ -589,7 +596,7 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 8,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -606,7 +613,7 @@
           "name": "BOOLEAN",
           "type": "BOOLEAN",
           "links": [
-            9
+            11
           ]
         }
       ],
@@ -626,7 +633,7 @@
       "title": "Choose automatic or manual crop",
       "pos": [
         520,
-        1270
+        1120
       ],
       "size": [
         360,
@@ -635,23 +642,23 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 9,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
           "name": "switch",
           "type": "BOOLEAN",
-          "link": 9
+          "link": 11
         },
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 10
+          "link": 12
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 11
+          "link": 13
         }
       ],
       "outputs": [
@@ -659,7 +666,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            13
+            15
           ]
         }
       ],
@@ -677,7 +684,7 @@
       "title": "Load RealESRGAN x2",
       "pos": [
         100,
-        1430
+        1480
       ],
       "size": [
         300,
@@ -686,7 +693,7 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -703,7 +710,7 @@
           "name": "UPSCALE_MODEL",
           "type": "UPSCALE_MODEL",
           "links": [
-            12
+            14
           ]
         }
       ],
@@ -730,7 +737,7 @@
       "title": "Restore and upscale with ESRGAN",
       "pos": [
         520,
-        1430
+        1460
       ],
       "size": [
         267,
@@ -739,18 +746,18 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "upscale_model",
           "type": "UPSCALE_MODEL",
-          "link": 12
+          "link": 14
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 13
+          "link": 15
         }
       ],
       "outputs": [
@@ -758,7 +765,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            14
+            16
           ]
         }
       ],
@@ -776,7 +783,7 @@
       "title": "Fit portrait to the 832 x 1120 work canvas",
       "pos": [
         520,
-        1550
+        1600
       ],
       "size": [
         360,
@@ -785,13 +792,13 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 14
+          "link": 16
         },
         {
           "name": "upscale_method",
@@ -831,8 +838,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            18,
-            36
+            20,
+            38
           ]
         }
       ],
@@ -864,7 +871,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -889,8 +896,8 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            15,
-            24
+            17,
+            26
           ]
         }
       ],
@@ -927,7 +934,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -960,14 +967,14 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            16,
-            17,
-            38,
-            39,
-            58,
-            59,
-            78,
-            79
+            18,
+            19,
+            40,
+            41,
+            60,
+            61,
+            80,
+            81
           ]
         }
       ],
@@ -1005,7 +1012,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -1022,14 +1029,14 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            19,
-            34,
-            41,
-            56,
-            61,
-            76,
-            81,
-            96
+            21,
+            36,
+            43,
+            58,
+            63,
+            78,
+            83,
+            98
           ]
         }
       ],
@@ -1065,13 +1072,13 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 15
+          "link": 17
         },
         {
           "name": "lora_name",
@@ -1095,9 +1102,9 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            46,
-            66,
-            86
+            48,
+            68,
+            88
           ]
         }
       ],
@@ -1134,13 +1141,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 16
+          "link": 18
         },
         {
           "name": "text",
@@ -1156,7 +1163,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            20
+            22
           ]
         }
       ],
@@ -1185,13 +1192,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 17
+          "link": 19
         },
         {
           "name": "text",
@@ -1207,7 +1214,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            22
+            24
           ]
         }
       ],
@@ -1236,18 +1243,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 18
+          "link": 20
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 19
+          "link": 21
         }
       ],
       "outputs": [
@@ -1255,9 +1262,9 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            21,
             23,
-            32
+            25,
+            34
           ]
         }
       ],
@@ -1284,18 +1291,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 20,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 20
+          "link": 22
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 21
+          "link": 23
         }
       ],
       "outputs": [
@@ -1303,7 +1310,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            25
+            27
           ]
         }
       ],
@@ -1330,18 +1337,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 21,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 22
+          "link": 24
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 23
+          "link": 25
         }
       ],
       "outputs": [
@@ -1349,7 +1356,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            26
+            28
           ]
         }
       ],
@@ -1376,23 +1383,23 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 22,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 24
+          "link": 26
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 25
+          "link": 27
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 26
+          "link": 28
         },
         {
           "name": "cfg",
@@ -1408,7 +1415,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            29
+            31
           ]
         }
       ],
@@ -1437,7 +1444,7 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 23,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
@@ -1454,7 +1461,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            28
+            30
           ]
         }
       ],
@@ -1484,7 +1491,7 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 24,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -1501,7 +1508,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            30
+            32
           ]
         }
       ],
@@ -1530,7 +1537,7 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 25,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -1563,7 +1570,7 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            27
+            29
           ]
         }
       ],
@@ -1594,13 +1601,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 26,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 27
+          "link": 29
         },
         {
           "name": "denoise",
@@ -1616,7 +1623,7 @@
           "name": "high_sigmas",
           "type": "SIGMAS",
           "links": [
-            31
+            33
           ]
         },
         {
@@ -1650,33 +1657,33 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 27,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 28
+          "link": 30
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 29
+          "link": 31
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 30
+          "link": 32
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 31
+          "link": 33
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 32
+          "link": 34
         }
       ],
       "outputs": [
@@ -1684,7 +1691,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            33
+            35
           ]
         },
         {
@@ -1716,18 +1723,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 28,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 33
+          "link": 35
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 34
+          "link": 36
         }
       ],
       "outputs": [
@@ -1735,7 +1742,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            37
+            39
           ]
         }
       ],
@@ -1762,13 +1769,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 29,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 35
+          "link": 37
         }
       ],
       "outputs": [
@@ -1801,7 +1808,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 30,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
@@ -1815,12 +1822,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 36
+          "link": 38
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 37
+          "link": 39
         }
       ],
       "outputs": [
@@ -1828,10 +1835,10 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            35,
-            40,
-            60,
-            80
+            37,
+            42,
+            62,
+            82
           ]
         }
       ],
@@ -1860,13 +1867,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 31,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 38
+          "link": 40
         },
         {
           "name": "text",
@@ -1882,7 +1889,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            42
+            44
           ]
         }
       ],
@@ -1893,7 +1900,7 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        "hoi4_portrait, maintain the identity of the person in the portrait."
+        "hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing."
       ]
     },
     {
@@ -1911,13 +1918,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 32,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 39
+          "link": 41
         },
         {
           "name": "text",
@@ -1933,7 +1940,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            44
+            46
           ]
         }
       ],
@@ -1962,18 +1969,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 33,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 40
+          "link": 42
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 41
+          "link": 43
         }
       ],
       "outputs": [
@@ -1981,9 +1988,9 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            43,
             45,
-            54
+            47,
+            56
           ]
         }
       ],
@@ -2010,18 +2017,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 34,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 42
+          "link": 44
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 43
+          "link": 45
         }
       ],
       "outputs": [
@@ -2029,7 +2036,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            47
+            49
           ]
         }
       ],
@@ -2056,18 +2063,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 35,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 44
+          "link": 46
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 45
+          "link": 47
         }
       ],
       "outputs": [
@@ -2075,7 +2082,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            48
+            50
           ]
         }
       ],
@@ -2102,23 +2109,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 36,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 46
+          "link": 48
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 47
+          "link": 49
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 48
+          "link": 50
         },
         {
           "name": "cfg",
@@ -2134,7 +2141,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            51
+            53
           ]
         }
       ],
@@ -2163,7 +2170,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 37,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
@@ -2180,7 +2187,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            50
+            52
           ]
         }
       ],
@@ -2210,7 +2217,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 38,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
@@ -2227,7 +2234,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            52
+            54
           ]
         }
       ],
@@ -2256,7 +2263,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 39,
+      "order": 40,
       "mode": 0,
       "inputs": [
         {
@@ -2289,7 +2296,7 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            49
+            51
           ]
         }
       ],
@@ -2320,13 +2327,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 40,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 49
+          "link": 51
         },
         {
           "name": "denoise",
@@ -2342,7 +2349,7 @@
           "name": "high_sigmas",
           "type": "SIGMAS",
           "links": [
-            53
+            55
           ]
         },
         {
@@ -2376,33 +2383,33 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 41,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 50
+          "link": 52
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 51
+          "link": 53
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 52
+          "link": 54
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 53
+          "link": 55
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 54
+          "link": 56
         }
       ],
       "outputs": [
@@ -2410,7 +2417,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            55
+            57
           ]
         },
         {
@@ -2442,18 +2449,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 42,
+      "order": 43,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 55
+          "link": 57
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 56
+          "link": 58
         }
       ],
       "outputs": [
@@ -2461,10 +2468,10 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            57,
-            100,
+            59,
             102,
-            105
+            104,
+            107
           ]
         }
       ],
@@ -2491,13 +2498,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 43,
+      "order": 44,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 57
+          "link": 59
         }
       ],
       "outputs": [
@@ -2530,13 +2537,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 44,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 58
+          "link": 60
         },
         {
           "name": "text",
@@ -2552,7 +2559,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            62
+            64
           ]
         }
       ],
@@ -2563,7 +2570,7 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        "hoi4_portrait, maintain the identity of the person in the portrait."
+        "hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing."
       ]
     },
     {
@@ -2581,13 +2588,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 45,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 59
+          "link": 61
         },
         {
           "name": "text",
@@ -2603,7 +2610,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            64
+            66
           ]
         }
       ],
@@ -2632,18 +2639,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 46,
+      "order": 47,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 60
+          "link": 62
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 61
+          "link": 63
         }
       ],
       "outputs": [
@@ -2651,9 +2658,9 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            63,
             65,
-            74
+            67,
+            76
           ]
         }
       ],
@@ -2680,18 +2687,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 47,
+      "order": 48,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 62
+          "link": 64
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 63
+          "link": 65
         }
       ],
       "outputs": [
@@ -2699,7 +2706,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            67
+            69
           ]
         }
       ],
@@ -2726,18 +2733,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 48,
+      "order": 49,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 64
+          "link": 66
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 65
+          "link": 67
         }
       ],
       "outputs": [
@@ -2745,7 +2752,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            68
+            70
           ]
         }
       ],
@@ -2772,23 +2779,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 49,
+      "order": 50,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 66
+          "link": 68
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 67
+          "link": 69
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 68
+          "link": 70
         },
         {
           "name": "cfg",
@@ -2804,7 +2811,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            71
+            73
           ]
         }
       ],
@@ -2833,7 +2840,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 50,
+      "order": 51,
       "mode": 0,
       "inputs": [
         {
@@ -2850,7 +2857,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            70
+            72
           ]
         }
       ],
@@ -2880,7 +2887,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 51,
+      "order": 52,
       "mode": 0,
       "inputs": [
         {
@@ -2897,7 +2904,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            72
+            74
           ]
         }
       ],
@@ -2926,7 +2933,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 52,
+      "order": 53,
       "mode": 0,
       "inputs": [
         {
@@ -2959,7 +2966,7 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            69
+            71
           ]
         }
       ],
@@ -2990,13 +2997,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 53,
+      "order": 54,
       "mode": 0,
       "inputs": [
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 69
+          "link": 71
         },
         {
           "name": "denoise",
@@ -3012,7 +3019,7 @@
           "name": "high_sigmas",
           "type": "SIGMAS",
           "links": [
-            73
+            75
           ]
         },
         {
@@ -3046,33 +3053,33 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 54,
+      "order": 55,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 70
+          "link": 72
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 71
+          "link": 73
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 72
+          "link": 74
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 73
+          "link": 75
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 74
+          "link": 76
         }
       ],
       "outputs": [
@@ -3080,7 +3087,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            75
+            77
           ]
         },
         {
@@ -3112,18 +3119,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 55,
+      "order": 56,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 75
+          "link": 77
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 76
+          "link": 78
         }
       ],
       "outputs": [
@@ -3131,10 +3138,10 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            77,
-            111,
+            79,
             113,
-            116
+            115,
+            118
           ]
         }
       ],
@@ -3161,13 +3168,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 56,
+      "order": 57,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 77
+          "link": 79
         }
       ],
       "outputs": [
@@ -3200,13 +3207,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 57,
+      "order": 58,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 78
+          "link": 80
         },
         {
           "name": "text",
@@ -3222,7 +3229,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            82
+            84
           ]
         }
       ],
@@ -3233,7 +3240,7 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        "hoi4_portrait, maintain the identity of the person in the portrait."
+        "hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing."
       ]
     },
     {
@@ -3251,13 +3258,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 58,
+      "order": 59,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 79
+          "link": 81
         },
         {
           "name": "text",
@@ -3273,7 +3280,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            84
+            86
           ]
         }
       ],
@@ -3302,18 +3309,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 59,
+      "order": 60,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 80
+          "link": 82
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 81
+          "link": 83
         }
       ],
       "outputs": [
@@ -3321,9 +3328,9 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            83,
             85,
-            94
+            87,
+            96
           ]
         }
       ],
@@ -3350,18 +3357,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 60,
+      "order": 61,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 82
+          "link": 84
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 83
+          "link": 85
         }
       ],
       "outputs": [
@@ -3369,7 +3376,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            87
+            89
           ]
         }
       ],
@@ -3396,18 +3403,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 61,
+      "order": 62,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 84
+          "link": 86
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 85
+          "link": 87
         }
       ],
       "outputs": [
@@ -3415,7 +3422,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            88
+            90
           ]
         }
       ],
@@ -3442,23 +3449,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 62,
+      "order": 63,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 86
+          "link": 88
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 87
+          "link": 89
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 88
+          "link": 90
         },
         {
           "name": "cfg",
@@ -3474,7 +3481,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            91
+            93
           ]
         }
       ],
@@ -3503,7 +3510,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 63,
+      "order": 64,
       "mode": 0,
       "inputs": [
         {
@@ -3520,7 +3527,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            90
+            92
           ]
         }
       ],
@@ -3550,7 +3557,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 64,
+      "order": 65,
       "mode": 0,
       "inputs": [
         {
@@ -3567,7 +3574,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            92
+            94
           ]
         }
       ],
@@ -3596,7 +3603,7 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 65,
+      "order": 66,
       "mode": 0,
       "inputs": [
         {
@@ -3629,7 +3636,7 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            89
+            91
           ]
         }
       ],
@@ -3660,13 +3667,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 66,
+      "order": 67,
       "mode": 0,
       "inputs": [
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 89
+          "link": 91
         },
         {
           "name": "denoise",
@@ -3682,7 +3689,7 @@
           "name": "high_sigmas",
           "type": "SIGMAS",
           "links": [
-            93
+            95
           ]
         },
         {
@@ -3716,33 +3723,33 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 67,
+      "order": 68,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 90
+          "link": 92
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 91
+          "link": 93
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 92
+          "link": 94
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 93
+          "link": 95
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 94
+          "link": 96
         }
       ],
       "outputs": [
@@ -3750,7 +3757,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            95
+            97
           ]
         },
         {
@@ -3782,18 +3789,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 68,
+      "order": 69,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 95
+          "link": 97
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 96
+          "link": 98
         }
       ],
       "outputs": [
@@ -3801,10 +3808,10 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            97,
-            122,
+            99,
             124,
-            127
+            126,
+            129
           ]
         }
       ],
@@ -3831,13 +3838,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 69,
+      "order": 70,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 97
+          "link": 99
         }
       ],
       "outputs": [
@@ -3870,7 +3877,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 70,
+      "order": 71,
       "mode": 0,
       "inputs": [
         {
@@ -3887,9 +3894,9 @@
           "name": "BOOLEAN",
           "type": "BOOLEAN",
           "links": [
-            104,
-            115,
-            126
+            106,
+            117,
+            128
           ]
         }
       ],
@@ -3918,7 +3925,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 71,
+      "order": 72,
       "mode": 0,
       "inputs": [
         {
@@ -3935,7 +3942,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            98
+            100
           ]
         },
         {
@@ -3970,13 +3977,13 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 72,
+      "order": 73,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 98
+          "link": 100
         },
         {
           "name": "upscale_method",
@@ -4016,9 +4023,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            101,
-            112,
-            123
+            103,
+            114,
+            125
           ]
         }
       ],
@@ -4050,7 +4057,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 73,
+      "order": 74,
       "mode": 0,
       "inputs": [
         {
@@ -4067,9 +4074,9 @@
           "name": "BACKGROUND_REMOVAL",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            99,
-            110,
-            121
+            101,
+            112,
+            123
           ]
         }
       ],
@@ -4105,18 +4112,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 74,
+      "order": 75,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 99
+          "link": 101
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 100
+          "link": 102
         }
       ],
       "outputs": [
@@ -4124,7 +4131,7 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            103
+            105
           ]
         }
       ],
@@ -4151,18 +4158,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 75,
+      "order": 76,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 101
+          "link": 103
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 102
+          "link": 104
         },
         {
           "name": "x",
@@ -4191,7 +4198,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 103
+          "link": 105
         }
       ],
       "outputs": [
@@ -4199,7 +4206,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            106
+            108
           ]
         }
       ],
@@ -4230,23 +4237,23 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 76,
+      "order": 77,
       "mode": 0,
       "inputs": [
         {
           "name": "switch",
           "type": "BOOLEAN",
-          "link": 104
+          "link": 106
         },
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 105
+          "link": 107
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 106
+          "link": 108
         }
       ],
       "outputs": [
@@ -4254,8 +4261,8 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            107,
-            108
+            109,
+            110
           ]
         }
       ],
@@ -4282,13 +4289,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 77,
+      "order": 78,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 107
+          "link": 109
         },
         {
           "name": "filename_prefix",
@@ -4331,13 +4338,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 78,
+      "order": 79,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 108
+          "link": 110
         },
         {
           "name": "upscale_method",
@@ -4377,7 +4384,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            109
+            111
           ]
         }
       ],
@@ -4409,13 +4416,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 79,
+      "order": 80,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 109
+          "link": 111
         },
         {
           "name": "filename_prefix",
@@ -4458,18 +4465,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 80,
+      "order": 81,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 110
+          "link": 112
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 111
+          "link": 113
         }
       ],
       "outputs": [
@@ -4477,7 +4484,7 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            114
+            116
           ]
         }
       ],
@@ -4504,18 +4511,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 81,
+      "order": 82,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 112
+          "link": 114
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 113
+          "link": 115
         },
         {
           "name": "x",
@@ -4544,7 +4551,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 114
+          "link": 116
         }
       ],
       "outputs": [
@@ -4552,7 +4559,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            117
+            119
           ]
         }
       ],
@@ -4583,23 +4590,23 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 82,
+      "order": 83,
       "mode": 0,
       "inputs": [
         {
           "name": "switch",
           "type": "BOOLEAN",
-          "link": 115
+          "link": 117
         },
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 116
+          "link": 118
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 117
+          "link": 119
         }
       ],
       "outputs": [
@@ -4607,8 +4614,8 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            118,
-            119
+            120,
+            121
           ]
         }
       ],
@@ -4635,13 +4642,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 83,
+      "order": 84,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 118
+          "link": 120
         },
         {
           "name": "filename_prefix",
@@ -4684,13 +4691,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 84,
+      "order": 85,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 119
+          "link": 121
         },
         {
           "name": "upscale_method",
@@ -4730,7 +4737,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            120
+            122
           ]
         }
       ],
@@ -4762,13 +4769,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 85,
+      "order": 86,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 120
+          "link": 122
         },
         {
           "name": "filename_prefix",
@@ -4811,18 +4818,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 86,
+      "order": 87,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 121
+          "link": 123
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 122
+          "link": 124
         }
       ],
       "outputs": [
@@ -4830,7 +4837,7 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            125
+            127
           ]
         }
       ],
@@ -4857,18 +4864,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 87,
+      "order": 88,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 123
+          "link": 125
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 124
+          "link": 126
         },
         {
           "name": "x",
@@ -4897,7 +4904,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 125
+          "link": 127
         }
       ],
       "outputs": [
@@ -4905,7 +4912,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            128
+            130
           ]
         }
       ],
@@ -4936,23 +4943,23 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 88,
+      "order": 89,
       "mode": 0,
       "inputs": [
         {
           "name": "switch",
           "type": "BOOLEAN",
-          "link": 126
+          "link": 128
         },
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 127
+          "link": 129
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 128
+          "link": 130
         }
       ],
       "outputs": [
@@ -4960,8 +4967,8 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            129,
-            130
+            131,
+            132
           ]
         }
       ],
@@ -4988,13 +4995,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 89,
+      "order": 90,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 129
+          "link": 131
         },
         {
           "name": "filename_prefix",
@@ -5037,13 +5044,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 90,
+      "order": 91,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 130
+          "link": 132
         },
         {
           "name": "upscale_method",
@@ -5083,7 +5090,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            131
+            133
           ]
         }
       ],
@@ -5115,13 +5122,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 91,
+      "order": 92,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 131
+          "link": 133
         },
         {
           "name": "filename_prefix",
@@ -5193,14 +5200,30 @@
     ],
     [
       6,
+      156,
+      0,
       11,
-      0,
-      14,
-      0,
-      "IMAGE"
+      2,
+      "MASK"
     ],
     [
       7,
+      155,
+      0,
+      156,
+      0,
+      "BACKGROUND_REMOVAL"
+    ],
+    [
+      8,
+      9,
+      0,
+      156,
+      1,
+      "IMAGE"
+    ],
+    [
+      9,
       9,
       0,
       16,
@@ -5208,7 +5231,7 @@
       "IMAGE"
     ],
     [
-      8,
+      10,
       15,
       0,
       16,
@@ -5216,7 +5239,7 @@
       "BOUNDING_BOX"
     ],
     [
-      9,
+      11,
       17,
       0,
       18,
@@ -5224,15 +5247,15 @@
       "BOOLEAN"
     ],
     [
-      10,
-      14,
+      12,
+      11,
       0,
       18,
       1,
       "IMAGE"
     ],
     [
-      11,
+      13,
       16,
       0,
       18,
@@ -5240,7 +5263,7 @@
       "IMAGE"
     ],
     [
-      12,
+      14,
       6,
       0,
       7,
@@ -5248,7 +5271,7 @@
       "UPSCALE_MODEL"
     ],
     [
-      13,
+      15,
       18,
       0,
       7,
@@ -5256,7 +5279,7 @@
       "IMAGE"
     ],
     [
-      14,
+      16,
       7,
       0,
       8,
@@ -5264,7 +5287,7 @@
       "IMAGE"
     ],
     [
-      15,
+      17,
       1,
       0,
       4,
@@ -5272,7 +5295,7 @@
       "MODEL"
     ],
     [
-      16,
+      18,
       2,
       0,
       20,
@@ -5280,7 +5303,7 @@
       "CLIP"
     ],
     [
-      17,
+      19,
       2,
       0,
       21,
@@ -5288,7 +5311,7 @@
       "CLIP"
     ],
     [
-      18,
+      20,
       8,
       0,
       22,
@@ -5296,7 +5319,7 @@
       "IMAGE"
     ],
     [
-      19,
+      21,
       3,
       0,
       22,
@@ -5304,7 +5327,7 @@
       "VAE"
     ],
     [
-      20,
+      22,
       20,
       0,
       23,
@@ -5312,7 +5335,7 @@
       "CONDITIONING"
     ],
     [
-      21,
+      23,
       22,
       0,
       23,
@@ -5320,7 +5343,7 @@
       "LATENT"
     ],
     [
-      22,
+      24,
       21,
       0,
       24,
@@ -5328,7 +5351,7 @@
       "CONDITIONING"
     ],
     [
-      23,
+      25,
       22,
       0,
       24,
@@ -5336,7 +5359,7 @@
       "LATENT"
     ],
     [
-      24,
+      26,
       1,
       0,
       26,
@@ -5344,7 +5367,7 @@
       "MODEL"
     ],
     [
-      25,
+      27,
       23,
       0,
       26,
@@ -5352,7 +5375,7 @@
       "CONDITIONING"
     ],
     [
-      26,
+      28,
       24,
       0,
       26,
@@ -5360,7 +5383,7 @@
       "CONDITIONING"
     ],
     [
-      27,
+      29,
       29,
       0,
       25,
@@ -5368,7 +5391,7 @@
       "SIGMAS"
     ],
     [
-      28,
+      30,
       27,
       0,
       30,
@@ -5376,7 +5399,7 @@
       "NOISE"
     ],
     [
-      29,
+      31,
       26,
       0,
       30,
@@ -5384,7 +5407,7 @@
       "GUIDER"
     ],
     [
-      30,
+      32,
       28,
       0,
       30,
@@ -5392,7 +5415,7 @@
       "SAMPLER"
     ],
     [
-      31,
+      33,
       25,
       0,
       30,
@@ -5400,7 +5423,7 @@
       "SIGMAS"
     ],
     [
-      32,
+      34,
       22,
       0,
       30,
@@ -5408,7 +5431,7 @@
       "LATENT"
     ],
     [
-      33,
+      35,
       30,
       0,
       31,
@@ -5416,7 +5439,7 @@
       "LATENT"
     ],
     [
-      34,
+      36,
       3,
       0,
       31,
@@ -5424,39 +5447,39 @@
       "VAE"
     ],
     [
-      35,
-      32,
-      0,
-      35,
-      0,
-      "IMAGE"
-    ],
-    [
-      36,
-      8,
-      0,
-      32,
-      1,
-      "IMAGE"
-    ],
-    [
       37,
-      31,
-      0,
       32,
-      2,
+      0,
+      35,
+      0,
       "IMAGE"
     ],
     [
       38,
-      2,
+      8,
       0,
-      40,
-      0,
-      "CLIP"
+      32,
+      1,
+      "IMAGE"
     ],
     [
       39,
+      31,
+      0,
+      32,
+      2,
+      "IMAGE"
+    ],
+    [
+      40,
+      2,
+      0,
+      40,
+      0,
+      "CLIP"
+    ],
+    [
+      41,
       2,
       0,
       41,
@@ -5464,7 +5487,7 @@
       "CLIP"
     ],
     [
-      40,
+      42,
       32,
       0,
       42,
@@ -5472,7 +5495,7 @@
       "IMAGE"
     ],
     [
-      41,
+      43,
       3,
       0,
       42,
@@ -5480,7 +5503,7 @@
       "VAE"
     ],
     [
-      42,
+      44,
       40,
       0,
       43,
@@ -5488,7 +5511,7 @@
       "CONDITIONING"
     ],
     [
-      43,
+      45,
       42,
       0,
       43,
@@ -5496,7 +5519,7 @@
       "LATENT"
     ],
     [
-      44,
+      46,
       41,
       0,
       44,
@@ -5504,7 +5527,7 @@
       "CONDITIONING"
     ],
     [
-      45,
+      47,
       42,
       0,
       44,
@@ -5512,7 +5535,7 @@
       "LATENT"
     ],
     [
-      46,
+      48,
       4,
       0,
       46,
@@ -5520,7 +5543,7 @@
       "MODEL"
     ],
     [
-      47,
+      49,
       43,
       0,
       46,
@@ -5528,7 +5551,7 @@
       "CONDITIONING"
     ],
     [
-      48,
+      50,
       44,
       0,
       46,
@@ -5536,31 +5559,31 @@
       "CONDITIONING"
     ],
     [
-      49,
+      51,
       49,
       0,
       45,
       0,
       "SIGMAS"
-    ],
-    [
-      50,
-      47,
-      0,
-      50,
-      0,
-      "NOISE"
-    ],
-    [
-      51,
-      46,
-      0,
-      50,
-      1,
-      "GUIDER"
     ],
     [
       52,
+      47,
+      0,
+      50,
+      0,
+      "NOISE"
+    ],
+    [
+      53,
+      46,
+      0,
+      50,
+      1,
+      "GUIDER"
+    ],
+    [
+      54,
       48,
       0,
       50,
@@ -5568,7 +5591,7 @@
       "SAMPLER"
     ],
     [
-      53,
+      55,
       45,
       0,
       50,
@@ -5576,7 +5599,7 @@
       "SIGMAS"
     ],
     [
-      54,
+      56,
       42,
       0,
       50,
@@ -5584,7 +5607,7 @@
       "LATENT"
     ],
     [
-      55,
+      57,
       50,
       0,
       51,
@@ -5592,7 +5615,7 @@
       "LATENT"
     ],
     [
-      56,
+      58,
       3,
       0,
       51,
@@ -5600,7 +5623,7 @@
       "VAE"
     ],
     [
-      57,
+      59,
       51,
       0,
       55,
@@ -5608,7 +5631,7 @@
       "IMAGE"
     ],
     [
-      58,
+      60,
       2,
       0,
       60,
@@ -5616,7 +5639,7 @@
       "CLIP"
     ],
     [
-      59,
+      61,
       2,
       0,
       61,
@@ -5624,7 +5647,7 @@
       "CLIP"
     ],
     [
-      60,
+      62,
       32,
       0,
       62,
@@ -5632,7 +5655,7 @@
       "IMAGE"
     ],
     [
-      61,
+      63,
       3,
       0,
       62,
@@ -5640,7 +5663,7 @@
       "VAE"
     ],
     [
-      62,
+      64,
       60,
       0,
       63,
@@ -5648,7 +5671,7 @@
       "CONDITIONING"
     ],
     [
-      63,
+      65,
       62,
       0,
       63,
@@ -5656,7 +5679,7 @@
       "LATENT"
     ],
     [
-      64,
+      66,
       61,
       0,
       64,
@@ -5664,7 +5687,7 @@
       "CONDITIONING"
     ],
     [
-      65,
+      67,
       62,
       0,
       64,
@@ -5672,7 +5695,7 @@
       "LATENT"
     ],
     [
-      66,
+      68,
       4,
       0,
       66,
@@ -5680,7 +5703,7 @@
       "MODEL"
     ],
     [
-      67,
+      69,
       63,
       0,
       66,
@@ -5688,7 +5711,7 @@
       "CONDITIONING"
     ],
     [
-      68,
+      70,
       64,
       0,
       66,
@@ -5696,31 +5719,31 @@
       "CONDITIONING"
     ],
     [
-      69,
+      71,
       69,
       0,
       65,
       0,
       "SIGMAS"
-    ],
-    [
-      70,
-      67,
-      0,
-      70,
-      0,
-      "NOISE"
-    ],
-    [
-      71,
-      66,
-      0,
-      70,
-      1,
-      "GUIDER"
     ],
     [
       72,
+      67,
+      0,
+      70,
+      0,
+      "NOISE"
+    ],
+    [
+      73,
+      66,
+      0,
+      70,
+      1,
+      "GUIDER"
+    ],
+    [
+      74,
       68,
       0,
       70,
@@ -5728,7 +5751,7 @@
       "SAMPLER"
     ],
     [
-      73,
+      75,
       65,
       0,
       70,
@@ -5736,7 +5759,7 @@
       "SIGMAS"
     ],
     [
-      74,
+      76,
       62,
       0,
       70,
@@ -5744,7 +5767,7 @@
       "LATENT"
     ],
     [
-      75,
+      77,
       70,
       0,
       71,
@@ -5752,7 +5775,7 @@
       "LATENT"
     ],
     [
-      76,
+      78,
       3,
       0,
       71,
@@ -5760,7 +5783,7 @@
       "VAE"
     ],
     [
-      77,
+      79,
       71,
       0,
       75,
@@ -5768,7 +5791,7 @@
       "IMAGE"
     ],
     [
-      78,
+      80,
       2,
       0,
       80,
@@ -5776,7 +5799,7 @@
       "CLIP"
     ],
     [
-      79,
+      81,
       2,
       0,
       81,
@@ -5784,7 +5807,7 @@
       "CLIP"
     ],
     [
-      80,
+      82,
       32,
       0,
       82,
@@ -5792,7 +5815,7 @@
       "IMAGE"
     ],
     [
-      81,
+      83,
       3,
       0,
       82,
@@ -5800,7 +5823,7 @@
       "VAE"
     ],
     [
-      82,
+      84,
       80,
       0,
       83,
@@ -5808,7 +5831,7 @@
       "CONDITIONING"
     ],
     [
-      83,
+      85,
       82,
       0,
       83,
@@ -5816,7 +5839,7 @@
       "LATENT"
     ],
     [
-      84,
+      86,
       81,
       0,
       84,
@@ -5824,7 +5847,7 @@
       "CONDITIONING"
     ],
     [
-      85,
+      87,
       82,
       0,
       84,
@@ -5832,7 +5855,7 @@
       "LATENT"
     ],
     [
-      86,
+      88,
       4,
       0,
       86,
@@ -5840,7 +5863,7 @@
       "MODEL"
     ],
     [
-      87,
+      89,
       83,
       0,
       86,
@@ -5848,7 +5871,7 @@
       "CONDITIONING"
     ],
     [
-      88,
+      90,
       84,
       0,
       86,
@@ -5856,7 +5879,7 @@
       "CONDITIONING"
     ],
     [
-      89,
+      91,
       89,
       0,
       85,
@@ -5864,7 +5887,7 @@
       "SIGMAS"
     ],
     [
-      90,
+      92,
       87,
       0,
       90,
@@ -5872,7 +5895,7 @@
       "NOISE"
     ],
     [
-      91,
+      93,
       86,
       0,
       90,
@@ -5880,7 +5903,7 @@
       "GUIDER"
     ],
     [
-      92,
+      94,
       88,
       0,
       90,
@@ -5888,7 +5911,7 @@
       "SAMPLER"
     ],
     [
-      93,
+      95,
       85,
       0,
       90,
@@ -5896,7 +5919,7 @@
       "SIGMAS"
     ],
     [
-      94,
+      96,
       82,
       0,
       90,
@@ -5904,7 +5927,7 @@
       "LATENT"
     ],
     [
-      95,
+      97,
       90,
       0,
       91,
@@ -5912,7 +5935,7 @@
       "LATENT"
     ],
     [
-      96,
+      98,
       3,
       0,
       91,
@@ -5920,7 +5943,7 @@
       "VAE"
     ],
     [
-      97,
+      99,
       91,
       0,
       95,
@@ -5928,7 +5951,7 @@
       "IMAGE"
     ],
     [
-      98,
+      100,
       120,
       0,
       121,
@@ -5936,7 +5959,7 @@
       "IMAGE"
     ],
     [
-      99,
+      101,
       122,
       0,
       123,
@@ -5944,7 +5967,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      100,
+      102,
       51,
       0,
       123,
@@ -5952,7 +5975,7 @@
       "IMAGE"
     ],
     [
-      101,
+      103,
       121,
       0,
       124,
@@ -5960,7 +5983,7 @@
       "IMAGE"
     ],
     [
-      102,
+      104,
       51,
       0,
       124,
@@ -5968,7 +5991,7 @@
       "IMAGE"
     ],
     [
-      103,
+      105,
       123,
       0,
       124,
@@ -5976,7 +5999,7 @@
       "MASK"
     ],
     [
-      104,
+      106,
       119,
       0,
       125,
@@ -5984,7 +6007,7 @@
       "BOOLEAN"
     ],
     [
-      105,
+      107,
       51,
       0,
       125,
@@ -5992,7 +6015,7 @@
       "IMAGE"
     ],
     [
-      106,
+      108,
       124,
       0,
       125,
@@ -6000,7 +6023,7 @@
       "IMAGE"
     ],
     [
-      107,
+      109,
       125,
       0,
       127,
@@ -6008,7 +6031,7 @@
       "IMAGE"
     ],
     [
-      108,
+      110,
       125,
       0,
       128,
@@ -6016,7 +6039,7 @@
       "IMAGE"
     ],
     [
-      109,
+      111,
       128,
       0,
       129,
@@ -6024,7 +6047,7 @@
       "IMAGE"
     ],
     [
-      110,
+      112,
       122,
       0,
       133,
@@ -6032,7 +6055,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      111,
+      113,
       71,
       0,
       133,
@@ -6040,7 +6063,7 @@
       "IMAGE"
     ],
     [
-      112,
+      114,
       121,
       0,
       134,
@@ -6048,7 +6071,7 @@
       "IMAGE"
     ],
     [
-      113,
+      115,
       71,
       0,
       134,
@@ -6056,7 +6079,7 @@
       "IMAGE"
     ],
     [
-      114,
+      116,
       133,
       0,
       134,
@@ -6064,7 +6087,7 @@
       "MASK"
     ],
     [
-      115,
+      117,
       119,
       0,
       135,
@@ -6072,7 +6095,7 @@
       "BOOLEAN"
     ],
     [
-      116,
+      118,
       71,
       0,
       135,
@@ -6080,7 +6103,7 @@
       "IMAGE"
     ],
     [
-      117,
+      119,
       134,
       0,
       135,
@@ -6088,7 +6111,7 @@
       "IMAGE"
     ],
     [
-      118,
+      120,
       135,
       0,
       137,
@@ -6096,7 +6119,7 @@
       "IMAGE"
     ],
     [
-      119,
+      121,
       135,
       0,
       138,
@@ -6104,7 +6127,7 @@
       "IMAGE"
     ],
     [
-      120,
+      122,
       138,
       0,
       139,
@@ -6112,7 +6135,7 @@
       "IMAGE"
     ],
     [
-      121,
+      123,
       122,
       0,
       143,
@@ -6120,7 +6143,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      122,
+      124,
       91,
       0,
       143,
@@ -6128,7 +6151,7 @@
       "IMAGE"
     ],
     [
-      123,
+      125,
       121,
       0,
       144,
@@ -6136,7 +6159,7 @@
       "IMAGE"
     ],
     [
-      124,
+      126,
       91,
       0,
       144,
@@ -6144,7 +6167,7 @@
       "IMAGE"
     ],
     [
-      125,
+      127,
       143,
       0,
       144,
@@ -6152,7 +6175,7 @@
       "MASK"
     ],
     [
-      126,
+      128,
       119,
       0,
       145,
@@ -6160,7 +6183,7 @@
       "BOOLEAN"
     ],
     [
-      127,
+      129,
       91,
       0,
       145,
@@ -6168,7 +6191,7 @@
       "IMAGE"
     ],
     [
-      128,
+      130,
       144,
       0,
       145,
@@ -6176,7 +6199,7 @@
       "IMAGE"
     ],
     [
-      129,
+      131,
       145,
       0,
       147,
@@ -6184,7 +6207,7 @@
       "IMAGE"
     ],
     [
-      130,
+      132,
       145,
       0,
       148,
@@ -6192,7 +6215,7 @@
       "IMAGE"
     ],
     [
-      131,
+      133,
       148,
       0,
       149,
@@ -6207,7 +6230,7 @@
         40,
         40,
         930,
-        2040
+        2150
       ],
       "color": "#557a46",
       "font_size": 24,
@@ -6290,7 +6313,7 @@
     "graph_version": "2.4.1",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-    "core_nodes_only": true,
+    "core_nodes_only": false,
     "comfy_cloud_ready": true,
     "restoration_order": [
       "RealESRGAN_x2plus",
@@ -6300,7 +6323,7 @@
     "candidate_count": 3,
     "candidate_seed_count": 3,
     "background_candidate_count": 3,
-    "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
+    "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
     "pose_preservation": "encoded_source_latent_is_sampler_start",
     "background_order": "after_final_lora_styled_decode"
   },

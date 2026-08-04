@@ -1,0 +1,2 @@
+opencv-contrib-python==4.10.0.84
+scipy>=1.10

@@ -17,6 +17,12 @@ if (-not $Python) {
     $Python = (Get-Command python -ErrorAction Stop).Source
 }
 
+& $Python -c "import cv2, scipy" 2>$null
+if ($LASTEXITCODE -ne 0) {
+    & $Python -m pip install -r (Join-Path $ProjectRoot "custom_nodes\adaptive_portrait_crop\requirements.txt")
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+
 & $Python (Join-Path $ProjectRoot "scripts\build_workflows.py")
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & $Python (Join-Path $ProjectRoot "scripts\validate_workflows.py")
@@ -29,4 +35,4 @@ if (-not $SkipModels) {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-Write-Host "Installed three FLUX.2 Klein 9B workflows (built-in ComfyUI nodes only). Restart ComfyUI, then open Workflows > hoi4_portraits."
+Write-Host "Installed three FLUX.2 Klein 9B workflows and the adaptive portrait crop. Restart ComfyUI, then open Workflows > hoi4_portraits."

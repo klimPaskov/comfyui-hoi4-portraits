@@ -49,7 +49,7 @@ when reference conditioning is present.
 ## Source prompt
 
 ```text
-hoi4_portrait, maintain the identity of the person in the portrait.
+hoi4_portrait, maintain the identity, facing direction, and expression of the person in the portrait, including any objects they are holding or wearing.
 ```
 
 Each source candidate has its own prompt. Keep the identity sentence and append
