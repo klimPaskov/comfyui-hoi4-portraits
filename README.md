@@ -32,6 +32,18 @@ Krea 2 and Krea Edit variants are available as optional alternatives in the
 They are separate alternatives; the table above contains the default FLUX.2
 workflows.
 
+## Guides
+
+- [Getting started](docs/getting-started.md)
+- [Workflow controls and graph structure](docs/workflows.md)
+- [Comfy Cloud and MCP](docs/comfy-cloud.md)
+- [Local and RunPod installation](docs/local-install.md)
+- [Autoprompter prompt examples](docs/autoprompter-examples.md)
+- [Local test results and before/afters](docs/test-results.md)
+- [Testing](docs/testing.md)
+- [Contributing](CONTRIBUTING.md)
+- [Third-party model terms](THIRD_PARTY_LICENSES.md)
+
 ## What the source workflow does
 
 These screenshots show the source, crop + ESRGAN, optional restoration,
@@ -269,13 +281,16 @@ first so the gated FLUX.2 base can download:
 ```bash
 export HF_TOKEN="hf_..."
 P=/workspace/comfyui-hoi4-portraits
+COMFY_ROOT=/workspace/runpod-slim/ComfyUI
+test -f "$COMFY_ROOT/main.py" || { echo "ComfyUI not found at $COMFY_ROOT; set COMFY_ROOT to the folder containing main.py."; exit 1; }
 test -d "$P/.git" || git clone --depth 1 https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
-"$P/scripts/install_runpod.sh" /workspace/ComfyUI
+"$P/scripts/install_runpod.sh" "$COMFY_ROOT"
 ```
 
 The installer checks the final files against [`models.json`](models.json) and
 refuses partial or mismatched downloads. It never writes the token to the
-repository.
+repository. Confirm that `COMFY_ROOT` points to the folder containing
+`main.py`; the `runpod-slim` template uses `/workspace/runpod-slim/ComfyUI`.
 
 Windows users can run the checked-in installer script:
 
@@ -441,18 +456,6 @@ python scripts/build_workflows.py
 python scripts/validate_workflows.py
 python -m unittest discover -s tests -v
 ```
-
-## Guides
-
-- [Getting started](docs/getting-started.md)
-- [Workflow controls and graph structure](docs/workflows.md)
-- [Comfy Cloud and MCP](docs/comfy-cloud.md)
-- [Local and RunPod installation](docs/local-install.md)
-- [Autoprompter prompt examples](docs/autoprompter-examples.md)
-- [Local test results and before/afters](docs/test-results.md)
-- [Testing](docs/testing.md)
-- [Contributing](CONTRIBUTING.md)
-- [Third-party model terms](THIRD_PARTY_LICENSES.md)
 
 ## License and trademark
 

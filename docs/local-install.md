@@ -57,19 +57,23 @@ the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
 ```bash
 export HF_TOKEN="hf_..."
 P=/workspace/comfyui-hoi4-portraits
+COMFY_ROOT=/workspace/runpod-slim/ComfyUI
+test -f "$COMFY_ROOT/main.py" || { echo "ComfyUI not found at $COMFY_ROOT; set COMFY_ROOT to the folder containing main.py."; exit 1; }
 test -d "$P/.git" || git clone --depth 1 https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"
-"$P/scripts/install_runpod.sh" /workspace/ComfyUI
+"$P/scripts/install_runpod.sh" "$COMFY_ROOT"
 ```
 
 The final verification pass checks the locked size and SHA-256 for all six
 files. If a download is interrupted or a file was placed in the wrong folder,
 the installer stops instead of silently using it. `HF_TOKEN` is read only from
-the process environment and is never printed or saved.
+the process environment and is never printed or saved. Confirm that
+`COMFY_ROOT` is the folder containing `main.py`; the `runpod-slim` template
+uses `/workspace/runpod-slim/ComfyUI`.
 
 Start ComfyUI after installation:
 
 ```bash
-/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh /workspace/ComfyUI
+/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh /workspace/runpod-slim/ComfyUI
 ```
 
 Supply `HF_TOKEN` to the pod environment before installation. The script does

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-COMFY_ROOT="${1:-${COMFYUI_ROOT:-/workspace/ComfyUI}}"
+COMFY_ROOT="${1:-${COMFYUI_ROOT:-/workspace/runpod-slim/ComfyUI}}"
 
 if [[ ! -f "${COMFY_ROOT}/main.py" ]]; then
   echo "ComfyUI was not found at ${COMFY_ROOT}. Pass its root as the first argument." >&2

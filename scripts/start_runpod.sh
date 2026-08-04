@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-COMFY_ROOT="${1:-${COMFYUI_ROOT:-/workspace/ComfyUI}}"
+COMFY_ROOT="${1:-${COMFYUI_ROOT:-/workspace/runpod-slim/ComfyUI}}"
 if [[ ! -f "${COMFY_ROOT}/main.py" ]]; then
   echo "ComfyUI was not found at ${COMFY_ROOT}." >&2
   exit 1
