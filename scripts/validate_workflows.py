@@ -238,7 +238,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         errors.append(f"{path}: incorrect FLUX.2 Klein 9B base model")
     if is_processing and extra.get("style_lora") is not None:
         errors.append(f"{path}: processing workflow must not advertise a style LoRA")
-    elif not is_processing and extra.get("style_lora") != "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors":
+    elif not is_processing and extra.get("style_lora") != "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors":
         errors.append(f"{path}: incorrect style LoRA")
     expected_core_only = is_text_to_image
     if extra.get("core_nodes_only") is not expected_core_only or extra.get("comfy_cloud_ready") is not True:

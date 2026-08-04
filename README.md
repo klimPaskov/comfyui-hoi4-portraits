@@ -154,7 +154,7 @@ flowchart LR
 ## Fastest start: Comfy Cloud
 
 1. For the source or text-to-image workflow, use a Comfy Cloud Creator or Pro
-   plan, open **Models → Import**, and import the [public LoRA file](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors) as a LoRA.
+   plan, open **Models → Import**, and import the [1500-step LoRA checkpoint](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein9b_lora_000001500.safetensors) as a LoRA.
 2. Download and open one of the workflow JSON files from the table.
 3. For a source workflow, upload a portrait and select it in **Load source portrait**. **Face zoom** defaults to `0.90`; lower it to include more of the body. The complete head and headwear remain protected at every value. Check the crop preview before generating.
 4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then enable background replacement.
@@ -175,7 +175,7 @@ experimental. The setup below assumes that you already have:
   model-import access;
 - access to the Comfy Cloud MCP preview;
 - the project LoRA imported with the exact filename
-  `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors`;
+  `hoi4_portrait_flux2_klein9b_lora_000001500.safetensors`;
 - an MCP-capable agent with access to this repository and the target mod;
 - the mod root, character identifier, output filename, and portrait sprite name
   supplied to the agent. These values are mod-specific and must not be guessed.
@@ -270,7 +270,7 @@ workflow is practical on a 24 GB GPU with offloading. An 18 GB GPU may also run
 it with more aggressive offloading and a reduced test canvas; 16 GB systems can
 run the same kind of reduced-resolution test but will be slower. The upstream
 model card's roughly 29 GB figure is a conservative full-resolution/no-offload
-guideline. The eight pinned model files use 19.42 GB decimal (18.08 GiB) before
+guideline. The 15 pinned model files use 20.58 GB decimal (19.16 GiB) before
 ComfyUI caches or outputs. For RunPod, a 30 GB volume is sufficient for this
 project and its normal outputs.
 
@@ -285,7 +285,8 @@ The FLUX.2 base model is gated. Accept its Hugging Face agreement and run
 `hf auth login` (or set `HF_TOKEN`) before the model download command.
 
 For a RunPod ComfyUI template, this command installs the three workflows, the
-bundled backgrounds and sample input, and all eight pinned model files into the
+bundled backgrounds and sample input, and all seven retrained LoRA checkpoints,
+the previous LoRA, and the other required model files into the
 standard `ComfyUI/models/` subfolders. Set `HF_TOKEN` in the pod environment
 first so the gated FLUX.2 base can download:
 
@@ -315,7 +316,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.4-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.4"
+.\HOI4-Portrait-Workflows-v2.4.5-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.5"
 ```
 
 ## Prompting

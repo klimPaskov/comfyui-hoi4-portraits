@@ -20,11 +20,11 @@ SOURCE_LAYOUT_PATH = ROOT / "scripts" / "layouts" / "hoi4_portrait_flux2_klein_9
 BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
-STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
+STYLE_LORA = "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors"
 STYLE_LORA_STRENGTH = 0.7
 SOURCE_STYLE_DENOISE = 1.0
 DEFAULT_STEPS = 8
-WORKFLOW_SCHEMA_VERSION = "2.4.4"
+WORKFLOW_SCHEMA_VERSION = "2.4.5"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
@@ -36,7 +36,7 @@ MODEL_URLS = {
     BASE_MODEL: "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8/resolve/9ecf2143d71542449960c5584340269c6d401449/flux-2-klein-base-9b-fp8.safetensors",
     TEXT_ENCODER: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
     VAE_MODEL: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors",
-    STYLE_LORA: "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/567bdd03a4a93f7506453780285323fa10ed48aa/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
+    STYLE_LORA: "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
     ESRGAN_MODEL: "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
     BACKGROUND_MODEL: "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
     FACE_DETECTION_MODEL: "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",

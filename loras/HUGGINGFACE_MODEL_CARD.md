@@ -18,12 +18,17 @@ Style adapter used by the public
 [`comfyui-hoi4-portraits`](https://github.com/klimPaskov/comfyui-hoi4-portraits)
 workflows.
 
-## File
+## Checkpoints
 
-- `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors`
+- `hoi4_portrait_flux2_klein9b_lora_000001500.safetensors`
+- `hoi4_portrait_flux2_klein9b_lora_000002000.safetensors`
+- `hoi4_portrait_flux2_klein9b_lora_000002250.safetensors`
+- `hoi4_portrait_flux2_klein9b_lora_000002500.safetensors`
+- `hoi4_portrait_flux2_klein9b_lora_000003000.safetensors`
+- `hoi4_portrait_flux2_klein9b_lora_000003500.safetensors`
+- `hoi4_portrait_flux2_klein9b_lora_000004000.safetensors`
 - Trigger word: `hoi4_portrait`
 - Base: `black-forest-labs/FLUX.2-klein-base-9B-fp8`
-- Training step: 2,500 (epoch 5)
 - ComfyUI loader: `LoraLoaderModelOnly`
 - Suggested starting strength: `0.70`
 
@@ -32,7 +37,7 @@ workflows.
 1. `UNETLoader`: `flux-2-klein-base-9b-fp8.safetensors`
 2. `CLIPLoader`: `qwen_3_8b_fp8mixed.safetensors`, type `flux2`
 3. `VAELoader`: `flux2-vae.safetensors`
-4. `LoraLoaderModelOnly`: this LoRA at strength `0.70`
+4. `LoraLoaderModelOnly`: start with the 1500-step checkpoint at strength `0.70`, then compare checkpoints under the same seed
 5. Eight steps, CFG 5, Euler sampler, `Flux2Scheduler`
 
 Fixed-seed tests at 6, 8, 10, 12, 20, and 35 steps support eight as the

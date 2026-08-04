@@ -37,7 +37,7 @@ detector selects the wrong person.
 | `diffusion_models/` | `flux-2-klein-base-9b-fp8.safetensors` |
 | `text_encoders/` | `qwen_3_8b_fp8mixed.safetensors` |
 | `vae/` | `flux2-vae.safetensors` |
-| `loras/` | `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors` |
+| `loras/` | Seven retrained checkpoints from steps 1500–4000, plus the previous 2500-step LoRA; see `models.json` for exact filenames |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
 | `detection/` | `mediapipe_face_fp32.safetensors` |
@@ -53,6 +53,8 @@ accept the FLUX.2 model agreement and create a read-only token.
 
 1. Open the workflow JSON, not the `.api.json` file, in the ComfyUI editor.
 2. Check every model loader. A red loader means the named file has not been installed or imported.
+   The retrained 1500-step LoRA is selected initially; choose another installed
+   checkpoint in `LoraLoaderModelOnly` when comparing training steps.
 3. Select the source image and confirm the automatic crop preview. Adjust
    **Face zoom** if needed. If it chose the wrong person, turn on the
    manual-crop toggle and adjust its box.

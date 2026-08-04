@@ -40,7 +40,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_hashes_match_files(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.4")
+        self.assertEqual(manifest["schema_version"], "2.4.5")
         for item in manifest["workflows"]:
             for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
                 data = (ROOT / item[path_key]).read_bytes()
@@ -185,9 +185,11 @@ class InstallerAndModelTests(unittest.TestCase):
         data = json.loads((ROOT / "models.json").read_text())
         self.assertEqual(data["schema_version"], "2.0.0")
         models = data["models"]
-        self.assertEqual(len(models), 8)
+        self.assertEqual(len(models), 15)
         filenames = [entry["filename"] for entry in models]
         self.assertEqual(len(filenames), len(set(filenames)))
+        retrained = [name for name in filenames if name.startswith("hoi4_portrait_flux2_klein9b_lora_")]
+        self.assertEqual(len(retrained), 7)
         for entry in models:
             self.assertRegex(entry["revision"], r"^[0-9a-f]{40}$")
             self.assertRegex(entry["sha256"], r"^[0-9a-f]{64}$")

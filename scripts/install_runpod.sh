@@ -48,6 +48,6 @@ fi
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}"
 
 echo
-echo "Installed three FLUX.2 Klein 9B workflows, the adaptive crop, and all eight pinned model files."
+echo "Installed three FLUX.2 Klein 9B workflows, the adaptive crop, and all 15 pinned model files, including every LoRA test checkpoint."
 echo "Models are under ${COMFY_ROOT}/models/{diffusion_models,text_encoders,vae,loras,upscale_models,background_removal,detection}."
 echo "Open Workflows > hoi4_portraits after restarting ComfyUI."

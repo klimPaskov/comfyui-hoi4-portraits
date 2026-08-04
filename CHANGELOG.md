@@ -2,6 +2,12 @@
 
 All notable project changes are recorded here.
 
+## 2.4.5 — 2026-08-04
+
+- Added all seven retrained LoRA checkpoints to the RunPod and local model
+  installer for controlled checkpoint comparison.
+- Selected the 1500-step retrained checkpoint as the initial workflow LoRA.
+
 ## 2.4.4 — 2026-08-04
 
 - Set all three source styling passes to full denoise `1.00`, matching the
