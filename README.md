@@ -35,21 +35,21 @@ workflows.
 ## What the source workflow does
 
 These screenshots show the source, crop + ESRGAN, optional restoration,
-pre-background LoRA, and final portrait checkpoints from a local ComfyUI queue
-run. The source workflow opens with FLUX restoration disabled. The example run
-enables the switch so every checkpoint appears on one canvas.
+three LoRA candidates, and final portrait checkpoints in the editor layout.
+The source workflow opens with FLUX restoration disabled. Queueing the graph
+fills its preview nodes with the completed images.
 
 ```mermaid
 flowchart LR
     A["Source portrait"] --> CROP["Adjustable head-and-shoulders crop"]
     CROP --> B["RealESRGAN x2"]
     B --> C{"FLUX restoration enabled?"}
-    C -->|No| D["HOI4 LoRA styling"]
+    C -->|No| D["HOI4 LoRA styling ×3 seeds"]
     C -->|Yes| R["FLUX.2 conservative restoration"] --> D
-    D --> E["Final styled portrait"]
-    E --> F{"Replace background?"}
-    F -->|No| G["Save master + 156×210 PNG"]
-    F -->|Yes| H["BiRefNet mask + composite"] --> G
+    D --> E["Three final candidates"]
+    E --> F{"Replace background for all 3?"}
+    F -->|No| G["Save 3 masters + 3 game PNGs"]
+    F -->|Yes| H["BiRefNet mask + composite each candidate"] --> G
 ```
 
 ![Source workflow overview](docs/assets/workflows/source-workflow-overview.png)
@@ -80,28 +80,31 @@ Turn it on when a damaged source needs the additional pass.
 ### 4. Apply the portrait LoRA
 
 The selected processed portrait becomes the reference and starting image for
-LoRA styling. Describe only the person in the positive prompt. The defaults are
-Euler, eight steps, and CFG 5.
+three independent LoRA styling passes. Each pass uses a different seed, so one
+queue produces three candidates from the same input. Describe only the person
+in the positive prompt. The defaults are Euler, eight steps, and CFG 5.
 
 ![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
 
 ### 5. Optionally replace the background
 
-Background masking and compositing receive the decoded final portrait. This
-stage is off by default and runs only after crop, restoration, and LoRA
-generation.
+Background masking and compositing receive each decoded final portrait. One
+shared switch controls all three candidate branches; it is off by default and
+runs only after crop, restoration, and LoRA generation.
 
 ![Final-image background replacement stage](docs/assets/workflows/step-5-background-replacement.png)
 
 ### 6. Preview and save
 
-Preview the result, save the 832 × 1120 master PNG, and create the 156 × 210
-game-size portrait.
+Preview all three results, save three 832 × 1120 master PNGs, and create three
+156 × 210 game-size portraits. Candidate files use `candidate_1`,
+`candidate_2`, and `candidate_3` prefixes under `ComfyUI/output/hoi4_portraits/`.
 
 ![Preview and output stage](docs/assets/workflows/step-6-preview-and-save.png)
 
 Background removal and compositing consume the **decoded final LoRA-styled
-image**. They do not run on the source, the ESRGAN image, or the restoration
+images**. When enabled, the shared switch applies the replacement to all three
+candidates. They do not run on the source, the ESRGAN image, or the restoration
 pass.
 
 Both image-to-image stages start from the encoded processed portrait, not an
@@ -131,9 +134,10 @@ flowchart LR
    plan, open **Models → Import**, and import the [public LoRA file](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors) as a LoRA.
 2. Download and open one of the workflow JSON files from the table.
 3. For a source workflow, upload a portrait and select it in **Load source portrait**. Set the built-in crop box around the head and shoulders, then check its preview.
-4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then turn on the final background switch.
-5. Queue the workflow. In the source workflow, FLUX restoration is off by
-   default; turn **Toggle FLUX restoration** on only when the source needs it.
+4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then turn on the shared background switch.
+5. Queue the workflow. A source run creates three candidate portraits. FLUX
+   restoration is off by default; turn **Toggle FLUX restoration** on only when
+   the source needs it.
 
 See [Comfy Cloud setup](docs/comfy-cloud.md) for the exact model-import and MCP
 validation flow.

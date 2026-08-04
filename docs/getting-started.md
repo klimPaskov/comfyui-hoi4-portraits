@@ -50,10 +50,13 @@ Find the filenames, pinned sources, sizes, and SHA-256 hashes in
 4. Edit the positive prompt. Keep the `hoi4_portrait,` trigger and describe
    only the visible person.
 5. Leave background replacement off for the first run.
-6. Queue once. The source workflow's restoration switch is off by default; turn
-   it on only when the source needs the additional pass. Use the processing
-   workflow when you need the processed image without LoRA styling.
-7. Inspect the 832 × 1120 master before using the 156 × 210 game-size file.
+6. Queue once. The source workflow creates three final candidates from the
+   same input. Its restoration switch is off by default; turn it on only when
+   the source needs the additional pass. The shared background switch, when
+   enabled, applies to all three candidates. Use the processing workflow when
+   you need the processed image without LoRA styling.
+7. Inspect the three 832 × 1120 masters before choosing a 156 × 210 game-size
+   file.
 
 Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
 

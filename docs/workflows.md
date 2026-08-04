@@ -33,14 +33,22 @@ Groups run left to right:
 4. The restoration switch is off by default and sends the direct ESRGAN result
    onward. Turn it on to select the FLUX result. The disabled restoration pass
    does not run.
-5. **HOI4 LoRA styling** encodes the selected processed image as both the reference and starting latent, then samples with the LoRA-patched model. This avoids the pose drift caused by starting image-to-image work from an empty latent.
-6. **Optional background** receives the decoded styled image, creates its foreground mask with BiRefNet, and composites over the selected background.
-7. A second switch keeps the styled image unchanged by default or selects the
-   composite when enabled.
-8. **Preview and save** writes the 832 × 1120 master and a 156 × 210 PNG.
+5. **HOI4 LoRA styling** runs three independent seed passes. Each pass encodes
+   the selected processed image as both the reference and starting latent, then
+   samples with the LoRA-patched model. This keeps all three candidates tied to
+   the same crop and pose while giving the user a choice of final seed.
+6. **Optional background** receives each decoded styled image, creates its
+   foreground mask with BiRefNet, and composites each candidate over the same
+   selected background.
+7. One shared boolean switch controls all three background branches. It is off
+   by default, so each candidate remains unchanged unless the switch is enabled.
+8. **Preview and save** writes three 832 × 1120 masters and three 156 × 210
+   PNGs, using `candidate_1`, `candidate_2`, and `candidate_3` prefixes.
 
 The source graph opens with **Toggle FLUX restoration** set to `false`. Turn it
-on for the additional restoration pass. Keep the supplied connections intact.
+on for the single additional restoration pass. The separate shared background
+toggle is also false by default; enable it to replace the background on all
+three candidates. Keep the supplied connections intact.
 
 ## Processing workflow
 
@@ -68,19 +76,19 @@ common violations in every generated API graph.
 ## Background replacement invariant
 
 The background branch is deliberately downstream of `VAEDecode` for the HOI4
-LoRA sampler. In the API graphs:
-
-- node `63` masks the final styled image;
-- node `65` composites that same image over the chosen background using node
-  `63`'s foreground mask directly;
-- node `66` selects either the unchanged final image or the composite;
-- no background node is an ancestor of the LoRA-styled `VAEDecode`.
+LoRA sampler. In the source API graph, nodes `123`, `133`, and `143` mask final
+candidates `51`, `71`, and `91`; nodes `124`, `134`, and `144` composite them;
+and switches `125`, `135`, and `145` select the unchanged or composited result.
+All three switches use shared `PrimitiveBoolean` node `119`, which is false by
+default. The text-to-image API keeps the same invariant with its single branch
+(`63`, `65`, `66`). No background node is an ancestor of a LoRA-styled
+`VAEDecode`.
 
 The project checks this dependency order. Background processing belongs after
 portrait generation.
 
-`RemoveBackground` returns a foreground mask. Do not insert `InvertMask`
-between nodes `63` and `65`, or the foreground/background regions will swap.
+`RemoveBackground` returns a foreground mask. Do not insert `InvertMask` into
+any of the candidate branches, or the foreground/background regions will swap.
 
 ## Editing safely
 

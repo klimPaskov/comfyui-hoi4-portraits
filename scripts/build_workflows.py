@@ -24,6 +24,8 @@ STYLE_LORA = "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors"
 STYLE_LORA_STRENGTH = 0.7
 DEFAULT_STEPS = 8
 WORKFLOW_SCHEMA_VERSION = "2.3.0"
+SOURCE_CANDIDATE_COUNT = 3
+SOURCE_STYLE_SEEDS = (42, 43, 44)
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 
@@ -293,6 +295,7 @@ def _edit_stage(
     negative: str,
     seed: int,
     title_prefix: str,
+    y: int = 120,
 ) -> tuple[list[Node], Link]:
     i = id_start
     nodes = [
@@ -301,7 +304,7 @@ def _edit_stage(
             "CLIPTextEncode",
             f"{title_prefix} instructions",
             group,
-            (x, 120),
+            (x, y),
             size=(430, 250),
             inputs={"clip": Link(2), "text": prompt},
             input_types={"clip": "CLIP", "text": "STRING"},
@@ -314,7 +317,7 @@ def _edit_stage(
             "CLIPTextEncode",
             f"{title_prefix} negative",
             group,
-            (x, 450),
+            (x, y + 330),
             size=(430, 180),
             inputs={"clip": Link(2), "text": negative},
             input_types={"clip": "CLIP", "text": "STRING"},
@@ -327,7 +330,7 @@ def _edit_stage(
             "VAEEncode",
             f"Encode {title_prefix.lower()} reference",
             group,
-            (x + 500, 120),
+            (x + 500, y),
             inputs={"pixels": image, "vae": Link(3)},
             input_types={"pixels": "IMAGE", "vae": "VAE"},
             outputs=["LATENT"],
@@ -338,7 +341,7 @@ def _edit_stage(
             "ReferenceLatent",
             "Attach reference to positive conditioning",
             group,
-            (x + 500, 320),
+            (x + 500, y + 200),
             inputs={"conditioning": Link(i), "latent": Link(i + 2)},
             input_types={"conditioning": "CONDITIONING", "latent": "LATENT"},
             outputs=["CONDITIONING"],
@@ -349,7 +352,7 @@ def _edit_stage(
             "ReferenceLatent",
             "Attach reference to negative conditioning",
             group,
-            (x + 500, 520),
+            (x + 500, y + 400),
             inputs={"conditioning": Link(i + 1), "latent": Link(i + 2)},
             input_types={"conditioning": "CONDITIONING", "latent": "LATENT"},
             outputs=["CONDITIONING"],
@@ -360,7 +363,7 @@ def _edit_stage(
             "CFGGuider",
             f"Guide {title_prefix.lower()} pass",
             group,
-            (x + 900, 120),
+            (x + 900, y),
             inputs={"model": model, "positive": Link(i + 3), "negative": Link(i + 4), "cfg": 5.0},
             input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "cfg": "FLOAT"},
             outputs=["GUIDER"],
@@ -372,7 +375,7 @@ def _edit_stage(
             "RandomNoise",
             f"{title_prefix} seed",
             group,
-            (x + 900, 320),
+            (x + 900, y + 200),
             inputs={"noise_seed": seed},
             input_types={"noise_seed": "INT"},
             outputs=["NOISE"],
@@ -384,7 +387,7 @@ def _edit_stage(
             "KSamplerSelect",
             "Use Euler sampler",
             group,
-            (x + 900, 520),
+            (x + 900, y + 400),
             inputs={"sampler_name": "euler"},
             input_types={"sampler_name": "COMBO"},
             outputs=["SAMPLER"],
@@ -396,7 +399,7 @@ def _edit_stage(
             "Flux2Scheduler",
             f"FLUX.2 schedule - {DEFAULT_STEPS} steps",
             group,
-            (x + 900, 700),
+            (x + 900, y + 580),
             inputs={"steps": DEFAULT_STEPS, "width": 832, "height": 1120},
             input_types={"steps": "INT", "width": "INT", "height": "INT"},
             outputs=["SIGMAS"],
@@ -408,7 +411,7 @@ def _edit_stage(
             "SamplerCustomAdvanced",
             f"Run {title_prefix.lower()} pass",
             group,
-            (x + 1320, 260),
+            (x + 1320, y + 140),
             size=(300, 150),
             inputs={
                 "noise": Link(i + 7),
@@ -426,7 +429,7 @@ def _edit_stage(
             "VAEDecode",
             f"Decode {title_prefix.lower()} result",
             group,
-            (x + 1320, 500),
+            (x + 1320, y + 380),
             inputs={"samples": Link(i + 10), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -437,7 +440,7 @@ def _edit_stage(
             "PreviewImage",
             f"Preview {title_prefix.lower()} result",
             group,
-            (x + 1320, 680),
+            (x + 1320, y + 560),
             size=(300, 220),
             inputs={"images": Link(i + 11)},
             input_types={"images": "IMAGE"},
@@ -707,6 +710,180 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
     ]
 
 
+def _background_and_outputs_multi(
+    *,
+    final_images: list[Link],
+    x: int = 5600,
+    id_start: int = 120,
+) -> list[Node]:
+    """Fan one background/removal setup into one optional output branch per final."""
+    background_group = "05 Optional background - after generation"
+    output_group = "06 Preview and save"
+    nodes = [
+        _node(
+            id_start - 1,
+            "PrimitiveBoolean",
+            "Toggle replacement background for all three candidates (off by default)",
+            background_group,
+            (x, 680),
+            size=(340, 100),
+            inputs={"value": False},
+            input_types={"value": "BOOLEAN"},
+            outputs=["BOOLEAN"],
+            output_types=["BOOLEAN"],
+            widgets=[False],
+        ),
+        _node(
+            id_start,
+            "LoadImage",
+            "Load one replacement background for all candidates",
+            background_group,
+            (x, 120),
+            size=(340, 300),
+            inputs={"image": "hoi4_leader_portrait_background.png"},
+            input_types={"image": "COMBO"},
+            outputs=["IMAGE", "MASK"],
+            output_types=["IMAGE", "MASK"],
+            widgets=["hoi4_leader_portrait_background.png", "image"],
+        ),
+        _node(
+            id_start + 1,
+            "ImageScale",
+            "Fit one background to the final master canvas",
+            background_group,
+            (x, 500),
+            size=(340, 150),
+            inputs={
+                "image": Link(id_start),
+                "upscale_method": "lanczos",
+                "width": 832,
+                "height": 1120,
+                "crop": "center",
+            },
+            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["lanczos", 832, 1120, "center"],
+        ),
+        _node(
+            id_start + 2,
+            "LoadBackgroundRemovalModel",
+            "Load one BiRefNet model for all candidates",
+            background_group,
+            (x + 420, 120),
+            inputs={"bg_removal_name": BACKGROUND_MODEL},
+            input_types={"bg_removal_name": "COMBO"},
+            outputs=["BACKGROUND_REMOVAL"],
+            output_types=["BACKGROUND_REMOVAL"],
+            widgets=[BACKGROUND_MODEL],
+            models=_model(BACKGROUND_MODEL, "background_removal"),
+        ),
+    ]
+    for index, final_image in enumerate(final_images, start=1):
+        branch = id_start + 3 + (index - 1) * 10
+        row_y = 760 + (index - 1) * 760
+        label = f"candidate {index}"
+        prefix = f"hoi4_portraits/candidate_{index}"
+        nodes.extend(
+            [
+                _node(
+                    branch,
+                    "RemoveBackground",
+                    f"Mask {label} final portrait",
+                    background_group,
+                    (x + 420, row_y),
+                    inputs={"bg_removal_model": Link(id_start + 2), "image": final_image},
+                    input_types={"bg_removal_model": "BACKGROUND_REMOVAL", "image": "IMAGE"},
+                    outputs=["MASK"],
+                    output_types=["MASK"],
+                ),
+                _node(
+                    branch + 1,
+                    "ImageCompositeMasked",
+                    f"Composite {label} after final styling",
+                    background_group,
+                    (x + 800, row_y - 50),
+                    size=(360, 180),
+                    inputs={
+                        "destination": Link(id_start + 1),
+                        "source": final_image,
+                        "x": 0,
+                        "y": 0,
+                        "resize_source": True,
+                        "mask": Link(branch),
+                    },
+                    input_types={"destination": "IMAGE", "source": "IMAGE", "x": "INT", "y": "INT", "resize_source": "BOOLEAN", "mask": "MASK"},
+                    outputs=["IMAGE"],
+                    output_types=["IMAGE"],
+                    widgets=[0, 0, True],
+                ),
+                _node(
+                    branch + 2,
+                    "ComfySwitchNode",
+                    f"Toggle background for {label} (off by default)",
+                    background_group,
+                    (x + 800, row_y + 220),
+                    size=(360, 130),
+                    inputs={"switch": Link(id_start - 1), "on_false": final_image, "on_true": Link(branch + 1)},
+                    input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
+                    outputs=["output"],
+                    output_types=["IMAGE"],
+                    widgets=[],
+                ),
+                _node(
+                    branch + 3,
+                    "PreviewImage",
+                    f"Preview {label}",
+                    output_group,
+                    (x + 1380, row_y),
+                    size=(420, 420),
+                    inputs={"images": Link(branch + 2)},
+                    input_types={"images": "IMAGE"},
+                    outputs=["IMAGE"],
+                    output_types=["IMAGE"],
+                ),
+                _node(
+                    branch + 4,
+                    "SaveImage",
+                    f"Save {label} 832 x 1120 master PNG",
+                    output_group,
+                    (x + 1880, row_y),
+                    inputs={"images": Link(branch + 2), "filename_prefix": f"{prefix}_master"},
+                    input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+                    outputs=["IMAGE"],
+                    output_types=["IMAGE"],
+                    widgets=[f"{prefix}_master"],
+                ),
+                _node(
+                    branch + 5,
+                    "ImageScale",
+                    f"Resize {label} to HOI4 156 x 210",
+                    output_group,
+                    (x + 1880, row_y + 200),
+                    size=(340, 150),
+                    inputs={"image": Link(branch + 2), "upscale_method": "lanczos", "width": 156, "height": 210, "crop": "center"},
+                    input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+                    outputs=["IMAGE"],
+                    output_types=["IMAGE"],
+                    widgets=["lanczos", 156, 210, "center"],
+                ),
+                _node(
+                    branch + 6,
+                    "SaveImage",
+                    f"Save {label} game-size PNG",
+                    output_group,
+                    (x + 1880, row_y + 420),
+                    inputs={"images": Link(branch + 5), "filename_prefix": f"{prefix}_portrait_156x210"},
+                    input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+                    outputs=["IMAGE"],
+                    output_types=["IMAGE"],
+                    widgets=[f"{prefix}_portrait_156x210"],
+                ),
+            ]
+        )
+    return nodes
+
+
 def _processing_outputs(*, processed_image: Link) -> list[Node]:
     output_group = "04 Processed portrait output"
     return [
@@ -762,19 +939,21 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
     ]
 
 
-def _groups(*, has_source: bool, has_restoration: bool) -> list[Group]:
+def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1) -> list[Group]:
     groups: list[Group] = []
     if has_source:
         groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 1100), "#557a46"))
     groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 800), "#3f789e"))
     if has_restoration:
         groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"))
-        groups.append(Group("04 HOI4 LoRA styling", (3400, 40, 1800, 980), "#7a568e"))
+        style_height = 2700 if candidate_count > 1 else 980
+        groups.append(Group("04 HOI4 LoRA styling", (3400, 40, 1800, style_height), "#7a568e"))
     else:
         groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1800, 980), "#7a568e"))
     background_x = 5600 if has_restoration else 3600
-    groups.append(Group("05 Optional background - after generation", (background_x - 80, 40, 1300, 720), "#8d5b5b"))
-    groups.append(Group("06 Preview and save", (background_x + 1300, 40, 1100, 720), "#596b82"))
+    output_height = 3040 if candidate_count > 1 else 720
+    groups.append(Group("05 Optional background - after generation", (background_x - 80, 40, 1300, output_height), "#8d5b5b"))
+    groups.append(Group("06 Preview and save", (background_x + 1300, 40, 1100, output_height), "#596b82"))
     return groups
 
 
@@ -816,28 +995,35 @@ def build_source() -> Graph:
             widgets=[False],
         )
     )
-    style_nodes, styled = _edit_stage(
-        id_start=40,
-        group="04 HOI4 LoRA styling",
-        x=3440,
-        image=Link(32),
-        model=Link(4),
-        prompt=STYLE_PROMPT,
-        negative=STYLE_NEGATIVE,
-        seed=42,
-        title_prefix="Person-only LoRA",
-    )
-    nodes.extend(style_nodes)
-    nodes.extend(_background_and_outputs(final_image=styled, x=5600))
+    styled_images: list[Link] = []
+    for index, seed in enumerate(SOURCE_STYLE_SEEDS, start=1):
+        style_nodes, styled = _edit_stage(
+            id_start=40 + (index - 1) * 20,
+            group="04 HOI4 LoRA styling",
+            x=3440,
+            y=80 + (index - 1) * 900,
+            image=Link(32),
+            model=Link(4),
+            prompt=STYLE_PROMPT,
+            negative=STYLE_NEGATIVE,
+            seed=seed,
+            title_prefix=f"Candidate {index} person-only LoRA",
+        )
+        nodes.extend(style_nodes)
+        styled_images.append(styled)
+    nodes.extend(_background_and_outputs_multi(final_images=styled_images, x=5600, id_start=120))
     return Graph(
         workflow_id="hoi4_portrait_flux2_klein_9b_source",
-        description="Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration second, HOI4 LoRA styling, then optional background replacement.",
+        description="Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
         kind="image_to_image",
         nodes=nodes,
-        groups=_groups(has_source=True, has_restoration=True),
+        groups=_groups(has_source=True, has_restoration=True, candidate_count=SOURCE_CANDIDATE_COUNT),
         metadata={
             "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
             "flux_restoration_default": False,
+            "candidate_count": SOURCE_CANDIDATE_COUNT,
+            "candidate_seed_count": SOURCE_CANDIDATE_COUNT,
+            "background_candidate_count": SOURCE_CANDIDATE_COUNT,
             "source_crop": "native_adjustable_head_and_shoulders_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
             "background_order": "after_final_lora_styled_decode",

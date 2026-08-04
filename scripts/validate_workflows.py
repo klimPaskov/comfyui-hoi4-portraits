@@ -30,6 +30,7 @@ ALLOWED_CORE_NODES = {
     "LoadImage",
     "LoraLoaderModelOnly",
     "PreviewImage",
+    "PrimitiveBoolean",
     "PrimitiveBoundingBox",
     "RandomNoise",
     "ReferenceLatent",
@@ -268,6 +269,12 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         preview_expectations["29"] = ["28", 0]
     elif is_processing:
         preview_expectations.update({"10": ["8", 0], "35": ["31", 0], "70": ["32", 0]})
+    elif is_source:
+        preview_expectations.update({"10": ["8", 0], "35": ["31", 0]})
+        for preview_id, decode_id in (("55", "51"), ("75", "71"), ("95", "91")):
+            preview_expectations[preview_id] = [decode_id, 0]
+        for preview_id, switch_id in (("126", "125"), ("136", "135"), ("146", "145")):
+            preview_expectations[preview_id] = [switch_id, 0]
     else:
         preview_expectations.update({"10": ["8", 0], "35": ["31", 0], "55": ["51", 0], "70": ["66", 0]})
     for preview_id, expected_image in preview_expectations.items():
@@ -276,34 +283,57 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: required completed-stage preview node {preview_id} is missing or miswired")
 
     if not is_processing:
-        composite = next((node_id for node_id, node in api.items() if node.get("class_type") == "ImageCompositeMasked"), None)
-        background_switch = next(
-            (node_id for node_id, node in api.items() if node.get("class_type") == "ComfySwitchNode" and node_id == "66"),
-            None,
-        )
-        if composite is None or background_switch is None:
-            errors.append(f"{path}: optional final background branch is incomplete")
+        if is_source:
+            background_branches = [
+                ("125", "123", "124", "51"),
+                ("135", "133", "134", "71"),
+                ("145", "143", "144", "91"),
+            ]
+            if api.get("119", {}).get("class_type") != "PrimitiveBoolean" or api.get("119", {}).get("inputs", {}).get("value") is not False:
+                errors.append(f"{path}: source background toggle must be one shared false-by-default PrimitiveBoolean")
+            for switch_id, _, _, _ in background_branches:
+                if api.get(switch_id, {}).get("inputs", {}).get("switch") != ["119", 0]:
+                    errors.append(f"{path}: background switch {switch_id} is not controlled by the shared toggle")
+            shared_background = {"120": "LoadImage", "121": "ImageScale", "122": "LoadBackgroundRemovalModel"}
         else:
-            final_link = api[background_switch]["inputs"].get("on_false")
-            if not (isinstance(final_link, list) and final_link[0] in api):
-                errors.append(f"{path}: final unmodified portrait link is invalid")
-            else:
-                final_node_id = final_link[0]
-                if api[final_node_id].get("class_type") != "VAEDecode":
-                    errors.append(f"{path}: background branch does not start from a decoded final portrait")
-                if api[composite]["inputs"].get("source") != final_link:
-                    errors.append(f"{path}: composite source differs from the final styled portrait")
-                if api[composite]["inputs"].get("mask") != ["63", 0]:
-                    errors.append(f"{path}: composite must use RemoveBackground's foreground mask directly")
-                if api.get("63", {}).get("inputs", {}).get("image") != final_link:
-                    errors.append(f"{path}: foreground mask is not derived from the final styled portrait")
-                if any(node.get("class_type") == "InvertMask" for node in api.values()):
-                    errors.append(f"{path}: foreground mask must not be inverted")
-                if lora_node not in _ancestors(api, final_node_id):
-                    errors.append(f"{path}: final portrait was not generated with the LoRA model")
-                background_ancestors = _ancestors(api, final_node_id)
-                if any(node_id in background_ancestors for node_id in {"60", "61", "62", "63", "65", "66"}):
-                    errors.append(f"{path}: background processing occurs before final portrait generation")
+            background_branches = [("66", "63", "65", "28")]
+            shared_background = {"60": "LoadImage", "61": "ImageScale", "62": "LoadBackgroundRemovalModel"}
+        background_canvas_id = "121" if is_source else "61"
+
+        if any(api.get(node_id, {}).get("class_type") != class_type for node_id, class_type in shared_background.items()):
+            errors.append(f"{path}: shared background setup is incomplete")
+        if any(node.get("class_type") == "InvertMask" for node in api.values()):
+            errors.append(f"{path}: foreground mask must not be inverted")
+
+        for switch_id, mask_id, composite_id, expected_final_id in background_branches:
+            switch = api.get(switch_id, {})
+            composite = api.get(composite_id, {})
+            mask = api.get(mask_id, {})
+            if switch.get("class_type") != "ComfySwitchNode" or composite.get("class_type") != "ImageCompositeMasked" or mask.get("class_type") != "RemoveBackground":
+                errors.append(f"{path}: optional final background branch {switch_id} is incomplete")
+                continue
+            final_link = switch.get("inputs", {}).get("on_false")
+            if final_link != [expected_final_id, 0] or final_link[0] not in api:
+                errors.append(f"{path}: background branch {switch_id} has an invalid final portrait link")
+                continue
+            final_node_id = final_link[0]
+            if api[final_node_id].get("class_type") != "VAEDecode":
+                errors.append(f"{path}: background branch {switch_id} does not start from a decoded final portrait")
+            if composite.get("inputs", {}).get("source") != final_link:
+                errors.append(f"{path}: composite {composite_id} differs from its final styled portrait")
+            expected_mask_link = [mask_id, 0]
+            if composite.get("inputs", {}).get("mask") != expected_mask_link:
+                errors.append(f"{path}: composite {composite_id} must use its RemoveBackground mask directly")
+            if mask.get("inputs", {}).get("image") != final_link:
+                errors.append(f"{path}: foreground mask {mask_id} is not derived from the final styled portrait")
+            if composite.get("inputs", {}).get("destination") != [background_canvas_id, 0]:
+                errors.append(f"{path}: composite {composite_id} does not use the fitted background")
+            if lora_node not in _ancestors(api, final_node_id):
+                errors.append(f"{path}: final portrait {final_node_id} was not generated with the LoRA model")
+            background_ancestors = _ancestors(api, final_node_id)
+            background_ids = set(shared_background) | {branch_id for branch in background_branches for branch_id in branch[:3]}
+            if background_ids & background_ancestors:
+                errors.append(f"{path}: background processing occurs before final portrait generation for {final_node_id}")
 
     if is_source:
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
@@ -311,6 +341,9 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: source restoration order is wrong")
         if extra.get("flux_restoration_default") is not False:
             errors.append(f"{path}: FLUX restoration must be disabled by default")
+        for key in ("candidate_count", "candidate_seed_count", "background_candidate_count"):
+            if extra.get(key) != 3:
+                errors.append(f"{path}: source metadata {key} must be three")
         switch = api.get("32", {}).get("inputs", {})
         if switch.get("switch") is not False or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["31", 0]:
             errors.append(f"{path}: FLUX restoration toggle does not keep the direct ESRGAN output")
@@ -320,8 +353,14 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: LoRA styling does not consume the restoration switch output")
         if api.get("30", {}).get("inputs", {}).get("latent_image") != ["22", 0]:
             errors.append(f"{path}: FLUX restoration does not start from the encoded cropped portrait")
-        if api.get("50", {}).get("inputs", {}).get("latent_image") != ["42", 0]:
-            errors.append(f"{path}: LoRA styling does not start from the encoded restored portrait")
+        style_branches = (("42", "50", "46"), ("62", "70", "66"), ("82", "90", "86"))
+        for latent_id, sampler_id, guider_id in style_branches:
+            if api.get(latent_id, {}).get("inputs", {}).get("pixels") != ["32", 0]:
+                errors.append(f"{path}: LoRA branch {sampler_id} does not consume the restoration switch output")
+            if api.get(sampler_id, {}).get("inputs", {}).get("latent_image") != [latent_id, 0]:
+                errors.append(f"{path}: LoRA branch {sampler_id} does not start from its encoded restored portrait")
+            if api.get(guider_id, {}).get("inputs", {}).get("model") != ["4", 0]:
+                errors.append(f"{path}: LoRA branch {sampler_id} is not using the project LoRA model")
     elif is_processing:
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
         if extra.get("restoration_order") != expected:

@@ -32,7 +32,8 @@ For source workflows, upload:
 - one background from [`backgrounds/`](../backgrounds/) if replacement is enabled.
 
 Background replacement is off by default, so a background file is optional
-unless you enable that switch.
+unless you enable the shared switch. In the source workflow, that one switch
+controls the background branch for all three final candidates.
 
 Keep the LoRA loader at strength `0.7`. Every
 positive prompt must begin with `hoi4_portrait,` and then describe only the
@@ -62,9 +63,14 @@ workflow before generating.
 
 1. Upload source/background media with the Cloud file upload flow.
 2. Replace the `LoadImage.image` values in the API graph with the returned filenames.
-3. Submit the API-format graph.
-4. Wait for the returned prompt ID to reach a terminal state before claiming success.
-5. Retrieve the output only after the job reports completion.
+3. For a source graph, set node `119`'s boolean `value` to `true` only when
+   background replacement is wanted; that one toggle controls all three
+   candidates. Leave it `false` otherwise.
+4. Submit the API-format graph.
+5. Wait for the returned prompt ID to reach a terminal state before claiming success.
+6. Retrieve the output only after the job reports completion. A source run
+   returns three candidate master/game-size pairs; review them and choose the
+   candidate you want to install.
 
 The workflows contain no paid partner/API nodes. Normal Comfy Cloud compute
 and subscription limits still apply.

@@ -95,10 +95,28 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(api["7"]["inputs"]["image"], ["11", 0])
             self.assertNotIn("EmptyFlux2LatentImage", {node["class_type"] for node in api.values()})
             if name == "source":
-                self.assertEqual(api["50"]["inputs"]["latent_image"], ["42", 0])
+                for latent_id, sampler_id in (("42", "50"), ("62", "70"), ("82", "90")):
+                    self.assertEqual(api[latent_id]["inputs"]["pixels"], ["32", 0])
+                    self.assertEqual(api[sampler_id]["inputs"]["latent_image"], [latent_id, 0])
+                self.assertEqual(api["119"]["class_type"], "PrimitiveBoolean")
+                self.assertFalse(api["119"]["inputs"]["value"])
+                for switch_id, final_id in (("125", "51"), ("135", "71"), ("145", "91")):
+                    self.assertEqual(api[switch_id]["inputs"]["switch"], ["119", 0])
+                    self.assertEqual(api[switch_id]["inputs"]["on_false"], [final_id, 0])
             else:
                 self.assertNotIn("4", api)
                 self.assertEqual(api["30"]["inputs"]["latent_image"], ["22", 0])
+
+    def test_source_workflow_has_three_final_candidates_and_one_restoration(self) -> None:
+        api = json.loads(
+            (ROOT / "workflows" / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(build_workflows.SOURCE_CANDIDATE_COUNT, 3)
+        self.assertEqual([api[node_id]["inputs"]["noise_seed"] for node_id in ("47", "67", "87")], [42, 43, 44])
+        self.assertEqual(sum(node["class_type"] == "SamplerCustomAdvanced" for node in api.values()), 4)
+        self.assertEqual(sum(node["class_type"] == "VAEDecode" for node in api.values()), 4)
+        self.assertEqual(sum(node["class_type"] == "RemoveBackground" for node in api.values()), 3)
+        self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 6)
 
     def test_person_prompt_policy_allows_hairstyle_but_rejects_style(self) -> None:
         self.assertEqual(validate_workflows._non_person_prompt_terms("a different hairstyle"), [])
