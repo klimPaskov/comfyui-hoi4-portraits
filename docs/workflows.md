@@ -16,6 +16,9 @@ The source and text-to-image model stack is:
 6. `Identity Feature Transfer Final` — source workflow only; keeps each styling branch tied to the uploaded person's reference features. `MID_LOCK` is the default and `HARD_LOCK` is available for difficult sources.
 7. `FLUX.2 Portrait Sampler`: seed, sampler, steps, denoise, CFG, guidance, and canvas size for that branch.
 
+The [identity comparison pack](identity-comparison.md) keeps this stack and
+generation policy fixed while testing nine alternate preservation paths.
+
 Restoration and text-to-image use Euler with six steps. The three source
 candidates use Euler/6 steps, `res_2s`/4 steps, and `res_2m`/8 steps.
 

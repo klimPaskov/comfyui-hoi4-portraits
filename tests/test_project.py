@@ -42,11 +42,11 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_and_layout_validation_passes(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", result["errors"])
-        self.assertEqual(len(result["workflows"]), 3)
+        self.assertEqual(len(result["workflows"]), 12)
 
     def test_manifest_workflow_files_exist(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.5.0")
+        self.assertEqual(manifest["schema_version"], "2.6.0")
         for item in manifest["workflows"]:
             self.assertTrue((ROOT / item["workflow_json"]).is_file())
             self.assertTrue((ROOT / item["api_json"]).is_file())
@@ -63,6 +63,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(build_workflows.DEFAULT_GUIDANCE, 1.0)
         for workflow in (ROOT / "workflows").glob("*.api.json"):
             api = json.loads(workflow.read_text(encoding="utf-8"))
+            is_source = "_source" in workflow.name
             loras = [
                 node
                 for node in api.values()
@@ -85,7 +86,7 @@ class WorkflowTests(unittest.TestCase):
                 for node_id, node in api.items()
                 if node["class_type"] == "Flux2PortraitSampler"
             }
-            if workflow.name.endswith("source.api.json"):
+            if is_source:
                 self.assertEqual(
                     {node_id: inputs["steps"] for node_id, inputs in portrait_samplers.items()},
                     {"30": 6, "50": 6, "70": 4, "90": 8},
@@ -103,20 +104,26 @@ class WorkflowTests(unittest.TestCase):
             self.assertTrue(all(node["cfg"] == 1.0 for node in portrait_samplers.values()), workflow.name)
             self.assertTrue(all(node["guidance"] == 1.0 for node in portrait_samplers.values()), workflow.name)
             self.assertTrue(all(node["denoise"] == 1.0 for node in portrait_samplers.values()), workflow.name)
-            if workflow.name.endswith("source.api.json"):
+            if is_source:
                 self.assertIs(api["32"]["inputs"]["switch"], False)
-                self.assertEqual(
-                    api["40"]["inputs"]["text"],
-                    "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing.",
-                )
+                expected_prompt = build_workflows.STYLE_PROMPT
+                if "refcontrol_lineart" in workflow.name:
+                    expected_prompt = expected_prompt.replace("hoi4_portrait,", "hoi4_portrait, refcontrol,", 1)
+                self.assertEqual(api["40"]["inputs"]["text"], expected_prompt)
                 for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
-                    self.assertEqual(api[prompt_id]["inputs"]["text"], build_workflows.STYLE_PROMPT)
+                    self.assertEqual(api[prompt_id]["inputs"]["text"], expected_prompt)
                     self.assertEqual(api[reference_id]["inputs"]["conditioning"], [prompt_id, 0])
                     self.assertEqual(api[reference_id]["class_type"], "Flux2KleinMultiReferenceLatent")
-                    self.assertEqual(api[reference_id]["inputs"]["latent_1"], api[reference_id]["inputs"]["latent_2"])
-                self.assertEqual(api["190"]["class_type"], "IdentityFeatureTransferFinal")
-                self.assertEqual(api["190"]["inputs"]["preset"], "MID_LOCK")
-                self.assertTrue(api["190"]["inputs"]["enabled"])
+                    if workflow.name.endswith("9b_source.api.json"):
+                        self.assertEqual(api[reference_id]["inputs"]["latent_1"], api[reference_id]["inputs"]["latent_2"])
+                    else:
+                        start = int(prompt_id)
+                        self.assertEqual(api[reference_id]["inputs"]["latent_1"], [str(start + 5), 0])
+                        self.assertEqual(api[reference_id]["inputs"]["latent_2"], [str(start + 6), 0])
+                if workflow.name.endswith("9b_source.api.json"):
+                    self.assertEqual(api["190"]["class_type"], "IdentityFeatureTransferFinal")
+                    self.assertEqual(api["190"]["inputs"]["preset"], "MID_LOCK")
+                    self.assertTrue(api["190"]["inputs"]["enabled"])
 
     def test_feature_toggle_nodes_are_red_and_off_by_default(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
@@ -138,22 +145,24 @@ class WorkflowTests(unittest.TestCase):
                 self.assertIs(node["widgets_values"][0], False, f"{workflow.name}: {node['title']}")
 
     def test_restoration_seed_is_fixed_and_candidate_seeds_randomize(self) -> None:
-        for filename in (
-            "hoi4_portrait_flux2_klein_9b_source.json",
-            "hoi4_portrait_processing_only.json",
-        ):
+        filenames = ["hoi4_portrait_processing_only.json"] + sorted(
+            path.name
+            for path in (ROOT / "workflows").glob("hoi4_portrait_flux2_klein_9b_source*.json")
+            if not path.name.endswith(".api.json")
+        )
+        for filename in filenames:
             ui = json.loads((ROOT / "workflows" / filename).read_text(encoding="utf-8"))
             nodes = {node["id"]: node for node in _editor_nodes(ui)}
             self.assertEqual(nodes[30]["widgets_values"][:2], [17, "fixed"], filename)
-            if filename.endswith("9b_source.json"):
+            if "_source" in filename:
                 for node_id in (50, 70, 90):
                     self.assertEqual(nodes[node_id]["widgets_values"][1], "randomize", filename)
 
     def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
-        for name, path in (
-            ("source", ROOT / "workflows" / "hoi4_portrait_flux2_klein_9b_source.api.json"),
-            ("processing", ROOT / "workflows" / "hoi4_portrait_processing_only.api.json"),
-        ):
+        sources = sorted((ROOT / "workflows").glob("hoi4_portrait_flux2_klein_9b_source*.api.json"))
+        for name, path in [("source", path) for path in sources] + [
+            ("processing", ROOT / "workflows" / "hoi4_portrait_processing_only.api.json")
+        ]:
             api = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(api["9"]["class_type"], "ImageScaleToMaxDimension")
             self.assertEqual(api["9"]["inputs"]["image"], ["5", 0])
@@ -172,14 +181,19 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(api["18"]["inputs"]["on_false"], ["11", 0])
             self.assertEqual(api["18"]["inputs"]["on_true"], ["16", 0])
             self.assertEqual(api["7"]["inputs"]["image"], ["18", 0])
-            self.assertNotIn("EmptyFlux2LatentImage", {node["class_type"] for node in api.values()})
+            if "identity_test_" not in path.name:
+                self.assertNotIn("EmptyFlux2LatentImage", {node["class_type"] for node in api.values()})
             if name == "source":
                 for latent_id, sampler_id in (("42", "50"), ("62", "70"), ("82", "90")):
-                    self.assertEqual(api[latent_id]["inputs"]["pixels"], ["32", 0])
+                    if "identity_test_" in path.name:
+                        self.assertEqual(api[latent_id]["class_type"], "EmptyFlux2LatentImage")
+                    else:
+                        self.assertEqual(api[latent_id]["inputs"]["pixels"], ["32", 0])
                     self.assertEqual(api[sampler_id]["inputs"]["latent_image"], [latent_id, 0])
                 self.assertEqual(api["119"]["class_type"], "PrimitiveBoolean")
                 self.assertFalse(api["119"]["inputs"]["value"])
-                for switch_id, final_id in (("125", "51"), ("135", "71"), ("145", "91")):
+                final_ids = ("200", "210", "220") if "identity_test_composite" in path.name else ("51", "71", "91")
+                for switch_id, final_id in zip(("125", "135", "145"), final_ids):
                     self.assertEqual(api[switch_id]["inputs"]["switch"], ["119", 0])
                     self.assertEqual(api[switch_id]["inputs"]["on_false"], [final_id, 0])
             else:
@@ -197,6 +211,49 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(sum(node["class_type"] == "RemoveBackground" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 6)
 
+    def test_identity_comparison_pack_is_complete_and_isolated(self) -> None:
+        expected = {
+            "native",
+            "feature_mid",
+            "feature_hard",
+            "dx_consistency",
+            "lcs_consistency",
+            "sameface",
+            "refcontrol_lineart",
+            "pulid",
+            "composite",
+        }
+        files = {
+            path.stem.removesuffix(".api").split("identity_test_", 1)[1]: path
+            for path in (ROOT / "workflows").glob("*source_identity_test_*.api.json")
+        }
+        self.assertEqual(set(files), expected)
+        for method, path in files.items():
+            api = json.loads(path.read_text(encoding="utf-8"))
+            for latent_id, sampler_id in (("42", "50"), ("62", "70"), ("82", "90")):
+                self.assertEqual(api[latent_id]["class_type"], "EmptyFlux2LatentImage", method)
+                self.assertEqual(api[latent_id]["inputs"], {"width": 832, "height": 1120, "batch_size": 1}, method)
+                self.assertEqual(api[sampler_id]["inputs"]["latent_image"], [latent_id, 0], method)
+            if method in {"feature_mid", "feature_hard"}:
+                self.assertEqual(api["190"]["class_type"], "IdentityFeatureTransferFinal")
+                self.assertEqual(api["190"]["inputs"]["preset"], "custom")
+                self.assertEqual(api["192"]["class_type"], "PortraitIdentityMask")
+                self.assertEqual(api["190"]["inputs"]["subject_mask_1"], ["192", 0])
+                self.assertEqual(api["190"]["inputs"]["subject_mask_2"], ["192", 0])
+            if method == "pulid":
+                self.assertEqual(api["190"]["class_type"], "PuLIDModelLoader")
+                self.assertEqual(api["193"]["inputs"]["provider"], "CUDA")
+                self.assertEqual(api["194"]["inputs"]["strength"], 1.4)
+                self.assertEqual(api["50"]["inputs"]["model"], ["194", 0])
+            if method == "refcontrol_lineart":
+                self.assertEqual(api["192"]["class_type"], "Canny")
+                self.assertIn("refcontrol", api["40"]["inputs"]["text"])
+                self.assertEqual(api["45"]["inputs"]["pixels"], ["192", 0])
+                self.assertEqual(api["46"]["inputs"]["pixels"], ["32", 0])
+            if method == "composite":
+                self.assertEqual([api[node]["class_type"] for node in ("200", "210", "220")], ["KleinEditComposite"] * 3)
+                self.assertEqual(api["125"]["inputs"]["on_false"], ["200", 0])
+
     def test_editor_workflows_are_flat_and_fully_visible(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
             if workflow.name.endswith(".api.json") or workflow.name == "manifest.json":
@@ -212,7 +269,7 @@ class WorkflowTests(unittest.TestCase):
 
 
 class InstallerAndModelTests(unittest.TestCase):
-    def test_installer_copies_three_workflows_and_project_nodes(self) -> None:
+    def test_installer_copies_all_workflows_and_project_nodes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             comfy_root = Path(directory)
             (comfy_root / "main.py").touch()
@@ -223,7 +280,7 @@ class InstallerAndModelTests(unittest.TestCase):
                 result = install_workflows.main(["--comfyui-root", str(comfy_root)])
             self.assertEqual(result, 0)
             installed = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
-            self.assertEqual(len(installed), 3)
+            self.assertEqual(len(installed), 12)
             self.assertTrue((comfy_root / "input/source_portrait.jpg").is_file())
             self.assertTrue((comfy_root / "custom_nodes/hoi4_portraits/__init__.py").is_file())
             self.assertTrue((comfy_root / "custom_nodes/hoi4_portraits/requirements.txt").is_file())
@@ -233,7 +290,8 @@ class InstallerAndModelTests(unittest.TestCase):
         data = json.loads((ROOT / "models.json").read_text())
         self.assertEqual(data["schema_version"], "2.0.0")
         models = data["models"]
-        self.assertEqual(len(models), 11)
+        self.assertEqual(len(models), 21)
+        self.assertEqual(sum(entry["size_bytes"] for entry in models), 24057010868)
         filenames = [entry["filename"] for entry in models]
         self.assertEqual(len(filenames), len(set(filenames)))
         retrained = [name for name in filenames if name.startswith("hoi4_portrait_flux2_klein9b_lora_")]
@@ -274,15 +332,11 @@ class InstallerAndModelTests(unittest.TestCase):
             {path for path in files if path.startswith("scripts/")},
             {f"scripts/{name}" for name in build_release_artifacts.RUNPOD_SCRIPTS},
         )
-        self.assertEqual(
-            {path for path in files if path.startswith("workflows/")},
-            {
-                "workflows/manifest.json",
-                "workflows/hoi4_portrait_flux2_klein_9b_source.json",
-                "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json",
-                "workflows/hoi4_portrait_processing_only.json",
-            },
-        )
+        manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text(encoding="utf-8"))
+        expected_workflows = {"workflows/manifest.json"} | {
+            item["workflow_json"] for item in manifest["workflows"]
+        }
+        self.assertEqual({path for path in files if path.startswith("workflows/")}, expected_workflows)
         with tempfile.TemporaryDirectory() as directory:
             archive_path = Path(directory) / "runpod.tar.gz"
             build_release_artifacts._build_runpod_archive(archive_path, files)
@@ -318,6 +372,12 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertIn("https://github.com/capitan01R/ComfyUI-Flux2Klein-Enhancer.git", enhancer)
         self.assertIn("6804643bff9a20926106427ff08d5b1bd2e49861", enhancer)
         self.assertIn("install_flux2_klein_enhancer.sh", runpod)
+        self.assertIn("install_pulid_flux2.sh", runpod)
+        self.assertIn("install_klein_edit_composite.sh", runpod)
+        pulid = (ROOT / "scripts" / "install_pulid_flux2.sh").read_text(encoding="utf-8")
+        composite = (ROOT / "scripts" / "install_klein_edit_composite.sh").read_text(encoding="utf-8")
+        self.assertIn("3a0a3f5f18260fc914f96a8c7f0f23c835e881cd", pulid)
+        self.assertIn("1505bc58d38abf5411457804ed4923e83f986eee", composite)
 
 
 class DocumentationTests(unittest.TestCase):

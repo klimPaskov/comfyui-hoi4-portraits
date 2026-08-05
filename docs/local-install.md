@@ -4,10 +4,11 @@
 
 - ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
-- The 11 pinned model files occupy 20.62 GB decimal (19.20 GiB). A 30 GB
-  RunPod volume is sufficient for the repository, ComfyUI files, normal caches,
-  and outputs. The downloader writes directly to the ComfyUI model folders and
-  does not create a second model copy.
+- The 21 pinned model files occupy 24.06 GB decimal (22.40 GiB). PuLID also
+  prepares an 0.86 GB EVA-CLIP weight in the Hugging Face cache. A 30 GB
+  RunPod volume is sufficient for the comparison package; keep generated
+  outputs tidy while testing. The downloader writes directly to the ComfyUI
+  model folders and does not create a second model copy.
 - A 24 GB GPU is a sufficient practical target for the FP8 workflows with
   normal offloading. An 18 GB GPU may work with more aggressive offloading and
   a reduced test canvas; 16 GB can work similarly but is slow.
@@ -23,11 +24,13 @@ python scripts/validate_workflows.py
 python scripts/install_workflows.py --comfyui-root /path/to/ComfyUI
 scripts/install_res4lyf.sh /path/to/ComfyUI
 scripts/install_flux2_klein_enhancer.sh /path/to/ComfyUI
+scripts/install_pulid_flux2.sh /path/to/ComfyUI /path/to/ComfyUI/python
+scripts/install_klein_edit_composite.sh /path/to/ComfyUI
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI
 ```
 
-The installer copies three editor workflows, the `hoi4_portraits` node pack,
-installs the pinned RES4LYF sampler and FLUX.2 Klein identity extensions, and adds the bundled backgrounds
+The installer copies the three primary workflows and nine identity comparison
+workflows, installs their pinned extensions, and adds the bundled backgrounds
 and one sample source image. It does not replace the existing ComfyUI
 installation.
 
@@ -58,7 +61,8 @@ On a RunPod image that already contains ComfyUI, the installer places the
 workflows in `user/default/workflows/hoi4_portraits`, installs the project nodes
 in `custom_nodes/hoi4_portraits`, installs the pinned RES4LYF
 samplers in `custom_nodes/RES4LYF`, installs identity preservation in
-`custom_nodes/ComfyUI-Flux2Klein-Enhancer`, copies the backgrounds and
+`custom_nodes/ComfyUI-Flux2Klein-Enhancer`, installs PuLID and Klein edit
+compositing, copies the backgrounds and
 sample input into `input/`, and downloads every entry in `models.json` to
 the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
 `loras`, `upscale_models`, and `background_removal`):
@@ -76,7 +80,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The final verification pass validates all 11 files. If a download is
+The final verification pass validates all 21 files. If a download is
 interrupted or a file was placed in the wrong folder,
 the installer stops instead of silently using it. `HF_TOKEN` is read only from
 the process environment and is never printed or saved. Confirm that
@@ -107,7 +111,7 @@ From PowerShell:
 The release self-extractor accepts an empty destination directory:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.5.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.5.0"
+.\HOI4-Portrait-Workflows-v2.6.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.6.0"
 ```
 
 Use `-SkipModels` if the model files are already installed. Start with:

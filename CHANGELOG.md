@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## 2.6.0 — 2026-08-05
+
+- Added nine source-workflow variants for controlled identity-preservation
+  comparison while holding the HOI4 checkpoint and generation policy fixed.
+- Added pinned RunPod installation for the comparison adapters, PuLID Flux2,
+  InsightFace AntelopeV2, EVA-CLIP, and Klein edit compositing.
+- Added masked MID and HARD feature-transfer profiles using the source face and
+  head region without removing the full native reference conditioning.
+- Extended layout, registry, model, installer, and graph validation across the
+  complete comparison package.
+
 ## 2.5.0 — 2026-08-05
 
 - Selected training step 2250 as the default HOI4 portrait LoRA and retained

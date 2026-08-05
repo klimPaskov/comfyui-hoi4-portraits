@@ -245,29 +245,6 @@
       "title": "Apply Adonis restoration LoKr — strength editable here"
     }
   },
-  "190": {
-    "class_type": "IdentityFeatureTransferFinal",
-    "inputs": {
-      "model": [
-        "4",
-        0
-      ],
-      "preset": "MID_LOCK",
-      "enabled": true,
-      "reference_index": 0,
-      "reference_indices": "all",
-      "similarity_floor": 0.2,
-      "softmax_temperature": 0.07,
-      "mask_threshold": 1.0,
-      "double_blocks": "0-7:mid_img=0.55",
-      "single_blocks": "0:mid_img=0.22; 1:mid_img=0.24; 3:mid_img=0.28; 4:mid_img=0.22; 6:mid_img=0.26; 7:mid_img=0.27; 8:mid_img=0.25; 10:mid_img=0.27; 13:mid_img=0.27",
-      "debug": false,
-      "mask_behavior": "focus_only"
-    },
-    "_meta": {
-      "title": "Source identity feature transfer — MID_LOCK"
-    }
-  },
   "20": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -446,19 +423,14 @@
     }
   },
   "42": {
-    "class_type": "VAEEncode",
+    "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "pixels": [
-        "32",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
+      "width": 832,
+      "height": 1120,
+      "batch_size": 1
     },
     "_meta": {
-      "title": "Encode candidate 1 identity lora reference"
+      "title": "Create candidate 1 identity lora edit latent"
     }
   },
   "43": {
@@ -469,16 +441,16 @@
         0
       ],
       "latent_1": [
-        "42",
+        "45",
         0
       ],
       "latent_2": [
-        "42",
+        "46",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to positive conditioning"
+      "title": "Attach two identity references to positive conditioning"
     }
   },
   "44": {
@@ -489,23 +461,23 @@
         0
       ],
       "latent_1": [
-        "42",
+        "45",
         0
       ],
       "latent_2": [
-        "42",
+        "46",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to negative conditioning"
+      "title": "Attach two identity references to negative conditioning"
     }
   },
   "50": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "190",
+        "4",
         0
       ],
       "positive": [
@@ -553,12 +525,73 @@
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "51",
+        "200",
         0
       ]
     },
     "_meta": {
-      "title": "Preview candidate 1 identity lora result"
+      "title": "Preview composited candidate 1"
+    }
+  },
+  "45": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "18",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 1 identity lora original-crop reference"
+    }
+  },
+  "46": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 1 identity lora selected-processed reference"
+    }
+  },
+  "200": {
+    "class_type": "KleinEditComposite",
+    "inputs": {
+      "generated_image": [
+        "51",
+        0
+      ],
+      "original_image": [
+        "18",
+        0
+      ],
+      "delta_e_threshold": -1.0,
+      "flow_quality": "medium",
+      "use_occlusion": false,
+      "occlusion_threshold": -1.0,
+      "noise_removal_pct": 0.3,
+      "close_radius_pct": 0.5,
+      "fill_holes": false,
+      "fill_borders": true,
+      "max_islands": 0,
+      "grow_mask_pct": 0.0,
+      "feather_pct": 2.0,
+      "color_match_blend": 0.0,
+      "poisson_blend_edges": false
+    },
+    "_meta": {
+      "title": "Composite candidate 1 identity details"
     }
   },
   "60": {
@@ -588,19 +621,14 @@
     }
   },
   "62": {
-    "class_type": "VAEEncode",
+    "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "pixels": [
-        "32",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
+      "width": 832,
+      "height": 1120,
+      "batch_size": 1
     },
     "_meta": {
-      "title": "Encode candidate 2 identity lora reference"
+      "title": "Create candidate 2 identity lora edit latent"
     }
   },
   "63": {
@@ -611,16 +639,16 @@
         0
       ],
       "latent_1": [
-        "62",
+        "65",
         0
       ],
       "latent_2": [
-        "62",
+        "66",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to positive conditioning"
+      "title": "Attach two identity references to positive conditioning"
     }
   },
   "64": {
@@ -631,23 +659,23 @@
         0
       ],
       "latent_1": [
-        "62",
+        "65",
         0
       ],
       "latent_2": [
-        "62",
+        "66",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to negative conditioning"
+      "title": "Attach two identity references to negative conditioning"
     }
   },
   "70": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "190",
+        "4",
         0
       ],
       "positive": [
@@ -695,12 +723,73 @@
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "71",
+        "210",
         0
       ]
     },
     "_meta": {
-      "title": "Preview candidate 2 identity lora result"
+      "title": "Preview composited candidate 2"
+    }
+  },
+  "65": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "18",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 2 identity lora original-crop reference"
+    }
+  },
+  "66": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 2 identity lora selected-processed reference"
+    }
+  },
+  "210": {
+    "class_type": "KleinEditComposite",
+    "inputs": {
+      "generated_image": [
+        "71",
+        0
+      ],
+      "original_image": [
+        "18",
+        0
+      ],
+      "delta_e_threshold": -1.0,
+      "flow_quality": "medium",
+      "use_occlusion": false,
+      "occlusion_threshold": -1.0,
+      "noise_removal_pct": 0.3,
+      "close_radius_pct": 0.5,
+      "fill_holes": false,
+      "fill_borders": true,
+      "max_islands": 0,
+      "grow_mask_pct": 0.0,
+      "feather_pct": 2.0,
+      "color_match_blend": 0.0,
+      "poisson_blend_edges": false
+    },
+    "_meta": {
+      "title": "Composite candidate 2 identity details"
     }
   },
   "80": {
@@ -730,19 +819,14 @@
     }
   },
   "82": {
-    "class_type": "VAEEncode",
+    "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "pixels": [
-        "32",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
+      "width": 832,
+      "height": 1120,
+      "batch_size": 1
     },
     "_meta": {
-      "title": "Encode candidate 3 identity lora reference"
+      "title": "Create candidate 3 identity lora edit latent"
     }
   },
   "83": {
@@ -753,16 +837,16 @@
         0
       ],
       "latent_1": [
-        "82",
+        "85",
         0
       ],
       "latent_2": [
-        "82",
+        "86",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to positive conditioning"
+      "title": "Attach two identity references to positive conditioning"
     }
   },
   "84": {
@@ -773,23 +857,23 @@
         0
       ],
       "latent_1": [
-        "82",
+        "85",
         0
       ],
       "latent_2": [
-        "82",
+        "86",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to negative conditioning"
+      "title": "Attach two identity references to negative conditioning"
     }
   },
   "90": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "190",
+        "4",
         0
       ],
       "positive": [
@@ -837,12 +921,73 @@
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "91",
+        "220",
         0
       ]
     },
     "_meta": {
-      "title": "Preview candidate 3 identity lora result"
+      "title": "Preview composited candidate 3"
+    }
+  },
+  "85": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "18",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 3 identity lora original-crop reference"
+    }
+  },
+  "86": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 3 identity lora selected-processed reference"
+    }
+  },
+  "220": {
+    "class_type": "KleinEditComposite",
+    "inputs": {
+      "generated_image": [
+        "91",
+        0
+      ],
+      "original_image": [
+        "18",
+        0
+      ],
+      "delta_e_threshold": -1.0,
+      "flow_quality": "medium",
+      "use_occlusion": false,
+      "occlusion_threshold": -1.0,
+      "noise_removal_pct": 0.3,
+      "close_radius_pct": 0.5,
+      "fill_holes": false,
+      "fill_borders": true,
+      "max_islands": 0,
+      "grow_mask_pct": 0.0,
+      "feather_pct": 2.0,
+      "color_match_blend": 0.0,
+      "poisson_blend_edges": false
+    },
+    "_meta": {
+      "title": "Composite candidate 3 identity details"
     }
   },
   "119": {
@@ -896,7 +1041,7 @@
         0
       ],
       "image": [
-        "51",
+        "200",
         0
       ]
     },
@@ -912,7 +1057,7 @@
         0
       ],
       "source": [
-        "51",
+        "200",
         0
       ],
       "x": 0,
@@ -935,7 +1080,7 @@
         0
       ],
       "on_false": [
-        "51",
+        "200",
         0
       ],
       "on_true": [
@@ -997,7 +1142,7 @@
         0
       ],
       "image": [
-        "71",
+        "210",
         0
       ]
     },
@@ -1013,7 +1158,7 @@
         0
       ],
       "source": [
-        "71",
+        "210",
         0
       ],
       "x": 0,
@@ -1036,7 +1181,7 @@
         0
       ],
       "on_false": [
-        "71",
+        "210",
         0
       ],
       "on_true": [
@@ -1098,7 +1243,7 @@
         0
       ],
       "image": [
-        "91",
+        "220",
         0
       ]
     },
@@ -1114,7 +1259,7 @@
         0
       ],
       "source": [
-        "91",
+        "220",
         0
       ],
       "x": 0,
@@ -1137,7 +1282,7 @@
         0
       ],
       "on_false": [
-        "91",
+        "220",
         0
       ],
       "on_true": [

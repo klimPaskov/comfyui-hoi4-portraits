@@ -18,6 +18,8 @@ GROUP_NODE_PADDING = 24
 
 ALLOWED_CORE_NODES = {
     "AdaptivePortraitCrop",
+    "ApplyPuLIDFlux2",
+    "Canny",
     "Flux2PortraitSampler",
     "CFGGuider",
     "CLIPLoader",
@@ -35,14 +37,19 @@ ALLOWED_CORE_NODES = {
     "ImageUpscaleWithModel",
     "IdentityFeatureTransferFinal",
     "KSamplerSelect",
+    "KleinEditComposite",
     "LoadBackgroundRemovalModel",
     "LoadImage",
     "LoadMediaPipeFaceLandmarker",
     "LoraLoaderModelOnly",
     "MediaPipeFaceLandmarker",
     "PreviewImage",
+    "PortraitIdentityMask",
     "PrimitiveBoolean",
     "PrimitiveBoundingBox",
+    "PuLIDEVACLIPLoader",
+    "PuLIDInsightFaceLoader",
+    "PuLIDModelLoader",
     "RandomNoise",
     "ReferenceLatent",
     "RemoveBackground",
@@ -239,9 +246,11 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     errors: list[str] = []
     extra = ui.get("extra", {})
     workflow_id = str(extra.get("workflow_id", ""))
-    is_source = workflow_id.endswith("source")
+    is_source = extra.get("workflow_kind") == "image_to_image"
     is_processing = workflow_id.endswith("processing_only")
     is_text_to_image = workflow_id.endswith("text_to_image")
+    identity_method = str(extra.get("identity_preservation", ""))
+    is_comparison = extra.get("identity_comparison") is True
     if extra.get("base_model") != "flux-2-klein-base-9b-fp8.safetensors":
         errors.append(f"{path}: incorrect FLUX.2 Klein 9B base model")
     if is_processing and extra.get("style_lora") is not None:
@@ -287,18 +296,28 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     identity_nodes = {
         node_id: node for node_id, node in api.items() if node.get("class_type") == "IdentityFeatureTransferFinal"
     }
-    if is_source:
+    if is_source and identity_method in {"default", "feature_mid", "feature_hard"}:
         identity = identity_nodes.get("190", {}).get("inputs", {})
+        profile = "HARD_LOCK" if identity_method == "feature_hard" else "MID_LOCK"
+        expected_preset = "custom" if identity_method in {"feature_mid", "feature_hard"} else "MID_LOCK"
         if set(identity_nodes) != {"190"}:
-            errors.append(f"{path}: source workflow must contain one shared identity-lock node")
+            errors.append(f"{path}: feature-transfer source must contain one shared identity-lock node")
         elif (
             identity.get("model") != ["4", 0]
-            or identity.get("preset") != "MID_LOCK"
+            or identity.get("preset") != expected_preset
             or identity.get("enabled") is not True
         ):
-            errors.append(f"{path}: source identity lock must be enabled with the MID_LOCK preset")
+            errors.append(f"{path}: source feature transfer is not configured for the {profile} profile")
+        if identity_method in {"feature_mid", "feature_hard"}:
+            if api.get("192", {}).get("class_type") != "PortraitIdentityMask":
+                errors.append(f"{path}: masked feature transfer requires PortraitIdentityMask")
+            if identity.get("subject_mask_1") != ["192", 0] or identity.get("subject_mask_2") != ["192", 0]:
+                errors.append(f"{path}: both feature-transfer references must use the identity mask")
+            expected_floor, expected_temperature = ((0.04, 0.025) if identity_method == "feature_hard" else (0.2, 0.07))
+            if identity.get("similarity_floor") != expected_floor or identity.get("softmax_temperature") != expected_temperature:
+                errors.append(f"{path}: masked feature-transfer profile values are incorrect")
     elif identity_nodes:
-        errors.append(f"{path}: identity locking is only valid for a source-reference workflow")
+        errors.append(f"{path}: unexpected feature-transfer node for identity method {identity_method!r}")
 
     expected_sampling = {"30": ("euler", DEFAULT_STEPS)}
     if is_source:
@@ -326,8 +345,14 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: sampler node {sampler_id} must default CFG and guidance to 1.00")
         if sampler_id == "30" and not is_text_to_image and inputs.get("model") != ["191", 0]:
             errors.append(f"{path}: restoration sampler must use the Adonis LoKr model")
-        if is_source and sampler_id in {"50", "70", "90"} and inputs.get("model") != ["190", 0]:
-            errors.append(f"{path}: source candidate sampler {sampler_id} must use the shared identity-locked model")
+        if is_source and sampler_id in {"50", "70", "90"}:
+            expected_model_node = {
+                "native": "4",
+                "composite": "4",
+                "pulid": "194",
+            }.get(identity_method, "190")
+            if inputs.get("model") != [expected_model_node, 0]:
+                errors.append(f"{path}: source candidate sampler {sampler_id} must use model node {expected_model_node}")
 
     if not is_processing:
         person_prompt_node = "20" if is_text_to_image else "40"
@@ -342,6 +367,8 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, "
                 "including every object they are holding or wearing."
             )
+            if identity_method == "refcontrol_lineart":
+                expected = expected.replace("hoi4_portrait,", "hoi4_portrait, refcontrol,", 1)
             if person_prompt != expected:
                 errors.append(f"{path}: source identity prompt must use the concise editable default")
             for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
@@ -352,8 +379,18 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 reference = api.get(reference_id, {})
                 if reference.get("class_type") != "Flux2KleinMultiReferenceLatent":
                     errors.append(f"{path}: candidate {prompt_id} must use doubled source-reference conditioning")
-                elif reference.get("inputs", {}).get("latent_1") != reference.get("inputs", {}).get("latent_2"):
-                    errors.append(f"{path}: candidate {prompt_id} must attach the same source reference twice")
+                elif identity_method == "default":
+                    if reference.get("inputs", {}).get("latent_1") != reference.get("inputs", {}).get("latent_2"):
+                        errors.append(f"{path}: default candidate {prompt_id} must attach the source reference twice")
+                else:
+                    start = int(prompt_id)
+                    if reference.get("inputs", {}).get("latent_1") != [str(start + 5), 0] or reference.get("inputs", {}).get("latent_2") != [str(start + 6), 0]:
+                        errors.append(f"{path}: comparison candidate {prompt_id} must attach two independent references")
+                    expected_first = ["192", 0] if identity_method == "refcontrol_lineart" else ["18", 0]
+                    if api.get(str(start + 5), {}).get("inputs", {}).get("pixels") != expected_first:
+                        errors.append(f"{path}: comparison candidate {prompt_id} has the wrong first identity reference")
+                    if api.get(str(start + 6), {}).get("inputs", {}).get("pixels") != ["32", 0]:
+                        errors.append(f"{path}: comparison candidate {prompt_id} must use the selected processed reference")
 
     preview_expectations: dict[str, list[Any]] = {}
     if is_text_to_image:
@@ -363,7 +400,8 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         preview_expectations.update({"10": ["8", 0], "35": ["32", 0], "70": ["32", 0]})
     elif is_source:
         preview_expectations["35"] = ["32", 0]
-        for preview_id, decode_id in (("55", "51"), ("75", "71"), ("95", "91")):
+        preview_sources = (("55", "200"), ("75", "210"), ("95", "220")) if identity_method == "composite" else (("55", "51"), ("75", "71"), ("95", "91"))
+        for preview_id, decode_id in preview_sources:
             preview_expectations[preview_id] = [decode_id, 0]
     else:
         preview_expectations.update({"10": ["8", 0], "35": ["31", 0], "55": ["51", 0], "70": ["66", 0]})
@@ -374,10 +412,11 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
 
     if not is_processing:
         if is_source:
+            source_final_ids = ("200", "210", "220") if identity_method == "composite" else ("51", "71", "91")
             background_branches = [
-                ("125", "123", "124", "51"),
-                ("135", "133", "134", "71"),
-                ("145", "143", "144", "91"),
+                ("125", "123", "124", source_final_ids[0]),
+                ("135", "133", "134", source_final_ids[1]),
+                ("145", "143", "144", source_final_ids[2]),
             ]
             if api.get("119", {}).get("class_type") != "PrimitiveBoolean" or api.get("119", {}).get("inputs", {}).get("value") is not False:
                 errors.append(f"{path}: source background toggle must be one shared false-by-default PrimitiveBoolean")
@@ -407,7 +446,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 errors.append(f"{path}: background branch {switch_id} has an invalid final portrait link")
                 continue
             final_node_id = final_link[0]
-            if api[final_node_id].get("class_type") != "VAEDecode":
+            if api[final_node_id].get("class_type") not in {"VAEDecode", "KleinEditComposite"}:
                 errors.append(f"{path}: background branch {switch_id} does not start from a decoded final portrait")
             if composite.get("inputs", {}).get("source") != final_link:
                 errors.append(f"{path}: composite {composite_id} differs from its final styled portrait")
@@ -439,18 +478,23 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: FLUX restoration toggle does not keep the direct ESRGAN output")
         if api.get("22", {}).get("inputs", {}).get("pixels") != ["8", 0]:
             errors.append(f"{path}: FLUX restoration does not consume ESRGAN output")
-        if api.get("42", {}).get("inputs", {}).get("pixels") != ["32", 0]:
+        if not is_comparison and api.get("42", {}).get("inputs", {}).get("pixels") != ["32", 0]:
             errors.append(f"{path}: LoRA styling does not consume the restoration switch output")
         if api.get("30", {}).get("inputs", {}).get("latent_image") != ["22", 0]:
             errors.append(f"{path}: FLUX restoration does not start from the encoded cropped portrait")
         style_branches = (("42", "50"), ("62", "70"), ("82", "90"))
         for latent_id, sampler_id in style_branches:
-            if api.get(latent_id, {}).get("inputs", {}).get("pixels") != ["32", 0]:
+            latent = api.get(latent_id, {})
+            if is_comparison:
+                if latent.get("class_type") != "EmptyFlux2LatentImage" or latent.get("inputs") != {"width": 832, "height": 1120, "batch_size": 1}:
+                    errors.append(f"{path}: comparison branch {sampler_id} must use a canonical empty edit latent")
+            elif latent.get("inputs", {}).get("pixels") != ["32", 0]:
                 errors.append(f"{path}: LoRA branch {sampler_id} does not consume the restoration switch output")
             if api.get(sampler_id, {}).get("inputs", {}).get("latent_image") != [latent_id, 0]:
-                errors.append(f"{path}: LoRA branch {sampler_id} does not start from its encoded restored portrait")
-            if api.get(sampler_id, {}).get("inputs", {}).get("model") != ["190", 0]:
-                errors.append(f"{path}: LoRA branch {sampler_id} is not using the identity-locked project LoRA model")
+                errors.append(f"{path}: LoRA branch {sampler_id} does not use its selected edit latent")
+            expected_model_node = {"native": "4", "composite": "4", "pulid": "194"}.get(identity_method, "190")
+            if api.get(sampler_id, {}).get("inputs", {}).get("model") != [expected_model_node, 0]:
+                errors.append(f"{path}: LoRA branch {sampler_id} is not using model node {expected_model_node}")
     elif is_processing:
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
         if extra.get("restoration_order") != expected:
@@ -471,7 +515,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         errors.append(f"{path}: unexpected workflow id {workflow_id!r}")
 
     if not workflow_id.endswith("text_to_image"):
-        if any(node.get("class_type") == "EmptyFlux2LatentImage" for node in api.values()):
+        if not is_comparison and any(node.get("class_type") == "EmptyFlux2LatentImage" for node in api.values()):
             errors.append(f"{path}: source workflow must not start sampling from an empty latent")
         normalized = api.get("9", {})
         detector = api.get("13", {})
@@ -523,8 +567,8 @@ def validate_all(root: Path = ROOT) -> dict[str, Any]:
     errors: list[str] = []
     reports: list[dict[str, Any]] = []
     items = manifest.get("workflows", [])
-    if len(items) != 3:
-        errors.append(f"{manifest_path}: exactly three public workflows are required")
+    if len(items) != 3 + 9:
+        errors.append(f"{manifest_path}: three primary and nine comparison workflows are required")
     for item in items:
         ui_path = root / item["workflow_json"]
         api_path = root / item["api_json"]

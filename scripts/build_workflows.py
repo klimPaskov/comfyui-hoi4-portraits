@@ -21,12 +21,17 @@ TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors"
 RESTORATION_LOKR = "adonis_base.safetensors"
+DX_CONSISTENCY_LORA = "Flux2-Klein-9B-consistency-V2.safetensors"
+LCS_CONSISTENCY_LORA = "f2k_9B_lcs_consist_20260415.safetensors"
+SAMEFACE_LORA = "Flux2Klein9BSameFaceR64.safetensors"
+REFCONTROL_LINEART_LORA = "flux2_klein_9b_refcontrol_lineart.safetensors"
+PULID_MODEL = "pulid_flux2_klein_v2.safetensors"
 STYLE_LORA_STRENGTH = 1.0
 SOURCE_STYLE_DENOISE = 1.0
 DEFAULT_STEPS = 6
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
-WORKFLOW_SCHEMA_VERSION = "2.5.0"
+WORKFLOW_SCHEMA_VERSION = "2.6.0"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
@@ -47,6 +52,11 @@ MODEL_URLS = {
     VAE_MODEL: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors",
     STYLE_LORA: "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
     RESTORATION_LOKR: "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors",
+    DX_CONSISTENCY_LORA: "https://huggingface.co/dx8152/Flux2-Klein-9B-Consistency/resolve/8df0c7338cf68cfcd89ca7e461fe679905634607/Flux2-Klein-9B-consistency-V2.safetensors",
+    LCS_CONSISTENCY_LORA: "https://huggingface.co/lrzjason/Consistance_Edit_Lora/resolve/825b73f9952186f807acb44f05dec4ec5044f394/f2k_9B_lcs_consist_20260415.safetensors",
+    SAMEFACE_LORA: "https://huggingface.co/rphmeier/Flux2Klein9B-SameFaceLora/resolve/94ee6271f4d37fbcd6689b6469341aba6170d0b9/Flux2Klein9BSameFaceR64.safetensors",
+    REFCONTROL_LINEART_LORA: "https://huggingface.co/thedeoxen/refcontrol-FLUX.2-klein-9B-reference-lineart-lora/resolve/140f26de5b6006f6d455ecee417be774a1c054e8/flux2_klein_9b_refcontrol_lineart.safetensors",
+    PULID_MODEL: "https://huggingface.co/Fayens/Pulid-Flux2/resolve/550167db98d7169bfc83f9aa8225bd0da70f2d6b/pulid_flux2_klein_v2.safetensors",
     ESRGAN_MODEL: "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
     BACKGROUND_MODEL: "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
     FACE_DETECTION_MODEL: "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",
@@ -107,6 +117,26 @@ class Graph:
     nodes: list[Node]
     groups: list[Group]
     metadata: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class IdentityComparison:
+    key: str
+    label: str
+    method: str
+
+
+IDENTITY_COMPARISONS = (
+    IdentityComparison("native", "Native two-reference baseline", "native"),
+    IdentityComparison("feature_mid", "Feature transfer — MID_LOCK", "feature_mid"),
+    IdentityComparison("feature_hard", "Feature transfer — HARD_LOCK", "feature_hard"),
+    IdentityComparison("dx_consistency", "DX consistency LoRA V2", "dx_consistency"),
+    IdentityComparison("lcs_consistency", "LCS consistency LoRA", "lcs_consistency"),
+    IdentityComparison("sameface", "SameFace LoRA", "sameface"),
+    IdentityComparison("refcontrol_lineart", "RefControl lineart", "refcontrol_lineart"),
+    IdentityComparison("pulid", "PuLID Flux2 v2", "pulid"),
+    IdentityComparison("composite", "Klein edit composite", "composite"),
+)
 
 
 def _model(name: str, directory: str) -> list[dict[str, str]]:
@@ -471,8 +501,12 @@ def _edit_stage(
     sampler_name: str = "euler",
     steps: int = DEFAULT_STEPS,
     double_reference: bool = False,
+    reference_images: tuple[Link, Link] | None = None,
+    start_from_empty: bool = False,
 ) -> tuple[list[Node], Link]:
     i = id_start
+    if double_reference and reference_images is not None:
+        raise ValueError("double_reference and reference_images are mutually exclusive")
     nodes: list[Node] = [
         _node(
             i,
@@ -502,29 +536,47 @@ def _edit_stage(
         ),
         _node(
             i + 2,
-            "VAEEncode",
-            f"Encode {title_prefix.lower()} reference",
+            "EmptyFlux2LatentImage" if start_from_empty else "VAEEncode",
+            f"Create {title_prefix.lower()} edit latent" if start_from_empty else f"Encode {title_prefix.lower()} reference",
             group,
             (x + 500, y),
-            inputs={"pixels": image, "vae": Link(3)},
-            input_types={"pixels": "IMAGE", "vae": "VAE"},
+            inputs=(
+                {"width": 832, "height": 1120, "batch_size": 1}
+                if start_from_empty
+                else {"pixels": image, "vae": Link(3)}
+            ),
+            input_types=(
+                {"width": "INT", "height": "INT", "batch_size": "INT"}
+                if start_from_empty
+                else {"pixels": "IMAGE", "vae": "VAE"}
+            ),
             outputs=["LATENT"],
             output_types=["LATENT"],
+            widgets=[832, 1120, 1] if start_from_empty else [],
         ),
         _node(
             i + 3,
-            "Flux2KleinMultiReferenceLatent" if double_reference else "ReferenceLatent",
-            "Attach source twice to positive conditioning" if double_reference else "Attach reference to positive conditioning",
+            "Flux2KleinMultiReferenceLatent" if (double_reference or reference_images) else "ReferenceLatent",
+            (
+                "Attach two identity references to positive conditioning"
+                if reference_images
+                else "Attach source twice to positive conditioning"
+                if double_reference
+                else "Attach reference to positive conditioning"
+            ),
             group,
             (x + 500, y + 200),
             inputs=(
+                {"conditioning": Link(i), "latent_1": Link(i + 5), "latent_2": Link(i + 6)}
+                if reference_images
+                else
                 {"conditioning": Link(i), "latent_1": Link(i + 2), "latent_2": Link(i + 2)}
                 if double_reference
                 else {"conditioning": Link(i), "latent": Link(i + 2)}
             ),
             input_types=(
                 {"conditioning": "CONDITIONING", "latent_1": "LATENT", "latent_2": "LATENT"}
-                if double_reference
+                if (double_reference or reference_images)
                 else {"conditioning": "CONDITIONING", "latent": "LATENT"}
             ),
             outputs=["CONDITIONING"],
@@ -532,18 +584,27 @@ def _edit_stage(
         ),
         _node(
             i + 4,
-            "Flux2KleinMultiReferenceLatent" if double_reference else "ReferenceLatent",
-            "Attach source twice to negative conditioning" if double_reference else "Attach reference to negative conditioning",
+            "Flux2KleinMultiReferenceLatent" if (double_reference or reference_images) else "ReferenceLatent",
+            (
+                "Attach two identity references to negative conditioning"
+                if reference_images
+                else "Attach source twice to negative conditioning"
+                if double_reference
+                else "Attach reference to negative conditioning"
+            ),
             group,
             (x + 500, y + 400),
             inputs=(
+                {"conditioning": Link(i + 1), "latent_1": Link(i + 5), "latent_2": Link(i + 6)}
+                if reference_images
+                else
                 {"conditioning": Link(i + 1), "latent_1": Link(i + 2), "latent_2": Link(i + 2)}
                 if double_reference
                 else {"conditioning": Link(i + 1), "latent": Link(i + 2)}
             ),
             input_types=(
                 {"conditioning": "CONDITIONING", "latent_1": "LATENT", "latent_2": "LATENT"}
-                if double_reference
+                if (double_reference or reference_images)
                 else {"conditioning": "CONDITIONING", "latent": "LATENT"}
             ),
             outputs=["CONDITIONING"],
@@ -612,6 +673,33 @@ def _edit_stage(
             output_types=["IMAGE"],
         ),
     ]
+    if reference_images:
+        nodes.extend(
+            [
+                _node(
+                    i + 5,
+                    "VAEEncode",
+                    f"Encode {title_prefix.lower()} original-crop reference",
+                    group,
+                    (x + 500, y + 600),
+                    inputs={"pixels": reference_images[0], "vae": Link(3)},
+                    input_types={"pixels": "IMAGE", "vae": "VAE"},
+                    outputs=["LATENT"],
+                    output_types=["LATENT"],
+                ),
+                _node(
+                    i + 6,
+                    "VAEEncode",
+                    f"Encode {title_prefix.lower()} selected-processed reference",
+                    group,
+                    (x + 900, y + 600),
+                    inputs={"pixels": reference_images[1], "vae": Link(3)},
+                    input_types={"pixels": "IMAGE", "vae": "VAE"},
+                    outputs=["LATENT"],
+                    output_types=["LATENT"],
+                ),
+            ]
+        )
     return nodes, Link(i + 11)
 
 
@@ -1097,61 +1185,272 @@ def _processing_groups() -> list[Group]:
     ]
 
 
-def build_source() -> Graph:
-    nodes = _source_nodes(include_processed_preview=False) + _model_nodes()
-    nodes.append(
+def _feature_transfer_node(*, preset: str, with_mask: bool) -> list[Node]:
+    effective_preset = "custom" if with_mask else preset
+    similarity_floor = 0.04 if preset == "HARD_LOCK" else 0.2
+    softmax_temperature = 0.025 if preset == "HARD_LOCK" else 0.07
+    inputs: dict[str, Any] = {
+        "model": Link(4),
+        "preset": effective_preset,
+        "enabled": True,
+        "reference_index": 0,
+        "reference_indices": "all",
+        "similarity_floor": similarity_floor,
+        "softmax_temperature": softmax_temperature,
+        "mask_threshold": 0.35 if with_mask else 1.0,
+        "double_blocks": IDENTITY_HARD_DOUBLE,
+        "single_blocks": IDENTITY_HARD_SINGLE,
+        "debug": False,
+        "mask_behavior": "focus_only",
+    }
+    input_types = {
+        "model": "MODEL",
+        "preset": "COMBO",
+        "enabled": "BOOLEAN",
+        "reference_index": "INT",
+        "reference_indices": "STRING",
+        "similarity_floor": "FLOAT",
+        "softmax_temperature": "FLOAT",
+        "mask_threshold": "FLOAT",
+        "double_blocks": "STRING",
+        "single_blocks": "STRING",
+        "debug": "BOOLEAN",
+        "mask_behavior": "COMBO",
+    }
+    nodes: list[Node] = []
+    if with_mask:
+        nodes.append(
+            _node(
+                192,
+                "PortraitIdentityMask",
+                "Face-and-head mask for reference feature transfer",
+                "02 FLUX.2 Klein 9B models",
+                (1100, 1480),
+                size=(340, 120),
+                inputs={"image": Link(18)},
+                input_types={"image": "IMAGE"},
+                outputs=["identity_mask"],
+                output_types=["MASK"],
+            )
+        )
+        inputs.update({"subject_mask_1": Link(192), "subject_mask_2": Link(192)})
+        input_types.update({"subject_mask_1": "MASK", "subject_mask_2": "MASK"})
+    nodes.insert(
+        0,
         _node(
             190,
             "IdentityFeatureTransferFinal",
-            "Source identity lock — MID_LOCK; use HARD_LOCK for difficult portraits",
+            f"Source identity feature transfer — {preset}",
             "02 FLUX.2 Klein 9B models",
             (1100, 1000),
             size=(340, 430),
-            inputs={
-                "model": Link(4),
-                "preset": IDENTITY_LOCK_PRESET,
-                "enabled": True,
-                "reference_index": 0,
-                "reference_indices": "all",
-                "similarity_floor": 0.2,
-                "softmax_temperature": 0.07,
-                "mask_threshold": 1.0,
-                "double_blocks": IDENTITY_HARD_DOUBLE,
-                "single_blocks": IDENTITY_HARD_SINGLE,
-                "debug": False,
-                "mask_behavior": "focus_only",
-            },
-            input_types={
-                "model": "MODEL",
-                "preset": "COMBO",
-                "enabled": "BOOLEAN",
-                "reference_index": "INT",
-                "reference_indices": "STRING",
-                "similarity_floor": "FLOAT",
-                "softmax_temperature": "FLOAT",
-                "mask_threshold": "FLOAT",
-                "double_blocks": "STRING",
-                "single_blocks": "STRING",
-                "debug": "BOOLEAN",
-                "mask_behavior": "COMBO",
-            },
+            inputs=inputs,
+            input_types=input_types,
             outputs=["MODEL"],
             output_types=["MODEL"],
             widgets=[
-                IDENTITY_LOCK_PRESET,
+                effective_preset,
                 True,
                 0,
                 "all",
-                0.2,
-                0.07,
-                1.0,
+                similarity_floor,
+                softmax_temperature,
+                0.35 if with_mask else 1.0,
                 IDENTITY_HARD_DOUBLE,
                 IDENTITY_HARD_SINGLE,
                 False,
                 "focus_only",
             ],
-        )
+        ),
     )
+    return nodes
+
+
+def _identity_comparison_setup(
+    method: str,
+) -> tuple[list[Node], Link, tuple[Link, Link] | None, bool, str]:
+    if method == "default":
+        return _feature_transfer_node(preset=IDENTITY_LOCK_PRESET, with_mask=False), Link(190), None, True, STYLE_PROMPT
+    if method == "native":
+        return [], Link(4), (Link(18), Link(32)), False, STYLE_PROMPT
+    if method in {"feature_mid", "feature_hard"}:
+        preset = "MID_LOCK" if method == "feature_mid" else "HARD_LOCK"
+        return _feature_transfer_node(preset=preset, with_mask=True), Link(190), (Link(18), Link(32)), False, STYLE_PROMPT
+    consistency = {
+        "dx_consistency": (DX_CONSISTENCY_LORA, 0.4, "DX consistency LoRA V2"),
+        "lcs_consistency": (LCS_CONSISTENCY_LORA, 0.5, "LCS consistency LoRA"),
+        "sameface": (SAMEFACE_LORA, 1.0, "SameFace identity LoRA"),
+        "refcontrol_lineart": (REFCONTROL_LINEART_LORA, 0.8, "RefControl lineart LoRA"),
+    }
+    if method in consistency:
+        filename, strength, title = consistency[method]
+        nodes = [
+            _node(
+                190,
+                "LoraLoaderModelOnly",
+                f"Apply {title} — strength editable here",
+                "02 FLUX.2 Klein 9B models",
+                (1100, 1000),
+                size=(340, 130),
+                inputs={"model": Link(4), "lora_name": filename, "strength_model": strength},
+                input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
+                outputs=["MODEL"],
+                output_types=["MODEL"],
+                widgets=[filename, strength],
+                models=_model(filename, "loras"),
+            )
+        ]
+        references = (Link(18), Link(32))
+        prompt = STYLE_PROMPT
+        if method == "refcontrol_lineart":
+            nodes.append(
+                _node(
+                    192,
+                    "Canny",
+                    "Create first RefControl lineart reference",
+                    "02 FLUX.2 Klein 9B models",
+                    (1100, 1180),
+                    size=(340, 150),
+                    inputs={"image": Link(18), "low_threshold": 0.4, "high_threshold": 0.8},
+                    input_types={"image": "IMAGE", "low_threshold": "FLOAT", "high_threshold": "FLOAT"},
+                    outputs=["IMAGE"],
+                    output_types=["IMAGE"],
+                    widgets=[0.4, 0.8],
+                )
+            )
+            references = (Link(192), Link(32))
+            prompt = STYLE_PROMPT.replace("hoi4_portrait,", "hoi4_portrait, refcontrol,", 1)
+        return nodes, Link(190), references, False, prompt
+    if method == "pulid":
+        nodes = [
+            _node(
+                190,
+                "PuLIDModelLoader",
+                "Load PuLID Flux2 Klein v2",
+                "02 FLUX.2 Klein 9B models",
+                (1100, 1000),
+                size=(340, 120),
+                inputs={"pulid_file": PULID_MODEL},
+                input_types={"pulid_file": "COMBO"},
+                outputs=["PULID_MODEL"],
+                output_types=["PULID_MODEL"],
+                widgets=[PULID_MODEL],
+                models=_model(PULID_MODEL, "pulid"),
+            ),
+            _node(
+                192,
+                "PuLIDEVACLIPLoader",
+                "Load PuLID EVA-CLIP",
+                "02 FLUX.2 Klein 9B models",
+                (1100, 1170),
+                size=(340, 100),
+                outputs=["EVA_CLIP"],
+                output_types=["EVA_CLIP"],
+            ),
+            _node(
+                193,
+                "PuLIDInsightFaceLoader",
+                "Load PuLID InsightFace on CUDA",
+                "02 FLUX.2 Klein 9B models",
+                (1100, 1320),
+                size=(340, 110),
+                inputs={"provider": "CUDA"},
+                input_types={"provider": "COMBO"},
+                outputs=["INSIGHTFACE"],
+                output_types=["INSIGHTFACE"],
+                widgets=["CUDA"],
+            ),
+            _node(
+                194,
+                "ApplyPuLIDFlux2",
+                "Apply PuLID identity — strength editable here",
+                "02 FLUX.2 Klein 9B models",
+                (1100, 1480),
+                size=(340, 330),
+                inputs={
+                    "model": Link(4),
+                    "pulid_model": Link(190),
+                    "strength": 1.4,
+                    "eva_clip": Link(192),
+                    "face_analysis": Link(193),
+                    "image": Link(18),
+                    "face_index": 0,
+                    "debug_mode": False,
+                },
+                input_types={
+                    "model": "MODEL",
+                    "pulid_model": "PULID_MODEL",
+                    "strength": "FLOAT",
+                    "eva_clip": "EVA_CLIP",
+                    "face_analysis": "INSIGHTFACE",
+                    "image": "IMAGE",
+                    "face_index": "INT",
+                    "debug_mode": "BOOLEAN",
+                },
+                outputs=["MODEL"],
+                output_types=["MODEL"],
+                widgets=[1.4, 0, False],
+            ),
+        ]
+        return nodes, Link(194), (Link(18), Link(32)), False, STYLE_PROMPT
+    if method == "composite":
+        return [], Link(4), (Link(18), Link(32)), False, STYLE_PROMPT
+    raise ValueError(f"unsupported identity comparison method: {method}")
+
+
+def _klein_composite_node(*, node_id: int, generated: Link, y: int, candidate: int) -> Node:
+    return _node(
+        node_id,
+        "KleinEditComposite",
+        f"Composite candidate {candidate} identity details",
+        "04 HOI4 LoRA styling",
+        (5140, y),
+        size=(340, 620),
+        inputs={
+            "generated_image": generated,
+            "original_image": Link(18),
+            "delta_e_threshold": -1.0,
+            "flow_quality": "medium",
+            "use_occlusion": False,
+            "occlusion_threshold": -1.0,
+            "noise_removal_pct": 0.3,
+            "close_radius_pct": 0.5,
+            "fill_holes": False,
+            "fill_borders": True,
+            "max_islands": 0,
+            "grow_mask_pct": 0.0,
+            "feather_pct": 2.0,
+            "color_match_blend": 0.0,
+            "poisson_blend_edges": False,
+        },
+        input_types={
+            "generated_image": "IMAGE",
+            "original_image": "IMAGE",
+            "delta_e_threshold": "FLOAT",
+            "flow_quality": "COMBO",
+            "use_occlusion": "BOOLEAN",
+            "occlusion_threshold": "FLOAT",
+            "noise_removal_pct": "FLOAT",
+            "close_radius_pct": "FLOAT",
+            "fill_holes": "BOOLEAN",
+            "fill_borders": "BOOLEAN",
+            "max_islands": "INT",
+            "grow_mask_pct": "FLOAT",
+            "feather_pct": "FLOAT",
+            "color_match_blend": "FLOAT",
+            "poisson_blend_edges": "BOOLEAN",
+        },
+        outputs=["IMAGE", "MASK", "STRING", "IMAGE"],
+        output_types=["IMAGE", "MASK", "STRING", "IMAGE"],
+        widgets=[-1.0, "medium", False, -1.0, 0.3, 0.5, False, True, 0, 0.0, 2.0, 0.0, False],
+    )
+
+
+def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
+    method = comparison.method if comparison else "default"
+    nodes = _source_nodes(include_processed_preview=False) + _model_nodes()
+    identity_nodes, style_model, reference_images, double_reference, style_prompt = _identity_comparison_setup(method)
+    nodes.extend(identity_nodes)
     restoration_nodes, restored = _edit_stage(
         id_start=20,
         group="03 Optional FLUX.2 restoration",
@@ -1195,8 +1494,8 @@ def build_source() -> Graph:
             x=3440,
             y=80 + (index - 1) * 900,
             image=Link(32),
-            model=Link(190),
-            prompt=STYLE_PROMPT,
+            model=style_model,
+            prompt=style_prompt,
             negative=STYLE_NEGATIVE,
             seed=seed,
             title_prefix=f"Candidate {index} identity LoRA",
@@ -1204,14 +1503,35 @@ def build_source() -> Graph:
             prompt_node_title=f"Editable candidate {index} prompt — edits affect only candidate {index}",
             sampler_name=sampler_name,
             steps=steps,
-            double_reference=True,
+            double_reference=double_reference,
+            reference_images=reference_images,
+            start_from_empty=comparison is not None,
         )
+        if method == "composite":
+            composite_id = 200 + (index - 1) * 10
+            composite = _klein_composite_node(
+                node_id=composite_id,
+                generated=styled,
+                y=100 + (index - 1) * 900,
+                candidate=index,
+            )
+            style_nodes.append(composite)
+            preview = next(node for node in style_nodes if node.node_id == 55 + (index - 1) * 20)
+            preview.title = f"Preview composited candidate {index}"
+            preview.inputs["images"] = Link(composite_id)
+            styled = Link(composite_id)
         nodes.extend(style_nodes)
         styled_images.append(styled)
     nodes.extend(_background_and_outputs_multi(final_images=styled_images, x=5600, id_start=120))
+    workflow_id = (
+        f"hoi4_portrait_flux2_klein_9b_source_identity_test_{comparison.key}"
+        if comparison
+        else "hoi4_portrait_flux2_klein_9b_source"
+    )
+    identity_label = comparison.label if comparison else "Feature transfer — MID_LOCK with doubled source reference"
     return Graph(
-        workflow_id="hoi4_portrait_flux2_klein_9b_source",
-        description="Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, source-reference identity locking, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
+        workflow_id=workflow_id,
+        description=f"Source portrait workflow using {identity_label}: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates.",
         kind="image_to_image",
         nodes=nodes,
         groups=_groups(has_source=True, has_restoration=True, candidate_count=SOURCE_CANDIDATE_COUNT),
@@ -1223,7 +1543,10 @@ def build_source() -> Graph:
             "background_candidate_count": SOURCE_CANDIDATE_COUNT,
             "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
-            "identity_preservation": "reference_tokens_with_mid_lock_feature_transfer",
+            "identity_preservation": method,
+            "identity_comparison": comparison is not None,
+            "identity_comparison_label": identity_label,
+            "generation_start": "empty_edit_latent" if comparison else "encoded_processed_source",
             "background_order": "after_final_lora_styled_decode",
         },
     )
@@ -1436,7 +1759,14 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
 def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
     workflow_dir = root / "workflows"
     workflow_dir.mkdir(parents=True, exist_ok=True)
-    graphs = [build_source(), build_processing(), build_text_to_image()]
+    graphs = [
+        build_source(),
+        build_text_to_image(),
+        build_processing(),
+        *(build_source(comparison=comparison) for comparison in IDENTITY_COMPARISONS),
+    ]
+    for stale in workflow_dir.glob("*.json"):
+        stale.unlink()
     manifest_items: list[dict[str, Any]] = []
     for graph in graphs:
         ui_path = workflow_dir / f"{graph.workflow_id}.json"

@@ -220,6 +220,52 @@ class AdaptivePortraitCrop:
         return (torch.stack(outputs).clamp(0, 1),)
 
 
+class PortraitIdentityMask:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {"image": ("IMAGE",)}}
+
+    RETURN_TYPES = ("MASK",)
+    RETURN_NAMES = ("identity_mask",)
+    FUNCTION = "mask"
+    CATEGORY = "masking"
+    DESCRIPTION = "Soft face-and-head mask for FLUX.2 reference-feature transfer."
+
+    def mask(self, image):
+        masks = []
+        for frame in image:
+            height, width = int(frame.shape[0]), int(frame.shape[1])
+            faces = _yunet_faces(frame)
+            if faces:
+                face = max(faces, key=lambda item: _face_score(item, width, height))
+                x = float(face["x"])
+                y = float(face["y"])
+                face_width = float(face["width"])
+                face_height = float(face["height"])
+                center = (
+                    round(x + face_width * 0.5),
+                    round(y + face_height * 0.34),
+                )
+                axes = (
+                    max(1, round(face_width * 1.02)),
+                    max(1, round(face_height * 1.22)),
+                )
+            else:
+                # The source has already been framed as a portrait. This
+                # conservative fallback covers the head without selecting the
+                # lower torso when the archival face is too degraded for YuNet.
+                center = (round(width * 0.5), round(height * 0.34))
+                axes = (round(width * 0.31), round(height * 0.29))
+            mask = np.zeros((height, width), dtype=np.float32)
+            cv2.ellipse(mask, center, axes, 0, 0, 360, 1.0, thickness=-1)
+            blur = max(5, round(min(width, height) * 0.045))
+            if blur % 2 == 0:
+                blur += 1
+            mask = cv2.GaussianBlur(mask, (blur, blur), 0)
+            masks.append(torch.from_numpy(mask))
+        return (torch.stack(masks).clamp(0, 1),)
+
+
 class Flux2PortraitSampler:
     @classmethod
     def INPUT_TYPES(cls):
@@ -307,9 +353,11 @@ class Flux2PortraitSampler:
 
 NODE_CLASS_MAPPINGS = {
     "AdaptivePortraitCrop": AdaptivePortraitCrop,
+    "PortraitIdentityMask": PortraitIdentityMask,
     "Flux2PortraitSampler": Flux2PortraitSampler,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AdaptivePortraitCrop": "Adaptive Portrait Crop",
+    "PortraitIdentityMask": "Portrait Identity Mask",
     "Flux2PortraitSampler": "FLUX.2 Portrait Sampler",
 }

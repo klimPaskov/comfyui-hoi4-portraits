@@ -246,26 +246,59 @@
     }
   },
   "190": {
-    "class_type": "IdentityFeatureTransferFinal",
+    "class_type": "PuLIDModelLoader",
+    "inputs": {
+      "pulid_file": "pulid_flux2_klein_v2.safetensors"
+    },
+    "_meta": {
+      "title": "Load PuLID Flux2 Klein v2"
+    }
+  },
+  "192": {
+    "class_type": "PuLIDEVACLIPLoader",
+    "inputs": {},
+    "_meta": {
+      "title": "Load PuLID EVA-CLIP"
+    }
+  },
+  "193": {
+    "class_type": "PuLIDInsightFaceLoader",
+    "inputs": {
+      "provider": "CUDA"
+    },
+    "_meta": {
+      "title": "Load PuLID InsightFace on CUDA"
+    }
+  },
+  "194": {
+    "class_type": "ApplyPuLIDFlux2",
     "inputs": {
       "model": [
         "4",
         0
       ],
-      "preset": "MID_LOCK",
-      "enabled": true,
-      "reference_index": 0,
-      "reference_indices": "all",
-      "similarity_floor": 0.2,
-      "softmax_temperature": 0.07,
-      "mask_threshold": 1.0,
-      "double_blocks": "0-7:mid_img=0.55",
-      "single_blocks": "0:mid_img=0.22; 1:mid_img=0.24; 3:mid_img=0.28; 4:mid_img=0.22; 6:mid_img=0.26; 7:mid_img=0.27; 8:mid_img=0.25; 10:mid_img=0.27; 13:mid_img=0.27",
-      "debug": false,
-      "mask_behavior": "focus_only"
+      "pulid_model": [
+        "190",
+        0
+      ],
+      "strength": 1.4,
+      "eva_clip": [
+        "192",
+        0
+      ],
+      "face_analysis": [
+        "193",
+        0
+      ],
+      "image": [
+        "18",
+        0
+      ],
+      "face_index": 0,
+      "debug_mode": false
     },
     "_meta": {
-      "title": "Source identity feature transfer — MID_LOCK"
+      "title": "Apply PuLID identity — strength editable here"
     }
   },
   "20": {
@@ -446,19 +479,14 @@
     }
   },
   "42": {
-    "class_type": "VAEEncode",
+    "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "pixels": [
-        "32",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
+      "width": 832,
+      "height": 1120,
+      "batch_size": 1
     },
     "_meta": {
-      "title": "Encode candidate 1 identity lora reference"
+      "title": "Create candidate 1 identity lora edit latent"
     }
   },
   "43": {
@@ -469,16 +497,16 @@
         0
       ],
       "latent_1": [
-        "42",
+        "45",
         0
       ],
       "latent_2": [
-        "42",
+        "46",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to positive conditioning"
+      "title": "Attach two identity references to positive conditioning"
     }
   },
   "44": {
@@ -489,23 +517,23 @@
         0
       ],
       "latent_1": [
-        "42",
+        "45",
         0
       ],
       "latent_2": [
-        "42",
+        "46",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to negative conditioning"
+      "title": "Attach two identity references to negative conditioning"
     }
   },
   "50": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "190",
+        "194",
         0
       ],
       "positive": [
@@ -561,6 +589,38 @@
       "title": "Preview candidate 1 identity lora result"
     }
   },
+  "45": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "18",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 1 identity lora original-crop reference"
+    }
+  },
+  "46": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 1 identity lora selected-processed reference"
+    }
+  },
   "60": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -588,19 +648,14 @@
     }
   },
   "62": {
-    "class_type": "VAEEncode",
+    "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "pixels": [
-        "32",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
+      "width": 832,
+      "height": 1120,
+      "batch_size": 1
     },
     "_meta": {
-      "title": "Encode candidate 2 identity lora reference"
+      "title": "Create candidate 2 identity lora edit latent"
     }
   },
   "63": {
@@ -611,16 +666,16 @@
         0
       ],
       "latent_1": [
-        "62",
+        "65",
         0
       ],
       "latent_2": [
-        "62",
+        "66",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to positive conditioning"
+      "title": "Attach two identity references to positive conditioning"
     }
   },
   "64": {
@@ -631,23 +686,23 @@
         0
       ],
       "latent_1": [
-        "62",
+        "65",
         0
       ],
       "latent_2": [
-        "62",
+        "66",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to negative conditioning"
+      "title": "Attach two identity references to negative conditioning"
     }
   },
   "70": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "190",
+        "194",
         0
       ],
       "positive": [
@@ -703,6 +758,38 @@
       "title": "Preview candidate 2 identity lora result"
     }
   },
+  "65": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "18",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 2 identity lora original-crop reference"
+    }
+  },
+  "66": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 2 identity lora selected-processed reference"
+    }
+  },
   "80": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -730,19 +817,14 @@
     }
   },
   "82": {
-    "class_type": "VAEEncode",
+    "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "pixels": [
-        "32",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
+      "width": 832,
+      "height": 1120,
+      "batch_size": 1
     },
     "_meta": {
-      "title": "Encode candidate 3 identity lora reference"
+      "title": "Create candidate 3 identity lora edit latent"
     }
   },
   "83": {
@@ -753,16 +835,16 @@
         0
       ],
       "latent_1": [
-        "82",
+        "85",
         0
       ],
       "latent_2": [
-        "82",
+        "86",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to positive conditioning"
+      "title": "Attach two identity references to positive conditioning"
     }
   },
   "84": {
@@ -773,23 +855,23 @@
         0
       ],
       "latent_1": [
-        "82",
+        "85",
         0
       ],
       "latent_2": [
-        "82",
+        "86",
         0
       ]
     },
     "_meta": {
-      "title": "Attach source twice to negative conditioning"
+      "title": "Attach two identity references to negative conditioning"
     }
   },
   "90": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "190",
+        "194",
         0
       ],
       "positive": [
@@ -843,6 +925,38 @@
     },
     "_meta": {
       "title": "Preview candidate 3 identity lora result"
+    }
+  },
+  "85": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "18",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 3 identity lora original-crop reference"
+    }
+  },
+  "86": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode candidate 3 identity lora selected-processed reference"
     }
   },
   "119": {

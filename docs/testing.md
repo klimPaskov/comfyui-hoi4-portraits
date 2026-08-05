@@ -16,8 +16,8 @@ saved layout used by the release.
 python scripts/build_workflows.py
 ```
 
-This recreates all three editor and API graphs plus `workflows/manifest.json`.
-Generated files are deterministic.
+This recreates the three primary workflows, nine identity comparisons, their
+API graphs, and `workflows/manifest.json`. Generated files are deterministic.
 
 ## Structural and layout validation
 
@@ -63,7 +63,7 @@ LoRA is imported into the Cloud model library.
 
 ## Local inference evidence
 
-The 11 pinned model files are integrity-verified. ComfyUI 0.25.0 ran with
+The primary workflow model set is integrity-verified. ComfyUI 0.25.0 ran with
 optional extensions disabled.
 
 The public graphs use LoRA strength `1.00`, CFG 1, and FLUX guidance 1. Source

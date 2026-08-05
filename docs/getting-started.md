@@ -9,6 +9,8 @@
   result without LoRA styling.
 - The separate **text to image** workflow is for fictional portraits without a
   reference image.
+- Use the [identity comparison pack](identity-comparison.md) to test alternate
+  preservation methods against the same source and generation settings.
 
 ## Prepare a source image
 
@@ -42,6 +44,9 @@ detector selects the wrong person.
 | `background_removal/` | `birefnet.safetensors` |
 | `detection/` | `mediapipe_face_fp32.safetensors` |
 | `detection/` | `face_detection_yunet_2023mar.onnx` |
+| `loras/` | Identity comparison LoRAs listed in `models.json` |
+| `pulid/` | `pulid_flux2_klein_v2.safetensors` |
+| `insightface/models/antelopev2/` | Five AntelopeV2 face-analysis models |
 
 Find the filenames, pinned sources, and sizes in
 [`models.json`](../models.json).
@@ -52,8 +57,7 @@ accept the FLUX.2 model agreement and create a read-only token.
 ## First run
 
 1. Open the workflow JSON, not the `.api.json` file, in the ComfyUI editor.
-   Double-click a stage card to edit its nodes; use the back arrow above the
-   canvas to return to the complete workflow.
+   Every stage and control is visible on the main canvas.
 2. Check every model loader. A red loader means the named file has not been installed or imported.
    The retrained 2250-step LoRA is selected initially; choose another installed
    checkpoint in `LoraLoaderModelOnly` when comparing training steps.

@@ -10,6 +10,11 @@ for source-reference identity locking. Import the custom-node folders and restar
 Builder environment before opening the workflow. The text-to-image and
 processing workflows do not require RES4LYF.
 
+The temporary identity comparison workflows are packaged primarily for
+RunPod testing. In Builder they also require the PuLID Flux2 and Klein edit
+composite repositories plus the comparison weights listed in `models.json`.
+Use the three primary workflows when those additions are unavailable.
+
 ## Import the custom LoRA
 
 Comfy Cloud cannot upload a model directly from your local disk through a

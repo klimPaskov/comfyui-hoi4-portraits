@@ -45,6 +45,11 @@ processed image as both reference conditioning and sampler starting latent.
 Restoration uses a fixed seed and is off by default; the three styling branches
 use independent randomized seeds and separate prompts.
 
+The repository also provides a temporary
+[identity comparison pack](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/codex/portrait-pipeline/docs/identity-comparison.md)
+that holds these settings constant while testing native references, feature
+transfer, consistency adapters, RefControl, PuLID, and edit compositing.
+
 ## Source prompt
 
 ```text

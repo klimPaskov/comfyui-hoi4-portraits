@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DIST = ROOT / "dist"
 WINDOWS_SOURCE = ROOT / "packaging" / "windows"
-RELEASE_SCHEMA_VERSION = "2.5.0"
+RELEASE_SCHEMA_VERSION = "2.6.0"
 FIXED_ZIP_TIME = (2026, 8, 4, 0, 0, 0)
 ROOT_FILES = {
     "CHANGELOG.md",
@@ -35,6 +35,8 @@ MODEL_SUFFIXES = {".bin", ".ckpt", ".gguf", ".onnx", ".pt", ".pth", ".safetensor
 RUNPOD_SCRIPTS = {
     "download_models.py",
     "install_flux2_klein_enhancer.sh",
+    "install_klein_edit_composite.sh",
+    "install_pulid_flux2.sh",
     "install_res4lyf.sh",
     "install_runpod.sh",
     "install_workflows.py",
@@ -59,8 +61,10 @@ def _selected_files() -> list[Path]:
     missing = sorted(path.relative_to(ROOT).as_posix() for path in selected if not path.is_file())
     if missing:
         raise RuntimeError(f"release inputs are missing: {', '.join(missing)}")
-    if len(list((ROOT / "workflows").glob("*.json"))) != 7:
-        raise RuntimeError("expected three editor graphs, three API graphs, and one manifest")
+    manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text(encoding="utf-8"))
+    expected_graph_files = 2 * len(manifest.get("workflows", [])) + 1
+    if len(list((ROOT / "workflows").glob("*.json"))) != expected_graph_files:
+        raise RuntimeError("workflow files do not match the generated manifest")
     return files
 
 

@@ -132,6 +132,126 @@
       "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
       "license": "Apache-2.0",
       "requires_huggingface_auth": false
+    },
+    {
+      "name": "DX FLUX.2 Klein 9B consistency LoRA V2",
+      "filename": "Flux2-Klein-9B-consistency-V2.safetensors",
+      "directory": "loras",
+      "source": "dx8152/Flux2-Klein-9B-Consistency",
+      "revision": "8df0c7338cf68cfcd89ca7e461fe679905634607",
+      "url": "https://huggingface.co/dx8152/Flux2-Klein-9B-Consistency/resolve/8df0c7338cf68cfcd89ca7e461fe679905634607/Flux2-Klein-9B-consistency-V2.safetensors",
+      "size_bytes": 331379608,
+      "sha256": "61db2017ce420b97bd5ef11984e5a894c90003a6bbf0dc9473f8d7b9ebb3ff93",
+      "license": "Apache-2.0",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "LCS FLUX.2 Klein 9B consistency LoRA",
+      "filename": "f2k_9B_lcs_consist_20260415.safetensors",
+      "directory": "loras",
+      "source": "lrzjason/Consistance_Edit_Lora",
+      "revision": "825b73f9952186f807acb44f05dec4ec5044f394",
+      "url": "https://huggingface.co/lrzjason/Consistance_Edit_Lora/resolve/825b73f9952186f807acb44f05dec4ec5044f394/f2k_9B_lcs_consist_20260415.safetensors",
+      "size_bytes": 348167344,
+      "sha256": "16c454cb57d3d22c7a61d9ec8ed73036028cde9409588edc37f101bdbf35d338",
+      "license": "Apache-2.0",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "FLUX.2 Klein 9B SameFace LoRA",
+      "filename": "Flux2Klein9BSameFaceR64.safetensors",
+      "directory": "loras",
+      "source": "rphmeier/Flux2Klein9B-SameFaceLora",
+      "revision": "94ee6271f4d37fbcd6689b6469341aba6170d0b9",
+      "url": "https://huggingface.co/rphmeier/Flux2Klein9B-SameFaceLora/resolve/94ee6271f4d37fbcd6689b6469341aba6170d0b9/Flux2Klein9BSameFaceR64.safetensors",
+      "size_bytes": 801141336,
+      "sha256": "ad1ecd67db1e6a91c6f25d896b913a6c5b34f5f4cf8ce34294a8f93251257823",
+      "license": "Apache-2.0",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "RefControl FLUX.2 Klein 9B lineart LoRA",
+      "filename": "flux2_klein_9b_refcontrol_lineart.safetensors",
+      "directory": "loras",
+      "source": "thedeoxen/refcontrol-FLUX.2-klein-9B-reference-lineart-lora",
+      "revision": "140f26de5b6006f6d455ecee417be774a1c054e8",
+      "url": "https://huggingface.co/thedeoxen/refcontrol-FLUX.2-klein-9B-reference-lineart-lora/resolve/140f26de5b6006f6d455ecee417be774a1c054e8/flux2_klein_9b_refcontrol_lineart.safetensors",
+      "size_bytes": 165704520,
+      "sha256": "38a0e9eabde424b27b4ff4cf0d25aad4e5d7e4b9ff41b595831e3321f725edf7",
+      "license": "Apache-2.0",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "PuLID Flux2 Klein v2",
+      "filename": "pulid_flux2_klein_v2.safetensors",
+      "directory": "pulid",
+      "source": "Fayens/Pulid-Flux2",
+      "revision": "550167db98d7169bfc83f9aa8225bd0da70f2d6b",
+      "url": "https://huggingface.co/Fayens/Pulid-Flux2/resolve/550167db98d7169bfc83f9aa8225bd0da70f2d6b/pulid_flux2_klein_v2.safetensors",
+      "size_bytes": 1364389800,
+      "sha256": "d5d291cb054eb6eceb25e3b46eff8f05f7b58f8f19a89ec76ba730a6ba8935bb",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "InsightFace AntelopeV2 1k3d68",
+      "filename": "1k3d68.onnx",
+      "directory": "insightface/models/antelopev2",
+      "source": "MonsterMMORPG/InstantID_Models",
+      "revision": "397cafa6d8310e96e302e96528c20a4c92a884f2",
+      "url": "https://huggingface.co/MonsterMMORPG/InstantID_Models/resolve/397cafa6d8310e96e302e96528c20a4c92a884f2/models/antelopev2/1k3d68.onnx",
+      "size_bytes": 143607619,
+      "sha256": "df5c06b8a0c12e422b2ed8947b8869faa4105387f199c477af038aa01f9a45cc",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "InsightFace AntelopeV2 2d106det",
+      "filename": "2d106det.onnx",
+      "directory": "insightface/models/antelopev2",
+      "source": "MonsterMMORPG/InstantID_Models",
+      "revision": "397cafa6d8310e96e302e96528c20a4c92a884f2",
+      "url": "https://huggingface.co/MonsterMMORPG/InstantID_Models/resolve/397cafa6d8310e96e302e96528c20a4c92a884f2/models/antelopev2/2d106det.onnx",
+      "size_bytes": 5030888,
+      "sha256": "f001b856447c413801ef5c42091ed0cd516fcd21f2d6b79635b1e733a7109dbf",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "InsightFace AntelopeV2 genderage",
+      "filename": "genderage.onnx",
+      "directory": "insightface/models/antelopev2",
+      "source": "MonsterMMORPG/InstantID_Models",
+      "revision": "397cafa6d8310e96e302e96528c20a4c92a884f2",
+      "url": "https://huggingface.co/MonsterMMORPG/InstantID_Models/resolve/397cafa6d8310e96e302e96528c20a4c92a884f2/models/antelopev2/genderage.onnx",
+      "size_bytes": 1322532,
+      "sha256": "4fde69b1c810857b88c64a335084f1c3fe8f01246c9a191b48c7bb756d6652fb",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "InsightFace AntelopeV2 glintr100",
+      "filename": "glintr100.onnx",
+      "directory": "insightface/models/antelopev2",
+      "source": "MonsterMMORPG/InstantID_Models",
+      "revision": "397cafa6d8310e96e302e96528c20a4c92a884f2",
+      "url": "https://huggingface.co/MonsterMMORPG/InstantID_Models/resolve/397cafa6d8310e96e302e96528c20a4c92a884f2/models/antelopev2/glintr100.onnx",
+      "size_bytes": 260665334,
+      "sha256": "4ab1d6435d639628a6f3e5008dd4f929edf4c4124b1a7169e1048f9fef534cdf",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    },
+    {
+      "name": "InsightFace AntelopeV2 SCRFD",
+      "filename": "scrfd_10g_bnkps.onnx",
+      "directory": "insightface/models/antelopev2",
+      "source": "MonsterMMORPG/InstantID_Models",
+      "revision": "397cafa6d8310e96e302e96528c20a4c92a884f2",
+      "url": "https://huggingface.co/MonsterMMORPG/InstantID_Models/resolve/397cafa6d8310e96e302e96528c20a4c92a884f2/models/antelopev2/scrfd_10g_bnkps.onnx",
+      "size_bytes": 16923827,
+      "sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
     }
   ]
 }

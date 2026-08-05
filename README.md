@@ -22,6 +22,12 @@ The same workflow opens locally, on RunPod, and in Comfy Cloud.
 Matching [API-format graphs](workflows/) are included for Comfy Cloud MCP,
 the Comfy Cloud API, and local `/prompt` submission.
 
+Nine temporary [identity comparison workflows](docs/identity-comparison.md)
+are also included for controlled testing of native references, feature
+transfer, consistency adapters, RefControl, PuLID, and edit compositing. They
+use the same source processing, HOI4 checkpoint, prompts, seeds, and sampler
+branches so identity and style strength can be compared fairly.
+
 The [latest GitHub release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest)
 contains a model-free ZIP and a Windows x64 self-extractor.
 The Windows executable only unpacks this project; it does not bundle ComfyUI or
@@ -37,6 +43,7 @@ workflows.
 - [Getting started](docs/getting-started.md)
 - [Hugging Face model access and read-only token](docs/hugging-face.md)
 - [Workflow controls and graph structure](docs/workflows.md)
+- [Identity comparison workflows](docs/identity-comparison.md)
 - [Comfy Cloud and MCP](docs/comfy-cloud.md)
 - [Local and RunPod installation](docs/local-install.md)
 - [Local test results and before/afters](docs/test-results.md)
@@ -258,9 +265,10 @@ workflow is practical on a 24 GB GPU with offloading. An 18 GB GPU may also run
 it with more aggressive offloading and a reduced test canvas; 16 GB systems can
 run the same kind of reduced-resolution test but will be slower. The upstream
 model card's roughly 29 GB figure is a conservative full-resolution/no-offload
-guideline. The 11 pinned model files use 20.62 GB decimal (19.20 GiB) before
-ComfyUI caches or outputs. For RunPod, a 30 GB volume is sufficient for this
-project and its normal outputs.
+guideline. The comparison package uses 24.06 GB of pinned model files plus an
+0.86 GB PuLID vision weight. A 30 GB RunPod volume is sufficient for the
+workflows and model set; remove rejected outputs during testing to preserve
+headroom.
 
 ```bash
 git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
@@ -272,12 +280,10 @@ python scripts/download_models.py --comfyui-root /path/to/ComfyUI
 The FLUX.2 base model is gated. Accept its Hugging Face agreement and run
 `hf auth login` (or set `HF_TOKEN`) before the model download command.
 
-For a RunPod ComfyUI template, this command installs the three workflows, the
-bundled backgrounds and sample input, the 2000-, 2250-, and 2500-step portrait
-LoRAs, and the Adonis restoration LoKr,
-the previous LoRA, and the other required model files into the
-standard `ComfyUI/models/` subfolders. Set `HF_TOKEN` in the pod environment
-first so the gated FLUX.2 base can download:
+For a RunPod ComfyUI template, this command installs the three primary
+workflows, nine identity comparisons, their required extensions, bundled
+inputs, and all model files in the correct ComfyUI folders. Set `HF_TOKEN` in
+the pod environment first so the gated FLUX.2 base can download:
 
 ```bash
 (
@@ -312,7 +318,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.5.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.5.0"
+.\HOI4-Portrait-Workflows-v2.6.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.6.0"
 ```
 
 ## Prompting
@@ -388,10 +394,11 @@ See [the three random prompts, exact test conditions, and findings](docs/test-re
 
 ## Checks
 
-- All three editor graphs and API graphs are generated from one deterministic source.
+- The three primary workflows and nine identity comparisons are generated with
+  matching API graphs from one deterministic source.
 - Link endpoints, slot types, output nodes, visual groups, and node geometry are tested.
 - Node and group overlap checks pass with spacing margins.
-- Comfy Cloud MCP no-spend preflight passes for all three API graphs. The
+- Comfy Cloud MCP no-spend preflight passes for the three primary API graphs. The
   project LoRA must be imported into the Cloud model library before generation.
 - Cloud GPU mechanical tests pass every workflow shape and the final
   background path with a compatible catalog LoRA at zero strength.
