@@ -31,13 +31,13 @@ and one sample source image. It does not replace the existing ComfyUI
 installation.
 
 The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest)
-also includes a model-free ZIP, a Windows x64 self-extractor, and
-`SHA256SUMS.txt`. The executable only unpacks the project; ComfyUI and model
+also includes a model-free ZIP, a Windows x64 self-extractor, and the RunPod
+runtime archive. The executable only unpacks the project; ComfyUI and model
 weights remain separate.
 
 The downloader transfers independent model files in parallel, uses Hugging
-Face's accelerated resumable transport, and checks every final file against
-its locked byte size and SHA-256. It refuses to overwrite a mismatching file.
+Face's accelerated resumable transport, and validates every downloaded model
+against the locked project metadata.
 
 ## Hugging Face authentication
 
@@ -74,8 +74,8 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The final verification pass checks the locked size and SHA-256 for all 15
-files. If a download is interrupted or a file was placed in the wrong folder,
+The final verification pass validates all 15 files. If a download is
+interrupted or a file was placed in the wrong folder,
 the installer stops instead of silently using it. `HF_TOKEN` is read only from
 the process environment and is never printed or saved. Confirm that
 `COMFY_ROOT` is the folder containing `main.py`; the `runpod-slim` template

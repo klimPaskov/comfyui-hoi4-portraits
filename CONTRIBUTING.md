@@ -26,7 +26,7 @@ git diff --check
 
 Commit regenerated editor JSON, API JSON, and `workflows/manifest.json` with
 the source change. If visual output changes, state the GPU, ComfyUI revision,
-model checksums, seed, prompt, and settings in the pull request. Use only test
+model sources, seed, prompt, and settings in the pull request. Use only test
 images you have permission to share.
 
 ## Reporting workflow bugs

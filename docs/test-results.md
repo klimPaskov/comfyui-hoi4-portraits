@@ -2,8 +2,7 @@
 
 These images were generated locally with the FLUX.2 Klein base 9B stack and
 `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors`. All six source
-portraits came from the supplied `source_originals.zip`. The archive SHA-256 is
-`71924dbe78019464c21da9aa4d522441cb7faa99fc33b082f42561e2ff086321`.
+portraits came from the supplied `source_originals.zip`.
 
 ## Test conditions
 

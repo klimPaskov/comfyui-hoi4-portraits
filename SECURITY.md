@@ -20,8 +20,8 @@ within seven days.
 
 ## Model and workflow safety
 
-The download helper accepts model URLs and checksums only from the committed
-`models.json`. Every downloaded file is size- and SHA-256-verified before it is
-installed. Review changes to that manifest carefully. ComfyUI, third-party
+The download helper accepts model URLs only from the committed `models.json`.
+Every downloaded file is validated before it is installed. Review changes to
+that manifest carefully. ComfyUI, third-party
 models, and user-installed nodes have their own security policies and must be
 kept current independently.

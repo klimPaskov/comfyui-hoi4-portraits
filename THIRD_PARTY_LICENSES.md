@@ -14,7 +14,7 @@ hosting, or using them, read the current upstream terms for your use case.
 | BiRefNet | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet) | Follow the model repository and original BiRefNet terms. |
 | OpenCV and YuNet | [opencv/opencv](https://github.com/opencv/opencv), [opencv/opencv_zoo](https://github.com/opencv/opencv_zoo) | Apache-2.0 software and model. |
 
-Exact source revisions, filenames, byte sizes, and SHA-256 checksums are pinned
+Exact source revisions, filenames, and byte sizes are pinned
 in [`models.json`](models.json). No third-party weights are committed to this
 repository or bundled in its workflow release ZIP.
 

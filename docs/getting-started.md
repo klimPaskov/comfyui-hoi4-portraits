@@ -43,7 +43,7 @@ detector selects the wrong person.
 | `detection/` | `mediapipe_face_fp32.safetensors` |
 | `detection/` | `face_detection_yunet_2023mar.onnx` |
 
-Find the filenames, pinned sources, sizes, and SHA-256 hashes in
+Find the filenames, pinned sources, and sizes in
 [`models.json`](../models.json).
 
 Before downloading, follow the [Hugging Face access guide](hugging-face.md) to

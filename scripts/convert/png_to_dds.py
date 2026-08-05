@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import struct
 import tempfile
@@ -76,7 +75,6 @@ def convert(source: Path, destination: Path) -> dict[str, object]:
         "height": HEIGHT,
         "format": "uncompressed 32-bit BGRA DDS",
         "size_bytes": destination.stat().st_size,
-        "sha256": hashlib.sha256(payload).hexdigest(),
     }
 
 

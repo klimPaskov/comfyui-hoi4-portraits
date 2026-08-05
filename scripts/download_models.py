@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download and checksum-verify the models used by the workflows."""
+"""Download and integrity-verify the models used by the workflows."""
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) ->
     if _verify(destination, entry):
         return "verified"
     if destination.exists():
-        raise RuntimeError(f"existing file failed checksum verification: {destination}")
+        raise RuntimeError(f"existing file failed integrity validation: {destination}")
     if verify_only:
         raise RuntimeError(f"required model is missing: {destination}")
     token = _hf_token() if "huggingface.co" in entry["url"] else None
@@ -85,7 +85,7 @@ def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) ->
                 if downloaded_path != destination:
                     downloaded_path.replace(destination)
                 if not _verify(destination, entry):
-                    raise RuntimeError(f"downloaded file failed checksum verification: {entry['filename']}")
+                    raise RuntimeError(f"downloaded file failed integrity validation: {entry['filename']}")
                 return "downloaded"
 
         offset = partial.stat().st_size if partial.exists() else 0
@@ -104,7 +104,7 @@ def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) ->
                     if downloaded % (256 * 1024 * 1024) < len(chunk):
                         print(f"  {entry['filename']}: {downloaded / total:.0%}", flush=True)
         if partial.stat().st_size != int(entry["size_bytes"]) or _sha256(partial) != entry["sha256"]:
-            raise RuntimeError(f"downloaded file failed checksum verification: {entry['filename']}")
+            raise RuntimeError(f"downloaded file failed integrity validation: {entry['filename']}")
         partial.replace(destination)
     except (OSError, urllib.error.URLError) as exc:
         raise RuntimeError(f"failed to download {entry['filename']}: {exc}") from exc

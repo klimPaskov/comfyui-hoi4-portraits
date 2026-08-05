@@ -23,7 +23,7 @@ Matching [API-format graphs](workflows/) are included for Comfy Cloud MCP,
 the Comfy Cloud API, and local `/prompt` submission.
 
 The [latest GitHub release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest)
-contains a model-free ZIP, a Windows x64 self-extractor, and SHA-256 checksums.
+contains a model-free ZIP and a Windows x64 self-extractor.
 The Windows executable only unpacks this project; it does not bundle ComfyUI or
 model weights.
 

@@ -71,7 +71,7 @@ All notable project changes are recorded here.
   README table and does not load the LoRA.
 - Updated the RunPod, Windows PowerShell, and Windows self-extractor paths to
   install the current workflows and pinned model files without custom nodes.
-- Added a model-free ZIP, Windows x64 executable, and checksums to the release
+- Added a model-free ZIP and Windows x64 executable to the release
   package.
 - Refreshed release metadata and documentation for the current filenames,
   model defaults, and portable core-node graph design.
@@ -132,7 +132,7 @@ All notable project changes are recorded here.
   remain portable across supported ComfyUI environments.
 - Published the LoRA and model card on Hugging Face.
 - Added deterministic workflow generation, structural/layout checks, pinned
-  model checksums, installers, tests, and Comfy Cloud guidance.
+  model locks, installers, tests, and Comfy Cloud guidance.
 - Moved the Krea-based workflows out of the default experience; they remain
   available only through the archived v1.0.0 release.
 

@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import gzip
-import hashlib
 import io
 import json
 import os
@@ -43,12 +42,6 @@ RUNPOD_SCRIPTS = {
 }
 
 
-def _sha256(data: bytes | Path) -> str:
-    if isinstance(data, Path):
-        data = data.read_bytes()
-    return hashlib.sha256(data).hexdigest()
-
-
 def _selected_files() -> list[Path]:
     selected = {ROOT / name for name in ROOT_FILES}
     for tree in INCLUDED_TREES:
@@ -69,13 +62,13 @@ def _selected_files() -> list[Path]:
     return files
 
 
-def _build_zip(path: Path, files: list[Path], version: str) -> dict[str, str]:
-    checksums: dict[str, str] = {}
+def _build_zip(path: Path, files: list[Path], version: str) -> int:
+    included_files: list[str] = []
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in files:
             relative = source.relative_to(ROOT).as_posix()
             data = source.read_bytes()
-            checksums[relative] = _sha256(data)
+            included_files.append(relative)
             info = zipfile.ZipInfo(relative, FIXED_ZIP_TIME)
             info.create_system = 3
             mode = 0o755 if source.suffix in {".py", ".sh"} else 0o644
@@ -87,7 +80,7 @@ def _build_zip(path: Path, files: list[Path], version: str) -> dict[str, str]:
                 "version": version,
                 "models_bundled": False,
                 "custom_nodes_bundled": True,
-                "files": checksums,
+                "files": included_files,
             },
             indent=2,
             sort_keys=True,
@@ -96,7 +89,7 @@ def _build_zip(path: Path, files: list[Path], version: str) -> dict[str, str]:
         info.create_system = 3
         info.external_attr = (0o644 & 0xFFFF) << 16
         archive.writestr(info, manifest, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
-    return checksums
+    return len(included_files)
 
 
 def _runpod_files() -> dict[str, Path]:
@@ -176,32 +169,23 @@ def main(argv: list[str] | None = None) -> int:
         if stale.is_file() and (
             stale.name.startswith("HOI4-Portrait-Workflows-")
             or stale.name.startswith("HOI4-Portrait-RunPod")
-            or stale.name == "SHA256SUMS.txt"
         ):
             stale.unlink()
     zip_path = DIST / f"HOI4-Portrait-Workflows-{version}.zip"
-    checksums = _build_zip(zip_path, _selected_files(), version)
+    file_count = _build_zip(zip_path, _selected_files(), version)
     windows_path = _build_windows(zip_path, version)
     runpod_path = DIST / "HOI4-Portrait-RunPod.tar.gz"
     _build_runpod_archive(runpod_path, _runpod_files())
-    sums_path = DIST / "SHA256SUMS.txt"
     artifacts = [zip_path, windows_path, runpod_path]
-    sums_path.write_text(
-        "".join(f"{_sha256(path)}  {path.name}\n" for path in artifacts),
-        encoding="utf-8",
-    )
     print(
         json.dumps(
             {
                 "status": "PASS",
                 "version": version,
-                "file_count": len(checksums),
+                "file_count": file_count,
                 "artifacts": [
-                    *[
-                        {"path": str(path), "size_bytes": path.stat().st_size, "sha256": _sha256(path)}
-                        for path in artifacts
-                    ],
-                    {"path": str(sums_path), "size_bytes": sums_path.stat().st_size},
+                    {"path": str(path), "size_bytes": path.stat().st_size}
+                    for path in artifacts
                 ],
             },
             indent=2,

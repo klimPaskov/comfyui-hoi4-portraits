@@ -7,7 +7,6 @@ The generated ``*.json`` files are editor/save format; the matching
 
 from __future__ import annotations
 
-import hashlib
 import json
 import uuid
 from copy import deepcopy
@@ -1839,8 +1838,6 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
                 "description": graph.description,
                 "workflow_json": ui_path.relative_to(root).as_posix(),
                 "api_json": api_path.relative_to(root).as_posix(),
-                "sha256": hashlib.sha256(ui_path.read_bytes()).hexdigest(),
-                "api_sha256": hashlib.sha256(api_path.read_bytes()).hexdigest(),
                 "node_count": len(graph.nodes),
                 "core_nodes_only": not any(node.class_type == "AdaptivePortraitCrop" for node in graph.nodes),
             }

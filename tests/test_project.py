@@ -8,6 +8,7 @@ import re
 import tarfile
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 from scripts import build_workflows, install_workflows, validate_workflows
@@ -46,13 +47,12 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(result["status"], "PASS", result["errors"])
         self.assertEqual(len(result["workflows"]), 3)
 
-    def test_manifest_hashes_match_files(self) -> None:
+    def test_manifest_workflow_files_exist(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
         self.assertEqual(manifest["schema_version"], "2.4.8")
         for item in manifest["workflows"]:
-            for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
-                data = (ROOT / item[path_key]).read_bytes()
-                self.assertEqual(hashlib.sha256(data).hexdigest(), item[digest_key])
+            self.assertTrue((ROOT / item["workflow_json"]).is_file())
+            self.assertTrue((ROOT / item["api_json"]).is_file())
 
     def test_editor_model_urls_are_revision_pinned(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
@@ -237,6 +237,14 @@ class InstallerAndModelTests(unittest.TestCase):
         selected = build_release_artifacts._selected_files()
         forbidden = build_release_artifacts.MODEL_SUFFIXES
         self.assertFalse(any(path.suffix.casefold() in forbidden for path in selected))
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "release.zip"
+            count = build_release_artifacts._build_zip(archive_path, selected, "v-test")
+            with zipfile.ZipFile(archive_path) as archive:
+                manifest = json.loads(archive.read("RELEASE_MANIFEST.json"))
+            self.assertEqual(count, len(selected))
+            self.assertIsInstance(manifest["files"], list)
+            self.assertNotIn("sha256", json.dumps(manifest).casefold())
 
     def test_runpod_release_contains_only_runtime_files(self) -> None:
         files = build_release_artifacts._runpod_files()
@@ -379,6 +387,7 @@ class DocumentationTests(unittest.TestCase):
         self.assertTrue(readme.splitlines()[6].startswith("Create identity-preserving Hearts of Iron IV-style"))
         self.assertNotIn("Clean ComfyUI workflows", readme)
         documents = [ROOT / "README.md", *(ROOT / "docs").glob("*.md"), *(ROOT / "loras").glob("*.md")]
+        self.assertFalse(any(re.search(r"sha-?256|checksum", path.read_text(encoding="utf-8"), re.IGNORECASE) for path in documents))
         forbidden = re.compile(
             r"\b(earlier project|previously verified|current workflows|newly trained|now use|what changed)\b",
             re.IGNORECASE,
