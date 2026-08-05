@@ -11,7 +11,9 @@ PYTHON_BIN=""
 for candidate in \
   "${COMFY_ROOT}/.venv/bin/python" \
   "${COMFY_ROOT}/venv/bin/python" \
+  "$(dirname "${COMFY_ROOT}")/venv/bin/python" \
   "${COMFY_ROOT}/python_embeded/python" \
+  /workspace/runpod-slim/venv/bin/python \
   /workspace/venv/bin/python \
   /workspace/.venv/bin/python \
   /opt/pyvenv/bin/python; do

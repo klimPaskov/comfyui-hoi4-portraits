@@ -272,6 +272,8 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertIn(revision, shell)
         self.assertIn("install_res4lyf.sh", runpod)
         self.assertIn(revision, windows)
+        self.assertIn('/workspace/runpod-slim/venv/bin/python', runpod)
+        self.assertIn('AdaptivePortraitCrop did not register', runpod)
 
 
 class DocumentationTests(unittest.TestCase):
