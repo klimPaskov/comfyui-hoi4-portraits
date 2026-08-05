@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DIST = ROOT / "dist"
 WINDOWS_SOURCE = ROOT / "packaging" / "windows"
-RELEASE_SCHEMA_VERSION = "2.4.10"
+RELEASE_SCHEMA_VERSION = "2.4.11"
 FIXED_ZIP_TIME = (2026, 8, 4, 0, 0, 0)
 ROOT_FILES = {
     "CHANGELOG.md",
@@ -104,9 +104,9 @@ def _runpod_files() -> dict[str, Path]:
             files[f"workflows/{path.name}"] = path
     for path in sorted((ROOT / "backgrounds").glob("*.png")):
         files[f"backgrounds/{path.name}"] = path
-    for path in sorted((ROOT / "custom_nodes" / "adaptive_portrait_crop").iterdir()):
+    for path in sorted((ROOT / "custom_nodes" / "hoi4_portraits").iterdir()):
         if path.is_file():
-            files[f"custom_nodes/adaptive_portrait_crop/{path.name}"] = path
+            files[f"custom_nodes/hoi4_portraits/{path.name}"] = path
     for name in sorted(RUNPOD_SCRIPTS):
         files[f"scripts/{name}"] = ROOT / "scripts" / name
     missing = [archive_path for archive_path, source in files.items() if not source.is_file()]

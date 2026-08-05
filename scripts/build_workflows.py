@@ -25,7 +25,7 @@ SOURCE_STYLE_DENOISE = 1.0
 DEFAULT_STEPS = 6
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
-WORKFLOW_SCHEMA_VERSION = "2.4.10"
+WORKFLOW_SCHEMA_VERSION = "2.4.11"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
@@ -1271,7 +1271,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         is_project_node = node.class_type in {"AdaptivePortraitCrop", "Flux2PortraitSampler"}
         properties: dict[str, Any] = {
             "Node name for S&R": node.class_type,
-            "cnr_id": "adaptive-portrait-crop" if is_project_node else "comfy-core",
+            "cnr_id": "hoi4_portraits" if is_project_node else "comfy-core",
             "ver": "0.8.2",
             "hoi4_group": node.group,
         }

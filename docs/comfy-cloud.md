@@ -1,12 +1,12 @@
 # Comfy Cloud and MCP
 
-The workflows use Comfy Cloud's model catalog. Source and processing workflows
-require the bundled `adaptive_portrait_crop` folder in the Builder custom-node
-environment. The source workflow also requires
+The workflows use Comfy Cloud's model catalog and require the bundled
+`hoi4_portraits` folder in the Builder custom-node environment. The source
+workflow also requires
 [RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) for its `res_2s` and
 `res_2m` candidate samplers. Import both custom-node folders and restart the
-Builder environment before opening the workflow. The text-to-image workflow
-does not require either extension.
+Builder environment before opening the workflow. The text-to-image and
+processing workflows do not require RES4LYF.
 
 ## Import the custom LoRA
 

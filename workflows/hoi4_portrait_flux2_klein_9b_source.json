@@ -311,7 +311,7 @@
       ],
       "properties": {
         "Node name for S&R": "AdaptivePortraitCrop",
-        "cnr_id": "adaptive-portrait-crop",
+        "cnr_id": "hoi4_portraits",
         "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN",
         "models": [
@@ -1441,7 +1441,7 @@
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "adaptive-portrait-crop",
+        "cnr_id": "hoi4_portraits",
         "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
@@ -1957,7 +1957,7 @@
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "adaptive-portrait-crop",
+        "cnr_id": "hoi4_portraits",
         "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
@@ -2417,7 +2417,7 @@
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "adaptive-portrait-crop",
+        "cnr_id": "hoi4_portraits",
         "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
@@ -2877,7 +2877,7 @@
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "adaptive-portrait-crop",
+        "cnr_id": "hoi4_portraits",
         "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
@@ -5261,7 +5261,7 @@
     "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
     "workflow_kind": "image_to_image",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.10",
+    "graph_version": "2.4.11",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
     "core_nodes_only": false,

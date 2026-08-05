@@ -311,7 +311,7 @@
       ],
       "properties": {
         "Node name for S&R": "AdaptivePortraitCrop",
-        "cnr_id": "adaptive-portrait-crop",
+        "cnr_id": "hoi4_portraits",
         "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN",
         "models": [
@@ -1399,7 +1399,7 @@
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "adaptive-portrait-crop",
+        "cnr_id": "hoi4_portraits",
         "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
@@ -2136,7 +2136,7 @@
     "description": "Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
     "workflow_kind": "image_processing",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.10",
+    "graph_version": "2.4.11",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": null,
     "core_nodes_only": false,

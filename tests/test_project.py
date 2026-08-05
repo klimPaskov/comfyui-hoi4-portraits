@@ -46,7 +46,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_workflow_files_exist(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.10")
+        self.assertEqual(manifest["schema_version"], "2.4.11")
         for item in manifest["workflows"]:
             self.assertTrue((ROOT / item["workflow_json"]).is_file())
             self.assertTrue((ROOT / item["api_json"]).is_file())
@@ -197,18 +197,22 @@ class WorkflowTests(unittest.TestCase):
 
 
 class InstallerAndModelTests(unittest.TestCase):
-    def test_installer_copies_three_workflows_and_adaptive_crop(self) -> None:
+    def test_installer_copies_three_workflows_and_project_nodes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             comfy_root = Path(directory)
             (comfy_root / "main.py").touch()
+            legacy_node = comfy_root / "custom_nodes/adaptive_portrait_crop"
+            legacy_node.mkdir(parents=True)
+            (legacy_node / "__init__.py").write_text("# previous package name\n", encoding="utf-8")
             with contextlib.redirect_stdout(io.StringIO()):
                 result = install_workflows.main(["--comfyui-root", str(comfy_root)])
             self.assertEqual(result, 0)
             installed = list((comfy_root / "user/default/workflows/hoi4_portraits").glob("*.json"))
             self.assertEqual(len(installed), 3)
             self.assertTrue((comfy_root / "input/source_portrait.jpg").is_file())
-            self.assertTrue((comfy_root / "custom_nodes/adaptive_portrait_crop/__init__.py").is_file())
-            self.assertTrue((comfy_root / "custom_nodes/adaptive_portrait_crop/requirements.txt").is_file())
+            self.assertTrue((comfy_root / "custom_nodes/hoi4_portraits/__init__.py").is_file())
+            self.assertTrue((comfy_root / "custom_nodes/hoi4_portraits/requirements.txt").is_file())
+            self.assertFalse((comfy_root / "custom_nodes/adaptive_portrait_crop").exists())
 
     def test_model_manifest_is_pinned_and_unique(self) -> None:
         data = json.loads((ROOT / "models.json").read_text())
@@ -267,7 +271,7 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertTrue((ROOT / "packaging" / "windows" / "go.mod").is_file())
         contents = source.read_text(encoding="utf-8")
         self.assertIn('"docs", "local-install.md"', contents)
-        self.assertIn("adaptive portrait crop", contents.casefold())
+        self.assertIn("hoi4_portraits node pack", contents.casefold())
         self.assertNotIn("setup-with-coding-agent.md", contents)
 
     def test_sampler_extension_is_pinned_in_installers(self) -> None:
@@ -283,6 +287,7 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertIn(revision, windows)
         self.assertIn('/workspace/runpod-slim/venv/bin/python', runpod)
         self.assertIn('AdaptivePortraitCrop did not register', runpod)
+        self.assertIn('Flux2PortraitSampler did not register', runpod)
         self.assertIn("git -C \"${RES4LYF_DIR}\" grep -q 'res_2s'", runpod)
         self.assertIn("git -C \"${RES4LYF_DIR}\" grep -q 'res_2m'", runpod)
         self.assertNotIn("import custom_nodes.RES4LYF", runpod)

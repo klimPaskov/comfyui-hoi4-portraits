@@ -39,7 +39,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 & $Python -c "import cv2, scipy" 2>$null
 if ($LASTEXITCODE -ne 0) {
-    & $Python -m pip install -r (Join-Path $ProjectRoot "custom_nodes\adaptive_portrait_crop\requirements.txt")
+    & $Python -m pip install -r (Join-Path $ProjectRoot "custom_nodes\hoi4_portraits\requirements.txt")
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
@@ -63,4 +63,4 @@ if (-not $SkipModels) {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-Write-Host "Installed three FLUX.2 Klein 9B workflows, the adaptive portrait crop, and RES4LYF samplers. Restart ComfyUI, then open Workflows > hoi4_portraits."
+Write-Host "Installed three FLUX.2 Klein 9B workflows, the hoi4_portraits node pack, and RES4LYF samplers. Restart ComfyUI, then open Workflows > hoi4_portraits."

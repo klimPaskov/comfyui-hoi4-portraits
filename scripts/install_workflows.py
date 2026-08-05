@@ -39,8 +39,11 @@ def main(argv: list[str] | None = None) -> int:
     if not sample_source.is_file():
         sample_source = ROOT / "docs" / "assets" / "examples" / "source_portrait.jpg"
     _copy(sample_source, comfy_root / "input" / "source_portrait.jpg")
-    custom_node_source = ROOT / "custom_nodes" / "adaptive_portrait_crop"
-    custom_node_destination = comfy_root / "custom_nodes" / "adaptive_portrait_crop"
+    custom_node_source = ROOT / "custom_nodes" / "hoi4_portraits"
+    custom_node_destination = comfy_root / "custom_nodes" / "hoi4_portraits"
+    legacy_custom_node = comfy_root / "custom_nodes" / "adaptive_portrait_crop"
+    if legacy_custom_node.is_dir():
+        shutil.rmtree(legacy_custom_node)
     for source in sorted(custom_node_source.iterdir()):
         if source.is_file():
             _copy(source, custom_node_destination / source.name)

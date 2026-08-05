@@ -2,6 +2,13 @@
 
 All notable project changes are recorded here.
 
+## 2.4.11 — 2026-08-05
+
+- Renamed the bundled custom-node package to `hoi4_portraits` to reflect its
+  crop and FLUX.2 sampling nodes.
+- Updated local, Windows, RunPod, and Comfy Cloud installation paths to the
+  new package name.
+
 ## 2.4.10 — 2026-08-05
 
 - Combined seed, sampler, steps, denoise, CFG, guidance, and canvas size into

@@ -25,7 +25,7 @@ scripts/install_res4lyf.sh /path/to/ComfyUI
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI
 ```
 
-The installer copies three editor workflows, the adaptive portrait crop,
+The installer copies three editor workflows, the `hoi4_portraits` node pack,
 installs the pinned RES4LYF sampler extension, and adds the bundled backgrounds
 and one sample source image. It does not replace the existing ComfyUI
 installation.
@@ -54,8 +54,8 @@ token is written into this repository or a workflow.
 ## RunPod
 
 On a RunPod image that already contains ComfyUI, the installer places the
-workflows in `user/default/workflows/hoi4_portraits`, installs the adaptive
-crop in `custom_nodes/adaptive_portrait_crop`, installs the pinned RES4LYF
+workflows in `user/default/workflows/hoi4_portraits`, installs the project nodes
+in `custom_nodes/hoi4_portraits`, installs the pinned RES4LYF
 samplers in `custom_nodes/RES4LYF`, copies the backgrounds and
 sample input into `input/`, and downloads every entry in `models.json` to
 the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
@@ -105,7 +105,7 @@ From PowerShell:
 The release self-extractor accepts an empty destination directory:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.10-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.10"
+.\HOI4-Portrait-Workflows-v2.4.11-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.11"
 ```
 
 Use `-SkipModels` if the model files are already installed. Start with:
