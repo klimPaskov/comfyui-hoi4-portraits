@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DIST = ROOT / "dist"
 WINDOWS_SOURCE = ROOT / "packaging" / "windows"
-RELEASE_SCHEMA_VERSION = "2.4.8"
+RELEASE_SCHEMA_VERSION = "2.4.9"
 FIXED_ZIP_TIME = (2026, 8, 4, 0, 0, 0)
 ROOT_FILES = {
     "CHANGELOG.md",
@@ -39,6 +39,7 @@ RUNPOD_SCRIPTS = {
     "install_workflows.py",
     "requirements-download.txt",
     "start_runpod.sh",
+    "validate_comfyui_registry.py",
 }
 
 

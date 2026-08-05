@@ -2,6 +2,14 @@
 
 All notable project changes are recorded here.
 
+## 2.4.9 — 2026-08-05
+
+- Restored fully visible workflow canvases with colored stage frames and no
+  collapsible subgraph wrappers.
+- Merged LoRA strength into the LoRA loader and the manual-crop toggle into its
+  image switch.
+- Added live RunPod node and sampler validation after ComfyUI starts.
+
 ## 2.4.8 — 2026-08-05
 
 - Reorganized the editor workflows into compact native stage cards with

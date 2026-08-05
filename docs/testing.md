@@ -32,7 +32,7 @@ The validator checks:
 - supported workflow classes only;
 - no Krea dependencies;
 - required `SaveImage` outputs;
-- one native subgraph instance for every editor stage;
+- every stage and node visible together on the main canvas;
 - valid boundary links and supported nodes inside every stage;
 - no overlapping or too-close cards on the main canvas or inside a stage;
 - RealESRGAN → optional FLUX restoration order;

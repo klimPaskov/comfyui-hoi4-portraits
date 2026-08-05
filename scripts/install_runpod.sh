@@ -8,6 +8,7 @@ if [[ ! -f "${COMFY_ROOT}/main.py" ]]; then
   echo "ComfyUI was not found at ${COMFY_ROOT}. Pass its root as the first argument." >&2
   exit 1
 fi
+COMFY_ROOT="$(cd "${COMFY_ROOT}" && pwd)"
 
 PYTHON_BIN=""
 if command -v pgrep >/dev/null 2>&1; then
@@ -22,6 +23,7 @@ fi
 for candidate in \
   "${COMFY_ROOT}/.venv/bin/python" \
   "${COMFY_ROOT}/venv/bin/python" \
+  "$(dirname "${COMFY_ROOT}")/.venv/bin/python" \
   "$(dirname "${COMFY_ROOT}")/venv/bin/python" \
   "${COMFY_ROOT}/python_embeded/python" \
   /workspace/runpod-slim/venv/bin/python \

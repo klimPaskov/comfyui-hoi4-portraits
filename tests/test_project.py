@@ -18,9 +18,6 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _editor_nodes(ui: dict) -> list[dict]:
-    definitions = ui.get("definitions", {}).get("subgraphs", [])
-    if definitions:
-        return [node for definition in definitions for node in definition.get("nodes", [])]
     return ui.get("nodes", [])
 
 
@@ -49,7 +46,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_workflow_files_exist(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.8")
+        self.assertEqual(manifest["schema_version"], "2.4.9")
         for item in manifest["workflows"]:
             self.assertTrue((ROOT / item["workflow_json"]).is_file())
             self.assertTrue((ROOT / item["api_json"]).is_file())
@@ -71,9 +68,8 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(loras, [], workflow.name)
             else:
                 self.assertEqual(len(loras), 1, workflow.name)
-                self.assertEqual(loras[0]["inputs"]["strength_model"], ["19", 0], workflow.name)
-                self.assertEqual(api["19"]["class_type"], "PrimitiveFloat", workflow.name)
-                self.assertEqual(api["19"]["inputs"]["value"], 1.0, workflow.name)
+                self.assertEqual(loras[0]["inputs"]["strength_model"], 1.0, workflow.name)
+                self.assertNotIn("19", api, workflow.name)
             schedules = {
                 node_id: node["inputs"]["steps"]
                 for node_id, node in api.items()
@@ -170,7 +166,8 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(api["156"]["inputs"]["image"], ["9", 0])
             self.assertEqual(api["15"]["class_type"], "PrimitiveBoundingBox")
             self.assertEqual(api["16"]["inputs"]["bboxes"], ["15", 0])
-            self.assertFalse(api["17"]["inputs"]["value"])
+            self.assertNotIn("17", api)
+            self.assertFalse(api["18"]["inputs"]["switch"])
             self.assertEqual(api["18"]["inputs"]["on_false"], ["11", 0])
             self.assertEqual(api["18"]["inputs"]["on_true"], ["16", 0])
             self.assertEqual(api["7"]["inputs"]["image"], ["18", 0])
@@ -198,6 +195,15 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(sum(node["class_type"] == "VAEDecode" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "RemoveBackground" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 6)
+
+    def test_editor_workflows_are_flat_and_fully_visible(self) -> None:
+        for workflow in (ROOT / "workflows").glob("*.json"):
+            if workflow.name.endswith(".api.json") or workflow.name == "manifest.json":
+                continue
+            ui = json.loads(workflow.read_text(encoding="utf-8"))
+            self.assertNotIn("definitions", ui, workflow.name)
+            self.assertGreater(len(ui["nodes"]), len(ui["groups"]), workflow.name)
+            self.assertEqual(ui["extra"]["editor_layout"], "flat_grouped_canvas", workflow.name)
 
     def test_person_prompt_policy_allows_hairstyle_but_rejects_style(self) -> None:
         self.assertEqual(validate_workflows._non_person_prompt_terms("a different hairstyle"), [])
@@ -287,6 +293,7 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertIn(revision, shell)
         self.assertIn('getattr(work_device, \\"type\\", str(work_device)) == \\"mps\\"', shell)
         self.assertIn("install_res4lyf.sh", runpod)
+        self.assertIn("validate_comfyui_registry.py", (ROOT / "scripts" / "start_runpod.sh").read_text())
         self.assertIn(revision, windows)
         self.assertIn('/workspace/runpod-slim/venv/bin/python', runpod)
         self.assertIn('AdaptivePortraitCrop did not register', runpod)

@@ -40,7 +40,6 @@ ALLOWED_CORE_NODES = {
     "PreviewImage",
     "PrimitiveBoolean",
     "PrimitiveBoundingBox",
-    "PrimitiveFloat",
     "RandomNoise",
     "ReferenceLatent",
     "RemoveBackground",
@@ -119,7 +118,8 @@ def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
         return [f"{path}: groups must be a non-empty list"]
     by_id = {node.get("id"): node for node in nodes}
     subgraphs = ui.get("definitions", {}).get("subgraphs", [])
-    subgraph_ids = {definition.get("id") for definition in subgraphs}
+    if subgraphs:
+        errors.append(f"{path}: workflow stages must remain visible on the main canvas")
     if len(by_id) != len(nodes) or None in by_id:
         errors.append(f"{path}: node ids must be present and unique")
 
@@ -150,7 +150,7 @@ def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
 
     for node in nodes:
         class_type = str(node.get("type", ""))
-        if class_type not in ALLOWED_CORE_NODES and class_type not in subgraph_ids:
+        if class_type not in ALLOWED_CORE_NODES:
             errors.append(f"{path}: non-core or unapproved node {class_type!r}")
         if class_type.casefold().startswith("hoi4") or "krea" in class_type.casefold():
             errors.append(f"{path}: forbidden custom/Krea node {class_type!r}")
@@ -201,76 +201,6 @@ def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
             b = [*other.get("pos", [0, 0]), *other.get("size", [0, 0])]
             if _overlap(a, b, padding=LAYOUT_NODE_PADDING):
                 errors.append(f"{path}: nodes overlap or are too close: {node.get('id')} and {other.get('id')}")
-    errors.extend(_validate_subgraphs(path, subgraphs, nodes))
-    return errors
-
-
-def _validate_subgraphs(path: Path, definitions: list[Any], root_nodes: list[dict[str, Any]]) -> list[str]:
-    errors: list[str] = []
-    if not definitions:
-        return [f"{path}: editor workflow must use native stage subgraphs"]
-    root_types = {node.get("type") for node in root_nodes}
-    definition_ids = {definition.get("id") for definition in definitions if isinstance(definition, dict)}
-    if root_types != definition_ids or len(root_nodes) != len(definitions):
-        errors.append(f"{path}: every stage subgraph must have exactly one root instance")
-    for definition in definitions:
-        if not isinstance(definition, dict):
-            errors.append(f"{path}: malformed subgraph definition")
-            continue
-        name = definition.get("name", "unnamed")
-        nodes = definition.get("nodes", [])
-        links = definition.get("links", [])
-        by_id = {node.get("id"): node for node in nodes}
-        root_instance = next((node for node in root_nodes if node.get("type") == definition.get("id")), None)
-        if root_instance is not None:
-            proxies = root_instance.get("properties", {}).get("proxyWidgets", [])
-            values = root_instance.get("widgets_values", [])
-            if len(proxies) != len(values):
-                errors.append(f"{path}: subgraph {name} proxy controls and values are out of sync")
-            for index, proxy in enumerate(proxies):
-                if not (isinstance(proxy, list) and len(proxy) == 2 and str(proxy[0]).isdigit()):
-                    errors.append(f"{path}: subgraph {name} has a malformed proxy control")
-                    continue
-                internal = by_id.get(int(proxy[0]))
-                if internal is None:
-                    errors.append(f"{path}: subgraph {name} proxy control targets a missing node")
-                    continue
-                internal_values = internal.get("widgets_values", [])
-                if index < len(values) and internal_values and values[index] != internal_values[0]:
-                    errors.append(f"{path}: subgraph {name} proxy value differs from its internal control")
-        if not nodes:
-            errors.append(f"{path}: subgraph {name} is empty")
-            continue
-        for node in nodes:
-            class_type = str(node.get("type", ""))
-            if class_type not in ALLOWED_CORE_NODES:
-                errors.append(f"{path}: subgraph {name} uses unapproved node {class_type!r}")
-            if node.get("mode") != 0:
-                errors.append(f"{path}: subgraph {name} node {node.get('id')} is bypassed or muted")
-        link_ids: set[int] = set()
-        for link in links:
-            if not isinstance(link, dict):
-                errors.append(f"{path}: subgraph {name} has a malformed link")
-                continue
-            link_id = link.get("id")
-            if not isinstance(link_id, int) or link_id in link_ids:
-                errors.append(f"{path}: subgraph {name} has a duplicate or invalid link id")
-            link_ids.add(link_id)
-            source_id = link.get("origin_id")
-            target_id = link.get("target_id")
-            if source_id != -10 and source_id not in by_id:
-                errors.append(f"{path}: subgraph {name} link {link_id} has a missing source")
-            if target_id != -20 and target_id not in by_id:
-                errors.append(f"{path}: subgraph {name} link {link_id} has a missing target")
-        for index, node in enumerate(nodes):
-            a = [*node.get("pos", [0, 0]), *node.get("size", [0, 0])]
-            for other in nodes[index + 1 :]:
-                b = [*other.get("pos", [0, 0]), *other.get("size", [0, 0])]
-                if _overlap(a, b, padding=LAYOUT_NODE_PADDING):
-                    errors.append(
-                        f"{path}: subgraph {name} nodes overlap or are too close: "
-                        f"{node.get('id')} and {other.get('id')}"
-                    )
     return errors
 
 
@@ -328,14 +258,8 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: processing workflow must not contain a style LoRA")
     elif lora_node is None or api[lora_node]["inputs"].get("model") != ["1", 0]:
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
-    elif api[lora_node]["inputs"].get("strength_model") != ["19", 0]:
-        errors.append(f"{path}: style LoRA must use the visible strength control")
-    strength_control = api.get("19", {})
-    if not is_processing and (
-        strength_control.get("class_type") != "PrimitiveFloat"
-        or strength_control.get("inputs", {}).get("value") != 1.0
-    ):
-        errors.append(f"{path}: visible LoRA strength control must default to 1.00")
+    elif api[lora_node]["inputs"].get("strength_model") != 1.0:
+        errors.append(f"{path}: LoRA loader strength must default to 1.00")
 
     cfg_nodes = [node for node in api.values() if node.get("class_type") == "CFGGuider"]
     if not cfg_nodes or any(node.get("inputs", {}).get("cfg") != DEFAULT_CFG for node in cfg_nodes):
@@ -543,7 +467,6 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         silhouette_mask = api.get("156", {})
         manual_box = api.get("15", {})
         manual_crop = api.get("16", {})
-        manual_toggle = api.get("17", {})
         crop_switch = api.get("18", {})
         if normalized.get("class_type") != "ImageScaleToMaxDimension" or normalized.get("inputs", {}).get("image") != ["5", 0] or normalized.get("inputs", {}).get("largest_size") != 1024:
             errors.append(f"{path}: source must be normalized to 1024 before face detection")
@@ -566,10 +489,8 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         manual_inputs = manual_crop.get("inputs", {})
         if manual_crop.get("class_type") != "CropByBBoxes" or manual_inputs.get("image") != ["9", 0] or manual_inputs.get("bboxes") != ["15", 0] or manual_inputs.get("output_width") != 832 or manual_inputs.get("output_height") != 1120:
             errors.append(f"{path}: manual crop override is not connected to the normalized source")
-        if manual_toggle.get("class_type") != "PrimitiveBoolean" or manual_toggle.get("inputs", {}).get("value") is not False:
-            errors.append(f"{path}: manual crop override must be a one-click toggle that is off by default")
         switch_inputs = crop_switch.get("inputs", {})
-        if crop_switch.get("class_type") != "ComfySwitchNode" or switch_inputs.get("switch") != ["17", 0] or switch_inputs.get("on_false") != ["11", 0] or switch_inputs.get("on_true") != ["16", 0]:
+        if crop_switch.get("class_type") != "ComfySwitchNode" or switch_inputs.get("switch") is not False or switch_inputs.get("on_false") != ["11", 0] or switch_inputs.get("on_true") != ["16", 0]:
             errors.append(f"{path}: automatic/manual crop switch is wired incorrectly")
         if api.get("7", {}).get("inputs", {}).get("image") != ["18", 0]:
             errors.append(f"{path}: ESRGAN must consume the selected head-and-shoulders crop")

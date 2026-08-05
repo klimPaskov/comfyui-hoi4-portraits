@@ -292,6 +292,9 @@ final files against [`models.json`](models.json), and refuses partial or
 mismatched downloads. It never writes the token to the repository. Confirm
 that `COMFY_ROOT` points to the folder containing
 `main.py`; the `runpod-slim` template uses `/workspace/runpod-slim/ComfyUI`.
+Start ComfyUI with `scripts/start_runpod.sh`; startup checks the live node and
+sampler registry and reports the exact missing component instead of opening a
+broken workflow.
 
 Windows users can run the checked-in installer script:
 
@@ -304,7 +307,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.8-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.8"
+.\HOI4-Portrait-Workflows-v2.4.9-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.9"
 ```
 
 ## Prompting

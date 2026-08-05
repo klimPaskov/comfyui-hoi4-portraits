@@ -87,6 +87,10 @@ Start ComfyUI after installation:
 /workspace/hoi4-portrait-runpod/scripts/start_runpod.sh /workspace/runpod-slim/ComfyUI
 ```
 
+Startup validates ComfyUI's live node registry before it stays online. It
+stops with the exact missing node or sampler name if the installation did not
+load correctly.
+
 Supply `HF_TOKEN` to the pod environment before installation. The script does
 not print the token.
 
@@ -101,7 +105,7 @@ From PowerShell:
 The release self-extractor accepts an empty destination directory:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.8-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.8"
+.\HOI4-Portrait-Workflows-v2.4.9-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.9"
 ```
 
 Use `-SkipModels` if the model files are already installed. Start with:

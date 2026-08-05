@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.4.8",
+  "schema_version": "2.4.9",
   "base_model": "flux-2-klein-base-9b-fp8.safetensors",
   "text_encoder": "qwen_3_8b_fp8mixed.safetensors",
   "vae": "flux2-vae.safetensors",
@@ -10,7 +10,7 @@
       "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_source.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_source.api.json",
-      "node_count": 98,
+      "node_count": 96,
       "core_nodes_only": false
     },
     {
@@ -18,7 +18,7 @@
       "description": "Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
       "workflow_json": "workflows/hoi4_portrait_processing_only.json",
       "api_json": "workflows/hoi4_portrait_processing_only.api.json",
-      "node_count": 37,
+      "node_count": 36,
       "core_nodes_only": false
     },
     {
@@ -26,7 +26,7 @@
       "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
       "workflow_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json",
       "api_json": "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.api.json",
-      "node_count": 26,
+      "node_count": 25,
       "core_nodes_only": true
     }
   ]

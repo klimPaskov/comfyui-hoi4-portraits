@@ -12,7 +12,7 @@ The source and text-to-image model stack is:
 1. `UNETLoader` — FLUX.2 Klein base 9B FP8.
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
 3. `VAELoader` — FLUX.2 VAE.
-4. `PrimitiveFloat` and `LoraLoaderModelOnly` — the visible LoRA strength control, defaulting to `1.00`, followed by the HOI4 adapter.
+4. `LoraLoaderModelOnly` — loads the HOI4 adapter and exposes LoRA strength directly on the same node, defaulting to `1.00`.
 5. `FluxGuidance`, `CFGGuider`, `KSamplerSelect`, and `Flux2Scheduler`: guidance 1 and CFG 1, with the branch-specific sampler and step count.
 
 Restoration and text-to-image use Euler with six steps. The three source
@@ -51,7 +51,7 @@ Each source prompt defaults to `hoi4_portrait, maintain the exact identity,
 facing direction, and expression of the person, including every object they
 are holding or wearing.` Keep that sentence and append deliberate requested
 changes. Each prompt affects only its own candidate. Denoise defaults to
-`1.00`; the shared visible LoRA strength control defaults to `1.00`.
+`1.00`; LoRA strength is editable directly on the LoRA loader and defaults to `1.00`.
 
 Enable FLUX restoration for monochrome or sepia inputs. It restores plausible
 natural color before the three LoRA candidates are generated.

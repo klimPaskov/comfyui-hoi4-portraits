@@ -8,8 +8,6 @@ The generated ``*.json`` files are editor/save format; the matching
 from __future__ import annotations
 
 import json
-import uuid
-from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -27,7 +25,7 @@ SOURCE_STYLE_DENOISE = 1.0
 DEFAULT_STEPS = 6
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
-WORKFLOW_SCHEMA_VERSION = "2.4.8"
+WORKFLOW_SCHEMA_VERSION = "2.4.9"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
@@ -182,34 +180,21 @@ def _model_nodes(*, include_lora: bool = True) -> list[Node]:
         ),
     ]
     if include_lora:
-        nodes.extend(
-            [
-                _node(
-                    19,
-                    "PrimitiveFloat",
-                    "LoRA strength 1.00 (editable)",
-                    group,
-                    (1120, 620),
-                    inputs={"value": STYLE_LORA_STRENGTH},
-                    input_types={"value": "FLOAT"},
-                    outputs=["value"],
-                    output_types=["FLOAT"],
-                    widgets=[STYLE_LORA_STRENGTH],
-                ),
-                _node(
-                    4,
-                    "LoraLoaderModelOnly",
-                    "Apply the HOI4 FLUX.2 Klein 9B LoRA",
-                    group,
-                    (1120, 780),
-                    inputs={"model": Link(1), "lora_name": STYLE_LORA, "strength_model": Link(19)},
-                    input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
-                    outputs=["MODEL"],
-                    output_types=["MODEL"],
-                    widgets=[STYLE_LORA, STYLE_LORA_STRENGTH],
-                    models=_model(STYLE_LORA, "loras"),
-                ),
-            ]
+        nodes.append(
+            _node(
+                4,
+                "LoraLoaderModelOnly",
+                "Apply HOI4 LoRA — strength editable here",
+                group,
+                (1120, 640),
+                size=(300, 130),
+                inputs={"model": Link(1), "lora_name": STYLE_LORA, "strength_model": STYLE_LORA_STRENGTH},
+                input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
+                outputs=["MODEL"],
+                output_types=["MODEL"],
+                widgets=[STYLE_LORA, STYLE_LORA_STRENGTH],
+                models=_model(STYLE_LORA, "loras"),
+            )
         )
     return nodes
 
@@ -374,29 +359,17 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             widgets=[832, 1120, 0, "stretch"],
         ),
         _node(
-            17,
-            "PrimitiveBoolean",
-            "Use manual crop for difficult sources",
-            group,
-            (100, 1330),
-            size=(320, 90),
-            inputs={"value": False},
-            input_types={"value": "BOOLEAN"},
-            outputs=["BOOLEAN"],
-            output_types=["BOOLEAN"],
-            widgets=[False],
-        ),
-        _node(
             18,
             "ComfySwitchNode",
-            "Choose automatic or manual crop",
+            "Manual crop override — off uses automatic crop",
             group,
             (520, 1120),
-            size=(360, 130),
-            inputs={"switch": Link(17), "on_false": Link(11), "on_true": Link(16)},
+            size=(360, 150),
+            inputs={"switch": False, "on_false": Link(11), "on_true": Link(16)},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
+            widgets=[False],
         ),
         _node(
             6,
@@ -1427,393 +1400,10 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         },
         "version": 0.4,
     }
-    return _stage_subgraph_ui(flat_ui, graph)
-
-
-def _stable_uuid(*parts: str) -> str:
-    """Return stable IDs so generated workflow files remain reproducible."""
-    return str(uuid.uuid5(uuid.NAMESPACE_URL, "comfyui-hoi4-portraits/" + "/".join(parts)))
-
-
-def _apply_stage_layout(workflow_id: str, stage_name: str, nodes: list[dict[str, Any]]) -> None:
-    """Give the larger source stages a readable left-to-right internal layout."""
-    if workflow_id.endswith("text_to_image"):
-        return
-    positions: dict[int, tuple[int, int]] = {}
-    if stage_name == "01 Source and ESRGAN":
-        positions = {
-            5: (100, 100), 9: (520, 100), 13: (940, 100), 11: (1360, 100),
-            18: (1780, 100), 7: (2200, 100), 8: (2600, 100),
-            155: (520, 400), 12: (940, 400), 156: (940, 540),
-            15: (1360, 400), 17: (1360, 680), 16: (1780, 400), 6: (2200, 400),
-        }
-    elif stage_name == "05 Optional background - after generation":
-        positions = {
-            120: (100, 100), 121: (540, 100), 122: (100, 500), 119: (540, 500),
-            123: (1100, 100), 124: (1480, 60), 125: (1900, 85),
-            133: (1100, 420), 134: (1480, 380), 135: (1900, 405),
-            143: (1100, 740), 144: (1480, 700), 145: (1900, 725),
-        }
-    elif stage_name == "06 Preview and save":
-        positions = {
-            127: (100, 100), 128: (520, 200), 129: (940, 100),
-            137: (100, 600), 138: (520, 700), 139: (940, 600),
-            147: (100, 1100), 148: (520, 1200), 149: (940, 1100),
-        }
-    for node in nodes:
-        if node["id"] in positions:
-            node["pos"] = list(positions[node["id"]])
-
-
-def _stage_subgraph_ui(flat_ui: dict[str, Any], graph: Graph) -> dict[str, Any]:
-    """Collapse each visual stage into a native ComfyUI subgraph.
-
-    The API workflow remains flat. Only the editor representation is compacted,
-    which keeps automation compatibility while making the canvas readable.
-    """
-    flat_nodes = deepcopy(flat_ui["nodes"])
-    flat_links = deepcopy(flat_ui["links"])
-    stage_names = [group.title for group in graph.groups]
-    stage_colors = {group.title: group.color for group in graph.groups}
-    candidate_stages = {
-        40: "04A Candidate 1 — Euler · 6 steps",
-        60: "04B Candidate 2 — res_2s · 4 steps",
-        80: "04C Candidate 3 — res_2m · 8 steps",
-    }
-    if graph.workflow_id.endswith("source"):
-        style_index = stage_names.index("04 HOI4 LoRA styling")
-        stage_names[style_index : style_index + 1] = list(candidate_stages.values())
-        for candidate_name in candidate_stages.values():
-            stage_colors[candidate_name] = "#7a568e"
-    node_by_id = {node["id"]: node for node in flat_nodes}
-    node_stage: dict[int, str] = {}
-    for node in flat_nodes:
-        stage_name = node.get("properties", {}).get("hoi4_group")
-        if graph.workflow_id.endswith("source") and stage_name == "04 HOI4 LoRA styling":
-            stage_name = next(
-                name for start, name in reversed(candidate_stages.items()) if node["id"] >= start
-            )
-        node_stage[node["id"]] = stage_name
-    if set(node_stage.values()) - set(stage_names):
-        raise ValueError(f"{graph.workflow_id}: every editor node must belong to a stage")
-
-    same_stage: dict[str, list[list[Any]]] = {name: [] for name in stage_names}
-    cross_stage: list[list[Any]] = []
-    for link in flat_links:
-        source_stage = node_stage[link[1]]
-        target_stage = node_stage[link[3]]
-        (same_stage[source_stage] if source_stage == target_stage else cross_stage).append(link)
-
-    # One subgraph output may fan out to several stages. Each destination stage
-    # receives one input, which then fans out internally to all consumers.
-    output_keys: dict[tuple[str, int, int, str], int] = {}
-    input_keys: dict[tuple[str, str, int, int, str], int] = {}
-    for _, source_id, source_slot, target_id, _, link_type in cross_stage:
-        source_stage = node_stage[source_id]
-        target_stage = node_stage[target_id]
-        output_keys.setdefault((source_stage, source_id, source_slot, link_type), len(output_keys))
-        input_keys.setdefault(
-            (target_stage, source_stage, source_id, source_slot, link_type), len(input_keys)
-        )
-
-    stage_ids = {
-        name: _stable_uuid(graph.workflow_id, "stage", name) for name in stage_names
-    }
-    root_ids = {name: 1000 + index for index, name in enumerate(stage_names, start=1)}
-    definitions: list[dict[str, Any]] = []
-    root_nodes: list[dict[str, Any]] = []
-
-    # Create root links once for every destination-stage input.
-    root_links: list[list[Any]] = []
-    root_link_for_input: dict[tuple[str, str, int, int, str], int] = {}
-    output_root_links: dict[tuple[str, int, int, str], list[int]] = {}
-    for root_link_id, key in enumerate(input_keys, start=1):
-        target_stage, source_stage, source_id, source_slot, link_type = key
-        output_key = (source_stage, source_id, source_slot, link_type)
-        source_output_slot = list(k for k in output_keys if k[0] == source_stage).index(output_key)
-        target_input_slot = list(k for k in input_keys if k[0] == target_stage).index(key)
-        root_links.append(
-            [
-                root_link_id,
-                root_ids[source_stage],
-                source_output_slot,
-                root_ids[target_stage],
-                target_input_slot,
-                link_type,
-            ]
-        )
-        root_link_for_input[key] = root_link_id
-        output_root_links.setdefault(output_key, []).append(root_link_id)
-
-    for stage_index, stage_name in enumerate(stage_names):
-        stage_nodes = [deepcopy(node) for node in flat_nodes if node_stage[node["id"]] == stage_name]
-        _apply_stage_layout(graph.workflow_id, stage_name, stage_nodes)
-        stage_node_by_id = {node["id"]: node for node in stage_nodes}
-        stage_link_objects = [
-            {
-                "id": link[0],
-                "origin_id": link[1],
-                "origin_slot": link[2],
-                "target_id": link[3],
-                "target_slot": link[4],
-                "type": link[5],
-            }
-            for link in same_stage[stage_name]
-        ]
-        max_link_id = max((link[0] for link in flat_links), default=0) + stage_index * 1000
-
-        stage_input_keys = [key for key in input_keys if key[0] == stage_name]
-        stage_output_keys = [key for key in output_keys if key[0] == stage_name]
-        input_type_totals = {
-            link_type: sum(key[4] == link_type for key in stage_input_keys)
-            for link_type in {key[4] for key in stage_input_keys}
-        }
-        output_type_totals = {
-            link_type: sum(key[3] == link_type for key in stage_output_keys)
-            for link_type in {key[3] for key in stage_output_keys}
-        }
-        input_type_seen: dict[str, int] = {}
-        output_type_seen: dict[str, int] = {}
-        sub_inputs: list[dict[str, Any]] = []
-        sub_outputs: list[dict[str, Any]] = []
-
-        for input_index, key in enumerate(stage_input_keys):
-            _, source_stage, source_id, source_slot, link_type = key
-            matching = [
-                link
-                for link in cross_stage
-                if node_stage[link[3]] == stage_name
-                and node_stage[link[1]] == source_stage
-                and link[1] == source_id
-                and link[2] == source_slot
-                and link[5] == link_type
-            ]
-            boundary_ids: list[int] = []
-            for link in matching:
-                max_link_id += 1
-                boundary_ids.append(max_link_id)
-                target_node = stage_node_by_id[link[3]]
-                target_node["inputs"][link[4]]["link"] = max_link_id
-                stage_link_objects.append(
-                    {
-                        "id": max_link_id,
-                        "origin_id": -10,
-                        "origin_slot": input_index,
-                        "target_id": link[3],
-                        "target_slot": link[4],
-                        "type": link_type,
-                    }
-                )
-            input_type_seen[link_type] = input_type_seen.get(link_type, 0) + 1
-            label = link_type.casefold().replace("_", " ")
-            if input_type_totals[link_type] > 1:
-                label = f"{label} {input_type_seen[link_type]}"
-            sub_inputs.append(
-                {
-                    "id": _stable_uuid(graph.workflow_id, stage_name, "input", str(input_index)),
-                    "name": f"input_{input_index + 1}",
-                    "type": link_type,
-                    "linkIds": boundary_ids,
-                    "localized_name": label,
-                    "label": label,
-                    "pos": [0, 100 + input_index * 70],
-                }
-            )
-
-        for output_index, key in enumerate(stage_output_keys):
-            _, source_id, source_slot, link_type = key
-            max_link_id += 1
-            boundary_id = max_link_id
-            source_node = stage_node_by_id[source_id]
-            original_cross_ids = {
-                link[0]
-                for link in cross_stage
-                if link[1] == source_id and link[2] == source_slot and node_stage[link[1]] == stage_name
-            }
-            existing = source_node["outputs"][source_slot].get("links") or []
-            source_node["outputs"][source_slot]["links"] = [
-                link_id for link_id in existing if link_id not in original_cross_ids
-            ] + [boundary_id]
-            stage_link_objects.append(
-                {
-                    "id": boundary_id,
-                    "origin_id": source_id,
-                    "origin_slot": source_slot,
-                    "target_id": -20,
-                    "target_slot": output_index,
-                    "type": link_type,
-                }
-            )
-            output_type_seen[link_type] = output_type_seen.get(link_type, 0) + 1
-            label = link_type.casefold().replace("_", " ")
-            if output_type_totals[link_type] > 1:
-                label = f"{label} {output_type_seen[link_type]}"
-            sub_outputs.append(
-                {
-                    "id": _stable_uuid(graph.workflow_id, stage_name, "output", str(output_index)),
-                    "name": f"output_{output_index + 1}",
-                    "type": link_type,
-                    "linkIds": [boundary_id],
-                    "localized_name": label,
-                    "label": label,
-                    "pos": [2200, 100 + output_index * 70],
-                }
-            )
-
-        # Internal nodes retain their deliberately spacious stage layout. The
-        # stage opens independently, so it can be inspected without canvas noise.
-        xs = [node["pos"][0] for node in stage_nodes]
-        ys = [node["pos"][1] for node in stage_nodes]
-        rights = [node["pos"][0] + node["size"][0] for node in stage_nodes]
-        bottoms = [node["pos"][1] + node["size"][1] for node in stage_nodes]
-        min_x, min_y = min(xs), min(ys)
-        max_x, max_y = max(rights), max(bottoms)
-        for item in sub_inputs:
-            item["pos"] = [min_x - 170, min_y + 80 + sub_inputs.index(item) * 70]
-        for item in sub_outputs:
-            item["pos"] = [max_x + 50, min_y + 80 + sub_outputs.index(item) * 70]
-
-        proxy_widgets: list[list[str]] = []
-        proxy_widget_values: list[Any] = []
-        for node in stage_nodes:
-            # Promote deliberate controls, not loader internals or output paths.
-            if node["type"] in {
-                "PrimitiveBoolean",
-                "PrimitiveFloat",
-                "KSamplerSelect",
-                "Flux2Scheduler",
-                "SplitSigmasDenoise",
-            }:
-                widget_names = [item["name"] for item in node.get("inputs", []) if "widget" in item]
-                if widget_names:
-                    proxy_widgets.append([str(node["id"]), widget_names[0]])
-                    proxy_widget_values.append(deepcopy(node.get("widgets_values", [None])[0]))
-            elif node["type"] == "LoadImage":
-                proxy_widgets.append([str(node["id"]), "image"])
-                proxy_widget_values.append(deepcopy(node.get("widgets_values", [None])[0]))
-            elif node["type"] == "AdaptivePortraitCrop":
-                proxy_widgets.append([str(node["id"]), "zoom"])
-                proxy_widget_values.append(deepcopy(node.get("widgets_values", [None])[0]))
-
-        definition = {
-            "id": stage_ids[stage_name],
-            "version": 1,
-            "state": {
-                "lastGroupId": 0,
-                "lastNodeId": max(node["id"] for node in stage_nodes),
-                "lastLinkId": max((link["id"] for link in stage_link_objects), default=0),
-                "lastRerouteId": 0,
-            },
-            "revision": 0,
-            "config": {},
-            "name": stage_name,
-            "inputNode": {"id": -10, "bounding": [min_x - 240, min_y, 120, max(60, len(sub_inputs) * 70)]},
-            "outputNode": {"id": -20, "bounding": [max_x + 120, min_y, 120, max(60, len(sub_outputs) * 70)]},
-            "inputs": sub_inputs,
-            "outputs": sub_outputs,
-            "widgets": [],
-            "nodes": stage_nodes,
-            "groups": [],
-            "links": stage_link_objects,
-            "extra": {"ds": {"scale": 0.55, "offset": [-min_x + 120, -min_y + 120]}},
-        }
-        definitions.append(definition)
-
-        stage_input_items = []
-        for input_index, key in enumerate(stage_input_keys):
-            label = sub_inputs[input_index]["label"]
-            stage_input_items.append(
-                {
-                    "label": label,
-                    "localized_name": label,
-                    "name": f"input_{input_index + 1}",
-                    "type": key[4],
-                    "link": root_link_for_input[key],
-                }
-            )
-        stage_output_items = []
-        for output_index, key in enumerate(stage_output_keys):
-            label = sub_outputs[output_index]["label"]
-            stage_output_items.append(
-                {
-                    "label": label,
-                    "localized_name": label,
-                    "name": f"output_{output_index + 1}",
-                    "type": key[3],
-                    "links": output_root_links.get(key, []),
-                }
-            )
-
-        if graph.workflow_id.endswith("source"):
-            source_positions = {
-                "01 Source and ESRGAN": [100, 360],
-                "02 FLUX.2 Klein 9B models": [500, 360],
-                "03 Optional FLUX.2 restoration": [900, 360],
-                candidate_stages[40]: [1300, 80],
-                candidate_stages[60]: [1300, 390],
-                candidate_stages[80]: [1300, 700],
-                "05 Optional background - after generation": [1700, 360],
-                "06 Preview and save": [2100, 360],
-            }
-            root_position = source_positions[stage_name]
-        else:
-            root_position = [100 + stage_index * 410, 220]
-        root_height = max(150, 100 + 34 * len(proxy_widgets))
-        optional_stage = stage_name.startswith(("03 Optional", "05 Optional"))
-        root_color = "#b91c1c" if optional_stage else stage_colors[stage_name]
-        root_background = "#7f1d1d" if optional_stage else stage_colors[stage_name]
-        root_nodes.append(
-            {
-                "id": root_ids[stage_name],
-                "type": stage_ids[stage_name],
-                "title": stage_name,
-                "pos": root_position,
-                "size": [330, root_height],
-                "color": root_color,
-                "bgcolor": root_background,
-                "flags": {},
-                "order": stage_index,
-                "mode": 0,
-                "inputs": stage_input_items,
-                "outputs": stage_output_items,
-                "properties": {
-                    "proxyWidgets": proxy_widgets,
-                    "hoi4_group": "HOI4 portrait pipeline",
-                },
-                "widgets_values": proxy_widget_values,
-            }
-        )
-
-    min_root_x = min(node["pos"][0] for node in root_nodes)
-    min_root_y = min(node["pos"][1] for node in root_nodes)
-    max_root_x = max(node["pos"][0] + node["size"][0] for node in root_nodes)
-    max_root_y = max(node["pos"][1] + node["size"][1] for node in root_nodes)
-    flat_ui.update(
-        {
-            "revision": 0,
-            "last_node_id": max(root_ids.values()),
-            "last_link_id": len(root_links),
-            "nodes": root_nodes,
-            "links": root_links,
-            "groups": [
-                {
-                    "title": "HOI4 portrait pipeline",
-                    "bounding": [
-                        min_root_x - 60,
-                        min_root_y - 40,
-                        max_root_x - min_root_x + 120,
-                        max_root_y - min_root_y + 80,
-                    ],
-                    "color": "#334155",
-                    "font_size": 26,
-                    "flags": {},
-                }
-            ],
-            "definitions": {"subgraphs": definitions},
-        }
-    )
-    flat_ui["extra"]["ds"] = {"scale": 0.62, "offset": [80, 220]}
-    flat_ui["extra"]["editor_layout"] = "native_stage_subgraphs"
+    # Keep every workflow stage visible on the main canvas. Colored groups are
+    # organizational frames only; native subgraphs can be mistaken for missing
+    # node packs by some hosted ComfyUI builds.
+    flat_ui["extra"]["editor_layout"] = "flat_grouped_canvas"
     return flat_ui
 
 

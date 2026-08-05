@@ -129,22 +129,10 @@
       "title": "Apply manual head-and-shoulders crop"
     }
   },
-  "17": {
-    "class_type": "PrimitiveBoolean",
-    "inputs": {
-      "value": false
-    },
-    "_meta": {
-      "title": "Use manual crop for difficult sources"
-    }
-  },
   "18": {
     "class_type": "ComfySwitchNode",
     "inputs": {
-      "switch": [
-        "17",
-        0
-      ],
+      "switch": false,
       "on_false": [
         "11",
         0
@@ -155,7 +143,7 @@
       ]
     },
     "_meta": {
-      "title": "Choose automatic or manual crop"
+      "title": "Manual crop override — off uses automatic crop"
     }
   },
   "6": {
