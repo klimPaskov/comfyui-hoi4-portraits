@@ -46,7 +46,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_workflow_files_exist(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.11")
+        self.assertEqual(manifest["schema_version"], "2.5.0")
         for item in manifest["workflows"]:
             self.assertTrue((ROOT / item["workflow_json"]).is_file())
             self.assertTrue((ROOT / item["api_json"]).is_file())
@@ -63,12 +63,22 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(build_workflows.DEFAULT_GUIDANCE, 1.0)
         for workflow in (ROOT / "workflows").glob("*.api.json"):
             api = json.loads(workflow.read_text(encoding="utf-8"))
-            loras = [node for node in api.values() if node["class_type"] == "LoraLoaderModelOnly"]
+            loras = [
+                node
+                for node in api.values()
+                if node["class_type"] == "LoraLoaderModelOnly"
+                and str(node["inputs"].get("lora_name", "")).startswith("hoi4_portrait_flux2_klein9b_lora_")
+            ]
             if workflow.name.endswith("processing_only.api.json"):
                 self.assertEqual(loras, [], workflow.name)
             else:
                 self.assertEqual(len(loras), 1, workflow.name)
                 self.assertEqual(loras[0]["inputs"]["strength_model"], 1.0, workflow.name)
+                self.assertEqual(
+                    loras[0]["inputs"]["lora_name"],
+                    "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+                    workflow.name,
+                )
                 self.assertNotIn("19", api, workflow.name)
             portrait_samplers = {
                 node_id: node["inputs"]
@@ -102,6 +112,11 @@ class WorkflowTests(unittest.TestCase):
                 for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
                     self.assertEqual(api[prompt_id]["inputs"]["text"], build_workflows.STYLE_PROMPT)
                     self.assertEqual(api[reference_id]["inputs"]["conditioning"], [prompt_id, 0])
+                    self.assertEqual(api[reference_id]["class_type"], "Flux2KleinMultiReferenceLatent")
+                    self.assertEqual(api[reference_id]["inputs"]["latent_1"], api[reference_id]["inputs"]["latent_2"])
+                self.assertEqual(api["190"]["class_type"], "IdentityFeatureTransferFinal")
+                self.assertEqual(api["190"]["inputs"]["preset"], "MID_LOCK")
+                self.assertTrue(api["190"]["inputs"]["enabled"])
 
     def test_feature_toggle_nodes_are_red_and_off_by_default(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
@@ -218,11 +233,19 @@ class InstallerAndModelTests(unittest.TestCase):
         data = json.loads((ROOT / "models.json").read_text())
         self.assertEqual(data["schema_version"], "2.0.0")
         models = data["models"]
-        self.assertEqual(len(models), 15)
+        self.assertEqual(len(models), 11)
         filenames = [entry["filename"] for entry in models]
         self.assertEqual(len(filenames), len(set(filenames)))
         retrained = [name for name in filenames if name.startswith("hoi4_portrait_flux2_klein9b_lora_")]
-        self.assertEqual(len(retrained), 7)
+        self.assertEqual(
+            retrained,
+            [
+                "hoi4_portrait_flux2_klein9b_lora_000002000.safetensors",
+                "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+                "hoi4_portrait_flux2_klein9b_lora_000002500.safetensors",
+            ],
+        )
+        self.assertIn("adonis_base.safetensors", filenames)
         for entry in models:
             self.assertRegex(entry["revision"], r"^[0-9a-f]{40}$")
             self.assertRegex(entry["sha256"], r"^[0-9a-f]{64}$")
@@ -291,6 +314,10 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertIn("git -C \"${RES4LYF_DIR}\" grep -q 'res_2s'", runpod)
         self.assertIn("git -C \"${RES4LYF_DIR}\" grep -q 'res_2m'", runpod)
         self.assertNotIn("import custom_nodes.RES4LYF", runpod)
+        enhancer = (ROOT / "scripts" / "install_flux2_klein_enhancer.sh").read_text(encoding="utf-8")
+        self.assertIn("https://github.com/capitan01R/ComfyUI-Flux2Klein-Enhancer.git", enhancer)
+        self.assertIn("6804643bff9a20926106427ff08d5b1bd2e49861", enhancer)
+        self.assertIn("install_flux2_klein_enhancer.sh", runpod)
 
 
 class DocumentationTests(unittest.TestCase):

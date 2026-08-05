@@ -27,11 +27,13 @@ ALLOWED_CORE_NODES = {
     "EmptyFlux2LatentImage",
     "Flux2Scheduler",
     "FluxGuidance",
+    "Flux2KleinMultiReferenceLatent",
     "ImageCompositeMasked",
     "ImageCropV2",
     "ImageScale",
     "ImageScaleToMaxDimension",
     "ImageUpscaleWithModel",
+    "IdentityFeatureTransferFinal",
     "KSamplerSelect",
     "LoadBackgroundRemovalModel",
     "LoadImage",
@@ -244,7 +246,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         errors.append(f"{path}: incorrect FLUX.2 Klein 9B base model")
     if is_processing and extra.get("style_lora") is not None:
         errors.append(f"{path}: processing workflow must not advertise a style LoRA")
-    elif not is_processing and extra.get("style_lora") != "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors":
+    elif not is_processing and extra.get("style_lora") != "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors":
         errors.append(f"{path}: incorrect style LoRA")
     expected_core_only = False
     if extra.get("core_nodes_only") is not expected_core_only or extra.get("comfy_cloud_ready") is not True:
@@ -253,7 +255,15 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     if extra.get("background_order") != expected_background_order:
         errors.append(f"{path}: background policy is not final-stage-only")
 
-    lora_node = next((node_id for node_id, node in api.items() if node.get("class_type") == "LoraLoaderModelOnly"), None)
+    lora_node = next(
+        (
+            node_id
+            for node_id, node in api.items()
+            if node.get("class_type") == "LoraLoaderModelOnly"
+            and str(node.get("inputs", {}).get("lora_name", "")).startswith("hoi4_portrait_flux2_klein9b_lora_")
+        ),
+        None,
+    )
     if is_processing:
         if lora_node is not None:
             errors.append(f"{path}: processing workflow must not contain a style LoRA")
@@ -261,6 +271,34 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         errors.append(f"{path}: style LoRA is not applied directly to the FLUX.2 base model")
     elif api[lora_node]["inputs"].get("strength_model") != 1.0:
         errors.append(f"{path}: LoRA loader strength must default to 1.00")
+
+    restoration_lokr = {
+        node_id: node
+        for node_id, node in api.items()
+        if node.get("class_type") == "LoraLoaderModelOnly"
+        and node.get("inputs", {}).get("lora_name") == "adonis_base.safetensors"
+    }
+    if is_text_to_image:
+        if restoration_lokr:
+            errors.append(f"{path}: text-to-image workflow must not load the restoration LoKr")
+    elif set(restoration_lokr) != {"191"} or restoration_lokr["191"]["inputs"].get("model") != ["1", 0]:
+        errors.append(f"{path}: restoration workflow must load Adonis Base from the FLUX.2 model")
+
+    identity_nodes = {
+        node_id: node for node_id, node in api.items() if node.get("class_type") == "IdentityFeatureTransferFinal"
+    }
+    if is_source:
+        identity = identity_nodes.get("190", {}).get("inputs", {})
+        if set(identity_nodes) != {"190"}:
+            errors.append(f"{path}: source workflow must contain one shared identity-lock node")
+        elif (
+            identity.get("model") != ["4", 0]
+            or identity.get("preset") != "MID_LOCK"
+            or identity.get("enabled") is not True
+        ):
+            errors.append(f"{path}: source identity lock must be enabled with the MID_LOCK preset")
+    elif identity_nodes:
+        errors.append(f"{path}: identity locking is only valid for a source-reference workflow")
 
     expected_sampling = {"30": ("euler", DEFAULT_STEPS)}
     if is_source:
@@ -286,6 +324,10 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: sampler node {sampler_id} must default to denoise 1.00")
         if inputs.get("cfg") != DEFAULT_CFG or inputs.get("guidance") != DEFAULT_GUIDANCE:
             errors.append(f"{path}: sampler node {sampler_id} must default CFG and guidance to 1.00")
+        if sampler_id == "30" and not is_text_to_image and inputs.get("model") != ["191", 0]:
+            errors.append(f"{path}: restoration sampler must use the Adonis LoKr model")
+        if is_source and sampler_id in {"50", "70", "90"} and inputs.get("model") != ["190", 0]:
+            errors.append(f"{path}: source candidate sampler {sampler_id} must use the shared identity-locked model")
 
     if not is_processing:
         person_prompt_node = "20" if is_text_to_image else "40"
@@ -307,6 +349,11 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                     errors.append(f"{path}: candidate prompt {prompt_id} must use the concise editable default")
                 if api.get(reference_id, {}).get("inputs", {}).get("conditioning") != [prompt_id, 0]:
                     errors.append(f"{path}: candidate prompt {prompt_id} must affect only its own branch")
+                reference = api.get(reference_id, {})
+                if reference.get("class_type") != "Flux2KleinMultiReferenceLatent":
+                    errors.append(f"{path}: candidate {prompt_id} must use doubled source-reference conditioning")
+                elif reference.get("inputs", {}).get("latent_1") != reference.get("inputs", {}).get("latent_2"):
+                    errors.append(f"{path}: candidate {prompt_id} must attach the same source reference twice")
 
     preview_expectations: dict[str, list[Any]] = {}
     if is_text_to_image:
@@ -402,8 +449,8 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 errors.append(f"{path}: LoRA branch {sampler_id} does not consume the restoration switch output")
             if api.get(sampler_id, {}).get("inputs", {}).get("latent_image") != [latent_id, 0]:
                 errors.append(f"{path}: LoRA branch {sampler_id} does not start from its encoded restored portrait")
-            if api.get(sampler_id, {}).get("inputs", {}).get("model") != ["4", 0]:
-                errors.append(f"{path}: LoRA branch {sampler_id} is not using the project LoRA model")
+            if api.get(sampler_id, {}).get("inputs", {}).get("model") != ["190", 0]:
+                errors.append(f"{path}: LoRA branch {sampler_id} is not using the identity-locked project LoRA model")
     elif is_processing:
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
         if extra.get("restoration_order") != expected:

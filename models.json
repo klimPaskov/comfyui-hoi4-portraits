@@ -38,18 +38,6 @@
       "requires_huggingface_auth": false
     },
     {
-      "name": "HOI4 portrait retrained LoRA — step 1500",
-      "filename": "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
-      "directory": "loras",
-      "source": "Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora",
-      "revision": "4902bba7fd76337dabc4a6273d3f6edb3dafc2f5",
-      "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
-      "size_bytes": 165704424,
-      "sha256": "768c3e09de6f8ba8513f0d02139d09c3d4cf073b2ff7bf568ad1d91ea96cd079",
-      "license": "MIT",
-      "requires_huggingface_auth": false
-    },
-    {
       "name": "HOI4 portrait retrained LoRA — step 2000",
       "filename": "hoi4_portrait_flux2_klein9b_lora_000002000.safetensors",
       "directory": "loras",
@@ -86,51 +74,15 @@
       "requires_huggingface_auth": false
     },
     {
-      "name": "HOI4 portrait retrained LoRA — step 3000",
-      "filename": "hoi4_portrait_flux2_klein9b_lora_000003000.safetensors",
+      "name": "Adonis Base restoration LoKr",
+      "filename": "adonis_base.safetensors",
       "directory": "loras",
-      "source": "Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora",
-      "revision": "4902bba7fd76337dabc4a6273d3f6edb3dafc2f5",
-      "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000003000.safetensors",
-      "size_bytes": 165704424,
-      "sha256": "85816ffcf7cde453b8581947d7ac0d038c3a1a0ee5d0fda9c892642590ea1124",
-      "license": "MIT",
-      "requires_huggingface_auth": false
-    },
-    {
-      "name": "HOI4 portrait retrained LoRA — step 3500",
-      "filename": "hoi4_portrait_flux2_klein9b_lora_000003500.safetensors",
-      "directory": "loras",
-      "source": "Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora",
-      "revision": "4902bba7fd76337dabc4a6273d3f6edb3dafc2f5",
-      "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000003500.safetensors",
-      "size_bytes": 165704424,
-      "sha256": "db31410060692225581ddb5494e1f4836ae80f2cfd1ab29f285d34d99687ae15",
-      "license": "MIT",
-      "requires_huggingface_auth": false
-    },
-    {
-      "name": "HOI4 portrait retrained LoRA — step 4000",
-      "filename": "hoi4_portrait_flux2_klein9b_lora_000004000.safetensors",
-      "directory": "loras",
-      "source": "Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora",
-      "revision": "4902bba7fd76337dabc4a6273d3f6edb3dafc2f5",
-      "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000004000.safetensors",
-      "size_bytes": 165704424,
-      "sha256": "4aa03461e4fa11ace240515a56f3fe6c5335e513d3a1655c67b62b43870a1483",
-      "license": "MIT",
-      "requires_huggingface_auth": false
-    },
-    {
-      "name": "HOI4 portraits FLUX.2 Klein 9B LoRA",
-      "filename": "hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-      "directory": "loras",
-      "source": "Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora",
-      "revision": "567bdd03a4a93f7506453780285323fa10ed48aa",
-      "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/567bdd03a4a93f7506453780285323fa10ed48aa/hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors",
-      "size_bytes": 331379656,
-      "sha256": "b7b1bcbf1231e14651afd80a7f9c39f5f962239ff41806c672d1b03282bebb4a",
-      "license": "MIT",
+      "source": "n8te0/adonis_flux2klein",
+      "revision": "515ecf66717d14309a055811b3d478cdfa59bbda",
+      "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors",
+      "size_bytes": 1036034472,
+      "sha256": "151227483e74d9ad0e30fd41e3aac52ddc32a75177e006d106a29f75dbc5d26d",
+      "license": "See upstream repository",
       "requires_huggingface_auth": false
     },
     {

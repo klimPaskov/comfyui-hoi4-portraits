@@ -1,16 +1,15 @@
 # FLUX.2 Klein 9B style LoRA
 
-The installer downloads the retrained checkpoints from steps 1500, 2000, 2250,
-2500, 3000, 3500, and 4000 from the public
+The installer downloads the selected checkpoints from steps 2000, 2250, and
+2500 from the public
 [Hugging Face model repository](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
-into `ComfyUI/models/loras/`. It also keeps the previous adapter available as a
-baseline during checkpoint selection.
+into `ComfyUI/models/loras/`.
 
 Comfy Cloud users should import the checkpoint they want to test through
 **Models → Import**, select **LoRA**, and wait for the filename to appear in
 the `LoraLoaderModelOnly` dropdown.
 
-The source and text-to-image workflows initially select the 1500-step
+The source and text-to-image workflows initially select the 2250-step
 checkpoint. Choose another checkpoint in `LoraLoaderModelOnly` to compare it
 under the same prompt and seed. The trigger word is `hoi4_portrait`. Start with
 LoRA strength `1.00`, CFG 1, and FLUX guidance 1. The three source candidates

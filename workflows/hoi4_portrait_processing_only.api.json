@@ -229,6 +229,20 @@
       "title": "Load FLUX.2 VAE"
     }
   },
+  "191": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "adonis_base.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Apply Adonis restoration LoKr — strength editable here"
+    }
+  },
   "20": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -236,7 +250,7 @@
         "2",
         0
       ],
-      "text": "Restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
+      "text": "uhdmanscale, restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, blur, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
     },
     "_meta": {
       "title": "Conservative restoration instructions"
@@ -307,7 +321,7 @@
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "1",
+        "191",
         0
       ],
       "positive": [

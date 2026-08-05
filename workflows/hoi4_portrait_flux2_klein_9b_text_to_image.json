@@ -48,8 +48,6 @@
       ],
       "properties": {
         "Node name for S&R": "UNETLoader",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
@@ -119,8 +117,6 @@
       ],
       "properties": {
         "Node name for S&R": "CLIPLoader",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
@@ -174,8 +170,6 @@
       ],
       "properties": {
         "Node name for S&R": "VAELoader",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
@@ -240,19 +234,17 @@
       ],
       "properties": {
         "Node name for S&R": "LoraLoaderModelOnly",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
-            "name": "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
-            "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
+            "name": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+            "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
             "directory": "loras"
           }
         ]
       },
       "widgets_values": [
-        "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
+        "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
         1.0
       ]
     },
@@ -299,8 +291,6 @@
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -350,8 +340,6 @@
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -412,8 +400,6 @@
       ],
       "properties": {
         "Node name for S&R": "EmptyFlux2LatentImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -536,8 +522,6 @@
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "hoi4_portraits",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -595,8 +579,6 @@
       ],
       "properties": {
         "Node name for S&R": "VAEDecode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -634,8 +616,6 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -683,8 +663,6 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -759,8 +737,6 @@
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -808,8 +784,6 @@
       ],
       "properties": {
         "Node name for S&R": "LoadBackgroundRemovalModel",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation",
         "models": [
           {
@@ -863,8 +837,6 @@
       ],
       "properties": {
         "Node name for S&R": "RemoveBackground",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": []
@@ -938,8 +910,6 @@
       ],
       "properties": {
         "Node name for S&R": "ImageCompositeMasked",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -998,8 +968,6 @@
       ],
       "properties": {
         "Node name for S&R": "ComfySwitchNode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -1039,8 +1007,6 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": []
@@ -1086,8 +1052,6 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -1161,8 +1125,6 @@
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -1213,8 +1175,6 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -1463,9 +1423,9 @@
     "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
     "workflow_kind": "text_to_image",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.11",
+    "graph_version": "2.5.0",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
-    "style_lora": "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
+    "style_lora": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
     "core_nodes_only": false,
     "comfy_cloud_ready": true,
     "restoration_order": [],

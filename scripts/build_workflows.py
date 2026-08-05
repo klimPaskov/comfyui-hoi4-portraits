@@ -19,16 +19,23 @@ SOURCE_LAYOUT_PATH = ROOT / "scripts" / "layouts" / "hoi4_portrait_flux2_klein_9
 BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
-STYLE_LORA = "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors"
+STYLE_LORA = "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors"
+RESTORATION_LOKR = "adonis_base.safetensors"
 STYLE_LORA_STRENGTH = 1.0
 SOURCE_STYLE_DENOISE = 1.0
 DEFAULT_STEPS = 6
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
-WORKFLOW_SCHEMA_VERSION = "2.4.11"
+WORKFLOW_SCHEMA_VERSION = "2.5.0"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
+IDENTITY_LOCK_PRESET = "MID_LOCK"
+IDENTITY_HARD_DOUBLE = "0-7:mid_img=0.55"
+IDENTITY_HARD_SINGLE = (
+    "0:mid_img=0.22; 1:mid_img=0.24; 3:mid_img=0.28; 4:mid_img=0.22; "
+    "6:mid_img=0.26; 7:mid_img=0.27; 8:mid_img=0.25; 10:mid_img=0.27; 13:mid_img=0.27"
+)
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 FACE_DETECTION_MODEL = "mediapipe_face_fp32.safetensors"
@@ -38,7 +45,8 @@ MODEL_URLS = {
     BASE_MODEL: "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8/resolve/9ecf2143d71542449960c5584340269c6d401449/flux-2-klein-base-9b-fp8.safetensors",
     TEXT_ENCODER: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
     VAE_MODEL: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors",
-    STYLE_LORA: "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
+    STYLE_LORA: "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+    RESTORATION_LOKR: "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors",
     ESRGAN_MODEL: "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
     BACKGROUND_MODEL: "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
     FACE_DETECTION_MODEL: "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",
@@ -46,7 +54,7 @@ MODEL_URLS = {
 }
 
 RESTORATION_PROMPT = (
-    "Restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, and lost fine detail. "
+    "uhdmanscale, restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, blur, and lost fine detail. "
     "Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. "
     "Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
 )
@@ -136,7 +144,7 @@ def _node(
     )
 
 
-def _model_nodes(*, include_lora: bool = True) -> list[Node]:
+def _model_nodes(*, include_lora: bool = True, include_restoration_lokr: bool = True) -> list[Node]:
     group = "02 FLUX.2 Klein 9B models"
     nodes = [
         _node(
@@ -194,6 +202,23 @@ def _model_nodes(*, include_lora: bool = True) -> list[Node]:
                 output_types=["MODEL"],
                 widgets=[STYLE_LORA, STYLE_LORA_STRENGTH],
                 models=_model(STYLE_LORA, "loras"),
+            )
+        )
+    if include_restoration_lokr:
+        nodes.append(
+            _node(
+                191,
+                "LoraLoaderModelOnly",
+                "Apply Adonis restoration LoKr — strength editable here",
+                group,
+                (1120, 820 if include_lora else 640),
+                size=(300, 130),
+                inputs={"model": Link(1), "lora_name": RESTORATION_LOKR, "strength_model": 1.0},
+                input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
+                outputs=["MODEL"],
+                output_types=["MODEL"],
+                widgets=[RESTORATION_LOKR, 1.0],
+                models=_model(RESTORATION_LOKR, "loras"),
             )
         )
     return nodes
@@ -445,6 +470,7 @@ def _edit_stage(
     prompt_node_title: str | None = None,
     sampler_name: str = "euler",
     steps: int = DEFAULT_STEPS,
+    double_reference: bool = False,
 ) -> tuple[list[Node], Link]:
     i = id_start
     nodes: list[Node] = [
@@ -487,23 +513,39 @@ def _edit_stage(
         ),
         _node(
             i + 3,
-            "ReferenceLatent",
-            "Attach reference to positive conditioning",
+            "Flux2KleinMultiReferenceLatent" if double_reference else "ReferenceLatent",
+            "Attach source twice to positive conditioning" if double_reference else "Attach reference to positive conditioning",
             group,
             (x + 500, y + 200),
-            inputs={"conditioning": Link(i), "latent": Link(i + 2)},
-            input_types={"conditioning": "CONDITIONING", "latent": "LATENT"},
+            inputs=(
+                {"conditioning": Link(i), "latent_1": Link(i + 2), "latent_2": Link(i + 2)}
+                if double_reference
+                else {"conditioning": Link(i), "latent": Link(i + 2)}
+            ),
+            input_types=(
+                {"conditioning": "CONDITIONING", "latent_1": "LATENT", "latent_2": "LATENT"}
+                if double_reference
+                else {"conditioning": "CONDITIONING", "latent": "LATENT"}
+            ),
             outputs=["CONDITIONING"],
             output_types=["CONDITIONING"],
         ),
         _node(
             i + 4,
-            "ReferenceLatent",
-            "Attach reference to negative conditioning",
+            "Flux2KleinMultiReferenceLatent" if double_reference else "ReferenceLatent",
+            "Attach source twice to negative conditioning" if double_reference else "Attach reference to negative conditioning",
             group,
             (x + 500, y + 400),
-            inputs={"conditioning": Link(i + 1), "latent": Link(i + 2)},
-            input_types={"conditioning": "CONDITIONING", "latent": "LATENT"},
+            inputs=(
+                {"conditioning": Link(i + 1), "latent_1": Link(i + 2), "latent_2": Link(i + 2)}
+                if double_reference
+                else {"conditioning": Link(i + 1), "latent": Link(i + 2)}
+            ),
+            input_types=(
+                {"conditioning": "CONDITIONING", "latent_1": "LATENT", "latent_2": "LATENT"}
+                if double_reference
+                else {"conditioning": "CONDITIONING", "latent": "LATENT"}
+            ),
             outputs=["CONDITIONING"],
             output_types=["CONDITIONING"],
         ),
@@ -1057,12 +1099,65 @@ def _processing_groups() -> list[Group]:
 
 def build_source() -> Graph:
     nodes = _source_nodes(include_processed_preview=False) + _model_nodes()
+    nodes.append(
+        _node(
+            190,
+            "IdentityFeatureTransferFinal",
+            "Source identity lock — MID_LOCK; use HARD_LOCK for difficult portraits",
+            "02 FLUX.2 Klein 9B models",
+            (1100, 1000),
+            size=(340, 430),
+            inputs={
+                "model": Link(4),
+                "preset": IDENTITY_LOCK_PRESET,
+                "enabled": True,
+                "reference_index": 0,
+                "reference_indices": "all",
+                "similarity_floor": 0.2,
+                "softmax_temperature": 0.07,
+                "mask_threshold": 1.0,
+                "double_blocks": IDENTITY_HARD_DOUBLE,
+                "single_blocks": IDENTITY_HARD_SINGLE,
+                "debug": False,
+                "mask_behavior": "focus_only",
+            },
+            input_types={
+                "model": "MODEL",
+                "preset": "COMBO",
+                "enabled": "BOOLEAN",
+                "reference_index": "INT",
+                "reference_indices": "STRING",
+                "similarity_floor": "FLOAT",
+                "softmax_temperature": "FLOAT",
+                "mask_threshold": "FLOAT",
+                "double_blocks": "STRING",
+                "single_blocks": "STRING",
+                "debug": "BOOLEAN",
+                "mask_behavior": "COMBO",
+            },
+            outputs=["MODEL"],
+            output_types=["MODEL"],
+            widgets=[
+                IDENTITY_LOCK_PRESET,
+                True,
+                0,
+                "all",
+                0.2,
+                0.07,
+                1.0,
+                IDENTITY_HARD_DOUBLE,
+                IDENTITY_HARD_SINGLE,
+                False,
+                "focus_only",
+            ],
+        )
+    )
     restoration_nodes, restored = _edit_stage(
         id_start=20,
         group="03 Optional FLUX.2 restoration",
         x=1540,
         image=Link(8),
-        model=Link(1),
+        model=Link(191),
         prompt=RESTORATION_PROMPT,
         negative=RESTORATION_NEGATIVE,
         seed=17,
@@ -1100,7 +1195,7 @@ def build_source() -> Graph:
             x=3440,
             y=80 + (index - 1) * 900,
             image=Link(32),
-            model=Link(4),
+            model=Link(190),
             prompt=STYLE_PROMPT,
             negative=STYLE_NEGATIVE,
             seed=seed,
@@ -1109,13 +1204,14 @@ def build_source() -> Graph:
             prompt_node_title=f"Editable candidate {index} prompt — edits affect only candidate {index}",
             sampler_name=sampler_name,
             steps=steps,
+            double_reference=True,
         )
         nodes.extend(style_nodes)
         styled_images.append(styled)
     nodes.extend(_background_and_outputs_multi(final_images=styled_images, x=5600, id_start=120))
     return Graph(
         workflow_id="hoi4_portrait_flux2_klein_9b_source",
-        description="Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
+        description="Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, source-reference identity locking, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
         kind="image_to_image",
         nodes=nodes,
         groups=_groups(has_source=True, has_restoration=True, candidate_count=SOURCE_CANDIDATE_COUNT),
@@ -1127,6 +1223,7 @@ def build_source() -> Graph:
             "background_candidate_count": SOURCE_CANDIDATE_COUNT,
             "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
+            "identity_preservation": "reference_tokens_with_mid_lock_feature_transfer",
             "background_order": "after_final_lora_styled_decode",
         },
     )
@@ -1139,7 +1236,7 @@ def build_processing() -> Graph:
         group="03 Optional FLUX.2 restoration",
         x=1540,
         image=Link(8),
-        model=Link(1),
+        model=Link(191),
         prompt=RESTORATION_PROMPT,
         negative=RESTORATION_NEGATIVE,
         seed=17,
@@ -1183,7 +1280,7 @@ def build_processing() -> Graph:
 
 
 def build_text_to_image() -> Graph:
-    nodes = _model_nodes()
+    nodes = _model_nodes(include_restoration_lokr=False)
     text_nodes, styled = _text_stage(group="04 HOI4 LoRA styling", x=1540)
     nodes.extend(text_nodes)
     nodes.extend(_background_and_outputs(final_image=styled, x=3600))
@@ -1268,11 +1365,8 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         for slot, name in enumerate(node.outputs):
             outgoing = output_links.get((node.node_id, slot))
             outputs.append({"name": name, "type": node.output_types[slot], "links": outgoing or None})
-        is_project_node = node.class_type in {"AdaptivePortraitCrop", "Flux2PortraitSampler"}
         properties: dict[str, Any] = {
             "Node name for S&R": node.class_type,
-            "cnr_id": "hoi4_portraits" if is_project_node else "comfy-core",
-            "ver": "0.8.2",
             "hoi4_group": node.group,
         }
         if node.models:

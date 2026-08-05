@@ -56,9 +56,8 @@ three LoRA candidates, and final portrait checkpoints in the editor layout.
 The source workflow opens with FLUX restoration disabled. Queueing the graph
 fills its preview nodes with the completed images.
 
-The editor opens as eight organized stage cards. Controls and preview areas stay
-visible on the cards; double-click a card to inspect or edit every node inside.
-Use the back arrow above the canvas to return to the full pipeline.
+The editor keeps the complete pipeline visible in clearly labeled groups, with
+controls and previews placed beside the stage they affect.
 
 ![Source workflow overview](docs/assets/workflows/source-workflow-overview.jpg)
 
@@ -75,14 +74,17 @@ RealESRGAN.
 
 ### 2. Load FLUX.2 and the portrait LoRA
 
-This group loads the FLUX.2 Klein 9B base model, Qwen text encoder, VAE, and
-the portrait LoRA. The visible **LoRA strength** control defaults to `1.00`.
+This group loads FLUX.2 Klein 9B, the Qwen text encoder, VAE, the 2250-step
+portrait LoRA, and the Adonis restoration LoKr. The visible **LoRA strength**
+controls default to `1.00`. The source workflow also enables **Source identity
+lock** with the balanced `MID_LOCK` preset; select `HARD_LOCK` when a difficult
+source still changes too much.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.jpg)
 
 ### 3. Optionally restore with FLUX.2
 
-The source workflow includes a conservative FLUX.2 restoration pass after
+The source workflow includes an Adonis-assisted FLUX.2 restoration pass after
 ESRGAN. The restoration switch is off by default, so that pass does not run.
 The red toggle opens at `false`; turn it on when a damaged source needs the
 additional pass.
@@ -92,10 +94,11 @@ additional pass.
 ### 4. Apply the portrait LoRA
 
 The selected processed portrait becomes the reference and starting image for
-three independent LoRA styling passes. Each pass uses a different seed, so one
-queue produces three candidates from the same input. Each branch has its own
-stage card and editable identity prompt. Double-click a candidate card to edit
-its controls. Keep its identity text and add only deliberate
+three independent LoRA styling passes. Each branch attaches the same source
+reference twice and uses the shared identity lock during sampling. Each pass
+uses a different seed, so one queue produces three candidates from the same
+input. Each branch has its own editable identity prompt. Keep its identity text
+and add only deliberate
 changes, such as `wearing a military hat`, to the candidate you want to test.
 Candidate 1 uses Euler with 6 steps, candidate 2 uses `res_2s` with 4 steps,
 and candidate 3 uses `res_2m` with 8 steps. All three default to denoise
@@ -125,8 +128,9 @@ images**. They do not run on the source, the ESRGAN image, or the restoration
 pass.
 
 Both image-to-image stages start from the encoded processed portrait, not an
-empty latent canvas. The reference conditioning and sampler therefore share
-the same source composition, which reduces unwanted pose and framing changes.
+empty latent canvas. The styling passes also use doubled reference conditioning
+and reference-feature transfer to reduce unwanted identity, pose, and framing
+changes.
 
 ## Processing workflow
 
@@ -138,7 +142,7 @@ LoRA styling and saves the selected processed image as both 832 × 1120 and
 ## Fastest start: Comfy Cloud
 
 1. For the source or text-to-image workflow, use a Comfy Cloud Creator or Pro
-   plan, open **Models → Import**, and import the [1500-step LoRA checkpoint](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein9b_lora_000001500.safetensors) as a LoRA.
+   plan, open **Models → Import**, and import the [2250-step LoRA checkpoint](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors) as a LoRA. Import `adonis_base.safetensors` when you want the optional restoration pass.
 2. Download and open one of the workflow JSON files from the table.
 3. For a source workflow, upload a portrait and select it in **Load source portrait**. **Face zoom** defaults to `0.90`; lower it to include more of the body. The complete head and headwear remain protected at every value. Check the crop preview before generating.
 4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then enable background replacement.
@@ -159,7 +163,7 @@ experimental. The setup below assumes that you already have:
   model-import access;
 - access to the Comfy Cloud MCP preview;
 - the project LoRA imported with the exact filename
-  `hoi4_portrait_flux2_klein9b_lora_000001500.safetensors`;
+  `hoi4_portrait_flux2_klein9b_lora_000002250.safetensors`;
 - an MCP-capable agent with access to this repository and the target mod;
 - the mod root, character identifier, output filename, and portrait sprite name
   supplied to the agent. These values are mod-specific and must not be guessed.
@@ -254,7 +258,7 @@ workflow is practical on a 24 GB GPU with offloading. An 18 GB GPU may also run
 it with more aggressive offloading and a reduced test canvas; 16 GB systems can
 run the same kind of reduced-resolution test but will be slower. The upstream
 model card's roughly 29 GB figure is a conservative full-resolution/no-offload
-guideline. The 15 pinned model files use 20.58 GB decimal (19.16 GiB) before
+guideline. The 11 pinned model files use 20.62 GB decimal (19.20 GiB) before
 ComfyUI caches or outputs. For RunPod, a 30 GB volume is sufficient for this
 project and its normal outputs.
 
@@ -269,7 +273,8 @@ The FLUX.2 base model is gated. Accept its Hugging Face agreement and run
 `hf auth login` (or set `HF_TOKEN`) before the model download command.
 
 For a RunPod ComfyUI template, this command installs the three workflows, the
-bundled backgrounds and sample input, and all seven retrained LoRA checkpoints,
+bundled backgrounds and sample input, the 2000-, 2250-, and 2500-step portrait
+LoRAs, and the Adonis restoration LoKr,
 the previous LoRA, and the other required model files into the
 standard `ComfyUI/models/` subfolders. Set `HF_TOKEN` in the pod environment
 first so the gated FLUX.2 base can download:
@@ -307,7 +312,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.11-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.11"
+.\HOI4-Portrait-Workflows-v2.5.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.5.0"
 ```
 
 ## Prompting

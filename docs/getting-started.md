@@ -37,7 +37,7 @@ detector selects the wrong person.
 | `diffusion_models/` | `flux-2-klein-base-9b-fp8.safetensors` |
 | `text_encoders/` | `qwen_3_8b_fp8mixed.safetensors` |
 | `vae/` | `flux2-vae.safetensors` |
-| `loras/` | Seven retrained checkpoints from steps 1500–4000, plus the previous 2500-step LoRA; see `models.json` for exact filenames |
+| `loras/` | Portrait checkpoints from steps 2000, 2250, and 2500, plus `adonis_base.safetensors` for optional restoration |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
 | `detection/` | `mediapipe_face_fp32.safetensors` |
@@ -55,7 +55,7 @@ accept the FLUX.2 model agreement and create a read-only token.
    Double-click a stage card to edit its nodes; use the back arrow above the
    canvas to return to the complete workflow.
 2. Check every model loader. A red loader means the named file has not been installed or imported.
-   The retrained 1500-step LoRA is selected initially; choose another installed
+   The retrained 2250-step LoRA is selected initially; choose another installed
    checkpoint in `LoraLoaderModelOnly` when comparing training steps.
 3. Select the source image and confirm the automatic crop preview. Adjust
    **Face zoom** if needed. If it chose the wrong person, turn on the
@@ -95,5 +95,5 @@ visual style, background, lighting, framing, or rendering.
 | Background appears too early | Background replacement runs after portrait generation; reopen the published workflow if the graph has been edited. |
 | Style is weak | Keep `hoi4_portrait` in the prompt, confirm **LoRA strength** is `1.00`, and keep the crop clean. |
 | Monochrome result | Enable **FLUX restoration** so natural color is restored before LoRA styling. |
-| Identity or position changes | Confirm the crop, restore the fixed identity instruction if it was edited, and disable optional FLUX restoration. |
+| Identity or position changes | Confirm the crop, restore the fixed identity instruction, and change **Source identity lock** from `MID_LOCK` to `HARD_LOCK`. |
 | Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Compare the three candidate branches; optional FLUX restoration can soften identity, so disable it first. |

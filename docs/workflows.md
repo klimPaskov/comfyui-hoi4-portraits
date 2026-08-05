@@ -2,9 +2,8 @@
 
 ## Shared design
 
-Each workflow opens as a small set of native ComfyUI stage cards. Double-click
-a card to inspect or edit its nodes, then use the back arrow above the canvas
-to return to the pipeline. The source workflow keeps its three candidate
+Each workflow keeps its complete pipeline visible in labeled stage groups.
+Controls and previews are placed beside the stage they affect. The source workflow keeps its three candidate
 branches in separate cards so prompts and sampler controls are easy to compare.
 
 The source and text-to-image model stack is:
@@ -13,7 +12,9 @@ The source and text-to-image model stack is:
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
 3. `VAELoader` — FLUX.2 VAE.
 4. `LoraLoaderModelOnly` — loads the HOI4 adapter and exposes LoRA strength directly on the same node, defaulting to `1.00`.
-5. `FLUX.2 Portrait Sampler`: seed, sampler, steps, denoise, CFG, guidance, and canvas size for that branch.
+5. `LoraLoaderModelOnly` — loads Adonis Base for the optional restoration pass.
+6. `Identity Feature Transfer Final` — source workflow only; keeps each styling branch tied to the uploaded person's reference features. `MID_LOCK` is the default and `HARD_LOCK` is available for difficult sources.
+7. `FLUX.2 Portrait Sampler`: seed, sampler, steps, denoise, CFG, guidance, and canvas size for that branch.
 
 Restoration and text-to-image use Euler with six steps. The three source
 candidates use Euler/6 steps, `res_2s`/4 steps, and `res_2m`/8 steps.
@@ -27,14 +28,14 @@ Groups run left to right:
 
 1. **Source and ESRGAN** loads the portrait, detects the face and subject silhouette, and produces an 832 × 1120 head-and-shoulders crop. **Face zoom** accepts `0.0–1.0` and defaults to `0.90`; larger values remove more body space while the complete head, headwear, and a safety margin remain protected. A one-click manual bounding-box override is available for ambiguous multi-person sources. The selected crop then runs through RealESRGAN x2.
 2. **FLUX.2 Klein 9B models** loads the base model, encoder, VAE, and LoRA.
-3. **Optional FLUX.2 restoration** encodes the ESRGAN result as both its reference and starting latent for a conservative restoration pass. This keeps framing and pose anchored.
+3. **Optional FLUX.2 restoration** applies the Adonis Base LoKr and encodes the ESRGAN result as both its reference and starting latent for a conservative restoration pass.
 4. The restoration switch is off by default and sends the direct ESRGAN result
    onward. Turn it on to select the FLUX result. The disabled restoration pass
    does not run.
 5. **HOI4 LoRA styling** runs three independent seed passes. Each pass encodes
-   the selected processed image as both the reference and starting latent and
-   uses a separate editable identity prompt in each branch with the LoRA-patched
-   model. Candidate 1 uses Euler/6 steps, candidate 2 uses `res_2s`/4 steps,
+   the selected processed image as the starting latent and attaches it twice as
+   a source reference. Each branch uses a separate editable identity prompt with
+   the shared identity-locked LoRA model. Candidate 1 uses Euler/6 steps, candidate 2 uses `res_2s`/4 steps,
    and candidate 3 uses `res_2m`/8 steps. This keeps all three candidates tied
    to the same face, crop, and pose while also comparing sampling behavior.
 6. **Optional background** receives each decoded styled image, creates its
@@ -51,7 +52,9 @@ Each source prompt defaults to `hoi4_portrait, maintain the exact identity,
 facing direction, and expression of the person, including every object they
 are holding or wearing.` Keep that sentence and append deliberate requested
 changes. Each prompt affects only its own candidate. Denoise defaults to
-`1.00`; LoRA strength is editable directly on the LoRA loader and defaults to `1.00`.
+`1.00`; LoRA strength is editable directly on the LoRA loader and defaults to
+`1.00`. Keep identity locking at `MID_LOCK` normally. Choose `HARD_LOCK` if the
+face still drifts.
 
 Enable FLUX restoration for monochrome or sepia inputs. It restores plausible
 natural color before the three LoRA candidates are generated.

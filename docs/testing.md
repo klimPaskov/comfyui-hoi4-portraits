@@ -63,7 +63,7 @@ LoRA is imported into the Cloud model library.
 
 ## Local inference evidence
 
-The 15 pinned model files are integrity-verified. ComfyUI 0.25.0 ran with
+The 11 pinned model files are integrity-verified. ComfyUI 0.25.0 ran with
 optional extensions disabled.
 
 The public graphs use LoRA strength `1.00`, CFG 1, and FLUX guidance 1. Source

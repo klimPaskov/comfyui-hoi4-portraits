@@ -1,6 +1,6 @@
 {
-  "last_node_id": 156,
-  "last_link_id": 112,
+  "last_node_id": 191,
+  "last_link_id": 120,
   "nodes": [
     {
       "id": 5,
@@ -45,8 +45,6 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
@@ -108,8 +106,6 @@
       ],
       "properties": {
         "Node name for S&R": "ImageScaleToMaxDimension",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
@@ -155,8 +151,6 @@
       ],
       "properties": {
         "Node name for S&R": "LoadMediaPipeFaceLandmarker",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN",
         "models": [
           {
@@ -247,8 +241,6 @@
       ],
       "properties": {
         "Node name for S&R": "MediaPipeFaceLandmarker",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
@@ -311,8 +303,6 @@
       ],
       "properties": {
         "Node name for S&R": "AdaptivePortraitCrop",
-        "cnr_id": "hoi4_portraits",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN",
         "models": [
           {
@@ -364,8 +354,6 @@
       ],
       "properties": {
         "Node name for S&R": "LoadBackgroundRemovalModel",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN",
         "models": [
           {
@@ -419,8 +407,6 @@
       ],
       "properties": {
         "Node name for S&R": "RemoveBackground",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": []
@@ -487,8 +473,6 @@
       ],
       "properties": {
         "Node name for S&R": "PrimitiveBoundingBox",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
@@ -570,8 +554,6 @@
       ],
       "properties": {
         "Node name for S&R": "CropByBBoxes",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
@@ -629,8 +611,6 @@
       ],
       "properties": {
         "Node name for S&R": "ComfySwitchNode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
@@ -675,8 +655,6 @@
       ],
       "properties": {
         "Node name for S&R": "UpscaleModelLoader",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN",
         "models": [
           {
@@ -730,8 +708,6 @@
       ],
       "properties": {
         "Node name for S&R": "ImageUpscaleWithModel",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": []
@@ -797,15 +773,13 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            19,
-            32
+            21,
+            34
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
@@ -856,14 +830,12 @@
           "type": "MODEL",
           "links": [
             16,
-            25
+            17
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "UNETLoader",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
@@ -926,21 +898,19 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            17,
-            18,
-            34,
-            35,
-            49,
-            50,
-            64,
-            65
+            19,
+            20,
+            36,
+            37,
+            53,
+            54,
+            70,
+            71
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "CLIPLoader",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
@@ -988,21 +958,19 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            20,
-            30,
-            37,
-            47,
-            52,
-            62,
-            67,
-            77
+            22,
+            32,
+            39,
+            51,
+            56,
+            68,
+            73,
+            85
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAELoader",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
@@ -1061,28 +1029,230 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            42,
-            57,
-            72
+            18
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "LoraLoaderModelOnly",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
-            "name": "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
-            "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
+            "name": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+            "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
             "directory": "loras"
           }
         ]
       },
       "widgets_values": [
-        "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
+        "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
         1.0
+      ]
+    },
+    {
+      "id": 191,
+      "type": "LoraLoaderModelOnly",
+      "title": "Apply Adonis restoration LoKr — strength editable here",
+      "pos": [
+        1120,
+        820
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "color": "#3f789e",
+      "bgcolor": "#3f789e",
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 17
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "lora_name"
+          }
+        },
+        {
+          "name": "strength_model",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "strength_model"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoaderModelOnly",
+        "hoi4_group": "02 FLUX.2 Klein 9B models",
+        "models": [
+          {
+            "name": "adonis_base.safetensors",
+            "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors",
+            "directory": "loras"
+          }
+        ]
+      },
+      "widgets_values": [
+        "adonis_base.safetensors",
+        1.0
+      ]
+    },
+    {
+      "id": 190,
+      "type": "IdentityFeatureTransferFinal",
+      "title": "Source identity lock — MID_LOCK; use HARD_LOCK for difficult portraits",
+      "pos": [
+        1100,
+        1000
+      ],
+      "size": [
+        340,
+        430
+      ],
+      "color": "#3f789e",
+      "bgcolor": "#3f789e",
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 18
+        },
+        {
+          "name": "preset",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "preset"
+          }
+        },
+        {
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "enabled"
+          }
+        },
+        {
+          "name": "reference_index",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "reference_index"
+          }
+        },
+        {
+          "name": "reference_indices",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "reference_indices"
+          }
+        },
+        {
+          "name": "similarity_floor",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "similarity_floor"
+          }
+        },
+        {
+          "name": "softmax_temperature",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "softmax_temperature"
+          }
+        },
+        {
+          "name": "mask_threshold",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "mask_threshold"
+          }
+        },
+        {
+          "name": "double_blocks",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "double_blocks"
+          }
+        },
+        {
+          "name": "single_blocks",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "single_blocks"
+          }
+        },
+        {
+          "name": "debug",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "debug"
+          }
+        },
+        {
+          "name": "mask_behavior",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "mask_behavior"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            46,
+            63,
+            80
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IdentityFeatureTransferFinal",
+        "hoi4_group": "02 FLUX.2 Klein 9B models"
+      },
+      "widgets_values": [
+        "MID_LOCK",
+        true,
+        0,
+        "all",
+        0.2,
+        0.07,
+        1.0,
+        "0-7:mid_img=0.55",
+        "0:mid_img=0.22; 1:mid_img=0.24; 3:mid_img=0.28; 4:mid_img=0.22; 6:mid_img=0.26; 7:mid_img=0.27; 8:mid_img=0.25; 10:mid_img=0.27; 13:mid_img=0.27",
+        false,
+        "focus_only"
       ]
     },
     {
@@ -1100,64 +1270,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 17,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 17
-        },
-        {
-          "name": "text",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "text"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            21
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "03 Optional FLUX.2 restoration"
-      },
-      "widgets_values": [
-        "Restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
-      ]
-    },
-    {
-      "id": 21,
-      "type": "CLIPTextEncode",
-      "title": "Conservative restoration negative",
-      "pos": [
-        1540,
-        450
-      ],
-      "size": [
-        430,
-        180
-      ],
-      "color": "#8b6f47",
-      "bgcolor": "#8b6f47",
-      "flags": {},
-      "order": 18,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 18
+          "link": 19
         },
         {
           "name": "text",
@@ -1179,8 +1298,55 @@
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": [
+        "uhdmanscale, restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, blur, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
+      ]
+    },
+    {
+      "id": 21,
+      "type": "CLIPTextEncode",
+      "title": "Conservative restoration negative",
+      "pos": [
+        1540,
+        450
+      ],
+      "size": [
+        430,
+        180
+      ],
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 20
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
@@ -1202,18 +1368,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 19,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 19
+          "link": 21
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 20
+          "link": 22
         }
       ],
       "outputs": [
@@ -1221,16 +1387,14 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            22,
             24,
-            28
+            26,
+            30
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
@@ -1250,18 +1414,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 20,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 21
+          "link": 23
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 22
+          "link": 24
         }
       ],
       "outputs": [
@@ -1269,14 +1433,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            26
+            28
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
@@ -1296,18 +1458,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 21,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 23
+          "link": 25
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 24
+          "link": 26
         }
       ],
       "outputs": [
@@ -1315,14 +1477,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            27
+            29
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
@@ -1342,28 +1502,28 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 22,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 25
+          "link": 27
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 26
+          "link": 28
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 27
+          "link": 29
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 28
+          "link": 30
         },
         {
           "name": "seed",
@@ -1435,14 +1595,12 @@
           "name": "sampled_latent",
           "type": "LATENT",
           "links": [
-            29
+            31
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "hoi4_portraits",
-        "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
@@ -1472,18 +1630,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 23,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 29
+          "link": 31
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 30
+          "link": 32
         }
       ],
       "outputs": [
@@ -1491,14 +1649,12 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            33
+            35
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEDecode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
@@ -1518,13 +1674,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 24,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 31
+          "link": 33
         }
       ],
       "outputs": [
@@ -1536,8 +1692,6 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": []
@@ -1557,7 +1711,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 25,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -1571,12 +1725,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 32
+          "link": 34
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 33
+          "link": 35
         }
       ],
       "outputs": [
@@ -1584,17 +1738,15 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            31,
-            36,
-            51,
-            66
+            33,
+            38,
+            55,
+            72
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ComfySwitchNode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
@@ -1616,64 +1768,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 26,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 34
-        },
-        {
-          "name": "text",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "text"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            38
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": [
-        "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing."
-      ]
-    },
-    {
-      "id": 41,
-      "type": "CLIPTextEncode",
-      "title": "Candidate 1 identity LoRA negative",
-      "pos": [
-        3428.20100522765,
-        510.9469552745495
-      ],
-      "size": [
-        430,
-        180
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 27,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 35
+          "link": 36
         },
         {
           "name": "text",
@@ -1695,8 +1796,55 @@
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": [
+        "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing."
+      ]
+    },
+    {
+      "id": 41,
+      "type": "CLIPTextEncode",
+      "title": "Candidate 1 identity LoRA negative",
+      "pos": [
+        3428.20100522765,
+        510.9469552745495
+      ],
+      "size": [
+        430,
+        180
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 37
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -1718,18 +1866,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 28,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 36
+          "link": 38
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 37
+          "link": 39
         }
       ],
       "outputs": [
@@ -1737,24 +1885,24 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            39,
             41,
-            45
+            42,
+            44,
+            45,
+            49
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
     },
     {
       "id": 43,
-      "type": "ReferenceLatent",
-      "title": "Attach reference to positive conditioning",
+      "type": "Flux2KleinMultiReferenceLatent",
+      "title": "Attach source twice to positive conditioning",
       "pos": [
         3938.68900058085,
         308.84198722129986
@@ -1766,18 +1914,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 29,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 38
+          "link": 40
         },
         {
-          "name": "latent",
+          "name": "latent_1",
           "type": "LATENT",
-          "link": 39
+          "link": 41
+        },
+        {
+          "name": "latent_2",
+          "type": "LATENT",
+          "link": 42
         }
       ],
       "outputs": [
@@ -1785,22 +1938,20 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            43
+            47
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
+        "Node name for S&R": "Flux2KleinMultiReferenceLatent",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
     },
     {
       "id": 44,
-      "type": "ReferenceLatent",
-      "title": "Attach reference to negative conditioning",
+      "type": "Flux2KleinMultiReferenceLatent",
+      "title": "Attach source twice to negative conditioning",
       "pos": [
         3945.2439976766,
         493.10999419149994
@@ -1812,18 +1963,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 30,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 40
+          "link": 43
         },
         {
-          "name": "latent",
+          "name": "latent_1",
           "type": "LATENT",
-          "link": 41
+          "link": 44
+        },
+        {
+          "name": "latent_2",
+          "type": "LATENT",
+          "link": 45
         }
       ],
       "outputs": [
@@ -1831,14 +1987,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            44
+            48
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
+        "Node name for S&R": "Flux2KleinMultiReferenceLatent",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -1858,28 +2012,28 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 31,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 42
+          "link": 46
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 43
+          "link": 47
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 44
+          "link": 48
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 45
+          "link": 49
         },
         {
           "name": "seed",
@@ -1951,14 +2105,12 @@
           "name": "sampled_latent",
           "type": "LATENT",
           "links": [
-            46
+            50
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "hoi4_portraits",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -1988,18 +2140,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 32,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 46
+          "link": 50
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 47
+          "link": 51
         }
       ],
       "outputs": [
@@ -2007,17 +2159,15 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            48,
-            81,
-            83,
-            86
+            52,
+            89,
+            91,
+            94
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEDecode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -2037,13 +2187,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 33,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 48
+          "link": 52
         }
       ],
       "outputs": [
@@ -2055,8 +2205,6 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -2076,13 +2224,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 34,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 49
+          "link": 53
         },
         {
           "name": "text",
@@ -2098,14 +2246,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            53
+            57
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -2127,13 +2273,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 35,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 50
+          "link": 54
         },
         {
           "name": "text",
@@ -2149,14 +2295,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            55
+            60
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -2178,18 +2322,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 36,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 51
+          "link": 55
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 52
+          "link": 56
         }
       ],
       "outputs": [
@@ -2197,24 +2341,24 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            54,
-            56,
-            60
+            58,
+            59,
+            61,
+            62,
+            66
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
     },
     {
       "id": 63,
-      "type": "ReferenceLatent",
-      "title": "Attach reference to positive conditioning",
+      "type": "Flux2KleinMultiReferenceLatent",
+      "title": "Attach source twice to positive conditioning",
       "pos": [
         3940,
         1180
@@ -2226,18 +2370,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 37,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 53
+          "link": 57
         },
         {
-          "name": "latent",
+          "name": "latent_1",
           "type": "LATENT",
-          "link": 54
+          "link": 58
+        },
+        {
+          "name": "latent_2",
+          "type": "LATENT",
+          "link": 59
         }
       ],
       "outputs": [
@@ -2245,22 +2394,20 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            58
+            64
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
+        "Node name for S&R": "Flux2KleinMultiReferenceLatent",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
     },
     {
       "id": 64,
-      "type": "ReferenceLatent",
-      "title": "Attach reference to negative conditioning",
+      "type": "Flux2KleinMultiReferenceLatent",
+      "title": "Attach source twice to negative conditioning",
       "pos": [
         3940,
         1380
@@ -2272,18 +2419,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 38,
+      "order": 40,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 55
+          "link": 60
         },
         {
-          "name": "latent",
+          "name": "latent_1",
           "type": "LATENT",
-          "link": 56
+          "link": 61
+        },
+        {
+          "name": "latent_2",
+          "type": "LATENT",
+          "link": 62
         }
       ],
       "outputs": [
@@ -2291,14 +2443,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            59
+            65
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
+        "Node name for S&R": "Flux2KleinMultiReferenceLatent",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -2318,28 +2468,28 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 39,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 57
+          "link": 63
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 58
+          "link": 64
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 59
+          "link": 65
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 60
+          "link": 66
         },
         {
           "name": "seed",
@@ -2411,14 +2561,12 @@
           "name": "sampled_latent",
           "type": "LATENT",
           "links": [
-            61
+            67
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "hoi4_portraits",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -2448,18 +2596,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 40,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 61
+          "link": 67
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 62
+          "link": 68
         }
       ],
       "outputs": [
@@ -2467,17 +2615,15 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            63,
-            92,
-            94,
-            97
+            69,
+            100,
+            102,
+            105
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEDecode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -2497,13 +2643,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 41,
+      "order": 43,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 63
+          "link": 69
         }
       ],
       "outputs": [
@@ -2515,8 +2661,6 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -2536,13 +2680,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 42,
+      "order": 44,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 64
+          "link": 70
         },
         {
           "name": "text",
@@ -2558,14 +2702,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            68
+            74
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -2587,13 +2729,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 43,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 65
+          "link": 71
         },
         {
           "name": "text",
@@ -2609,14 +2751,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            70
+            77
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -2638,18 +2778,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 44,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 66
+          "link": 72
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 67
+          "link": 73
         }
       ],
       "outputs": [
@@ -2657,24 +2797,24 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            69,
-            71,
-            75
+            75,
+            76,
+            78,
+            79,
+            83
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEEncode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
     },
     {
       "id": 83,
-      "type": "ReferenceLatent",
-      "title": "Attach reference to positive conditioning",
+      "type": "Flux2KleinMultiReferenceLatent",
+      "title": "Attach source twice to positive conditioning",
       "pos": [
         3940,
         2080
@@ -2686,18 +2826,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 45,
+      "order": 47,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 68
+          "link": 74
         },
         {
-          "name": "latent",
+          "name": "latent_1",
           "type": "LATENT",
-          "link": 69
+          "link": 75
+        },
+        {
+          "name": "latent_2",
+          "type": "LATENT",
+          "link": 76
         }
       ],
       "outputs": [
@@ -2705,22 +2850,20 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            73
+            81
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
+        "Node name for S&R": "Flux2KleinMultiReferenceLatent",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
     },
     {
       "id": 84,
-      "type": "ReferenceLatent",
-      "title": "Attach reference to negative conditioning",
+      "type": "Flux2KleinMultiReferenceLatent",
+      "title": "Attach source twice to negative conditioning",
       "pos": [
         3940,
         2280
@@ -2732,18 +2875,23 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 46,
+      "order": 48,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 70
+          "link": 77
         },
         {
-          "name": "latent",
+          "name": "latent_1",
           "type": "LATENT",
-          "link": 71
+          "link": 78
+        },
+        {
+          "name": "latent_2",
+          "type": "LATENT",
+          "link": 79
         }
       ],
       "outputs": [
@@ -2751,14 +2899,12 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            74
+            82
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
+        "Node name for S&R": "Flux2KleinMultiReferenceLatent",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -2778,28 +2924,28 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 47,
+      "order": 49,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 72
+          "link": 80
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 73
+          "link": 81
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 74
+          "link": 82
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 75
+          "link": 83
         },
         {
           "name": "seed",
@@ -2871,14 +3017,12 @@
           "name": "sampled_latent",
           "type": "LATENT",
           "links": [
-            76
+            84
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Flux2PortraitSampler",
-        "cnr_id": "hoi4_portraits",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
@@ -2908,18 +3052,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 48,
+      "order": 50,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 76
+          "link": 84
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 77
+          "link": 85
         }
       ],
       "outputs": [
@@ -2927,17 +3071,15 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            78,
-            103,
-            105,
-            108
+            86,
+            111,
+            113,
+            116
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAEDecode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -2957,13 +3099,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 49,
+      "order": 51,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 78
+          "link": 86
         }
       ],
       "outputs": [
@@ -2975,8 +3117,6 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": []
@@ -2996,7 +3136,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 50,
+      "order": 52,
       "mode": 0,
       "inputs": [
         {
@@ -3013,16 +3153,14 @@
           "name": "BOOLEAN",
           "type": "BOOLEAN",
           "links": [
-            85,
-            96,
-            107
+            93,
+            104,
+            115
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "PrimitiveBoolean",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -3044,7 +3182,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 51,
+      "order": 53,
       "mode": 0,
       "inputs": [
         {
@@ -3061,7 +3199,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            79
+            87
           ]
         },
         {
@@ -3072,8 +3210,6 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -3096,13 +3232,13 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 52,
+      "order": 54,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 79
+          "link": 87
         },
         {
           "name": "upscale_method",
@@ -3142,16 +3278,14 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            82,
-            93,
-            104
+            90,
+            101,
+            112
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -3176,7 +3310,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 53,
+      "order": 55,
       "mode": 0,
       "inputs": [
         {
@@ -3193,16 +3327,14 @@
           "name": "BACKGROUND_REMOVAL",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            80,
-            91,
-            102
+            88,
+            99,
+            110
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "LoadBackgroundRemovalModel",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation",
         "models": [
           {
@@ -3231,18 +3363,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 54,
+      "order": 56,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 80
+          "link": 88
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 81
+          "link": 89
         }
       ],
       "outputs": [
@@ -3250,14 +3382,12 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            84
+            92
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "RemoveBackground",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": []
@@ -3277,18 +3407,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 55,
+      "order": 57,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 82
+          "link": 90
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 83
+          "link": 91
         },
         {
           "name": "x",
@@ -3317,7 +3447,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 84
+          "link": 92
         }
       ],
       "outputs": [
@@ -3325,14 +3455,12 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            87
+            95
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageCompositeMasked",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -3356,23 +3484,23 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 56,
+      "order": 58,
       "mode": 0,
       "inputs": [
         {
           "name": "switch",
           "type": "BOOLEAN",
-          "link": 85
+          "link": 93
         },
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 86
+          "link": 94
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 87
+          "link": 95
         }
       ],
       "outputs": [
@@ -3380,15 +3508,13 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            88,
-            89
+            96,
+            97
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ComfySwitchNode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": []
@@ -3408,13 +3534,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 57,
+      "order": 59,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 88
+          "link": 96
         },
         {
           "name": "filename_prefix",
@@ -3434,8 +3560,6 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -3457,13 +3581,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 58,
+      "order": 60,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 89
+          "link": 97
         },
         {
           "name": "upscale_method",
@@ -3503,14 +3627,12 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            90
+            98
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -3535,13 +3657,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 59,
+      "order": 61,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 90
+          "link": 98
         },
         {
           "name": "filename_prefix",
@@ -3561,8 +3683,6 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -3584,18 +3704,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 60,
+      "order": 62,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 91
+          "link": 99
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 92
+          "link": 100
         }
       ],
       "outputs": [
@@ -3603,14 +3723,12 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            95
+            103
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "RemoveBackground",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": []
@@ -3630,18 +3748,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 61,
+      "order": 63,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 93
+          "link": 101
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 94
+          "link": 102
         },
         {
           "name": "x",
@@ -3670,7 +3788,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 95
+          "link": 103
         }
       ],
       "outputs": [
@@ -3678,14 +3796,12 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            98
+            106
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageCompositeMasked",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -3709,23 +3825,23 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 62,
+      "order": 64,
       "mode": 0,
       "inputs": [
         {
           "name": "switch",
           "type": "BOOLEAN",
-          "link": 96
+          "link": 104
         },
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 97
+          "link": 105
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 98
+          "link": 106
         }
       ],
       "outputs": [
@@ -3733,15 +3849,13 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            99,
-            100
+            107,
+            108
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ComfySwitchNode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": []
@@ -3761,13 +3875,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 63,
+      "order": 65,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 99
+          "link": 107
         },
         {
           "name": "filename_prefix",
@@ -3787,8 +3901,6 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -3810,13 +3922,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 64,
+      "order": 66,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 100
+          "link": 108
         },
         {
           "name": "upscale_method",
@@ -3856,14 +3968,12 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            101
+            109
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -3888,13 +3998,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 65,
+      "order": 67,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 101
+          "link": 109
         },
         {
           "name": "filename_prefix",
@@ -3914,8 +4024,6 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -3937,18 +4045,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 66,
+      "order": 68,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 102
+          "link": 110
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 103
+          "link": 111
         }
       ],
       "outputs": [
@@ -3956,14 +4064,12 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            106
+            114
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "RemoveBackground",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": []
@@ -3983,18 +4089,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 67,
+      "order": 69,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 104
+          "link": 112
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 105
+          "link": 113
         },
         {
           "name": "x",
@@ -4023,7 +4129,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 106
+          "link": 114
         }
       ],
       "outputs": [
@@ -4031,14 +4137,12 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            109
+            117
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageCompositeMasked",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": [
@@ -4062,23 +4166,23 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 68,
+      "order": 70,
       "mode": 0,
       "inputs": [
         {
           "name": "switch",
           "type": "BOOLEAN",
-          "link": 107
+          "link": 115
         },
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 108
+          "link": 116
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 109
+          "link": 117
         }
       ],
       "outputs": [
@@ -4086,15 +4190,13 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            110,
-            111
+            118,
+            119
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ComfySwitchNode",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "05 Optional background - after generation"
       },
       "widgets_values": []
@@ -4114,13 +4216,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 69,
+      "order": 71,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 110
+          "link": 118
         },
         {
           "name": "filename_prefix",
@@ -4140,8 +4242,6 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -4163,13 +4263,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 70,
+      "order": 72,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 111
+          "link": 119
         },
         {
           "name": "upscale_method",
@@ -4209,14 +4309,12 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            112
+            120
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -4241,13 +4339,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 71,
+      "order": 73,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 112
+          "link": 120
         },
         {
           "name": "filename_prefix",
@@ -4267,8 +4365,6 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
         "hoi4_group": "06 Preview and save"
       },
       "widgets_values": [
@@ -4407,6 +4503,22 @@
     ],
     [
       17,
+      1,
+      0,
+      191,
+      0,
+      "MODEL"
+    ],
+    [
+      18,
+      4,
+      0,
+      190,
+      0,
+      "MODEL"
+    ],
+    [
+      19,
       2,
       0,
       20,
@@ -4414,7 +4526,7 @@
       "CLIP"
     ],
     [
-      18,
+      20,
       2,
       0,
       21,
@@ -4422,7 +4534,7 @@
       "CLIP"
     ],
     [
-      19,
+      21,
       8,
       0,
       22,
@@ -4430,7 +4542,7 @@
       "IMAGE"
     ],
     [
-      20,
+      22,
       3,
       0,
       22,
@@ -4438,7 +4550,7 @@
       "VAE"
     ],
     [
-      21,
+      23,
       20,
       0,
       23,
@@ -4446,39 +4558,39 @@
       "CONDITIONING"
     ],
     [
-      22,
+      24,
       22,
       0,
       23,
-      1,
-      "LATENT"
-    ],
-    [
-      23,
-      21,
-      0,
-      24,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      24,
-      22,
-      0,
-      24,
       1,
       "LATENT"
     ],
     [
       25,
+      21,
+      0,
+      24,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      26,
+      22,
+      0,
+      24,
       1,
+      "LATENT"
+    ],
+    [
+      27,
+      191,
       0,
       30,
       0,
       "MODEL"
     ],
     [
-      26,
+      28,
       23,
       0,
       30,
@@ -4486,7 +4598,7 @@
       "CONDITIONING"
     ],
     [
-      27,
+      29,
       24,
       0,
       30,
@@ -4494,7 +4606,7 @@
       "CONDITIONING"
     ],
     [
-      28,
+      30,
       22,
       0,
       30,
@@ -4502,7 +4614,7 @@
       "LATENT"
     ],
     [
-      29,
+      31,
       30,
       0,
       31,
@@ -4510,7 +4622,7 @@
       "LATENT"
     ],
     [
-      30,
+      32,
       3,
       0,
       31,
@@ -4518,7 +4630,7 @@
       "VAE"
     ],
     [
-      31,
+      33,
       32,
       0,
       35,
@@ -4526,7 +4638,7 @@
       "IMAGE"
     ],
     [
-      32,
+      34,
       8,
       0,
       32,
@@ -4534,7 +4646,7 @@
       "IMAGE"
     ],
     [
-      33,
+      35,
       31,
       0,
       32,
@@ -4542,7 +4654,7 @@
       "IMAGE"
     ],
     [
-      34,
+      36,
       2,
       0,
       40,
@@ -4550,7 +4662,7 @@
       "CLIP"
     ],
     [
-      35,
+      37,
       2,
       0,
       41,
@@ -4558,7 +4670,7 @@
       "CLIP"
     ],
     [
-      36,
+      38,
       32,
       0,
       42,
@@ -4566,7 +4678,7 @@
       "IMAGE"
     ],
     [
-      37,
+      39,
       3,
       0,
       42,
@@ -4574,7 +4686,7 @@
       "VAE"
     ],
     [
-      38,
+      40,
       40,
       0,
       43,
@@ -4582,7 +4694,7 @@
       "CONDITIONING"
     ],
     [
-      39,
+      41,
       42,
       0,
       43,
@@ -4590,103 +4702,119 @@
       "LATENT"
     ],
     [
-      40,
-      41,
-      0,
-      44,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      41,
+      42,
       42,
       0,
-      44,
-      1,
-      "LATENT"
-    ],
-    [
-      42,
-      4,
-      0,
-      50,
-      0,
-      "MODEL"
-    ],
-    [
       43,
-      43,
-      0,
-      50,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      44,
-      44,
-      0,
-      50,
       2,
+      "LATENT"
+    ],
+    [
+      43,
+      41,
+      0,
+      44,
+      0,
       "CONDITIONING"
+    ],
+    [
+      44,
+      42,
+      0,
+      44,
+      1,
+      "LATENT"
     ],
     [
       45,
       42,
       0,
-      50,
-      3,
+      44,
+      2,
       "LATENT"
     ],
     [
       46,
+      190,
+      0,
       50,
       0,
-      51,
-      0,
-      "LATENT"
+      "MODEL"
     ],
     [
       47,
-      3,
+      43,
       0,
-      51,
+      50,
       1,
-      "VAE"
+      "CONDITIONING"
     ],
     [
       48,
-      51,
+      44,
       0,
-      55,
-      0,
-      "IMAGE"
+      50,
+      2,
+      "CONDITIONING"
     ],
     [
       49,
-      2,
+      42,
       0,
-      60,
-      0,
-      "CLIP"
+      50,
+      3,
+      "LATENT"
     ],
     [
       50,
-      2,
+      50,
       0,
-      61,
+      51,
       0,
-      "CLIP"
+      "LATENT"
     ],
     [
       51,
-      32,
+      3,
       0,
-      62,
-      0,
-      "IMAGE"
+      51,
+      1,
+      "VAE"
     ],
     [
       52,
+      51,
+      0,
+      55,
+      0,
+      "IMAGE"
+    ],
+    [
+      53,
+      2,
+      0,
+      60,
+      0,
+      "CLIP"
+    ],
+    [
+      54,
+      2,
+      0,
+      61,
+      0,
+      "CLIP"
+    ],
+    [
+      55,
+      32,
+      0,
+      62,
+      0,
+      "IMAGE"
+    ],
+    [
+      56,
       3,
       0,
       62,
@@ -4694,7 +4822,7 @@
       "VAE"
     ],
     [
-      53,
+      57,
       60,
       0,
       63,
@@ -4702,7 +4830,7 @@
       "CONDITIONING"
     ],
     [
-      54,
+      58,
       62,
       0,
       63,
@@ -4710,7 +4838,15 @@
       "LATENT"
     ],
     [
-      55,
+      59,
+      62,
+      0,
+      63,
+      2,
+      "LATENT"
+    ],
+    [
+      60,
       61,
       0,
       64,
@@ -4718,7 +4854,7 @@
       "CONDITIONING"
     ],
     [
-      56,
+      61,
       62,
       0,
       64,
@@ -4726,15 +4862,23 @@
       "LATENT"
     ],
     [
-      57,
-      4,
+      62,
+      62,
+      0,
+      64,
+      2,
+      "LATENT"
+    ],
+    [
+      63,
+      190,
       0,
       70,
       0,
       "MODEL"
     ],
     [
-      58,
+      64,
       63,
       0,
       70,
@@ -4742,7 +4886,7 @@
       "CONDITIONING"
     ],
     [
-      59,
+      65,
       64,
       0,
       70,
@@ -4750,7 +4894,7 @@
       "CONDITIONING"
     ],
     [
-      60,
+      66,
       62,
       0,
       70,
@@ -4758,7 +4902,7 @@
       "LATENT"
     ],
     [
-      61,
+      67,
       70,
       0,
       71,
@@ -4766,7 +4910,7 @@
       "LATENT"
     ],
     [
-      62,
+      68,
       3,
       0,
       71,
@@ -4774,7 +4918,7 @@
       "VAE"
     ],
     [
-      63,
+      69,
       71,
       0,
       75,
@@ -4782,7 +4926,7 @@
       "IMAGE"
     ],
     [
-      64,
+      70,
       2,
       0,
       80,
@@ -4790,7 +4934,7 @@
       "CLIP"
     ],
     [
-      65,
+      71,
       2,
       0,
       81,
@@ -4798,7 +4942,7 @@
       "CLIP"
     ],
     [
-      66,
+      72,
       32,
       0,
       82,
@@ -4806,7 +4950,7 @@
       "IMAGE"
     ],
     [
-      67,
+      73,
       3,
       0,
       82,
@@ -4814,7 +4958,7 @@
       "VAE"
     ],
     [
-      68,
+      74,
       80,
       0,
       83,
@@ -4822,63 +4966,79 @@
       "CONDITIONING"
     ],
     [
-      69,
-      82,
-      0,
-      83,
-      1,
-      "LATENT"
-    ],
-    [
-      70,
-      81,
-      0,
-      84,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      71,
-      82,
-      0,
-      84,
-      1,
-      "LATENT"
-    ],
-    [
-      72,
-      4,
-      0,
-      90,
-      0,
-      "MODEL"
-    ],
-    [
-      73,
-      83,
-      0,
-      90,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      74,
-      84,
-      0,
-      90,
-      2,
-      "CONDITIONING"
-    ],
-    [
       75,
       82,
       0,
-      90,
-      3,
+      83,
+      1,
       "LATENT"
     ],
     [
       76,
+      82,
+      0,
+      83,
+      2,
+      "LATENT"
+    ],
+    [
+      77,
+      81,
+      0,
+      84,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      78,
+      82,
+      0,
+      84,
+      1,
+      "LATENT"
+    ],
+    [
+      79,
+      82,
+      0,
+      84,
+      2,
+      "LATENT"
+    ],
+    [
+      80,
+      190,
+      0,
+      90,
+      0,
+      "MODEL"
+    ],
+    [
+      81,
+      83,
+      0,
+      90,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      82,
+      84,
+      0,
+      90,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      83,
+      82,
+      0,
+      90,
+      3,
+      "LATENT"
+    ],
+    [
+      84,
       90,
       0,
       91,
@@ -4886,7 +5046,7 @@
       "LATENT"
     ],
     [
-      77,
+      85,
       3,
       0,
       91,
@@ -4894,7 +5054,7 @@
       "VAE"
     ],
     [
-      78,
+      86,
       91,
       0,
       95,
@@ -4902,7 +5062,7 @@
       "IMAGE"
     ],
     [
-      79,
+      87,
       120,
       0,
       121,
@@ -4910,7 +5070,7 @@
       "IMAGE"
     ],
     [
-      80,
+      88,
       122,
       0,
       123,
@@ -4918,7 +5078,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      81,
+      89,
       51,
       0,
       123,
@@ -4926,7 +5086,7 @@
       "IMAGE"
     ],
     [
-      82,
+      90,
       121,
       0,
       124,
@@ -4934,7 +5094,7 @@
       "IMAGE"
     ],
     [
-      83,
+      91,
       51,
       0,
       124,
@@ -4942,7 +5102,7 @@
       "IMAGE"
     ],
     [
-      84,
+      92,
       123,
       0,
       124,
@@ -4950,7 +5110,7 @@
       "MASK"
     ],
     [
-      85,
+      93,
       119,
       0,
       125,
@@ -4958,7 +5118,7 @@
       "BOOLEAN"
     ],
     [
-      86,
+      94,
       51,
       0,
       125,
@@ -4966,7 +5126,7 @@
       "IMAGE"
     ],
     [
-      87,
+      95,
       124,
       0,
       125,
@@ -4974,7 +5134,7 @@
       "IMAGE"
     ],
     [
-      88,
+      96,
       125,
       0,
       127,
@@ -4982,7 +5142,7 @@
       "IMAGE"
     ],
     [
-      89,
+      97,
       125,
       0,
       128,
@@ -4990,7 +5150,7 @@
       "IMAGE"
     ],
     [
-      90,
+      98,
       128,
       0,
       129,
@@ -4998,7 +5158,7 @@
       "IMAGE"
     ],
     [
-      91,
+      99,
       122,
       0,
       133,
@@ -5006,7 +5166,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      92,
+      100,
       71,
       0,
       133,
@@ -5014,7 +5174,7 @@
       "IMAGE"
     ],
     [
-      93,
+      101,
       121,
       0,
       134,
@@ -5022,7 +5182,7 @@
       "IMAGE"
     ],
     [
-      94,
+      102,
       71,
       0,
       134,
@@ -5030,7 +5190,7 @@
       "IMAGE"
     ],
     [
-      95,
+      103,
       133,
       0,
       134,
@@ -5038,7 +5198,7 @@
       "MASK"
     ],
     [
-      96,
+      104,
       119,
       0,
       135,
@@ -5046,7 +5206,7 @@
       "BOOLEAN"
     ],
     [
-      97,
+      105,
       71,
       0,
       135,
@@ -5054,7 +5214,7 @@
       "IMAGE"
     ],
     [
-      98,
+      106,
       134,
       0,
       135,
@@ -5062,7 +5222,7 @@
       "IMAGE"
     ],
     [
-      99,
+      107,
       135,
       0,
       137,
@@ -5070,7 +5230,7 @@
       "IMAGE"
     ],
     [
-      100,
+      108,
       135,
       0,
       138,
@@ -5078,7 +5238,7 @@
       "IMAGE"
     ],
     [
-      101,
+      109,
       138,
       0,
       139,
@@ -5086,7 +5246,7 @@
       "IMAGE"
     ],
     [
-      102,
+      110,
       122,
       0,
       143,
@@ -5094,7 +5254,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      103,
+      111,
       91,
       0,
       143,
@@ -5102,7 +5262,7 @@
       "IMAGE"
     ],
     [
-      104,
+      112,
       121,
       0,
       144,
@@ -5110,7 +5270,7 @@
       "IMAGE"
     ],
     [
-      105,
+      113,
       91,
       0,
       144,
@@ -5118,7 +5278,7 @@
       "IMAGE"
     ],
     [
-      106,
+      114,
       143,
       0,
       144,
@@ -5126,7 +5286,7 @@
       "MASK"
     ],
     [
-      107,
+      115,
       119,
       0,
       145,
@@ -5134,7 +5294,7 @@
       "BOOLEAN"
     ],
     [
-      108,
+      116,
       91,
       0,
       145,
@@ -5142,7 +5302,7 @@
       "IMAGE"
     ],
     [
-      109,
+      117,
       144,
       0,
       145,
@@ -5150,7 +5310,7 @@
       "IMAGE"
     ],
     [
-      110,
+      118,
       145,
       0,
       147,
@@ -5158,7 +5318,7 @@
       "IMAGE"
     ],
     [
-      111,
+      119,
       145,
       0,
       148,
@@ -5166,7 +5326,7 @@
       "IMAGE"
     ],
     [
-      112,
+      120,
       148,
       0,
       149,
@@ -5192,8 +5352,8 @@
       "bounding": [
         1040,
         40,
-        420,
-        770
+        440,
+        1430
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -5258,12 +5418,12 @@
       ]
     },
     "workflow_id": "hoi4_portrait_flux2_klein_9b_source",
-    "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
+    "description": "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, source-reference identity locking, then three independent HOI4 LoRA portrait candidates with optional background replacement on every candidate.",
     "workflow_kind": "image_to_image",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.11",
+    "graph_version": "2.5.0",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
-    "style_lora": "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
+    "style_lora": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
     "core_nodes_only": false,
     "comfy_cloud_ready": true,
     "restoration_order": [
@@ -5276,6 +5436,7 @@
     "background_candidate_count": 3,
     "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
     "pose_preservation": "encoded_source_latent_is_sampler_start",
+    "identity_preservation": "reference_tokens_with_mid_lock_feature_transfer",
     "background_order": "after_final_lora_styled_decode",
     "editor_layout": "flat_grouped_canvas"
   },

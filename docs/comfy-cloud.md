@@ -4,7 +4,9 @@ The workflows use Comfy Cloud's model catalog and require the bundled
 `hoi4_portraits` folder in the Builder custom-node environment. The source
 workflow also requires
 [RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) for its `res_2s` and
-`res_2m` candidate samplers. Import both custom-node folders and restart the
+`res_2m` candidate samplers and
+[ComfyUI-Flux2Klein-Enhancer](https://github.com/capitan01R/ComfyUI-Flux2Klein-Enhancer)
+for source-reference identity locking. Import the custom-node folders and restart the
 Builder environment before opening the workflow. The text-to-image and
 processing workflows do not require RES4LYF.
 
@@ -15,7 +17,7 @@ workflow. Import it from its hosted source:
 
 1. Open **Models** in the Comfy Cloud sidebar.
 2. Choose **Import**.
-3. Paste the download or file-page URL for [`hoi4_portrait_flux2_klein9b_lora_000001500.safetensors`](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein9b_lora_000001500.safetensors).
+3. Paste the download or file-page URL for [`hoi4_portrait_flux2_klein9b_lora_000002250.safetensors`](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors). Import [`adonis_base.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_base.safetensors) when you want optional restoration.
 4. Select model type **LoRA** and target folder `loras`.
 5. Wait for the exact filename to appear in `LoraLoaderModelOnly`.
 

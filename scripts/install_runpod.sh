@@ -45,6 +45,7 @@ fi
 printf '%s\n' "${PYTHON_BIN}" > "${COMFY_ROOT}/.hoi4_python"
 
 "${PROJECT_ROOT}/scripts/install_res4lyf.sh" "${COMFY_ROOT}" "${PYTHON_BIN}"
+"${PROJECT_ROOT}/scripts/install_flux2_klein_enhancer.sh" "${COMFY_ROOT}"
 RES4LYF_DIR="${COMFY_ROOT}/custom_nodes/RES4LYF"
 if ! git -C "${RES4LYF_DIR}" grep -q 'res_2s' -- '*.py' || \
    ! git -C "${RES4LYF_DIR}" grep -q 'res_2m' -- '*.py'; then
@@ -91,6 +92,6 @@ PY
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}"
 
 echo
-echo "Installed three FLUX.2 Klein 9B workflows, the hoi4_portraits node pack, RES4LYF samplers, and all 15 pinned model files, including every LoRA test checkpoint."
+echo "Installed three FLUX.2 Klein 9B workflows, identity preservation, the hoi4_portraits node pack, RES4LYF samplers, and all 11 pinned model files."
 echo "Models are under ${COMFY_ROOT}/models/{diffusion_models,text_encoders,vae,loras,upscale_models,background_removal,detection}."
 echo "Open Workflows > hoi4_portraits after restarting ComfyUI."

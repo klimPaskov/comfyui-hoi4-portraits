@@ -10,6 +10,9 @@ $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $Res4lyfUrl = "https://github.com/ClownsharkBatwing/RES4LYF.git"
 $Res4lyfRevision = "e716cd1cb2c5cff90131bf4914b75b75a0489d48"
 $Res4lyfDirectory = Join-Path $ComfyUIRoot "custom_nodes\RES4LYF"
+$EnhancerUrl = "https://github.com/capitan01R/ComfyUI-Flux2Klein-Enhancer.git"
+$EnhancerRevision = "6804643bff9a20926106427ff08d5b1bd2e49861"
+$EnhancerDirectory = Join-Path $ComfyUIRoot "custom_nodes\ComfyUI-Flux2Klein-Enhancer"
 $Candidates = @(
     (Join-Path $ComfyUIRoot ".venv\Scripts\python.exe"),
     (Join-Path (Split-Path -Parent $ComfyUIRoot) "python_embeded\python.exe"),
@@ -35,6 +38,20 @@ if (Test-Path (Join-Path $Res4lyfDirectory ".git")) {
 & git -C $Res4lyfDirectory checkout --detach $Res4lyfRevision
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & $Python -m pip install -r (Join-Path $Res4lyfDirectory "requirements.txt")
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+if (Test-Path (Join-Path $EnhancerDirectory ".git")) {
+    & git -C $EnhancerDirectory fetch --depth 1 origin $EnhancerRevision
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+} elseif (Test-Path $EnhancerDirectory) {
+    throw "$EnhancerDirectory exists but is not a Git checkout. Move it aside, then rerun this installer."
+} else {
+    & git clone --filter=blob:none --no-checkout $EnhancerUrl $EnhancerDirectory
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    & git -C $EnhancerDirectory fetch --depth 1 origin $EnhancerRevision
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+& git -C $EnhancerDirectory checkout --detach $EnhancerRevision
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 & $Python -c "import cv2, scipy" 2>$null
@@ -63,4 +80,4 @@ if (-not $SkipModels) {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-Write-Host "Installed three FLUX.2 Klein 9B workflows, the hoi4_portraits node pack, and RES4LYF samplers. Restart ComfyUI, then open Workflows > hoi4_portraits."
+Write-Host "Installed three FLUX.2 Klein 9B workflows, identity preservation, the hoi4_portraits node pack, and RES4LYF samplers. Restart ComfyUI, then open Workflows > hoi4_portraits."

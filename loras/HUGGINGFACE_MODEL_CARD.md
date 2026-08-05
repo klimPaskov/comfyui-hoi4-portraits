@@ -20,9 +20,9 @@ ComfyUI workflows. Trigger: `hoi4_portrait`.
 
 ## Checkpoints
 
-Files are available at training steps 1500, 2000, 2250, 2500, 3000, 3500,
-and 4000. The workflow initially selects
-`hoi4_portrait_flux2_klein9b_lora_000001500.safetensors`.
+The supported checkpoints are training steps 2000, 2250, and 2500. The
+workflows select step 2250 by default:
+`hoi4_portrait_flux2_klein9b_lora_000002250.safetensors`.
 
 ## Workflow settings
 

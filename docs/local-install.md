@@ -4,7 +4,7 @@
 
 - ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
-- The 15 pinned model files occupy 20.58 GB decimal (19.16 GiB). A 30 GB
+- The 11 pinned model files occupy 20.62 GB decimal (19.20 GiB). A 30 GB
   RunPod volume is sufficient for the repository, ComfyUI files, normal caches,
   and outputs. The downloader writes directly to the ComfyUI model folders and
   does not create a second model copy.
@@ -22,11 +22,12 @@ python scripts/build_workflows.py
 python scripts/validate_workflows.py
 python scripts/install_workflows.py --comfyui-root /path/to/ComfyUI
 scripts/install_res4lyf.sh /path/to/ComfyUI
+scripts/install_flux2_klein_enhancer.sh /path/to/ComfyUI
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI
 ```
 
 The installer copies three editor workflows, the `hoi4_portraits` node pack,
-installs the pinned RES4LYF sampler extension, and adds the bundled backgrounds
+installs the pinned RES4LYF sampler and FLUX.2 Klein identity extensions, and adds the bundled backgrounds
 and one sample source image. It does not replace the existing ComfyUI
 installation.
 
@@ -56,7 +57,8 @@ token is written into this repository or a workflow.
 On a RunPod image that already contains ComfyUI, the installer places the
 workflows in `user/default/workflows/hoi4_portraits`, installs the project nodes
 in `custom_nodes/hoi4_portraits`, installs the pinned RES4LYF
-samplers in `custom_nodes/RES4LYF`, copies the backgrounds and
+samplers in `custom_nodes/RES4LYF`, installs identity preservation in
+`custom_nodes/ComfyUI-Flux2Klein-Enhancer`, copies the backgrounds and
 sample input into `input/`, and downloads every entry in `models.json` to
 the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
 `loras`, `upscale_models`, and `background_removal`):
@@ -74,7 +76,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The final verification pass validates all 15 files. If a download is
+The final verification pass validates all 11 files. If a download is
 interrupted or a file was placed in the wrong folder,
 the installer stops instead of silently using it. `HF_TOKEN` is read only from
 the process environment and is never printed or saved. Confirm that
@@ -105,7 +107,7 @@ From PowerShell:
 The release self-extractor accepts an empty destination directory:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.11-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.11"
+.\HOI4-Portrait-Workflows-v2.5.0-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.5.0"
 ```
 
 Use `-SkipModels` if the model files are already installed. Start with:

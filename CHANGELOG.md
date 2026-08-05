@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## 2.5.0 — 2026-08-05
+
+- Selected training step 2250 as the default HOI4 portrait LoRA and retained
+  only steps 2000, 2250, and 2500 for comparison.
+- Added source-reference feature transfer and doubled reference conditioning
+  to improve identity consistency across the three portrait candidates.
+- Added the optional Adonis restoration LoKr after RealESRGAN and kept FLUX
+  restoration disabled by default.
+- Added the pinned FLUX.2 Klein Enhancer extension to local, Windows, and
+  RunPod installation paths.
+
 ## 2.4.11 — 2026-08-05
 
 - Renamed the bundled custom-node package to `hoi4_portraits` to reflect its

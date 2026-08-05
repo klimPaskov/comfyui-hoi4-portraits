@@ -224,11 +224,48 @@
         "1",
         0
       ],
-      "lora_name": "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
+      "lora_name": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
       "strength_model": 1.0
     },
     "_meta": {
       "title": "Apply HOI4 LoRA — strength editable here"
+    }
+  },
+  "191": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "adonis_base.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Apply Adonis restoration LoKr — strength editable here"
+    }
+  },
+  "190": {
+    "class_type": "IdentityFeatureTransferFinal",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "preset": "MID_LOCK",
+      "enabled": true,
+      "reference_index": 0,
+      "reference_indices": "all",
+      "similarity_floor": 0.2,
+      "softmax_temperature": 0.07,
+      "mask_threshold": 1.0,
+      "double_blocks": "0-7:mid_img=0.55",
+      "single_blocks": "0:mid_img=0.22; 1:mid_img=0.24; 3:mid_img=0.28; 4:mid_img=0.22; 6:mid_img=0.26; 7:mid_img=0.27; 8:mid_img=0.25; 10:mid_img=0.27; 13:mid_img=0.27",
+      "debug": false,
+      "mask_behavior": "focus_only"
+    },
+    "_meta": {
+      "title": "Source identity lock — MID_LOCK; use HARD_LOCK for difficult portraits"
     }
   },
   "20": {
@@ -238,7 +275,7 @@
         "2",
         0
       ],
-      "text": "Restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
+      "text": "uhdmanscale, restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, blur, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
     },
     "_meta": {
       "title": "Conservative restoration instructions"
@@ -309,7 +346,7 @@
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "1",
+        "191",
         0
       ],
       "positive": [
@@ -425,42 +462,50 @@
     }
   },
   "43": {
-    "class_type": "ReferenceLatent",
+    "class_type": "Flux2KleinMultiReferenceLatent",
     "inputs": {
       "conditioning": [
         "40",
         0
       ],
-      "latent": [
+      "latent_1": [
+        "42",
+        0
+      ],
+      "latent_2": [
         "42",
         0
       ]
     },
     "_meta": {
-      "title": "Attach reference to positive conditioning"
+      "title": "Attach source twice to positive conditioning"
     }
   },
   "44": {
-    "class_type": "ReferenceLatent",
+    "class_type": "Flux2KleinMultiReferenceLatent",
     "inputs": {
       "conditioning": [
         "41",
         0
       ],
-      "latent": [
+      "latent_1": [
+        "42",
+        0
+      ],
+      "latent_2": [
         "42",
         0
       ]
     },
     "_meta": {
-      "title": "Attach reference to negative conditioning"
+      "title": "Attach source twice to negative conditioning"
     }
   },
   "50": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "4",
+        "190",
         0
       ],
       "positive": [
@@ -559,42 +604,50 @@
     }
   },
   "63": {
-    "class_type": "ReferenceLatent",
+    "class_type": "Flux2KleinMultiReferenceLatent",
     "inputs": {
       "conditioning": [
         "60",
         0
       ],
-      "latent": [
+      "latent_1": [
+        "62",
+        0
+      ],
+      "latent_2": [
         "62",
         0
       ]
     },
     "_meta": {
-      "title": "Attach reference to positive conditioning"
+      "title": "Attach source twice to positive conditioning"
     }
   },
   "64": {
-    "class_type": "ReferenceLatent",
+    "class_type": "Flux2KleinMultiReferenceLatent",
     "inputs": {
       "conditioning": [
         "61",
         0
       ],
-      "latent": [
+      "latent_1": [
+        "62",
+        0
+      ],
+      "latent_2": [
         "62",
         0
       ]
     },
     "_meta": {
-      "title": "Attach reference to negative conditioning"
+      "title": "Attach source twice to negative conditioning"
     }
   },
   "70": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "4",
+        "190",
         0
       ],
       "positive": [
@@ -693,42 +746,50 @@
     }
   },
   "83": {
-    "class_type": "ReferenceLatent",
+    "class_type": "Flux2KleinMultiReferenceLatent",
     "inputs": {
       "conditioning": [
         "80",
         0
       ],
-      "latent": [
+      "latent_1": [
+        "82",
+        0
+      ],
+      "latent_2": [
         "82",
         0
       ]
     },
     "_meta": {
-      "title": "Attach reference to positive conditioning"
+      "title": "Attach source twice to positive conditioning"
     }
   },
   "84": {
-    "class_type": "ReferenceLatent",
+    "class_type": "Flux2KleinMultiReferenceLatent",
     "inputs": {
       "conditioning": [
         "81",
         0
       ],
-      "latent": [
+      "latent_1": [
+        "82",
+        0
+      ],
+      "latent_2": [
         "82",
         0
       ]
     },
     "_meta": {
-      "title": "Attach reference to negative conditioning"
+      "title": "Attach source twice to negative conditioning"
     }
   },
   "90": {
     "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
-        "4",
+        "190",
         0
       ],
       "positive": [
