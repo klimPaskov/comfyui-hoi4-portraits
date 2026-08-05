@@ -1,5 +1,15 @@
 # Testing and audit notes
 
+## Live editor validation
+
+The source workflow was loaded in ComfyUI with the crop node and RES4LYF
+samplers installed. The compact pipeline and an opened candidate stage show the
+saved layout used by the release.
+
+![Live source workflow validation](assets/workflows/workflow-live-validation.jpg)
+
+![Live candidate stage validation](assets/workflows/workflow-live-candidate-stage.jpg)
+
 ## Deterministic build
 
 ```bash
@@ -22,10 +32,9 @@ The validator checks:
 - supported workflow classes only;
 - no Krea dependencies;
 - required `SaveImage` outputs;
-- every node contained inside its declared group;
-- no overlapping groups;
-- no overlapping/too-close nodes across the entire canvas, including group boundaries;
-- one group per node and no node extending beyond its group;
+- one native subgraph instance for every editor stage;
+- valid boundary links and supported nodes inside every stage;
+- no overlapping or too-close cards on the main canvas or inside a stage;
 - RealESRGAN → optional FLUX restoration order;
 - restoration switch bypass to direct ESRGAN output;
 - LoRA-patched model ancestry for the final styled decode;

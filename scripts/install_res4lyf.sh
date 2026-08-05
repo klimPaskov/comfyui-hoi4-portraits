@@ -27,6 +27,28 @@ else
 fi
 git -C "${RES4LYF_DIR}" checkout --detach "${RES4LYF_REV}"
 
+# RES samplers use float64 for scalar math, but Apple MPS cannot allocate a
+# float64 tensor. Keep upstream precision on CUDA/CPU and select float32 only
+# when the active sampling device is MPS.
+"${PYTHON_BIN}" - "${RES4LYF_DIR}/beta/rk_sampler_beta.py" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+source = path.read_text(encoding="utf-8")
+needle = "    work_device    = 'cpu' if EO(\"work_device_cpu\") else model_device\n"
+guard = (
+    needle
+    + "    if getattr(work_device, \"type\", str(work_device)) == \"mps\":\n"
+    + "        default_dtype = torch.float32\n"
+)
+if guard not in source:
+    if needle not in source:
+        raise SystemExit(f"Cannot apply the RES4LYF MPS compatibility guard to {path}")
+    path.write_text(source.replace(needle, guard, 1), encoding="utf-8")
+print("Applied the RES4LYF Apple MPS precision guard.")
+PY
+
 if command -v uv >/dev/null 2>&1; then
   uv pip install --python "${PYTHON_BIN}" -r "${RES4LYF_DIR}/requirements.txt"
 else

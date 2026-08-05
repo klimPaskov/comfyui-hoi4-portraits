@@ -52,6 +52,8 @@ accept the FLUX.2 model agreement and create a read-only token.
 ## First run
 
 1. Open the workflow JSON, not the `.api.json` file, in the ComfyUI editor.
+   Double-click a stage card to edit its nodes; use the back arrow above the
+   canvas to return to the complete workflow.
 2. Check every model loader. A red loader means the named file has not been installed or imported.
    The retrained 1500-step LoRA is selected initially; choose another installed
    checkpoint in `LoraLoaderModelOnly` when comparing training steps.

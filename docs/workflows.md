@@ -2,8 +2,10 @@
 
 ## Shared design
 
-Each workflow is arranged in clearly labeled groups that run from left to
-right. The groups are visual organization and do not change execution order.
+Each workflow opens as a small set of native ComfyUI stage cards. Double-click
+a card to inspect or edit its nodes, then use the back arrow above the canvas
+to return to the pipeline. The source workflow keeps its three candidate
+branches in separate cards so prompts and sampler controls are easy to compare.
 
 The source and text-to-image model stack is:
 
@@ -12,9 +14,6 @@ The source and text-to-image model stack is:
 3. `VAELoader` — FLUX.2 VAE.
 4. `PrimitiveFloat` and `LoraLoaderModelOnly` — the visible LoRA strength control, defaulting to `1.00`, followed by the HOI4 adapter.
 5. `FluxGuidance`, `CFGGuider`, `KSamplerSelect`, and `Flux2Scheduler`: guidance 1 and CFG 1, with the branch-specific sampler and step count.
-
-The processing workflow loads the base model, text encoder, and VAE for its
-optional restoration pass. It does not load the LoRA or run a style pass.
 
 Restoration and text-to-image use Euler with six steps. The three source
 candidates use Euler/6 steps, `res_2s`/4 steps, and `res_2m`/8 steps.
@@ -59,11 +58,9 @@ natural color before the three LoRA candidates are generated.
 
 ## Processing workflow
 
-This graph ends after source processing. It contains automatic cropping with
-a manual override,
-RealESRGAN, and optional FLUX.2 restoration pass, with the restoration switch
-off by default. It saves the processed 832 × 1120 image and the 156 × 210
-game-size image. It does not load or apply the project LoRA.
+This graph ends after automatic cropping, RealESRGAN, and the optional FLUX.2
+restoration pass. The restoration switch is off by default. It saves the
+processed 832 × 1120 image and the 156 × 210 game-size image.
 
 ## Text to image
 
@@ -78,19 +75,11 @@ candidate. The text-to-image prompt begins with `hoi4_portrait,` and uses a
 short general person description. Neither prompt should request a game/style,
 background, lighting, palette, or rendering behavior.
 
-## Background replacement invariant
+## Background replacement
 
-The background branch is deliberately downstream of `VAEDecode` for the HOI4
-LoRA sampler. In the source API graph, nodes `123`, `133`, and `143` mask final
-candidates `51`, `71`, and `91`; nodes `124`, `134`, and `144` composite them;
-and switches `125`, `135`, and `145` select the unchanged or composited result.
-All three switches use shared `PrimitiveBoolean` node `119`, which is false by
-default. The text-to-image API keeps the same invariant with its single branch
-(`63`, `65`, `66`). No background node is an ancestor of a LoRA-styled
-`VAEDecode`.
-
-The project checks this dependency order. Background processing belongs after
-portrait generation.
+Background masking and compositing run only after the final LoRA portrait has
+been decoded. The red switch is off by default and applies the selected
+background to all three source candidates when enabled.
 
 `RemoveBackground` returns a foreground mask. Do not insert `InvertMask` into
 any of the candidate branches, or the foreground/background regions will swap.
@@ -104,5 +93,3 @@ any of the candidate branches, or the foreground/background regions will swap.
 - Keep the exact model family and encoder type together.
 - Keep 832 and 1120 divisible by 16 if you change the work canvas.
 - Do not connect a background composite into a reference-latent encode.
-- Re-run `python scripts/validate_workflows.py` after structural edits.
-- Edit [`scripts/build_workflows.py`](../scripts/build_workflows.py), then regenerate, instead of hand-editing six JSON files independently.

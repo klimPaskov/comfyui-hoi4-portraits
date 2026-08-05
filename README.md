@@ -56,20 +56,11 @@ three LoRA candidates, and final portrait checkpoints in the editor layout.
 The source workflow opens with FLUX restoration disabled. Queueing the graph
 fills its preview nodes with the completed images.
 
-```mermaid
-flowchart LR
-    A["Source portrait"] --> CROP["Adjustable head-and-shoulders crop"]
-    CROP --> B["RealESRGAN x2"]
-    B --> C{"FLUX restoration enabled?"}
-    C -->|No| D["HOI4 LoRA styling ×3 seeds"]
-    C -->|Yes| R["FLUX.2 conservative restoration"] --> D
-    D --> E["Three final candidates"]
-    E --> F{"Replace background?"}
-    F -->|No| G["Save 3 masters + 3 game PNGs"]
-    F -->|Yes| H["BiRefNet mask + composite each candidate"] --> G
-```
+The editor opens as eight organized stage cards. Controls and preview areas stay
+visible on the cards; double-click a card to inspect or edit every node inside.
+Use the back arrow above the canvas to return to the full pipeline.
 
-![Source workflow overview](docs/assets/workflows/source-workflow-overview.png)
+![Source workflow overview](docs/assets/workflows/source-workflow-overview.jpg)
 
 ### 1. Crop and restore the source
 
@@ -80,14 +71,14 @@ multi-person source, turn on **Use manual crop for difficult sources** and set
 its box around the intended person. The selected crop then goes through
 RealESRGAN.
 
-![Source crop and RealESRGAN processing](docs/assets/workflows/step-1-source-processing.png)
+![Source crop and RealESRGAN processing](docs/assets/workflows/step-1-source-processing.jpg)
 
 ### 2. Load FLUX.2 and the portrait LoRA
 
 This group loads the FLUX.2 Klein 9B base model, Qwen text encoder, VAE, and
 the portrait LoRA. The visible **LoRA strength** control defaults to `1.00`.
 
-![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.png)
+![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.jpg)
 
 ### 3. Optionally restore with FLUX.2
 
@@ -96,20 +87,21 @@ ESRGAN. The restoration switch is off by default, so that pass does not run.
 The red toggle opens at `false`; turn it on when a damaged source needs the
 additional pass.
 
-![Optional FLUX.2 restoration stage](docs/assets/workflows/step-3-flux-restoration.png)
+![Optional FLUX.2 restoration stage](docs/assets/workflows/step-3-flux-restoration.jpg)
 
 ### 4. Apply the portrait LoRA
 
 The selected processed portrait becomes the reference and starting image for
 three independent LoRA styling passes. Each pass uses a different seed, so one
 queue produces three candidates from the same input. Each branch has its own
-editable identity prompt. Keep its identity text and add only deliberate
+stage card and editable identity prompt. Double-click a candidate card to edit
+its controls. Keep its identity text and add only deliberate
 changes, such as `wearing a military hat`, to the candidate you want to test.
 Candidate 1 uses Euler with 6 steps, candidate 2 uses `res_2s` with 4 steps,
 and candidate 3 uses `res_2m` with 8 steps. All three default to denoise
 `1.00`, LoRA strength `1.00`, CFG 1, and FLUX guidance 1.
 
-![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.png)
+![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.jpg)
 
 ### 5. Optionally replace the background
 
@@ -118,7 +110,7 @@ shared switch controls all three candidate branches; it is off by default and
 runs only after crop, restoration, and LoRA generation. Its red toggle also
 opens at `false`.
 
-![Final-image background replacement stage](docs/assets/workflows/step-5-background-replacement.png)
+![Final-image background replacement stage](docs/assets/workflows/step-5-background-replacement.jpg)
 
 ### 6. Preview and save
 
@@ -126,7 +118,7 @@ Preview all three results, save three 832 × 1120 master PNGs, and create three
 156 × 210 game-size portraits. Candidate files use `candidate_1`,
 `candidate_2`, and `candidate_3` prefixes under `ComfyUI/output/hoi4_portraits/`.
 
-![Preview and output stage](docs/assets/workflows/step-6-preview-and-save.png)
+![Preview and output stage](docs/assets/workflows/step-6-preview-and-save.jpg)
 
 Background removal and compositing consume the **decoded final LoRA-styled
 images**. They do not run on the source, the ESRGAN image, or the restoration
@@ -142,16 +134,6 @@ The processing workflow uses the same crop and RealESRGAN preparation as the
 source workflow, then offers the same FLUX restoration switch. It stops before
 LoRA styling and saves the selected processed image as both 832 × 1120 and
 156 × 210 PNG files.
-
-```mermaid
-flowchart LR
-    A["Source portrait"] --> B["Head-and-shoulders crop"]
-    B --> C["RealESRGAN x2"]
-    C --> D{"FLUX restoration enabled?"}
-    D -->|No| E["Processed portrait"]
-    D -->|Yes| F["FLUX.2 restoration"] --> E
-    E --> G["Save 832 × 1120 + 156 × 210"]
-```
 
 ## Fastest start: Comfy Cloud
 
@@ -322,7 +304,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.7-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.7"
+.\HOI4-Portrait-Workflows-v2.4.8-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.8"
 ```
 
 ## Prompting

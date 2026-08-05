@@ -8,6 +8,12 @@ if [[ ! -f "${COMFY_ROOT}/main.py" ]]; then
 fi
 
 PYTHON_BIN=""
+if [[ -f "${COMFY_ROOT}/.hoi4_python" ]]; then
+  SAVED_PYTHON="$(head -n 1 "${COMFY_ROOT}/.hoi4_python")"
+  if [[ -x "${SAVED_PYTHON}" ]]; then
+    PYTHON_BIN="${SAVED_PYTHON}"
+  fi
+fi
 for candidate in \
   "${COMFY_ROOT}/.venv/bin/python" \
   "${COMFY_ROOT}/venv/bin/python" \
@@ -17,7 +23,7 @@ for candidate in \
   /workspace/venv/bin/python \
   /workspace/.venv/bin/python \
   /opt/pyvenv/bin/python; do
-  if [[ -x "${candidate}" ]]; then
+  if [[ -z "${PYTHON_BIN}" && -x "${candidate}" ]]; then
     PYTHON_BIN="${candidate}"
     break
   fi

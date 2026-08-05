@@ -118,6 +118,8 @@ def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
     if not isinstance(groups, list) or not groups:
         return [f"{path}: groups must be a non-empty list"]
     by_id = {node.get("id"): node for node in nodes}
+    subgraphs = ui.get("definitions", {}).get("subgraphs", [])
+    subgraph_ids = {definition.get("id") for definition in subgraphs}
     if len(by_id) != len(nodes) or None in by_id:
         errors.append(f"{path}: node ids must be present and unique")
 
@@ -148,7 +150,7 @@ def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
 
     for node in nodes:
         class_type = str(node.get("type", ""))
-        if class_type not in ALLOWED_CORE_NODES:
+        if class_type not in ALLOWED_CORE_NODES and class_type not in subgraph_ids:
             errors.append(f"{path}: non-core or unapproved node {class_type!r}")
         if class_type.casefold().startswith("hoi4") or "krea" in class_type.casefold():
             errors.append(f"{path}: forbidden custom/Krea node {class_type!r}")
@@ -199,6 +201,76 @@ def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
             b = [*other.get("pos", [0, 0]), *other.get("size", [0, 0])]
             if _overlap(a, b, padding=LAYOUT_NODE_PADDING):
                 errors.append(f"{path}: nodes overlap or are too close: {node.get('id')} and {other.get('id')}")
+    errors.extend(_validate_subgraphs(path, subgraphs, nodes))
+    return errors
+
+
+def _validate_subgraphs(path: Path, definitions: list[Any], root_nodes: list[dict[str, Any]]) -> list[str]:
+    errors: list[str] = []
+    if not definitions:
+        return [f"{path}: editor workflow must use native stage subgraphs"]
+    root_types = {node.get("type") for node in root_nodes}
+    definition_ids = {definition.get("id") for definition in definitions if isinstance(definition, dict)}
+    if root_types != definition_ids or len(root_nodes) != len(definitions):
+        errors.append(f"{path}: every stage subgraph must have exactly one root instance")
+    for definition in definitions:
+        if not isinstance(definition, dict):
+            errors.append(f"{path}: malformed subgraph definition")
+            continue
+        name = definition.get("name", "unnamed")
+        nodes = definition.get("nodes", [])
+        links = definition.get("links", [])
+        by_id = {node.get("id"): node for node in nodes}
+        root_instance = next((node for node in root_nodes if node.get("type") == definition.get("id")), None)
+        if root_instance is not None:
+            proxies = root_instance.get("properties", {}).get("proxyWidgets", [])
+            values = root_instance.get("widgets_values", [])
+            if len(proxies) != len(values):
+                errors.append(f"{path}: subgraph {name} proxy controls and values are out of sync")
+            for index, proxy in enumerate(proxies):
+                if not (isinstance(proxy, list) and len(proxy) == 2 and str(proxy[0]).isdigit()):
+                    errors.append(f"{path}: subgraph {name} has a malformed proxy control")
+                    continue
+                internal = by_id.get(int(proxy[0]))
+                if internal is None:
+                    errors.append(f"{path}: subgraph {name} proxy control targets a missing node")
+                    continue
+                internal_values = internal.get("widgets_values", [])
+                if index < len(values) and internal_values and values[index] != internal_values[0]:
+                    errors.append(f"{path}: subgraph {name} proxy value differs from its internal control")
+        if not nodes:
+            errors.append(f"{path}: subgraph {name} is empty")
+            continue
+        for node in nodes:
+            class_type = str(node.get("type", ""))
+            if class_type not in ALLOWED_CORE_NODES:
+                errors.append(f"{path}: subgraph {name} uses unapproved node {class_type!r}")
+            if node.get("mode") != 0:
+                errors.append(f"{path}: subgraph {name} node {node.get('id')} is bypassed or muted")
+        link_ids: set[int] = set()
+        for link in links:
+            if not isinstance(link, dict):
+                errors.append(f"{path}: subgraph {name} has a malformed link")
+                continue
+            link_id = link.get("id")
+            if not isinstance(link_id, int) or link_id in link_ids:
+                errors.append(f"{path}: subgraph {name} has a duplicate or invalid link id")
+            link_ids.add(link_id)
+            source_id = link.get("origin_id")
+            target_id = link.get("target_id")
+            if source_id != -10 and source_id not in by_id:
+                errors.append(f"{path}: subgraph {name} link {link_id} has a missing source")
+            if target_id != -20 and target_id not in by_id:
+                errors.append(f"{path}: subgraph {name} link {link_id} has a missing target")
+        for index, node in enumerate(nodes):
+            a = [*node.get("pos", [0, 0]), *node.get("size", [0, 0])]
+            for other in nodes[index + 1 :]:
+                b = [*other.get("pos", [0, 0]), *other.get("size", [0, 0])]
+                if _overlap(a, b, padding=LAYOUT_NODE_PADDING):
+                    errors.append(
+                        f"{path}: subgraph {name} nodes overlap or are too close: "
+                        f"{node.get('id')} and {other.get('id')}"
+                    )
     return errors
 
 

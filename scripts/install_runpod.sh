@@ -10,6 +10,15 @@ if [[ ! -f "${COMFY_ROOT}/main.py" ]]; then
 fi
 
 PYTHON_BIN=""
+if command -v pgrep >/dev/null 2>&1; then
+  COMFY_PID="$(pgrep -f '[p]ython.*[m]ain.py' | head -n 1 || true)"
+  if [[ -n "${COMFY_PID}" ]]; then
+    RUNNING_PYTHON="$(readlink -f "/proc/${COMFY_PID}/exe" 2>/dev/null || true)"
+    if [[ -x "${RUNNING_PYTHON}" ]]; then
+      PYTHON_BIN="${RUNNING_PYTHON}"
+    fi
+  fi
+fi
 for candidate in \
   "${COMFY_ROOT}/.venv/bin/python" \
   "${COMFY_ROOT}/venv/bin/python" \
@@ -19,7 +28,7 @@ for candidate in \
   /workspace/venv/bin/python \
   /workspace/.venv/bin/python \
   /opt/pyvenv/bin/python; do
-  if [[ -x "${candidate}" ]]; then
+  if [[ -z "${PYTHON_BIN}" && -x "${candidate}" ]]; then
     PYTHON_BIN="${candidate}"
     break
   fi
@@ -27,8 +36,20 @@ done
 if [[ -z "${PYTHON_BIN}" ]]; then
   PYTHON_BIN="$(command -v python3)"
 fi
+if [[ ! -x "${PYTHON_BIN}" ]]; then
+  echo "No usable Python interpreter was found for ComfyUI." >&2
+  exit 1
+fi
+printf '%s\n' "${PYTHON_BIN}" > "${COMFY_ROOT}/.hoi4_python"
 
 "${PROJECT_ROOT}/scripts/install_res4lyf.sh" "${COMFY_ROOT}" "${PYTHON_BIN}"
+RES4LYF_DIR="${COMFY_ROOT}/custom_nodes/RES4LYF"
+if ! git -C "${RES4LYF_DIR}" grep -q 'res_2s' -- '*.py' || \
+   ! git -C "${RES4LYF_DIR}" grep -q 'res_2m' -- '*.py'; then
+  echo "The installed RES4LYF checkout does not contain the required res_2s and res_2m samplers." >&2
+  exit 1
+fi
+echo "Verified the pinned RES4LYF sampler sources. ComfyUI registers them during restart."
 
 if command -v uv >/dev/null 2>&1; then
   uv pip install --python "${PYTHON_BIN}" -r "${PROJECT_ROOT}/custom_nodes/adaptive_portrait_crop/requirements.txt"

@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## 2.4.8 — 2026-08-05
+
+- Reorganized the editor workflows into compact native stage cards with
+  separate source candidates and collision-checked internal layouts.
+- Made RunPod installation and restart use the same detected ComfyUI Python,
+  with checks for the crop node and pinned RES4LYF sampler sources.
+- Added an Apple MPS precision guard for the RES sampler extension; CUDA keeps
+  its upstream precision behavior.
+- Replaced the workflow screenshots and expanded live-editor validation.
+
 ## 2.4.7 — 2026-08-05
 
 - Set the three source candidates to Euler/6 steps, `res_2s`/4 steps, and

@@ -16,6 +16,13 @@ from scripts.release import build_release_artifacts
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _editor_nodes(ui: dict) -> list[dict]:
+    definitions = ui.get("definitions", {}).get("subgraphs", [])
+    if definitions:
+        return [node for definition in definitions for node in definition.get("nodes", [])]
+    return ui.get("nodes", [])
+
+
 class WorkflowTests(unittest.TestCase):
     def test_committed_workflows_match_deterministic_builder(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -41,7 +48,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_hashes_match_files(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.7")
+        self.assertEqual(manifest["schema_version"], "2.4.8")
         for item in manifest["workflows"]:
             for path_key, digest_key in (("workflow_json", "sha256"), ("api_json", "api_sha256")):
                 data = (ROOT / item[path_key]).read_bytes()
@@ -123,7 +130,7 @@ class WorkflowTests(unittest.TestCase):
                 continue
             toggles = [
                 node
-                for node in ui["nodes"]
+                for node in _editor_nodes(ui)
                 if node["title"].startswith("Toggle FLUX restoration")
                 or node["title"].startswith("Toggle replacement background")
             ]
@@ -139,7 +146,7 @@ class WorkflowTests(unittest.TestCase):
             "hoi4_portrait_processing_only.json",
         ):
             ui = json.loads((ROOT / "workflows" / filename).read_text(encoding="utf-8"))
-            nodes = {node["id"]: node for node in ui["nodes"]}
+            nodes = {node["id"]: node for node in _editor_nodes(ui)}
             self.assertEqual(nodes[27]["widgets_values"], [17, "fixed"], filename)
             if filename.endswith("9b_source.json"):
                 for node_id in (47, 67, 87):
@@ -270,10 +277,14 @@ class InstallerAndModelTests(unittest.TestCase):
         windows = (ROOT / "scripts" / "install_windows.ps1").read_text(encoding="utf-8")
         self.assertIn("https://github.com/ClownsharkBatwing/RES4LYF.git", shell)
         self.assertIn(revision, shell)
+        self.assertIn('getattr(work_device, \\"type\\", str(work_device)) == \\"mps\\"', shell)
         self.assertIn("install_res4lyf.sh", runpod)
         self.assertIn(revision, windows)
         self.assertIn('/workspace/runpod-slim/venv/bin/python', runpod)
         self.assertIn('AdaptivePortraitCrop did not register', runpod)
+        self.assertIn("git -C \"${RES4LYF_DIR}\" grep -q 'res_2s'", runpod)
+        self.assertIn("git -C \"${RES4LYF_DIR}\" grep -q 'res_2m'", runpod)
+        self.assertNotIn("import custom_nodes.RES4LYF", runpod)
 
 
 class DocumentationTests(unittest.TestCase):
@@ -350,13 +361,13 @@ class DocumentationTests(unittest.TestCase):
     def test_readme_contains_source_workflow_visual_walkthrough(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         screenshots = (
-            "source-workflow-overview.png",
-            "step-1-source-processing.png",
-            "step-2-model-setup.png",
-            "step-3-flux-restoration.png",
-            "step-4-lora-styling.png",
-            "step-5-background-replacement.png",
-            "step-6-preview-and-save.png",
+            "source-workflow-overview.jpg",
+            "step-1-source-processing.jpg",
+            "step-2-model-setup.jpg",
+            "step-3-flux-restoration.jpg",
+            "step-4-lora-styling.jpg",
+            "step-5-background-replacement.jpg",
+            "step-6-preview-and-save.jpg",
         )
         for screenshot in screenshots:
             asset = ROOT / "docs" / "assets" / "workflows" / screenshot

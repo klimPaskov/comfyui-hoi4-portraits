@@ -101,7 +101,7 @@ From PowerShell:
 The release self-extractor accepts an empty destination directory:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.4.7-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.7"
+.\HOI4-Portrait-Workflows-v2.4.8-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.4.8"
 ```
 
 Use `-SkipModels` if the model files are already installed. Start with:
