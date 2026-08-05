@@ -46,7 +46,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_workflow_files_exist(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.6.0")
+        self.assertEqual(manifest["schema_version"], "2.6.1")
         for item in manifest["workflows"]:
             self.assertTrue((ROOT / item["workflow_json"]).is_file())
             self.assertTrue((ROOT / item["api_json"]).is_file())
@@ -54,6 +54,18 @@ class WorkflowTests(unittest.TestCase):
     def test_editor_model_urls_are_revision_pinned(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
             self.assertNotIn("/resolve/main/", workflow.read_text(encoding="utf-8"), workflow.name)
+
+    def test_identity_runtime_uses_compatible_onnx_dependencies(self) -> None:
+        installers = [
+            ROOT / "scripts" / "install_pulid_flux2.sh",
+            ROOT / "scripts" / "install_windows.ps1",
+        ]
+        for installer in installers:
+            text = installer.read_text(encoding="utf-8")
+            self.assertIn("onnx==1.22.0", text, installer.name)
+            self.assertIn("ml_dtypes==0.5.4", text, installer.name)
+            self.assertNotIn("ml_dtypes==0.3.2", text, installer.name)
+            self.assertIn("float4_e2m1fn", text, installer.name)
 
     def test_selected_lora_and_sampling_defaults(self) -> None:
         self.assertEqual(build_workflows.STYLE_LORA_STRENGTH, 1.0)

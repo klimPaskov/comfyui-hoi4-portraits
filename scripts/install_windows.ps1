@@ -90,15 +90,18 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 $IdentityPackages = @(
     "insightface==1.0.1",
+    "onnx==1.22.0",
     "onnxruntime-gpu>=1.16.0",
     "open-clip-torch==3.2.0",
     "safetensors>=0.4.0",
     "huggingface_hub>=0.34.0",
     "hf_xet>=1.1.0",
     "numpy<2.0.0",
-    "ml_dtypes==0.3.2"
+    "ml_dtypes==0.5.4"
 )
 & $Python -m pip install $IdentityPackages
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& $Python -c "import ml_dtypes, onnx; assert hasattr(ml_dtypes, 'float4_e2m1fn'), 'ml_dtypes is incompatible with ONNX'; print(f'Verified ONNX {onnx.__version__} with ml_dtypes {ml_dtypes.__version__}.')"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & $Python -c "import onnxruntime; assert 'CUDAExecutionProvider' in onnxruntime.get_available_providers()"
 if ($LASTEXITCODE -ne 0) {

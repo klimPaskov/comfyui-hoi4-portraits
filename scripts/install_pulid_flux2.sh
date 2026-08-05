@@ -33,19 +33,32 @@ git -C "${PULID_DIR}" checkout --detach "${PULID_REV}"
 
 PACKAGES=(
   "insightface==1.0.1"
+  "onnx==1.22.0"
   "onnxruntime-gpu>=1.16.0"
   "open-clip-torch==3.2.0"
   "safetensors>=0.4.0"
   "huggingface_hub>=0.34.0"
   "hf_xet>=1.1.0"
   "numpy<2.0.0"
-  "ml_dtypes==0.3.2"
+  "ml_dtypes==0.5.4"
 )
 if command -v uv >/dev/null 2>&1; then
   uv pip install --python "${PYTHON_BIN}" "${PACKAGES[@]}"
 else
   "${PYTHON_BIN}" -m pip install "${PACKAGES[@]}"
 fi
+
+"${PYTHON_BIN}" - <<'PY'
+import ml_dtypes
+import onnx
+
+if not hasattr(ml_dtypes, "float4_e2m1fn"):
+    raise SystemExit(
+        "The installed ml_dtypes package is incompatible with ONNX: "
+        "float4_e2m1fn is missing."
+    )
+print(f"Verified ONNX {onnx.__version__} with ml_dtypes {ml_dtypes.__version__}.")
+PY
 
 if ! "${PYTHON_BIN}" - <<'PY'
 import onnxruntime

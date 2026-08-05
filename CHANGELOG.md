@@ -2,6 +2,13 @@
 
 All notable project changes are recorded here.
 
+## 2.6.1 — 2026-08-05
+
+- Fixed the PuLID runtime installation by pinning compatible ONNX and
+  `ml_dtypes` versions on RunPod and Windows.
+- Added an early dependency check so incompatible environments stop before
+  downloading the EVA-CLIP model.
+
 ## 2.6.0 — 2026-08-05
 
 - Added nine source-workflow variants for controlled identity-preservation
