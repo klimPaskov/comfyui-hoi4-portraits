@@ -277,7 +277,7 @@
     "class_type": "ReferenceLatent",
     "inputs": {
       "conditioning": [
-        "33",
+        "20",
         0
       ],
       "latent": [
@@ -305,8 +305,8 @@
       "title": "Attach reference to negative conditioning"
     }
   },
-  "26": {
-    "class_type": "CFGGuider",
+  "30": {
+    "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
         "1",
@@ -320,93 +320,21 @@
         "24",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Guide conservative restoration pass"
-    }
-  },
-  "27": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 17
-    },
-    "_meta": {
-      "title": "Conservative restoration seed"
-    }
-  },
-  "28": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "euler"
-    },
-    "_meta": {
-      "title": "Use euler sampler"
-    }
-  },
-  "29": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
+      "latent_image": [
+        "22",
+        0
+      ],
+      "seed": 17,
+      "sampler_name": "euler",
       "steps": 6,
+      "denoise": 1.0,
+      "cfg": 1.0,
+      "guidance": 1.0,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 6 steps"
-    }
-  },
-  "25": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "29",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Denoise 1.00 (editable)"
-    }
-  },
-  "33": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "20",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Conservative restoration guidance 1"
-    }
-  },
-  "30": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "27",
-        0
-      ],
-      "guider": [
-        "26",
-        0
-      ],
-      "sampler": [
-        "28",
-        0
-      ],
-      "sigmas": [
-        "25",
-        1
-      ],
-      "latent_image": [
-        "22",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Run conservative restoration pass"
+      "title": "Conservative restoration sampling controls"
     }
   },
   "31": {
@@ -500,7 +428,7 @@
     "class_type": "ReferenceLatent",
     "inputs": {
       "conditioning": [
-        "53",
+        "40",
         0
       ],
       "latent": [
@@ -528,8 +456,8 @@
       "title": "Attach reference to negative conditioning"
     }
   },
-  "46": {
-    "class_type": "CFGGuider",
+  "50": {
+    "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
         "4",
@@ -543,93 +471,21 @@
         "44",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Guide candidate 1 identity lora pass"
-    }
-  },
-  "47": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 42
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA seed"
-    }
-  },
-  "48": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "euler"
-    },
-    "_meta": {
-      "title": "Use euler sampler"
-    }
-  },
-  "49": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
+      "latent_image": [
+        "42",
+        0
+      ],
+      "seed": 42,
+      "sampler_name": "euler",
       "steps": 6,
+      "denoise": 1.0,
+      "cfg": 1.0,
+      "guidance": 1.0,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 6 steps"
-    }
-  },
-  "45": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "49",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Denoise 1.00 (editable)"
-    }
-  },
-  "53": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "40",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA guidance 1"
-    }
-  },
-  "50": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "47",
-        0
-      ],
-      "guider": [
-        "46",
-        0
-      ],
-      "sampler": [
-        "48",
-        0
-      ],
-      "sigmas": [
-        "45",
-        1
-      ],
-      "latent_image": [
-        "42",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Run candidate 1 identity lora pass"
+      "title": "Candidate 1 identity LoRA sampling controls"
     }
   },
   "51": {
@@ -706,7 +562,7 @@
     "class_type": "ReferenceLatent",
     "inputs": {
       "conditioning": [
-        "73",
+        "60",
         0
       ],
       "latent": [
@@ -734,8 +590,8 @@
       "title": "Attach reference to negative conditioning"
     }
   },
-  "66": {
-    "class_type": "CFGGuider",
+  "70": {
+    "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
         "4",
@@ -749,93 +605,21 @@
         "64",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Guide candidate 2 identity lora pass"
-    }
-  },
-  "67": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 43
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA seed"
-    }
-  },
-  "68": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "res_2s"
-    },
-    "_meta": {
-      "title": "Use res_2s sampler"
-    }
-  },
-  "69": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
+      "latent_image": [
+        "62",
+        0
+      ],
+      "seed": 43,
+      "sampler_name": "res_2s",
       "steps": 4,
+      "denoise": 1.0,
+      "cfg": 1.0,
+      "guidance": 1.0,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 4 steps"
-    }
-  },
-  "65": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "69",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Denoise 1.00 (editable)"
-    }
-  },
-  "73": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "60",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA guidance 1"
-    }
-  },
-  "70": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "67",
-        0
-      ],
-      "guider": [
-        "66",
-        0
-      ],
-      "sampler": [
-        "68",
-        0
-      ],
-      "sigmas": [
-        "65",
-        1
-      ],
-      "latent_image": [
-        "62",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Run candidate 2 identity lora pass"
+      "title": "Candidate 2 identity LoRA sampling controls"
     }
   },
   "71": {
@@ -912,7 +696,7 @@
     "class_type": "ReferenceLatent",
     "inputs": {
       "conditioning": [
-        "93",
+        "80",
         0
       ],
       "latent": [
@@ -940,8 +724,8 @@
       "title": "Attach reference to negative conditioning"
     }
   },
-  "86": {
-    "class_type": "CFGGuider",
+  "90": {
+    "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
         "4",
@@ -955,93 +739,21 @@
         "84",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Guide candidate 3 identity lora pass"
-    }
-  },
-  "87": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 44
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA seed"
-    }
-  },
-  "88": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "res_2m"
-    },
-    "_meta": {
-      "title": "Use res_2m sampler"
-    }
-  },
-  "89": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
+      "latent_image": [
+        "82",
+        0
+      ],
+      "seed": 44,
+      "sampler_name": "res_2m",
       "steps": 8,
+      "denoise": 1.0,
+      "cfg": 1.0,
+      "guidance": 1.0,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 8 steps"
-    }
-  },
-  "85": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "89",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Denoise 1.00 (editable)"
-    }
-  },
-  "93": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "80",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA guidance 1"
-    }
-  },
-  "90": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "87",
-        0
-      ],
-      "guider": [
-        "86",
-        0
-      ],
-      "sampler": [
-        "88",
-        0
-      ],
-      "sigmas": [
-        "85",
-        1
-      ],
-      "latent_image": [
-        "82",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Run candidate 3 identity lora pass"
+      "title": "Candidate 3 identity LoRA sampling controls"
     }
   },
   "91": {

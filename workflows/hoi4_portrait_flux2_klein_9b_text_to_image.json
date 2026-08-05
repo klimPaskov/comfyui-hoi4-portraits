@@ -1,6 +1,6 @@
 {
   "last_node_id": 73,
-  "last_link_id": 27,
+  "last_link_id": 22,
   "nodes": [
     {
       "id": 1,
@@ -168,7 +168,7 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            14
+            9
           ]
         }
       ],
@@ -234,7 +234,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            5
+            4
           ]
         }
       ],
@@ -293,7 +293,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            4
+            5
           ]
         }
       ],
@@ -344,7 +344,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            7
+            6
           ]
         }
       ],
@@ -406,7 +406,7 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            12
+            7
           ]
         }
       ],
@@ -423,16 +423,16 @@
       ]
     },
     {
-      "id": 30,
-      "type": "FluxGuidance",
-      "title": "FLUX guidance 1",
+      "id": 27,
+      "type": "Flux2PortraitSampler",
+      "title": "HOI4 portrait sampling controls",
       "pos": [
-        2060,
-        740
+        2440,
+        120
       ],
       "size": [
-        300,
-        100
+        390,
+        430
       ],
       "color": "#7a568e",
       "bgcolor": "#7a568e",
@@ -441,70 +441,56 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "link": 4
-        },
-        {
-          "name": "guidance",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "guidance"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            6
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "FluxGuidance",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": [
-        1.0
-      ]
-    },
-    {
-      "id": 23,
-      "type": "CFGGuider",
-      "title": "Guide the HOI4 LoRA generation",
-      "pos": [
-        2060,
-        300
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
           "name": "model",
           "type": "MODEL",
-          "link": 5
+          "link": 4
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 6
+          "link": 5
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
           "link": 7
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "seed"
+          }
+        },
+        {
+          "name": "sampler_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "sampler_name"
+          }
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "steps"
+          }
+        },
+        {
+          "name": "denoise",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "denoise"
+          }
         },
         {
           "name": "cfg",
@@ -513,144 +499,13 @@
           "widget": {
             "name": "cfg"
           }
-        }
-      ],
-      "outputs": [
+        },
         {
-          "name": "GUIDER",
-          "type": "GUIDER",
-          "links": [
-            9
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CFGGuider",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": [
-        1.0
-      ]
-    },
-    {
-      "id": 24,
-      "type": "RandomNoise",
-      "title": "Portrait seed",
-      "pos": [
-        2060,
-        520
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "noise_seed",
-          "type": "INT",
+          "name": "guidance",
+          "type": "FLOAT",
           "link": null,
           "widget": {
-            "name": "noise_seed"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "NOISE",
-          "type": "NOISE",
-          "links": [
-            8
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "RandomNoise",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": [
-        42,
-        "randomize"
-      ]
-    },
-    {
-      "id": 25,
-      "type": "KSamplerSelect",
-      "title": "Use Euler sampler",
-      "pos": [
-        2440,
-        140
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "sampler_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "sampler_name"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "SAMPLER",
-          "type": "SAMPLER",
-          "links": [
-            10
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "KSamplerSelect",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": [
-        "euler"
-      ]
-    },
-    {
-      "id": 26,
-      "type": "Flux2Scheduler",
-      "title": "FLUX.2 schedule - 6 steps",
-      "pos": [
-        2440,
-        340
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "steps",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "steps"
+            "name": "guidance"
           }
         },
         {
@@ -672,98 +527,38 @@
       ],
       "outputs": [
         {
-          "name": "SIGMAS",
-          "type": "SIGMAS",
+          "name": "sampled_latent",
+          "type": "LATENT",
           "links": [
-            11
+            8
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Flux2Scheduler",
-        "cnr_id": "comfy-core",
+        "Node name for S&R": "Flux2PortraitSampler",
+        "cnr_id": "adaptive-portrait-crop",
         "ver": "0.8.2",
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
+        42,
+        "randomize",
+        "euler",
         6,
+        1.0,
+        1.0,
+        1.0,
         832,
         1120
       ]
-    },
-    {
-      "id": 27,
-      "type": "SamplerCustomAdvanced",
-      "title": "Generate the HOI4 portrait",
-      "pos": [
-        2440,
-        540
-      ],
-      "size": [
-        320,
-        150
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "noise",
-          "type": "NOISE",
-          "link": 8
-        },
-        {
-          "name": "guider",
-          "type": "GUIDER",
-          "link": 9
-        },
-        {
-          "name": "sampler",
-          "type": "SAMPLER",
-          "link": 10
-        },
-        {
-          "name": "sigmas",
-          "type": "SIGMAS",
-          "link": 11
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 12
-        }
-      ],
-      "outputs": [
-        {
-          "name": "output",
-          "type": "LATENT",
-          "links": [
-            13
-          ]
-        },
-        {
-          "name": "denoised_output",
-          "type": "LATENT",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SamplerCustomAdvanced",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": []
     },
     {
       "id": 28,
       "type": "VAEDecode",
       "title": "Decode final styled portrait",
       "pos": [
-        2860,
-        540
+        2900,
+        180
       ],
       "size": [
         300,
@@ -772,18 +567,18 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 13,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 13
+          "link": 8
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 14
+          "link": 9
         }
       ],
       "outputs": [
@@ -791,10 +586,10 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
+            10,
+            13,
             15,
-            18,
-            20,
-            22
+            17
           ]
         }
       ],
@@ -821,13 +616,13 @@
       "color": "#7a568e",
       "bgcolor": "#7a568e",
       "flags": {},
-      "order": 14,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 15
+          "link": 10
         }
       ],
       "outputs": [
@@ -860,7 +655,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 15,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -877,7 +672,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            16
+            11
           ]
         },
         {
@@ -912,13 +707,13 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 16,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 16
+          "link": 11
         },
         {
           "name": "upscale_method",
@@ -958,7 +753,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            19
+            14
           ]
         }
       ],
@@ -990,7 +785,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 17,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -1007,7 +802,7 @@
           "name": "BACKGROUND_REMOVAL",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            17
+            12
           ]
         }
       ],
@@ -1043,18 +838,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 18,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 17
+          "link": 12
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 18
+          "link": 13
         }
       ],
       "outputs": [
@@ -1062,7 +857,7 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            21
+            16
           ]
         }
       ],
@@ -1089,18 +884,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 19,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 19
+          "link": 14
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 20
+          "link": 15
         },
         {
           "name": "x",
@@ -1129,7 +924,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 21
+          "link": 16
         }
       ],
       "outputs": [
@@ -1137,7 +932,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            23
+            18
           ]
         }
       ],
@@ -1168,7 +963,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 20,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -1182,12 +977,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 22
+          "link": 17
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 23
+          "link": 18
         }
       ],
       "outputs": [
@@ -1195,9 +990,9 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            24,
-            25,
-            26
+            19,
+            20,
+            21
           ]
         }
       ],
@@ -1226,13 +1021,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 21,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 24
+          "link": 19
         }
       ],
       "outputs": [
@@ -1265,13 +1060,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 22,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 25
+          "link": 20
         },
         {
           "name": "filename_prefix",
@@ -1314,13 +1109,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 23,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 26
+          "link": 21
         },
         {
           "name": "upscale_method",
@@ -1360,7 +1155,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            27
+            22
           ]
         }
       ],
@@ -1392,13 +1187,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 24,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 27
+          "link": 22
         },
         {
           "name": "filename_prefix",
@@ -1454,78 +1249,38 @@
     ],
     [
       4,
-      20,
-      0,
-      30,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      5,
       4,
       0,
-      23,
+      27,
       0,
       "MODEL"
     ],
     [
-      6,
-      30,
+      5,
+      20,
       0,
-      23,
+      27,
       1,
+      "CONDITIONING"
+    ],
+    [
+      6,
+      21,
+      0,
+      27,
+      2,
       "CONDITIONING"
     ],
     [
       7,
-      21,
-      0,
-      23,
-      2,
-      "CONDITIONING"
-    ],
-    [
-      8,
-      24,
-      0,
-      27,
-      0,
-      "NOISE"
-    ],
-    [
-      9,
-      23,
-      0,
-      27,
-      1,
-      "GUIDER"
-    ],
-    [
-      10,
-      25,
-      0,
-      27,
-      2,
-      "SAMPLER"
-    ],
-    [
-      11,
-      26,
-      0,
-      27,
-      3,
-      "SIGMAS"
-    ],
-    [
-      12,
       22,
       0,
       27,
-      4,
+      3,
       "LATENT"
     ],
     [
-      13,
+      8,
       27,
       0,
       28,
@@ -1533,7 +1288,7 @@
       "LATENT"
     ],
     [
-      14,
+      9,
       3,
       0,
       28,
@@ -1541,7 +1296,7 @@
       "VAE"
     ],
     [
-      15,
+      10,
       28,
       0,
       29,
@@ -1549,7 +1304,7 @@
       "IMAGE"
     ],
     [
-      16,
+      11,
       60,
       0,
       61,
@@ -1557,7 +1312,7 @@
       "IMAGE"
     ],
     [
-      17,
+      12,
       62,
       0,
       63,
@@ -1565,7 +1320,7 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      18,
+      13,
       28,
       0,
       63,
@@ -1573,7 +1328,7 @@
       "IMAGE"
     ],
     [
-      19,
+      14,
       61,
       0,
       65,
@@ -1581,7 +1336,7 @@
       "IMAGE"
     ],
     [
-      20,
+      15,
       28,
       0,
       65,
@@ -1589,7 +1344,7 @@
       "IMAGE"
     ],
     [
-      21,
+      16,
       63,
       0,
       65,
@@ -1597,7 +1352,7 @@
       "MASK"
     ],
     [
-      22,
+      17,
       28,
       0,
       66,
@@ -1605,7 +1360,7 @@
       "IMAGE"
     ],
     [
-      23,
+      18,
       65,
       0,
       66,
@@ -1613,7 +1368,7 @@
       "IMAGE"
     ],
     [
-      24,
+      19,
       66,
       0,
       70,
@@ -1621,7 +1376,7 @@
       "IMAGE"
     ],
     [
-      25,
+      20,
       66,
       0,
       71,
@@ -1629,7 +1384,7 @@
       "IMAGE"
     ],
     [
-      26,
+      21,
       66,
       0,
       72,
@@ -1637,7 +1392,7 @@
       "IMAGE"
     ],
     [
-      27,
+      22,
       72,
       0,
       73,
@@ -1651,8 +1406,8 @@
       "bounding": [
         1040,
         40,
-        430,
-        980
+        420,
+        770
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -1663,8 +1418,8 @@
       "bounding": [
         1500,
         40,
-        1800,
-        980
+        1740,
+        920
       ],
       "color": "#7a568e",
       "font_size": 24,
@@ -1675,8 +1430,8 @@
       "bounding": [
         3520,
         40,
-        1300,
-        720
+        1280,
+        650
       ],
       "color": "#8d5b5b",
       "font_size": 24,
@@ -1687,8 +1442,8 @@
       "bounding": [
         4900,
         40,
-        1100,
-        720
+        960,
+        640
       ],
       "color": "#596b82",
       "font_size": 24,
@@ -1708,10 +1463,10 @@
     "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
     "workflow_kind": "text_to_image",
     "project": "comfyui-hoi4-portraits",
-    "graph_version": "2.4.9",
+    "graph_version": "2.4.10",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors",
-    "core_nodes_only": true,
+    "core_nodes_only": false,
     "comfy_cloud_ready": true,
     "restoration_order": [],
     "flux_restoration_default": false,

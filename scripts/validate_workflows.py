@@ -18,6 +18,7 @@ GROUP_NODE_PADDING = 24
 
 ALLOWED_CORE_NODES = {
     "AdaptivePortraitCrop",
+    "Flux2PortraitSampler",
     "CFGGuider",
     "CLIPLoader",
     "CLIPTextEncode",
@@ -245,7 +246,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         errors.append(f"{path}: processing workflow must not advertise a style LoRA")
     elif not is_processing and extra.get("style_lora") != "hoi4_portrait_flux2_klein9b_lora_000001500.safetensors":
         errors.append(f"{path}: incorrect style LoRA")
-    expected_core_only = is_text_to_image
+    expected_core_only = False
     if extra.get("core_nodes_only") is not expected_core_only or extra.get("comfy_cloud_ready") is not True:
         errors.append(f"{path}: workflow compatibility metadata is incorrect")
     expected_background_order = "not_applicable_processing_only" if is_processing else "after_final_lora_styled_decode"
@@ -261,63 +262,30 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     elif api[lora_node]["inputs"].get("strength_model") != 1.0:
         errors.append(f"{path}: LoRA loader strength must default to 1.00")
 
-    cfg_nodes = [node for node in api.values() if node.get("class_type") == "CFGGuider"]
-    if not cfg_nodes or any(node.get("inputs", {}).get("cfg") != DEFAULT_CFG for node in cfg_nodes):
-        errors.append(f"{path}: every CFG guider must default to {DEFAULT_CFG:g}")
-    guidance_nodes = [node for node in api.values() if node.get("class_type") == "FluxGuidance"]
-    expected_guidance_count = 4 if is_source else 1
-    if len(guidance_nodes) != expected_guidance_count:
-        errors.append(f"{path}: expected {expected_guidance_count} FLUX guidance controls")
-    elif any(node.get("inputs", {}).get("guidance") != DEFAULT_GUIDANCE for node in guidance_nodes):
-        errors.append(f"{path}: every FLUX guidance control must default to {DEFAULT_GUIDANCE:g}")
-
-    expected_sampling = {"29": ("28", "euler", DEFAULT_STEPS)}
+    expected_sampling = {"30": ("euler", DEFAULT_STEPS)}
     if is_source:
         expected_sampling.update(
             {
-                "49": ("48", "euler", 6),
-                "69": ("68", "res_2s", 4),
-                "89": ("88", "res_2m", 8),
+                "50": ("euler", 6),
+                "70": ("res_2s", 4),
+                "90": ("res_2m", 8),
             }
         )
     elif is_text_to_image:
-        expected_sampling = {"26": ("25", "euler", DEFAULT_STEPS)}
-    scheduler_nodes = {
-        node_id: node for node_id, node in api.items() if node.get("class_type") == "Flux2Scheduler"
+        expected_sampling = {"27": ("euler", DEFAULT_STEPS)}
+    sampler_nodes = {
+        node_id: node for node_id, node in api.items() if node.get("class_type") == "Flux2PortraitSampler"
     }
-    if set(scheduler_nodes) != set(expected_sampling):
-        errors.append(f"{path}: FLUX.2 scheduler nodes do not match the workflow sampling policy")
-    for scheduler_id, (sampler_id, sampler_name, steps) in expected_sampling.items():
-        if scheduler_nodes.get(scheduler_id, {}).get("inputs", {}).get("steps") != steps:
-            errors.append(f"{path}: scheduler node {scheduler_id} must default to {steps} steps")
-        sampler = api.get(sampler_id, {})
-        if (
-            sampler.get("class_type") != "KSamplerSelect"
-            or sampler.get("inputs", {}).get("sampler_name") != sampler_name
-        ):
-            errors.append(f"{path}: sampler node {sampler_id} must default to {sampler_name}")
-
-    if not is_text_to_image:
-        denoise_nodes = {
-            node_id: node for node_id, node in api.items() if node.get("class_type") == "SplitSigmasDenoise"
-        }
-        expected_denoise_count = 4 if is_source else 1
-        if len(denoise_nodes) != expected_denoise_count:
-            errors.append(f"{path}: expected {expected_denoise_count} editable denoise controls")
-        expected_denoise = {"25": 1.0}
-        if is_source:
-            expected_denoise.update({"45": 1.0, "65": 1.0, "85": 1.0})
-        for node_id, node in denoise_nodes.items():
-            if node.get("inputs", {}).get("denoise") != expected_denoise.get(node_id):
-                errors.append(f"{path}: denoise node {node_id} has the wrong default")
-        for node_id, node in api.items():
-            if node.get("class_type") != "SamplerCustomAdvanced":
-                continue
-            sigmas = node.get("inputs", {}).get("sigmas")
-            if not (isinstance(sigmas, list) and sigmas[0] in denoise_nodes and sigmas[1] == 1):
-                errors.append(
-                    f"{path}: image-edit sampler {node_id} must use the low-sigmas output of its denoise control"
-                )
+    if set(sampler_nodes) != set(expected_sampling):
+        errors.append(f"{path}: portrait sampler nodes do not match the workflow sampling policy")
+    for sampler_id, (sampler_name, steps) in expected_sampling.items():
+        inputs = sampler_nodes.get(sampler_id, {}).get("inputs", {})
+        if inputs.get("sampler_name") != sampler_name or inputs.get("steps") != steps:
+            errors.append(f"{path}: sampler node {sampler_id} must use {sampler_name} for {steps} steps")
+        if inputs.get("denoise") != 1.0:
+            errors.append(f"{path}: sampler node {sampler_id} must default to denoise 1.00")
+        if inputs.get("cfg") != DEFAULT_CFG or inputs.get("guidance") != DEFAULT_GUIDANCE:
+            errors.append(f"{path}: sampler node {sampler_id} must default CFG and guidance to 1.00")
 
     if not is_processing:
         person_prompt_node = "20" if is_text_to_image else "40"
@@ -334,12 +302,10 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             )
             if person_prompt != expected:
                 errors.append(f"{path}: source identity prompt must use the concise editable default")
-            for prompt_id, guidance_id, reference_id in (("40", "53", "43"), ("60", "73", "63"), ("80", "93", "83")):
+            for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
                 if api.get(prompt_id, {}).get("inputs", {}).get("text") != expected:
                     errors.append(f"{path}: candidate prompt {prompt_id} must use the concise editable default")
-                if api.get(guidance_id, {}).get("inputs", {}).get("conditioning") != [prompt_id, 0]:
-                    errors.append(f"{path}: candidate prompt {prompt_id} must feed its own guidance control")
-                if api.get(reference_id, {}).get("inputs", {}).get("conditioning") != [guidance_id, 0]:
+                if api.get(reference_id, {}).get("inputs", {}).get("conditioning") != [prompt_id, 0]:
                     errors.append(f"{path}: candidate prompt {prompt_id} must affect only its own branch")
 
     preview_expectations: dict[str, list[Any]] = {}
@@ -430,13 +396,13 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: LoRA styling does not consume the restoration switch output")
         if api.get("30", {}).get("inputs", {}).get("latent_image") != ["22", 0]:
             errors.append(f"{path}: FLUX restoration does not start from the encoded cropped portrait")
-        style_branches = (("42", "50", "46"), ("62", "70", "66"), ("82", "90", "86"))
-        for latent_id, sampler_id, guider_id in style_branches:
+        style_branches = (("42", "50"), ("62", "70"), ("82", "90"))
+        for latent_id, sampler_id in style_branches:
             if api.get(latent_id, {}).get("inputs", {}).get("pixels") != ["32", 0]:
                 errors.append(f"{path}: LoRA branch {sampler_id} does not consume the restoration switch output")
             if api.get(sampler_id, {}).get("inputs", {}).get("latent_image") != [latent_id, 0]:
                 errors.append(f"{path}: LoRA branch {sampler_id} does not start from its encoded restored portrait")
-            if api.get(guider_id, {}).get("inputs", {}).get("model") != ["4", 0]:
+            if api.get(sampler_id, {}).get("inputs", {}).get("model") != ["4", 0]:
                 errors.append(f"{path}: LoRA branch {sampler_id} is not using the project LoRA model")
     elif is_processing:
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]

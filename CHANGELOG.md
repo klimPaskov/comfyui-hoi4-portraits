@@ -2,6 +2,15 @@
 
 All notable project changes are recorded here.
 
+## 2.4.10 — 2026-08-05
+
+- Combined seed, sampler, steps, denoise, CFG, guidance, and canvas size into
+  one visible sampling node per generation branch.
+- Tightened every workflow group to its actual contents and removed unused
+  space below the nodes.
+- Reduced the public source workflow from 96 to 72 visible nodes without
+  hiding its processing stages or previews.
+
 ## 2.4.9 — 2026-08-05
 
 - Restored fully visible workflow canvases with colored stage frames and no

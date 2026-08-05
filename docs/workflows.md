@@ -13,7 +13,7 @@ The source and text-to-image model stack is:
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
 3. `VAELoader` — FLUX.2 VAE.
 4. `LoraLoaderModelOnly` — loads the HOI4 adapter and exposes LoRA strength directly on the same node, defaulting to `1.00`.
-5. `FluxGuidance`, `CFGGuider`, `KSamplerSelect`, and `Flux2Scheduler`: guidance 1 and CFG 1, with the branch-specific sampler and step count.
+5. `FLUX.2 Portrait Sampler`: seed, sampler, steps, denoise, CFG, guidance, and canvas size for that branch.
 
 Restoration and text-to-image use Euler with six steps. The three source
 candidates use Euler/6 steps, `res_2s`/4 steps, and `res_2m`/8 steps.

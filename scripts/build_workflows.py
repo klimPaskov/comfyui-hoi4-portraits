@@ -25,7 +25,7 @@ SOURCE_STYLE_DENOISE = 1.0
 DEFAULT_STEPS = 6
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
-WORKFLOW_SCHEMA_VERSION = "2.4.9"
+WORKFLOW_SCHEMA_VERSION = "2.4.10"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
@@ -447,7 +447,6 @@ def _edit_stage(
     steps: int = DEFAULT_STEPS,
 ) -> tuple[list[Node], Link]:
     i = id_start
-    guidance_y_offset = 560 if id_start == 20 else 730
     nodes: list[Node] = [
         _node(
             i,
@@ -492,7 +491,7 @@ def _edit_stage(
             "Attach reference to positive conditioning",
             group,
             (x + 500, y + 200),
-            inputs={"conditioning": Link(i + 13), "latent": Link(i + 2)},
+            inputs={"conditioning": Link(i), "latent": Link(i + 2)},
             input_types={"conditioning": "CONDITIONING", "latent": "LATENT"},
             outputs=["CONDITIONING"],
             output_types=["CONDITIONING"],
@@ -509,104 +508,50 @@ def _edit_stage(
             output_types=["CONDITIONING"],
         ),
         _node(
-            i + 6,
-            "CFGGuider",
-            f"Guide {title_prefix.lower()} pass",
+            i + 10,
+            "Flux2PortraitSampler",
+            f"{title_prefix} sampling controls",
             group,
             (x + 900, y),
-            inputs={"model": model, "positive": Link(i + 3), "negative": Link(i + 4), "cfg": DEFAULT_CFG},
-            input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "cfg": "FLOAT"},
-            outputs=["GUIDER"],
-            output_types=["GUIDER"],
-            widgets=[DEFAULT_CFG],
-        ),
-        _node(
-            i + 7,
-            "RandomNoise",
-            f"{title_prefix} seed",
-            group,
-            (x + 900, y + 200),
-            inputs={"noise_seed": seed},
-            input_types={"noise_seed": "INT"},
-            outputs=["NOISE"],
-            output_types=["NOISE"],
-            widgets=[seed, seed_mode],
-        ),
-        _node(
-            i + 8,
-            "KSamplerSelect",
-            f"Use {sampler_name} sampler",
-            group,
-            (x + 900, y + 400),
-            inputs={"sampler_name": sampler_name},
-            input_types={"sampler_name": "COMBO"},
-            outputs=["SAMPLER"],
-            output_types=["SAMPLER"],
-            widgets=[sampler_name],
-        ),
-        _node(
-            i + 9,
-            "Flux2Scheduler",
-            f"FLUX.2 schedule - {steps} steps",
-            group,
-            (x + 900, y + 580),
-            inputs={"steps": steps, "width": 832, "height": 1120},
-            input_types={"steps": "INT", "width": "INT", "height": "INT"},
-            outputs=["SIGMAS"],
-            output_types=["SIGMAS"],
-            widgets=[steps, 832, 1120],
-        ),
-        _node(
-            i + 5,
-            "SplitSigmasDenoise",
-            f"Denoise {denoise:.2f} (editable)",
-            group,
-            (x + 900, y + 720),
-            inputs={"sigmas": Link(i + 9), "denoise": denoise},
-            input_types={"sigmas": "SIGMAS", "denoise": "FLOAT"},
-            outputs=["high_sigmas", "low_sigmas"],
-            output_types=["SIGMAS", "SIGMAS"],
-            widgets=[denoise],
-        ),
-        _node(
-            i + 13,
-            "FluxGuidance",
-            f"{title_prefix} guidance {DEFAULT_GUIDANCE:g}",
-            group,
-            (x, y + guidance_y_offset),
-            size=(250, 100),
-            inputs={"conditioning": Link(i), "guidance": DEFAULT_GUIDANCE},
-            input_types={"conditioning": "CONDITIONING", "guidance": "FLOAT"},
-            outputs=["CONDITIONING"],
-            output_types=["CONDITIONING"],
-            widgets=[DEFAULT_GUIDANCE],
-        ),
-        _node(
-            i + 10,
-            "SamplerCustomAdvanced",
-            f"Run {title_prefix.lower()} pass",
-            group,
-            (x + 1320, y + 140),
-            size=(300, 150),
+            size=(390, 430),
             inputs={
-                "noise": Link(i + 7),
-                "guider": Link(i + 6),
-                "sampler": Link(i + 8),
-                # SplitSigmasDenoise output 0 is the discarded high-sigma
-                # prefix. Output 1 is the schedule that must be sampled.
-                "sigmas": Link(i + 5, 1),
+                "model": model,
+                "positive": Link(i + 3),
+                "negative": Link(i + 4),
                 "latent_image": Link(i + 2),
+                "seed": seed,
+                "sampler_name": sampler_name,
+                "steps": steps,
+                "denoise": denoise,
+                "cfg": DEFAULT_CFG,
+                "guidance": DEFAULT_GUIDANCE,
+                "width": 832,
+                "height": 1120,
             },
-            input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
-            outputs=["output", "denoised_output"],
-            output_types=["LATENT", "LATENT"],
+            input_types={
+                "model": "MODEL",
+                "positive": "CONDITIONING",
+                "negative": "CONDITIONING",
+                "latent_image": "LATENT",
+                "seed": "INT",
+                "sampler_name": "COMBO",
+                "steps": "INT",
+                "denoise": "FLOAT",
+                "cfg": "FLOAT",
+                "guidance": "FLOAT",
+                "width": "INT",
+                "height": "INT",
+            },
+            outputs=["sampled_latent"],
+            output_types=["LATENT"],
+            widgets=[seed, seed_mode, sampler_name, steps, denoise, DEFAULT_CFG, DEFAULT_GUIDANCE, 832, 1120],
         ),
         _node(
             i + 11,
             "VAEDecode",
             f"Decode {title_prefix.lower()} result",
             group,
-            (x + 1320, y + 380),
+            (x + 1360, y + 80),
             inputs={"samples": Link(i + 10), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -617,7 +562,7 @@ def _edit_stage(
             "PreviewImage",
             f"Preview {title_prefix.lower()} result",
             group,
-            (x + 1320, y + 560),
+            (x + 1360, y + 290),
             size=(300, 220),
             inputs={"images": Link(i + 11)},
             input_types={"images": "IMAGE"},
@@ -669,83 +614,50 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             widgets=[832, 1120, 1],
         ),
         _node(
-            30,
-            "FluxGuidance",
-            f"FLUX guidance {DEFAULT_GUIDANCE:g}",
-            group,
-            (x + 520, 740),
-            inputs={"conditioning": Link(20), "guidance": DEFAULT_GUIDANCE},
-            input_types={"conditioning": "CONDITIONING", "guidance": "FLOAT"},
-            outputs=["CONDITIONING"],
-            output_types=["CONDITIONING"],
-            widgets=[DEFAULT_GUIDANCE],
-        ),
-        _node(
-            23,
-            "CFGGuider",
-            "Guide the HOI4 LoRA generation",
-            group,
-            (x + 520, 300),
-            inputs={"model": Link(4), "positive": Link(30), "negative": Link(21), "cfg": DEFAULT_CFG},
-            input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "cfg": "FLOAT"},
-            outputs=["GUIDER"],
-            output_types=["GUIDER"],
-            widgets=[DEFAULT_CFG],
-        ),
-        _node(
-            24,
-            "RandomNoise",
-            "Portrait seed",
-            group,
-            (x + 520, 520),
-            inputs={"noise_seed": 42},
-            input_types={"noise_seed": "INT"},
-            outputs=["NOISE"],
-            output_types=["NOISE"],
-            widgets=[42, "randomize"],
-        ),
-        _node(
-            25,
-            "KSamplerSelect",
-            "Use Euler sampler",
-            group,
-            (x + 900, 140),
-            inputs={"sampler_name": "euler"},
-            input_types={"sampler_name": "COMBO"},
-            outputs=["SAMPLER"],
-            output_types=["SAMPLER"],
-            widgets=["euler"],
-        ),
-        _node(
-            26,
-            "Flux2Scheduler",
-            f"FLUX.2 schedule - {DEFAULT_STEPS} steps",
-            group,
-            (x + 900, 340),
-            inputs={"steps": DEFAULT_STEPS, "width": 832, "height": 1120},
-            input_types={"steps": "INT", "width": "INT", "height": "INT"},
-            outputs=["SIGMAS"],
-            output_types=["SIGMAS"],
-            widgets=[DEFAULT_STEPS, 832, 1120],
-        ),
-        _node(
             27,
-            "SamplerCustomAdvanced",
-            "Generate the HOI4 portrait",
+            "Flux2PortraitSampler",
+            "HOI4 portrait sampling controls",
             group,
-            (x + 900, 540),
-            size=(320, 150),
-            inputs={"noise": Link(24), "guider": Link(23), "sampler": Link(25), "sigmas": Link(26), "latent_image": Link(22)},
-            input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
-            outputs=["output", "denoised_output"],
-            output_types=["LATENT", "LATENT"],
+            (x + 900, 120),
+            size=(390, 430),
+            inputs={
+                "model": Link(4),
+                "positive": Link(20),
+                "negative": Link(21),
+                "latent_image": Link(22),
+                "seed": 42,
+                "sampler_name": "euler",
+                "steps": DEFAULT_STEPS,
+                "denoise": 1.0,
+                "cfg": DEFAULT_CFG,
+                "guidance": DEFAULT_GUIDANCE,
+                "width": 832,
+                "height": 1120,
+            },
+            input_types={
+                "model": "MODEL",
+                "positive": "CONDITIONING",
+                "negative": "CONDITIONING",
+                "latent_image": "LATENT",
+                "seed": "INT",
+                "sampler_name": "COMBO",
+                "steps": "INT",
+                "denoise": "FLOAT",
+                "cfg": "FLOAT",
+                "guidance": "FLOAT",
+                "width": "INT",
+                "height": "INT",
+            },
+            outputs=["sampled_latent"],
+            output_types=["LATENT"],
+            widgets=[42, "randomize", "euler", DEFAULT_STEPS, 1.0, DEFAULT_CFG, DEFAULT_GUIDANCE, 832, 1120],
         ),
         _node(
             28,
             "VAEDecode",
             "Decode final styled portrait",
             group,
-            (x + 1320, 540),
+            (x + 1360, 180),
             inputs={"samples": Link(27), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -1330,7 +1242,20 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             output_links.setdefault((value.node_id, value.slot), []).append(link_id)
             link_id += 1
 
-    colors = {group.title: group.color for group in graph.groups}
+    tightened_groups: list[Group] = []
+    for group in graph.groups:
+        grouped_nodes = [node for node in graph.nodes if node.group == group.title]
+        if not grouped_nodes:
+            tightened_groups.append(group)
+            continue
+        group_x, group_y, _, _ = group.bounding
+        right = max(node.pos[0] + node.size[0] for node in grouped_nodes) + 40
+        bottom = max(node.pos[1] + node.size[1] for node in grouped_nodes) + 40
+        tightened_groups.append(
+            Group(group.title, (group_x, group_y, right - group_x, bottom - group_y), group.color)
+        )
+
+    colors = {group.title: group.color for group in tightened_groups}
     ui_nodes: list[dict[str, Any]] = []
     for order, node in enumerate(graph.nodes):
         inputs = []
@@ -1343,10 +1268,10 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         for slot, name in enumerate(node.outputs):
             outgoing = output_links.get((node.node_id, slot))
             outputs.append({"name": name, "type": node.output_types[slot], "links": outgoing or None})
-        is_adaptive_crop = node.class_type == "AdaptivePortraitCrop"
+        is_project_node = node.class_type in {"AdaptivePortraitCrop", "Flux2PortraitSampler"}
         properties: dict[str, Any] = {
             "Node name for S&R": node.class_type,
-            "cnr_id": "adaptive-portrait-crop" if is_adaptive_crop else "comfy-core",
+            "cnr_id": "adaptive-portrait-crop" if is_project_node else "comfy-core",
             "ver": "0.8.2",
             "hoi4_group": node.group,
         }
@@ -1382,7 +1307,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         "links": links,
         "groups": [
             {"title": group.title, "bounding": list(group.bounding), "color": group.color, "font_size": 24, "flags": {}}
-            for group in graph.groups
+            for group in tightened_groups
         ],
         "config": {},
         "extra": {
@@ -1394,7 +1319,9 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             "graph_version": WORKFLOW_SCHEMA_VERSION,
             "base_model": BASE_MODEL,
             "style_lora": STYLE_LORA,
-            "core_nodes_only": not any(node.class_type == "AdaptivePortraitCrop" for node in graph.nodes),
+            "core_nodes_only": not any(
+                node.class_type in {"AdaptivePortraitCrop", "Flux2PortraitSampler"} for node in graph.nodes
+            ),
             "comfy_cloud_ready": True,
             **graph.metadata,
         },
@@ -1429,7 +1356,10 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
                 "workflow_json": ui_path.relative_to(root).as_posix(),
                 "api_json": api_path.relative_to(root).as_posix(),
                 "node_count": len(graph.nodes),
-                "core_nodes_only": not any(node.class_type == "AdaptivePortraitCrop" for node in graph.nodes),
+                "core_nodes_only": not any(
+                    node.class_type in {"AdaptivePortraitCrop", "Flux2PortraitSampler"}
+                    for node in graph.nodes
+                ),
             }
         )
     manifest = {

@@ -275,7 +275,7 @@
     "class_type": "ReferenceLatent",
     "inputs": {
       "conditioning": [
-        "33",
+        "20",
         0
       ],
       "latent": [
@@ -303,8 +303,8 @@
       "title": "Attach reference to negative conditioning"
     }
   },
-  "26": {
-    "class_type": "CFGGuider",
+  "30": {
+    "class_type": "Flux2PortraitSampler",
     "inputs": {
       "model": [
         "1",
@@ -318,93 +318,21 @@
         "24",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Guide conservative restoration pass"
-    }
-  },
-  "27": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 17
-    },
-    "_meta": {
-      "title": "Conservative restoration seed"
-    }
-  },
-  "28": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "euler"
-    },
-    "_meta": {
-      "title": "Use euler sampler"
-    }
-  },
-  "29": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
+      "latent_image": [
+        "22",
+        0
+      ],
+      "seed": 17,
+      "sampler_name": "euler",
       "steps": 6,
+      "denoise": 1.0,
+      "cfg": 1.0,
+      "guidance": 1.0,
       "width": 832,
       "height": 1120
     },
     "_meta": {
-      "title": "FLUX.2 schedule - 6 steps"
-    }
-  },
-  "25": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "29",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Denoise 1.00 (editable)"
-    }
-  },
-  "33": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "20",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Conservative restoration guidance 1"
-    }
-  },
-  "30": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "27",
-        0
-      ],
-      "guider": [
-        "26",
-        0
-      ],
-      "sampler": [
-        "28",
-        0
-      ],
-      "sigmas": [
-        "25",
-        1
-      ],
-      "latent_image": [
-        "22",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Run conservative restoration pass"
+      "title": "Conservative restoration sampling controls"
     }
   },
   "31": {

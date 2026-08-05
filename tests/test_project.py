@@ -46,7 +46,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_manifest_workflow_files_exist(self) -> None:
         manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text())
-        self.assertEqual(manifest["schema_version"], "2.4.9")
+        self.assertEqual(manifest["schema_version"], "2.4.10")
         for item in manifest["workflows"]:
             self.assertTrue((ROOT / item["workflow_json"]).is_file())
             self.assertTrue((ROOT / item["api_json"]).is_file())
@@ -70,52 +70,38 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(len(loras), 1, workflow.name)
                 self.assertEqual(loras[0]["inputs"]["strength_model"], 1.0, workflow.name)
                 self.assertNotIn("19", api, workflow.name)
-            schedules = {
-                node_id: node["inputs"]["steps"]
+            portrait_samplers = {
+                node_id: node["inputs"]
                 for node_id, node in api.items()
-                if node["class_type"] == "Flux2Scheduler"
-            }
-            samplers = {
-                node_id: node["inputs"]["sampler_name"]
-                for node_id, node in api.items()
-                if node["class_type"] == "KSamplerSelect"
+                if node["class_type"] == "Flux2PortraitSampler"
             }
             if workflow.name.endswith("source.api.json"):
-                self.assertEqual(schedules, {"29": 6, "49": 6, "69": 4, "89": 8}, workflow.name)
                 self.assertEqual(
-                    samplers,
-                    {"28": "euler", "48": "euler", "68": "res_2s", "88": "res_2m"},
+                    {node_id: inputs["steps"] for node_id, inputs in portrait_samplers.items()},
+                    {"30": 6, "50": 6, "70": 4, "90": 8},
+                    workflow.name,
+                )
+                self.assertEqual(
+                    {node_id: inputs["sampler_name"] for node_id, inputs in portrait_samplers.items()},
+                    {"30": "euler", "50": "euler", "70": "res_2s", "90": "res_2m"},
                     workflow.name,
                 )
             elif workflow.name.endswith("text_to_image.api.json"):
-                self.assertEqual(schedules, {"26": 6}, workflow.name)
-                self.assertEqual(samplers, {"25": "euler"}, workflow.name)
+                self.assertEqual(set(portrait_samplers), {"27"}, workflow.name)
             else:
-                self.assertEqual(schedules, {"29": 6}, workflow.name)
-                self.assertEqual(samplers, {"28": "euler"}, workflow.name)
-            guiders = [node for node in api.values() if node["class_type"] == "CFGGuider"]
-            self.assertTrue(guiders, workflow.name)
-            self.assertTrue(all(node["inputs"]["cfg"] == 1.0 for node in guiders), workflow.name)
-            flux_guidance = [node for node in api.values() if node["class_type"] == "FluxGuidance"]
-            self.assertTrue(flux_guidance, workflow.name)
-            self.assertTrue(all(node["inputs"]["guidance"] == 1.0 for node in flux_guidance), workflow.name)
+                self.assertEqual(set(portrait_samplers), {"30"}, workflow.name)
+            self.assertTrue(all(node["cfg"] == 1.0 for node in portrait_samplers.values()), workflow.name)
+            self.assertTrue(all(node["guidance"] == 1.0 for node in portrait_samplers.values()), workflow.name)
+            self.assertTrue(all(node["denoise"] == 1.0 for node in portrait_samplers.values()), workflow.name)
             if workflow.name.endswith("source.api.json"):
                 self.assertIs(api["32"]["inputs"]["switch"], False)
                 self.assertEqual(
                     api["40"]["inputs"]["text"],
                     "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing.",
                 )
-                for prompt_id, guidance_id, reference_id in (("40", "53", "43"), ("60", "73", "63"), ("80", "93", "83")):
+                for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
                     self.assertEqual(api[prompt_id]["inputs"]["text"], build_workflows.STYLE_PROMPT)
-                    self.assertEqual(api[guidance_id]["inputs"]["conditioning"], [prompt_id, 0])
-                    self.assertEqual(api[reference_id]["inputs"]["conditioning"], [guidance_id, 0])
-                for denoise_id, sampler_id in (("25", "30"), ("45", "50"), ("65", "70"), ("85", "90")):
-                    self.assertEqual(api[denoise_id]["class_type"], "SplitSigmasDenoise")
-                    self.assertEqual(api[denoise_id]["inputs"]["denoise"], 1.0)
-                    self.assertEqual(api[sampler_id]["inputs"]["sigmas"], [denoise_id, 1])
-            elif workflow.name.endswith("processing_only.api.json"):
-                self.assertEqual(api["25"]["inputs"]["denoise"], 1.0)
-                self.assertEqual(api["30"]["inputs"]["sigmas"], ["25", 1])
+                    self.assertEqual(api[reference_id]["inputs"]["conditioning"], [prompt_id, 0])
 
     def test_feature_toggle_nodes_are_red_and_off_by_default(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
@@ -143,9 +129,9 @@ class WorkflowTests(unittest.TestCase):
         ):
             ui = json.loads((ROOT / "workflows" / filename).read_text(encoding="utf-8"))
             nodes = {node["id"]: node for node in _editor_nodes(ui)}
-            self.assertEqual(nodes[27]["widgets_values"], [17, "fixed"], filename)
+            self.assertEqual(nodes[30]["widgets_values"][:2], [17, "fixed"], filename)
             if filename.endswith("9b_source.json"):
-                for node_id in (47, 67, 87):
+                for node_id in (50, 70, 90):
                     self.assertEqual(nodes[node_id]["widgets_values"][1], "randomize", filename)
 
     def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
@@ -190,8 +176,8 @@ class WorkflowTests(unittest.TestCase):
             (ROOT / "workflows" / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text(encoding="utf-8")
         )
         self.assertEqual(build_workflows.SOURCE_CANDIDATE_COUNT, 3)
-        self.assertEqual([api[node_id]["inputs"]["noise_seed"] for node_id in ("47", "67", "87")], [42, 43, 44])
-        self.assertEqual(sum(node["class_type"] == "SamplerCustomAdvanced" for node in api.values()), 4)
+        self.assertEqual([api[node_id]["inputs"]["seed"] for node_id in ("50", "70", "90")], [42, 43, 44])
+        self.assertEqual(sum(node["class_type"] == "Flux2PortraitSampler" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "VAEDecode" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "RemoveBackground" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 6)
