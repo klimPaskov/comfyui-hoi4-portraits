@@ -4,11 +4,14 @@
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
+import io
 import json
 import os
 import shutil
 import subprocess
+import tarfile
 import zipfile
 from pathlib import Path
 
@@ -30,6 +33,14 @@ ROOT_FILES = {
 INCLUDED_TREES = {"backgrounds", "custom_nodes", "docs", "loras", "prompts", "scripts", "tests", "workflows"}
 IGNORED_PARTS = {"__pycache__", ".DS_Store"}
 MODEL_SUFFIXES = {".bin", ".ckpt", ".gguf", ".onnx", ".pt", ".pth", ".safetensors"}
+RUNPOD_SCRIPTS = {
+    "download_models.py",
+    "install_res4lyf.sh",
+    "install_runpod.sh",
+    "install_workflows.py",
+    "requirements-download.txt",
+    "start_runpod.sh",
+}
 
 
 def _sha256(data: bytes | Path) -> str:
@@ -88,6 +99,41 @@ def _build_zip(path: Path, files: list[Path], version: str) -> dict[str, str]:
     return checksums
 
 
+def _runpod_files() -> dict[str, Path]:
+    files: dict[str, Path] = {
+        "models.json": ROOT / "models.json",
+        "source_portrait.jpg": ROOT / "docs" / "assets" / "examples" / "source_portrait.jpg",
+        "workflows/manifest.json": ROOT / "workflows" / "manifest.json",
+    }
+    for path in sorted((ROOT / "workflows").glob("*.json")):
+        if not path.name.endswith(".api.json") and path.name != "manifest.json":
+            files[f"workflows/{path.name}"] = path
+    for path in sorted((ROOT / "backgrounds").glob("*.png")):
+        files[f"backgrounds/{path.name}"] = path
+    for path in sorted((ROOT / "custom_nodes" / "adaptive_portrait_crop").iterdir()):
+        if path.is_file():
+            files[f"custom_nodes/adaptive_portrait_crop/{path.name}"] = path
+    for name in sorted(RUNPOD_SCRIPTS):
+        files[f"scripts/{name}"] = ROOT / "scripts" / name
+    missing = [archive_path for archive_path, source in files.items() if not source.is_file()]
+    if missing:
+        raise RuntimeError(f"RunPod package inputs are missing: {', '.join(missing)}")
+    return files
+
+
+def _build_runpod_archive(path: Path, files: dict[str, Path]) -> None:
+    with path.open("wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", fileobj=raw, compresslevel=9, mtime=0) as compressed:
+            with tarfile.open(fileobj=compressed, mode="w") as archive:
+                for archive_path, source in sorted(files.items()):
+                    data = source.read_bytes()
+                    info = tarfile.TarInfo(archive_path)
+                    info.size = len(data)
+                    info.mtime = 0
+                    info.mode = 0o755 if source.suffix in {".py", ".sh"} else 0o644
+                    archive.addfile(info, io.BytesIO(data))
+
+
 def _build_windows(zip_path: Path, version: str) -> Path:
     """Cross-compile the model-free ZIP extractor for Windows x64."""
     payload = WINDOWS_SOURCE / "payload.zip"
@@ -128,14 +174,18 @@ def main(argv: list[str] | None = None) -> int:
     DIST.mkdir(exist_ok=True)
     for stale in DIST.iterdir():
         if stale.is_file() and (
-            stale.name.startswith("HOI4-Portrait-Workflows-") or stale.name == "SHA256SUMS.txt"
+            stale.name.startswith("HOI4-Portrait-Workflows-")
+            or stale.name.startswith("HOI4-Portrait-RunPod")
+            or stale.name == "SHA256SUMS.txt"
         ):
             stale.unlink()
     zip_path = DIST / f"HOI4-Portrait-Workflows-{version}.zip"
     checksums = _build_zip(zip_path, _selected_files(), version)
     windows_path = _build_windows(zip_path, version)
+    runpod_path = DIST / "HOI4-Portrait-RunPod.tar.gz"
+    _build_runpod_archive(runpod_path, _runpod_files())
     sums_path = DIST / "SHA256SUMS.txt"
-    artifacts = [zip_path, windows_path]
+    artifacts = [zip_path, windows_path, runpod_path]
     sums_path.write_text(
         "".join(f"{_sha256(path)}  {path.name}\n" for path in artifacts),
         encoding="utf-8",

@@ -44,8 +44,6 @@ if ! "${PYTHON_BIN}" -c "import huggingface_hub, hf_xet" >/dev/null 2>&1; then
   fi
 fi
 
-"${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/build_workflows.py"
-"${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/validate_workflows.py"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_workflows.py" --comfyui-root "${COMFY_ROOT}"
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}"
 

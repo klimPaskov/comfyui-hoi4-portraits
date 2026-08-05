@@ -5,6 +5,7 @@ import hashlib
 import io
 import json
 import re
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -229,6 +230,30 @@ class InstallerAndModelTests(unittest.TestCase):
         selected = build_release_artifacts._selected_files()
         forbidden = build_release_artifacts.MODEL_SUFFIXES
         self.assertFalse(any(path.suffix.casefold() in forbidden for path in selected))
+
+    def test_runpod_release_contains_only_runtime_files(self) -> None:
+        files = build_release_artifacts._runpod_files()
+        self.assertTrue(files)
+        self.assertFalse(any(path.endswith(".md") for path in files))
+        self.assertFalse(any(".api.json" in path for path in files))
+        self.assertEqual(
+            {path for path in files if path.startswith("scripts/")},
+            {f"scripts/{name}" for name in build_release_artifacts.RUNPOD_SCRIPTS},
+        )
+        self.assertEqual(
+            {path for path in files if path.startswith("workflows/")},
+            {
+                "workflows/manifest.json",
+                "workflows/hoi4_portrait_flux2_klein_9b_source.json",
+                "workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json",
+                "workflows/hoi4_portrait_processing_only.json",
+            },
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "runpod.tar.gz"
+            build_release_artifacts._build_runpod_archive(archive_path, files)
+            with tarfile.open(archive_path, "r:gz") as archive:
+                self.assertEqual(set(archive.getnames()), set(files))
 
     def test_windows_release_extractor_sources_are_current(self) -> None:
         source = ROOT / "packaging" / "windows" / "main.go"

@@ -62,12 +62,16 @@ the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
 `loras`, `upscale_models`, and `background_removal`):
 
 ```bash
+(
+set -euo pipefail
 export HF_TOKEN="hf_..."
-P=/workspace/comfyui-hoi4-portraits
 COMFY_ROOT=/workspace/runpod-slim/ComfyUI
+RUNTIME_DIR=/workspace/hoi4-portrait-runpod
 test -f "$COMFY_ROOT/main.py" || { echo "ComfyUI not found at $COMFY_ROOT; set COMFY_ROOT to the folder containing main.py."; exit 1; }
-if test -d "$P/.git"; then git -C "$P" pull --ff-only; else git clone --depth 1 https://github.com/klimPaskov/comfyui-hoi4-portraits.git "$P"; fi
-"$P/scripts/install_runpod.sh" "$COMFY_ROOT"
+mkdir -p "$RUNTIME_DIR"
+curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest/download/HOI4-Portrait-RunPod.tar.gz" | tar -xz -C "$RUNTIME_DIR"
+"$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT"
+)
 ```
 
 The final verification pass checks the locked size and SHA-256 for all 15
@@ -80,7 +84,7 @@ uses `/workspace/runpod-slim/ComfyUI`.
 Start ComfyUI after installation:
 
 ```bash
-/workspace/comfyui-hoi4-portraits/scripts/start_runpod.sh /workspace/runpod-slim/ComfyUI
+/workspace/hoi4-portrait-runpod/scripts/start_runpod.sh /workspace/runpod-slim/ComfyUI
 ```
 
 Supply `HF_TOKEN` to the pod environment before installation. The script does

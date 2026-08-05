@@ -35,7 +35,10 @@ def main(argv: list[str] | None = None) -> int:
         installed.append(str(destination))
     for background in sorted((ROOT / "backgrounds").glob("*.png")):
         _copy(background, comfy_root / "input" / background.name)
-    _copy(ROOT / "docs" / "assets" / "examples" / "source_portrait.jpg", comfy_root / "input" / "source_portrait.jpg")
+    sample_source = ROOT / "source_portrait.jpg"
+    if not sample_source.is_file():
+        sample_source = ROOT / "docs" / "assets" / "examples" / "source_portrait.jpg"
+    _copy(sample_source, comfy_root / "input" / "source_portrait.jpg")
     custom_node_source = ROOT / "custom_nodes" / "adaptive_portrait_crop"
     custom_node_destination = comfy_root / "custom_nodes" / "adaptive_portrait_crop"
     for source in sorted(custom_node_source.iterdir()):
