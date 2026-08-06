@@ -20,9 +20,8 @@ ComfyUI workflows. Trigger: `hoi4_portrait`.
 
 ## Checkpoints
 
-The supported checkpoints are training steps 2000, 2250, and 2500. The
-workflows select step 2250 by default:
-`hoi4_portrait_flux2_klein9b_lora_000002250.safetensors`.
+Model weights are not currently published. Compatible checkpoints must target
+`black-forest-labs/FLUX.2-klein-base-9B-fp8`.
 
 ## Workflow settings
 
@@ -39,16 +38,11 @@ workflows select step 2250 by default:
 [RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF). The repository
 installers add the pinned extension automatically.
 
-For source portraits, the graph crops to 832 × 1120 head-and-shoulders,
+For source portraits, the graph crops to 1024 × 1365 head-and-shoulders,
 applies RealESRGAN, and optionally runs FLUX restoration. It then encodes the
 processed image as both reference conditioning and sampler starting latent.
 Restoration uses a fixed seed and is off by default; the three styling branches
 use independent randomized seeds and separate prompts.
-
-The repository also provides a temporary
-[identity comparison pack](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/codex/portrait-pipeline/docs/identity-comparison.md)
-that holds these settings constant while testing native references, feature
-transfer, consistency adapters, RefControl, PuLID, and edit compositing.
 
 ## Source prompt
 

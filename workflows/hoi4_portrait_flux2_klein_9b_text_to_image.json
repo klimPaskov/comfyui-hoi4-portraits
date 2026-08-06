@@ -1,6 +1,6 @@
 {
   "last_node_id": 73,
-  "last_link_id": 22,
+  "last_link_id": 23,
   "nodes": [
     {
       "id": 1,
@@ -349,7 +349,7 @@
     {
       "id": 22,
       "type": "EmptyFlux2LatentImage",
-      "title": "Set 832 x 1120 portrait canvas",
+      "title": "Set 1024 x 1365 portrait canvas",
       "pos": [
         2060,
         120
@@ -403,8 +403,8 @@
         "hoi4_group": "04 HOI4 LoRA styling"
       },
       "widgets_values": [
-        832,
-        1120,
+        1024,
+        1365,
         1
       ]
     },
@@ -532,8 +532,8 @@
         1.0,
         1.0,
         1.0,
-        832,
-        1120
+        1024,
+        1365
       ]
     },
     {
@@ -570,10 +570,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            10,
-            13,
-            15,
-            17
+            10
           ]
         }
       ],
@@ -584,16 +581,16 @@
       "widgets_values": []
     },
     {
-      "id": 29,
-      "type": "PreviewImage",
-      "title": "Preview generated portrait before background replacement",
+      "id": 30,
+      "type": "ImageScale",
+      "title": "Normalize final portrait to exact 1024 x 1365",
       "pos": [
-        2860,
-        700
+        2900,
+        330
       ],
       "size": [
-        300,
-        220
+        340,
+        150
       ],
       "color": "#7a568e",
       "bgcolor": "#7a568e",
@@ -602,96 +599,9 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "images",
+          "name": "image",
           "type": "IMAGE",
           "link": 10
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 60,
-      "type": "LoadImage",
-      "title": "Load replacement background",
-      "pos": [
-        3600,
-        120
-      ],
-      "size": [
-        340,
-        300
-      ],
-      "color": "#8d5b5b",
-      "bgcolor": "#8d5b5b",
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "image"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            11
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage",
-        "hoi4_group": "05 Optional background - after generation"
-      },
-      "widgets_values": [
-        "hoi4_leader_portrait_background.png",
-        "image"
-      ]
-    },
-    {
-      "id": 61,
-      "type": "ImageScale",
-      "title": "Fit background to final master canvas",
-      "pos": [
-        3600,
-        500
-      ],
-      "size": [
-        340,
-        150
-      ],
-      "color": "#8d5b5b",
-      "bgcolor": "#8d5b5b",
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 11
         },
         {
           "name": "upscale_method",
@@ -731,7 +641,173 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            14
+            11,
+            14,
+            16,
+            18
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
+    },
+    {
+      "id": 29,
+      "type": "PreviewImage",
+      "title": "Preview generated portrait before background replacement",
+      "pos": [
+        2860,
+        700
+      ],
+      "size": [
+        300,
+        220
+      ],
+      "color": "#7a568e",
+      "bgcolor": "#7a568e",
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "04 HOI4 LoRA styling"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 60,
+      "type": "LoadImage",
+      "title": "Load replacement background",
+      "pos": [
+        3600,
+        120
+      ],
+      "size": [
+        340,
+        300
+      ],
+      "color": "#8d5b5b",
+      "bgcolor": "#8d5b5b",
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "image"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage",
+        "hoi4_group": "05 Optional background - after generation"
+      },
+      "widgets_values": [
+        "hoi4_leader_portrait_background.png",
+        "image"
+      ]
+    },
+    {
+      "id": 61,
+      "type": "ImageScale",
+      "title": "Fit background to final master canvas",
+      "pos": [
+        3600,
+        500
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "color": "#8d5b5b",
+      "bgcolor": "#8d5b5b",
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 12
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            15
           ]
         }
       ],
@@ -741,8 +817,8 @@
       },
       "widgets_values": [
         "lanczos",
-        832,
-        1120,
+        1024,
+        1365,
         "center"
       ]
     },
@@ -761,7 +837,7 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -778,7 +854,7 @@
           "name": "BACKGROUND_REMOVAL",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            12
+            13
           ]
         }
       ],
@@ -812,18 +888,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 12
+          "link": 13
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 13
+          "link": 14
         }
       ],
       "outputs": [
@@ -831,7 +907,7 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            16
+            17
           ]
         }
       ],
@@ -856,18 +932,18 @@
       "color": "#8d5b5b",
       "bgcolor": "#8d5b5b",
       "flags": {},
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
           "name": "destination",
           "type": "IMAGE",
-          "link": 14
+          "link": 15
         },
         {
           "name": "source",
           "type": "IMAGE",
-          "link": 15
+          "link": 16
         },
         {
           "name": "x",
@@ -896,7 +972,7 @@
         {
           "name": "mask",
           "type": "MASK",
-          "link": 16
+          "link": 17
         }
       ],
       "outputs": [
@@ -904,7 +980,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            18
+            19
           ]
         }
       ],
@@ -933,7 +1009,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -947,12 +1023,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 17
+          "link": 18
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 18
+          "link": 19
         }
       ],
       "outputs": [
@@ -960,9 +1036,9 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            19,
             20,
-            21
+            21,
+            22
           ]
         }
       ],
@@ -989,13 +1065,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 19
+          "link": 20
         }
       ],
       "outputs": [
@@ -1014,7 +1090,7 @@
     {
       "id": 71,
       "type": "SaveImage",
-      "title": "Save 832 x 1120 master PNG",
+      "title": "Save 1024 x 1365 master PNG",
       "pos": [
         5480,
         120
@@ -1026,13 +1102,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 20
+          "link": 21
         },
         {
           "name": "filename_prefix",
@@ -1073,13 +1149,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 21
+          "link": 22
         },
         {
           "name": "upscale_method",
@@ -1119,7 +1195,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            22
+            23
           ]
         }
       ],
@@ -1149,13 +1225,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 22
+          "link": 23
         },
         {
           "name": "filename_prefix",
@@ -1259,12 +1335,20 @@
       10,
       28,
       0,
-      29,
+      30,
       0,
       "IMAGE"
     ],
     [
       11,
+      30,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
       60,
       0,
       61,
@@ -1272,7 +1356,7 @@
       "IMAGE"
     ],
     [
-      12,
+      13,
       62,
       0,
       63,
@@ -1280,15 +1364,15 @@
       "BACKGROUND_REMOVAL"
     ],
     [
-      13,
-      28,
+      14,
+      30,
       0,
       63,
       1,
       "IMAGE"
     ],
     [
-      14,
+      15,
       61,
       0,
       65,
@@ -1296,15 +1380,15 @@
       "IMAGE"
     ],
     [
-      15,
-      28,
+      16,
+      30,
       0,
       65,
       1,
       "IMAGE"
     ],
     [
-      16,
+      17,
       63,
       0,
       65,
@@ -1312,15 +1396,15 @@
       "MASK"
     ],
     [
-      17,
-      28,
+      18,
+      30,
       0,
       66,
       1,
       "IMAGE"
     ],
     [
-      18,
+      19,
       65,
       0,
       66,
@@ -1328,7 +1412,7 @@
       "IMAGE"
     ],
     [
-      19,
+      20,
       66,
       0,
       70,
@@ -1336,7 +1420,7 @@
       "IMAGE"
     ],
     [
-      20,
+      21,
       66,
       0,
       71,
@@ -1344,7 +1428,7 @@
       "IMAGE"
     ],
     [
-      21,
+      22,
       66,
       0,
       72,
@@ -1352,7 +1436,7 @@
       "IMAGE"
     ],
     [
-      22,
+      23,
       72,
       0,
       73,
@@ -1378,7 +1462,7 @@
       "bounding": [
         1500,
         40,
-        1740,
+        1780,
         920
       ],
       "color": "#7a568e",
@@ -1426,6 +1510,15 @@
     "graph_version": "2.6.1",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+    "master_size": [
+      1024,
+      1365
+    ],
+    "game_size": [
+      156,
+      210
+    ],
+    "game_resize_policy": "lanczos_center_crop",
     "core_nodes_only": false,
     "comfy_cloud_ready": true,
     "restoration_order": [],

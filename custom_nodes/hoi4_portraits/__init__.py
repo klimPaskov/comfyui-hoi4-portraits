@@ -15,7 +15,7 @@ import node_helpers
 from comfy_extras.nodes_flux import get_schedule
 
 
-ASPECT = 26 / 35
+ASPECT = 1024 / 1365
 YUNET_MODEL = "face_detection_yunet_2023mar.onnx"
 
 
@@ -93,6 +93,7 @@ def _frame_box(
     face: dict,
     mask: np.ndarray,
     zoom: float,
+    preserve_headwear: bool,
 ) -> tuple[int, int, int, int]:
     x1 = float(face["x"])
     y1 = float(face["y"])
@@ -104,7 +105,7 @@ def _frame_box(
         raise RuntimeError("The detected face box is invalid.")
 
     center_x = (x1 + x2) / 2
-    head_top = max(0.0, y1 - 0.88 * face_height)
+    head_top = max(0.0, y1 - (0.88 if preserve_headwear else 0.52) * face_height)
     head_left = max(0.0, x1 - 0.42 * face_height)
     head_right = min(float(width), x2 + 0.42 * face_height)
 
@@ -117,7 +118,7 @@ def _frame_box(
     fy1 = max(0, round(y1 * scale_y))
     fx2 = min(mask_width, round(x2 * scale_x))
     fy2 = min(mask_height, round(y2 * scale_y))
-    if count and fx2 > fx1 and fy2 > fy1:
+    if preserve_headwear and count and fx2 > fx1 and fy2 > fy1:
         face_labels = labels[fy1:fy2, fx1:fx2]
         values, frequencies = np.unique(face_labels[face_labels > 0], return_counts=True)
         if len(values):
@@ -140,8 +141,9 @@ def _frame_box(
                 head_right = max(head_right, min(float(width), silhouette_right + 0.08 * face_height))
 
     zoom = min(1.0, max(0.0, float(zoom)))
-    # Zoom primarily removes torso below the face. The protected head/headwear
-    # bounds remain hard constraints and are never weakened by this control.
+    # Zoom primarily removes torso below the face. When headwear preservation
+    # is enabled, its silhouette remains a hard constraint. Otherwise the crop
+    # uses ordinary face/head geometry and may cut oversized hats.
     body_below_face = 1.00 - 0.85 * zoom
     base_height = 3.40 - 1.45 * zoom
     desired_bottom = min(float(height), y2 + body_below_face * face_height)
@@ -187,7 +189,16 @@ class AdaptivePortraitCrop:
                         "min": 0.0,
                         "max": 1.0,
                         "step": 0.05,
-                        "tooltip": "Higher values frame the face more closely while preserving the complete head, headwear, and a safety margin.",
+                        "tooltip": "Higher values frame the face more closely while preserving the head and a safety margin.",
+                    },
+                ),
+                "preserve_headwear": (
+                    "BOOLEAN",
+                    {
+                        "default": True,
+                        "label_on": "preserve hat/headwear",
+                        "label_off": "ignore hat/headwear",
+                        "tooltip": "When enabled, the subject silhouette protects the complete hat or headwear. Disable it for a normal face-led crop that may cut oversized headwear.",
                     },
                 ),
             }
@@ -197,9 +208,9 @@ class AdaptivePortraitCrop:
     RETURN_NAMES = ("portrait",)
     FUNCTION = "crop"
     CATEGORY = "image/transform"
-    DESCRIPTION = "Adaptive head-and-shoulders crop with protected hair and headwear."
+    DESCRIPTION = "Adaptive head-and-shoulders crop with optional headwear preservation."
 
-    def crop(self, image, face_bboxes, subject_mask, zoom):
+    def crop(self, image, face_bboxes, subject_mask, zoom, preserve_headwear=True):
         if not isinstance(face_bboxes, list):
             face_bboxes = [[face_bboxes]]
         elif face_bboxes and isinstance(face_bboxes[0], dict):
@@ -212,10 +223,17 @@ class AdaptivePortraitCrop:
             face = _select_face(frame, boxes)
             mask_index = min(index, subject_mask.shape[0] - 1) if subject_mask.ndim == 3 else None
             mask = subject_mask[mask_index] if mask_index is not None else subject_mask
-            box = _frame_box(width, height, face, mask.detach().float().cpu().numpy(), zoom)
+            box = _frame_box(
+                width,
+                height,
+                face,
+                mask.detach().float().cpu().numpy(),
+                zoom,
+                bool(preserve_headwear),
+            )
             left, top, right, bottom = box
             crop = frame[top:bottom, left:right, :].permute(2, 0, 1).unsqueeze(0)
-            resized = functional.interpolate(crop, size=(1120, 832), mode="bicubic", align_corners=False, antialias=True)
+            resized = functional.interpolate(crop, size=(1365, 1024), mode="bicubic", align_corners=False, antialias=True)
             outputs.append(resized.squeeze(0).permute(1, 2, 0))
         return (torch.stack(outputs).clamp(0, 1),)
 
@@ -289,8 +307,8 @@ class Flux2PortraitSampler:
                 "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0, "step": 0.1}),
                 "guidance": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0, "step": 0.1}),
-                "width": ("INT", {"default": 832, "min": 16, "max": 16384, "step": 16}),
-                "height": ("INT", {"default": 1120, "min": 16, "max": 16384, "step": 16}),
+                "width": ("INT", {"default": 1024, "min": 16, "max": 16384, "step": 16}),
+                "height": ("INT", {"default": 1365, "min": 16, "max": 16384, "step": 1}),
             }
         }
 

@@ -66,10 +66,11 @@
         "156",
         0
       ],
-      "zoom": 0.9
+      "zoom": 0.9,
+      "preserve_headwear": true
     },
     "_meta": {
-      "title": "Face zoom 0.90 — full head and headwear protected"
+      "title": "Face zoom 0.90 — preserve headwear: true"
     }
   },
   "155": {
@@ -120,8 +121,8 @@
         "15",
         0
       ],
-      "output_width": 832,
-      "output_height": 1120,
+      "output_width": 1024,
+      "output_height": 1365,
       "padding": 0,
       "keep_aspect": "stretch"
     },
@@ -146,6 +147,23 @@
       "title": "Manual crop override — off uses automatic crop"
     }
   },
+  "17": {
+    "class_type": "ComfySwitchNode",
+    "inputs": {
+      "switch": true,
+      "on_false": [
+        "9",
+        0
+      ],
+      "on_true": [
+        "18",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Toggle face processing (on: face crop; off: keep full composition)"
+    }
+  },
   "6": {
     "class_type": "UpscaleModelLoader",
     "inputs": {
@@ -163,7 +181,7 @@
         0
       ],
       "image": [
-        "18",
+        "17",
         0
       ]
     },
@@ -179,12 +197,12 @@
         0
       ],
       "upscale_method": "lanczos",
-      "width": 832,
-      "height": 1120,
+      "width": 1024,
+      "height": 1365,
       "crop": "center"
     },
     "_meta": {
-      "title": "Fit portrait to the 832 x 1120 work canvas"
+      "title": "Fit portrait to the 1024 x 1365 work canvas"
     }
   },
   "1": {
@@ -387,8 +405,8 @@
       "denoise": 1.0,
       "cfg": 1.0,
       "guidance": 1.0,
-      "width": 832,
-      "height": 1120
+      "width": 1024,
+      "height": 1365
     },
     "_meta": {
       "title": "Conservative restoration sampling controls"
@@ -410,6 +428,22 @@
       "title": "Decode conservative restoration result"
     }
   },
+  "34": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "31",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Normalize conservative restoration to exact 1024 x 1365"
+    }
+  },
   "35": {
     "class_type": "PreviewImage",
     "inputs": {
@@ -425,13 +459,13 @@
   "32": {
     "class_type": "ComfySwitchNode",
     "inputs": {
-      "switch": false,
+      "switch": true,
       "on_false": [
         "8",
         0
       ],
       "on_true": [
-        "31",
+        "34",
         0
       ]
     },
@@ -468,8 +502,8 @@
   "42": {
     "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "width": 832,
-      "height": 1120,
+      "width": 1024,
+      "height": 1365,
       "batch_size": 1
     },
     "_meta": {
@@ -541,8 +575,8 @@
       "denoise": 1.0,
       "cfg": 1.0,
       "guidance": 1.0,
-      "width": 832,
-      "height": 1120
+      "width": 1024,
+      "height": 1365
     },
     "_meta": {
       "title": "Candidate 1 identity LoRA sampling controls"
@@ -564,11 +598,27 @@
       "title": "Decode candidate 1 identity lora result"
     }
   },
+  "54": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "51",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Normalize candidate 1 identity lora to exact 1024 x 1365"
+    }
+  },
   "55": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "51",
+        "54",
         0
       ]
     },
@@ -637,8 +687,8 @@
   "62": {
     "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "width": 832,
-      "height": 1120,
+      "width": 1024,
+      "height": 1365,
       "batch_size": 1
     },
     "_meta": {
@@ -710,8 +760,8 @@
       "denoise": 1.0,
       "cfg": 1.0,
       "guidance": 1.0,
-      "width": 832,
-      "height": 1120
+      "width": 1024,
+      "height": 1365
     },
     "_meta": {
       "title": "Candidate 2 identity LoRA sampling controls"
@@ -733,11 +783,27 @@
       "title": "Decode candidate 2 identity lora result"
     }
   },
+  "74": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "71",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Normalize candidate 2 identity lora to exact 1024 x 1365"
+    }
+  },
   "75": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "71",
+        "74",
         0
       ]
     },
@@ -806,8 +872,8 @@
   "82": {
     "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "width": 832,
-      "height": 1120,
+      "width": 1024,
+      "height": 1365,
       "batch_size": 1
     },
     "_meta": {
@@ -879,8 +945,8 @@
       "denoise": 1.0,
       "cfg": 1.0,
       "guidance": 1.0,
-      "width": 832,
-      "height": 1120
+      "width": 1024,
+      "height": 1365
     },
     "_meta": {
       "title": "Candidate 3 identity LoRA sampling controls"
@@ -902,11 +968,27 @@
       "title": "Decode candidate 3 identity lora result"
     }
   },
+  "94": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "91",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Normalize candidate 3 identity lora to exact 1024 x 1365"
+    }
+  },
   "95": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "91",
+        "94",
         0
       ]
     },
@@ -972,8 +1054,8 @@
         0
       ],
       "upscale_method": "lanczos",
-      "width": 832,
-      "height": 1120,
+      "width": 1024,
+      "height": 1365,
       "crop": "center"
     },
     "_meta": {
@@ -997,7 +1079,7 @@
         0
       ],
       "image": [
-        "51",
+        "54",
         0
       ]
     },
@@ -1013,7 +1095,7 @@
         0
       ],
       "source": [
-        "51",
+        "54",
         0
       ],
       "x": 0,
@@ -1036,7 +1118,7 @@
         0
       ],
       "on_false": [
-        "51",
+        "54",
         0
       ],
       "on_true": [
@@ -1058,7 +1140,7 @@
       "filename_prefix": "hoi4_portraits/candidate_1_master"
     },
     "_meta": {
-      "title": "Save candidate 1 832 x 1120 master PNG"
+      "title": "Save candidate 1 1024 x 1365 master PNG"
     }
   },
   "128": {
@@ -1098,7 +1180,7 @@
         0
       ],
       "image": [
-        "71",
+        "74",
         0
       ]
     },
@@ -1114,7 +1196,7 @@
         0
       ],
       "source": [
-        "71",
+        "74",
         0
       ],
       "x": 0,
@@ -1137,7 +1219,7 @@
         0
       ],
       "on_false": [
-        "71",
+        "74",
         0
       ],
       "on_true": [
@@ -1159,7 +1241,7 @@
       "filename_prefix": "hoi4_portraits/candidate_2_master"
     },
     "_meta": {
-      "title": "Save candidate 2 832 x 1120 master PNG"
+      "title": "Save candidate 2 1024 x 1365 master PNG"
     }
   },
   "138": {
@@ -1199,7 +1281,7 @@
         0
       ],
       "image": [
-        "91",
+        "94",
         0
       ]
     },
@@ -1215,7 +1297,7 @@
         0
       ],
       "source": [
-        "91",
+        "94",
         0
       ],
       "x": 0,
@@ -1238,7 +1320,7 @@
         0
       ],
       "on_false": [
-        "91",
+        "94",
         0
       ],
       "on_true": [
@@ -1260,7 +1342,7 @@
       "filename_prefix": "hoi4_portraits/candidate_3_master"
     },
     "_meta": {
-      "title": "Save candidate 3 832 x 1120 master PNG"
+      "title": "Save candidate 3 1024 x 1365 master PNG"
     }
   },
   "148": {

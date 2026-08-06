@@ -60,7 +60,7 @@ The [Hugging Face guide](docs/hugging-face.md) shows the complete setup.
 
 These screenshots show the source, crop + ESRGAN, optional restoration,
 three LoRA candidates, and final portrait checkpoints in the editor layout.
-The source workflow opens with FLUX restoration disabled. Queueing the graph
+The source workflow opens with FLUX restoration enabled. Queueing the graph
 fills its preview nodes with the completed images.
 
 The editor keeps the complete pipeline visible in clearly labeled groups, with
@@ -71,11 +71,12 @@ controls and previews placed beside the stage they affect.
 ### 1. Crop and restore the source
 
 Load the portrait and confirm the automatic head-and-shoulders preview. **Face
-zoom** defaults to `0.90`; lower values retain more body while the complete
-head, headwear, and top safety margin remain protected. For an ambiguous
-multi-person source, turn on **Use manual crop for difficult sources** and set
-its box around the intended person. The selected crop then goes through
-RealESRGAN.
+zoom** defaults to `0.90`; lower values retain more body. **Preserve
+hat/headwear** defaults to `true`; set it to `false` for a normal face-led crop
+that may cut oversized headwear. **Toggle face processing** defaults to on. Turn
+it off when the full composition—including multiple people—must be retained;
+the image still receives a centered 1024 × 1365 crop and RealESRGAN. Use the
+manual crop only when selecting one particular person.
 
 ![Source crop and RealESRGAN processing](docs/assets/workflows/step-1-source-processing.jpg)
 
@@ -83,26 +84,23 @@ RealESRGAN.
 
 This group loads FLUX.2 Klein 9B, the Qwen text encoder, VAE, the 2250-step
 portrait LoRA, and the Adonis restoration LoKr. The visible **LoRA strength**
-controls default to `1.00`. The source workflow also enables **Source identity
-lock** with the balanced `MID_LOCK` preset; select `HARD_LOCK` when a difficult
-source still changes too much.
+controls default to `1.00`.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.jpg)
 
 ### 3. Optionally restore with FLUX.2
 
 The source workflow includes an Adonis-assisted FLUX.2 restoration pass after
-ESRGAN. The restoration switch is off by default, so that pass does not run.
-The red toggle opens at `false`; turn it on when a damaged source needs the
-additional pass.
+ESRGAN. Its red switch opens enabled. Turn it off when the direct ESRGAN result
+is preferred.
 
 ![Optional FLUX.2 restoration stage](docs/assets/workflows/step-3-flux-restoration.jpg)
 
 ### 4. Apply the portrait LoRA
 
 The selected processed portrait becomes the reference and starting image for
-three independent LoRA styling passes. Each branch attaches the same source
-reference twice and uses the shared identity lock during sampling. Each pass
+three independent LoRA styling passes. Each branch uses the processed source
+once without an additional identity-preservation method. Each pass
 uses a different seed, so one queue produces three candidates from the same
 input. Each branch has its own editable identity prompt. Keep its identity text
 and add only deliberate
@@ -124,9 +122,11 @@ opens at `false`.
 
 ### 6. Preview and save
 
-Preview all three results, save three 832 × 1120 master PNGs, and create three
-156 × 210 game-size portraits. Candidate files use `candidate_1`,
+Preview all three results, save three 1024 × 1365 master PNGs, and create three
+156 × 210 center-cropped game-size portraits. Candidate files use `candidate_1`,
 `candidate_2`, and `candidate_3` prefixes under `ComfyUI/output/hoi4_portraits/`.
+Lanczos scaling followed by the centered crop removes only a narrow strip from
+the sides; it does not stretch the portrait.
 
 ![Preview and output stage](docs/assets/workflows/step-6-preview-and-save.jpg)
 
@@ -143,19 +143,19 @@ changes.
 
 The processing workflow uses the same crop and RealESRGAN preparation as the
 source workflow, then offers the same FLUX restoration switch. It stops before
-LoRA styling and saves the selected processed image as both 832 × 1120 and
-156 × 210 PNG files.
+LoRA styling and saves the selected processed image as a 1024 × 1365 master
+and a centered 156 × 210 game-size PNG.
 
 ## Fastest start: Comfy Cloud
 
 1. For the source or text-to-image workflow, use a Comfy Cloud Creator or Pro
    plan, open **Models → Import**, and import the [2250-step LoRA checkpoint](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors) as a LoRA. Import `adonis_base.safetensors` when you want the optional restoration pass.
 2. Download and open one of the workflow JSON files from the table.
-3. For a source workflow, upload a portrait and select it in **Load source portrait**. **Face zoom** defaults to `0.90`; lower it to include more of the body. The complete head and headwear remain protected at every value. Check the crop preview before generating.
+3. For a source workflow, upload a portrait and select it in **Load source portrait**. **Face zoom** defaults to `0.90`; lower it to include more of the body. Leave **Preserve hat/headwear** on to protect the complete hat, or turn it off for a normal face-led crop. Turn off **Toggle face processing** to retain a multi-person composition. Check the processing preview before generating.
 4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then enable background replacement.
 5. Queue the workflow. A source run creates three candidate portraits. FLUX
-   restoration is off by default; turn **Toggle FLUX restoration** on only when
-   the source needs it.
+   restoration is enabled by default; turn it off to compare the direct ESRGAN
+   result.
 
 See [Comfy Cloud setup](docs/comfy-cloud.md) for the exact model-import and MCP
 validation flow.
@@ -225,7 +225,7 @@ portrait job autonomously:
    invalid input values before submitting any generation.
 7. Submit the graph, retain its returned `prompt_id`, and wait for that exact
    job to finish. Queue status alone does not confirm completion.
-8. Retrieve and download both the 832 × 1120 master and 156 × 210 game output.
+8. Retrieve and download both the 1024 × 1365 master and centered 156 × 210 game output.
    Visually verify the crop, identity, expression, facial detail, background,
    and absence of frame or vignette artifacts.
 9. Copy the approved game portrait into the mod's configured portrait path,
@@ -318,7 +318,7 @@ PowerShell with an empty destination, then follow `docs/local-install.md` in
 the extracted folder:
 
 ```powershell
-.\HOI4-Portrait-Workflows-v2.6.1-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.6.1"
+.\HOI4-Portrait-Workflows-2.6.1-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.6.1"
 ```
 
 ## Prompting

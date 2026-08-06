@@ -1,6 +1,6 @@
 {
   "last_node_id": 191,
-  "last_link_id": 38,
+  "last_link_id": 41,
   "nodes": [
     {
       "id": 5,
@@ -100,7 +100,8 @@
             3,
             4,
             8,
-            9
+            9,
+            13
           ]
         }
       ],
@@ -253,14 +254,14 @@
     {
       "id": 11,
       "type": "AdaptivePortraitCrop",
-      "title": "Face zoom 0.90 — full head and headwear protected",
+      "title": "Face zoom 0.90 — preserve headwear: true",
       "pos": [
         520,
         580
       ],
       "size": [
         360,
-        190
+        230
       ],
       "color": "#557a46",
       "bgcolor": "#557a46",
@@ -290,6 +291,14 @@
           "widget": {
             "name": "zoom"
           }
+        },
+        {
+          "name": "preserve_headwear",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "preserve_headwear"
+          }
         }
       ],
       "outputs": [
@@ -313,7 +322,8 @@
         ]
       },
       "widgets_values": [
-        0.9
+        0.9,
+        true
       ]
     },
     {
@@ -557,8 +567,8 @@
         "hoi4_group": "01 Source and ESRGAN"
       },
       "widgets_values": [
-        832,
-        1120,
+        1024,
+        1365,
         0,
         "stretch"
       ]
@@ -618,6 +628,60 @@
       ]
     },
     {
+      "id": 17,
+      "type": "ComfySwitchNode",
+      "title": "Toggle face processing (on: face crop; off: keep full composition)",
+      "pos": [
+        520,
+        1320
+      ],
+      "size": [
+        360,
+        100
+      ],
+      "color": "#b91c1c",
+      "bgcolor": "#7f1d1d",
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "switch"
+          }
+        },
+        {
+          "name": "on_false",
+          "type": "IMAGE",
+          "link": 13
+        },
+        {
+          "name": "on_true",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ComfySwitchNode",
+        "hoi4_group": "01 Source and ESRGAN"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
       "id": 6,
       "type": "UpscaleModelLoader",
       "title": "Load RealESRGAN x2",
@@ -632,7 +696,7 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -649,7 +713,7 @@
           "name": "UPSCALE_MODEL",
           "type": "UPSCALE_MODEL",
           "links": [
-            13
+            15
           ]
         }
       ],
@@ -683,18 +747,18 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "upscale_model",
           "type": "UPSCALE_MODEL",
-          "link": 13
+          "link": 15
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 14
+          "link": 16
         }
       ],
       "outputs": [
@@ -702,7 +766,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            15
+            17
           ]
         }
       ],
@@ -715,7 +779,7 @@
     {
       "id": 8,
       "type": "ImageScale",
-      "title": "Fit portrait to the 832 x 1120 work canvas",
+      "title": "Fit portrait to the 1024 x 1365 work canvas",
       "pos": [
         520,
         1600
@@ -727,13 +791,13 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 15
+          "link": 17
         },
         {
           "name": "upscale_method",
@@ -773,9 +837,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            16,
-            20,
-            33
+            18,
+            22,
+            36
           ]
         }
       ],
@@ -785,8 +849,8 @@
       },
       "widgets_values": [
         "lanczos",
-        832,
-        1120,
+        1024,
+        1365,
         "center"
       ]
     },
@@ -805,13 +869,13 @@
       "color": "#557a46",
       "bgcolor": "#557a46",
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 16
+          "link": 18
         }
       ],
       "outputs": [
@@ -842,7 +906,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -867,7 +931,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            17
+            19
           ]
         }
       ],
@@ -902,7 +966,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -935,8 +999,8 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            18,
-            19
+            20,
+            21
           ]
         }
       ],
@@ -972,7 +1036,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -989,8 +1053,8 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            21,
-            31
+            23,
+            33
           ]
         }
       ],
@@ -1024,13 +1088,13 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 17
+          "link": 19
         },
         {
           "name": "lora_name",
@@ -1054,7 +1118,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            26
+            28
           ]
         }
       ],
@@ -1089,13 +1153,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 18
+          "link": 20
         },
         {
           "name": "text",
@@ -1111,7 +1175,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            22
+            24
           ]
         }
       ],
@@ -1138,13 +1202,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 19
+          "link": 21
         },
         {
           "name": "text",
@@ -1160,7 +1224,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            24
+            26
           ]
         }
       ],
@@ -1187,18 +1251,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 20,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 20
+          "link": 22
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 21
+          "link": 23
         }
       ],
       "outputs": [
@@ -1206,9 +1270,9 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            23,
             25,
-            29
+            27,
+            31
           ]
         }
       ],
@@ -1225,50 +1289,6 @@
       "pos": [
         2040,
         320
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#8b6f47",
-      "bgcolor": "#8b6f47",
-      "flags": {},
-      "order": 21,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "link": 22
-        },
-        {
-          "name": "latent",
-          "type": "LATENT",
-          "link": 23
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            27
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "03 Optional FLUX.2 restoration"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 24,
-      "type": "ReferenceLatent",
-      "title": "Attach reference to negative conditioning",
-      "pos": [
-        2040,
-        520
       ],
       "size": [
         300,
@@ -1296,7 +1316,51 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            28
+            29
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "ReferenceLatent",
+      "title": "Attach reference to negative conditioning",
+      "pos": [
+        2040,
+        520
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 26
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            30
           ]
         }
       ],
@@ -1321,28 +1385,28 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 23,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 26
+          "link": 28
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 27
+          "link": 29
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 28
+          "link": 30
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 29
+          "link": 31
         },
         {
           "name": "seed",
@@ -1414,7 +1478,7 @@
           "name": "sampled_latent",
           "type": "LATENT",
           "links": [
-            30
+            32
           ]
         }
       ],
@@ -1430,8 +1494,8 @@
         1.0,
         1.0,
         1.0,
-        832,
-        1120
+        1024,
+        1365
       ]
     },
     {
@@ -1449,18 +1513,18 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 24,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 30
+          "link": 32
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 31
+          "link": 33
         }
       ],
       "outputs": [
@@ -1479,12 +1543,88 @@
       "widgets_values": []
     },
     {
+      "id": 34,
+      "type": "ImageScale",
+      "title": "Normalize conservative restoration to exact 1024 x 1365",
+      "pos": [
+        2900,
+        330
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "color": "#8b6f47",
+      "bgcolor": "#8b6f47",
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 34
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "03 Optional FLUX.2 restoration"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
+    },
+    {
       "id": 35,
       "type": "PreviewImage",
       "title": "Preview selected processed portrait",
       "pos": [
         2900,
-        410
+        540
       ],
       "size": [
         300,
@@ -1493,13 +1633,13 @@
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
       "flags": {},
-      "order": 25,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 32
+          "link": 35
         }
       ],
       "outputs": [
@@ -1530,7 +1670,7 @@
       "color": "#b91c1c",
       "bgcolor": "#7f1d1d",
       "flags": {},
-      "order": 26,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -1544,12 +1684,12 @@
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 33
+          "link": 36
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 34
+          "link": 37
         }
       ],
       "outputs": [
@@ -1557,10 +1697,10 @@
           "name": "output",
           "type": "IMAGE",
           "links": [
-            32,
             35,
-            36,
-            37
+            38,
+            39,
+            40
           ]
         }
       ],
@@ -1569,7 +1709,7 @@
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
-        false
+        true
       ]
     },
     {
@@ -1587,13 +1727,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 27,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 35
+          "link": 38
         }
       ],
       "outputs": [
@@ -1612,7 +1752,7 @@
     {
       "id": 71,
       "type": "SaveImage",
-      "title": "Save 832 x 1120 processed PNG",
+      "title": "Save 1024 x 1365 processed PNG",
       "pos": [
         4000,
         120
@@ -1624,13 +1764,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 28,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 36
+          "link": 39
         },
         {
           "name": "filename_prefix",
@@ -1671,13 +1811,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 29,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 37
+          "link": 40
         },
         {
           "name": "upscale_method",
@@ -1717,7 +1857,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            38
+            41
           ]
         }
       ],
@@ -1747,13 +1887,13 @@
       "color": "#596b82",
       "bgcolor": "#596b82",
       "flags": {},
-      "order": 30,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 38
+          "link": 41
         },
         {
           "name": "filename_prefix",
@@ -1879,6 +2019,22 @@
     ],
     [
       13,
+      9,
+      0,
+      17,
+      1,
+      "IMAGE"
+    ],
+    [
+      14,
+      18,
+      0,
+      17,
+      2,
+      "IMAGE"
+    ],
+    [
+      15,
       6,
       0,
       7,
@@ -1886,15 +2042,15 @@
       "UPSCALE_MODEL"
     ],
     [
-      14,
-      18,
+      16,
+      17,
       0,
       7,
       1,
       "IMAGE"
     ],
     [
-      15,
+      17,
       7,
       0,
       8,
@@ -1902,7 +2058,7 @@
       "IMAGE"
     ],
     [
-      16,
+      18,
       8,
       0,
       10,
@@ -1910,7 +2066,7 @@
       "IMAGE"
     ],
     [
-      17,
+      19,
       1,
       0,
       191,
@@ -1918,7 +2074,7 @@
       "MODEL"
     ],
     [
-      18,
+      20,
       2,
       0,
       20,
@@ -1926,7 +2082,7 @@
       "CLIP"
     ],
     [
-      19,
+      21,
       2,
       0,
       21,
@@ -1934,7 +2090,7 @@
       "CLIP"
     ],
     [
-      20,
+      22,
       8,
       0,
       22,
@@ -1942,7 +2098,7 @@
       "IMAGE"
     ],
     [
-      21,
+      23,
       3,
       0,
       22,
@@ -1950,26 +2106,10 @@
       "VAE"
     ],
     [
-      22,
+      24,
       20,
       0,
       23,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      23,
-      22,
-      0,
-      23,
-      1,
-      "LATENT"
-    ],
-    [
-      24,
-      21,
-      0,
-      24,
       0,
       "CONDITIONING"
     ],
@@ -1977,12 +2117,28 @@
       25,
       22,
       0,
-      24,
+      23,
       1,
       "LATENT"
     ],
     [
       26,
+      21,
+      0,
+      24,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      27,
+      22,
+      0,
+      24,
+      1,
+      "LATENT"
+    ],
+    [
+      28,
       191,
       0,
       30,
@@ -1990,7 +2146,7 @@
       "MODEL"
     ],
     [
-      27,
+      29,
       23,
       0,
       30,
@@ -1998,7 +2154,7 @@
       "CONDITIONING"
     ],
     [
-      28,
+      30,
       24,
       0,
       30,
@@ -2006,7 +2162,7 @@
       "CONDITIONING"
     ],
     [
-      29,
+      31,
       22,
       0,
       30,
@@ -2014,7 +2170,7 @@
       "LATENT"
     ],
     [
-      30,
+      32,
       30,
       0,
       31,
@@ -2022,7 +2178,7 @@
       "LATENT"
     ],
     [
-      31,
+      33,
       3,
       0,
       31,
@@ -2030,7 +2186,15 @@
       "VAE"
     ],
     [
-      32,
+      34,
+      31,
+      0,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      35,
       32,
       0,
       35,
@@ -2038,7 +2202,7 @@
       "IMAGE"
     ],
     [
-      33,
+      36,
       8,
       0,
       32,
@@ -2046,15 +2210,15 @@
       "IMAGE"
     ],
     [
+      37,
       34,
-      31,
       0,
       32,
       2,
       "IMAGE"
     ],
     [
-      35,
+      38,
       32,
       0,
       70,
@@ -2062,7 +2226,7 @@
       "IMAGE"
     ],
     [
-      36,
+      39,
       32,
       0,
       71,
@@ -2070,7 +2234,7 @@
       "IMAGE"
     ],
     [
-      37,
+      40,
       32,
       0,
       72,
@@ -2078,7 +2242,7 @@
       "IMAGE"
     ],
     [
-      38,
+      41,
       72,
       0,
       73,
@@ -2116,7 +2280,7 @@
       "bounding": [
         1500,
         40,
-        1740,
+        1780,
         830
       ],
       "color": "#8b6f47",
@@ -2152,14 +2316,25 @@
     "graph_version": "2.6.1",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
     "style_lora": null,
+    "master_size": [
+      1024,
+      1365
+    ],
+    "game_size": [
+      156,
+      210
+    ],
+    "game_resize_policy": "lanczos_center_crop",
     "core_nodes_only": false,
     "comfy_cloud_ready": true,
     "restoration_order": [
       "RealESRGAN_x2plus",
       "optional_flux2_klein_9b"
     ],
-    "flux_restoration_default": false,
-    "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
+    "flux_restoration_default": true,
+    "face_processing_default": true,
+    "face_processing_bypass": "whole_composition_center_crop_then_esrgan",
+    "source_crop": "toggleable_adaptive_head_and_shoulders_zoom_0.90_adjustable_headwear_before_esrgan",
     "background_order": "not_applicable_processing_only",
     "editor_layout": "flat_grouped_canvas"
   },

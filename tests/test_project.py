@@ -116,8 +116,10 @@ class WorkflowTests(unittest.TestCase):
             self.assertTrue(all(node["cfg"] == 1.0 for node in portrait_samplers.values()), workflow.name)
             self.assertTrue(all(node["guidance"] == 1.0 for node in portrait_samplers.values()), workflow.name)
             self.assertTrue(all(node["denoise"] == 1.0 for node in portrait_samplers.values()), workflow.name)
+            self.assertTrue(all(node["width"] == 1024 for node in portrait_samplers.values()), workflow.name)
+            self.assertTrue(all(node["height"] == 1365 for node in portrait_samplers.values()), workflow.name)
             if is_source:
-                self.assertIs(api["32"]["inputs"]["switch"], False)
+                self.assertIs(api["32"]["inputs"]["switch"], True)
                 expected_prompt = build_workflows.STYLE_PROMPT
                 if "refcontrol_lineart" in workflow.name:
                     expected_prompt = expected_prompt.replace("hoi4_portrait,", "hoi4_portrait, refcontrol,", 1)
@@ -125,19 +127,19 @@ class WorkflowTests(unittest.TestCase):
                 for prompt_id, reference_id in (("40", "43"), ("60", "63"), ("80", "83")):
                     self.assertEqual(api[prompt_id]["inputs"]["text"], expected_prompt)
                     self.assertEqual(api[reference_id]["inputs"]["conditioning"], [prompt_id, 0])
-                    self.assertEqual(api[reference_id]["class_type"], "Flux2KleinMultiReferenceLatent")
                     if workflow.name.endswith("9b_source.api.json"):
-                        self.assertEqual(api[reference_id]["inputs"]["latent_1"], api[reference_id]["inputs"]["latent_2"])
+                        self.assertEqual(api[reference_id]["class_type"], "ReferenceLatent")
+                        self.assertEqual(api[reference_id]["inputs"]["latent"], [str(int(prompt_id) + 2), 0])
                     else:
+                        self.assertEqual(api[reference_id]["class_type"], "Flux2KleinMultiReferenceLatent")
                         start = int(prompt_id)
                         self.assertEqual(api[reference_id]["inputs"]["latent_1"], [str(start + 5), 0])
                         self.assertEqual(api[reference_id]["inputs"]["latent_2"], [str(start + 6), 0])
                 if workflow.name.endswith("9b_source.api.json"):
-                    self.assertEqual(api["190"]["class_type"], "IdentityFeatureTransferFinal")
-                    self.assertEqual(api["190"]["inputs"]["preset"], "MID_LOCK")
-                    self.assertTrue(api["190"]["inputs"]["enabled"])
+                    self.assertNotIn("190", api)
+                    self.assertTrue(all(api[node_id]["inputs"]["model"] == ["4", 0] for node_id in ("50", "70", "90")))
 
-    def test_feature_toggle_nodes_are_red_and_off_by_default(self) -> None:
+    def test_feature_toggle_nodes_are_red_and_use_expected_defaults(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
             if workflow.name.endswith(".api.json"):
                 continue
@@ -149,12 +151,14 @@ class WorkflowTests(unittest.TestCase):
                 for node in _editor_nodes(ui)
                 if node["title"].startswith("Toggle FLUX restoration")
                 or node["title"].startswith("Toggle replacement background")
+                or node["title"].startswith("Toggle face processing")
             ]
             self.assertTrue(toggles, workflow.name)
             for node in toggles:
                 self.assertEqual(node["color"], "#b91c1c", f"{workflow.name}: {node['title']}")
                 self.assertEqual(node["bgcolor"], "#7f1d1d", f"{workflow.name}: {node['title']}")
-                self.assertIs(node["widgets_values"][0], False, f"{workflow.name}: {node['title']}")
+                expected = not node["title"].startswith("Toggle replacement background")
+                self.assertIs(node["widgets_values"][0], expected, f"{workflow.name}: {node['title']}")
 
     def test_restoration_seed_is_fixed_and_candidate_seeds_randomize(self) -> None:
         filenames = ["hoi4_portrait_processing_only.json"] + sorted(
@@ -185,14 +189,18 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(api["11"]["inputs"]["face_bboxes"], ["13", 1])
             self.assertEqual(api["11"]["inputs"]["subject_mask"], ["156", 0])
             self.assertEqual(api["11"]["inputs"]["zoom"], 0.9)
+            self.assertIs(api["11"]["inputs"]["preserve_headwear"], True)
             self.assertEqual(api["156"]["inputs"]["image"], ["9", 0])
             self.assertEqual(api["15"]["class_type"], "PrimitiveBoundingBox")
             self.assertEqual(api["16"]["inputs"]["bboxes"], ["15", 0])
-            self.assertNotIn("17", api)
+            self.assertEqual(api["17"]["class_type"], "ComfySwitchNode")
+            self.assertTrue(api["17"]["inputs"]["switch"])
+            self.assertEqual(api["17"]["inputs"]["on_false"], ["9", 0])
+            self.assertEqual(api["17"]["inputs"]["on_true"], ["18", 0])
             self.assertFalse(api["18"]["inputs"]["switch"])
             self.assertEqual(api["18"]["inputs"]["on_false"], ["11", 0])
             self.assertEqual(api["18"]["inputs"]["on_true"], ["16", 0])
-            self.assertEqual(api["7"]["inputs"]["image"], ["18", 0])
+            self.assertEqual(api["7"]["inputs"]["image"], ["17", 0])
             if "identity_test_" not in path.name:
                 self.assertNotIn("EmptyFlux2LatentImage", {node["class_type"] for node in api.values()})
             if name == "source":
@@ -204,13 +212,20 @@ class WorkflowTests(unittest.TestCase):
                     self.assertEqual(api[sampler_id]["inputs"]["latent_image"], [latent_id, 0])
                 self.assertEqual(api["119"]["class_type"], "PrimitiveBoolean")
                 self.assertFalse(api["119"]["inputs"]["value"])
-                final_ids = ("200", "210", "220") if "identity_test_composite" in path.name else ("51", "71", "91")
+                final_ids = ("200", "210", "220") if "identity_test_composite" in path.name else ("54", "74", "94")
                 for switch_id, final_id in zip(("125", "135", "145"), final_ids):
                     self.assertEqual(api[switch_id]["inputs"]["switch"], ["119", 0])
                     self.assertEqual(api[switch_id]["inputs"]["on_false"], [final_id, 0])
             else:
                 self.assertNotIn("4", api)
                 self.assertEqual(api["30"]["inputs"]["latent_image"], ["22", 0])
+
+    def test_adaptive_crop_exposes_optional_headwear_preservation(self) -> None:
+        source = (ROOT / "custom_nodes" / "hoi4_portraits" / "__init__.py").read_text(encoding="utf-8")
+        self.assertIn('"preserve_headwear": (', source)
+        self.assertIn('"default": True', source)
+        self.assertIn("if preserve_headwear and count", source)
+        self.assertIn("0.88 if preserve_headwear else 0.52", source)
 
     def test_source_workflow_has_three_final_candidates_and_one_restoration(self) -> None:
         api = json.loads(
@@ -222,6 +237,27 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(sum(node["class_type"] == "VAEDecode" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "RemoveBackground" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 6)
+
+    def test_master_and_game_output_dimensions(self) -> None:
+        for path in (ROOT / "workflows").glob("*.api.json"):
+            api = json.loads(path.read_text(encoding="utf-8"))
+            master_nodes = [
+                node
+                for node in api.values()
+                if node["class_type"] == "ImageScale"
+                and node["inputs"].get("width") == 1024
+                and node["inputs"].get("height") == 1365
+            ]
+            self.assertTrue(master_nodes, path.name)
+            game_nodes = [
+                node
+                for node in api.values()
+                if node["class_type"] == "ImageScale"
+                and node["inputs"].get("width") == 156
+                and node["inputs"].get("height") == 210
+            ]
+            self.assertTrue(game_nodes, path.name)
+            self.assertTrue(all(node["inputs"].get("crop") == "center" for node in game_nodes), path.name)
 
     def test_identity_comparison_pack_is_complete_and_isolated(self) -> None:
         expected = {
@@ -244,7 +280,7 @@ class WorkflowTests(unittest.TestCase):
             api = json.loads(path.read_text(encoding="utf-8"))
             for latent_id, sampler_id in (("42", "50"), ("62", "70"), ("82", "90")):
                 self.assertEqual(api[latent_id]["class_type"], "EmptyFlux2LatentImage", method)
-                self.assertEqual(api[latent_id]["inputs"], {"width": 832, "height": 1120, "batch_size": 1}, method)
+                self.assertEqual(api[latent_id]["inputs"], {"width": 1024, "height": 1365, "batch_size": 1}, method)
                 self.assertEqual(api[sampler_id]["inputs"]["latent_image"], [latent_id, 0], method)
             if method in {"feature_mid", "feature_hard"}:
                 self.assertEqual(api["190"]["class_type"], "IdentityFeatureTransferFinal")

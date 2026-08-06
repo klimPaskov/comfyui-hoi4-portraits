@@ -13,8 +13,7 @@ The source and text-to-image model stack is:
 3. `VAELoader` — FLUX.2 VAE.
 4. `LoraLoaderModelOnly` — loads the HOI4 adapter and exposes LoRA strength directly on the same node, defaulting to `1.00`.
 5. `LoraLoaderModelOnly` — loads Adonis Base for the optional restoration pass.
-6. `Identity Feature Transfer Final` — source workflow only; keeps each styling branch tied to the uploaded person's reference features. `MID_LOCK` is the default and `HARD_LOCK` is available for difficult sources.
-7. `FLUX.2 Portrait Sampler`: seed, sampler, steps, denoise, CFG, guidance, and canvas size for that branch.
+6. `FLUX.2 Portrait Sampler`: seed, sampler, steps, denoise, CFG, guidance, and canvas size for that branch.
 
 The [identity comparison pack](identity-comparison.md) keeps this stack and
 generation policy fixed while testing nine alternate preservation paths.
@@ -29,35 +28,32 @@ with one full-graph screenshot and a readable close-up of every group.
 
 Groups run left to right:
 
-1. **Source and ESRGAN** loads the portrait, detects the face and subject silhouette, and produces an 832 × 1120 head-and-shoulders crop. **Face zoom** accepts `0.0–1.0` and defaults to `0.90`; larger values remove more body space while the complete head, headwear, and a safety margin remain protected. A one-click manual bounding-box override is available for ambiguous multi-person sources. The selected crop then runs through RealESRGAN x2.
+1. **Source and ESRGAN** loads the portrait, detects the face and subject silhouette, and produces a 1024 × 1365 head-and-shoulders crop. **Face zoom** accepts `0.0–1.0` and defaults to `0.90`; larger values remove more body space. **Preserve hat/headwear** defaults to `true` and protects the complete headwear silhouette. Set it to `false` for a normal face-led crop that may cut oversized hats. **Toggle face processing** defaults to on; turn it off to skip face detection and retain the full composition or multiple people. The bypass still applies a centered canvas crop and RealESRGAN. A manual bounding-box override remains available for selecting one person.
 2. **FLUX.2 Klein 9B models** loads the base model, encoder, VAE, and LoRA.
 3. **Optional FLUX.2 restoration** applies the Adonis Base LoKr and encodes the ESRGAN result as both its reference and starting latent for a conservative restoration pass.
-4. The restoration switch is off by default and sends the direct ESRGAN result
-   onward. Turn it on to select the FLUX result. The disabled restoration pass
-   does not run.
+4. The restoration switch is on by default and selects the FLUX result. Turn it
+   off to use the direct ESRGAN result; the disabled restoration branch does not run.
 5. **HOI4 LoRA styling** runs three independent seed passes. Each pass encodes
-   the selected processed image as the starting latent and attaches it twice as
-   a source reference. Each branch uses a separate editable identity prompt with
-   the shared identity-locked LoRA model. Candidate 1 uses Euler/6 steps, candidate 2 uses `res_2s`/4 steps,
+   the selected processed image as the starting latent and attaches it once as
+   the source reference. Each branch uses a separate editable prompt with the
+   HOI4 LoRA model. Candidate 1 uses Euler/6 steps, candidate 2 uses `res_2s`/4 steps,
    and candidate 3 uses `res_2m`/8 steps. This keeps all three candidates tied
    to the same face, crop, and pose while also comparing sampling behavior.
 6. **Optional background** receives each decoded styled image, creates its
    foreground mask with BiRefNet, and composites each candidate over the same
    selected background.
-7. **Preview and save** writes three 832 × 1120 masters and three 156 × 210
-   PNGs, using `candidate_1`, `candidate_2`, and `candidate_3` prefixes.
+7. **Preview and save** writes three 1024 × 1365 masters and three centered
+   156 × 210 PNGs, using `candidate_1`, `candidate_2`, and `candidate_3` prefixes.
 
-The source graph opens with **Toggle FLUX restoration** set to `false`. Turn it
-on for the single additional restoration pass. Keep the supplied connections
-intact.
+The source graph opens with **Toggle FLUX restoration** enabled. Turn it off to
+bypass the single restoration pass. Keep the supplied connections intact.
 
 Each source prompt defaults to `hoi4_portrait, maintain the exact identity,
 facing direction, and expression of the person, including every object they
 are holding or wearing.` Keep that sentence and append deliberate requested
 changes. Each prompt affects only its own candidate. Denoise defaults to
 `1.00`; LoRA strength is editable directly on the LoRA loader and defaults to
-`1.00`. Keep identity locking at `MID_LOCK` normally. Choose `HARD_LOCK` if the
-face still drifts.
+`1.00`.
 
 Enable FLUX restoration for monochrome or sepia inputs. It restores plausible
 natural color before the three LoRA candidates are generated.
@@ -65,8 +61,10 @@ natural color before the three LoRA candidates are generated.
 ## Processing workflow
 
 This graph ends after automatic cropping, RealESRGAN, and the optional FLUX.2
-restoration pass. The restoration switch is off by default. It saves the
-processed 832 × 1120 image and the 156 × 210 game-size image.
+restoration pass. Face processing and restoration are enabled by default. It saves the
+processed 1024 × 1365 image and the centered 156 × 210 game-size image.
+The centered game crop removes the slight ratio mismatch from the left and
+right edges instead of distorting the image.
 
 ## Text to image
 
@@ -97,5 +95,7 @@ any of the candidate branches, or the foreground/background regions will swap.
   queueing the expensive FLUX stages. Use the manual crop only when the source
   contains multiple plausible subjects.
 - Keep the exact model family and encoder type together.
-- Keep 832 and 1120 divisible by 16 if you change the work canvas.
+- Keep the published 1024 × 1365 master size. FLUX.2 performs latent sampling
+  at its supported internal grid and each decoded stage is normalized back to
+  the exact master size before preview, compositing, or saving.
 - Do not connect a background composite into a reference-latent encode.

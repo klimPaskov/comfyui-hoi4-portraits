@@ -66,10 +66,11 @@
         "156",
         0
       ],
-      "zoom": 0.9
+      "zoom": 0.9,
+      "preserve_headwear": true
     },
     "_meta": {
-      "title": "Face zoom 0.90 — full head and headwear protected"
+      "title": "Face zoom 0.90 — preserve headwear: true"
     }
   },
   "155": {
@@ -120,8 +121,8 @@
         "15",
         0
       ],
-      "output_width": 832,
-      "output_height": 1120,
+      "output_width": 1024,
+      "output_height": 1365,
       "padding": 0,
       "keep_aspect": "stretch"
     },
@@ -146,6 +147,23 @@
       "title": "Manual crop override — off uses automatic crop"
     }
   },
+  "17": {
+    "class_type": "ComfySwitchNode",
+    "inputs": {
+      "switch": true,
+      "on_false": [
+        "9",
+        0
+      ],
+      "on_true": [
+        "18",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Toggle face processing (on: face crop; off: keep full composition)"
+    }
+  },
   "6": {
     "class_type": "UpscaleModelLoader",
     "inputs": {
@@ -163,7 +181,7 @@
         0
       ],
       "image": [
-        "18",
+        "17",
         0
       ]
     },
@@ -179,12 +197,12 @@
         0
       ],
       "upscale_method": "lanczos",
-      "width": 832,
-      "height": 1120,
+      "width": 1024,
+      "height": 1365,
       "crop": "center"
     },
     "_meta": {
-      "title": "Fit portrait to the 832 x 1120 work canvas"
+      "title": "Fit portrait to the 1024 x 1365 work canvas"
     }
   },
   "10": {
@@ -342,8 +360,8 @@
       "denoise": 1.0,
       "cfg": 1.0,
       "guidance": 1.0,
-      "width": 832,
-      "height": 1120
+      "width": 1024,
+      "height": 1365
     },
     "_meta": {
       "title": "Conservative restoration sampling controls"
@@ -365,6 +383,22 @@
       "title": "Decode conservative restoration result"
     }
   },
+  "34": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "31",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Normalize conservative restoration to exact 1024 x 1365"
+    }
+  },
   "35": {
     "class_type": "PreviewImage",
     "inputs": {
@@ -380,13 +414,13 @@
   "32": {
     "class_type": "ComfySwitchNode",
     "inputs": {
-      "switch": false,
+      "switch": true,
       "on_false": [
         "8",
         0
       ],
       "on_true": [
-        "31",
+        "34",
         0
       ]
     },
@@ -416,7 +450,7 @@
       "filename_prefix": "hoi4_portraits/processed_master"
     },
     "_meta": {
-      "title": "Save 832 x 1120 processed PNG"
+      "title": "Save 1024 x 1365 processed PNG"
     }
   },
   "72": {

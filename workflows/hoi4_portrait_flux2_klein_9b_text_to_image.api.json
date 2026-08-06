@@ -72,12 +72,12 @@
   "22": {
     "class_type": "EmptyFlux2LatentImage",
     "inputs": {
-      "width": 832,
-      "height": 1120,
+      "width": 1024,
+      "height": 1365,
       "batch_size": 1
     },
     "_meta": {
-      "title": "Set 832 x 1120 portrait canvas"
+      "title": "Set 1024 x 1365 portrait canvas"
     }
   },
   "27": {
@@ -105,8 +105,8 @@
       "denoise": 1.0,
       "cfg": 1.0,
       "guidance": 1.0,
-      "width": 832,
-      "height": 1120
+      "width": 1024,
+      "height": 1365
     },
     "_meta": {
       "title": "HOI4 portrait sampling controls"
@@ -128,11 +128,27 @@
       "title": "Decode final styled portrait"
     }
   },
+  "30": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "28",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Normalize final portrait to exact 1024 x 1365"
+    }
+  },
   "29": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "28",
+        "30",
         0
       ]
     },
@@ -157,8 +173,8 @@
         0
       ],
       "upscale_method": "lanczos",
-      "width": 832,
-      "height": 1120,
+      "width": 1024,
+      "height": 1365,
       "crop": "center"
     },
     "_meta": {
@@ -182,7 +198,7 @@
         0
       ],
       "image": [
-        "28",
+        "30",
         0
       ]
     },
@@ -198,7 +214,7 @@
         0
       ],
       "source": [
-        "28",
+        "30",
         0
       ],
       "x": 0,
@@ -218,7 +234,7 @@
     "inputs": {
       "switch": false,
       "on_false": [
-        "28",
+        "30",
         0
       ],
       "on_true": [
@@ -252,7 +268,7 @@
       "filename_prefix": "hoi4_portraits/master"
     },
     "_meta": {
-      "title": "Save 832 x 1120 master PNG"
+      "title": "Save 1024 x 1365 master PNG"
     }
   },
   "72": {

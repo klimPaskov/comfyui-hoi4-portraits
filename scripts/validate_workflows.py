@@ -13,6 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_STEPS = 6
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
+CANVAS_WIDTH = 1024
+CANVAS_HEIGHT = 1365
+GAME_WIDTH = 156
+GAME_HEIGHT = 210
 LAYOUT_NODE_PADDING = 24
 GROUP_NODE_PADDING = 24
 
@@ -263,6 +267,10 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     expected_background_order = "not_applicable_processing_only" if is_processing else "after_final_lora_styled_decode"
     if extra.get("background_order") != expected_background_order:
         errors.append(f"{path}: background policy is not final-stage-only")
+    if extra.get("master_size") != [CANVAS_WIDTH, CANVAS_HEIGHT]:
+        errors.append(f"{path}: master size must be {CANVAS_WIDTH} x {CANVAS_HEIGHT}")
+    if extra.get("game_size") != [GAME_WIDTH, GAME_HEIGHT] or extra.get("game_resize_policy") != "lanczos_center_crop":
+        errors.append(f"{path}: game-size output must use a centered crop to {GAME_WIDTH} x {GAME_HEIGHT}")
 
     lora_node = next(
         (
@@ -296,7 +304,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     identity_nodes = {
         node_id: node for node_id, node in api.items() if node.get("class_type") == "IdentityFeatureTransferFinal"
     }
-    if is_source and identity_method in {"default", "feature_mid", "feature_hard"}:
+    if is_source and identity_method in {"feature_mid", "feature_hard"}:
         identity = identity_nodes.get("190", {}).get("inputs", {})
         profile = "HARD_LOCK" if identity_method == "feature_hard" else "MID_LOCK"
         expected_preset = "custom" if identity_method in {"feature_mid", "feature_hard"} else "MID_LOCK"
@@ -347,12 +355,38 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             errors.append(f"{path}: restoration sampler must use the Adonis LoKr model")
         if is_source and sampler_id in {"50", "70", "90"}:
             expected_model_node = {
+                "source": "4",
                 "native": "4",
                 "composite": "4",
                 "pulid": "194",
             }.get(identity_method, "190")
             if inputs.get("model") != [expected_model_node, 0]:
                 errors.append(f"{path}: source candidate sampler {sampler_id} must use model node {expected_model_node}")
+
+    master_scale_ids = {"61", "30"} if is_text_to_image else {"8", "34"}
+    if is_source:
+        master_scale_ids.update({"54", "74", "94", "121"})
+    game_scale_ids = {"128", "138", "148"} if is_source else {"72"}
+    for node_id in master_scale_ids:
+        scale = api.get(node_id, {})
+        scale_inputs = scale.get("inputs", {})
+        if (
+            scale.get("class_type") != "ImageScale"
+            or scale_inputs.get("width") != CANVAS_WIDTH
+            or scale_inputs.get("height") != CANVAS_HEIGHT
+            or scale_inputs.get("crop") != "center"
+        ):
+            errors.append(f"{path}: image node {node_id} must normalize to {CANVAS_WIDTH} x {CANVAS_HEIGHT}")
+    for node_id in game_scale_ids:
+        scale = api.get(node_id, {})
+        scale_inputs = scale.get("inputs", {})
+        if (
+            scale.get("class_type") != "ImageScale"
+            or scale_inputs.get("width") != GAME_WIDTH
+            or scale_inputs.get("height") != GAME_HEIGHT
+            or scale_inputs.get("crop") != "center"
+        ):
+            errors.append(f"{path}: game node {node_id} must center-crop to {GAME_WIDTH} x {GAME_HEIGHT}")
 
     if not is_processing:
         person_prompt_node = "20" if is_text_to_image else "40"
@@ -377,11 +411,13 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 if api.get(reference_id, {}).get("inputs", {}).get("conditioning") != [prompt_id, 0]:
                     errors.append(f"{path}: candidate prompt {prompt_id} must affect only its own branch")
                 reference = api.get(reference_id, {})
-                if reference.get("class_type") != "Flux2KleinMultiReferenceLatent":
-                    errors.append(f"{path}: candidate {prompt_id} must use doubled source-reference conditioning")
-                elif identity_method == "default":
-                    if reference.get("inputs", {}).get("latent_1") != reference.get("inputs", {}).get("latent_2"):
-                        errors.append(f"{path}: default candidate {prompt_id} must attach the source reference twice")
+                if identity_method == "source":
+                    if reference.get("class_type") != "ReferenceLatent":
+                        errors.append(f"{path}: primary source candidate {prompt_id} must use one source reference")
+                    elif reference.get("inputs", {}).get("latent") != [str(int(prompt_id) + 2), 0]:
+                        errors.append(f"{path}: primary source candidate {prompt_id} has the wrong source latent")
+                elif reference.get("class_type") != "Flux2KleinMultiReferenceLatent":
+                    errors.append(f"{path}: comparison candidate {prompt_id} must use two source references")
                 else:
                     start = int(prompt_id)
                     if reference.get("inputs", {}).get("latent_1") != [str(start + 5), 0] or reference.get("inputs", {}).get("latent_2") != [str(start + 6), 0]:
@@ -395,16 +431,16 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
     preview_expectations: dict[str, list[Any]] = {}
     if is_text_to_image:
         preview_expectations["70"] = ["66", 0]
-        preview_expectations["29"] = ["28", 0]
+        preview_expectations["29"] = ["30", 0]
     elif is_processing:
         preview_expectations.update({"10": ["8", 0], "35": ["32", 0], "70": ["32", 0]})
     elif is_source:
         preview_expectations["35"] = ["32", 0]
-        preview_sources = (("55", "200"), ("75", "210"), ("95", "220")) if identity_method == "composite" else (("55", "51"), ("75", "71"), ("95", "91"))
+        preview_sources = (("55", "200"), ("75", "210"), ("95", "220")) if identity_method == "composite" else (("55", "54"), ("75", "74"), ("95", "94"))
         for preview_id, decode_id in preview_sources:
             preview_expectations[preview_id] = [decode_id, 0]
     else:
-        preview_expectations.update({"10": ["8", 0], "35": ["31", 0], "55": ["51", 0], "70": ["66", 0]})
+        preview_expectations.update({"10": ["8", 0], "35": ["34", 0], "55": ["54", 0], "70": ["66", 0]})
     for preview_id, expected_image in preview_expectations.items():
         preview = api.get(preview_id, {})
         if preview.get("class_type") != "PreviewImage" or preview.get("inputs", {}).get("images") != expected_image:
@@ -412,7 +448,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
 
     if not is_processing:
         if is_source:
-            source_final_ids = ("200", "210", "220") if identity_method == "composite" else ("51", "71", "91")
+            source_final_ids = ("200", "210", "220") if identity_method == "composite" else ("54", "74", "94")
             background_branches = [
                 ("125", "123", "124", source_final_ids[0]),
                 ("135", "133", "134", source_final_ids[1]),
@@ -425,7 +461,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                     errors.append(f"{path}: background switch {switch_id} is not controlled by the shared toggle")
             shared_background = {"120": "LoadImage", "121": "ImageScale", "122": "LoadBackgroundRemovalModel"}
         else:
-            background_branches = [("66", "63", "65", "28")]
+            background_branches = [("66", "63", "65", "30")]
             shared_background = {"60": "LoadImage", "61": "ImageScale", "62": "LoadBackgroundRemovalModel"}
         background_canvas_id = "121" if is_source else "61"
 
@@ -446,7 +482,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
                 errors.append(f"{path}: background branch {switch_id} has an invalid final portrait link")
                 continue
             final_node_id = final_link[0]
-            if api[final_node_id].get("class_type") not in {"VAEDecode", "KleinEditComposite"}:
+            if api[final_node_id].get("class_type") not in {"VAEDecode", "ImageScale", "KleinEditComposite"}:
                 errors.append(f"{path}: background branch {switch_id} does not start from a decoded final portrait")
             if composite.get("inputs", {}).get("source") != final_link:
                 errors.append(f"{path}: composite {composite_id} differs from its final styled portrait")
@@ -468,14 +504,14 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
         if extra.get("restoration_order") != expected:
             errors.append(f"{path}: source restoration order is wrong")
-        if extra.get("flux_restoration_default") is not False:
-            errors.append(f"{path}: FLUX restoration must be disabled by default")
+        if extra.get("flux_restoration_default") is not True:
+            errors.append(f"{path}: FLUX restoration must be enabled by default")
         for key in ("candidate_count", "candidate_seed_count", "background_candidate_count"):
             if extra.get(key) != 3:
                 errors.append(f"{path}: source metadata {key} must be three")
         switch = api.get("32", {}).get("inputs", {})
-        if switch.get("switch") is not False or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["31", 0]:
-            errors.append(f"{path}: FLUX restoration toggle does not keep the direct ESRGAN output")
+        if switch.get("switch") is not True or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["34", 0]:
+            errors.append(f"{path}: FLUX restoration toggle is not enabled or wired correctly")
         if api.get("22", {}).get("inputs", {}).get("pixels") != ["8", 0]:
             errors.append(f"{path}: FLUX restoration does not consume ESRGAN output")
         if not is_comparison and api.get("42", {}).get("inputs", {}).get("pixels") != ["32", 0]:
@@ -486,24 +522,24 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         for latent_id, sampler_id in style_branches:
             latent = api.get(latent_id, {})
             if is_comparison:
-                if latent.get("class_type") != "EmptyFlux2LatentImage" or latent.get("inputs") != {"width": 832, "height": 1120, "batch_size": 1}:
+                if latent.get("class_type") != "EmptyFlux2LatentImage" or latent.get("inputs") != {"width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "batch_size": 1}:
                     errors.append(f"{path}: comparison branch {sampler_id} must use a canonical empty edit latent")
             elif latent.get("inputs", {}).get("pixels") != ["32", 0]:
                 errors.append(f"{path}: LoRA branch {sampler_id} does not consume the restoration switch output")
             if api.get(sampler_id, {}).get("inputs", {}).get("latent_image") != [latent_id, 0]:
                 errors.append(f"{path}: LoRA branch {sampler_id} does not use its selected edit latent")
-            expected_model_node = {"native": "4", "composite": "4", "pulid": "194"}.get(identity_method, "190")
+            expected_model_node = {"source": "4", "native": "4", "composite": "4", "pulid": "194"}.get(identity_method, "190")
             if api.get(sampler_id, {}).get("inputs", {}).get("model") != [expected_model_node, 0]:
                 errors.append(f"{path}: LoRA branch {sampler_id} is not using model node {expected_model_node}")
     elif is_processing:
         expected = ["RealESRGAN_x2plus", "optional_flux2_klein_9b"]
         if extra.get("restoration_order") != expected:
             errors.append(f"{path}: processing restoration order is wrong")
-        if extra.get("flux_restoration_default") is not False:
-            errors.append(f"{path}: FLUX restoration must be disabled by default")
+        if extra.get("flux_restoration_default") is not True:
+            errors.append(f"{path}: FLUX restoration must be enabled by default")
         switch = api.get("32", {}).get("inputs", {})
-        if switch.get("switch") is not False or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["31", 0]:
-            errors.append(f"{path}: processing restoration toggle does not keep the direct ESRGAN output")
+        if switch.get("switch") is not True or switch.get("on_false") != ["8", 0] or switch.get("on_true") != ["34", 0]:
+            errors.append(f"{path}: processing restoration toggle is not enabled or wired correctly")
         if api.get("22", {}).get("inputs", {}).get("pixels") != ["8", 0]:
             errors.append(f"{path}: FLUX restoration does not consume ESRGAN output")
         if api.get("30", {}).get("inputs", {}).get("latent_image") != ["22", 0]:
@@ -525,6 +561,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         manual_box = api.get("15", {})
         manual_crop = api.get("16", {})
         crop_switch = api.get("18", {})
+        processing_switch = api.get("17", {})
         if normalized.get("class_type") != "ImageScaleToMaxDimension" or normalized.get("inputs", {}).get("image") != ["5", 0] or normalized.get("inputs", {}).get("largest_size") != 1024:
             errors.append(f"{path}: source must be normalized to 1024 before face detection")
         detector_inputs = detector.get("inputs", {})
@@ -537,21 +574,32 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
             or crop_inputs.get("face_bboxes") != ["13", 1]
             or crop_inputs.get("subject_mask") != ["156", 0]
             or crop_inputs.get("zoom") != 0.9
+            or crop_inputs.get("preserve_headwear") is not True
         ):
-            errors.append(f"{path}: source must use the 0.90 adaptive head-and-headwear crop")
+            errors.append(f"{path}: source must use the 0.90 adaptive crop with headwear preservation enabled")
         if silhouette_loader.get("class_type") != "LoadBackgroundRemovalModel" or silhouette_mask.get("inputs", {}).get("image") != ["9", 0] or silhouette_mask.get("inputs", {}).get("bg_removal_model") != ["155", 0]:
             errors.append(f"{path}: source silhouette measurement is missing or miswired")
         if manual_box.get("class_type") != "PrimitiveBoundingBox":
             errors.append(f"{path}: difficult sources require a manual bounding-box override")
         manual_inputs = manual_crop.get("inputs", {})
-        if manual_crop.get("class_type") != "CropByBBoxes" or manual_inputs.get("image") != ["9", 0] or manual_inputs.get("bboxes") != ["15", 0] or manual_inputs.get("output_width") != 832 or manual_inputs.get("output_height") != 1120:
+        if manual_crop.get("class_type") != "CropByBBoxes" or manual_inputs.get("image") != ["9", 0] or manual_inputs.get("bboxes") != ["15", 0] or manual_inputs.get("output_width") != CANVAS_WIDTH or manual_inputs.get("output_height") != CANVAS_HEIGHT:
             errors.append(f"{path}: manual crop override is not connected to the normalized source")
         switch_inputs = crop_switch.get("inputs", {})
         if crop_switch.get("class_type") != "ComfySwitchNode" or switch_inputs.get("switch") is not False or switch_inputs.get("on_false") != ["11", 0] or switch_inputs.get("on_true") != ["16", 0]:
             errors.append(f"{path}: automatic/manual crop switch is wired incorrectly")
-        if api.get("7", {}).get("inputs", {}).get("image") != ["18", 0]:
-            errors.append(f"{path}: ESRGAN must consume the selected head-and-shoulders crop")
-        if extra.get("source_crop") != "adaptive_head_and_shoulders_zoom_0.90_before_esrgan":
+        processing_inputs = processing_switch.get("inputs", {})
+        if (
+            processing_switch.get("class_type") != "ComfySwitchNode"
+            or processing_inputs.get("switch") is not True
+            or processing_inputs.get("on_false") != ["9", 0]
+            or processing_inputs.get("on_true") != ["18", 0]
+        ):
+            errors.append(f"{path}: face-processing bypass must default on and retain the normalized full composition when disabled")
+        if api.get("7", {}).get("inputs", {}).get("image") != ["17", 0]:
+            errors.append(f"{path}: ESRGAN must consume the face-processing switch output")
+        if extra.get("face_processing_default") is not True or extra.get("face_processing_bypass") != "whole_composition_center_crop_then_esrgan":
+            errors.append(f"{path}: face-processing metadata is missing")
+        if extra.get("source_crop") != "toggleable_adaptive_head_and_shoulders_zoom_0.90_adjustable_headwear_before_esrgan":
             errors.append(f"{path}: source crop metadata is missing")
         if is_source and extra.get("pose_preservation") != "encoded_source_latent_is_sampler_start":
             errors.append(f"{path}: pose-preservation metadata is missing")

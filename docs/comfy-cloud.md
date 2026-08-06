@@ -4,9 +4,7 @@ The workflows use Comfy Cloud's model catalog and require the bundled
 `hoi4_portraits` folder in the Builder custom-node environment. The source
 workflow also requires
 [RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) for its `res_2s` and
-`res_2m` candidate samplers and
-[ComfyUI-Flux2Klein-Enhancer](https://github.com/capitan01R/ComfyUI-Flux2Klein-Enhancer)
-for source-reference identity locking. Import the custom-node folders and restart the
+`res_2m` candidate samplers. Import the custom-node folders and restart the
 Builder environment before opening the workflow. The text-to-image and
 processing workflows do not require RES4LYF.
 
@@ -56,8 +54,10 @@ general person description. Do not add game/style, background, lighting, or
 rendering language.
 
 In either source workflow, **Face zoom** defaults to `0.90`. Lower values retain
-more of the body. The complete head, headwear, and a safety margin remain
-protected across the entire `0.0–1.0` range. Check the crop preview before
+more of the body. **Preserve hat/headwear** defaults to `true`; set it to
+`false` when the crop should ignore oversized headwear. Turn off **Toggle face
+processing** to keep a full multi-person composition without running face
+detection. FLUX restoration opens enabled. Check the processing preview before
 queueing.
 
 ## MCP validation

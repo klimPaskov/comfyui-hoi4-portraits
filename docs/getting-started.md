@@ -4,7 +4,7 @@
 
 - Use **source** for an identity-preserving portrait from a reference image.
   It keeps the crop and source composition anchored while preparing and styling
-  the final portrait; optional FLUX.2 restoration is off by default.
+  the final portrait; FLUX.2 restoration is enabled by default.
 - Use **processing** when you need a crop, upscale, and optional restoration
   result without LoRA styling.
 - The separate **text to image** workflow is for fictional portraits without a
@@ -16,10 +16,12 @@
 
 In either source workflow, confirm that the automatic crop contains one
 person's complete head and shoulders. **Face zoom** defaults to `0.90`; lower
-it to retain more body. Hair, hats, and a small top margin remain protected at
-every value. For an ambiguous multi-person image, turn on **Use manual crop for
-difficult sources**, adjust the bounding box, and confirm its preview before
-running RealESRGAN or FLUX.
+it to retain more body. **Preserve hat/headwear** defaults to `true`; disable it
+when the hat may be cropped and a closer face-led composition is preferred.
+Turn off **Toggle face processing** when a multi-person image should retain the
+whole composition. Face detection and the head-and-shoulders crop are then
+skipped, while centered resizing and RealESRGAN still run. Use **Manual crop**
+only when selecting one particular person.
 
 Good input:
 
@@ -63,16 +65,18 @@ accept the FLUX.2 model agreement and create a read-only token.
    checkpoint in `LoraLoaderModelOnly` when comparing training steps.
 3. Select the source image and confirm the automatic crop preview. Adjust
    **Face zoom** if needed. If it chose the wrong person, turn on the
-   manual-crop toggle and adjust its box.
+   manual-crop toggle and adjust its box. Turn off **Preserve hat/headwear**
+   when the crop should ignore an oversized hat. Turn off **Toggle face
+   processing** when the full composition should be retained.
 4. Keep each candidate's identity sentence intact. Append deliberate requested
    changes, such as adding a military hat, only to the candidate that should
    test that change.
 5. Leave background replacement off for the first run.
 6. Queue once. The source workflow creates three final candidates from the
-   same input. Its restoration switch is off by default; turn it on only when
-   the source needs the additional pass. Use the processing workflow when you
+   same input. Its restoration switch is enabled by default; turn it off when
+   comparing against the direct ESRGAN result. Use the processing workflow when you
    need the processed image without LoRA styling.
-7. Inspect the three 832 × 1120 masters before choosing a 156 × 210 game-size
+7. Inspect the three 1024 × 1365 masters before choosing a centered 156 × 210 game-size
    file.
 
 Outputs are saved under `ComfyUI/output/hoi4_portraits/`.
@@ -94,10 +98,10 @@ visual style, background, lighting, framing, or rendering.
 | --- | --- |
 | Loader is red | Install/import the exact filename from `models.json`, then refresh ComfyUI. |
 | Out of memory | Disable FLUX restoration, close other GPU work, use offloading, or move to Comfy Cloud/a 24 GB GPU. |
-| Wrong person | Turn on **Use manual crop for difficult sources**, adjust its box, and confirm the crop preview. |
+| Wrong person | Use the manual crop to select that person, or turn face processing off to retain everyone. |
 | Too much body | Increase **Face zoom**; `0.90` is the default and `1.00` is the closest safe framing. |
 | Background appears too early | Background replacement runs after portrait generation; reopen the published workflow if the graph has been edited. |
 | Style is weak | Keep `hoi4_portrait` in the prompt, confirm **LoRA strength** is `1.00`, and keep the crop clean. |
 | Monochrome result | Enable **FLUX restoration** so natural color is restored before LoRA styling. |
-| Identity or position changes | Confirm the crop, restore the fixed identity instruction, and change **Source identity lock** from `MID_LOCK` to `HARD_LOCK`. |
-| Final looks too smooth | Use a sharper source crop, keep the 832 × 1120 workflow canvas, and avoid speculative prompt details. Compare the three candidate branches; optional FLUX restoration can soften identity, so disable it first. |
+| Identity or position changes | Confirm the crop, restore the fixed identity instruction, and compare the three seeds before changing LoRA strength. |
+| Final looks too smooth | Use a sharper source crop, keep the 1024 × 1365 workflow canvas, and avoid speculative prompt details. Compare the three candidate branches; optional FLUX restoration can soften identity, so disable it first. |

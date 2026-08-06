@@ -31,6 +31,10 @@ SOURCE_STYLE_DENOISE = 1.0
 DEFAULT_STEPS = 6
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
+CANVAS_WIDTH = 1024
+CANVAS_HEIGHT = 1365
+GAME_WIDTH = 156
+GAME_HEIGHT = 210
 WORKFLOW_SCHEMA_VERSION = "2.6.1"
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
@@ -326,25 +330,27 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
         _node(
             11,
             "AdaptivePortraitCrop",
-            "Face zoom 0.90 — full head and headwear protected",
+            "Face zoom 0.90 — preserve headwear: true",
             group,
             (520, 580),
-            size=(360, 190),
+            size=(360, 230),
             inputs={
                 "image": Link(9),
                 "face_bboxes": Link(13, 1),
                 "subject_mask": Link(156),
                 "zoom": 0.90,
+                "preserve_headwear": True,
             },
             input_types={
                 "image": "IMAGE",
                 "face_bboxes": "BOUNDING_BOX",
                 "subject_mask": "MASK",
                 "zoom": "FLOAT",
+                "preserve_headwear": "BOOLEAN",
             },
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=[0.90],
+            widgets=[0.90, True],
             models=_model(YUNET_MODEL, "detection"),
         ),
         _node(
@@ -396,8 +402,8 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             inputs={
                 "image": Link(9),
                 "bboxes": Link(15),
-                "output_width": 832,
-                "output_height": 1120,
+                "output_width": CANVAS_WIDTH,
+                "output_height": CANVAS_HEIGHT,
                 "padding": 0,
                 "keep_aspect": "stretch",
             },
@@ -411,7 +417,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             },
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=[832, 1120, 0, "stretch"],
+            widgets=[CANVAS_WIDTH, CANVAS_HEIGHT, 0, "stretch"],
         ),
         _node(
             18,
@@ -425,6 +431,19 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             outputs=["IMAGE"],
             output_types=["IMAGE"],
             widgets=[False],
+        ),
+        _node(
+            17,
+            "ComfySwitchNode",
+            "Toggle face processing (on: face crop; off: keep full composition)",
+            group,
+            (520, 1320),
+            size=(360, 100),
+            inputs={"switch": True, "on_false": Link(9), "on_true": Link(18)},
+            input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=[True],
         ),
         _node(
             6,
@@ -446,7 +465,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             group,
             (520, 1460),
             size=(267, 46),
-            inputs={"upscale_model": Link(6), "image": Link(18)},
+            inputs={"upscale_model": Link(6), "image": Link(17)},
             input_types={"upscale_model": "UPSCALE_MODEL", "image": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
@@ -454,15 +473,15 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
         _node(
             8,
             "ImageScale",
-            "Fit portrait to the 832 x 1120 work canvas",
+            f"Fit portrait to the {CANVAS_WIDTH} x {CANVAS_HEIGHT} work canvas",
             group,
             (520, 1600),
             size=(360, 150),
-            inputs={"image": Link(7), "upscale_method": "lanczos", "width": 832, "height": 1120, "crop": "center"},
+            inputs={"image": Link(7), "upscale_method": "lanczos", "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["lanczos", 832, 1120, "center"],
+            widgets=["lanczos", CANVAS_WIDTH, CANVAS_HEIGHT, "center"],
         ),
     ]
     if include_processed_preview:
@@ -541,7 +560,7 @@ def _edit_stage(
             group,
             (x + 500, y),
             inputs=(
-                {"width": 832, "height": 1120, "batch_size": 1}
+                {"width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "batch_size": 1}
                 if start_from_empty
                 else {"pixels": image, "vae": Link(3)}
             ),
@@ -552,7 +571,7 @@ def _edit_stage(
             ),
             outputs=["LATENT"],
             output_types=["LATENT"],
-            widgets=[832, 1120, 1] if start_from_empty else [],
+            widgets=[CANVAS_WIDTH, CANVAS_HEIGHT, 1] if start_from_empty else [],
         ),
         _node(
             i + 3,
@@ -628,8 +647,8 @@ def _edit_stage(
                 "denoise": denoise,
                 "cfg": DEFAULT_CFG,
                 "guidance": DEFAULT_GUIDANCE,
-                "width": 832,
-                "height": 1120,
+                "width": CANVAS_WIDTH,
+                "height": CANVAS_HEIGHT,
             },
             input_types={
                 "model": "MODEL",
@@ -647,7 +666,7 @@ def _edit_stage(
             },
             outputs=["sampled_latent"],
             output_types=["LATENT"],
-            widgets=[seed, seed_mode, sampler_name, steps, denoise, DEFAULT_CFG, DEFAULT_GUIDANCE, 832, 1120],
+            widgets=[seed, seed_mode, sampler_name, steps, denoise, DEFAULT_CFG, DEFAULT_GUIDANCE, CANVAS_WIDTH, CANVAS_HEIGHT],
         ),
         _node(
             i + 11,
@@ -661,13 +680,32 @@ def _edit_stage(
             output_types=["IMAGE"],
         ),
         _node(
+            i + 14,
+            "ImageScale",
+            f"Normalize {title_prefix.lower()} to exact {CANVAS_WIDTH} x {CANVAS_HEIGHT}",
+            group,
+            (x + 1360, y + 210),
+            size=(340, 150),
+            inputs={
+                "image": Link(i + 11),
+                "upscale_method": "lanczos",
+                "width": CANVAS_WIDTH,
+                "height": CANVAS_HEIGHT,
+                "crop": "center",
+            },
+            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["lanczos", CANVAS_WIDTH, CANVAS_HEIGHT, "center"],
+        ),
+        _node(
             i + 15,
             "PreviewImage",
             f"Preview {title_prefix.lower()} result",
             group,
-            (x + 1360, y + 290),
+            (x + 1360, y + 420),
             size=(300, 220),
-            inputs={"images": Link(i + 11)},
+            inputs={"images": Link(i + 14)},
             input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
@@ -700,7 +738,7 @@ def _edit_stage(
                 ),
             ]
         )
-    return nodes, Link(i + 11)
+    return nodes, Link(i + 14)
 
 
 def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
@@ -734,14 +772,14 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
         _node(
             22,
             "EmptyFlux2LatentImage",
-            "Set 832 x 1120 portrait canvas",
+            f"Set {CANVAS_WIDTH} x {CANVAS_HEIGHT} portrait canvas",
             group,
             (x + 520, 120),
-            inputs={"width": 832, "height": 1120, "batch_size": 1},
+            inputs={"width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "batch_size": 1},
             input_types={"width": "INT", "height": "INT", "batch_size": "INT"},
             outputs=["LATENT"],
             output_types=["LATENT"],
-            widgets=[832, 1120, 1],
+            widgets=[CANVAS_WIDTH, CANVAS_HEIGHT, 1],
         ),
         _node(
             27,
@@ -761,8 +799,8 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
                 "denoise": 1.0,
                 "cfg": DEFAULT_CFG,
                 "guidance": DEFAULT_GUIDANCE,
-                "width": 832,
-                "height": 1120,
+                "width": CANVAS_WIDTH,
+                "height": CANVAS_HEIGHT,
             },
             input_types={
                 "model": "MODEL",
@@ -780,7 +818,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             },
             outputs=["sampled_latent"],
             output_types=["LATENT"],
-            widgets=[42, "randomize", "euler", DEFAULT_STEPS, 1.0, DEFAULT_CFG, DEFAULT_GUIDANCE, 832, 1120],
+            widgets=[42, "randomize", "euler", DEFAULT_STEPS, 1.0, DEFAULT_CFG, DEFAULT_GUIDANCE, CANVAS_WIDTH, CANVAS_HEIGHT],
         ),
         _node(
             28,
@@ -794,19 +832,32 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             output_types=["IMAGE"],
         ),
         _node(
+            30,
+            "ImageScale",
+            f"Normalize final portrait to exact {CANVAS_WIDTH} x {CANVAS_HEIGHT}",
+            group,
+            (x + 1360, 330),
+            size=(340, 150),
+            inputs={"image": Link(28), "upscale_method": "lanczos", "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "crop": "center"},
+            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["lanczos", CANVAS_WIDTH, CANVAS_HEIGHT, "center"],
+        ),
+        _node(
             29,
             "PreviewImage",
             "Preview generated portrait before background replacement",
             group,
             (x + 1320, 700),
             size=(300, 220),
-            inputs={"images": Link(28)},
+            inputs={"images": Link(30)},
             input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
         ),
     ]
-    return nodes, Link(28)
+    return nodes, Link(30)
 
 
 def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
@@ -833,11 +884,11 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             background_group,
             (x, 500),
             size=(340, 150),
-            inputs={"image": Link(60), "upscale_method": "lanczos", "width": 832, "height": 1120, "crop": "center"},
+            inputs={"image": Link(60), "upscale_method": "lanczos", "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["lanczos", 832, 1120, "center"],
+            widgets=["lanczos", CANVAS_WIDTH, CANVAS_HEIGHT, "center"],
         ),
         _node(
             62,
@@ -904,7 +955,7 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
         _node(
             71,
             "SaveImage",
-            "Save 832 x 1120 master PNG",
+            f"Save {CANVAS_WIDTH} x {CANVAS_HEIGHT} master PNG",
             output_group,
             (x + 1880, 120),
             inputs={"images": Link(66), "filename_prefix": "hoi4_portraits/master"},
@@ -920,11 +971,11 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             output_group,
             (x + 1880, 320),
             size=(340, 150),
-            inputs={"image": Link(66), "upscale_method": "lanczos", "width": 156, "height": 210, "crop": "center"},
+            inputs={"image": Link(66), "upscale_method": "lanczos", "width": GAME_WIDTH, "height": GAME_HEIGHT, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["lanczos", 156, 210, "center"],
+            widgets=["lanczos", GAME_WIDTH, GAME_HEIGHT, "center"],
         ),
         _node(
             73,
@@ -987,14 +1038,14 @@ def _background_and_outputs_multi(
             inputs={
                 "image": Link(id_start),
                 "upscale_method": "lanczos",
-                "width": 832,
-                "height": 1120,
+                "width": CANVAS_WIDTH,
+                "height": CANVAS_HEIGHT,
                 "crop": "center",
             },
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["lanczos", 832, 1120, "center"],
+            widgets=["lanczos", CANVAS_WIDTH, CANVAS_HEIGHT, "center"],
         ),
         _node(
             id_start + 2,
@@ -1064,7 +1115,7 @@ def _background_and_outputs_multi(
                 _node(
                     branch + 4,
                     "SaveImage",
-                    f"Save {label} 832 x 1120 master PNG",
+                    f"Save {label} {CANVAS_WIDTH} x {CANVAS_HEIGHT} master PNG",
                     output_group,
                     (x + 1880, row_y),
                     inputs={"images": Link(branch + 2), "filename_prefix": f"{prefix}_master"},
@@ -1080,11 +1131,11 @@ def _background_and_outputs_multi(
                     output_group,
                     (x + 1880, row_y + 200),
                     size=(340, 150),
-                    inputs={"image": Link(branch + 2), "upscale_method": "lanczos", "width": 156, "height": 210, "crop": "center"},
+                    inputs={"image": Link(branch + 2), "upscale_method": "lanczos", "width": GAME_WIDTH, "height": GAME_HEIGHT, "crop": "center"},
                     input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
                     outputs=["IMAGE"],
                     output_types=["IMAGE"],
-                    widgets=["lanczos", 156, 210, "center"],
+                    widgets=["lanczos", GAME_WIDTH, GAME_HEIGHT, "center"],
                 ),
                 _node(
                     branch + 6,
@@ -1121,7 +1172,7 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
         _node(
             71,
             "SaveImage",
-            "Save 832 x 1120 processed PNG",
+            f"Save {CANVAS_WIDTH} x {CANVAS_HEIGHT} processed PNG",
             output_group,
             (4000, 120),
             inputs={"images": processed_image, "filename_prefix": "hoi4_portraits/processed_master"},
@@ -1137,11 +1188,11 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
             output_group,
             (4000, 320),
             size=(340, 150),
-            inputs={"image": processed_image, "upscale_method": "lanczos", "width": 156, "height": 210, "crop": "center"},
+            inputs={"image": processed_image, "upscale_method": "lanczos", "width": GAME_WIDTH, "height": GAME_HEIGHT, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["lanczos", 156, 210, "center"],
+            widgets=["lanczos", GAME_WIDTH, GAME_HEIGHT, "center"],
         ),
         _node(
             73,
@@ -1169,7 +1220,7 @@ def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1
         groups.append(Group("04 HOI4 LoRA styling", (3400, 40, 1800, style_height), "#7a568e"))
     else:
         groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1800, 980), "#7a568e"))
-    background_x = 5600 if has_restoration else 3600
+    background_x = 5650 if has_restoration else 3600
     output_height = 3040 if candidate_count > 1 else 720
     groups.append(Group("05 Optional background - after generation", (background_x - 80, 40, 1300, output_height), "#8d5b5b"))
     groups.append(Group("06 Preview and save", (background_x + 1300, 40, 1100, output_height), "#596b82"))
@@ -1269,8 +1320,8 @@ def _feature_transfer_node(*, preset: str, with_mask: bool) -> list[Node]:
 def _identity_comparison_setup(
     method: str,
 ) -> tuple[list[Node], Link, tuple[Link, Link] | None, bool, str]:
-    if method == "default":
-        return _feature_transfer_node(preset=IDENTITY_LOCK_PRESET, with_mask=False), Link(190), None, True, STYLE_PROMPT
+    if method == "source":
+        return [], Link(4), None, False, STYLE_PROMPT
     if method == "native":
         return [], Link(4), (Link(18), Link(32)), False, STYLE_PROMPT
     if method in {"feature_mid", "feature_hard"}:
@@ -1404,7 +1455,7 @@ def _klein_composite_node(*, node_id: int, generated: Link, y: int, candidate: i
         "KleinEditComposite",
         f"Composite candidate {candidate} identity details",
         "04 HOI4 LoRA styling",
-        (5140, y),
+        (5165, y),
         size=(340, 620),
         inputs={
             "generated_image": generated,
@@ -1447,7 +1498,7 @@ def _klein_composite_node(*, node_id: int, generated: Link, y: int, candidate: i
 
 
 def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
-    method = comparison.method if comparison else "default"
+    method = comparison.method if comparison else "source"
     nodes = _source_nodes(include_processed_preview=False) + _model_nodes()
     identity_nodes, style_model, reference_images, double_reference, style_prompt = _identity_comparison_setup(method)
     nodes.extend(identity_nodes)
@@ -1472,11 +1523,11 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             "03 Optional FLUX.2 restoration",
             (2040, 680),
             size=(330, 150),
-            inputs={"switch": False, "on_false": Link(8), "on_true": restored},
+            inputs={"switch": True, "on_false": Link(8), "on_true": restored},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
             outputs=["output"],
             output_types=["IMAGE"],
-            widgets=[False],
+            widgets=[True],
         )
     )
     restoration_preview = next(node for node in nodes if node.node_id == 35)
@@ -1528,20 +1579,26 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
         if comparison
         else "hoi4_portrait_flux2_klein_9b_source"
     )
-    identity_label = comparison.label if comparison else "Feature transfer — MID_LOCK with doubled source reference"
+    identity_label = comparison.label if comparison else "Direct source reference"
     return Graph(
         workflow_id=workflow_id,
-        description=f"Source portrait workflow using {identity_label}: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates.",
+        description=(
+            f"Source portrait workflow using {identity_label}: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates."
+            if comparison
+            else "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates from the processed source reference."
+        ),
         kind="image_to_image",
         nodes=nodes,
         groups=_groups(has_source=True, has_restoration=True, candidate_count=SOURCE_CANDIDATE_COUNT),
         metadata={
             "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
-            "flux_restoration_default": False,
+            "flux_restoration_default": True,
+            "face_processing_default": True,
+            "face_processing_bypass": "whole_composition_center_crop_then_esrgan",
             "candidate_count": SOURCE_CANDIDATE_COUNT,
             "candidate_seed_count": SOURCE_CANDIDATE_COUNT,
             "background_candidate_count": SOURCE_CANDIDATE_COUNT,
-            "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
+            "source_crop": "toggleable_adaptive_head_and_shoulders_zoom_0.90_adjustable_headwear_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
             "identity_preservation": method,
             "identity_comparison": comparison is not None,
@@ -1575,11 +1632,11 @@ def build_processing() -> Graph:
             "03 Optional FLUX.2 restoration",
             (2040, 680),
             size=(330, 150),
-            inputs={"switch": False, "on_false": Link(8), "on_true": restored},
+            inputs={"switch": True, "on_false": Link(8), "on_true": restored},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
             outputs=["output"],
             output_types=["IMAGE"],
-            widgets=[False],
+            widgets=[True],
         )
     )
     restoration_preview = next(node for node in nodes if node.node_id == 35)
@@ -1595,8 +1652,10 @@ def build_processing() -> Graph:
         metadata={
             "style_lora": None,
             "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
-            "flux_restoration_default": False,
-            "source_crop": "adaptive_head_and_shoulders_zoom_0.90_before_esrgan",
+            "flux_restoration_default": True,
+            "face_processing_default": True,
+            "face_processing_bypass": "whole_composition_center_crop_then_esrgan",
+            "source_crop": "toggleable_adaptive_head_and_shoulders_zoom_0.90_adjustable_headwear_before_esrgan",
             "background_order": "not_applicable_processing_only",
         },
     )
@@ -1644,6 +1703,20 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             if saved:
                 node.pos = tuple(saved["pos"])
                 node.size = tuple(saved["size"])
+        exact_size_stage_geometry = {
+            34: ((2850, 475), (340, 150)),
+            35: ((2850, 665), (370, 300)),
+            54: ((4760, 465), (340, 150)),
+            55: ((4760, 655), (330, 260)),
+            74: ((4760, 1331), (340, 150)),
+            75: ((4760, 1521), (330, 260)),
+            94: ((4760, 2229), (340, 150)),
+            95: ((4760, 2419), (360, 260)),
+            119: ((5600, 680), (340, 100)),
+        }
+        for node in graph.nodes:
+            if node.node_id in exact_size_stage_geometry:
+                node.pos, node.size = exact_size_stage_geometry[node.node_id]
         viewport = layout["viewport"]
 
     node_by_id = {node.node_id: node for node in graph.nodes}
@@ -1694,8 +1767,10 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         }
         if node.models:
             properties["models"] = node.models
-        is_feature_toggle = node.title.startswith("Toggle FLUX restoration") or node.title.startswith(
-            "Toggle replacement background"
+        is_feature_toggle = (
+            node.title.startswith("Toggle FLUX restoration")
+            or node.title.startswith("Toggle replacement background")
+            or node.title.startswith("Toggle face processing")
         )
         node_color = "#b91c1c" if is_feature_toggle else colors.get(node.group, "#3f789e")
         node_background = "#7f1d1d" if is_feature_toggle else colors.get(node.group, "#3f789e")
@@ -1736,6 +1811,9 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             "graph_version": WORKFLOW_SCHEMA_VERSION,
             "base_model": BASE_MODEL,
             "style_lora": STYLE_LORA,
+            "master_size": [CANVAS_WIDTH, CANVAS_HEIGHT],
+            "game_size": [GAME_WIDTH, GAME_HEIGHT],
+            "game_resize_policy": "lanczos_center_crop",
             "core_nodes_only": not any(
                 node.class_type in {"AdaptivePortraitCrop", "Flux2PortraitSampler"} for node in graph.nodes
             ),
@@ -1792,6 +1870,8 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
         "text_encoder": TEXT_ENCODER,
         "vae": VAE_MODEL,
         "style_lora": STYLE_LORA,
+        "master_size": [CANVAS_WIDTH, CANVAS_HEIGHT],
+        "game_size": [GAME_WIDTH, GAME_HEIGHT],
         "workflows": manifest_items,
     }
     _write_json(workflow_dir / "manifest.json", manifest)
