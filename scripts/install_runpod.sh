@@ -87,8 +87,6 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 if "AdaptivePortraitCrop" not in module.NODE_CLASS_MAPPINGS:
     raise RuntimeError("AdaptivePortraitCrop did not register")
-if "Flux2PortraitSampler" not in module.NODE_CLASS_MAPPINGS:
-    raise RuntimeError("Flux2PortraitSampler did not register")
 if "PortraitIdentityMask" not in module.NODE_CLASS_MAPPINGS:
     raise RuntimeError("PortraitIdentityMask did not register")
 print(f"Verified the hoi4_portraits node pack with {sys.executable}")

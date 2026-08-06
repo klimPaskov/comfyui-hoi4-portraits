@@ -335,38 +335,6 @@
       "title": "Attach reference to negative conditioning"
     }
   },
-  "30": {
-    "class_type": "Flux2PortraitSampler",
-    "inputs": {
-      "model": [
-        "191",
-        0
-      ],
-      "positive": [
-        "23",
-        0
-      ],
-      "negative": [
-        "24",
-        0
-      ],
-      "latent_image": [
-        "22",
-        0
-      ],
-      "seed": 17,
-      "sampler_name": "euler",
-      "steps": 6,
-      "denoise": 1.0,
-      "cfg": 1.0,
-      "guidance": 1.0,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Conservative restoration sampling controls"
-    }
-  },
   "31": {
     "class_type": "VAEDecode",
     "inputs": {
@@ -409,6 +377,110 @@
     },
     "_meta": {
       "title": "Preview selected processed portrait"
+    }
+  },
+  "1300": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "23",
+        0
+      ],
+      "guidance": 1.0
+    },
+    "_meta": {
+      "title": "Conservative restoration guidance"
+    }
+  },
+  "1301": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "191",
+        0
+      ],
+      "positive": [
+        "1300",
+        0
+      ],
+      "negative": [
+        "24",
+        0
+      ],
+      "cfg": 1.0
+    },
+    "_meta": {
+      "title": "Conservative restoration CFG"
+    }
+  },
+  "1302": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 17
+    },
+    "_meta": {
+      "title": "Conservative restoration seed"
+    }
+  },
+  "1303": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Conservative restoration sampler"
+    }
+  },
+  "1304": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 6,
+      "width": 1024,
+      "height": 1365
+    },
+    "_meta": {
+      "title": "Conservative restoration steps and resolution"
+    }
+  },
+  "1305": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "1304",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Conservative restoration denoise"
+    }
+  },
+  "30": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "1302",
+        0
+      ],
+      "guider": [
+        "1301",
+        0
+      ],
+      "sampler": [
+        "1303",
+        0
+      ],
+      "sigmas": [
+        "1305",
+        1
+      ],
+      "latent_image": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample conservative restoration"
     }
   },
   "32": {

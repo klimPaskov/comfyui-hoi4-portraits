@@ -80,38 +80,6 @@
       "title": "Set 1024 x 1365 portrait canvas"
     }
   },
-  "27": {
-    "class_type": "Flux2PortraitSampler",
-    "inputs": {
-      "model": [
-        "4",
-        0
-      ],
-      "positive": [
-        "20",
-        0
-      ],
-      "negative": [
-        "21",
-        0
-      ],
-      "latent_image": [
-        "22",
-        0
-      ],
-      "seed": 42,
-      "sampler_name": "euler",
-      "steps": 6,
-      "denoise": 1.0,
-      "cfg": 1.0,
-      "guidance": 1.0,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "HOI4 portrait sampling controls"
-    }
-  },
   "28": {
     "class_type": "VAEDecode",
     "inputs": {
@@ -154,6 +122,110 @@
     },
     "_meta": {
       "title": "Preview generated portrait before background replacement"
+    }
+  },
+  "1270": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "20",
+        0
+      ],
+      "guidance": 1.0
+    },
+    "_meta": {
+      "title": "HOI4 portrait guidance"
+    }
+  },
+  "1271": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "1270",
+        0
+      ],
+      "negative": [
+        "21",
+        0
+      ],
+      "cfg": 1.0
+    },
+    "_meta": {
+      "title": "HOI4 portrait CFG"
+    }
+  },
+  "1272": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 42
+    },
+    "_meta": {
+      "title": "HOI4 portrait seed"
+    }
+  },
+  "1273": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "HOI4 portrait sampler"
+    }
+  },
+  "1274": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 6,
+      "width": 1024,
+      "height": 1365
+    },
+    "_meta": {
+      "title": "HOI4 portrait steps and resolution"
+    }
+  },
+  "1275": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "1274",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "HOI4 portrait denoise"
+    }
+  },
+  "27": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "1272",
+        0
+      ],
+      "guider": [
+        "1271",
+        0
+      ],
+      "sampler": [
+        "1273",
+        0
+      ],
+      "sigmas": [
+        "1275",
+        1
+      ],
+      "latent_image": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample hoi4 portrait"
     }
   },
   "60": {

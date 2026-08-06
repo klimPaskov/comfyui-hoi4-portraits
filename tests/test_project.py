@@ -96,16 +96,22 @@ class WorkflowTests(unittest.TestCase):
             portrait_samplers = {
                 node_id: node["inputs"]
                 for node_id, node in api.items()
-                if node["class_type"] == "Flux2PortraitSampler"
+                if node["class_type"] == "SamplerCustomAdvanced"
             }
             if is_source:
                 self.assertEqual(
-                    {node_id: inputs["steps"] for node_id, inputs in portrait_samplers.items()},
+                    {
+                        node_id: api[str(1000 + int(node_id) * 10 + 4)]["inputs"]["steps"]
+                        for node_id in portrait_samplers
+                    },
                     {"30": 6, "50": 6, "70": 4, "90": 8},
                     workflow.name,
                 )
                 self.assertEqual(
-                    {node_id: inputs["sampler_name"] for node_id, inputs in portrait_samplers.items()},
+                    {
+                        node_id: api[str(1000 + int(node_id) * 10 + 3)]["inputs"]["sampler_name"]
+                        for node_id in portrait_samplers
+                    },
                     {"30": "euler", "50": "euler", "70": "res_2s", "90": "res_2m"},
                     workflow.name,
                 )
@@ -113,11 +119,13 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(set(portrait_samplers), {"27"}, workflow.name)
             else:
                 self.assertEqual(set(portrait_samplers), {"30"}, workflow.name)
-            self.assertTrue(all(node["cfg"] == 1.0 for node in portrait_samplers.values()), workflow.name)
-            self.assertTrue(all(node["guidance"] == 1.0 for node in portrait_samplers.values()), workflow.name)
-            self.assertTrue(all(node["denoise"] == 1.0 for node in portrait_samplers.values()), workflow.name)
-            self.assertTrue(all(node["width"] == 1024 for node in portrait_samplers.values()), workflow.name)
-            self.assertTrue(all(node["height"] == 1365 for node in portrait_samplers.values()), workflow.name)
+            for node_id in portrait_samplers:
+                control_id = 1000 + int(node_id) * 10
+                self.assertEqual(api[str(control_id)]["inputs"]["guidance"], 1.0, workflow.name)
+                self.assertEqual(api[str(control_id + 1)]["inputs"]["cfg"], 1.0, workflow.name)
+                self.assertEqual(api[str(control_id + 5)]["inputs"]["denoise"], 1.0, workflow.name)
+                self.assertEqual(api[str(control_id + 4)]["inputs"]["width"], 1024, workflow.name)
+                self.assertEqual(api[str(control_id + 4)]["inputs"]["height"], 1365, workflow.name)
             if is_source:
                 self.assertIs(api["32"]["inputs"]["switch"], True)
                 expected_prompt = build_workflows.STYLE_PROMPT
@@ -137,7 +145,9 @@ class WorkflowTests(unittest.TestCase):
                         self.assertEqual(api[reference_id]["inputs"]["latent_2"], [str(start + 6), 0])
                 if workflow.name.endswith("9b_source.api.json"):
                     self.assertNotIn("190", api)
-                    self.assertTrue(all(api[node_id]["inputs"]["model"] == ["4", 0] for node_id in ("50", "70", "90")))
+                    self.assertTrue(
+                        all(api[str(1000 + int(node_id) * 10 + 1)]["inputs"]["model"] == ["4", 0] for node_id in ("50", "70", "90"))
+                    )
 
     def test_feature_toggle_nodes_are_red_and_use_expected_defaults(self) -> None:
         for workflow in (ROOT / "workflows").glob("*.json"):
@@ -169,9 +179,9 @@ class WorkflowTests(unittest.TestCase):
         for filename in filenames:
             ui = json.loads((ROOT / "workflows" / filename).read_text(encoding="utf-8"))
             nodes = {node["id"]: node for node in _editor_nodes(ui)}
-            self.assertEqual(nodes[30]["widgets_values"][:2], [17, "fixed"], filename)
+            self.assertEqual(nodes[1302]["widgets_values"][:2], [17, "fixed"], filename)
             if "_source" in filename:
-                for node_id in (50, 70, 90):
+                for node_id in (1502, 1702, 1902):
                     self.assertEqual(nodes[node_id]["widgets_values"][1], "randomize", filename)
 
     def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
@@ -232,8 +242,9 @@ class WorkflowTests(unittest.TestCase):
             (ROOT / "workflows" / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text(encoding="utf-8")
         )
         self.assertEqual(build_workflows.SOURCE_CANDIDATE_COUNT, 3)
-        self.assertEqual([api[node_id]["inputs"]["seed"] for node_id in ("50", "70", "90")], [42, 43, 44])
-        self.assertEqual(sum(node["class_type"] == "Flux2PortraitSampler" for node in api.values()), 4)
+        self.assertEqual([api[node_id]["inputs"]["noise_seed"] for node_id in ("1502", "1702", "1902")], [42, 43, 44])
+        self.assertEqual(sum(node["class_type"] == "SamplerCustomAdvanced" for node in api.values()), 4)
+        self.assertEqual(sum(node["class_type"] == "Flux2Scheduler" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "VAEDecode" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "RemoveBackground" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 6)
@@ -292,7 +303,7 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(api["190"]["class_type"], "PuLIDModelLoader")
                 self.assertEqual(api["193"]["inputs"]["provider"], "CUDA")
                 self.assertEqual(api["194"]["inputs"]["strength"], 1.4)
-                self.assertEqual(api["50"]["inputs"]["model"], ["194", 0])
+                self.assertEqual(api["1501"]["inputs"]["model"], ["194", 0])
             if method == "refcontrol_lineart":
                 self.assertEqual(api["192"]["class_type"], "Canny")
                 self.assertIn("refcontrol", api["40"]["inputs"]["text"])
@@ -412,7 +423,7 @@ class InstallerAndModelTests(unittest.TestCase):
         self.assertIn(revision, windows)
         self.assertIn('/workspace/runpod-slim/venv/bin/python', runpod)
         self.assertIn('AdaptivePortraitCrop did not register', runpod)
-        self.assertIn('Flux2PortraitSampler did not register', runpod)
+        self.assertNotIn('Flux2PortraitSampler did not register', runpod)
         self.assertIn("git -C \"${RES4LYF_DIR}\" grep -q 'res_2s'", runpod)
         self.assertIn("git -C \"${RES4LYF_DIR}\" grep -q 'res_2m'", runpod)
         self.assertNotIn("import custom_nodes.RES4LYF", runpod)

@@ -13,7 +13,7 @@ The source and text-to-image model stack is:
 3. `VAELoader` — FLUX.2 VAE.
 4. `LoraLoaderModelOnly` — loads the HOI4 adapter and exposes LoRA strength directly on the same node, defaulting to `1.00`.
 5. `LoraLoaderModelOnly` — loads Adonis Base for the optional restoration pass.
-6. `FLUX.2 Portrait Sampler`: seed, sampler, steps, denoise, CFG, guidance, and canvas size for that branch.
+6. Standard sampling controls: independently adjust seed behavior, sampler, FLUX.2 steps, denoise, CFG, guidance, and canvas size for that branch.
 
 The [identity comparison pack](identity-comparison.md) keeps this stack and
 generation policy fixed while testing nine alternate preservation paths.

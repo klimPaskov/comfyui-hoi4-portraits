@@ -337,38 +337,6 @@
       "title": "Attach reference to negative conditioning"
     }
   },
-  "30": {
-    "class_type": "Flux2PortraitSampler",
-    "inputs": {
-      "model": [
-        "191",
-        0
-      ],
-      "positive": [
-        "23",
-        0
-      ],
-      "negative": [
-        "24",
-        0
-      ],
-      "latent_image": [
-        "22",
-        0
-      ],
-      "seed": 17,
-      "sampler_name": "euler",
-      "steps": 6,
-      "denoise": 1.0,
-      "cfg": 1.0,
-      "guidance": 1.0,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Conservative restoration sampling controls"
-    }
-  },
   "31": {
     "class_type": "VAEDecode",
     "inputs": {
@@ -411,6 +379,110 @@
     },
     "_meta": {
       "title": "Preview selected processed portrait"
+    }
+  },
+  "1300": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "23",
+        0
+      ],
+      "guidance": 1.0
+    },
+    "_meta": {
+      "title": "Conservative restoration guidance"
+    }
+  },
+  "1301": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "191",
+        0
+      ],
+      "positive": [
+        "1300",
+        0
+      ],
+      "negative": [
+        "24",
+        0
+      ],
+      "cfg": 1.0
+    },
+    "_meta": {
+      "title": "Conservative restoration CFG"
+    }
+  },
+  "1302": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 17
+    },
+    "_meta": {
+      "title": "Conservative restoration seed"
+    }
+  },
+  "1303": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Conservative restoration sampler"
+    }
+  },
+  "1304": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 6,
+      "width": 1024,
+      "height": 1365
+    },
+    "_meta": {
+      "title": "Conservative restoration steps and resolution"
+    }
+  },
+  "1305": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "1304",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Conservative restoration denoise"
+    }
+  },
+  "30": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "1302",
+        0
+      ],
+      "guider": [
+        "1301",
+        0
+      ],
+      "sampler": [
+        "1303",
+        0
+      ],
+      "sigmas": [
+        "1305",
+        1
+      ],
+      "latent_image": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample conservative restoration"
     }
   },
   "32": {
@@ -507,38 +579,6 @@
       "title": "Attach two identity references to negative conditioning"
     }
   },
-  "50": {
-    "class_type": "Flux2PortraitSampler",
-    "inputs": {
-      "model": [
-        "4",
-        0
-      ],
-      "positive": [
-        "43",
-        0
-      ],
-      "negative": [
-        "44",
-        0
-      ],
-      "latent_image": [
-        "42",
-        0
-      ],
-      "seed": 42,
-      "sampler_name": "euler",
-      "steps": 6,
-      "denoise": 1.0,
-      "cfg": 1.0,
-      "guidance": 1.0,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA sampling controls"
-    }
-  },
   "51": {
     "class_type": "VAEDecode",
     "inputs": {
@@ -581,6 +621,110 @@
     },
     "_meta": {
       "title": "Preview composited candidate 1"
+    }
+  },
+  "1500": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "43",
+        0
+      ],
+      "guidance": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 1 identity LoRA guidance"
+    }
+  },
+  "1501": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "1500",
+        0
+      ],
+      "negative": [
+        "44",
+        0
+      ],
+      "cfg": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 1 identity LoRA CFG"
+    }
+  },
+  "1502": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 42
+    },
+    "_meta": {
+      "title": "Candidate 1 identity LoRA seed"
+    }
+  },
+  "1503": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Candidate 1 identity LoRA sampler"
+    }
+  },
+  "1504": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 6,
+      "width": 1024,
+      "height": 1365
+    },
+    "_meta": {
+      "title": "Candidate 1 identity LoRA steps and resolution"
+    }
+  },
+  "1505": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "1504",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 1 identity LoRA denoise"
+    }
+  },
+  "50": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "1502",
+        0
+      ],
+      "guider": [
+        "1501",
+        0
+      ],
+      "sampler": [
+        "1503",
+        0
+      ],
+      "sigmas": [
+        "1505",
+        1
+      ],
+      "latent_image": [
+        "42",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample candidate 1 identity lora"
     }
   },
   "45": {
@@ -721,38 +865,6 @@
       "title": "Attach two identity references to negative conditioning"
     }
   },
-  "70": {
-    "class_type": "Flux2PortraitSampler",
-    "inputs": {
-      "model": [
-        "4",
-        0
-      ],
-      "positive": [
-        "63",
-        0
-      ],
-      "negative": [
-        "64",
-        0
-      ],
-      "latent_image": [
-        "62",
-        0
-      ],
-      "seed": 43,
-      "sampler_name": "res_2s",
-      "steps": 4,
-      "denoise": 1.0,
-      "cfg": 1.0,
-      "guidance": 1.0,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA sampling controls"
-    }
-  },
   "71": {
     "class_type": "VAEDecode",
     "inputs": {
@@ -795,6 +907,110 @@
     },
     "_meta": {
       "title": "Preview composited candidate 2"
+    }
+  },
+  "1700": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "63",
+        0
+      ],
+      "guidance": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 2 identity LoRA guidance"
+    }
+  },
+  "1701": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "1700",
+        0
+      ],
+      "negative": [
+        "64",
+        0
+      ],
+      "cfg": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 2 identity LoRA CFG"
+    }
+  },
+  "1702": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 43
+    },
+    "_meta": {
+      "title": "Candidate 2 identity LoRA seed"
+    }
+  },
+  "1703": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "res_2s"
+    },
+    "_meta": {
+      "title": "Candidate 2 identity LoRA sampler"
+    }
+  },
+  "1704": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 4,
+      "width": 1024,
+      "height": 1365
+    },
+    "_meta": {
+      "title": "Candidate 2 identity LoRA steps and resolution"
+    }
+  },
+  "1705": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "1704",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 2 identity LoRA denoise"
+    }
+  },
+  "70": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "1702",
+        0
+      ],
+      "guider": [
+        "1701",
+        0
+      ],
+      "sampler": [
+        "1703",
+        0
+      ],
+      "sigmas": [
+        "1705",
+        1
+      ],
+      "latent_image": [
+        "62",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample candidate 2 identity lora"
     }
   },
   "65": {
@@ -935,38 +1151,6 @@
       "title": "Attach two identity references to negative conditioning"
     }
   },
-  "90": {
-    "class_type": "Flux2PortraitSampler",
-    "inputs": {
-      "model": [
-        "4",
-        0
-      ],
-      "positive": [
-        "83",
-        0
-      ],
-      "negative": [
-        "84",
-        0
-      ],
-      "latent_image": [
-        "82",
-        0
-      ],
-      "seed": 44,
-      "sampler_name": "res_2m",
-      "steps": 8,
-      "denoise": 1.0,
-      "cfg": 1.0,
-      "guidance": 1.0,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA sampling controls"
-    }
-  },
   "91": {
     "class_type": "VAEDecode",
     "inputs": {
@@ -1009,6 +1193,110 @@
     },
     "_meta": {
       "title": "Preview composited candidate 3"
+    }
+  },
+  "1900": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "83",
+        0
+      ],
+      "guidance": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 3 identity LoRA guidance"
+    }
+  },
+  "1901": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "1900",
+        0
+      ],
+      "negative": [
+        "84",
+        0
+      ],
+      "cfg": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 3 identity LoRA CFG"
+    }
+  },
+  "1902": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 44
+    },
+    "_meta": {
+      "title": "Candidate 3 identity LoRA seed"
+    }
+  },
+  "1903": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "res_2m"
+    },
+    "_meta": {
+      "title": "Candidate 3 identity LoRA sampler"
+    }
+  },
+  "1904": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 8,
+      "width": 1024,
+      "height": 1365
+    },
+    "_meta": {
+      "title": "Candidate 3 identity LoRA steps and resolution"
+    }
+  },
+  "1905": {
+    "class_type": "SplitSigmasDenoise",
+    "inputs": {
+      "sigmas": [
+        "1904",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Candidate 3 identity LoRA denoise"
+    }
+  },
+  "90": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "1902",
+        0
+      ],
+      "guider": [
+        "1901",
+        0
+      ],
+      "sampler": [
+        "1903",
+        0
+      ],
+      "sigmas": [
+        "1905",
+        1
+      ],
+      "latent_image": [
+        "82",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample candidate 3 identity lora"
     }
   },
   "85": {

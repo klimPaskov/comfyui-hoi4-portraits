@@ -14,7 +14,6 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_DIR = ROOT / "workflows"
-SOURCE_LAYOUT_PATH = ROOT / "scripts" / "layouts" / "hoi4_portrait_flux2_klein_9b_source.json"
 
 BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
@@ -502,6 +501,127 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
     return nodes
 
 
+def _sampling_nodes(
+    *,
+    sampler_id: int,
+    group: str,
+    x: int,
+    y: int,
+    model: Link,
+    positive: Link,
+    negative: Link,
+    latent: Link,
+    seed: int,
+    seed_mode: str,
+    sampler_name: str,
+    steps: int,
+    denoise: float,
+    title_prefix: str,
+) -> list[Node]:
+    control_id = 1000 + sampler_id * 10
+    control_x = x + 850
+    option_x = x + 1140
+    sample_x = x + 1430
+    return [
+        _node(
+            control_id,
+            "FluxGuidance",
+            f"{title_prefix} guidance",
+            group,
+            (control_x, y),
+            size=(260, 100),
+            inputs={"conditioning": positive, "guidance": DEFAULT_GUIDANCE},
+            input_types={"conditioning": "CONDITIONING", "guidance": "FLOAT"},
+            outputs=["CONDITIONING"],
+            output_types=["CONDITIONING"],
+            widgets=[DEFAULT_GUIDANCE],
+        ),
+        _node(
+            control_id + 1,
+            "CFGGuider",
+            f"{title_prefix} CFG",
+            group,
+            (control_x, y + 140),
+            size=(260, 160),
+            inputs={"model": model, "positive": Link(control_id), "negative": negative, "cfg": DEFAULT_CFG},
+            input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "cfg": "FLOAT"},
+            outputs=["GUIDER"],
+            output_types=["GUIDER"],
+            widgets=[DEFAULT_CFG],
+        ),
+        _node(
+            control_id + 2,
+            "RandomNoise",
+            f"{title_prefix} seed",
+            group,
+            (option_x, y),
+            size=(260, 100),
+            inputs={"noise_seed": seed},
+            input_types={"noise_seed": "INT"},
+            outputs=["NOISE"],
+            output_types=["NOISE"],
+            widgets=[seed, seed_mode],
+        ),
+        _node(
+            control_id + 3,
+            "KSamplerSelect",
+            f"{title_prefix} sampler",
+            group,
+            (option_x, y + 140),
+            size=(260, 100),
+            inputs={"sampler_name": sampler_name},
+            input_types={"sampler_name": "COMBO"},
+            outputs=["SAMPLER"],
+            output_types=["SAMPLER"],
+            widgets=[sampler_name],
+        ),
+        _node(
+            control_id + 4,
+            "Flux2Scheduler",
+            f"{title_prefix} steps and resolution",
+            group,
+            (option_x, y + 280),
+            size=(260, 150),
+            inputs={"steps": steps, "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT},
+            input_types={"steps": "INT", "width": "INT", "height": "INT"},
+            outputs=["SIGMAS"],
+            output_types=["SIGMAS"],
+            widgets=[steps, CANVAS_WIDTH, CANVAS_HEIGHT],
+        ),
+        _node(
+            control_id + 5,
+            "SplitSigmasDenoise",
+            f"{title_prefix} denoise",
+            group,
+            (option_x, y + 470),
+            size=(260, 100),
+            inputs={"sigmas": Link(control_id + 4), "denoise": denoise},
+            input_types={"sigmas": "SIGMAS", "denoise": "FLOAT"},
+            outputs=["high_sigmas", "low_sigmas"],
+            output_types=["SIGMAS", "SIGMAS"],
+            widgets=[denoise],
+        ),
+        _node(
+            sampler_id,
+            "SamplerCustomAdvanced",
+            f"Sample {title_prefix.lower()}",
+            group,
+            (sample_x, y + 80),
+            size=(300, 170),
+            inputs={
+                "noise": Link(control_id + 2),
+                "guider": Link(control_id + 1),
+                "sampler": Link(control_id + 3),
+                "sigmas": Link(control_id + 5, 1),
+                "latent_image": latent,
+            },
+            input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
+            outputs=["output", "denoised_output"],
+            output_types=["LATENT", "LATENT"],
+        ),
+    ]
+
+
 def _edit_stage(
     *,
     id_start: int,
@@ -630,50 +750,11 @@ def _edit_stage(
             output_types=["CONDITIONING"],
         ),
         _node(
-            i + 10,
-            "Flux2PortraitSampler",
-            f"{title_prefix} sampling controls",
-            group,
-            (x + 900, y),
-            size=(390, 430),
-            inputs={
-                "model": model,
-                "positive": Link(i + 3),
-                "negative": Link(i + 4),
-                "latent_image": Link(i + 2),
-                "seed": seed,
-                "sampler_name": sampler_name,
-                "steps": steps,
-                "denoise": denoise,
-                "cfg": DEFAULT_CFG,
-                "guidance": DEFAULT_GUIDANCE,
-                "width": CANVAS_WIDTH,
-                "height": CANVAS_HEIGHT,
-            },
-            input_types={
-                "model": "MODEL",
-                "positive": "CONDITIONING",
-                "negative": "CONDITIONING",
-                "latent_image": "LATENT",
-                "seed": "INT",
-                "sampler_name": "COMBO",
-                "steps": "INT",
-                "denoise": "FLOAT",
-                "cfg": "FLOAT",
-                "guidance": "FLOAT",
-                "width": "INT",
-                "height": "INT",
-            },
-            outputs=["sampled_latent"],
-            output_types=["LATENT"],
-            widgets=[seed, seed_mode, sampler_name, steps, denoise, DEFAULT_CFG, DEFAULT_GUIDANCE, CANVAS_WIDTH, CANVAS_HEIGHT],
-        ),
-        _node(
             i + 11,
             "VAEDecode",
             f"Decode {title_prefix.lower()} result",
             group,
-            (x + 1360, y + 80),
+            (x + 1430, y + 290),
             inputs={"samples": Link(i + 10), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -684,7 +765,7 @@ def _edit_stage(
             "ImageScale",
             f"Normalize {title_prefix.lower()} to exact {CANVAS_WIDTH} x {CANVAS_HEIGHT}",
             group,
-            (x + 1360, y + 210),
+            (x + 1430, y + 430),
             size=(340, 150),
             inputs={
                 "image": Link(i + 11),
@@ -703,7 +784,7 @@ def _edit_stage(
             "PreviewImage",
             f"Preview {title_prefix.lower()} result",
             group,
-            (x + 1360, y + 420),
+            (x + 1430, y + 620),
             size=(300, 220),
             inputs={"images": Link(i + 14)},
             input_types={"images": "IMAGE"},
@@ -711,6 +792,24 @@ def _edit_stage(
             output_types=["IMAGE"],
         ),
     ]
+    nodes.extend(
+        _sampling_nodes(
+            sampler_id=i + 10,
+            group=group,
+            x=x,
+            y=y,
+            model=model,
+            positive=Link(i + 3),
+            negative=Link(i + 4),
+            latent=Link(i + 2),
+            seed=seed,
+            seed_mode=seed_mode,
+            sampler_name=sampler_name,
+            steps=steps,
+            denoise=denoise,
+            title_prefix=title_prefix,
+        )
+    )
     if reference_images:
         nodes.extend(
             [
@@ -782,50 +881,11 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             widgets=[CANVAS_WIDTH, CANVAS_HEIGHT, 1],
         ),
         _node(
-            27,
-            "Flux2PortraitSampler",
-            "HOI4 portrait sampling controls",
-            group,
-            (x + 900, 120),
-            size=(390, 430),
-            inputs={
-                "model": Link(4),
-                "positive": Link(20),
-                "negative": Link(21),
-                "latent_image": Link(22),
-                "seed": 42,
-                "sampler_name": "euler",
-                "steps": DEFAULT_STEPS,
-                "denoise": 1.0,
-                "cfg": DEFAULT_CFG,
-                "guidance": DEFAULT_GUIDANCE,
-                "width": CANVAS_WIDTH,
-                "height": CANVAS_HEIGHT,
-            },
-            input_types={
-                "model": "MODEL",
-                "positive": "CONDITIONING",
-                "negative": "CONDITIONING",
-                "latent_image": "LATENT",
-                "seed": "INT",
-                "sampler_name": "COMBO",
-                "steps": "INT",
-                "denoise": "FLOAT",
-                "cfg": "FLOAT",
-                "guidance": "FLOAT",
-                "width": "INT",
-                "height": "INT",
-            },
-            outputs=["sampled_latent"],
-            output_types=["LATENT"],
-            widgets=[42, "randomize", "euler", DEFAULT_STEPS, 1.0, DEFAULT_CFG, DEFAULT_GUIDANCE, CANVAS_WIDTH, CANVAS_HEIGHT],
-        ),
-        _node(
             28,
             "VAEDecode",
             "Decode final styled portrait",
             group,
-            (x + 1360, 180),
+            (x + 1430, 410),
             inputs={"samples": Link(27), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -836,7 +896,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "ImageScale",
             f"Normalize final portrait to exact {CANVAS_WIDTH} x {CANVAS_HEIGHT}",
             group,
-            (x + 1360, 330),
+            (x + 1430, 550),
             size=(340, 150),
             inputs={"image": Link(28), "upscale_method": "lanczos", "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
@@ -849,7 +909,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "PreviewImage",
             "Preview generated portrait before background replacement",
             group,
-            (x + 1320, 700),
+            (x + 1430, 740),
             size=(300, 220),
             inputs={"images": Link(30)},
             input_types={"images": "IMAGE"},
@@ -857,6 +917,24 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             output_types=["IMAGE"],
         ),
     ]
+    nodes.extend(
+        _sampling_nodes(
+            sampler_id=27,
+            group=group,
+            x=x,
+            y=120,
+            model=Link(4),
+            positive=Link(20),
+            negative=Link(21),
+            latent=Link(22),
+            seed=42,
+            seed_mode="randomize",
+            sampler_name="euler",
+            steps=DEFAULT_STEPS,
+            denoise=1.0,
+            title_prefix="HOI4 portrait",
+        )
+    )
     return nodes, Link(30)
 
 
@@ -1232,7 +1310,7 @@ def _processing_groups() -> list[Group]:
         Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"),
         Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 980), "#3f789e"),
         Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"),
-        Group("04 Processed portrait output", (3340, 40, 1100, 720), "#596b82"),
+        Group("04 Processed portrait output", (3400, 40, 1100, 720), "#596b82"),
     ]
 
 
@@ -1455,7 +1533,7 @@ def _klein_composite_node(*, node_id: int, generated: Link, y: int, candidate: i
         "KleinEditComposite",
         f"Composite candidate {candidate} identity details",
         "04 HOI4 LoRA styling",
-        (5165, y),
+        (5235, y),
         size=(340, 620),
         inputs={
             "generated_image": generated,
@@ -1573,13 +1651,22 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             styled = Link(composite_id)
         nodes.extend(style_nodes)
         styled_images.append(styled)
-    nodes.extend(_background_and_outputs_multi(final_images=styled_images, x=5600, id_start=120))
+    background_x = 5700 if method == "composite" else 5600
+    nodes.extend(_background_and_outputs_multi(final_images=styled_images, x=background_x, id_start=120))
     workflow_id = (
         f"hoi4_portrait_flux2_klein_9b_source_identity_test_{comparison.key}"
         if comparison
         else "hoi4_portrait_flux2_klein_9b_source"
     )
     identity_label = comparison.label if comparison else "Direct source reference"
+    groups = _groups(has_source=True, has_restoration=True, candidate_count=SOURCE_CANDIDATE_COUNT)
+    if method == "composite":
+        groups = [
+            Group(group.title, (5670, *group.bounding[1:]), group.color)
+            if group.title == "05 Optional background - after generation"
+            else group
+            for group in groups
+        ]
     return Graph(
         workflow_id=workflow_id,
         description=(
@@ -1589,7 +1676,7 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
         ),
         kind="image_to_image",
         nodes=nodes,
-        groups=_groups(has_source=True, has_restoration=True, candidate_count=SOURCE_CANDIDATE_COUNT),
+        groups=groups,
         metadata={
             "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
             "flux_restoration_default": True,
@@ -1693,31 +1780,6 @@ def _api_json(graph: Graph) -> dict[str, Any]:
 
 def _ui_json(graph: Graph) -> dict[str, Any]:
     viewport = {"scale": 0.45, "offset": [120, 120]}
-    if graph.workflow_id == "hoi4_portrait_flux2_klein_9b_source":
-        layout = json.loads(SOURCE_LAYOUT_PATH.read_text(encoding="utf-8"))
-        geometry = layout["nodes"]
-        for node in graph.nodes:
-            if node.node_id in {5, 6, 7, 8, 9, 11, 12, 13, 14}:
-                continue
-            saved = geometry.get(str(node.node_id))
-            if saved:
-                node.pos = tuple(saved["pos"])
-                node.size = tuple(saved["size"])
-        exact_size_stage_geometry = {
-            34: ((2850, 475), (340, 150)),
-            35: ((2850, 665), (370, 300)),
-            54: ((4760, 465), (340, 150)),
-            55: ((4760, 655), (330, 260)),
-            74: ((4760, 1331), (340, 150)),
-            75: ((4760, 1521), (330, 260)),
-            94: ((4760, 2229), (340, 150)),
-            95: ((4760, 2419), (360, 260)),
-            119: ((5600, 680), (340, 100)),
-        }
-        for node in graph.nodes:
-            if node.node_id in exact_size_stage_geometry:
-                node.pos, node.size = exact_size_stage_geometry[node.node_id]
-        viewport = layout["viewport"]
 
     node_by_id = {node.node_id: node for node in graph.nodes}
     link_id = 1
@@ -1815,7 +1877,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             "game_size": [GAME_WIDTH, GAME_HEIGHT],
             "game_resize_policy": "lanczos_center_crop",
             "core_nodes_only": not any(
-                node.class_type in {"AdaptivePortraitCrop", "Flux2PortraitSampler"} for node in graph.nodes
+                node.class_type in {"AdaptivePortraitCrop", "PortraitIdentityMask"} for node in graph.nodes
             ),
             "comfy_cloud_ready": True,
             **graph.metadata,
@@ -1859,7 +1921,7 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
                 "api_json": api_path.relative_to(root).as_posix(),
                 "node_count": len(graph.nodes),
                 "core_nodes_only": not any(
-                    node.class_type in {"AdaptivePortraitCrop", "Flux2PortraitSampler"}
+                    node.class_type in {"AdaptivePortraitCrop", "PortraitIdentityMask"}
                     for node in graph.nodes
                 ),
             }

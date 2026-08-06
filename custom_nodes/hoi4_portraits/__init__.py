@@ -6,13 +6,7 @@ import torch.nn.functional as functional
 from scipy import ndimage
 
 import cv2
-import comfy.sample
-import comfy.samplers
-import comfy.utils
 import folder_paths
-import latent_preview
-import node_helpers
-from comfy_extras.nodes_flux import get_schedule
 
 
 ASPECT = 1024 / 1365
@@ -284,98 +278,11 @@ class PortraitIdentityMask:
         return (torch.stack(masks).clamp(0, 1),)
 
 
-class Flux2PortraitSampler:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "model": ("MODEL",),
-                "positive": ("CONDITIONING",),
-                "negative": ("CONDITIONING",),
-                "latent_image": ("LATENT",),
-                "seed": (
-                    "INT",
-                    {
-                        "default": 0,
-                        "min": 0,
-                        "max": 0xFFFFFFFFFFFFFFFF,
-                        "control_after_generate": True,
-                    },
-                ),
-                "sampler_name": (comfy.samplers.SAMPLER_NAMES,),
-                "steps": ("INT", {"default": 6, "min": 1, "max": 4096}),
-                "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0, "step": 0.1}),
-                "guidance": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0, "step": 0.1}),
-                "width": ("INT", {"default": 1024, "min": 16, "max": 16384, "step": 16}),
-                "height": ("INT", {"default": 1365, "min": 16, "max": 16384, "step": 1}),
-            }
-        }
-
-    RETURN_TYPES = ("LATENT",)
-    RETURN_NAMES = ("sampled_latent",)
-    FUNCTION = "sample"
-    CATEGORY = "sampling/custom_sampling"
-    DESCRIPTION = "FLUX.2 sampling controls for one visible portrait branch."
-
-    def sample(
-        self,
-        model,
-        positive,
-        negative,
-        latent_image,
-        seed,
-        sampler_name,
-        steps,
-        denoise,
-        cfg,
-        guidance,
-        width,
-        height,
-    ):
-        positive = node_helpers.conditioning_set_values(positive, {"guidance": guidance})
-        sigmas = get_schedule(steps, round(width * height / (16 * 16)))
-        total_steps = round(steps * denoise)
-        sigmas = sigmas[-(total_steps + 1):]
-        sampler = comfy.samplers.sampler_object(sampler_name)
-
-        latent = latent_image.copy()
-        samples = comfy.sample.fix_empty_latent_channels(
-            model,
-            latent["samples"],
-            latent.get("downscale_ratio_spacial"),
-            latent.get("downscale_ratio_temporal"),
-        )
-        latent["samples"] = samples
-        noise = comfy.sample.prepare_noise(samples, seed, latent.get("batch_index"))
-        callback = latent_preview.prepare_callback(model, max(sigmas.shape[-1] - 1, 0), {})
-        sampled = comfy.sample.sample_custom(
-            model,
-            noise,
-            cfg,
-            sampler,
-            sigmas,
-            positive,
-            negative,
-            samples,
-            noise_mask=latent.get("noise_mask"),
-            callback=callback,
-            disable_pbar=not comfy.utils.PROGRESS_BAR_ENABLED,
-            seed=seed,
-        )
-        latent.pop("downscale_ratio_spacial", None)
-        latent.pop("downscale_ratio_temporal", None)
-        latent["samples"] = sampled
-        return (latent,)
-
-
 NODE_CLASS_MAPPINGS = {
     "AdaptivePortraitCrop": AdaptivePortraitCrop,
     "PortraitIdentityMask": PortraitIdentityMask,
-    "Flux2PortraitSampler": Flux2PortraitSampler,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AdaptivePortraitCrop": "Adaptive Portrait Crop",
     "PortraitIdentityMask": "Portrait Identity Mask",
-    "Flux2PortraitSampler": "FLUX.2 Portrait Sampler",
 }
