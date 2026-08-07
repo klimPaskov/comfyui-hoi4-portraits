@@ -2,13 +2,22 @@
 
 ## Live editor validation
 
-The source workflow was loaded in ComfyUI with the crop node and RES4LYF
-samplers installed. The compact pipeline and an opened candidate stage show the
-saved layout used by the release.
+The source workflow was loaded in a fresh ComfyUI 0.30.0 instance with the
+`hoi4_portraits` crop pack and the pinned RES4LYF checkout installed. These are
+actual captures from the running editor: the full canvas, a readable close-up,
+and the queue validation panel.
 
 ![Live source workflow validation](assets/workflows/workflow-live-validation.jpg)
 
 ![Live candidate stage validation](assets/workflows/workflow-live-candidate-stage.jpg)
+
+![Live model validation](assets/workflows/workflow-live-missing-models.jpg)
+
+The graph loaded without missing-node or sampler errors, and the structural
+validator found no invalid links or overlapping cards. The local Mac check does
+not contain the 28.20 GB model set, so ComfyUI correctly stopped at resource
+validation; a completed image run requires the pinned model download on a
+RunPod/CUDA machine.
 
 ## Deterministic build
 
