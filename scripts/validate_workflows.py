@@ -17,7 +17,9 @@ CANVAS_WIDTH = 1024
 CANVAS_HEIGHT = 1365
 GAME_WIDTH = 156
 GAME_HEIGHT = 210
-LAYOUT_NODE_PADDING = 24
+# Match the editor layout guard used by build_workflows.py.  Widget-heavy
+# ComfyUI nodes can render larger than their compact serialized dimensions.
+LAYOUT_NODE_PADDING = 80
 GROUP_NODE_PADDING = 24
 
 ALLOWED_CORE_NODES = {

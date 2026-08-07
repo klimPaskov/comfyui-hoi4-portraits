@@ -39,6 +39,11 @@ CANVAS_HEIGHT = 1365
 GAME_WIDTH = 156
 GAME_HEIGHT = 210
 WORKFLOW_SCHEMA_VERSION = "2.6.1"
+# Keep a visible breathing space between cards in the editor.  ComfyUI can
+# render widget-heavy nodes taller than the compact dimensions stored in a
+# workflow, so the editor layout uses a larger guard than the JSON validator's
+# old 24 px minimum.
+UI_LAYOUT_PADDING = 80
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
@@ -1295,7 +1300,13 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
     ]
 
 
-def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1) -> list[Group]:
+def _groups(
+    *,
+    has_source: bool,
+    has_restoration: bool,
+    candidate_count: int = 1,
+    background_x: int | None = None,
+) -> list[Group]:
     groups: list[Group] = []
     if has_source:
         groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"))
@@ -1306,7 +1317,8 @@ def _groups(*, has_source: bool, has_restoration: bool, candidate_count: int = 1
         groups.append(Group("04 HOI4 LoRA styling", (3400, 40, 1800, style_height), "#7a568e"))
     else:
         groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1800, 980), "#7a568e"))
-    background_x = 5650 if has_restoration else 3600
+    if background_x is None:
+        background_x = 6000 if has_restoration else 3600
     output_height = 3040 if candidate_count > 1 else 720
     groups.append(Group("05 Optional background - after generation", (background_x - 80, 40, 1300, output_height), "#8d5b5b"))
     groups.append(Group("06 Preview and save", (background_x + 1300, 40, 1100, output_height), "#596b82"))
@@ -1659,7 +1671,9 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             styled = Link(composite_id)
         nodes.extend(style_nodes)
         styled_images.append(styled)
-    background_x = 5700 if method == "composite" else 5600
+    # The optional composite comparison adds one tall card after each sample
+    # branch, so give that comparison its own extra column of breathing room.
+    background_x = 6200 if method == "composite" else 6000
     nodes.extend(_background_and_outputs_multi(final_images=styled_images, x=background_x, id_start=120))
     workflow_id = (
         f"hoi4_portrait_flux2_klein_9b_source_identity_test_{comparison.key}"
@@ -1667,14 +1681,12 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
         else "hoi4_portrait_flux2_klein_9b_source"
     )
     identity_label = comparison.label if comparison else "Direct source reference"
-    groups = _groups(has_source=True, has_restoration=True, candidate_count=SOURCE_CANDIDATE_COUNT)
-    if method == "composite":
-        groups = [
-            Group(group.title, (5670, *group.bounding[1:]), group.color)
-            if group.title == "05 Optional background - after generation"
-            else group
-            for group in groups
-        ]
+    groups = _groups(
+        has_source=True,
+        has_restoration=True,
+        candidate_count=SOURCE_CANDIDATE_COUNT,
+        background_x=background_x,
+    )
     return Graph(
         workflow_id=workflow_id,
         description=(
@@ -1786,10 +1798,63 @@ def _api_json(graph: Graph) -> dict[str, Any]:
     return data
 
 
+def _layout_positions(graph: Graph) -> dict[int, list[int]]:
+    """Spread cards within each visual group without changing graph wiring.
+
+    The hand-authored positions provide the semantic left-to-right flow.  This
+    pass only nudges cards that would render too close together, accounting for
+    the larger runtime size of nodes with multi-line widgets.  It keeps the
+    public editor JSON deterministic while preventing the close-up view from
+    showing cards touching or hiding each other's controls.
+    """
+
+    positions = {node.node_id: [node.pos[0], node.pos[1]] for node in graph.nodes}
+    for group in graph.groups:
+        grouped = [node for node in graph.nodes if node.group == group.title]
+        if len(grouped) < 2:
+            continue
+        # Preserve the intended reading order when resolving a collision.
+        grouped.sort(key=lambda node: (node.pos[1], node.pos[0], node.node_id))
+        # A move can expose a second collision farther along the same row, so
+        # finish a complete sweep before deciding that the group is stable.
+        for _ in range(len(grouped) * len(grouped) * 2):
+            moved = False
+            for index, first in enumerate(grouped):
+                ax, ay = positions[first.node_id]
+                aw, ah = first.size
+                for second in grouped[index + 1 :]:
+                    bx, by = positions[second.node_id]
+                    bw, bh = second.size
+                    if not (
+                        ax + aw + UI_LAYOUT_PADDING > bx
+                        and bx + bw + UI_LAYOUT_PADDING > ax
+                        and ay + ah + UI_LAYOUT_PADDING > by
+                        and by + bh + UI_LAYOUT_PADDING > ay
+                    ):
+                        continue
+
+                    # Move along the shorter axis.  A tie on identical cards
+                    # is resolved vertically so stacked controls stay stacked.
+                    right_gap = max(0, ax + aw + UI_LAYOUT_PADDING - bx)
+                    down_gap = max(0, ay + ah + UI_LAYOUT_PADDING - by)
+                    # The nodes are sorted top-to-bottom, left-to-right.  Do
+                    # not move a card backwards; use the vertical axis when a
+                    # lower card starts to the left of the earlier card.
+                    if by >= ay and (bx < ax or down_gap <= right_gap):
+                        positions[second.node_id][1] += down_gap
+                    else:
+                        positions[second.node_id][0] += right_gap
+                    moved = True
+            if not moved:
+                break
+    return positions
+
+
 def _ui_json(graph: Graph) -> dict[str, Any]:
     viewport = {"scale": 0.45, "offset": [120, 120]}
 
     node_by_id = {node.node_id: node for node in graph.nodes}
+    layout_positions = _layout_positions(graph)
     link_id = 1
     links: list[list[Any]] = []
     target_links: dict[tuple[int, str], int] = {}
@@ -1812,8 +1877,8 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
             tightened_groups.append(group)
             continue
         group_x, group_y, _, _ = group.bounding
-        right = max(node.pos[0] + node.size[0] for node in grouped_nodes) + 40
-        bottom = max(node.pos[1] + node.size[1] for node in grouped_nodes) + 40
+        right = max(layout_positions[node.node_id][0] + node.size[0] for node in grouped_nodes) + 40
+        bottom = max(layout_positions[node.node_id][1] + node.size[1] for node in grouped_nodes) + 40
         tightened_groups.append(
             Group(group.title, (group_x, group_y, right - group_x, bottom - group_y), group.color)
         )
@@ -1849,7 +1914,7 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
                 "id": node.node_id,
                 "type": node.class_type,
                 "title": node.title,
-                "pos": list(node.pos),
+                "pos": layout_positions[node.node_id],
                 "size": list(node.size),
                 "color": node_color,
                 "bgcolor": node_background,

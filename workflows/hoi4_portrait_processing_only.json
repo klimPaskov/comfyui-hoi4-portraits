@@ -57,7 +57,7 @@
       "type": "ImageScaleToMaxDimension",
       "title": "Normalize source for face detection",
       "pos": [
-        520,
+        540,
         120
       ],
       "size": [
@@ -120,7 +120,7 @@
       "title": "Load MediaPipe face detector",
       "pos": [
         100,
-        500
+        510
       ],
       "size": [
         300,
@@ -170,8 +170,8 @@
       "type": "MediaPipeFaceLandmarker",
       "title": "Find the portrait subject",
       "pos": [
-        520,
-        300
+        540,
+        320
       ],
       "size": [
         360,
@@ -257,7 +257,7 @@
       "title": "Face zoom 0.90 — preserve headwear: true",
       "pos": [
         520,
-        580
+        620
       ],
       "size": [
         360,
@@ -383,7 +383,7 @@
       "title": "Measure the complete head and headwear silhouette",
       "pos": [
         100,
-        920
+        940
       ],
       "size": [
         320,
@@ -427,7 +427,7 @@
       "title": "Manual crop box for difficult sources",
       "pos": [
         100,
-        1080
+        1120
       ],
       "size": [
         320,
@@ -498,7 +498,7 @@
       "title": "Apply manual head-and-shoulders crop",
       "pos": [
         520,
-        850
+        930
       ],
       "size": [
         360,
@@ -579,7 +579,7 @@
       "title": "Manual crop override — off uses automatic crop",
       "pos": [
         520,
-        1120
+        1190
       ],
       "size": [
         360,
@@ -633,7 +633,7 @@
       "title": "Toggle face processing (on: face crop; off: keep full composition)",
       "pos": [
         520,
-        1320
+        1420
       ],
       "size": [
         360,
@@ -738,7 +738,7 @@
       "title": "Restore and upscale with ESRGAN",
       "pos": [
         520,
-        1460
+        1600
       ],
       "size": [
         267,
@@ -782,7 +782,7 @@
       "title": "Fit portrait to the 1024 x 1365 work canvas",
       "pos": [
         520,
-        1600
+        1726
       ],
       "size": [
         360,
@@ -860,7 +860,7 @@
       "title": "Confirm head-and-shoulders processing before FLUX",
       "pos": [
         100,
-        1620
+        1956
       ],
       "size": [
         360,
@@ -957,7 +957,7 @@
       "title": "Load Qwen 3 8B text encoder",
       "pos": [
         1120,
-        280
+        300
       ],
       "size": [
         300,
@@ -1027,7 +1027,7 @@
       "title": "Load FLUX.2 VAE",
       "pos": [
         1120,
-        460
+        480
       ],
       "size": [
         300,
@@ -1079,7 +1079,7 @@
       "title": "Apply Adonis restoration LoKr — strength editable here",
       "pos": [
         1120,
-        640
+        660
       ],
       "size": [
         300,
@@ -1241,7 +1241,7 @@
       "type": "VAEEncode",
       "title": "Encode conservative restoration reference",
       "pos": [
-        2040,
+        2050,
         120
       ],
       "size": [
@@ -1287,8 +1287,8 @@
       "type": "ReferenceLatent",
       "title": "Attach reference to positive conditioning",
       "pos": [
-        2040,
-        320
+        2050,
+        540
       ],
       "size": [
         300,
@@ -1332,7 +1332,7 @@
       "title": "Attach reference to negative conditioning",
       "pos": [
         2040,
-        520
+        720
       ],
       "size": [
         300,
@@ -1375,8 +1375,8 @@
       "type": "VAEDecode",
       "title": "Decode conservative restoration result",
       "pos": [
-        2970,
-        410
+        3020,
+        550
       ],
       "size": [
         300,
@@ -1419,8 +1419,8 @@
       "type": "ImageScale",
       "title": "Normalize conservative restoration to exact 1024 x 1365",
       "pos": [
-        2970,
-        550
+        3020,
+        730
       ],
       "size": [
         340,
@@ -1495,8 +1495,8 @@
       "type": "PreviewImage",
       "title": "Preview selected processed portrait",
       "pos": [
-        2970,
-        740
+        3020,
+        960
       ],
       "size": [
         300,
@@ -1532,7 +1532,7 @@
       "type": "FluxGuidance",
       "title": "Conservative restoration guidance",
       "pos": [
-        2390,
+        2430,
         120
       ],
       "size": [
@@ -1582,7 +1582,7 @@
       "title": "Conservative restoration CFG",
       "pos": [
         2390,
-        260
+        300
       ],
       "size": [
         260,
@@ -1640,7 +1640,7 @@
       "type": "RandomNoise",
       "title": "Conservative restoration seed",
       "pos": [
-        2680,
+        2770,
         120
       ],
       "size": [
@@ -1686,7 +1686,7 @@
       "title": "Conservative restoration sampler",
       "pos": [
         2680,
-        260
+        550
       ],
       "size": [
         260,
@@ -1730,7 +1730,7 @@
       "title": "Conservative restoration steps and resolution",
       "pos": [
         2680,
-        400
+        730
       ],
       "size": [
         260,
@@ -1792,7 +1792,7 @@
       "title": "Conservative restoration denoise",
       "pos": [
         2680,
-        590
+        960
       ],
       "size": [
         260,
@@ -1846,7 +1846,7 @@
       "title": "Sample conservative restoration",
       "pos": [
         2970,
-        200
+        300
       ],
       "size": [
         300,
@@ -1910,7 +1910,7 @@
       "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)",
       "pos": [
         2040,
-        680
+        900
       ],
       "size": [
         330,
@@ -2127,7 +2127,7 @@
       "title": "Save processed game-size PNG",
       "pos": [
         4000,
-        540
+        550
       ],
       "size": [
         300,
@@ -2553,8 +2553,8 @@
       "bounding": [
         40,
         40,
-        880,
-        2050
+        900,
+        2386
       ],
       "color": "#557a46",
       "font_size": 24,
@@ -2566,7 +2566,7 @@
         1040,
         40,
         420,
-        770
+        790
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -2577,8 +2577,8 @@
       "bounding": [
         1500,
         40,
-        1850,
-        960
+        1900,
+        1180
       ],
       "color": "#8b6f47",
       "font_size": 24,
@@ -2590,7 +2590,7 @@
         3400,
         40,
         980,
-        640
+        650
       ],
       "color": "#596b82",
       "font_size": 24,

@@ -68,7 +68,7 @@
       "title": "Load Qwen 3 8B text encoder",
       "pos": [
         1120,
-        280
+        300
       ],
       "size": [
         300,
@@ -138,7 +138,7 @@
       "title": "Load FLUX.2 VAE",
       "pos": [
         1120,
-        460
+        480
       ],
       "size": [
         300,
@@ -189,7 +189,7 @@
       "title": "Apply HOI4 LoRA — strength editable here",
       "pos": [
         1120,
-        640
+        660
       ],
       "size": [
         300,
@@ -351,7 +351,7 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Set 1024 x 1365 portrait canvas",
       "pos": [
-        2060,
+        2070,
         120
       ],
       "size": [
@@ -413,8 +413,8 @@
       "type": "VAEDecode",
       "title": "Decode final styled portrait",
       "pos": [
-        2970,
-        410
+        3020,
+        550
       ],
       "size": [
         300,
@@ -457,8 +457,8 @@
       "type": "ImageScale",
       "title": "Normalize final portrait to exact 1024 x 1365",
       "pos": [
-        2970,
-        550
+        3020,
+        730
       ],
       "size": [
         340,
@@ -536,8 +536,8 @@
       "type": "PreviewImage",
       "title": "Preview generated portrait before background replacement",
       "pos": [
-        2970,
-        740
+        3020,
+        960
       ],
       "size": [
         300,
@@ -573,7 +573,7 @@
       "type": "FluxGuidance",
       "title": "HOI4 portrait guidance",
       "pos": [
-        2390,
+        2450,
         120
       ],
       "size": [
@@ -623,7 +623,7 @@
       "title": "HOI4 portrait CFG",
       "pos": [
         2390,
-        260
+        300
       ],
       "size": [
         260,
@@ -681,7 +681,7 @@
       "type": "RandomNoise",
       "title": "HOI4 portrait seed",
       "pos": [
-        2680,
+        2790,
         120
       ],
       "size": [
@@ -727,7 +727,7 @@
       "title": "HOI4 portrait sampler",
       "pos": [
         2680,
-        260
+        550
       ],
       "size": [
         260,
@@ -771,7 +771,7 @@
       "title": "HOI4 portrait steps and resolution",
       "pos": [
         2680,
-        400
+        730
       ],
       "size": [
         260,
@@ -833,7 +833,7 @@
       "title": "HOI4 portrait denoise",
       "pos": [
         2680,
-        590
+        960
       ],
       "size": [
         260,
@@ -887,7 +887,7 @@
       "title": "Sample hoi4 portrait",
       "pos": [
         2970,
-        200
+        300
       ],
       "size": [
         300,
@@ -1465,7 +1465,7 @@
       "title": "Save game-size portrait PNG",
       "pos": [
         5480,
-        540
+        550
       ],
       "size": [
         300,
@@ -1748,7 +1748,7 @@
         1040,
         40,
         420,
-        770
+        790
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -1759,8 +1759,8 @@
       "bounding": [
         1500,
         40,
-        1850,
-        960
+        1900,
+        1180
       ],
       "color": "#7a568e",
       "font_size": 24,
@@ -1784,7 +1784,7 @@
         4900,
         40,
         960,
-        640
+        650
       ],
       "color": "#596b82",
       "font_size": 24,

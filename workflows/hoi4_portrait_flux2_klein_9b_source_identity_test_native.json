@@ -57,7 +57,7 @@
       "type": "ImageScaleToMaxDimension",
       "title": "Normalize source for face detection",
       "pos": [
-        520,
+        540,
         120
       ],
       "size": [
@@ -120,7 +120,7 @@
       "title": "Load MediaPipe face detector",
       "pos": [
         100,
-        500
+        510
       ],
       "size": [
         300,
@@ -170,8 +170,8 @@
       "type": "MediaPipeFaceLandmarker",
       "title": "Find the portrait subject",
       "pos": [
-        520,
-        300
+        540,
+        320
       ],
       "size": [
         360,
@@ -257,7 +257,7 @@
       "title": "Face zoom 0.90 — preserve headwear: true",
       "pos": [
         520,
-        580
+        620
       ],
       "size": [
         360,
@@ -383,7 +383,7 @@
       "title": "Measure the complete head and headwear silhouette",
       "pos": [
         100,
-        920
+        940
       ],
       "size": [
         320,
@@ -427,7 +427,7 @@
       "title": "Manual crop box for difficult sources",
       "pos": [
         100,
-        1080
+        1120
       ],
       "size": [
         320,
@@ -498,7 +498,7 @@
       "title": "Apply manual head-and-shoulders crop",
       "pos": [
         520,
-        850
+        930
       ],
       "size": [
         360,
@@ -579,7 +579,7 @@
       "title": "Manual crop override — off uses automatic crop",
       "pos": [
         520,
-        1120
+        1190
       ],
       "size": [
         360,
@@ -636,7 +636,7 @@
       "title": "Toggle face processing (on: face crop; off: keep full composition)",
       "pos": [
         520,
-        1320
+        1420
       ],
       "size": [
         360,
@@ -741,7 +741,7 @@
       "title": "Restore and upscale with ESRGAN",
       "pos": [
         520,
-        1460
+        1600
       ],
       "size": [
         267,
@@ -785,7 +785,7 @@
       "title": "Fit portrait to the 1024 x 1365 work canvas",
       "pos": [
         520,
-        1600
+        1726
       ],
       "size": [
         360,
@@ -923,7 +923,7 @@
       "title": "Load Qwen 3 8B text encoder",
       "pos": [
         1120,
-        280
+        300
       ],
       "size": [
         300,
@@ -999,7 +999,7 @@
       "title": "Load FLUX.2 VAE",
       "pos": [
         1120,
-        460
+        480
       ],
       "size": [
         300,
@@ -1060,7 +1060,7 @@
       "title": "Apply HOI4 LoRA — strength editable here",
       "pos": [
         1120,
-        640
+        660
       ],
       "size": [
         300,
@@ -1127,7 +1127,7 @@
       "title": "Apply Adonis restoration LoKr — strength editable here",
       "pos": [
         1120,
-        820
+        870
       ],
       "size": [
         300,
@@ -1289,7 +1289,7 @@
       "type": "VAEEncode",
       "title": "Encode conservative restoration reference",
       "pos": [
-        2040,
+        2050,
         120
       ],
       "size": [
@@ -1335,8 +1335,8 @@
       "type": "ReferenceLatent",
       "title": "Attach reference to positive conditioning",
       "pos": [
-        2040,
-        320
+        2050,
+        540
       ],
       "size": [
         300,
@@ -1380,7 +1380,7 @@
       "title": "Attach reference to negative conditioning",
       "pos": [
         2040,
-        520
+        720
       ],
       "size": [
         300,
@@ -1423,8 +1423,8 @@
       "type": "VAEDecode",
       "title": "Decode conservative restoration result",
       "pos": [
-        2970,
-        410
+        3020,
+        550
       ],
       "size": [
         300,
@@ -1467,8 +1467,8 @@
       "type": "ImageScale",
       "title": "Normalize conservative restoration to exact 1024 x 1365",
       "pos": [
-        2970,
-        550
+        3020,
+        730
       ],
       "size": [
         340,
@@ -1543,8 +1543,8 @@
       "type": "PreviewImage",
       "title": "Preview selected processed portrait",
       "pos": [
-        2970,
-        740
+        3020,
+        960
       ],
       "size": [
         300,
@@ -1580,7 +1580,7 @@
       "type": "FluxGuidance",
       "title": "Conservative restoration guidance",
       "pos": [
-        2390,
+        2430,
         120
       ],
       "size": [
@@ -1630,7 +1630,7 @@
       "title": "Conservative restoration CFG",
       "pos": [
         2390,
-        260
+        300
       ],
       "size": [
         260,
@@ -1688,7 +1688,7 @@
       "type": "RandomNoise",
       "title": "Conservative restoration seed",
       "pos": [
-        2680,
+        2770,
         120
       ],
       "size": [
@@ -1734,7 +1734,7 @@
       "title": "Conservative restoration sampler",
       "pos": [
         2680,
-        260
+        550
       ],
       "size": [
         260,
@@ -1778,7 +1778,7 @@
       "title": "Conservative restoration steps and resolution",
       "pos": [
         2680,
-        400
+        730
       ],
       "size": [
         260,
@@ -1840,7 +1840,7 @@
       "title": "Conservative restoration denoise",
       "pos": [
         2680,
-        590
+        960
       ],
       "size": [
         260,
@@ -1894,7 +1894,7 @@
       "title": "Sample conservative restoration",
       "pos": [
         2970,
-        200
+        300
       ],
       "size": [
         300,
@@ -1958,7 +1958,7 @@
       "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)",
       "pos": [
         2040,
-        680
+        900
       ],
       "size": [
         330,
@@ -2112,7 +2112,7 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Create candidate 1 identity lora edit latent",
       "pos": [
-        3940,
+        3950,
         80
       ],
       "size": [
@@ -2174,8 +2174,8 @@
       "type": "Flux2KleinMultiReferenceLatent",
       "title": "Attach two identity references to positive conditioning",
       "pos": [
-        3940,
-        280
+        3950,
+        500
       ],
       "size": [
         300,
@@ -2224,7 +2224,7 @@
       "title": "Attach two identity references to negative conditioning",
       "pos": [
         3940,
-        480
+        680
       ],
       "size": [
         300,
@@ -2272,8 +2272,8 @@
       "type": "VAEDecode",
       "title": "Decode candidate 1 identity lora result",
       "pos": [
-        4870,
-        370
+        4920,
+        510
       ],
       "size": [
         300,
@@ -2316,8 +2316,8 @@
       "type": "ImageScale",
       "title": "Normalize candidate 1 identity lora to exact 1024 x 1365",
       "pos": [
-        4870,
-        510
+        4920,
+        690
       ],
       "size": [
         340,
@@ -2395,8 +2395,8 @@
       "type": "PreviewImage",
       "title": "Preview candidate 1 identity lora result",
       "pos": [
-        4870,
-        700
+        4920,
+        920
       ],
       "size": [
         300,
@@ -2432,7 +2432,7 @@
       "type": "FluxGuidance",
       "title": "Candidate 1 identity LoRA guidance",
       "pos": [
-        4290,
+        4330,
         80
       ],
       "size": [
@@ -2482,7 +2482,7 @@
       "title": "Candidate 1 identity LoRA CFG",
       "pos": [
         4290,
-        220
+        260
       ],
       "size": [
         260,
@@ -2540,7 +2540,7 @@
       "type": "RandomNoise",
       "title": "Candidate 1 identity LoRA seed",
       "pos": [
-        4580,
+        4670,
         80
       ],
       "size": [
@@ -2586,7 +2586,7 @@
       "title": "Candidate 1 identity LoRA sampler",
       "pos": [
         4580,
-        220
+        510
       ],
       "size": [
         260,
@@ -2630,7 +2630,7 @@
       "title": "Candidate 1 identity LoRA steps and resolution",
       "pos": [
         4580,
-        360
+        690
       ],
       "size": [
         260,
@@ -2692,7 +2692,7 @@
       "title": "Candidate 1 identity LoRA denoise",
       "pos": [
         4580,
-        550
+        920
       ],
       "size": [
         260,
@@ -2746,7 +2746,7 @@
       "title": "Sample candidate 1 identity lora",
       "pos": [
         4870,
-        160
+        260
       ],
       "size": [
         300,
@@ -2810,7 +2810,7 @@
       "title": "Encode candidate 1 identity lora original-crop reference",
       "pos": [
         3940,
-        680
+        860
       ],
       "size": [
         300,
@@ -2855,7 +2855,7 @@
       "title": "Encode candidate 1 identity lora selected-processed reference",
       "pos": [
         4340,
-        680
+        1100
       ],
       "size": [
         300,
@@ -2900,7 +2900,7 @@
       "title": "Editable candidate 2 prompt — edits affect only candidate 2",
       "pos": [
         3440,
-        980
+        1040
       ],
       "size": [
         430,
@@ -2949,7 +2949,7 @@
       "title": "Candidate 2 identity LoRA negative",
       "pos": [
         3440,
-        1310
+        1370
       ],
       "size": [
         430,
@@ -2997,8 +2997,8 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Create candidate 2 identity lora edit latent",
       "pos": [
-        3940,
-        980
+        3950,
+        1040
       ],
       "size": [
         300,
@@ -3059,8 +3059,8 @@
       "type": "Flux2KleinMultiReferenceLatent",
       "title": "Attach two identity references to positive conditioning",
       "pos": [
-        3940,
-        1180
+        4630,
+        1830
       ],
       "size": [
         300,
@@ -3109,7 +3109,7 @@
       "title": "Attach two identity references to negative conditioning",
       "pos": [
         3940,
-        1380
+        1700
       ],
       "size": [
         300,
@@ -3157,8 +3157,8 @@
       "type": "VAEDecode",
       "title": "Decode candidate 2 identity lora result",
       "pos": [
-        4870,
-        1270
+        5010,
+        1830
       ],
       "size": [
         300,
@@ -3201,8 +3201,8 @@
       "type": "ImageScale",
       "title": "Normalize candidate 2 identity lora to exact 1024 x 1365",
       "pos": [
-        4870,
-        1410
+        5010,
+        2010
       ],
       "size": [
         340,
@@ -3280,8 +3280,8 @@
       "type": "PreviewImage",
       "title": "Preview candidate 2 identity lora result",
       "pos": [
-        4870,
-        1600
+        5010,
+        2240
       ],
       "size": [
         300,
@@ -3318,7 +3318,7 @@
       "title": "Candidate 2 identity LoRA guidance",
       "pos": [
         4290,
-        980
+        1280
       ],
       "size": [
         260,
@@ -3367,7 +3367,7 @@
       "title": "Candidate 2 identity LoRA CFG",
       "pos": [
         4290,
-        1120
+        1460
       ],
       "size": [
         260,
@@ -3425,8 +3425,8 @@
       "type": "RandomNoise",
       "title": "Candidate 2 identity LoRA seed",
       "pos": [
-        4580,
-        980
+        4720,
+        1220
       ],
       "size": [
         260,
@@ -3470,8 +3470,8 @@
       "type": "KSamplerSelect",
       "title": "Candidate 2 identity LoRA sampler",
       "pos": [
-        4580,
-        1120
+        4720,
+        1650
       ],
       "size": [
         260,
@@ -3514,8 +3514,8 @@
       "type": "Flux2Scheduler",
       "title": "Candidate 2 identity LoRA steps and resolution",
       "pos": [
-        4580,
-        1260
+        4630,
+        2010
       ],
       "size": [
         260,
@@ -3577,7 +3577,7 @@
       "title": "Candidate 2 identity LoRA denoise",
       "pos": [
         4580,
-        1450
+        2240
       ],
       "size": [
         260,
@@ -3631,7 +3631,7 @@
       "title": "Sample candidate 2 identity lora",
       "pos": [
         4870,
-        1060
+        1400
       ],
       "size": [
         300,
@@ -3695,7 +3695,7 @@
       "title": "Encode candidate 2 identity lora original-crop reference",
       "pos": [
         3940,
-        1580
+        1880
       ],
       "size": [
         300,
@@ -3739,8 +3739,8 @@
       "type": "VAEEncode",
       "title": "Encode candidate 2 identity lora selected-processed reference",
       "pos": [
-        4340,
-        1580
+        5390,
+        1700
       ],
       "size": [
         300,
@@ -3785,7 +3785,7 @@
       "title": "Editable candidate 3 prompt — edits affect only candidate 3",
       "pos": [
         3440,
-        1880
+        2060
       ],
       "size": [
         430,
@@ -3834,7 +3834,7 @@
       "title": "Candidate 3 identity LoRA negative",
       "pos": [
         3440,
-        2210
+        2390
       ],
       "size": [
         430,
@@ -3882,8 +3882,8 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Create candidate 3 identity lora edit latent",
       "pos": [
-        3940,
-        1880
+        3950,
+        2060
       ],
       "size": [
         300,
@@ -3944,8 +3944,8 @@
       "type": "Flux2KleinMultiReferenceLatent",
       "title": "Attach two identity references to positive conditioning",
       "pos": [
-        3940,
-        2080
+        3950,
+        2240
       ],
       "size": [
         300,
@@ -3993,8 +3993,8 @@
       "type": "Flux2KleinMultiReferenceLatent",
       "title": "Attach two identity references to negative conditioning",
       "pos": [
-        3940,
-        2280
+        3950,
+        2600
       ],
       "size": [
         300,
@@ -4042,8 +4042,8 @@
       "type": "VAEDecode",
       "title": "Decode candidate 3 identity lora result",
       "pos": [
-        4870,
-        2170
+        4920,
+        2790
       ],
       "size": [
         300,
@@ -4086,8 +4086,8 @@
       "type": "ImageScale",
       "title": "Normalize candidate 3 identity lora to exact 1024 x 1365",
       "pos": [
-        4870,
-        2310
+        4920,
+        2970
       ],
       "size": [
         340,
@@ -4165,8 +4165,8 @@
       "type": "PreviewImage",
       "title": "Preview candidate 3 identity lora result",
       "pos": [
-        4870,
-        2500
+        4920,
+        3200
       ],
       "size": [
         300,
@@ -4202,8 +4202,8 @@
       "type": "FluxGuidance",
       "title": "Candidate 3 identity LoRA guidance",
       "pos": [
-        4290,
-        1880
+        4320,
+        2420
       ],
       "size": [
         260,
@@ -4251,7 +4251,7 @@
       "type": "CFGGuider",
       "title": "Candidate 3 identity LoRA CFG",
       "pos": [
-        4290,
+        5430,
         2020
       ],
       "size": [
@@ -4310,8 +4310,8 @@
       "type": "RandomNoise",
       "title": "Candidate 3 identity LoRA seed",
       "pos": [
-        4580,
-        1880
+        4660,
+        2420
       ],
       "size": [
         260,
@@ -4356,7 +4356,7 @@
       "title": "Candidate 3 identity LoRA sampler",
       "pos": [
         4580,
-        2020
+        2600
       ],
       "size": [
         260,
@@ -4400,7 +4400,7 @@
       "title": "Candidate 3 identity LoRA steps and resolution",
       "pos": [
         4580,
-        2160
+        2780
       ],
       "size": [
         260,
@@ -4462,7 +4462,7 @@
       "title": "Candidate 3 identity LoRA denoise",
       "pos": [
         4580,
-        2350
+        3010
       ],
       "size": [
         260,
@@ -4515,8 +4515,8 @@
       "type": "SamplerCustomAdvanced",
       "title": "Sample candidate 3 identity lora",
       "pos": [
-        4870,
-        1960
+        5000,
+        2540
       ],
       "size": [
         300,
@@ -4579,8 +4579,8 @@
       "type": "VAEEncode",
       "title": "Encode candidate 3 identity lora original-crop reference",
       "pos": [
-        3940,
-        2480
+        3950,
+        2780
       ],
       "size": [
         300,
@@ -4625,7 +4625,7 @@
       "title": "Encode candidate 3 identity lora selected-processed reference",
       "pos": [
         4340,
-        2480
+        3190
       ],
       "size": [
         300,
@@ -4669,8 +4669,8 @@
       "type": "PrimitiveBoolean",
       "title": "Toggle replacement background for all three candidates (off by default)",
       "pos": [
-        5600,
-        680
+        6000,
+        730
       ],
       "size": [
         340,
@@ -4715,7 +4715,7 @@
       "type": "LoadImage",
       "title": "Load one replacement background for all candidates",
       "pos": [
-        5600,
+        6000,
         120
       ],
       "size": [
@@ -4765,7 +4765,7 @@
       "type": "ImageScale",
       "title": "Fit one background to the final master canvas",
       "pos": [
-        5600,
+        6000,
         500
       ],
       "size": [
@@ -4843,7 +4843,7 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load one BiRefNet model for all candidates",
       "pos": [
-        6020,
+        6420,
         120
       ],
       "size": [
@@ -4896,7 +4896,7 @@
       "type": "RemoveBackground",
       "title": "Mask candidate 1 final portrait",
       "pos": [
-        6020,
+        6420,
         760
       ],
       "size": [
@@ -4940,7 +4940,7 @@
       "type": "ImageCompositeMasked",
       "title": "Composite candidate 1 after final styling",
       "pos": [
-        6400,
+        6800,
         710
       ],
       "size": [
@@ -5017,7 +5017,7 @@
       "type": "ComfySwitchNode",
       "title": "Toggle background for candidate 1 (off by default)",
       "pos": [
-        6400,
+        6800,
         980
       ],
       "size": [
@@ -5067,7 +5067,7 @@
       "type": "SaveImage",
       "title": "Save candidate 1 1024 x 1365 master PNG",
       "pos": [
-        7480,
+        7880,
         760
       ],
       "size": [
@@ -5114,7 +5114,7 @@
       "type": "ImageScale",
       "title": "Resize candidate 1 to HOI4 156 x 210",
       "pos": [
-        7480,
+        7880,
         960
       ],
       "size": [
@@ -5190,8 +5190,8 @@
       "type": "SaveImage",
       "title": "Save candidate 1 game-size PNG",
       "pos": [
-        7480,
-        1180
+        7880,
+        1190
       ],
       "size": [
         300,
@@ -5237,7 +5237,7 @@
       "type": "RemoveBackground",
       "title": "Mask candidate 2 final portrait",
       "pos": [
-        6020,
+        6420,
         1520
       ],
       "size": [
@@ -5281,7 +5281,7 @@
       "type": "ImageCompositeMasked",
       "title": "Composite candidate 2 after final styling",
       "pos": [
-        6400,
+        6800,
         1470
       ],
       "size": [
@@ -5358,7 +5358,7 @@
       "type": "ComfySwitchNode",
       "title": "Toggle background for candidate 2 (off by default)",
       "pos": [
-        6400,
+        6800,
         1740
       ],
       "size": [
@@ -5408,7 +5408,7 @@
       "type": "SaveImage",
       "title": "Save candidate 2 1024 x 1365 master PNG",
       "pos": [
-        7480,
+        7880,
         1520
       ],
       "size": [
@@ -5455,7 +5455,7 @@
       "type": "ImageScale",
       "title": "Resize candidate 2 to HOI4 156 x 210",
       "pos": [
-        7480,
+        7880,
         1720
       ],
       "size": [
@@ -5531,8 +5531,8 @@
       "type": "SaveImage",
       "title": "Save candidate 2 game-size PNG",
       "pos": [
-        7480,
-        1940
+        7880,
+        1950
       ],
       "size": [
         300,
@@ -5578,7 +5578,7 @@
       "type": "RemoveBackground",
       "title": "Mask candidate 3 final portrait",
       "pos": [
-        6020,
+        6420,
         2280
       ],
       "size": [
@@ -5622,7 +5622,7 @@
       "type": "ImageCompositeMasked",
       "title": "Composite candidate 3 after final styling",
       "pos": [
-        6400,
+        6800,
         2230
       ],
       "size": [
@@ -5699,7 +5699,7 @@
       "type": "ComfySwitchNode",
       "title": "Toggle background for candidate 3 (off by default)",
       "pos": [
-        6400,
+        6800,
         2500
       ],
       "size": [
@@ -5749,7 +5749,7 @@
       "type": "SaveImage",
       "title": "Save candidate 3 1024 x 1365 master PNG",
       "pos": [
-        7480,
+        7880,
         2280
       ],
       "size": [
@@ -5796,7 +5796,7 @@
       "type": "ImageScale",
       "title": "Resize candidate 3 to HOI4 156 x 210",
       "pos": [
-        7480,
+        7880,
         2480
       ],
       "size": [
@@ -5872,8 +5872,8 @@
       "type": "SaveImage",
       "title": "Save candidate 3 game-size PNG",
       "pos": [
-        7480,
-        2700
+        7880,
+        2710
       ],
       "size": [
         300,
@@ -7163,8 +7163,8 @@
       "bounding": [
         40,
         40,
-        880,
-        1750
+        900,
+        1876
       ],
       "color": "#557a46",
       "font_size": 24,
@@ -7176,7 +7176,7 @@
         1040,
         40,
         420,
-        950
+        1000
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -7187,8 +7187,8 @@
       "bounding": [
         1500,
         40,
-        1850,
-        960
+        1900,
+        1180
       ],
       "color": "#8b6f47",
       "font_size": 24,
@@ -7199,8 +7199,8 @@
       "bounding": [
         3400,
         40,
-        1850,
-        2720
+        2330,
+        3420
       ],
       "color": "#7a568e",
       "font_size": 24,
@@ -7209,9 +7209,9 @@
     {
       "title": "05 Optional background - after generation",
       "bounding": [
-        5570,
+        5920,
         40,
-        1230,
+        1280,
         2630
       ],
       "color": "#8d5b5b",
@@ -7221,10 +7221,10 @@
     {
       "title": "06 Preview and save",
       "bounding": [
-        6950,
+        7300,
         40,
-        910,
-        2800
+        960,
+        2810
       ],
       "color": "#596b82",
       "font_size": 24,
