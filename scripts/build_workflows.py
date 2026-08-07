@@ -44,6 +44,8 @@ WORKFLOW_SCHEMA_VERSION = "2.6.1"
 # workflow, so the editor layout uses a larger guard than the JSON validator's
 # old 24 px minimum.
 UI_LAYOUT_PADDING = 80
+STAGE_PREVIEW_SIZE = (420, 520)
+FINAL_PREVIEW_SIZE = (520, 620)
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
 SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
@@ -317,7 +319,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "MediaPipeFaceLandmarker",
             "Find the portrait subject",
             group,
-            (520, 300),
+            (520, 350),
             size=(360, 220),
             inputs={
                 "face_detection_model": Link(12),
@@ -344,7 +346,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "AdaptivePortraitCrop",
             "Face zoom 0.90 — preserve headwear: true",
             group,
-            (520, 580),
+            (520, 650),
             size=(360, 230),
             inputs={
                 "image": Link(9),
@@ -370,7 +372,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "LoadBackgroundRemovalModel",
             "Load subject silhouette model",
             group,
-            (100, 760),
+            (100, 680),
             size=(320, 100),
             inputs={"bg_removal_name": BACKGROUND_MODEL},
             input_types={"bg_removal_name": "COMBO"},
@@ -384,7 +386,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "RemoveBackground",
             "Measure the complete head and headwear silhouette",
             group,
-            (100, 920),
+            (100, 840),
             size=(320, 100),
             inputs={"bg_removal_model": Link(155), "image": Link(9)},
             input_types={"bg_removal_model": "BACKGROUND_REMOVAL", "image": "IMAGE"},
@@ -396,7 +398,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "PrimitiveBoundingBox",
             "Manual crop box for difficult sources",
             group,
-            (100, 1080),
+            (100, 1020),
             size=(320, 190),
             inputs={"x": 128, "y": 0, "width": 768, "height": 1024},
             input_types={"x": "INT", "y": "INT", "width": "INT", "height": "INT"},
@@ -409,7 +411,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "CropByBBoxes",
             "Apply manual head-and-shoulders crop",
             group,
-            (520, 850),
+            (520, 960),
             size=(360, 180),
             inputs={
                 "image": Link(9),
@@ -436,7 +438,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "ComfySwitchNode",
             "Manual crop override — off uses automatic crop",
             group,
-            (520, 1120),
+            (520, 1200),
             size=(360, 150),
             inputs={"switch": False, "on_false": Link(11), "on_true": Link(16)},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
@@ -449,7 +451,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "ComfySwitchNode",
             "Toggle face processing (on: face crop; off: keep full composition)",
             group,
-            (520, 1320),
+            (520, 1430),
             size=(360, 100),
             inputs={"switch": True, "on_false": Link(9), "on_true": Link(18)},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
@@ -462,7 +464,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "UpscaleModelLoader",
             "Load RealESRGAN x2",
             group,
-            (100, 1480),
+            (100, 1410),
             inputs={"model_name": ESRGAN_MODEL},
             input_types={"model_name": "COMBO"},
             outputs=["UPSCALE_MODEL"],
@@ -475,8 +477,8 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "ImageUpscaleWithModel",
             "Restore and upscale with ESRGAN",
             group,
-            (520, 1460),
-            size=(267, 46),
+            (520, 1600),
+            size=(360, 80),
             inputs={"upscale_model": Link(6), "image": Link(17)},
             input_types={"upscale_model": "UPSCALE_MODEL", "image": "IMAGE"},
             outputs=["IMAGE"],
@@ -487,7 +489,7 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             "ImageScale",
             f"Fit portrait to the {CANVAS_WIDTH} x {CANVAS_HEIGHT} work canvas",
             group,
-            (520, 1600),
+            (520, 1740),
             size=(360, 150),
             inputs={"image": Link(7), "upscale_method": "lanczos", "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
@@ -503,8 +505,8 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
                 "PreviewImage",
                 "Confirm head-and-shoulders processing before FLUX",
                 group,
-                (100, 1620),
-                size=(360, 430),
+                (520, 1980),
+                size=STAGE_PREVIEW_SIZE,
                 inputs={"images": Link(8)},
                 input_types={"images": "IMAGE"},
                 outputs=["IMAGE"],
@@ -554,7 +556,7 @@ def _sampling_nodes(
             "CFGGuider",
             f"{title_prefix} CFG",
             group,
-            (control_x, y + 140),
+            (control_x, y + 160),
             size=(260, 160),
             inputs={"model": model, "positive": Link(control_id), "negative": negative, "cfg": DEFAULT_CFG},
             input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "cfg": "FLOAT"},
@@ -580,7 +582,7 @@ def _sampling_nodes(
             "KSamplerSelect",
             f"{title_prefix} sampler",
             group,
-            (option_x, y + 140),
+            (option_x, y + 160),
             size=(260, 100),
             inputs={"sampler_name": sampler_name},
             input_types={"sampler_name": "COMBO"},
@@ -593,7 +595,7 @@ def _sampling_nodes(
             "Flux2Scheduler",
             f"{title_prefix} steps and resolution",
             group,
-            (option_x, y + 280),
+            (option_x, y + 320),
             size=(260, 150),
             inputs={"steps": steps, "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT},
             input_types={"steps": "INT", "width": "INT", "height": "INT"},
@@ -606,7 +608,7 @@ def _sampling_nodes(
             "SplitSigmasDenoise",
             f"{title_prefix} denoise",
             group,
-            (option_x, y + 470),
+            (option_x, y + 510),
             size=(260, 100),
             inputs={"sigmas": Link(control_id + 4), "denoise": denoise},
             input_types={"sigmas": "SIGMAS", "denoise": "FLOAT"},
@@ -619,8 +621,8 @@ def _sampling_nodes(
             "SamplerCustomAdvanced",
             f"Sample {title_prefix.lower()}",
             group,
-            (sample_x, y + 80),
-            size=(300, 170),
+            (sample_x, y + 240),
+            size=(320, 190),
             inputs={
                 "noise": Link(control_id + 2),
                 "guider": Link(control_id + 1),
@@ -666,7 +668,7 @@ def _edit_stage(
             prompt_node_title or f"{title_prefix} instructions",
             group,
             (x, y),
-            size=(430, 250),
+            size=(430, 280),
             inputs={"clip": Link(2), "text": prompt},
             input_types={"clip": "CLIP", "text": "STRING"},
             outputs=["CONDITIONING"],
@@ -679,7 +681,7 @@ def _edit_stage(
             f"{title_prefix} negative",
             group,
             (x, y + 330),
-            size=(430, 180),
+            size=(430, 200),
             inputs={"clip": Link(2), "text": negative},
             input_types={"clip": "CLIP", "text": "STRING"},
             outputs=["CONDITIONING"],
@@ -692,6 +694,7 @@ def _edit_stage(
             f"Create {title_prefix.lower()} edit latent" if start_from_empty else f"Encode {title_prefix.lower()} reference",
             group,
             (x + 500, y),
+            size=(300, 120),
             inputs=(
                 {"width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "batch_size": 1}
                 if start_from_empty
@@ -717,7 +720,8 @@ def _edit_stage(
                 else "Attach reference to positive conditioning"
             ),
             group,
-            (x + 500, y + 200),
+            (x + 500, y + 190),
+            size=(300, 120),
             inputs=(
                 {"conditioning": Link(i), "latent_1": Link(i + 5), "latent_2": Link(i + 6)}
                 if reference_images
@@ -745,7 +749,8 @@ def _edit_stage(
                 else "Attach reference to negative conditioning"
             ),
             group,
-            (x + 500, y + 400),
+            (x + 500, y + 380),
+            size=(300, 120),
             inputs=(
                 {"conditioning": Link(i + 1), "latent_1": Link(i + 5), "latent_2": Link(i + 6)}
                 if reference_images
@@ -767,7 +772,8 @@ def _edit_stage(
             "VAEDecode",
             f"Decode {title_prefix.lower()} result",
             group,
-            (x + 1430, y + 290),
+            (x + 1430, y + 500),
+            size=(300, 120),
             inputs={"samples": Link(i + 10), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -778,7 +784,7 @@ def _edit_stage(
             "ImageScale",
             f"Normalize {title_prefix.lower()} to exact {CANVAS_WIDTH} x {CANVAS_HEIGHT}",
             group,
-            (x + 1430, y + 430),
+            (x + 1430, y + 660),
             size=(340, 150),
             inputs={
                 "image": Link(i + 11),
@@ -797,8 +803,8 @@ def _edit_stage(
             "PreviewImage",
             f"Preview {title_prefix.lower()} result",
             group,
-            (x + 1430, y + 620),
-            size=(300, 220),
+            (x + 1430, y + 850),
+            size=STAGE_PREVIEW_SIZE,
             inputs={"images": Link(i + 14)},
             input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
@@ -831,7 +837,8 @@ def _edit_stage(
                     "VAEEncode",
                     f"Encode {title_prefix.lower()} original-crop reference",
                     group,
-                    (x + 500, y + 600),
+                    (x + 500, y + 670),
+                    size=(300, 120),
                     inputs={"pixels": reference_images[0], "vae": Link(3)},
                     input_types={"pixels": "IMAGE", "vae": "VAE"},
                     outputs=["LATENT"],
@@ -842,7 +849,8 @@ def _edit_stage(
                     "VAEEncode",
                     f"Encode {title_prefix.lower()} selected-processed reference",
                     group,
-                    (x + 900, y + 600),
+                    (x + 900, y + 670),
+                    size=(300, 120),
                     inputs={"pixels": reference_images[1], "vae": Link(3)},
                     input_types={"pixels": "IMAGE", "vae": "VAE"},
                     outputs=["LATENT"],
@@ -898,7 +906,8 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "VAEDecode",
             "Decode final styled portrait",
             group,
-            (x + 1430, 410),
+            (x + 1430, 500),
+            size=(300, 120),
             inputs={"samples": Link(27), "vae": Link(3)},
             input_types={"samples": "LATENT", "vae": "VAE"},
             outputs=["IMAGE"],
@@ -909,7 +918,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "ImageScale",
             f"Normalize final portrait to exact {CANVAS_WIDTH} x {CANVAS_HEIGHT}",
             group,
-            (x + 1430, 550),
+            (x + 1430, 660),
             size=(340, 150),
             inputs={"image": Link(28), "upscale_method": "lanczos", "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
@@ -922,8 +931,8 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             "PreviewImage",
             "Preview generated portrait before background replacement",
             group,
-            (x + 1430, 740),
-            size=(300, 220),
+            (x + 1430, 850),
+            size=STAGE_PREVIEW_SIZE,
             inputs={"images": Link(30)},
             input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
@@ -1037,7 +1046,7 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             "Preview final portrait",
             output_group,
             (x + 1380, 120),
-            size=(420, 420),
+            size=FINAL_PREVIEW_SIZE,
             inputs={"images": Link(66)},
             input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
@@ -1154,7 +1163,7 @@ def _background_and_outputs_multi(
     ]
     for index, final_image in enumerate(final_images, start=1):
         branch = id_start + 3 + (index - 1) * 10
-        row_y = 760 + (index - 1) * 760
+        row_y = 900 + (index - 1) * 760
         label = f"candidate {index}"
         prefix = f"hoi4_portraits/candidate_{index}"
         nodes.extend(
@@ -1175,7 +1184,7 @@ def _background_and_outputs_multi(
                     "ImageCompositeMasked",
                     f"Composite {label} after final styling",
                     background_group,
-                    (x + 800, row_y - 50),
+                    (x + 800, row_y),
                     size=(360, 180),
                     inputs={
                         "destination": Link(id_start + 1),
@@ -1195,7 +1204,7 @@ def _background_and_outputs_multi(
                     "ComfySwitchNode",
                     f"Toggle background for {label} (off by default)",
                     background_group,
-                    (x + 800, row_y + 220),
+                    (x + 800, row_y + 240),
                     size=(360, 130),
                     inputs={"switch": Link(id_start - 1), "on_false": final_image, "on_true": Link(branch + 1)},
                     input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
@@ -1253,8 +1262,8 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
             "PreviewImage",
             "Preview processed portrait",
             output_group,
-            (3500, 120),
-            size=(420, 420),
+            (3900, 120),
+            size=FINAL_PREVIEW_SIZE,
             inputs={"images": processed_image},
             input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
@@ -1265,7 +1274,7 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
             "SaveImage",
             f"Save {CANVAS_WIDTH} x {CANVAS_HEIGHT} processed PNG",
             output_group,
-            (4000, 120),
+            (4500, 120),
             inputs={"images": processed_image, "filename_prefix": "hoi4_portraits/processed_master"},
             input_types={"images": "IMAGE", "filename_prefix": "STRING"},
             outputs=["IMAGE"],
@@ -1277,7 +1286,7 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
             "ImageScale",
             "Resize to HOI4 156 x 210",
             output_group,
-            (4000, 320),
+            (4500, 320),
             size=(340, 150),
             inputs={"image": processed_image, "upscale_method": "lanczos", "width": GAME_WIDTH, "height": GAME_HEIGHT, "crop": "center"},
             input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
@@ -1290,7 +1299,7 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
             "SaveImage",
             "Save processed game-size PNG",
             output_group,
-            (4000, 540),
+            (4500, 540),
             inputs={"images": Link(72), "filename_prefix": "hoi4_portraits/processed_156x210"},
             input_types={"images": "IMAGE", "filename_prefix": "STRING"},
             outputs=["IMAGE"],
@@ -1314,11 +1323,11 @@ def _groups(
     if has_restoration:
         groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"))
         style_height = 2700 if candidate_count > 1 else 980
-        groups.append(Group("04 HOI4 LoRA styling", (3400, 40, 1800, style_height), "#7a568e"))
+        groups.append(Group("04 HOI4 LoRA styling", (3800, 40, 2400, style_height), "#7a568e"))
     else:
         groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1800, 980), "#7a568e"))
     if background_x is None:
-        background_x = 6000 if has_restoration else 3600
+        background_x = 6400 if has_restoration else 4000
     output_height = 3040 if candidate_count > 1 else 720
     groups.append(Group("05 Optional background - after generation", (background_x - 80, 40, 1300, output_height), "#8d5b5b"))
     groups.append(Group("06 Preview and save", (background_x + 1300, 40, 1100, output_height), "#596b82"))
@@ -1329,8 +1338,8 @@ def _processing_groups() -> list[Group]:
     return [
         Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"),
         Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 980), "#3f789e"),
-        Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"),
-        Group("04 Processed portrait output", (3400, 40, 1100, 720), "#596b82"),
+        Group("03 Optional FLUX.2 restoration", (1500, 40, 2200, 980), "#8b6f47"),
+        Group("04 Processed portrait output", (3800, 40, 1200, 900), "#596b82"),
     ]
 
 
@@ -1553,7 +1562,7 @@ def _klein_composite_node(*, node_id: int, generated: Link, y: int, candidate: i
         "KleinEditComposite",
         f"Composite candidate {candidate} identity details",
         "04 HOI4 LoRA styling",
-        (5235, y),
+        (5780, y),
         size=(340, 620),
         inputs={
             "generated_image": generated,
@@ -1640,8 +1649,8 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
         style_nodes, styled = _edit_stage(
             id_start=40 + (index - 1) * 20,
             group="04 HOI4 LoRA styling",
-            x=3440,
-            y=80 + (index - 1) * 900,
+            x=3840,
+            y=100 + (index - 1) * 1450,
             image=Link(32),
             model=style_model,
             prompt=style_prompt,
@@ -1661,7 +1670,7 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             composite = _klein_composite_node(
                 node_id=composite_id,
                 generated=styled,
-                y=100 + (index - 1) * 900,
+                y=120 + (index - 1) * 1450,
                 candidate=index,
             )
             style_nodes.append(composite)
@@ -1673,7 +1682,7 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
         styled_images.append(styled)
     # The optional composite comparison adds one tall card after each sample
     # branch, so give that comparison its own extra column of breathing room.
-    background_x = 6200 if method == "composite" else 6000
+    background_x = 6800 if method == "composite" else 6400
     nodes.extend(_background_and_outputs_multi(final_images=styled_images, x=background_x, id_start=120))
     workflow_id = (
         f"hoi4_portrait_flux2_klein_9b_source_identity_test_{comparison.key}"
@@ -1717,7 +1726,21 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
 
 
 def build_processing() -> Graph:
-    nodes = _source_nodes() + _model_nodes(include_lora=False)
+    nodes = _source_nodes(include_processed_preview=False) + _model_nodes(include_lora=False)
+    nodes.append(
+        _node(
+            19,
+            "PreviewImage",
+            "Preview crop + ESRGAN only (before optional FLUX restoration)",
+            "01 Source and ESRGAN",
+            (520, 1980),
+            size=STAGE_PREVIEW_SIZE,
+            inputs={"images": Link(8)},
+            input_types={"images": "IMAGE"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+        )
+    )
     restoration_nodes, restored = _edit_stage(
         id_start=20,
         group="03 Optional FLUX.2 restoration",
@@ -1764,6 +1787,7 @@ def build_processing() -> Graph:
             "face_processing_bypass": "whole_composition_center_crop_then_esrgan",
             "source_crop": "toggleable_adaptive_head_and_shoulders_zoom_0.90_adjustable_headwear_before_esrgan",
             "background_order": "not_applicable_processing_only",
+            "processing_preview": "crop_and_esrgan_before_flux_restoration",
         },
     )
 
@@ -1772,7 +1796,7 @@ def build_text_to_image() -> Graph:
     nodes = _model_nodes(include_restoration_lokr=False)
     text_nodes, styled = _text_stage(group="04 HOI4 LoRA styling", x=1540)
     nodes.extend(text_nodes)
-    nodes.extend(_background_and_outputs(final_image=styled, x=3600))
+    nodes.extend(_background_and_outputs(final_image=styled, x=4000))
     groups = [group for group in _groups(has_source=False, has_restoration=False) if group.title != "01 Source and ESRGAN"]
     return Graph(
         workflow_id="hoi4_portrait_flux2_klein_9b_text_to_image",
@@ -1799,54 +1823,49 @@ def _api_json(graph: Graph) -> dict[str, Any]:
 
 
 def _layout_positions(graph: Graph) -> dict[int, list[int]]:
-    """Spread cards within each visual group without changing graph wiring.
+    """Pack each visual group into aligned columns without moving branches sideways.
 
-    The hand-authored positions provide the semantic left-to-right flow.  This
-    pass only nudges cards that would render too close together, accounting for
-    the larger runtime size of nodes with multi-line widgets.  It keeps the
-    public editor JSON deterministic while preventing the close-up view from
-    showing cards touching or hiding each other's controls.
+    Nodes are authored with semantic columns.  This pass normalizes small
+    column offsets (for example, 4,040 vs. 4,050) and gives every column the
+    same horizontal clearance.  Within a column, cards are stacked in reading
+    order with the same vertical clearance.  It never resolves a collision by
+    moving a node into a different column, which keeps repeated candidates
+    visually symmetrical.
     """
 
     positions = {node.node_id: [node.pos[0], node.pos[1]] for node in graph.nodes}
+    horizontal_gap = UI_LAYOUT_PADDING + 20
+    lane_tolerance = 120
     for group in graph.groups:
         grouped = [node for node in graph.nodes if node.group == group.title]
         if len(grouped) < 2:
             continue
-        # Preserve the intended reading order when resolving a collision.
-        grouped.sort(key=lambda node: (node.pos[1], node.pos[0], node.node_id))
-        # A move can expose a second collision farther along the same row, so
-        # finish a complete sweep before deciding that the group is stable.
-        for _ in range(len(grouped) * len(grouped) * 2):
-            moved = False
-            for index, first in enumerate(grouped):
-                ax, ay = positions[first.node_id]
-                aw, ah = first.size
-                for second in grouped[index + 1 :]:
-                    bx, by = positions[second.node_id]
-                    bw, bh = second.size
-                    if not (
-                        ax + aw + UI_LAYOUT_PADDING > bx
-                        and bx + bw + UI_LAYOUT_PADDING > ax
-                        and ay + ah + UI_LAYOUT_PADDING > by
-                        and by + bh + UI_LAYOUT_PADDING > ay
-                    ):
-                        continue
 
-                    # Move along the shorter axis.  A tie on identical cards
-                    # is resolved vertically so stacked controls stay stacked.
-                    right_gap = max(0, ax + aw + UI_LAYOUT_PADDING - bx)
-                    down_gap = max(0, ay + ah + UI_LAYOUT_PADDING - by)
-                    # The nodes are sorted top-to-bottom, left-to-right.  Do
-                    # not move a card backwards; use the vertical axis when a
-                    # lower card starts to the left of the earlier card.
-                    if by >= ay and (bx < ax or down_gap <= right_gap):
-                        positions[second.node_id][1] += down_gap
-                    else:
-                        positions[second.node_id][0] += right_gap
-                    moved = True
-            if not moved:
-                break
+        lanes: list[list[Node]] = []
+        lane_centers: list[float] = []
+        for node in sorted(grouped, key=lambda item: (item.pos[0], item.pos[1], item.node_id)):
+            for index, center in enumerate(lane_centers):
+                if abs(node.pos[0] - center) <= lane_tolerance:
+                    lanes[index].append(node)
+                    lane_centers[index] = sum(item.pos[0] for item in lanes[index]) / len(lanes[index])
+                    break
+            else:
+                lanes.append([node])
+                lane_centers.append(float(node.pos[0]))
+
+        lane_x = min(node.pos[0] for node in grouped)
+        for lane in lanes:
+            lane_width = max(node.size[0] for node in lane)
+            for node in lane:
+                positions[node.node_id][0] = lane_x
+            lane_y = None
+            for node in sorted(lane, key=lambda item: (item.pos[1], item.node_id)):
+                desired_y = node.pos[1]
+                if lane_y is not None:
+                    desired_y = max(desired_y, lane_y)
+                positions[node.node_id][1] = desired_y
+                lane_y = desired_y + node.size[1] + UI_LAYOUT_PADDING
+            lane_x += lane_width + horizontal_gap
     return positions
 
 

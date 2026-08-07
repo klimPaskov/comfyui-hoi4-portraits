@@ -472,7 +472,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         preview_expectations["70"] = ["66", 0]
         preview_expectations["29"] = ["30", 0]
     elif is_processing:
-        preview_expectations.update({"10": ["8", 0], "35": ["32", 0], "70": ["32", 0]})
+        preview_expectations.update({"19": ["8", 0], "35": ["32", 0], "70": ["32", 0]})
     elif is_source:
         preview_expectations["35"] = ["32", 0]
         preview_sources = (("55", "200"), ("75", "210"), ("95", "220")) if identity_method == "composite" else (("55", "54"), ("75", "74"), ("95", "94"))

@@ -229,6 +229,8 @@ class WorkflowTests(unittest.TestCase):
             else:
                 self.assertNotIn("4", api)
                 self.assertEqual(api["30"]["inputs"]["latent_image"], ["22", 0])
+                self.assertEqual(api["19"]["class_type"], "PreviewImage")
+                self.assertEqual(api["19"]["inputs"]["images"], ["8", 0])
 
     def test_adaptive_crop_exposes_optional_headwear_preservation(self) -> None:
         source = (ROOT / "custom_nodes" / "hoi4_portraits" / "__init__.py").read_text(encoding="utf-8")

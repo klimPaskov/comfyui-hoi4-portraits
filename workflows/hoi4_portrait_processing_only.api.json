@@ -205,18 +205,6 @@
       "title": "Fit portrait to the 1024 x 1365 work canvas"
     }
   },
-  "10": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "8",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Confirm head-and-shoulders processing before FLUX"
-    }
-  },
   "1": {
     "class_type": "UNETLoader",
     "inputs": {
@@ -259,6 +247,18 @@
     },
     "_meta": {
       "title": "Apply Adonis restoration LoKr — strength editable here"
+    }
+  },
+  "19": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview crop + ESRGAN only (before optional FLUX restoration)"
     }
   },
   "20": {

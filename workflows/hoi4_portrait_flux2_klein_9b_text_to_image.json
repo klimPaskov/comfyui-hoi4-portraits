@@ -351,7 +351,7 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Set 1024 x 1365 portrait canvas",
       "pos": [
-        2070,
+        2090,
         120
       ],
       "size": [
@@ -413,12 +413,12 @@
       "type": "VAEDecode",
       "title": "Decode final styled portrait",
       "pos": [
-        3020,
-        550
+        3210,
+        630
       ],
       "size": [
         300,
-        100
+        120
       ],
       "color": "#7a568e",
       "bgcolor": "#7a568e",
@@ -457,8 +457,8 @@
       "type": "ImageScale",
       "title": "Normalize final portrait to exact 1024 x 1365",
       "pos": [
-        3020,
-        730
+        3210,
+        830
       ],
       "size": [
         340,
@@ -536,12 +536,12 @@
       "type": "PreviewImage",
       "title": "Preview generated portrait before background replacement",
       "pos": [
-        3020,
-        960
+        3210,
+        1060
       ],
       "size": [
-        300,
-        220
+        420,
+        520
       ],
       "color": "#7a568e",
       "bgcolor": "#7a568e",
@@ -573,7 +573,7 @@
       "type": "FluxGuidance",
       "title": "HOI4 portrait guidance",
       "pos": [
-        2450,
+        2490,
         120
       ],
       "size": [
@@ -622,7 +622,7 @@
       "type": "CFGGuider",
       "title": "HOI4 portrait CFG",
       "pos": [
-        2390,
+        2490,
         300
       ],
       "size": [
@@ -681,7 +681,7 @@
       "type": "RandomNoise",
       "title": "HOI4 portrait seed",
       "pos": [
-        2790,
+        2850,
         120
       ],
       "size": [
@@ -726,8 +726,8 @@
       "type": "KSamplerSelect",
       "title": "HOI4 portrait sampler",
       "pos": [
-        2680,
-        550
+        2850,
+        300
       ],
       "size": [
         260,
@@ -770,8 +770,8 @@
       "type": "Flux2Scheduler",
       "title": "HOI4 portrait steps and resolution",
       "pos": [
-        2680,
-        730
+        2850,
+        480
       ],
       "size": [
         260,
@@ -832,8 +832,8 @@
       "type": "SplitSigmasDenoise",
       "title": "HOI4 portrait denoise",
       "pos": [
-        2680,
-        960
+        2850,
+        710
       ],
       "size": [
         260,
@@ -886,12 +886,12 @@
       "type": "SamplerCustomAdvanced",
       "title": "Sample hoi4 portrait",
       "pos": [
-        2970,
-        300
+        3210,
+        360
       ],
       "size": [
-        300,
-        170
+        320,
+        190
       ],
       "color": "#7a568e",
       "bgcolor": "#7a568e",
@@ -950,7 +950,7 @@
       "type": "LoadImage",
       "title": "Load replacement background",
       "pos": [
-        3600,
+        4000,
         120
       ],
       "size": [
@@ -1000,7 +1000,7 @@
       "type": "ImageScale",
       "title": "Fit background to final master canvas",
       "pos": [
-        3600,
+        4000,
         500
       ],
       "size": [
@@ -1076,7 +1076,7 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet foreground model",
       "pos": [
-        4020,
+        4440,
         120
       ],
       "size": [
@@ -1127,7 +1127,7 @@
       "type": "RemoveBackground",
       "title": "Mask the final styled portrait",
       "pos": [
-        4020,
+        4440,
         300
       ],
       "size": [
@@ -1171,7 +1171,7 @@
       "type": "ImageCompositeMasked",
       "title": "Composite only after the styled portrait exists",
       "pos": [
-        4400,
+        4840,
         250
       ],
       "size": [
@@ -1248,7 +1248,7 @@
       "type": "ComfySwitchNode",
       "title": "Toggle replacement background (off by default)",
       "pos": [
-        4400,
+        4840,
         520
       ],
       "size": [
@@ -1304,12 +1304,12 @@
       "type": "PreviewImage",
       "title": "Preview final portrait",
       "pos": [
-        4980,
+        5380,
         120
       ],
       "size": [
-        420,
-        420
+        520,
+        620
       ],
       "color": "#596b82",
       "bgcolor": "#596b82",
@@ -1341,7 +1341,7 @@
       "type": "SaveImage",
       "title": "Save 1024 x 1365 master PNG",
       "pos": [
-        5480,
+        6000,
         120
       ],
       "size": [
@@ -1388,7 +1388,7 @@
       "type": "ImageScale",
       "title": "Resize to HOI4 156 x 210",
       "pos": [
-        5480,
+        6000,
         320
       ],
       "size": [
@@ -1464,7 +1464,7 @@
       "type": "SaveImage",
       "title": "Save game-size portrait PNG",
       "pos": [
-        5480,
+        6000,
         550
       ],
       "size": [
@@ -1759,8 +1759,8 @@
       "bounding": [
         1500,
         40,
-        1900,
-        1180
+        2170,
+        1580
       ],
       "color": "#7a568e",
       "font_size": 24,
@@ -1769,9 +1769,9 @@
     {
       "title": "05 Optional background - after generation",
       "bounding": [
-        3520,
+        3920,
         40,
-        1280,
+        1320,
         650
       ],
       "color": "#8d5b5b",
@@ -1781,10 +1781,10 @@
     {
       "title": "06 Preview and save",
       "bounding": [
-        4900,
+        5300,
         40,
-        960,
-        650
+        1080,
+        740
       ],
       "color": "#596b82",
       "font_size": 24,

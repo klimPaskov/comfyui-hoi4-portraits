@@ -57,7 +57,7 @@
       "type": "ImageScaleToMaxDimension",
       "title": "Normalize source for face detection",
       "pos": [
-        540,
+        560,
         120
       ],
       "size": [
@@ -170,8 +170,8 @@
       "type": "MediaPipeFaceLandmarker",
       "title": "Find the portrait subject",
       "pos": [
-        540,
-        320
+        560,
+        350
       ],
       "size": [
         360,
@@ -256,8 +256,8 @@
       "type": "AdaptivePortraitCrop",
       "title": "Face zoom 0.90 — preserve headwear: true",
       "pos": [
-        520,
-        620
+        560,
+        650
       ],
       "size": [
         360,
@@ -332,7 +332,7 @@
       "title": "Load subject silhouette model",
       "pos": [
         100,
-        760
+        690
       ],
       "size": [
         320,
@@ -383,7 +383,7 @@
       "title": "Measure the complete head and headwear silhouette",
       "pos": [
         100,
-        940
+        870
       ],
       "size": [
         320,
@@ -427,7 +427,7 @@
       "title": "Manual crop box for difficult sources",
       "pos": [
         100,
-        1120
+        1050
       ],
       "size": [
         320,
@@ -497,8 +497,8 @@
       "type": "CropByBBoxes",
       "title": "Apply manual head-and-shoulders crop",
       "pos": [
-        520,
-        930
+        560,
+        960
       ],
       "size": [
         360,
@@ -578,8 +578,8 @@
       "type": "ComfySwitchNode",
       "title": "Manual crop override — off uses automatic crop",
       "pos": [
-        520,
-        1190
+        560,
+        1220
       ],
       "size": [
         360,
@@ -632,8 +632,8 @@
       "type": "ComfySwitchNode",
       "title": "Toggle face processing (on: face crop; off: keep full composition)",
       "pos": [
-        520,
-        1420
+        560,
+        1450
       ],
       "size": [
         360,
@@ -687,7 +687,7 @@
       "title": "Load RealESRGAN x2",
       "pos": [
         100,
-        1480
+        1410
       ],
       "size": [
         300,
@@ -737,12 +737,12 @@
       "type": "ImageUpscaleWithModel",
       "title": "Restore and upscale with ESRGAN",
       "pos": [
-        520,
-        1600
+        560,
+        1630
       ],
       "size": [
-        267,
-        46
+        360,
+        80
       ],
       "color": "#557a46",
       "bgcolor": "#557a46",
@@ -781,8 +781,8 @@
       "type": "ImageScale",
       "title": "Fit portrait to the 1024 x 1365 work canvas",
       "pos": [
-        520,
-        1726
+        560,
+        1790
       ],
       "size": [
         360,
@@ -837,7 +837,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            18,
+            19,
             22,
             42
           ]
@@ -855,43 +855,6 @@
       ]
     },
     {
-      "id": 10,
-      "type": "PreviewImage",
-      "title": "Confirm head-and-shoulders processing before FLUX",
-      "pos": [
-        100,
-        1956
-      ],
-      "size": [
-        360,
-        430
-      ],
-      "color": "#557a46",
-      "bgcolor": "#557a46",
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 18
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "01 Source and ESRGAN"
-      },
-      "widgets_values": []
-    },
-    {
       "id": 1,
       "type": "UNETLoader",
       "title": "Load FLUX.2 Klein 9B base",
@@ -906,7 +869,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 15,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -931,7 +894,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            19
+            18
           ]
         }
       ],
@@ -966,7 +929,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 16,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -1036,7 +999,7 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 17,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -1088,13 +1051,13 @@
       "color": "#3f789e",
       "bgcolor": "#3f789e",
       "flags": {},
-      "order": 18,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 19
+          "link": 18
         },
         {
           "name": "lora_name",
@@ -1139,6 +1102,43 @@
       ]
     },
     {
+      "id": 19,
+      "type": "PreviewImage",
+      "title": "Preview crop + ESRGAN only (before optional FLUX restoration)",
+      "pos": [
+        560,
+        2020
+      ],
+      "size": [
+        420,
+        520
+      ],
+      "color": "#557a46",
+      "bgcolor": "#557a46",
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "01 Source and ESRGAN"
+      },
+      "widgets_values": []
+    },
+    {
       "id": 20,
       "type": "CLIPTextEncode",
       "title": "Conservative restoration instructions",
@@ -1148,7 +1148,7 @@
       ],
       "size": [
         430,
-        250
+        280
       ],
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
@@ -1193,11 +1193,11 @@
       "title": "Conservative restoration negative",
       "pos": [
         1540,
-        450
+        480
       ],
       "size": [
         430,
-        180
+        200
       ],
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
@@ -1241,12 +1241,12 @@
       "type": "VAEEncode",
       "title": "Encode conservative restoration reference",
       "pos": [
-        2050,
+        2070,
         120
       ],
       "size": [
         300,
-        100
+        120
       ],
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
@@ -1287,12 +1287,12 @@
       "type": "ReferenceLatent",
       "title": "Attach reference to positive conditioning",
       "pos": [
-        2050,
-        540
+        2070,
+        320
       ],
       "size": [
         300,
-        100
+        120
       ],
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
@@ -1331,12 +1331,12 @@
       "type": "ReferenceLatent",
       "title": "Attach reference to negative conditioning",
       "pos": [
-        2040,
-        720
+        2070,
+        520
       ],
       "size": [
         300,
-        100
+        120
       ],
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
@@ -1375,12 +1375,12 @@
       "type": "VAEDecode",
       "title": "Decode conservative restoration result",
       "pos": [
-        3020,
-        550
+        3220,
+        630
       ],
       "size": [
         300,
-        100
+        120
       ],
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
@@ -1419,8 +1419,8 @@
       "type": "ImageScale",
       "title": "Normalize conservative restoration to exact 1024 x 1365",
       "pos": [
-        3020,
-        730
+        3220,
+        830
       ],
       "size": [
         340,
@@ -1495,12 +1495,12 @@
       "type": "PreviewImage",
       "title": "Preview selected processed portrait",
       "pos": [
-        3020,
-        960
+        3220,
+        1060
       ],
       "size": [
-        300,
-        220
+        420,
+        520
       ],
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
@@ -1532,7 +1532,7 @@
       "type": "FluxGuidance",
       "title": "Conservative restoration guidance",
       "pos": [
-        2430,
+        2500,
         120
       ],
       "size": [
@@ -1581,7 +1581,7 @@
       "type": "CFGGuider",
       "title": "Conservative restoration CFG",
       "pos": [
-        2390,
+        2500,
         300
       ],
       "size": [
@@ -1640,7 +1640,7 @@
       "type": "RandomNoise",
       "title": "Conservative restoration seed",
       "pos": [
-        2770,
+        2860,
         120
       ],
       "size": [
@@ -1685,8 +1685,8 @@
       "type": "KSamplerSelect",
       "title": "Conservative restoration sampler",
       "pos": [
-        2680,
-        550
+        2860,
+        300
       ],
       "size": [
         260,
@@ -1729,8 +1729,8 @@
       "type": "Flux2Scheduler",
       "title": "Conservative restoration steps and resolution",
       "pos": [
-        2680,
-        730
+        2860,
+        480
       ],
       "size": [
         260,
@@ -1791,8 +1791,8 @@
       "type": "SplitSigmasDenoise",
       "title": "Conservative restoration denoise",
       "pos": [
-        2680,
-        960
+        2860,
+        710
       ],
       "size": [
         260,
@@ -1845,12 +1845,12 @@
       "type": "SamplerCustomAdvanced",
       "title": "Sample conservative restoration",
       "pos": [
-        2970,
-        300
+        3220,
+        360
       ],
       "size": [
-        300,
-        170
+        320,
+        190
       ],
       "color": "#8b6f47",
       "bgcolor": "#8b6f47",
@@ -1909,8 +1909,8 @@
       "type": "ComfySwitchNode",
       "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)",
       "pos": [
-        2040,
-        900
+        2070,
+        720
       ],
       "size": [
         330,
@@ -1966,12 +1966,12 @@
       "type": "PreviewImage",
       "title": "Preview processed portrait",
       "pos": [
-        3500,
+        3900,
         120
       ],
       "size": [
-        420,
-        420
+        520,
+        620
       ],
       "color": "#596b82",
       "bgcolor": "#596b82",
@@ -2003,7 +2003,7 @@
       "type": "SaveImage",
       "title": "Save 1024 x 1365 processed PNG",
       "pos": [
-        4000,
+        4520,
         120
       ],
       "size": [
@@ -2050,7 +2050,7 @@
       "type": "ImageScale",
       "title": "Resize to HOI4 156 x 210",
       "pos": [
-        4000,
+        4520,
         320
       ],
       "size": [
@@ -2126,7 +2126,7 @@
       "type": "SaveImage",
       "title": "Save processed game-size PNG",
       "pos": [
-        4000,
+        4520,
         550
       ],
       "size": [
@@ -2308,19 +2308,19 @@
     ],
     [
       18,
-      8,
-      0,
-      10,
-      0,
-      "IMAGE"
-    ],
-    [
-      19,
       1,
       0,
       191,
       0,
       "MODEL"
+    ],
+    [
+      19,
+      8,
+      0,
+      19,
+      0,
+      "IMAGE"
     ],
     [
       20,
@@ -2553,8 +2553,8 @@
       "bounding": [
         40,
         40,
-        900,
-        2386
+        980,
+        2540
       ],
       "color": "#557a46",
       "font_size": 24,
@@ -2577,8 +2577,8 @@
       "bounding": [
         1500,
         40,
-        1900,
-        1180
+        2180,
+        1580
       ],
       "color": "#8b6f47",
       "font_size": 24,
@@ -2587,10 +2587,10 @@
     {
       "title": "04 Processed portrait output",
       "bounding": [
-        3400,
+        3800,
         40,
-        980,
-        650
+        1100,
+        740
       ],
       "color": "#596b82",
       "font_size": 24,
@@ -2633,6 +2633,7 @@
     "face_processing_bypass": "whole_composition_center_crop_then_esrgan",
     "source_crop": "toggleable_adaptive_head_and_shoulders_zoom_0.90_adjustable_headwear_before_esrgan",
     "background_order": "not_applicable_processing_only",
+    "processing_preview": "crop_and_esrgan_before_flux_restoration",
     "editor_layout": "flat_grouped_canvas"
   },
   "version": 0.4

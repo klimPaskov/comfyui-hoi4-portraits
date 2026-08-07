@@ -145,7 +145,9 @@ changes.
 The processing workflow uses the same crop and RealESRGAN preparation as the
 source workflow, then offers the same FLUX restoration switch. It stops before
 LoRA styling and saves the selected processed image as a 1024 × 1365 master
-and a centered 156 × 210 game-size PNG.
+and a centered 156 × 210 game-size PNG. Its dedicated **Crop + ESRGAN only**
+preview sits before the optional FLUX pass, so the framing can be checked before
+the larger restoration stage is queued.
 
 ## Fastest start: Comfy Cloud
 

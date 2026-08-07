@@ -91,7 +91,8 @@ any of the candidate branches, or the foreground/background regions will swap.
 ## Editing safely
 
 - Change prompts, seeds, LoRA strength, and boolean switches freely.
-- Adjust **Face zoom** when needed and confirm node `10`'s preview before
+- Adjust **Face zoom** when needed and confirm the dedicated crop + ESRGAN
+  preview before
   queueing the expensive FLUX stages. Use the manual crop only when the source
   contains multiple plausible subjects.
 - Keep the exact model family and encoder type together.
