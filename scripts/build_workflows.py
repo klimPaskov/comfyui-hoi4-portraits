@@ -18,7 +18,11 @@ WORKFLOW_DIR = ROOT / "workflows"
 BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
-STYLE_LORA = "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors"
+STYLE_LORA = "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors"
+STYLE_LORA_CHECKPOINTS = tuple(
+    f"hoi4_portrait_flux2_klein_9b_lora_{step:09d}.safetensors"
+    for step in (750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000)
+)
 RESTORATION_LOKR = "adonis_base.safetensors"
 DX_CONSISTENCY_LORA = "Flux2-Klein-9B-consistency-V2.safetensors"
 LCS_CONSISTENCY_LORA = "f2k_9B_lcs_consist_20260415.safetensors"
@@ -53,7 +57,6 @@ MODEL_URLS = {
     BASE_MODEL: "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8/resolve/9ecf2143d71542449960c5584340269c6d401449/flux-2-klein-base-9b-fp8.safetensors",
     TEXT_ENCODER: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
     VAE_MODEL: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors",
-    STYLE_LORA: "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
     RESTORATION_LOKR: "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors",
     DX_CONSISTENCY_LORA: "https://huggingface.co/dx8152/Flux2-Klein-9B-Consistency/resolve/8df0c7338cf68cfcd89ca7e461fe679905634607/Flux2-Klein-9B-consistency-V2.safetensors",
     LCS_CONSISTENCY_LORA: "https://huggingface.co/lrzjason/Consistance_Edit_Lora/resolve/825b73f9952186f807acb44f05dec4ec5044f394/f2k_9B_lcs_consist_20260415.safetensors",
@@ -65,6 +68,11 @@ MODEL_URLS = {
     FACE_DETECTION_MODEL: "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",
     YUNET_MODEL: "https://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
 }
+for checkpoint in STYLE_LORA_CHECKPOINTS:
+    MODEL_URLS[checkpoint] = (
+        "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/"
+        f"resolve/001ab9fe6a795124432287125fb28c2b99b74f57/{checkpoint}"
+    )
 
 RESTORATION_PROMPT = (
     "uhdmanscale, restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, blur, and lost fine detail. "
@@ -634,7 +642,7 @@ def _edit_stage(
     seed: int,
     title_prefix: str,
     denoise: float = 1.0,
-    seed_mode: str = "randomize",
+    seed_mode: str = "fixed",
     y: int = 120,
     prompt_node_title: str | None = None,
     sampler_name: str = "euler",
@@ -928,7 +936,7 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             negative=Link(21),
             latent=Link(22),
             seed=42,
-            seed_mode="randomize",
+            seed_mode="fixed",
             sampler_name="euler",
             steps=DEFAULT_STEPS,
             denoise=1.0,

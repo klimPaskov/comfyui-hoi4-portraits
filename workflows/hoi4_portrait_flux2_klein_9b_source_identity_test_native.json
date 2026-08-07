@@ -1110,14 +1110,14 @@
         "hoi4_group": "02 FLUX.2 Klein 9B models",
         "models": [
           {
-            "name": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
-            "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/4902bba7fd76337dabc4a6273d3f6edb3dafc2f5/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+            "name": "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
+            "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
             "directory": "loras"
           }
         ]
       },
       "widgets_values": [
-        "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+        "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
         1.0
       ]
     },
@@ -2577,7 +2577,7 @@
       },
       "widgets_values": [
         42,
-        "randomize"
+        "fixed"
       ]
     },
     {
@@ -3462,7 +3462,7 @@
       },
       "widgets_values": [
         43,
-        "randomize"
+        "fixed"
       ]
     },
     {
@@ -4347,7 +4347,7 @@
       },
       "widgets_values": [
         44,
-        "randomize"
+        "fixed"
       ]
     },
     {
@@ -7246,7 +7246,7 @@
     "project": "comfyui-hoi4-portraits",
     "graph_version": "2.6.1",
     "base_model": "flux-2-klein-base-9b-fp8.safetensors",
-    "style_lora": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+    "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
     "master_size": [
       1024,
       1365

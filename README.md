@@ -82,9 +82,10 @@ manual crop only when selecting one particular person.
 
 ### 2. Load FLUX.2 and the portrait LoRA
 
-This group loads FLUX.2 Klein 9B, the Qwen text encoder, VAE, the 2250-step
-portrait LoRA, and the Adonis restoration LoKr. The visible **LoRA strength**
-controls default to `1.00`.
+This group loads FLUX.2 Klein 9B, the Qwen text encoder, VAE, all uploaded
+portrait LoRA checkpoints, and the Adonis restoration LoKr. The 2250-step
+checkpoint is selected initially; the visible **LoRA strength** controls
+default to `1.00`.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.jpg)
 
@@ -149,7 +150,7 @@ and a centered 156 × 210 game-size PNG.
 ## Fastest start: Comfy Cloud
 
 1. For the source or text-to-image workflow, use a Comfy Cloud Creator or Pro
-   plan, open **Models → Import**, and import the [2250-step LoRA checkpoint](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors) as a LoRA. Import `adonis_base.safetensors` when you want the optional restoration pass.
+   plan, open **Models → Import**, and import the [2250-step LoRA checkpoint](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors) as a LoRA. Import `adonis_base.safetensors` when you want the optional restoration pass.
 2. Download and open one of the workflow JSON files from the table.
 3. For a source workflow, upload a portrait and select it in **Load source portrait**. **Face zoom** defaults to `0.90`; lower it to include more of the body. Leave **Preserve hat/headwear** on to protect the complete hat, or turn it off for a normal face-led crop. Turn off **Toggle face processing** to retain a multi-person composition. Check the processing preview before generating.
 4. Upload one of the [`backgrounds/`](backgrounds/) files only if you want background replacement, then enable background replacement.
@@ -170,7 +171,7 @@ experimental. The setup below assumes that you already have:
   model-import access;
 - access to the Comfy Cloud MCP preview;
 - the project LoRA imported with the exact filename
-  `hoi4_portrait_flux2_klein9b_lora_000002250.safetensors`;
+  `hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors`;
 - an MCP-capable agent with access to this repository and the target mod;
 - the mod root, character identifier, output filename, and portrait sprite name
   supplied to the agent. These values are mod-specific and must not be guessed.
@@ -265,10 +266,10 @@ workflow is practical on a 24 GB GPU with offloading. An 18 GB GPU may also run
 it with more aggressive offloading and a reduced test canvas; 16 GB systems can
 run the same kind of reduced-resolution test but will be slower. The upstream
 model card's roughly 29 GB figure is a conservative full-resolution/no-offload
-guideline. The comparison package uses 24.06 GB of pinned model files plus an
-0.86 GB PuLID vision weight. A 30 GB RunPod volume is sufficient for the
-workflows and model set; remove rejected outputs during testing to preserve
-headroom.
+guideline. The complete checkpoint set uses 28.20 GB of pinned model files
+plus a 0.86 GB PuLID vision weight. A 32 GB RunPod volume is the practical
+minimum when downloading every checkpoint; keep generated outputs tidy while
+testing.
 
 ```bash
 git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
@@ -300,7 +301,9 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 
 The installer uses accelerated resumable Hugging Face transfers, checks the
 final files against [`models.json`](models.json), and refuses partial or
-mismatched downloads. It never writes the token to the repository. Confirm
+mismatched downloads. It downloads every uploaded portrait checkpoint so the
+same fixed-seed workflow can compare them. It never writes the token to the
+repository. Confirm
 that `COMFY_ROOT` points to the folder containing
 `main.py`; the `runpod-slim` template uses `/workspace/runpod-slim/ComfyUI`.
 Start ComfyUI with `scripts/start_runpod.sh`; startup checks the live node and

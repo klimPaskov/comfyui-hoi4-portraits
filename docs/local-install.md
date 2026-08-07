@@ -4,10 +4,10 @@
 
 - ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
-- The 21 pinned model files occupy 24.06 GB decimal (22.40 GiB). PuLID also
-  prepares an 0.86 GB EVA-CLIP weight in the Hugging Face cache. A 30 GB
-  RunPod volume is sufficient for the comparison package; keep generated
-  outputs tidy while testing. The downloader writes directly to the ComfyUI
+- The 32 pinned model files occupy 28.20 GB decimal (26.27 GiB). PuLID also
+  prepares an 0.86 GB EVA-CLIP weight in the Hugging Face cache. A 32 GB
+  RunPod volume is the practical minimum for the complete checkpoint set;
+  keep generated outputs tidy while testing. The downloader writes directly to the ComfyUI
   model folders and does not create a second model copy.
 - A 24 GB GPU is a sufficient practical target for the FP8 workflows with
   normal offloading. An 18 GB GPU may work with more aggressive offloading and
@@ -80,7 +80,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The final verification pass validates all 21 files. If a download is
+The final verification pass validates all 32 files. If a download is
 interrupted or a file was placed in the wrong folder,
 the installer stops instead of silently using it. `HF_TOKEN` is read only from
 the process environment and is never printed or saved. Confirm that

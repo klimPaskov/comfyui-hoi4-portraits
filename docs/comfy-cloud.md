@@ -20,7 +20,7 @@ workflow. Import it from its hosted source:
 
 1. Open **Models** in the Comfy Cloud sidebar.
 2. Choose **Import**.
-3. Paste the download or file-page URL for [`hoi4_portrait_flux2_klein9b_lora_000002250.safetensors`](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein9b_lora_000002250.safetensors). Import [`adonis_base.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_base.safetensors) when you want optional restoration.
+3. Paste the download or file-page URL for [`hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors`](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors). Import [`adonis_base.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_base.safetensors) when you want optional restoration.
 4. Select model type **LoRA** and target folder `loras`.
 5. Wait for the exact filename to appear in `LoraLoaderModelOnly`.
 

@@ -242,7 +242,7 @@
         "1",
         0
       ],
-      "lora_name": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+      "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
       "strength_model": 1.0
     },
     "_meta": {

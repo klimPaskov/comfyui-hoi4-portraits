@@ -94,6 +94,6 @@ PY
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/download_models.py" --comfyui-root "${COMFY_ROOT}"
 
 echo
-echo "Installed three primary workflows, nine identity comparison workflows, all required node packs, and all 21 pinned model files."
+echo "Installed three primary workflows, nine identity comparison workflows, all required node packs, and all 32 pinned model files."
 echo "Models are under ${COMFY_ROOT}/models, and the PuLID EVA-CLIP weight is prepared in the Hugging Face cache."
 echo "Open Workflows > hoi4_portraits after restarting ComfyUI."

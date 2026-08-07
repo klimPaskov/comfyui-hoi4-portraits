@@ -80,7 +80,7 @@ class WorkflowTests(unittest.TestCase):
                 node
                 for node in api.values()
                 if node["class_type"] == "LoraLoaderModelOnly"
-                and str(node["inputs"].get("lora_name", "")).startswith("hoi4_portrait_flux2_klein9b_lora_")
+                and str(node["inputs"].get("lora_name", "")).startswith("hoi4_portrait_flux2_klein_9b_lora_")
             ]
             if workflow.name.endswith("processing_only.api.json"):
                 self.assertEqual(loras, [], workflow.name)
@@ -89,7 +89,7 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(loras[0]["inputs"]["strength_model"], 1.0, workflow.name)
                 self.assertEqual(
                     loras[0]["inputs"]["lora_name"],
-                    "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+                    "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
                     workflow.name,
                 )
                 self.assertNotIn("19", api, workflow.name)
@@ -170,7 +170,7 @@ class WorkflowTests(unittest.TestCase):
                 expected = not node["title"].startswith("Toggle replacement background")
                 self.assertIs(node["widgets_values"][0], expected, f"{workflow.name}: {node['title']}")
 
-    def test_restoration_seed_is_fixed_and_candidate_seeds_randomize(self) -> None:
+    def test_all_workflow_seeds_are_fixed_for_comparison(self) -> None:
         filenames = ["hoi4_portrait_processing_only.json"] + sorted(
             path.name
             for path in (ROOT / "workflows").glob("hoi4_portrait_flux2_klein_9b_source*.json")
@@ -180,9 +180,9 @@ class WorkflowTests(unittest.TestCase):
             ui = json.loads((ROOT / "workflows" / filename).read_text(encoding="utf-8"))
             nodes = {node["id"]: node for node in _editor_nodes(ui)}
             self.assertEqual(nodes[1302]["widgets_values"][:2], [17, "fixed"], filename)
-            if "_source" in filename:
-                for node_id in (1502, 1702, 1902):
-                    self.assertEqual(nodes[node_id]["widgets_values"][1], "randomize", filename)
+            for node in nodes.values():
+                if node["type"] == "RandomNoise":
+                    self.assertEqual(node["widgets_values"][1], "fixed", filename)
 
     def test_source_graphs_crop_before_esrgan_and_preserve_source_latent(self) -> None:
         sources = sorted((ROOT / "workflows").glob("hoi4_portrait_flux2_klein_9b_source*.api.json"))
@@ -349,17 +349,28 @@ class InstallerAndModelTests(unittest.TestCase):
         data = json.loads((ROOT / "models.json").read_text())
         self.assertEqual(data["schema_version"], "2.0.0")
         models = data["models"]
-        self.assertEqual(len(models), 21)
-        self.assertEqual(sum(entry["size_bytes"] for entry in models), 24057010868)
+        self.assertEqual(len(models), 32)
+        self.assertEqual(sum(entry["size_bytes"] for entry in models), 28199209756)
         filenames = [entry["filename"] for entry in models]
         self.assertEqual(len(filenames), len(set(filenames)))
-        retrained = [name for name in filenames if name.startswith("hoi4_portrait_flux2_klein9b_lora_")]
+        retrained = [name for name in filenames if name.startswith("hoi4_portrait_flux2_klein_9b_lora_")]
         self.assertEqual(
             retrained,
             [
-                "hoi4_portrait_flux2_klein9b_lora_000002000.safetensors",
-                "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
-                "hoi4_portrait_flux2_klein9b_lora_000002500.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000000750.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000001000.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000001250.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000001500.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000001750.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000002000.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000002750.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000003000.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000003250.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000003500.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000003750.safetensors",
+                "hoi4_portrait_flux2_klein_9b_lora_000004000.safetensors",
             ],
         )
         self.assertIn("adonis_base.safetensors", filenames)

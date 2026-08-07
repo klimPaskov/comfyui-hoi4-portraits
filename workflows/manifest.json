@@ -3,7 +3,7 @@
   "base_model": "flux-2-klein-base-9b-fp8.safetensors",
   "text_encoder": "qwen_3_8b_fp8mixed.safetensors",
   "vae": "flux2-vae.safetensors",
-  "style_lora": "hoi4_portrait_flux2_klein9b_lora_000002250.safetensors",
+  "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
   "master_size": [
     1024,
     1365

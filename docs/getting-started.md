@@ -41,7 +41,7 @@ detector selects the wrong person.
 | `diffusion_models/` | `flux-2-klein-base-9b-fp8.safetensors` |
 | `text_encoders/` | `qwen_3_8b_fp8mixed.safetensors` |
 | `vae/` | `flux2-vae.safetensors` |
-| `loras/` | Portrait checkpoints from steps 2000, 2250, and 2500, plus `adonis_base.safetensors` for optional restoration |
+| `loras/` | All 14 uploaded portrait checkpoints from steps 750 through 4000, plus `adonis_base.safetensors` for optional restoration |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
 | `detection/` | `mediapipe_face_fp32.safetensors` |
@@ -76,6 +76,7 @@ accept the FLUX.2 model agreement and create a read-only token.
    same input. Its restoration switch is enabled by default; turn it off when
    comparing against the direct ESRGAN result. Use the processing workflow when you
    need the processed image without LoRA styling.
+   All seed controls are fixed so checkpoint comparisons remain reproducible.
 7. Inspect the three 1024 × 1365 masters before choosing a centered 156 × 210 game-size
    file.
 
