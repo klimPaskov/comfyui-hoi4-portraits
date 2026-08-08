@@ -39,8 +39,10 @@ For source and batch workflows, upload:
 
 Background replacement is off by default. Keep the source prompt exactly as
 `make this portrait hoi4_portrait style` and append only deliberate changes.
-For text-to-image, begin with `hoi4_portrait,` and use a concise person
-description without game/style, background, lighting, or rendering language.
+For text-to-image, use the exact example prompt
+`hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair,
+wearing a plain civilian jacket.` and edit the person description without
+game/style, background, lighting, or rendering language.
 
 In the source, processing, and batch workflows, **Face zoom** defaults to
 `0.90`; lower values retain more of the body. **Preserve hat/headwear**

@@ -250,7 +250,7 @@ def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> lis
         prompt = str(api.get("40", {}).get("inputs", {}).get("text", ""))
         if prompt != "make this portrait hoi4_portrait style":
             errors.append(f"{path}: source prompt is not the exact editable default")
-    if is_text and api.get("20", {}).get("inputs", {}).get("text") != "hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.":
+    if is_text and api.get("20", {}).get("inputs", {}).get("text") != "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.":
         errors.append(f"{path}: text-to-image prompt is not the documented example")
     if any(node.get("class_type") == "ImageScale" and node.get("inputs", {}).get("crop") == "stretch" for node in api.values()):
         errors.append(f"{path}: output scaling must not stretch")

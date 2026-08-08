@@ -1519,7 +1519,7 @@
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
-        "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. Output as professional high resolution color camera RAW image."
+        "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. Output as professional high resolution color camera RAW image. fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality."
       ]
     },
     {
@@ -1987,7 +1987,7 @@
         "hoi4_group": "03 Optional FLUX.2 restoration"
       },
       "widgets_values": [
-        "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. Output as professional high resolution color camera RAW image."
+        "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. Output as professional high resolution color camera RAW image. clean natural skin, hair and body texture, no jpeg artifacts, no checkerboard pattern, male portrait."
       ]
     },
     {
@@ -2942,7 +2942,7 @@
       "title": "Editable candidate 2 prompt — edits affect only candidate 2",
       "pos": [
         9540,
-        1900
+        1600
       ],
       "size": [
         430,
@@ -2991,7 +2991,7 @@
       "title": "Candidate 2 identity LoRA negative",
       "pos": [
         9540,
-        2330
+        2030
       ],
       "size": [
         430,
@@ -3040,7 +3040,7 @@
       "title": "Encode candidate 2 identity lora reference",
       "pos": [
         10140,
-        1900
+        1600
       ],
       "size": [
         300,
@@ -3086,7 +3086,7 @@
       "title": "Attach reference to positive conditioning",
       "pos": [
         10140,
-        2170
+        1870
       ],
       "size": [
         300,
@@ -3130,7 +3130,7 @@
       "title": "Attach reference to negative conditioning",
       "pos": [
         10140,
-        2440
+        2140
       ],
       "size": [
         300,
@@ -3174,7 +3174,7 @@
       "title": "Decode candidate 2 identity lora result",
       "pos": [
         11300,
-        2400
+        2100
       ],
       "size": [
         300,
@@ -3221,7 +3221,7 @@
       "title": "Preview candidate 2 identity lora result (live while sampling)",
       "pos": [
         11300,
-        2670
+        2370
       ],
       "size": [
         560,
@@ -3258,7 +3258,7 @@
       "title": "Candidate 2 identity LoRA — sampler and generation controls",
       "pos": [
         10610,
-        2050
+        1750
       ],
       "size": [
         520,
@@ -3412,7 +3412,7 @@
       "title": "Editable candidate 3 prompt — edits affect only candidate 3",
       "pos": [
         9540,
-        3700
+        3100
       ],
       "size": [
         430,
@@ -3461,7 +3461,7 @@
       "title": "Candidate 3 identity LoRA negative",
       "pos": [
         9540,
-        4130
+        3530
       ],
       "size": [
         430,
@@ -3510,7 +3510,7 @@
       "title": "Encode candidate 3 identity lora reference",
       "pos": [
         10140,
-        3700
+        3100
       ],
       "size": [
         300,
@@ -3556,7 +3556,7 @@
       "title": "Attach reference to positive conditioning",
       "pos": [
         10140,
-        3970
+        3370
       ],
       "size": [
         300,
@@ -3600,7 +3600,7 @@
       "title": "Attach reference to negative conditioning",
       "pos": [
         10140,
-        4240
+        3640
       ],
       "size": [
         300,
@@ -3644,7 +3644,7 @@
       "title": "Decode candidate 3 identity lora result",
       "pos": [
         11300,
-        4200
+        3600
       ],
       "size": [
         300,
@@ -3691,7 +3691,7 @@
       "title": "Preview candidate 3 identity lora result (live while sampling)",
       "pos": [
         11300,
-        4470
+        3870
       ],
       "size": [
         560,
@@ -3728,7 +3728,7 @@
       "title": "Candidate 3 identity LoRA — sampler and generation controls",
       "pos": [
         10610,
-        3850
+        3250
       ],
       "size": [
         520,
@@ -4575,7 +4575,7 @@
       "title": "Mask candidate 2 final portrait",
       "pos": [
         16540,
-        2850
+        2550
       ],
       "size": [
         300,
@@ -4619,7 +4619,7 @@
       "title": "Composite candidate 2 after final styling",
       "pos": [
         17010,
-        2850
+        2550
       ],
       "size": [
         360,
@@ -4696,7 +4696,7 @@
       "title": "Toggle background for candidate 2 (off by default)",
       "pos": [
         17010,
-        3180
+        2880
       ],
       "size": [
         360,
@@ -4746,7 +4746,7 @@
       "title": "Save candidate 2 1024 x 1365 master PNG",
       "pos": [
         17590,
-        2850
+        2550
       ],
       "size": [
         300,
@@ -4793,7 +4793,7 @@
       "title": "Resize candidate 2 to HOI4 156 x 210",
       "pos": [
         17590,
-        3100
+        2800
       ],
       "size": [
         340,
@@ -4871,7 +4871,7 @@
       "title": "Save candidate 2 game-size PNG",
       "pos": [
         17590,
-        3400
+        3100
       ],
       "size": [
         300,
@@ -4918,7 +4918,7 @@
       "title": "Enlarge candidate 2 game preview for clarity (does not change saved files)",
       "pos": [
         18120,
-        2850
+        2550
       ],
       "size": [
         340,
@@ -4994,7 +4994,7 @@
       "title": "Save candidate 2 HOI4-ready DDS",
       "pos": [
         17590,
-        3650
+        3350
       ],
       "size": [
         360,
@@ -5041,7 +5041,7 @@
       "title": "Mask candidate 3 final portrait",
       "pos": [
         16540,
-        4650
+        4050
       ],
       "size": [
         300,
@@ -5085,7 +5085,7 @@
       "title": "Composite candidate 3 after final styling",
       "pos": [
         17010,
-        4650
+        4050
       ],
       "size": [
         360,
@@ -5162,7 +5162,7 @@
       "title": "Toggle background for candidate 3 (off by default)",
       "pos": [
         17010,
-        4980
+        4380
       ],
       "size": [
         360,
@@ -5212,7 +5212,7 @@
       "title": "Save candidate 3 1024 x 1365 master PNG",
       "pos": [
         17590,
-        4650
+        4050
       ],
       "size": [
         300,
@@ -5259,7 +5259,7 @@
       "title": "Resize candidate 3 to HOI4 156 x 210",
       "pos": [
         17590,
-        4900
+        4300
       ],
       "size": [
         340,
@@ -5337,7 +5337,7 @@
       "title": "Save candidate 3 game-size PNG",
       "pos": [
         17590,
-        5200
+        4600
       ],
       "size": [
         300,
@@ -5384,7 +5384,7 @@
       "title": "Enlarge candidate 3 game preview for clarity (does not change saved files)",
       "pos": [
         18120,
-        4650
+        4050
       ],
       "size": [
         340,
@@ -5460,7 +5460,7 @@
       "title": "Save candidate 3 HOI4-ready DDS",
       "pos": [
         17590,
-        5450
+        4850
       ],
       "size": [
         360,
@@ -6916,7 +6916,7 @@
         15990,
         80,
         1420,
-        5070
+        4470
       ],
       "color": "#8d5b5b",
       "font_size": 24,
@@ -6928,7 +6928,7 @@
         17550,
         1010,
         950,
-        4630
+        4030
       ],
       "color": "#596b82",
       "font_size": 24,

@@ -64,12 +64,14 @@ hoi4_portrait, an Irish man with close-cropped dark hair, wearing a plain milita
 
 ## Fixed-seed 6/8/10/12/20/35-step control
 
-The step-count comparison holds Euler and CFG 5 constant.
+The step-count comparison holds Euler and CFG 1 constant.
 
 ![Euler at 6, 8, 10, 12, 20, and 35 steps](assets/test-runs/step-comparison.jpg)
 
-Use eight steps for production. It improves structure over six without the
-extra runtime and framing drift seen at 10, 12, 20, and 35.
+The tuned production default is **4 steps at CFG 1 with the Euler sampler**
+(the style LoRA was trained for it). The comparison above shows the earlier
+6–35 step exploration; 10+ steps mainly add runtime without meaningful
+structure gains at this CFG.
 
 ## Post-final background test
 

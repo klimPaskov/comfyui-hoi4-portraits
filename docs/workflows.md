@@ -63,11 +63,11 @@ Append a deliberate change only to the candidate that should test it.
 ## Text-to-image workflow
 
 The same model stack and one advanced sampler card, but no source, no
-restoration pass, and one final portrait. Start the prompt with `hoi4_portrait,`
-and describe only the person:
+restoration pass, and one final portrait. The default prompt describes only
+the person:
 
 ```text
-hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
 ```
 
 ## Processing workflow

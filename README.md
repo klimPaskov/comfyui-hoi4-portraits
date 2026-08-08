@@ -197,11 +197,10 @@ make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, 
 ```
 
 Don't describe the game, background, lighting, or rendering — the LoRA handles
-those. The text-to-image workflow starts with `hoi4_portrait,` and a short
-person description:
+those. The text-to-image workflow uses the exact example prompt:
 
 ```text
-hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
 ```
 
 ## Guides

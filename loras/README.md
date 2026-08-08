@@ -24,11 +24,10 @@ Source portraits default to the exact prompt:
 make this portrait hoi4_portrait style
 ```
 
-Text-to-image prompts describe only the person—not the game/style,
-background, lighting, or rendering. Example:
+The text-to-image workflow uses the exact example prompt:
 
 ```text
-hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
 ```
 
 For source portraits, the graph crops to 1024 × 1365 head and shoulders,

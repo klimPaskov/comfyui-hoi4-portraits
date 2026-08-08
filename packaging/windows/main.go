@@ -193,13 +193,17 @@ func askVariantMenu(vram float64) []string {
 			fmt.Println("Please enter valid numbers.")
 			continue
 		}
-		// Toggling: numbers select/deselect; returning empty keeps default.
+		// Each typed number toggles that variant from its current state;
+		// untyped variants keep their current state. Returning empty keeps
+		// the recommended selection.
 		result := []string{}
 		for _, v := range variants {
-			if v.vr && !selected[v.key] {
-				result = append(result, v.key)
-			}
-			if !v.vr && selected[v.key] {
+			desired, toggled := selected[v.key]
+			if toggled {
+				if desired {
+					result = append(result, v.key)
+				}
+			} else if v.vr {
 				result = append(result, v.key)
 			}
 		}

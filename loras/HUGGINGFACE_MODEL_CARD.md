@@ -55,5 +55,5 @@ help (ethnicity or skin colour, civilian/military clothing, age, hair).
 ## Text-to-image example
 
 ```text
-hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
 ```

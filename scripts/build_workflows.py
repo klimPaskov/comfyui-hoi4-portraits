@@ -59,7 +59,7 @@ SOURCE_CANDIDATE_SAMPLING = (("euler", DEFAULT_STEPS),) * SOURCE_CANDIDATE_COUNT
 # The preview card is taller than the sampler controls.  Leave a full card and
 # a safety gutter between candidate lanes so ComfyUI's widget auto-sizing
 # cannot make one lane touch the next one.
-SOURCE_CANDIDATE_ROW_GAP = 1800
+SOURCE_CANDIDATE_ROW_GAP = 1500
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 FACE_DETECTION_MODEL = "mediapipe_face_fp32.safetensors"
@@ -96,11 +96,17 @@ RESTORATION_PROMPT = (
     "Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. "
     "Output as professional high resolution color camera RAW image."
 )
+RESTORATION_BASE_PROMPT = RESTORATION_PROMPT + (
+    " fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality."
+)
+RESTORATION_POST_PROMPT = RESTORATION_PROMPT + (
+    " clean natural skin, hair and body texture, no jpeg artifacts, no checkerboard pattern, male portrait."
+)
 RESTORATION_NEGATIVE = ""
 STYLE_PROMPT = "make this portrait hoi4_portrait style"
 STYLE_NEGATIVE = ""
 TEXT_PROMPT = (
-    "hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, "
+    "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, "
     "wearing a plain civilian jacket."
 )
 
@@ -1516,7 +1522,7 @@ def _adonis_restoration_stages(*, image: Link, seed: int = 17) -> tuple[list[Nod
         x=1540,
         image=image,
         model=Link(191),
-        prompt=RESTORATION_PROMPT,
+        prompt=RESTORATION_BASE_PROMPT,
         negative=RESTORATION_NEGATIVE,
         seed=seed,
         title_prefix="Adonis Base restoration",
@@ -1528,7 +1534,7 @@ def _adonis_restoration_stages(*, image: Link, seed: int = 17) -> tuple[list[Nod
         x=3300,
         image=base_output,
         model=Link(192),
-        prompt=RESTORATION_PROMPT,
+        prompt=RESTORATION_POST_PROMPT,
         negative=RESTORATION_NEGATIVE,
         seed=seed,
         title_prefix="Adonis Post restoration",

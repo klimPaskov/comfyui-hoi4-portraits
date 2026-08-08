@@ -86,9 +86,11 @@ Append only deliberate changes to one candidate to test them:
 make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, wearing a military uniform
 ```
 
-For text-to-image, begin with `hoi4_portrait,` and add a short person
-description. Do not describe the game, visual style, background, lighting,
-framing, or rendering.
+For text-to-image, keep the exact example prompt
+`hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair,
+wearing a plain civilian jacket.` and edit the person description as needed.
+Do not describe the game, visual style, background, lighting, framing, or
+rendering.
 
 ## Common problems
 
