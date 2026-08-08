@@ -1,17 +1,10 @@
 # Comfy Cloud and MCP
 
 The workflows use Comfy Cloud's model catalog and require the bundled
-`hoi4_portraits` folder in the Builder custom-node environment. The source
-workflow also requires
-[RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) for its `res_2s` and
-`res_2m` candidate samplers. Import the custom-node folders and restart the
-Builder environment before opening the workflow. The text-to-image and
-processing workflows do not require RES4LYF.
-
-The temporary identity comparison workflows are packaged primarily for
-RunPod testing. In Builder they also require the PuLID Flux2 and Klein edit
-composite repositories plus the comparison weights listed in `models.json`.
-Use the three primary workflows when those additions are unavailable.
+`hoi4_portraits` folder in the Builder custom-node environment. Import the
+custom-node folder and restart the Builder environment before opening a
+workflow. The GGUF variant is not available in Cloud (Cloud uses safetensors);
+use the full or FP8 distilled model there.
 
 ## Import the custom LoRA
 
@@ -20,45 +13,40 @@ workflow. Import it from its hosted source:
 
 1. Open **Models** in the Comfy Cloud sidebar.
 2. Choose **Import**.
-3. Paste the download or file-page URL for [`hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors`](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors). Import [`adonis_base.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_base.safetensors) when you want optional restoration.
+3. Paste the URL for
+   [`hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors`](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors).
+   Import [`adonis_base.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_base.safetensors)
+   and `adonis_post.safetensors` when you want optional restoration.
 4. Select model type **LoRA** and target folder `loras`.
 5. Wait for the exact filename to appear in `LoraLoaderModelOnly`.
 
-Model import requires a Comfy Cloud Creator or Pro plan.
-The base FLUX.2 Klein 9B stack, RealESRGAN, and BiRefNet are present in the
-Cloud catalog.
+Model import requires a Comfy Cloud Creator or Pro plan. The distilled FLUX.2
+Klein 9B stack, RealESRGAN, and BiRefNet are present in the Cloud catalog.
 
 The processing workflow does not use the project LoRA, so this import is only
-needed for the source and text-to-image workflows.
+needed for the source, text-to-image, and batch workflows.
 
 ## Open a workflow
 
 Use the editor-format `.json` file when opening or dragging a workflow into
 Comfy Cloud. Use the `.api.json` counterpart only for MCP/API execution.
 
-For source workflows, upload:
+For source and batch workflows, upload:
 
-- a source named `source_portrait.jpg`, or select your uploaded filename in the loader;
-- one background from [`backgrounds/`](../backgrounds/) if replacement is enabled.
+- source images (a `source_portrait.jpg`, or your uploaded filenames);
+- one background from [`backgrounds/`](../backgrounds/) if replacement is
+  enabled.
 
-Background replacement is off by default, so a background file is optional
-unless you enable background replacement.
+Background replacement is off by default. Keep the source prompt exactly as
+`make this portrait hoi4_portrait style` and append only deliberate changes.
+For text-to-image, begin with `hoi4_portrait,` and use a concise person
+description without game/style, background, lighting, or rendering language.
 
-Start with denoise `1.00`, LoRA strength `1.00`, CFG 1, and FLUX guidance 1.
-The three source candidates use Euler/6 steps, `res_2s`/4 steps, and
-`res_2m`/8 steps. Each source candidate begins with the identity default shown
-in the workflow. Keep it unchanged or append one
-deliberate requested edit; editing one candidate prompt does not affect the
-other two. For text-to-image, begin with `hoi4_portrait,` and use a concise
-general person description. Do not add game/style, background, lighting, or
-rendering language.
-
-In either source workflow, **Face zoom** defaults to `0.90`. Lower values retain
-more of the body. **Preserve hat/headwear** defaults to `true`; set it to
-`false` when the crop should ignore oversized headwear. Turn off **Toggle face
-processing** to keep a full multi-person composition without running face
-detection. FLUX restoration opens enabled. Check the processing preview before
-queueing.
+In the source, processing, and batch workflows, **Face zoom** defaults to
+`0.90`; lower values retain more of the body. **Preserve hat/headwear**
+defaults to `true`. Turn off **Toggle face processing** to keep a full
+multi-person composition. FLUX restoration opens enabled. Check the
+processing previews before queueing.
 
 ## MCP validation
 
@@ -77,23 +65,22 @@ workflow before generating.
 1. Upload source/background media with the Cloud file upload flow.
 2. Replace the `LoadImage.image` values in the API graph with the returned filenames.
 3. For a source graph, set the background replacement boolean to `true` only
-   when background replacement is wanted. Leave it `false` otherwise.
+   when background replacement is wanted.
 4. Submit the API-format graph.
 5. Wait for the returned prompt ID to reach a terminal state before claiming success.
 6. Retrieve the output only after the job reports completion. A source run
-   returns three candidate master/game-size pairs; review them and choose the
-   candidate you want to install.
+   returns three candidate master/game-size pairs; the batch graph returns one
+   output per input image.
 
 The workflows contain no paid partner/API nodes. Normal Comfy Cloud compute
 and subscription limits still apply.
 
 ## Cloud checks
 
-All three API graphs pass Comfy Cloud MCP `dry_run` preflight. The project LoRA
+All four API graphs pass Comfy Cloud MCP `dry_run` preflight. The project LoRA
 must be imported into the Cloud model library before generation. Cloud GPU
 checks cover the source, processing, text-to-image, and final background paths
-with a compatible catalog LoRA at zero strength. A Creator or Pro plan is
-required for the project LoRA import.
+with a compatible catalog LoRA at zero strength.
 
 Official references:
 

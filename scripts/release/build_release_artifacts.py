@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DIST = ROOT / "dist"
 WINDOWS_SOURCE = ROOT / "packaging" / "windows"
-RELEASE_SCHEMA_VERSION = "2.6.1"
+RELEASE_SCHEMA_VERSION = "3.0.0"
 FIXED_ZIP_TIME = (2026, 8, 4, 0, 0, 0)
 ROOT_FILES = {
     "CHANGELOG.md",
@@ -33,11 +33,8 @@ INCLUDED_TREES = {"backgrounds", "custom_nodes", "docs", "loras", "prompts", "sc
 IGNORED_PARTS = {"__pycache__", ".DS_Store"}
 MODEL_SUFFIXES = {".bin", ".ckpt", ".gguf", ".onnx", ".pt", ".pth", ".safetensors"}
 RUNPOD_SCRIPTS = {
+    "apply_variant.py",
     "download_models.py",
-    "install_flux2_klein_enhancer.sh",
-    "install_klein_edit_composite.sh",
-    "install_pulid_flux2.sh",
-    "install_res4lyf.sh",
     "install_runpod.sh",
     "install_workflows.py",
     "requirements-download.txt",

@@ -116,6 +116,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--comfyui-root", required=True, type=Path)
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument("--only", action="append", help="Download only this exact filename; repeat as needed")
+    parser.add_argument(
+        "--variant",
+        action="append",
+        choices=["full", "fp8", "gguf"],
+        help="Which distilled FLUX.2 Klein 9B variant(s) to install: full (BF16), fp8, or gguf. Repeat for multiple. Shared support models are always included.",
+    )
+    parser.add_argument(
+        "--gguf-quants",
+        default="",
+        help="Comma-separated GGUF quantizations to install, e.g. Q4_K_M,Q5_K_M. Only used with --variant gguf. Defaults to every listed quantization.",
+    )
     parser.add_argument("--workers", type=int, default=4, help="Parallel model checks/downloads (default: 4)")
     args = parser.parse_args(argv)
     comfy_root = args.comfyui_root.expanduser().resolve()
@@ -123,12 +134,22 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--comfyui-root must point to a ComfyUI checkout containing main.py")
     manifest = json.loads((ROOT / "models.json").read_text(encoding="utf-8"))
     selected = set(args.only or [])
+    selected_variants = set(args.variant or [])
+    selected_quants = {item.strip() for item in args.gguf_quants.split(",") if item.strip()}
     if args.workers < 1:
         parser.error("--workers must be at least 1")
     jobs = []
     for entry in manifest["models"]:
         if selected and entry["filename"] not in selected:
             continue
+        variant = str(entry.get("variant", "shared"))
+        if selected_variants:
+            if variant == "shared":
+                pass
+            elif variant not in selected_variants:
+                continue
+            elif variant == "gguf" and selected_quants and str(entry.get("quant", "")) not in selected_quants:
+                continue
         destination = comfy_root / "models" / entry["directory"] / entry["filename"]
         jobs.append((entry, destination))
 

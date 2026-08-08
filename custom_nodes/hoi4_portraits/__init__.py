@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import glob
+import os
+from pathlib import Path
+
 import numpy as np
 import torch
 import torch.nn.functional as functional
@@ -7,6 +11,7 @@ from scipy import ndimage
 
 import cv2
 import folder_paths
+from PIL import Image, ImageOps
 
 
 ASPECT = 1024 / 1365
@@ -278,11 +283,325 @@ class PortraitIdentityMask:
         return (torch.stack(masks).clamp(0, 1),)
 
 
+class Hoi4PortraitSampler:
+    """One advanced sampler card for the portrait graph.
+
+    The node intentionally wraps ComfyUI's own ``common_ksampler`` rather than
+    implementing a second sampler.  This keeps sampler behaviour identical to
+    the core node while putting the controls that users actually tune beside
+    one another.  ``common_ksampler`` also installs ComfyUI's normal latent
+    preview callback, so the editor shows construction previews while the
+    sampling pass is running.
+
+    The ``sampling_algorithm`` combo exposes the sampler itself (``euler`` is
+    the FLUX.2 default) and ``scheduler`` exposes the step schedule (``simple``
+    is the FLUX.2 default).  Advanced users can switch to any ComfyUI sampler
+    or scheduler; the workflow defaults stay at the project's tuned settings.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        try:
+            from comfy.samplers import KSampler
+
+            samplers = list(KSampler.SAMPLERS)
+            schedulers = list(KSampler.SCHEDULERS)
+        except Exception:
+            samplers = ["euler"]
+            schedulers = ["simple"]
+        if "euler" not in samplers:
+            samplers.insert(0, "euler")
+        if "simple" not in schedulers:
+            schedulers.insert(0, "simple")
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "positive": ("CONDITIONING",),
+                "negative": ("CONDITIONING",),
+                "latent_image": ("LATENT",),
+                "noise_seed": (
+                    "INT",
+                    {
+                        "default": 42,
+                        "min": 0,
+                        "max": 0xFFFFFFFFFFFFFFFF,
+                        "control_after_generate": True,
+                        "tooltip": "Random source for the initial noise. Change it (or let 'randomize' pick one) to get a different portrait from the same prompt.",
+                    },
+                ),
+                "steps": (
+                    "INT",
+                    {
+                        "default": 4,
+                        "min": 1,
+                        "max": 10000,
+                        "tooltip": "How many denoising steps the sampler runs. More steps = more refined detail but slower. The project default of 4 is tuned for the HOI4 style LoRA.",
+                    },
+                ),
+                "cfg": (
+                    "FLOAT",
+                    {
+                        "default": 1.0,
+                        "min": 0.0,
+                        "max": 100.0,
+                        "step": 0.1,
+                        "round": 0.01,
+                        "tooltip": "How strongly the model follows the prompt. Higher values apply the HOI4 style more sharply; the tuned default for this workflow is 1.0.",
+                    },
+                ),
+                "guidance": (
+                    "FLOAT",
+                    {
+                        "default": 1.0,
+                        "min": 0.0,
+                        "max": 100.0,
+                        "step": 0.1,
+                        "round": 0.01,
+                        "tooltip": "FLUX.2 guidance scale. Like CFG it controls prompt adherence; FLUX.2 Klein works best at low values (default 1.0).",
+                    },
+                ),
+                "sampling_algorithm": (
+                    samplers,
+                    {
+                        "tooltip": "The sampling algorithm (sampler) itself. 'euler' is the tuned default; switch to 'euler_ancestral', 'dpmpp_2m' or any installed sampler for experiments.",
+                    },
+                ),
+                "scheduler": (
+                    schedulers,
+                    {
+                        "tooltip": "How the denoise strength is scheduled across the steps. 'simple' is the tuned FLUX.2 default; 'karras' or 'sgm_uniform' change the schedule.",
+                    },
+                ),
+                "denoise": (
+                    "FLOAT",
+                    {
+                        "default": 1.0,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                        "round": 0.01,
+                        "tooltip": "Fraction of the noise removed. 1.0 means a full generation from the reference latent; lower values keep more of the source structure.",
+                    },
+                ),
+                "add_noise": (
+                    ["enable", "disable"],
+                    {
+                        "tooltip": "Whether new noise is added before sampling. Keep 'enable'; 'disable' is only for img2img refinement at low denoise.",
+                    },
+                ),
+                "start_at_step": (
+                    "INT",
+                    {
+                        "default": 0,
+                        "min": 0,
+                        "max": 10000,
+                        "advanced": True,
+                        "tooltip": "Advanced: first step of sampling to run. Leave at 0.",
+                    },
+                ),
+                "end_at_step": (
+                    "INT",
+                    {
+                        "default": 10000,
+                        "min": 0,
+                        "max": 10000,
+                        "advanced": True,
+                        "tooltip": "Advanced: last step of sampling to run. Leave at 10000 to run the full range.",
+                    },
+                ),
+                "force_full_denoise": (
+                    "BOOLEAN",
+                    {
+                        "default": True,
+                        "advanced": True,
+                        "tooltip": "Advanced: force the sampler to denoise the final step fully. Keep enabled.",
+                    },
+                ),
+            }
+        }
+
+    RETURN_TYPES = ("LATENT",)
+    RETURN_NAMES = ("samples",)
+    FUNCTION = "sample"
+    CATEGORY = "HOI4 portraits/sampling"
+    DESCRIPTION = (
+        "Advanced FLUX.2 Klein sampler. Guidance, CFG, seed, steps, sampler, "
+        "scheduler, denoise, and partial-step controls live on one node. "
+        "Uses ComfyUI's live latent preview callback."
+    )
+
+    def sample(
+        self,
+        model,
+        positive,
+        negative,
+        latent_image,
+        noise_seed,
+        steps,
+        cfg,
+        guidance,
+        sampling_algorithm,
+        scheduler,
+        denoise,
+        add_noise="enable",
+        start_at_step=0,
+        end_at_step=10000,
+        force_full_denoise=True,
+    ):
+        # Imports are local so the node pack can be imported by the release
+        # validator without requiring a running ComfyUI process.
+        import node_helpers
+        import nodes
+
+        guided_positive = node_helpers.conditioning_set_values(
+            positive, {"guidance": float(guidance)}
+        )
+        return nodes.common_ksampler(
+            model,
+            int(noise_seed),
+            int(steps),
+            float(cfg),
+            sampling_algorithm,
+            scheduler,
+            guided_positive,
+            negative,
+            latent_image,
+            denoise=float(denoise),
+            disable_noise=add_noise == "disable",
+            start_step=int(start_at_step),
+            last_step=int(end_at_step),
+            force_full_denoise=bool(force_full_denoise),
+        )
+
+
+class Hoi4BatchInput:
+    """Load all compatible images in an input subfolder as one image batch."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "input_folder": ("STRING", {"default": "hoi4_portraits_batch"}),
+                "file_pattern": ("STRING", {"default": "*.png;*.jpg;*.jpeg;*.webp"}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING")
+    RETURN_NAMES = ("images", "masks", "filenames")
+    FUNCTION = "load_batch"
+    CATEGORY = "HOI4 portraits/input"
+    DESCRIPTION = "Load every image in input/hoi4_portraits_batch for one shared workflow run."
+
+    def load_batch(self, input_folder, file_pattern):
+        root = Path(folder_paths.get_input_directory()) / input_folder
+        patterns = [item.strip() for item in str(file_pattern).split(";") if item.strip()]
+        paths: list[Path] = []
+        for pattern in patterns or ["*"]:
+            paths.extend(Path(path) for path in glob.glob(str(root / pattern)))
+        paths = sorted({path.resolve() for path in paths if path.is_file()})
+        if not paths:
+            raise RuntimeError(f"No input images found in {root} matching {file_pattern!r}.")
+
+        images: list[Image.Image] = []
+        for path in paths:
+            with Image.open(path) as source:
+                images.append(ImageOps.exif_transpose(source).convert("RGB"))
+        max_width = max(image.width for image in images)
+        max_height = max(image.height for image in images)
+        tensors: list[torch.Tensor] = []
+        masks: list[torch.Tensor] = []
+        for image in images:
+            canvas = Image.new("RGB", (max_width, max_height), (0, 0, 0))
+            fitted = ImageOps.contain(image, (max_width, max_height), Image.Resampling.LANCZOS)
+            canvas.paste(fitted, ((max_width - fitted.width) // 2, (max_height - fitted.height) // 2))
+            array = np.asarray(canvas, dtype=np.float32) / 255.0
+            tensors.append(torch.from_numpy(array))
+            masks.append(torch.zeros((64, 64), dtype=torch.float32))
+        return (
+            torch.stack(tensors).clamp(0, 1),
+            torch.stack(masks),
+            "\n".join(path.name for path in paths),
+        )
+
+
+class Hoi4SaveDDS:
+    """Save a 156x210 portrait as a HOI4-compatible DDS.
+
+    Hearts of Iron IV reads 156x210 portrait textures in the classic DXT5
+    (BC3) block-compressed DDS format with no mipmaps.  That is the format the
+    in-game engine expects and the one the community tools (paint.net DXT5,
+    Kadaif BC3, GIMP DXT5) produce, so dropping the output straight into a
+    ``gfx/portraits`` folder will not crash the game.  Pillow writes the
+    standard DDS header with the ``DXT5`` FOURCC and a single top-level
+    mipmap, which keeps the file small (about 32 KB) and immediately usable.
+
+    ``compression`` lets advanced users pick the classic uncompressed ARGB8
+    profile instead (larger files, zero loss), which the engine also accepts.
+    Keeping this in a node means the workflow emits the game asset in
+    addition to the review PNG instead of relying on a second conversion tool.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "images": ("IMAGE",),
+                "filename_prefix": (
+                    "STRING",
+                    {
+                        "default": "156x210/dds/hoi4_portrait",
+                        "tooltip": "Output subfolder and filename prefix inside ComfyUI's output folder. '156x210/dds/...' matches the workflow's game-ready folder.",
+                    },
+                ),
+                "compression": (
+                    ["dxt5", "uncompressed"],
+                    {
+                        "tooltip": "DXT5 (BC3) is the HOI4 standard, ~32 KB, no mipmaps. 'uncompressed' writes ARGB8 which also works but is ~3x larger.",
+                    },
+                ),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("images",)
+    FUNCTION = "save"
+    CATEGORY = "HOI4 portraits/output"
+    DESCRIPTION = "Save 156x210 DXT5 (BC3) DDS files with no mipmaps for HOI4."
+
+    def save(self, images, filename_prefix, compression="dxt5"):
+        output_dir = Path(folder_paths.get_output_directory())
+        prefix = Path(str(filename_prefix))
+        if prefix.is_absolute() or ".." in prefix.parts:
+            raise ValueError("DDS filename_prefix must stay inside the ComfyUI output folder.")
+        saved: list[Path] = []
+        for index, tensor in enumerate(images):
+            array = (tensor.detach().cpu().numpy().clip(0, 1) * 255.0 + 0.5).astype(np.uint8)
+            if array.ndim != 3 or array.shape[0] != 210 or array.shape[1] != 156:
+                raise ValueError(
+                    f"HOI4 DDS output must be 156x210; received {array.shape[1]}x{array.shape[0]}."
+                )
+            image = Image.fromarray(array[:, :, :3], mode="RGB")
+            target = output_dir / prefix.parent / f"{prefix.name}_{index:03d}.dds"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if compression == "dxt5":
+                image.save(target, format="DDS", pixel_format="DXT5")
+            else:
+                image.save(target, format="DDS")
+            saved.append(target)
+        return (images,)
+
+
 NODE_CLASS_MAPPINGS = {
     "AdaptivePortraitCrop": AdaptivePortraitCrop,
     "PortraitIdentityMask": PortraitIdentityMask,
+    "Hoi4PortraitSampler": Hoi4PortraitSampler,
+    "Hoi4BatchInput": Hoi4BatchInput,
+    "Hoi4SaveDDS": Hoi4SaveDDS,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AdaptivePortraitCrop": "Adaptive Portrait Crop",
     "PortraitIdentityMask": "Portrait Identity Mask",
+    "Hoi4PortraitSampler": "HOI4 Portrait Sampler (advanced)",
+    "Hoi4BatchInput": "HOI4 Batch Input Folder",
+    "Hoi4SaveDDS": "HOI4 Save DDS (156x210)",
 }

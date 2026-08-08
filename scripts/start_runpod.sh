@@ -52,5 +52,6 @@ for _ in $(seq 1 120); do
 done
 
 "${PYTHON_BIN}" "${SCRIPT_DIR}/validate_comfyui_registry.py" \
-  --url "http://127.0.0.1:${COMFY_PORT}"
+  --url "http://127.0.0.1:${COMFY_PORT}" \
+  --comfyui-root "${COMFY_ROOT}"
 wait "${COMFY_PID}"

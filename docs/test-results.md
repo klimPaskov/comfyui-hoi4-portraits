@@ -1,6 +1,6 @@
 # Local test results
 
-These images were generated locally with the FLUX.2 Klein base 9B stack and
+These images were generated locally with the distilled FLUX.2 Klein 9B stack and
 `hoi4_portraits_flux2_klein_9b_lora_000002500.safetensors`. All six source
 portraits came from the supplied `source_originals.zip`.
 

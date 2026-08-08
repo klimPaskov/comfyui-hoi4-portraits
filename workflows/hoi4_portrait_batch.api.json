@@ -1,11 +1,12 @@
 {
   "5": {
-    "class_type": "LoadImage",
+    "class_type": "Hoi4BatchInput",
     "inputs": {
-      "image": "source_portrait.jpg"
+      "input_folder": "hoi4_portraits_batch",
+      "file_pattern": "*.png;*.jpg;*.jpeg;*.webp"
     },
     "_meta": {
-      "title": "Load source portrait — upload or pick your photo here"
+      "title": "Load all portraits from input/hoi4_portraits_batch"
     }
   },
   "9": {
@@ -269,6 +270,20 @@
     },
     "_meta": {
       "title": "Load FLUX.2 VAE"
+    }
+  },
+  "4": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Apply HOI4 LoRA — strength editable here"
     }
   },
   "191": {
@@ -587,27 +602,254 @@
       ]
     },
     "_meta": {
-      "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)"
+      "title": "Toggle FLUX restoration (on: Adonis Base then Post; off: ESRGAN only)"
+    }
+  },
+  "40": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "make this portrait hoi4_portrait style"
+    },
+    "_meta": {
+      "title": "Editable batch prompt — applies independently to each input image"
+    }
+  },
+  "41": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Batch HOI4 LoRA negative"
+    }
+  },
+  "42": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode batch hoi4 lora reference"
+    }
+  },
+  "43": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "40",
+        0
+      ],
+      "latent": [
+        "42",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Attach reference to positive conditioning"
+    }
+  },
+  "44": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "41",
+        0
+      ],
+      "latent": [
+        "42",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Attach reference to negative conditioning"
+    }
+  },
+  "51": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "50",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode batch hoi4 lora result"
+    }
+  },
+  "55": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "51",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview batch hoi4 lora result (live while sampling)"
+    }
+  },
+  "50": {
+    "class_type": "Hoi4PortraitSampler",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "43",
+        0
+      ],
+      "negative": [
+        "44",
+        0
+      ],
+      "latent_image": [
+        "42",
+        0
+      ],
+      "noise_seed": 42,
+      "steps": 4,
+      "cfg": 1.0,
+      "guidance": 1.0,
+      "sampling_algorithm": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "add_noise": "enable",
+      "start_at_step": 0,
+      "end_at_step": 10000,
+      "force_full_denoise": true
+    },
+    "_meta": {
+      "title": "Batch HOI4 LoRA — sampler and generation controls"
+    }
+  },
+  "60": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "hoi4_leader_portrait_background.png"
+    },
+    "_meta": {
+      "title": "Load replacement background"
+    }
+  },
+  "61": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "60",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center"
+    },
+    "_meta": {
+      "title": "Fit background to final master canvas"
+    }
+  },
+  "62": {
+    "class_type": "LoadBackgroundRemovalModel",
+    "inputs": {
+      "bg_removal_name": "birefnet.safetensors"
+    },
+    "_meta": {
+      "title": "Load BiRefNet foreground model"
+    }
+  },
+  "63": {
+    "class_type": "RemoveBackground",
+    "inputs": {
+      "bg_removal_model": [
+        "62",
+        0
+      ],
+      "image": [
+        "51",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Mask the final styled portrait"
+    }
+  },
+  "65": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "61",
+        0
+      ],
+      "source": [
+        "51",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": true,
+      "mask": [
+        "63",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Composite only after the styled portrait exists"
+    }
+  },
+  "66": {
+    "class_type": "ComfySwitchNode",
+    "inputs": {
+      "switch": false,
+      "on_false": [
+        "51",
+        0
+      ],
+      "on_true": [
+        "65",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Toggle replacement background (off by default)"
     }
   },
   "71": {
     "class_type": "SaveImage",
     "inputs": {
       "images": [
-        "32",
+        "66",
         0
       ],
-      "filename_prefix": "1024x1365/processed"
+      "filename_prefix": "1024x1365/portrait"
     },
     "_meta": {
-      "title": "Save 1024 x 1365 processed PNG"
+      "title": "Save 1024 x 1365 master PNG"
     }
   },
   "72": {
     "class_type": "ImageScale",
     "inputs": {
       "image": [
-        "32",
+        "66",
         0
       ],
       "upscale_method": "lanczos",
@@ -626,10 +868,10 @@
         "72",
         0
       ],
-      "filename_prefix": "156x210/processed"
+      "filename_prefix": "156x210/portrait"
     },
     "_meta": {
-      "title": "Save processed game-size PNG"
+      "title": "Save game-size portrait PNG"
     }
   },
   "74": {
@@ -639,10 +881,10 @@
         "72",
         0
       ],
-      "filename_prefix": "156x210/dds/processed"
+      "filename_prefix": "156x210/dds/portrait"
     },
     "_meta": {
-      "title": "Save processed HOI4-ready DDS"
+      "title": "Save HOI4-ready 156 x 210 DDS"
     }
   },
   "75": {
@@ -658,7 +900,7 @@
       "crop": "disabled"
     },
     "_meta": {
-      "title": "Enlarge processed preview for clarity (does not change saved files)"
+      "title": "Enlarge game preview for clarity (does not change saved files)"
     }
   },
   "600": {
@@ -694,7 +936,7 @@
       ]
     },
     "_meta": {
-      "title": "Final portrait processed — 156 x 210 (game size)"
+      "title": "Final portrait batch — 156 x 210 (game size)"
     }
   }
 }

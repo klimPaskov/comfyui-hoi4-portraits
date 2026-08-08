@@ -7,17 +7,14 @@ hosting, or using them, read the current upstream terms for your use case.
 | Component | Upstream | Notes |
 | --- | --- | --- |
 | ComfyUI | [comfyanonymous/ComfyUI](https://github.com/comfyanonymous/ComfyUI) | GPL-3.0 source project; not bundled here. |
-| RES4LYF | [ClownsharkBatwing/RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) | GPL-3.0 sampler extension installed from a pinned revision; not bundled here. |
-| ComfyUI-Flux2Klein-Enhancer | [capitan01R/ComfyUI-Flux2Klein-Enhancer](https://github.com/capitan01R/ComfyUI-Flux2Klein-Enhancer) | MIT custom-node extension installed from a pinned revision for source-reference identity locking; not bundled here. |
-| ComfyUI-PuLID-Flux2 | [iFayens/ComfyUI-PuLID-Flux2](https://github.com/iFayens/ComfyUI-PuLID-Flux2) | MIT node extension installed from a pinned revision for the PuLID comparison workflow; not bundled here. |
-| Klein edit composite | [supermansundies/comfyui-klein-edit-composite](https://github.com/supermansundies/comfyui-klein-edit-composite) | Node extension installed from a pinned revision for the composite comparison workflow; not bundled here. |
-| FLUX.2 Klein base 9B FP8 | [black-forest-labs/FLUX.2-klein-base-9B-fp8](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8) | Gated model. Accept and follow the model repository's license. |
+| ComfyUI-GGUF | [city96/ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) | Node extension installed from a pinned revision when the GGUF variant is selected; not bundled here. |
+| FLUX.2 Klein 9B distilled | [black-forest-labs/FLUX.2-klein-9B](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B), [FLUX.2-klein-9b-fp8](https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8), [drends/FLUX.2-klein-9B-GGUF](https://huggingface.co/drends/FLUX.2-klein-9B-GGUF) | Gated full/FP8 model (accept the agreement); GGUF is not gated. Follow each model repository's license. |
 | Qwen 3 8B FP8 mixed encoder and FLUX.2 VAE | [Comfy-Org/flux2-klein-9B](https://huggingface.co/Comfy-Org/flux2-klein-9B) | Follow the source model cards and file-specific upstream terms. |
 | RealESRGAN x2plus | [xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | Model and code terms are maintained upstream. |
-| Adonis Base LoKr | [n8te0/adonis_flux2klein](https://huggingface.co/n8te0/adonis_flux2klein) | Optional restoration adapter. Follow the model repository's terms. |
-| Identity comparison adapters | [DX consistency](https://huggingface.co/dx8152/Flux2-Klein-9B-Consistency), [LCS consistency](https://huggingface.co/lrzjason/Consistance_Edit_Lora), [SameFace](https://huggingface.co/rphmeier/Flux2Klein9B-SameFaceLora), [RefControl lineart](https://huggingface.co/thedeoxen/refcontrol-FLUX.2-klein-9B-reference-lineart-lora) | Temporary comparison weights. Follow each upstream model card and license. |
-| PuLID Flux2, EVA-CLIP, and InsightFace AntelopeV2 | [PuLID Flux2](https://huggingface.co/Fayens/Pulid-Flux2), [EVA02 CLIP](https://huggingface.co/timm/eva02_large_patch14_clip_336.merged2b_s6b_b61k), [AntelopeV2 mirror](https://huggingface.co/MonsterMMORPG/InstantID_Models) | Used only by the PuLID comparison workflow. Follow all upstream terms; InsightFace pretrained models are restricted to non-commercial research use. |
+| Adonis Base and Post LoKrs | [n8te0/adonis_flux2klein](https://huggingface.co/n8te0/adonis_flux2klein) | Optional restoration adapters. Follow the model repository's terms. |
+| HOI4 portrait LoRA | [Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora) | MIT; the project publishes this adapter. |
 | BiRefNet | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet) | Follow the model repository and original BiRefNet terms. |
+| MediaPipe face detection | [Comfy-Org/mediapipe](https://huggingface.co/Comfy-Org/mediapipe) | Apache-2.0. |
 | OpenCV and YuNet | [opencv/opencv](https://github.com/opencv/opencv), [opencv/opencv_zoo](https://github.com/opencv/opencv_zoo) | Apache-2.0 software and model. |
 
 Exact source revisions, filenames, and byte sizes are pinned

@@ -2,6 +2,42 @@
 
 All notable project changes are recorded here.
 
+## 3.0.0 — 2026-08-08
+
+- Rebuilt around the **distilled** FLUX.2 Klein 9B model; the base model was
+  removed everywhere (builder, validator, model lock, docs, installers).
+- Kept the tuned **2500-step** HOI4 LoRA as the only bundled checkpoint.
+- Tuned every generation branch to **Euler, simple, CFG 1, guidance 1,
+  4 steps, denoise 1.0** and made the sampling process live in the editor.
+- Removed the redundant normalize-to-canvas node after the LoRA decode; the
+  game-size output now resizes normally and center-crops without stretching.
+- Added a source preview, an ESRGAN preview, and a **comparison row**
+  (ESRGAN + restoration + the three 156×210 finals side by side) with
+  enlarged-for-display game previews.
+- Added beginner **Setup guide** notes: model folders with emojis, sampler
+  controls (steps/CFG/guidance), why the restoration pass helps, and the
+  prompting guide with the exact default prompt.
+- Added the **batch** workflow as a default: drop a folder of photos into
+  `input/hoi4_portraits_batch`, one sampler, and outputs to
+  `output/1024x1365/`, `output/156x210/`, and `output/156x210/dds/`.
+- Every workflow now saves game-ready **156×210 DXT5 DDS (no mipmaps)** via
+  the `Hoi4SaveDDS` node, with an optional uncompressed profile.
+- Advanced sampler card renamed its sampler control to **sampling algorithm**
+  and documents every control with tooltips.
+- Removed the nine identity comparison workflows, PuLID/InsightFace/RES4LYF/
+  Enhancer/Composite dependencies, and their docs.
+- Installers detect VRAM and suggest the distilled variant: **GGUF** 8–16 GB,
+  **FP8** 16–20 GB, **full** 24+ GB. Multiple variants and GGUF
+  quantizations are multi-select; RunPod defaults to full distilled.
+- The Windows release executable is now a full installer wizard (VRAM
+  detection, variant and quantization checkboxes, ComfyUI discovery, and
+  automated install) instead of a bare unpacker.
+- Added `apply_variant.py` to switch installed workflows between full/FP8/GGUF
+  (with ready-made copies for multiple variants) and `ComfyUI-GGUF` support.
+- Documented exact storage and VRAM requirements per install (full ≈ 30 GB
+  download / ~40 GB free; FP8 ≈ 21 GB / ~28 GB free; GGUF ≈ 18–22 GB /
+  ~25 GB free).
+
 ## 2.6.1 — 2026-08-05
 
 - Fixed the PuLID runtime installation by pinning compatible ONNX and

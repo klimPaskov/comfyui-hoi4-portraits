@@ -5,7 +5,7 @@
       "image": "source_portrait.jpg"
     },
     "_meta": {
-      "title": "Load source portrait"
+      "title": "Load source portrait — upload or pick your photo here"
     }
   },
   "9": {
@@ -205,14 +205,50 @@
       "title": "Fit portrait to the 1024 x 1365 work canvas"
     }
   },
+  "10": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview crop + ESRGAN only — before FLUX restoration"
+    }
+  },
+  "501": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview original source"
+    }
+  },
+  "502": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "7",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview ESRGAN upscale"
+    }
+  },
   "1": {
     "class_type": "UNETLoader",
     "inputs": {
-      "unet_name": "flux-2-klein-base-9b-fp8.safetensors",
+      "unet_name": "flux-2-klein-9b.safetensors",
       "weight_dtype": "default"
     },
     "_meta": {
-      "title": "Load FLUX.2 Klein 9B base"
+      "title": "Load FLUX.2 Klein 9B distilled"
     }
   },
   "2": {
@@ -242,7 +278,7 @@
         "1",
         0
       ],
-      "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
+      "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
       "strength_model": 1.0
     },
     "_meta": {
@@ -263,6 +299,20 @@
       "title": "Apply Adonis restoration LoKr — strength editable here"
     }
   },
+  "192": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "adonis_post.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Load Adonis Post restoration LoKr"
+    }
+  },
   "20": {
     "class_type": "CLIPTextEncode",
     "inputs": {
@@ -270,10 +320,10 @@
         "2",
         0
       ],
-      "text": "uhdmanscale, restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, blur, and lost fine detail. Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
+      "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. Output as professional high resolution color camera RAW image."
     },
     "_meta": {
-      "title": "Conservative restoration instructions"
+      "title": "Adonis Base restoration instructions"
     }
   },
   "21": {
@@ -286,7 +336,7 @@
       "text": ""
     },
     "_meta": {
-      "title": "Conservative restoration negative"
+      "title": "Adonis Base restoration negative"
     }
   },
   "22": {
@@ -302,7 +352,7 @@
       ]
     },
     "_meta": {
-      "title": "Encode conservative restoration reference"
+      "title": "Encode adonis base restoration reference"
     }
   },
   "23": {
@@ -350,139 +400,191 @@
       ]
     },
     "_meta": {
-      "title": "Decode conservative restoration result"
-    }
-  },
-  "34": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "31",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center"
-    },
-    "_meta": {
-      "title": "Normalize conservative restoration to exact 1024 x 1365"
+      "title": "Decode adonis base restoration result"
     }
   },
   "35": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "32",
+        "31",
         0
       ]
     },
     "_meta": {
-      "title": "Preview selected processed portrait"
+      "title": "Preview Adonis Base restoration"
     }
   },
-  "1300": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "23",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Conservative restoration guidance"
-    }
-  },
-  "1301": {
-    "class_type": "CFGGuider",
+  "30": {
+    "class_type": "Hoi4PortraitSampler",
     "inputs": {
       "model": [
         "191",
         0
       ],
       "positive": [
-        "1300",
+        "23",
         0
       ],
       "negative": [
         "24",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Conservative restoration CFG"
-    }
-  },
-  "1302": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 17
-    },
-    "_meta": {
-      "title": "Conservative restoration seed"
-    }
-  },
-  "1303": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "euler"
-    },
-    "_meta": {
-      "title": "Conservative restoration sampler"
-    }
-  },
-  "1304": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
-      "steps": 6,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Conservative restoration steps and resolution"
-    }
-  },
-  "1305": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "1304",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Conservative restoration denoise"
-    }
-  },
-  "30": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "1302",
-        0
-      ],
-      "guider": [
-        "1301",
-        0
-      ],
-      "sampler": [
-        "1303",
-        0
-      ],
-      "sigmas": [
-        "1305",
-        1
-      ],
       "latent_image": [
         "22",
+        0
+      ],
+      "noise_seed": 17,
+      "steps": 4,
+      "cfg": 1.0,
+      "guidance": 1.0,
+      "sampling_algorithm": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "add_noise": "enable",
+      "start_at_step": 0,
+      "end_at_step": 10000,
+      "force_full_denoise": true
+    },
+    "_meta": {
+      "title": "Adonis Base restoration — sampler and generation controls"
+    }
+  },
+  "400": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. Output as professional high resolution color camera RAW image."
+    },
+    "_meta": {
+      "title": "Adonis Post restoration instructions"
+    }
+  },
+  "401": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Adonis Post restoration negative"
+    }
+  },
+  "402": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "31",
+        0
+      ],
+      "vae": [
+        "3",
         0
       ]
     },
     "_meta": {
-      "title": "Sample conservative restoration"
+      "title": "Encode adonis post restoration reference"
+    }
+  },
+  "403": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "400",
+        0
+      ],
+      "latent": [
+        "402",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Attach reference to positive conditioning"
+    }
+  },
+  "404": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "401",
+        0
+      ],
+      "latent": [
+        "402",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Attach reference to negative conditioning"
+    }
+  },
+  "411": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "410",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode adonis post restoration result"
+    }
+  },
+  "415": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "411",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview Adonis Post restoration"
+    }
+  },
+  "410": {
+    "class_type": "Hoi4PortraitSampler",
+    "inputs": {
+      "model": [
+        "192",
+        0
+      ],
+      "positive": [
+        "403",
+        0
+      ],
+      "negative": [
+        "404",
+        0
+      ],
+      "latent_image": [
+        "402",
+        0
+      ],
+      "noise_seed": 17,
+      "steps": 4,
+      "cfg": 1.0,
+      "guidance": 1.0,
+      "sampling_algorithm": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "add_noise": "enable",
+      "start_at_step": 0,
+      "end_at_step": 10000,
+      "force_full_denoise": true
+    },
+    "_meta": {
+      "title": "Adonis Post restoration — sampler and generation controls"
     }
   },
   "32": {
@@ -494,7 +596,7 @@
         0
       ],
       "on_true": [
-        "34",
+        "411",
         0
       ]
     },
@@ -509,7 +611,7 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing."
+      "text": "make this portrait hoi4_portrait style"
     },
     "_meta": {
       "title": "Editable candidate 1 prompt — edits affect only candidate 1"
@@ -592,136 +694,51 @@
       "title": "Decode candidate 1 identity lora result"
     }
   },
-  "54": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "51",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center"
-    },
-    "_meta": {
-      "title": "Normalize candidate 1 identity lora to exact 1024 x 1365"
-    }
-  },
   "55": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "54",
+        "51",
         0
       ]
     },
     "_meta": {
-      "title": "Preview candidate 1 identity lora result"
+      "title": "Preview candidate 1 identity lora result (live while sampling)"
     }
   },
-  "1500": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "43",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA guidance"
-    }
-  },
-  "1501": {
-    "class_type": "CFGGuider",
+  "50": {
+    "class_type": "Hoi4PortraitSampler",
     "inputs": {
       "model": [
         "4",
         0
       ],
       "positive": [
-        "1500",
+        "43",
         0
       ],
       "negative": [
         "44",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA CFG"
-    }
-  },
-  "1502": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 42
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA seed"
-    }
-  },
-  "1503": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "euler"
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA sampler"
-    }
-  },
-  "1504": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
-      "steps": 6,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA steps and resolution"
-    }
-  },
-  "1505": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "1504",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 1 identity LoRA denoise"
-    }
-  },
-  "50": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "1502",
-        0
-      ],
-      "guider": [
-        "1501",
-        0
-      ],
-      "sampler": [
-        "1503",
-        0
-      ],
-      "sigmas": [
-        "1505",
-        1
-      ],
       "latent_image": [
         "42",
         0
-      ]
+      ],
+      "noise_seed": 42,
+      "steps": 4,
+      "cfg": 1.0,
+      "guidance": 1.0,
+      "sampling_algorithm": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "add_noise": "enable",
+      "start_at_step": 0,
+      "end_at_step": 10000,
+      "force_full_denoise": true
     },
     "_meta": {
-      "title": "Sample candidate 1 identity lora"
+      "title": "Candidate 1 identity LoRA — sampler and generation controls"
     }
   },
   "60": {
@@ -731,7 +748,7 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing."
+      "text": "make this portrait hoi4_portrait style"
     },
     "_meta": {
       "title": "Editable candidate 2 prompt — edits affect only candidate 2"
@@ -814,136 +831,51 @@
       "title": "Decode candidate 2 identity lora result"
     }
   },
-  "74": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "71",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center"
-    },
-    "_meta": {
-      "title": "Normalize candidate 2 identity lora to exact 1024 x 1365"
-    }
-  },
   "75": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "74",
+        "71",
         0
       ]
     },
     "_meta": {
-      "title": "Preview candidate 2 identity lora result"
+      "title": "Preview candidate 2 identity lora result (live while sampling)"
     }
   },
-  "1700": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "63",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA guidance"
-    }
-  },
-  "1701": {
-    "class_type": "CFGGuider",
+  "70": {
+    "class_type": "Hoi4PortraitSampler",
     "inputs": {
       "model": [
         "4",
         0
       ],
       "positive": [
-        "1700",
+        "63",
         0
       ],
       "negative": [
         "64",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA CFG"
-    }
-  },
-  "1702": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 43
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA seed"
-    }
-  },
-  "1703": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "res_2s"
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA sampler"
-    }
-  },
-  "1704": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
-      "steps": 4,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA steps and resolution"
-    }
-  },
-  "1705": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "1704",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 2 identity LoRA denoise"
-    }
-  },
-  "70": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "1702",
-        0
-      ],
-      "guider": [
-        "1701",
-        0
-      ],
-      "sampler": [
-        "1703",
-        0
-      ],
-      "sigmas": [
-        "1705",
-        1
-      ],
       "latent_image": [
         "62",
         0
-      ]
+      ],
+      "noise_seed": 43,
+      "steps": 4,
+      "cfg": 1.0,
+      "guidance": 1.0,
+      "sampling_algorithm": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "add_noise": "enable",
+      "start_at_step": 0,
+      "end_at_step": 10000,
+      "force_full_denoise": true
     },
     "_meta": {
-      "title": "Sample candidate 2 identity lora"
+      "title": "Candidate 2 identity LoRA — sampler and generation controls"
     }
   },
   "80": {
@@ -953,7 +885,7 @@
         "2",
         0
       ],
-      "text": "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, including every object they are holding or wearing."
+      "text": "make this portrait hoi4_portrait style"
     },
     "_meta": {
       "title": "Editable candidate 3 prompt — edits affect only candidate 3"
@@ -1036,136 +968,51 @@
       "title": "Decode candidate 3 identity lora result"
     }
   },
-  "94": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "91",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center"
-    },
-    "_meta": {
-      "title": "Normalize candidate 3 identity lora to exact 1024 x 1365"
-    }
-  },
   "95": {
     "class_type": "PreviewImage",
     "inputs": {
       "images": [
-        "94",
+        "91",
         0
       ]
     },
     "_meta": {
-      "title": "Preview candidate 3 identity lora result"
+      "title": "Preview candidate 3 identity lora result (live while sampling)"
     }
   },
-  "1900": {
-    "class_type": "FluxGuidance",
-    "inputs": {
-      "conditioning": [
-        "83",
-        0
-      ],
-      "guidance": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA guidance"
-    }
-  },
-  "1901": {
-    "class_type": "CFGGuider",
+  "90": {
+    "class_type": "Hoi4PortraitSampler",
     "inputs": {
       "model": [
         "4",
         0
       ],
       "positive": [
-        "1900",
+        "83",
         0
       ],
       "negative": [
         "84",
         0
       ],
-      "cfg": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA CFG"
-    }
-  },
-  "1902": {
-    "class_type": "RandomNoise",
-    "inputs": {
-      "noise_seed": 44
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA seed"
-    }
-  },
-  "1903": {
-    "class_type": "KSamplerSelect",
-    "inputs": {
-      "sampler_name": "res_2m"
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA sampler"
-    }
-  },
-  "1904": {
-    "class_type": "Flux2Scheduler",
-    "inputs": {
-      "steps": 8,
-      "width": 1024,
-      "height": 1365
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA steps and resolution"
-    }
-  },
-  "1905": {
-    "class_type": "SplitSigmasDenoise",
-    "inputs": {
-      "sigmas": [
-        "1904",
-        0
-      ],
-      "denoise": 1.0
-    },
-    "_meta": {
-      "title": "Candidate 3 identity LoRA denoise"
-    }
-  },
-  "90": {
-    "class_type": "SamplerCustomAdvanced",
-    "inputs": {
-      "noise": [
-        "1902",
-        0
-      ],
-      "guider": [
-        "1901",
-        0
-      ],
-      "sampler": [
-        "1903",
-        0
-      ],
-      "sigmas": [
-        "1905",
-        1
-      ],
       "latent_image": [
         "82",
         0
-      ]
+      ],
+      "noise_seed": 44,
+      "steps": 4,
+      "cfg": 1.0,
+      "guidance": 1.0,
+      "sampling_algorithm": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "add_noise": "enable",
+      "start_at_step": 0,
+      "end_at_step": 10000,
+      "force_full_denoise": true
     },
     "_meta": {
-      "title": "Sample candidate 3 identity lora"
+      "title": "Candidate 3 identity LoRA — sampler and generation controls"
     }
   },
   "119": {
@@ -1219,7 +1066,7 @@
         0
       ],
       "image": [
-        "54",
+        "51",
         0
       ]
     },
@@ -1235,7 +1082,7 @@
         0
       ],
       "source": [
-        "54",
+        "51",
         0
       ],
       "x": 0,
@@ -1258,7 +1105,7 @@
         0
       ],
       "on_false": [
-        "54",
+        "51",
         0
       ],
       "on_true": [
@@ -1277,7 +1124,7 @@
         "125",
         0
       ],
-      "filename_prefix": "hoi4_portraits/candidate_1_master"
+      "filename_prefix": "1024x1365/candidate_1"
     },
     "_meta": {
       "title": "Save candidate 1 1024 x 1365 master PNG"
@@ -1306,10 +1153,39 @@
         "128",
         0
       ],
-      "filename_prefix": "hoi4_portraits/candidate_1_portrait_156x210"
+      "filename_prefix": "156x210/candidate_1"
     },
     "_meta": {
       "title": "Save candidate 1 game-size PNG"
+    }
+  },
+  "132": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "128",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 624,
+      "height": 840,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Enlarge candidate 1 game preview for clarity (does not change saved files)"
+    }
+  },
+  "131": {
+    "class_type": "Hoi4SaveDDS",
+    "inputs": {
+      "images": [
+        "128",
+        0
+      ],
+      "filename_prefix": "156x210/dds/candidate_1"
+    },
+    "_meta": {
+      "title": "Save candidate 1 HOI4-ready DDS"
     }
   },
   "133": {
@@ -1320,7 +1196,7 @@
         0
       ],
       "image": [
-        "74",
+        "71",
         0
       ]
     },
@@ -1336,7 +1212,7 @@
         0
       ],
       "source": [
-        "74",
+        "71",
         0
       ],
       "x": 0,
@@ -1359,7 +1235,7 @@
         0
       ],
       "on_false": [
-        "74",
+        "71",
         0
       ],
       "on_true": [
@@ -1378,7 +1254,7 @@
         "135",
         0
       ],
-      "filename_prefix": "hoi4_portraits/candidate_2_master"
+      "filename_prefix": "1024x1365/candidate_2"
     },
     "_meta": {
       "title": "Save candidate 2 1024 x 1365 master PNG"
@@ -1407,10 +1283,39 @@
         "138",
         0
       ],
-      "filename_prefix": "hoi4_portraits/candidate_2_portrait_156x210"
+      "filename_prefix": "156x210/candidate_2"
     },
     "_meta": {
       "title": "Save candidate 2 game-size PNG"
+    }
+  },
+  "142": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "138",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 624,
+      "height": 840,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Enlarge candidate 2 game preview for clarity (does not change saved files)"
+    }
+  },
+  "141": {
+    "class_type": "Hoi4SaveDDS",
+    "inputs": {
+      "images": [
+        "138",
+        0
+      ],
+      "filename_prefix": "156x210/dds/candidate_2"
+    },
+    "_meta": {
+      "title": "Save candidate 2 HOI4-ready DDS"
     }
   },
   "143": {
@@ -1421,7 +1326,7 @@
         0
       ],
       "image": [
-        "94",
+        "91",
         0
       ]
     },
@@ -1437,7 +1342,7 @@
         0
       ],
       "source": [
-        "94",
+        "91",
         0
       ],
       "x": 0,
@@ -1460,7 +1365,7 @@
         0
       ],
       "on_false": [
-        "94",
+        "91",
         0
       ],
       "on_true": [
@@ -1479,7 +1384,7 @@
         "145",
         0
       ],
-      "filename_prefix": "hoi4_portraits/candidate_3_master"
+      "filename_prefix": "1024x1365/candidate_3"
     },
     "_meta": {
       "title": "Save candidate 3 1024 x 1365 master PNG"
@@ -1508,10 +1413,99 @@
         "148",
         0
       ],
-      "filename_prefix": "hoi4_portraits/candidate_3_portrait_156x210"
+      "filename_prefix": "156x210/candidate_3"
     },
     "_meta": {
       "title": "Save candidate 3 game-size PNG"
+    }
+  },
+  "152": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "148",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 624,
+      "height": 840,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Enlarge candidate 3 game preview for clarity (does not change saved files)"
+    }
+  },
+  "151": {
+    "class_type": "Hoi4SaveDDS",
+    "inputs": {
+      "images": [
+        "148",
+        0
+      ],
+      "filename_prefix": "156x210/dds/candidate_3"
+    },
+    "_meta": {
+      "title": "Save candidate 3 HOI4-ready DDS"
+    }
+  },
+  "600": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview ESRGAN restored source (before LoRA)"
+    }
+  },
+  "601": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "32",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Preview FLUX.2 restoration pass (Adonis)"
+    }
+  },
+  "602": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "132",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Final portrait candidate 1 — 156 x 210 (game size)"
+    }
+  },
+  "603": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "142",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Final portrait candidate 2 — 156 x 210 (game size)"
+    }
+  },
+  "604": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "152",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Final portrait candidate 3 — 156 x 210 (game size)"
     }
   }
 }

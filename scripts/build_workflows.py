@@ -15,61 +15,64 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_DIR = ROOT / "workflows"
 
-BASE_MODEL = "flux-2-klein-base-9b-fp8.safetensors"
+BASE_MODEL = "flux-2-klein-9b.safetensors"
+FP8_MODEL = "flux-2-klein-9b-fp8.safetensors"
+GGUF_MODEL = "flux-2-klein-9b-Q5_K_M.gguf"
 TEXT_ENCODER = "qwen_3_8b_fp8mixed.safetensors"
 VAE_MODEL = "flux2-vae.safetensors"
-STYLE_LORA = "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors"
-STYLE_LORA_CHECKPOINTS = tuple(
-    f"hoi4_portrait_flux2_klein_9b_lora_{step:09d}.safetensors"
-    for step in (750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000)
-)
+STYLE_LORA = "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors"
+STYLE_LORA_CHECKPOINTS = (STYLE_LORA,)
 RESTORATION_LOKR = "adonis_base.safetensors"
-DX_CONSISTENCY_LORA = "Flux2-Klein-9B-consistency-V2.safetensors"
-LCS_CONSISTENCY_LORA = "f2k_9B_lcs_consist_20260415.safetensors"
-SAMEFACE_LORA = "Flux2Klein9BSameFaceR64.safetensors"
-REFCONTROL_LINEART_LORA = "flux2_klein_9b_refcontrol_lineart.safetensors"
-PULID_MODEL = "pulid_flux2_klein_v2.safetensors"
+RESTORATION_POST_LOKR = "adonis_post.safetensors"
 STYLE_LORA_STRENGTH = 1.0
 SOURCE_STYLE_DENOISE = 1.0
-DEFAULT_STEPS = 6
+DEFAULT_STEPS = 4
 DEFAULT_CFG = 1.0
 DEFAULT_GUIDANCE = 1.0
 CANVAS_WIDTH = 1024
 CANVAS_HEIGHT = 1365
 GAME_WIDTH = 156
 GAME_HEIGHT = 210
-WORKFLOW_SCHEMA_VERSION = "2.6.1"
+WORKFLOW_SCHEMA_VERSION = "3.0.0"
 # Keep a visible breathing space between cards in the editor.  ComfyUI can
 # render widget-heavy nodes taller than the compact dimensions stored in a
 # workflow, so the editor layout uses a larger guard than the JSON validator's
 # old 24 px minimum.
-UI_LAYOUT_PADDING = 80
-STAGE_PREVIEW_SIZE = (420, 520)
-FINAL_PREVIEW_SIZE = (520, 620)
+UI_LAYOUT_PADDING = 150
+GROUP_LAYOUT_GAP = 140
+# Preview cards are deliberately larger than the default ComfyUI card.  The
+# editor uses the serialized node size as the initial render size; keeping the
+# same dimensions in every stage makes the three candidate lanes line up
+# instead of looking like a staircase of different cards.
+STAGE_PREVIEW_SIZE = (560, 700)
+FINAL_PREVIEW_SIZE = (620, 760)
+# Source and ESRGAN cards are deliberately smaller than the candidate cards so
+# the whole preparation stage stays compact; they still render clearly.
+SOURCE_PREVIEW_SIZE = (440, 540)
+# The game-size previews are upscaled purely for display so the 156x210
+# portrait can be compared clearly.  The saved PNG/DDS stay at exact 156x210.
+PREVIEW_BOOST_WIDTH = 624
+PREVIEW_BOOST_HEIGHT = 840
 SOURCE_CANDIDATE_COUNT = 3
 SOURCE_STYLE_SEEDS = (42, 43, 44)
-SOURCE_CANDIDATE_SAMPLING = (("euler", 6), ("res_2s", 4), ("res_2m", 8))
-IDENTITY_LOCK_PRESET = "MID_LOCK"
-IDENTITY_HARD_DOUBLE = "0-7:mid_img=0.55"
-IDENTITY_HARD_SINGLE = (
-    "0:mid_img=0.22; 1:mid_img=0.24; 3:mid_img=0.28; 4:mid_img=0.22; "
-    "6:mid_img=0.26; 7:mid_img=0.27; 8:mid_img=0.25; 10:mid_img=0.27; 13:mid_img=0.27"
-)
+SOURCE_CANDIDATE_SAMPLING = (("euler", DEFAULT_STEPS),) * SOURCE_CANDIDATE_COUNT
+# The preview card is taller than the sampler controls.  Leave a full card and
+# a safety gutter between candidate lanes so ComfyUI's widget auto-sizing
+# cannot make one lane touch the next one.
+SOURCE_CANDIDATE_ROW_GAP = 1800
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 FACE_DETECTION_MODEL = "mediapipe_face_fp32.safetensors"
 YUNET_MODEL = "face_detection_yunet_2023mar.onnx"
 
 MODEL_URLS = {
-    BASE_MODEL: "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8/resolve/9ecf2143d71542449960c5584340269c6d401449/flux-2-klein-base-9b-fp8.safetensors",
+    BASE_MODEL: "https://huggingface.co/black-forest-labs/FLUX.2-klein-9B/resolve/92196c8e11f7b6cf2b7493e037d8c5345c559216/flux-2-klein-9b.safetensors",
+    FP8_MODEL: "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/902d9d510b51533e07729f19211414a3648b77d2/flux-2-klein-9b-fp8.safetensors",
+    GGUF_MODEL: "https://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q5_K_M.gguf",
     TEXT_ENCODER: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
     VAE_MODEL: "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors",
     RESTORATION_LOKR: "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors",
-    DX_CONSISTENCY_LORA: "https://huggingface.co/dx8152/Flux2-Klein-9B-Consistency/resolve/8df0c7338cf68cfcd89ca7e461fe679905634607/Flux2-Klein-9B-consistency-V2.safetensors",
-    LCS_CONSISTENCY_LORA: "https://huggingface.co/lrzjason/Consistance_Edit_Lora/resolve/825b73f9952186f807acb44f05dec4ec5044f394/f2k_9B_lcs_consist_20260415.safetensors",
-    SAMEFACE_LORA: "https://huggingface.co/rphmeier/Flux2Klein9B-SameFaceLora/resolve/94ee6271f4d37fbcd6689b6469341aba6170d0b9/Flux2Klein9BSameFaceR64.safetensors",
-    REFCONTROL_LINEART_LORA: "https://huggingface.co/thedeoxen/refcontrol-FLUX.2-klein-9B-reference-lineart-lora/resolve/140f26de5b6006f6d455ecee417be774a1c054e8/flux2_klein_9b_refcontrol_lineart.safetensors",
-    PULID_MODEL: "https://huggingface.co/Fayens/Pulid-Flux2/resolve/550167db98d7169bfc83f9aa8225bd0da70f2d6b/pulid_flux2_klein_v2.safetensors",
+    RESTORATION_POST_LOKR: "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_post.safetensors",
     ESRGAN_MODEL: "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
     BACKGROUND_MODEL: "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
     FACE_DETECTION_MODEL: "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",
@@ -82,19 +85,137 @@ for checkpoint in STYLE_LORA_CHECKPOINTS:
     )
 
 RESTORATION_PROMPT = (
-    "uhdmanscale, restore this historical head-and-shoulders portrait conservatively. Repair scratches, fading, compression, blur, and lost fine detail. "
-    "Preserve the person's exact identity, facial geometry, expression, hairstyle, clothing, pose, camera angle, and crop. "
-    "Keep period-authentic texture. For monochrome or sepia material, restore plausible natural color. Do not stylize."
+    "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. "
+    "Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, "
+    "remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. "
+    "Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. "
+    "Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. "
+    "On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. "
+    "On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. "
+    "Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. "
+    "Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. "
+    "Output as professional high resolution color camera RAW image."
 )
 RESTORATION_NEGATIVE = ""
-STYLE_PROMPT = (
-    "hoi4_portrait, maintain the exact identity, facing direction, and expression of the person, "
-    "including every object they are holding or wearing."
-)
+STYLE_PROMPT = "make this portrait hoi4_portrait style"
 STYLE_NEGATIVE = ""
 TEXT_PROMPT = (
     "hoi4_portrait, an Irish middle-aged man with neatly combed dark hair, "
     "wearing a plain civilian jacket."
+)
+
+SETUP_GUIDE_NOTE = (
+    "📦 HOI4 PORTRAIT WORKFLOW — MODEL SETUP\n"
+    "\n"
+    "The bundled installer places every file below for you. If you install "
+    "manually, the workflow looks for these exact filenames:\n"
+    "\n"
+    "🖼️  FLUX.2 Klein 9B (distilled — never the base model)\n"
+    "    ComfyUI/models/diffusion_models/\n"
+    "    ├── flux-2-klein-9b.safetensors        · full BF16, 18.2 GB (24+ GB VRAM)\n"
+    "    ├── flux-2-klein-9b-fp8.safetensors    · FP8, 9.4 GB (16–20 GB VRAM)\n"
+    "    └── flux-2-klein-9b-Q5_K_M.gguf        · GGUF, 7.0 GB (8–16 GB VRAM)\n"
+    "\n"
+    "🧠  Qwen 3 8B text encoder\n"
+    "    ComfyUI/models/text_encoders/qwen_3_8b_fp8mixed.safetensors\n"
+    "\n"
+    "🎨  FLUX.2 VAE\n"
+    "    ComfyUI/models/vae/flux2-vae.safetensors\n"
+    "\n"
+    "🎭  HOI4 style LoRA — step 2500 (the tuned checkpoint)\n"
+    "    ComfyUI/models/loras/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n"
+    "\n"
+    "✨  Adonis restoration LoKrs (optional pass)\n"
+    "    ComfyUI/models/loras/adonis_base.safetensors\n"
+    "    ComfyUI/models/loras/adonis_post.safetensors\n"
+    "\n"
+    "🔍  Support models\n"
+    "    ComfyUI/models/upscale_models/RealESRGAN_x2plus.pth\n"
+    "    ComfyUI/models/background_removal/birefnet.safetensors\n"
+    "    ComfyUI/models/detection/face_detection_yunet_2023mar.onnx\n"
+    "\n"
+    "The GGUF and FP8 files are smaller variants of the same distilled model; "
+    "pick the one that fits your VRAM (the installer suggests one for you)."
+)
+
+SAMPLING_NOTE = (
+    "🎛️  SAMPLER CONTROLS — WHAT THEY DO\n"
+    "\n"
+    "Every generation node is one advanced sampler card. The tuned defaults "
+    "for this workflow are: CFG 1.0, guidance 1.0, 4 steps, Euler sampler, "
+    "simple scheduler, denoise 1.0.\n"
+    "\n"
+    "• Steps — how many denoising passes run. More steps = more detail but "
+    "slower generation. The style LoRA is trained for 4 steps; going much "
+    "higher mostly slows things down.\n"
+    "• CFG — how strongly the model follows your prompt. Higher values apply "
+    "the HOI4 style more sharply (try 2–3 if you want a stronger look).\n"
+    "• Guidance — FLUX.2's own prompt-following scale. Klein works best at "
+    "low values (default 1.0).\n"
+    "• Seed — the random source. Change it (or hit randomize) for a different "
+    "portrait from the same prompt.\n"
+    "• Sampling algorithm — the sampler itself. Euler is the tuned default; "
+    "advanced users can switch (e.g. euler_ancestral, dpmpp_2m).\n"
+    "• Scheduler — how denoise strength is scheduled across steps. Simple is "
+    "the FLUX.2 default.\n"
+    "\n"
+    "Sampling is LIVE: watch the portrait being constructed in the preview "
+    "cards while it runs."
+)
+
+RESTORATION_NOTE = (
+    "✨ WHY THE RESTORATION PASS IS WORTH KEEPING\n"
+    "\n"
+    "Old photos are often blurry, grainy, or sepia. RealESRGAN upscales them "
+    "first, then the optional Adonis pass (Base → Post) rebuilds skin, hair "
+    "and eye detail and restores natural colour.\n"
+    "\n"
+    "The benefit: the HOI4 style LoRA no longer has to guess colours or "
+    "invent facial details — it can focus purely on the painted HOI4 look, "
+    "which gives cleaner, more consistent portraits.\n"
+    "\n"
+    "The red toggle is ON by default. Turn it OFF if you prefer the direct "
+    "ESRGAN result (for example a very clean modern photo that needs no "
+    "repair)."
+)
+
+PROMPTING_NOTE = (
+    "✍️  WHAT TO PROMPT\n"
+    "\n"
+    "Keep the default prompt exactly as-is:\n"
+    "    make this portrait hoi4_portrait style\n"
+    "\n"
+    "That short phrase already triggers the trained HOI4 look. You can safely "
+    "append a short description when the model needs help:\n"
+    "\n"
+    "• Ethnicity or skin colour — if the skin tone comes out wrong.\n"
+    "• Civilian / military / clerical clothing — if it helps the outfit.\n"
+    "• Age, hair, or facial hair — if the portrait drifts.\n"
+    "\n"
+    "Example:\n"
+    "    make this portrait hoi4_portrait style, a middle-aged Irish man "
+    "with dark hair, wearing a military uniform\n"
+    "\n"
+    "Don't describe the game, background, lighting, or rendering — the LoRA "
+    "handles those."
+)
+
+BATCH_NOTE = (
+    "🖼️  BATCH MODE\n"
+    "\n"
+    "Drop any number of source photos into:\n"
+    "    ComfyUI/input/hoi4_portraits_batch/\n"
+    "\n"
+    "then queue once. Every image is processed one by one through the same "
+    "crop, ESRGAN, optional restoration, and the single HOI4 sampler. Results "
+    "are saved to:\n"
+    "\n"
+    "    ComfyUI/output/1024x1365/     · full-res masters\n"
+    "    ComfyUI/output/156x210/       · game-size PNGs\n"
+    "    ComfyUI/output/156x210/dds/   · HOI4-ready DDS files\n"
+    "\n"
+    "The DDS files are 156x210 DXT5 with no mipmaps — drop them straight "
+    "into your mod's gfx/portraits folder."
 )
 
 
@@ -137,28 +258,33 @@ class Graph:
     metadata: dict[str, Any]
 
 
-@dataclass(frozen=True)
-class IdentityComparison:
-    key: str
-    label: str
-    method: str
-
-
-IDENTITY_COMPARISONS = (
-    IdentityComparison("native", "Native two-reference baseline", "native"),
-    IdentityComparison("feature_mid", "Feature transfer — MID_LOCK", "feature_mid"),
-    IdentityComparison("feature_hard", "Feature transfer — HARD_LOCK", "feature_hard"),
-    IdentityComparison("dx_consistency", "DX consistency LoRA V2", "dx_consistency"),
-    IdentityComparison("lcs_consistency", "LCS consistency LoRA", "lcs_consistency"),
-    IdentityComparison("sameface", "SameFace LoRA", "sameface"),
-    IdentityComparison("refcontrol_lineart", "RefControl lineart", "refcontrol_lineart"),
-    IdentityComparison("pulid", "PuLID Flux2 v2", "pulid"),
-    IdentityComparison("composite", "Klein edit composite", "composite"),
-)
-
-
 def _model(name: str, directory: str) -> list[dict[str, str]]:
     return [{"name": name, "url": MODEL_URLS[name], "directory": directory}]
+
+
+def _note(
+    node_id: int,
+    title: str,
+    text: str,
+    group: str,
+    pos: tuple[int, int],
+    *,
+    size: tuple[int, int] = (760, 520),
+) -> Node:
+    """Create a frontend-only explanatory Note card.
+
+    The ComfyUI editor renders ``Note`` nodes client-side, so they never enter
+    the API graph and are skipped by ``_api_json``.
+    """
+    return _node(
+        node_id,
+        "Note",
+        title,
+        group,
+        pos,
+        size=size,
+        widgets=[text],
+    )
 
 
 def _node(
@@ -198,7 +324,7 @@ def _model_nodes(*, include_lora: bool = True, include_restoration_lokr: bool = 
         _node(
             1,
             "UNETLoader",
-            "Load FLUX.2 Klein 9B base",
+            "Load FLUX.2 Klein 9B distilled",
             group,
             (1120, 120),
             inputs={"unet_name": BASE_MODEL, "weight_dtype": "default"},
@@ -269,6 +395,22 @@ def _model_nodes(*, include_lora: bool = True, include_restoration_lokr: bool = 
                 models=_model(RESTORATION_LOKR, "loras"),
             )
         )
+        nodes.append(
+            _node(
+                192,
+                "LoraLoaderModelOnly",
+                "Load Adonis Post restoration LoKr",
+                group,
+                (1120, 1030 if include_lora else 850),
+                size=(300, 130),
+                inputs={"model": Link(1), "lora_name": RESTORATION_POST_LOKR, "strength_model": 1.0},
+                input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
+                outputs=["MODEL"],
+                output_types=["MODEL"],
+                widgets=[RESTORATION_POST_LOKR, 1.0],
+                models=_model(RESTORATION_POST_LOKR, "loras"),
+            )
+        )
     return nodes
 
 
@@ -278,10 +420,10 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
         _node(
             5,
             "LoadImage",
-            "Load source portrait",
+            "Load source portrait — upload or pick your photo here",
             group,
             (100, 120),
-            size=(360, 310),
+            size=(460, 420),
             inputs={"image": "source_portrait.jpg"},
             input_types={"image": "COMBO"},
             outputs=["IMAGE", "MASK"],
@@ -503,11 +645,39 @@ def _source_nodes(*, include_processed_preview: bool = True) -> list[Node]:
             _node(
                 10,
                 "PreviewImage",
-                "Confirm head-and-shoulders processing before FLUX",
+                "Preview crop + ESRGAN only — before FLUX restoration",
                 group,
-                (520, 1980),
-                size=STAGE_PREVIEW_SIZE,
+                (1180, 1500),
+                size=SOURCE_PREVIEW_SIZE,
                 inputs={"images": Link(8)},
+                input_types={"images": "IMAGE"},
+                outputs=["IMAGE"],
+                output_types=["IMAGE"],
+            )
+        )
+        nodes.append(
+            _node(
+                501,
+                "PreviewImage",
+                "Preview original source",
+                group,
+                (1180, 120),
+                size=SOURCE_PREVIEW_SIZE,
+                inputs={"images": Link(5)},
+                input_types={"images": "IMAGE"},
+                outputs=["IMAGE"],
+                output_types=["IMAGE"],
+            )
+        )
+        nodes.append(
+            _node(
+                502,
+                "PreviewImage",
+                "Preview ESRGAN upscale",
+                group,
+                (1180, 810),
+                size=SOURCE_PREVIEW_SIZE,
+                inputs={"images": Link(7)},
                 input_types={"images": "IMAGE"},
                 outputs=["IMAGE"],
                 output_types=["IMAGE"],
@@ -533,106 +703,53 @@ def _sampling_nodes(
     denoise: float,
     title_prefix: str,
 ) -> list[Node]:
-    control_id = 1000 + sampler_id * 10
-    control_x = x + 850
-    option_x = x + 1140
-    sample_x = x + 1430
+    # One advanced card keeps the graph readable while still exposing the
+    # underlying ComfyUI sampler, scheduler and partial-step controls.
     return [
         _node(
-            control_id,
-            "FluxGuidance",
-            f"{title_prefix} guidance",
-            group,
-            (control_x, y),
-            size=(260, 100),
-            inputs={"conditioning": positive, "guidance": DEFAULT_GUIDANCE},
-            input_types={"conditioning": "CONDITIONING", "guidance": "FLOAT"},
-            outputs=["CONDITIONING"],
-            output_types=["CONDITIONING"],
-            widgets=[DEFAULT_GUIDANCE],
-        ),
-        _node(
-            control_id + 1,
-            "CFGGuider",
-            f"{title_prefix} CFG",
-            group,
-            (control_x, y + 160),
-            size=(260, 160),
-            inputs={"model": model, "positive": Link(control_id), "negative": negative, "cfg": DEFAULT_CFG},
-            input_types={"model": "MODEL", "positive": "CONDITIONING", "negative": "CONDITIONING", "cfg": "FLOAT"},
-            outputs=["GUIDER"],
-            output_types=["GUIDER"],
-            widgets=[DEFAULT_CFG],
-        ),
-        _node(
-            control_id + 2,
-            "RandomNoise",
-            f"{title_prefix} seed",
-            group,
-            (option_x, y),
-            size=(260, 100),
-            inputs={"noise_seed": seed},
-            input_types={"noise_seed": "INT"},
-            outputs=["NOISE"],
-            output_types=["NOISE"],
-            widgets=[seed, seed_mode],
-        ),
-        _node(
-            control_id + 3,
-            "KSamplerSelect",
-            f"{title_prefix} sampler",
-            group,
-            (option_x, y + 160),
-            size=(260, 100),
-            inputs={"sampler_name": sampler_name},
-            input_types={"sampler_name": "COMBO"},
-            outputs=["SAMPLER"],
-            output_types=["SAMPLER"],
-            widgets=[sampler_name],
-        ),
-        _node(
-            control_id + 4,
-            "Flux2Scheduler",
-            f"{title_prefix} steps and resolution",
-            group,
-            (option_x, y + 320),
-            size=(260, 150),
-            inputs={"steps": steps, "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT},
-            input_types={"steps": "INT", "width": "INT", "height": "INT"},
-            outputs=["SIGMAS"],
-            output_types=["SIGMAS"],
-            widgets=[steps, CANVAS_WIDTH, CANVAS_HEIGHT],
-        ),
-        _node(
-            control_id + 5,
-            "SplitSigmasDenoise",
-            f"{title_prefix} denoise",
-            group,
-            (option_x, y + 510),
-            size=(260, 100),
-            inputs={"sigmas": Link(control_id + 4), "denoise": denoise},
-            input_types={"sigmas": "SIGMAS", "denoise": "FLOAT"},
-            outputs=["high_sigmas", "low_sigmas"],
-            output_types=["SIGMAS", "SIGMAS"],
-            widgets=[denoise],
-        ),
-        _node(
             sampler_id,
-            "SamplerCustomAdvanced",
-            f"Sample {title_prefix.lower()}",
+            "Hoi4PortraitSampler",
+            f"{title_prefix} — sampler and generation controls",
             group,
-            (sample_x, y + 240),
-            size=(320, 190),
+            (x + 1000, y + 150),
+            size=(520, 420),
             inputs={
-                "noise": Link(control_id + 2),
-                "guider": Link(control_id + 1),
-                "sampler": Link(control_id + 3),
-                "sigmas": Link(control_id + 5, 1),
+                "model": model,
+                "positive": positive,
+                "negative": negative,
                 "latent_image": latent,
+                "noise_seed": seed,
+                "steps": steps,
+                "cfg": DEFAULT_CFG,
+                "guidance": DEFAULT_GUIDANCE,
+                "sampling_algorithm": sampler_name,
+                "scheduler": "simple",
+                "denoise": denoise,
+                "add_noise": "enable",
+                "start_at_step": 0,
+                "end_at_step": 10000,
+                "force_full_denoise": True,
             },
-            input_types={"noise": "NOISE", "guider": "GUIDER", "sampler": "SAMPLER", "sigmas": "SIGMAS", "latent_image": "LATENT"},
-            outputs=["output", "denoised_output"],
-            output_types=["LATENT", "LATENT"],
+            input_types={
+                "model": "MODEL",
+                "positive": "CONDITIONING",
+                "negative": "CONDITIONING",
+                "latent_image": "LATENT",
+                "noise_seed": "INT",
+                "steps": "INT",
+                "cfg": "FLOAT",
+                "guidance": "FLOAT",
+                "sampling_algorithm": "COMBO",
+                "scheduler": "COMBO",
+                "denoise": "FLOAT",
+                "add_noise": "COMBO",
+                "start_at_step": "INT",
+                "end_at_step": "INT",
+                "force_full_denoise": "BOOLEAN",
+            },
+            outputs=["samples"],
+            output_types=["LATENT"],
+            widgets=[seed, steps, DEFAULT_CFG, DEFAULT_GUIDANCE, sampler_name, "simple", denoise, "enable", 0, 10000, True],
         ),
     ]
 
@@ -780,32 +897,13 @@ def _edit_stage(
             output_types=["IMAGE"],
         ),
         _node(
-            i + 14,
-            "ImageScale",
-            f"Normalize {title_prefix.lower()} to exact {CANVAS_WIDTH} x {CANVAS_HEIGHT}",
-            group,
-            (x + 1430, y + 660),
-            size=(340, 150),
-            inputs={
-                "image": Link(i + 11),
-                "upscale_method": "lanczos",
-                "width": CANVAS_WIDTH,
-                "height": CANVAS_HEIGHT,
-                "crop": "center",
-            },
-            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
-            outputs=["IMAGE"],
-            output_types=["IMAGE"],
-            widgets=["lanczos", CANVAS_WIDTH, CANVAS_HEIGHT, "center"],
-        ),
-        _node(
             i + 15,
             "PreviewImage",
-            f"Preview {title_prefix.lower()} result",
+            f"Preview {title_prefix.lower()} result (live while sampling)",
             group,
-            (x + 1430, y + 850),
-            size=STAGE_PREVIEW_SIZE,
-            inputs={"images": Link(i + 14)},
+            (x + 1430, y + 680),
+            size=(560, 680),
+            inputs={"images": Link(i + 11)},
             input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
@@ -858,7 +956,7 @@ def _edit_stage(
                 ),
             ]
         )
-    return nodes, Link(i + 14)
+    return nodes, Link(i + 11)
 
 
 def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
@@ -914,26 +1012,13 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             output_types=["IMAGE"],
         ),
         _node(
-            30,
-            "ImageScale",
-            f"Normalize final portrait to exact {CANVAS_WIDTH} x {CANVAS_HEIGHT}",
-            group,
-            (x + 1430, 660),
-            size=(340, 150),
-            inputs={"image": Link(28), "upscale_method": "lanczos", "width": CANVAS_WIDTH, "height": CANVAS_HEIGHT, "crop": "center"},
-            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
-            outputs=["IMAGE"],
-            output_types=["IMAGE"],
-            widgets=["lanczos", CANVAS_WIDTH, CANVAS_HEIGHT, "center"],
-        ),
-        _node(
             29,
             "PreviewImage",
-            "Preview generated portrait before background replacement",
+            "Preview generated portrait (live while sampling)",
             group,
-            (x + 1430, 850),
-            size=STAGE_PREVIEW_SIZE,
-            inputs={"images": Link(30)},
+            (x + 1430, 680),
+            size=(560, 680),
+            inputs={"images": Link(28)},
             input_types={"images": "IMAGE"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
@@ -957,13 +1042,13 @@ def _text_stage(*, group: str, x: int) -> tuple[list[Node], Link]:
             title_prefix="HOI4 portrait",
         )
     )
-    return nodes, Link(30)
+    return nodes, Link(28)
 
 
 def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
     background_group = "05 Optional background - after generation"
     output_group = "06 Preview and save"
-    return [
+    nodes = [
         _node(
             60,
             "LoadImage",
@@ -1041,28 +1126,16 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             widgets=[False],
         ),
         _node(
-            70,
-            "PreviewImage",
-            "Preview final portrait",
-            output_group,
-            (x + 1380, 120),
-            size=FINAL_PREVIEW_SIZE,
-            inputs={"images": Link(66)},
-            input_types={"images": "IMAGE"},
-            outputs=["IMAGE"],
-            output_types=["IMAGE"],
-        ),
-        _node(
             71,
             "SaveImage",
             f"Save {CANVAS_WIDTH} x {CANVAS_HEIGHT} master PNG",
             output_group,
             (x + 1880, 120),
-            inputs={"images": Link(66), "filename_prefix": "hoi4_portraits/master"},
+            inputs={"images": Link(66), "filename_prefix": "1024x1365/portrait"},
             input_types={"images": "IMAGE", "filename_prefix": "STRING"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["hoi4_portraits/master"],
+            widgets=["1024x1365/portrait"],
         ),
         _node(
             72,
@@ -1083,13 +1156,46 @@ def _background_and_outputs(*, final_image: Link, x: int = 5200) -> list[Node]:
             "Save game-size portrait PNG",
             output_group,
             (x + 1880, 540),
-            inputs={"images": Link(72), "filename_prefix": "hoi4_portraits/portrait_156x210"},
+            inputs={"images": Link(72), "filename_prefix": "156x210/portrait"},
             input_types={"images": "IMAGE", "filename_prefix": "STRING"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["hoi4_portraits/portrait_156x210"],
+            widgets=["156x210/portrait"],
+        ),
+        _node(
+            74,
+            "Hoi4SaveDDS",
+            "Save HOI4-ready 156 x 210 DDS",
+            output_group,
+            (x + 1880, 760),
+            size=(360, 150),
+            inputs={"images": Link(72), "filename_prefix": "156x210/dds/portrait"},
+            input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["156x210/dds/portrait"],
+        ),
+        _node(
+            75,
+            "ImageScale",
+            "Enlarge game preview for clarity (does not change saved files)",
+            output_group,
+            (x + 1380, 320),
+            size=(340, 150),
+            inputs={
+                "image": Link(72),
+                "upscale_method": "lanczos",
+                "width": PREVIEW_BOOST_WIDTH,
+                "height": PREVIEW_BOOST_HEIGHT,
+                "crop": "disabled",
+            },
+            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["lanczos", PREVIEW_BOOST_WIDTH, PREVIEW_BOOST_HEIGHT, "disabled"],
         ),
     ]
+    return nodes, Link(75)
 
 
 def _background_and_outputs_multi(
@@ -1163,7 +1269,10 @@ def _background_and_outputs_multi(
     ]
     for index, final_image in enumerate(final_images, start=1):
         branch = id_start + 3 + (index - 1) * 10
-        row_y = 900 + (index - 1) * 760
+        # Match the LoRA candidate lane spacing exactly.  Keeping each
+        # candidate's background/output card on the same repeated row makes
+        # the whole right-hand half of the canvas visually symmetrical.
+        row_y = 1050 + (index - 1) * SOURCE_CANDIDATE_ROW_GAP
         label = f"candidate {index}"
         prefix = f"hoi4_portraits/candidate_{index}"
         nodes.extend(
@@ -1218,11 +1327,11 @@ def _background_and_outputs_multi(
                     f"Save {label} {CANVAS_WIDTH} x {CANVAS_HEIGHT} master PNG",
                     output_group,
                     (x + 1880, row_y),
-                    inputs={"images": Link(branch + 2), "filename_prefix": f"{prefix}_master"},
+                    inputs={"images": Link(branch + 2), "filename_prefix": f"1024x1365/candidate_{index}"},
                     input_types={"images": "IMAGE", "filename_prefix": "STRING"},
                     outputs=["IMAGE"],
                     output_types=["IMAGE"],
-                    widgets=[f"{prefix}_master"],
+                    widgets=[f"1024x1365/candidate_{index}"],
                 ),
                 _node(
                     branch + 5,
@@ -1243,43 +1352,64 @@ def _background_and_outputs_multi(
                     f"Save {label} game-size PNG",
                     output_group,
                     (x + 1880, row_y + 420),
-                    inputs={"images": Link(branch + 5), "filename_prefix": f"{prefix}_portrait_156x210"},
+                    inputs={"images": Link(branch + 5), "filename_prefix": f"156x210/candidate_{index}"},
                     input_types={"images": "IMAGE", "filename_prefix": "STRING"},
                     outputs=["IMAGE"],
                     output_types=["IMAGE"],
-                    widgets=[f"{prefix}_portrait_156x210"],
+                    widgets=[f"156x210/candidate_{index}"],
+                ),
+                _node(
+                    branch + 9,
+                    "ImageScale",
+                    f"Enlarge {label} game preview for clarity (does not change saved files)",
+                    output_group,
+                    (x + 2420, row_y),
+                    size=(340, 150),
+                    inputs={
+                        "image": Link(branch + 5),
+                        "upscale_method": "lanczos",
+                        "width": PREVIEW_BOOST_WIDTH,
+                        "height": PREVIEW_BOOST_HEIGHT,
+                        "crop": "disabled",
+                    },
+                    input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+                    outputs=["IMAGE"],
+                    output_types=["IMAGE"],
+                    widgets=["lanczos", PREVIEW_BOOST_WIDTH, PREVIEW_BOOST_HEIGHT, "disabled"],
+                ),
+                _node(
+                    branch + 8,
+                    "Hoi4SaveDDS",
+                    f"Save {label} HOI4-ready DDS",
+                    output_group,
+                    (x + 1880, row_y + 650),
+                    size=(360, 150),
+                    inputs={"images": Link(branch + 5), "filename_prefix": f"156x210/dds/candidate_{index}"},
+                    input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+                    outputs=["IMAGE"],
+                    output_types=["IMAGE"],
+                    widgets=[f"156x210/dds/candidate_{index}"],
                 ),
             ]
         )
-    return nodes
+    preview_links = [Link(id_start + 3 + (index - 1) * 10 + 9) for index in range(1, len(final_images) + 1)]
+    return nodes, preview_links
 
 
 def _processing_outputs(*, processed_image: Link) -> list[Node]:
     output_group = "04 Processed portrait output"
-    return [
-        _node(
-            70,
-            "PreviewImage",
-            "Preview processed portrait",
-            output_group,
-            (3900, 120),
-            size=FINAL_PREVIEW_SIZE,
-            inputs={"images": processed_image},
-            input_types={"images": "IMAGE"},
-            outputs=["IMAGE"],
-            output_types=["IMAGE"],
-        ),
+    nodes = [
         _node(
             71,
             "SaveImage",
             f"Save {CANVAS_WIDTH} x {CANVAS_HEIGHT} processed PNG",
             output_group,
             (4500, 120),
-            inputs={"images": processed_image, "filename_prefix": "hoi4_portraits/processed_master"},
+            inputs={"images": processed_image, "filename_prefix": "1024x1365/processed"},
             input_types={"images": "IMAGE", "filename_prefix": "STRING"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["hoi4_portraits/processed_master"],
+            widgets=["1024x1365/processed"],
         ),
         _node(
             72,
@@ -1300,13 +1430,46 @@ def _processing_outputs(*, processed_image: Link) -> list[Node]:
             "Save processed game-size PNG",
             output_group,
             (4500, 540),
-            inputs={"images": Link(72), "filename_prefix": "hoi4_portraits/processed_156x210"},
+            inputs={"images": Link(72), "filename_prefix": "156x210/processed"},
             input_types={"images": "IMAGE", "filename_prefix": "STRING"},
             outputs=["IMAGE"],
             output_types=["IMAGE"],
-            widgets=["hoi4_portraits/processed_156x210"],
+            widgets=["156x210/processed"],
+        ),
+        _node(
+            74,
+            "Hoi4SaveDDS",
+            "Save processed HOI4-ready DDS",
+            output_group,
+            (4500, 760),
+            size=(360, 150),
+            inputs={"images": Link(72), "filename_prefix": "156x210/dds/processed"},
+            input_types={"images": "IMAGE", "filename_prefix": "STRING"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["156x210/dds/processed"],
+        ),
+        _node(
+            75,
+            "ImageScale",
+            "Enlarge processed preview for clarity (does not change saved files)",
+            output_group,
+            (3900, 120),
+            size=(340, 150),
+            inputs={
+                "image": Link(72),
+                "upscale_method": "lanczos",
+                "width": PREVIEW_BOOST_WIDTH,
+                "height": PREVIEW_BOOST_HEIGHT,
+                "crop": "disabled",
+            },
+            input_types={"image": "IMAGE", "upscale_method": "COMBO", "width": "INT", "height": "INT", "crop": "COMBO"},
+            outputs=["IMAGE"],
+            output_types=["IMAGE"],
+            widgets=["lanczos", PREVIEW_BOOST_WIDTH, PREVIEW_BOOST_HEIGHT, "disabled"],
         ),
     ]
+    return nodes, Link(75)
 
 
 def _groups(
@@ -1316,311 +1479,190 @@ def _groups(
     candidate_count: int = 1,
     background_x: int | None = None,
 ) -> list[Group]:
-    groups: list[Group] = []
+    groups: list[Group] = [Group("00 Welcome & setup", (40, 40, 840, 980), "#6b7280")]
     if has_source:
-        groups.append(Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"))
-    groups.append(Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 980), "#3f789e"))
+        groups.append(Group("01 Source and ESRGAN", (980, 40, 1180, 2200), "#557a46"))
+    groups.append(Group("02 FLUX.2 Klein 9B models", (2300, 40, 430, 1100), "#3f789e"))
     if has_restoration:
-        groups.append(Group("03 Optional FLUX.2 restoration", (1500, 40, 1800, 980), "#8b6f47"))
-        style_height = 2700 if candidate_count > 1 else 980
-        groups.append(Group("04 HOI4 LoRA styling", (3800, 40, 2400, style_height), "#7a568e"))
+        groups.append(Group("03 Optional FLUX.2 restoration", (2830, 40, 2100, 1100), "#8b6f47"))
+        style_height = 6200 if candidate_count > 1 else 3600
+        groups.append(Group("04 HOI4 LoRA styling", (5200, 40, 3600, style_height), "#7a568e"))
     else:
-        groups.append(Group("04 HOI4 LoRA styling", (1500, 40, 1800, 980), "#7a568e"))
+        groups.append(Group("04 HOI4 LoRA styling", (2830, 40, 2200, 3600), "#7a568e"))
     if background_x is None:
-        background_x = 6400 if has_restoration else 4000
-    output_height = 3040 if candidate_count > 1 else 720
+        background_x = 9400 if has_restoration else 5600
+    output_height = 3040 if candidate_count > 1 else 1120
     groups.append(Group("05 Optional background - after generation", (background_x - 80, 40, 1300, output_height), "#8d5b5b"))
-    groups.append(Group("06 Preview and save", (background_x + 1300, 40, 1100, output_height), "#596b82"))
+    groups.append(Group("06 Preview and save", (background_x + 1300, 40, 1200, output_height), "#596b82"))
     return groups
 
 
 def _processing_groups() -> list[Group]:
     return [
-        Group("01 Source and ESRGAN", (40, 40, 930, 2150), "#557a46"),
-        Group("02 FLUX.2 Klein 9B models", (1040, 40, 430, 980), "#3f789e"),
-        Group("03 Optional FLUX.2 restoration", (1500, 40, 2200, 980), "#8b6f47"),
-        Group("04 Processed portrait output", (3800, 40, 1200, 900), "#596b82"),
+        Group("00 Welcome & setup", (40, 40, 860, 2600), "#6b7280"),
+        Group("01 Source and ESRGAN", (980, 40, 1180, 2200), "#557a46"),
+        Group("02 FLUX.2 Klein 9B models", (2300, 40, 430, 1100), "#3f789e"),
+        Group("03 Optional FLUX.2 restoration", (2830, 40, 2100, 1100), "#8b6f47"),
+        Group("04 Processed portrait output", (5200, 40, 2200, 1800), "#596b82"),
     ]
 
 
-def _feature_transfer_node(*, preset: str, with_mask: bool) -> list[Node]:
-    effective_preset = "custom" if with_mask else preset
-    similarity_floor = 0.04 if preset == "HARD_LOCK" else 0.2
-    softmax_temperature = 0.025 if preset == "HARD_LOCK" else 0.07
-    inputs: dict[str, Any] = {
-        "model": Link(4),
-        "preset": effective_preset,
-        "enabled": True,
-        "reference_index": 0,
-        "reference_indices": "all",
-        "similarity_floor": similarity_floor,
-        "softmax_temperature": softmax_temperature,
-        "mask_threshold": 0.35 if with_mask else 1.0,
-        "double_blocks": IDENTITY_HARD_DOUBLE,
-        "single_blocks": IDENTITY_HARD_SINGLE,
-        "debug": False,
-        "mask_behavior": "focus_only",
-    }
-    input_types = {
-        "model": "MODEL",
-        "preset": "COMBO",
-        "enabled": "BOOLEAN",
-        "reference_index": "INT",
-        "reference_indices": "STRING",
-        "similarity_floor": "FLOAT",
-        "softmax_temperature": "FLOAT",
-        "mask_threshold": "FLOAT",
-        "double_blocks": "STRING",
-        "single_blocks": "STRING",
-        "debug": "BOOLEAN",
-        "mask_behavior": "COMBO",
-    }
-    nodes: list[Node] = []
-    if with_mask:
-        nodes.append(
-            _node(
-                192,
-                "PortraitIdentityMask",
-                "Face-and-head mask for reference feature transfer",
-                "02 FLUX.2 Klein 9B models",
-                (1100, 1480),
-                size=(340, 120),
-                inputs={"image": Link(18)},
-                input_types={"image": "IMAGE"},
-                outputs=["identity_mask"],
-                output_types=["MASK"],
-            )
-        )
-        inputs.update({"subject_mask_1": Link(192), "subject_mask_2": Link(192)})
-        input_types.update({"subject_mask_1": "MASK", "subject_mask_2": "MASK"})
-    nodes.insert(
-        0,
-        _node(
-            190,
-            "IdentityFeatureTransferFinal",
-            f"Source identity feature transfer — {preset}",
-            "02 FLUX.2 Klein 9B models",
-            (1100, 1000),
-            size=(340, 430),
-            inputs=inputs,
-            input_types=input_types,
-            outputs=["MODEL"],
-            output_types=["MODEL"],
-            widgets=[
-                effective_preset,
-                True,
-                0,
-                "all",
-                similarity_floor,
-                softmax_temperature,
-                0.35 if with_mask else 1.0,
-                IDENTITY_HARD_DOUBLE,
-                IDENTITY_HARD_SINGLE,
-                False,
-                "focus_only",
-            ],
-        ),
-    )
-    return nodes
+def _adonis_restoration_stages(*, image: Link, seed: int = 17) -> tuple[list[Node], Link]:
+    """Build the Adonis Base -> Adonis Post sequence from the model guide."""
 
-
-def _identity_comparison_setup(
-    method: str,
-) -> tuple[list[Node], Link, tuple[Link, Link] | None, bool, str]:
-    if method == "source":
-        return [], Link(4), None, False, STYLE_PROMPT
-    if method == "native":
-        return [], Link(4), (Link(18), Link(32)), False, STYLE_PROMPT
-    if method in {"feature_mid", "feature_hard"}:
-        preset = "MID_LOCK" if method == "feature_mid" else "HARD_LOCK"
-        return _feature_transfer_node(preset=preset, with_mask=True), Link(190), (Link(18), Link(32)), False, STYLE_PROMPT
-    consistency = {
-        "dx_consistency": (DX_CONSISTENCY_LORA, 0.4, "DX consistency LoRA V2"),
-        "lcs_consistency": (LCS_CONSISTENCY_LORA, 0.5, "LCS consistency LoRA"),
-        "sameface": (SAMEFACE_LORA, 1.0, "SameFace identity LoRA"),
-        "refcontrol_lineart": (REFCONTROL_LINEART_LORA, 0.8, "RefControl lineart LoRA"),
-    }
-    if method in consistency:
-        filename, strength, title = consistency[method]
-        nodes = [
-            _node(
-                190,
-                "LoraLoaderModelOnly",
-                f"Apply {title} — strength editable here",
-                "02 FLUX.2 Klein 9B models",
-                (1100, 1000),
-                size=(340, 130),
-                inputs={"model": Link(4), "lora_name": filename, "strength_model": strength},
-                input_types={"model": "MODEL", "lora_name": "COMBO", "strength_model": "FLOAT"},
-                outputs=["MODEL"],
-                output_types=["MODEL"],
-                widgets=[filename, strength],
-                models=_model(filename, "loras"),
-            )
-        ]
-        references = (Link(18), Link(32))
-        prompt = STYLE_PROMPT
-        if method == "refcontrol_lineart":
-            nodes.append(
-                _node(
-                    192,
-                    "Canny",
-                    "Create first RefControl lineart reference",
-                    "02 FLUX.2 Klein 9B models",
-                    (1100, 1180),
-                    size=(340, 150),
-                    inputs={"image": Link(18), "low_threshold": 0.4, "high_threshold": 0.8},
-                    input_types={"image": "IMAGE", "low_threshold": "FLOAT", "high_threshold": "FLOAT"},
-                    outputs=["IMAGE"],
-                    output_types=["IMAGE"],
-                    widgets=[0.4, 0.8],
-                )
-            )
-            references = (Link(192), Link(32))
-            prompt = STYLE_PROMPT.replace("hoi4_portrait,", "hoi4_portrait, refcontrol,", 1)
-        return nodes, Link(190), references, False, prompt
-    if method == "pulid":
-        nodes = [
-            _node(
-                190,
-                "PuLIDModelLoader",
-                "Load PuLID Flux2 Klein v2",
-                "02 FLUX.2 Klein 9B models",
-                (1100, 1000),
-                size=(340, 120),
-                inputs={"pulid_file": PULID_MODEL},
-                input_types={"pulid_file": "COMBO"},
-                outputs=["PULID_MODEL"],
-                output_types=["PULID_MODEL"],
-                widgets=[PULID_MODEL],
-                models=_model(PULID_MODEL, "pulid"),
-            ),
-            _node(
-                192,
-                "PuLIDEVACLIPLoader",
-                "Load PuLID EVA-CLIP",
-                "02 FLUX.2 Klein 9B models",
-                (1100, 1170),
-                size=(340, 100),
-                outputs=["EVA_CLIP"],
-                output_types=["EVA_CLIP"],
-            ),
-            _node(
-                193,
-                "PuLIDInsightFaceLoader",
-                "Load PuLID InsightFace on CUDA",
-                "02 FLUX.2 Klein 9B models",
-                (1100, 1320),
-                size=(340, 110),
-                inputs={"provider": "CUDA"},
-                input_types={"provider": "COMBO"},
-                outputs=["INSIGHTFACE"],
-                output_types=["INSIGHTFACE"],
-                widgets=["CUDA"],
-            ),
-            _node(
-                194,
-                "ApplyPuLIDFlux2",
-                "Apply PuLID identity — strength editable here",
-                "02 FLUX.2 Klein 9B models",
-                (1100, 1480),
-                size=(340, 330),
-                inputs={
-                    "model": Link(4),
-                    "pulid_model": Link(190),
-                    "strength": 1.4,
-                    "eva_clip": Link(192),
-                    "face_analysis": Link(193),
-                    "image": Link(18),
-                    "face_index": 0,
-                    "debug_mode": False,
-                },
-                input_types={
-                    "model": "MODEL",
-                    "pulid_model": "PULID_MODEL",
-                    "strength": "FLOAT",
-                    "eva_clip": "EVA_CLIP",
-                    "face_analysis": "INSIGHTFACE",
-                    "image": "IMAGE",
-                    "face_index": "INT",
-                    "debug_mode": "BOOLEAN",
-                },
-                outputs=["MODEL"],
-                output_types=["MODEL"],
-                widgets=[1.4, 0, False],
-            ),
-        ]
-        return nodes, Link(194), (Link(18), Link(32)), False, STYLE_PROMPT
-    if method == "composite":
-        return [], Link(4), (Link(18), Link(32)), False, STYLE_PROMPT
-    raise ValueError(f"unsupported identity comparison method: {method}")
-
-
-def _klein_composite_node(*, node_id: int, generated: Link, y: int, candidate: int) -> Node:
-    return _node(
-        node_id,
-        "KleinEditComposite",
-        f"Composite candidate {candidate} identity details",
-        "04 HOI4 LoRA styling",
-        (5780, y),
-        size=(340, 620),
-        inputs={
-            "generated_image": generated,
-            "original_image": Link(18),
-            "delta_e_threshold": -1.0,
-            "flow_quality": "medium",
-            "use_occlusion": False,
-            "occlusion_threshold": -1.0,
-            "noise_removal_pct": 0.3,
-            "close_radius_pct": 0.5,
-            "fill_holes": False,
-            "fill_borders": True,
-            "max_islands": 0,
-            "grow_mask_pct": 0.0,
-            "feather_pct": 2.0,
-            "color_match_blend": 0.0,
-            "poisson_blend_edges": False,
-        },
-        input_types={
-            "generated_image": "IMAGE",
-            "original_image": "IMAGE",
-            "delta_e_threshold": "FLOAT",
-            "flow_quality": "COMBO",
-            "use_occlusion": "BOOLEAN",
-            "occlusion_threshold": "FLOAT",
-            "noise_removal_pct": "FLOAT",
-            "close_radius_pct": "FLOAT",
-            "fill_holes": "BOOLEAN",
-            "fill_borders": "BOOLEAN",
-            "max_islands": "INT",
-            "grow_mask_pct": "FLOAT",
-            "feather_pct": "FLOAT",
-            "color_match_blend": "FLOAT",
-            "poisson_blend_edges": "BOOLEAN",
-        },
-        outputs=["IMAGE", "MASK", "STRING", "IMAGE"],
-        output_types=["IMAGE", "MASK", "STRING", "IMAGE"],
-        widgets=[-1.0, "medium", False, -1.0, 0.3, 0.5, False, True, 0, 0.0, 2.0, 0.0, False],
-    )
-
-
-def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
-    method = comparison.method if comparison else "source"
-    nodes = _source_nodes(include_processed_preview=False) + _model_nodes()
-    identity_nodes, style_model, reference_images, double_reference, style_prompt = _identity_comparison_setup(method)
-    nodes.extend(identity_nodes)
-    restoration_nodes, restored = _edit_stage(
+    base_nodes, base_output = _edit_stage(
         id_start=20,
         group="03 Optional FLUX.2 restoration",
         x=1540,
-        image=Link(8),
+        image=image,
         model=Link(191),
         prompt=RESTORATION_PROMPT,
         negative=RESTORATION_NEGATIVE,
-        seed=17,
-        title_prefix="Conservative restoration",
+        seed=seed,
+        title_prefix="Adonis Base restoration",
         seed_mode="fixed",
     )
+    post_nodes, post_output = _edit_stage(
+        id_start=400,
+        group="03 Optional FLUX.2 restoration",
+        x=3300,
+        image=base_output,
+        model=Link(192),
+        prompt=RESTORATION_PROMPT,
+        negative=RESTORATION_NEGATIVE,
+        seed=seed,
+        title_prefix="Adonis Post restoration",
+        seed_mode="fixed",
+    )
+    base_preview = next(node for node in base_nodes if node.node_id == 35)
+    base_preview.title = "Preview Adonis Base restoration"
+    post_preview = next(node for node in post_nodes if node.node_id == 415)
+    post_preview.title = "Preview Adonis Post restoration"
+    return base_nodes + post_nodes, post_output
+
+
+def _comparison_row(
+    *,
+    group: str,
+    x: int,
+    y: int,
+    esrgan: Link | None,
+    restored: Link | None,
+    finals: list[Link],
+    final_label: str = "candidate {index}",
+) -> list[Node]:
+    """A close comparison row: [ESRGAN] [restoration] [final 1] [final 2] [final 3].
+
+    The row sits below the generation cards so the source processing, the
+    optional restoration, and every final game-size result can be compared in
+    one glance.  The final previews show the upscaled-for-display game images
+    (the saved PNG/DDS stay exactly 156x210).
+    """
+    nodes: list[Node] = []
+    node_id = 600
+    gap = 60
+    if esrgan is not None:
+        nodes.append(
+            _node(
+                node_id,
+                "PreviewImage",
+                "Preview ESRGAN restored source (before LoRA)",
+                group,
+                (x, y),
+                size=FINAL_PREVIEW_SIZE,
+                inputs={"images": esrgan},
+                input_types={"images": "IMAGE"},
+                outputs=["IMAGE"],
+                output_types=["IMAGE"],
+            )
+        )
+        node_id += 1
+        x += FINAL_PREVIEW_SIZE[0] + gap
+    if restored is not None:
+        nodes.append(
+            _node(
+                node_id,
+                "PreviewImage",
+                "Preview FLUX.2 restoration pass (Adonis)",
+                group,
+                (x, y),
+                size=FINAL_PREVIEW_SIZE,
+                inputs={"images": restored},
+                input_types={"images": "IMAGE"},
+                outputs=["IMAGE"],
+                output_types=["IMAGE"],
+            )
+        )
+        node_id += 1
+        x += FINAL_PREVIEW_SIZE[0] + 180
+    for index, final in enumerate(finals, start=1):
+        nodes.append(
+            _node(
+                node_id,
+                "PreviewImage",
+                f"Final portrait {final_label.format(index=index)} — 156 x 210 (game size)",
+                group,
+                (x, y),
+                size=FINAL_PREVIEW_SIZE,
+                inputs={"images": final},
+                input_types={"images": "IMAGE"},
+                outputs=["IMAGE"],
+                output_types=["IMAGE"],
+            )
+        )
+        node_id += 1
+        x += FINAL_PREVIEW_SIZE[0] + gap
+    return nodes
+
+
+def _beginner_notes(*, with_restoration: bool) -> list[Node]:
+    """The beginner guide column plus the section note for restoration."""
+    nodes = [
+        _note(
+            800,
+            "📦 Setup guide — models and ComfyUI folders",
+            SETUP_GUIDE_NOTE,
+            "00 Welcome & setup",
+            (100, 100),
+            size=(860, 940),
+        ),
+        _note(
+            801,
+            "🎛️ Sampler controls — what steps and CFG do",
+            SAMPLING_NOTE,
+            "00 Welcome & setup",
+            (100, 1140),
+            size=(860, 660),
+        ),
+        _note(
+            802,
+            "✍️ Prompting guide",
+            PROMPTING_NOTE,
+            "00 Welcome & setup",
+            (100, 1900),
+            size=(860, 560),
+        ),
+    ]
+    if with_restoration:
+        nodes.append(
+            _note(
+                803,
+                "✨ Why the restoration pass is worth keeping",
+                RESTORATION_NOTE,
+                "03 Optional FLUX.2 restoration",
+                (5200, 120),
+                size=(840, 520),
+            )
+        )
+    return nodes
+
+
+def build_source() -> Graph:
+    # Show the crop + ESRGAN result before the optional FLUX pass.  This is
+    # intentionally present in the source workflow as well as the processing
+    # workflow, so a user can verify the input framing before any generation.
+    nodes = _source_nodes(include_processed_preview=True) + _model_nodes() + _beginner_notes(with_restoration=True)
+    restoration_nodes, restored = _adonis_restoration_stages(image=Link(8))
     nodes.extend(restoration_nodes)
     nodes.append(
         _node(
@@ -1628,8 +1670,8 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             "ComfySwitchNode",
             "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)",
             "03 Optional FLUX.2 restoration",
-            (2040, 680),
-            size=(330, 150),
+            (2450, 880),
+            size=(360, 150),
             inputs={"switch": True, "on_false": Link(8), "on_true": restored},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
             outputs=["output"],
@@ -1637,9 +1679,6 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             widgets=[True],
         )
     )
-    restoration_preview = next(node for node in nodes if node.node_id == 35)
-    restoration_preview.title = "Preview selected processed portrait"
-    restoration_preview.inputs["images"] = Link(32)
     styled_images: list[Link] = []
     if len(SOURCE_STYLE_SEEDS) != len(SOURCE_CANDIDATE_SAMPLING):
         raise ValueError("source seeds and sampling presets must have the same length")
@@ -1650,10 +1689,10 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             id_start=40 + (index - 1) * 20,
             group="04 HOI4 LoRA styling",
             x=3840,
-            y=100 + (index - 1) * 1450,
+            y=100 + (index - 1) * SOURCE_CANDIDATE_ROW_GAP,
             image=Link(32),
-            model=style_model,
-            prompt=style_prompt,
+            model=Link(4),
+            prompt=STYLE_PROMPT,
             negative=STYLE_NEGATIVE,
             seed=seed,
             title_prefix=f"Candidate {index} identity LoRA",
@@ -1661,53 +1700,39 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             prompt_node_title=f"Editable candidate {index} prompt — edits affect only candidate {index}",
             sampler_name=sampler_name,
             steps=steps,
-            double_reference=double_reference,
-            reference_images=reference_images,
-            start_from_empty=comparison is not None,
         )
-        if method == "composite":
-            composite_id = 200 + (index - 1) * 10
-            composite = _klein_composite_node(
-                node_id=composite_id,
-                generated=styled,
-                y=120 + (index - 1) * 1450,
-                candidate=index,
-            )
-            style_nodes.append(composite)
-            preview = next(node for node in style_nodes if node.node_id == 55 + (index - 1) * 20)
-            preview.title = f"Preview composited candidate {index}"
-            preview.inputs["images"] = Link(composite_id)
-            styled = Link(composite_id)
         nodes.extend(style_nodes)
         styled_images.append(styled)
-    # The optional composite comparison adds one tall card after each sample
-    # branch, so give that comparison its own extra column of breathing room.
-    background_x = 6800 if method == "composite" else 6400
-    nodes.extend(_background_and_outputs_multi(final_images=styled_images, x=background_x, id_start=120))
-    workflow_id = (
-        f"hoi4_portrait_flux2_klein_9b_source_identity_test_{comparison.key}"
-        if comparison
-        else "hoi4_portrait_flux2_klein_9b_source"
+    output_nodes, preview_links = _background_and_outputs_multi(
+        final_images=styled_images, x=6400, id_start=120
     )
-    identity_label = comparison.label if comparison else "Direct source reference"
+    nodes.extend(output_nodes)
+    # Portrait comparison row: ESRGAN source, restoration pass, then the three
+    # game-size finals side by side for a clear head-to-head.
+    nodes.extend(
+        _comparison_row(
+            group="04 HOI4 LoRA styling",
+            x=5840,
+            y=5400,
+            esrgan=Link(8),
+            restored=Link(32),
+            finals=preview_links,
+        )
+    )
     groups = _groups(
         has_source=True,
         has_restoration=True,
         candidate_count=SOURCE_CANDIDATE_COUNT,
-        background_x=background_x,
+        background_x=6400,
     )
     return Graph(
-        workflow_id=workflow_id,
-        description=(
-            f"Source portrait workflow using {identity_label}: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates."
-            if comparison
-            else "Source portrait workflow: RealESRGAN first, optional FLUX.2 Klein 9B restoration once, then three independent HOI4 LoRA portrait candidates from the processed source reference."
-        ),
+        workflow_id="hoi4_portrait_flux2_klein_9b_source",
+        description="Source portrait workflow: RealESRGAN first, optional Adonis Base and Post restoration, then three independent HOI4 LoRA portrait candidates from the processed source reference.",
         kind="image_to_image",
         nodes=nodes,
         groups=groups,
         metadata={
-            "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
+            "restoration_order": ["RealESRGAN_x2plus", "optional_adonis_base", "optional_adonis_post"],
             "flux_restoration_default": True,
             "face_processing_default": True,
             "face_processing_bypass": "whole_composition_center_crop_then_esrgan",
@@ -1716,43 +1741,19 @@ def build_source(*, comparison: IdentityComparison | None = None) -> Graph:
             "background_candidate_count": SOURCE_CANDIDATE_COUNT,
             "source_crop": "toggleable_adaptive_head_and_shoulders_zoom_0.90_adjustable_headwear_before_esrgan",
             "pose_preservation": "encoded_source_latent_is_sampler_start",
-            "identity_preservation": method,
-            "identity_comparison": comparison is not None,
-            "identity_comparison_label": identity_label,
-            "generation_start": "empty_edit_latent" if comparison else "encoded_processed_source",
+            "identity_preservation": "source_reference",
+            "generation_start": "encoded_processed_source",
             "background_order": "after_final_lora_styled_decode",
+            "comparison_row": ["esrgan", "flux_restoration", "final_1", "final_2", "final_3"],
         },
     )
 
 
 def build_processing() -> Graph:
-    nodes = _source_nodes(include_processed_preview=False) + _model_nodes(include_lora=False)
-    nodes.append(
-        _node(
-            19,
-            "PreviewImage",
-            "Preview crop + ESRGAN only (before optional FLUX restoration)",
-            "01 Source and ESRGAN",
-            (520, 1980),
-            size=STAGE_PREVIEW_SIZE,
-            inputs={"images": Link(8)},
-            input_types={"images": "IMAGE"},
-            outputs=["IMAGE"],
-            output_types=["IMAGE"],
-        )
-    )
-    restoration_nodes, restored = _edit_stage(
-        id_start=20,
-        group="03 Optional FLUX.2 restoration",
-        x=1540,
-        image=Link(8),
-        model=Link(191),
-        prompt=RESTORATION_PROMPT,
-        negative=RESTORATION_NEGATIVE,
-        seed=17,
-        title_prefix="Conservative restoration",
-        seed_mode="fixed",
-    )
+    nodes = _source_nodes(include_processed_preview=True) + _model_nodes(include_lora=False) + _beginner_notes(with_restoration=True)
+    processing_preview = next(node for node in nodes if node.node_id == 10)
+    processing_preview.title = "Preview crop + ESRGAN only — before FLUX restoration"
+    restoration_nodes, restored = _adonis_restoration_stages(image=Link(8))
     nodes.extend(restoration_nodes)
     nodes.append(
         _node(
@@ -1760,8 +1761,8 @@ def build_processing() -> Graph:
             "ComfySwitchNode",
             "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)",
             "03 Optional FLUX.2 restoration",
-            (2040, 680),
-            size=(330, 150),
+            (2450, 880),
+            size=(360, 150),
             inputs={"switch": True, "on_false": Link(8), "on_true": restored},
             input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
             outputs=["output"],
@@ -1769,34 +1770,56 @@ def build_processing() -> Graph:
             widgets=[True],
         )
     )
-    restoration_preview = next(node for node in nodes if node.node_id == 35)
-    restoration_preview.title = "Preview selected processed portrait"
-    restoration_preview.inputs["images"] = Link(32)
-    nodes.extend(_processing_outputs(processed_image=Link(32)))
+    output_nodes, processed_preview = _processing_outputs(processed_image=Link(32))
+    nodes.extend(output_nodes)
+    nodes.extend(
+        _comparison_row(
+            group="04 Processed portrait output",
+            x=5300,
+            y=1000,
+            esrgan=Link(8),
+            restored=Link(32),
+            finals=[processed_preview],
+            final_label="processed",
+        )
+    )
     return Graph(
         workflow_id="hoi4_portrait_processing_only",
-        description="Source processing workflow: adjustable crop, RealESRGAN, optional FLUX.2 Klein 9B restoration, and processed portrait outputs without LoRA styling.",
+        description="Source processing workflow: adjustable crop, RealESRGAN, optional Adonis Base and Post restoration, and processed portrait outputs without LoRA styling.",
         kind="image_processing",
         nodes=nodes,
         groups=_processing_groups(),
         metadata={
             "style_lora": None,
-            "restoration_order": ["RealESRGAN_x2plus", "optional_flux2_klein_9b"],
+            "restoration_order": ["RealESRGAN_x2plus", "optional_adonis_base", "optional_adonis_post"],
             "flux_restoration_default": True,
             "face_processing_default": True,
             "face_processing_bypass": "whole_composition_center_crop_then_esrgan",
             "source_crop": "toggleable_adaptive_head_and_shoulders_zoom_0.90_adjustable_headwear_before_esrgan",
             "background_order": "not_applicable_processing_only",
             "processing_preview": "crop_and_esrgan_before_flux_restoration",
+            "comparison_row": ["esrgan", "flux_restoration", "processed_final"],
         },
     )
 
 
 def build_text_to_image() -> Graph:
-    nodes = _model_nodes(include_restoration_lokr=False)
+    nodes = _model_nodes(include_restoration_lokr=False) + _beginner_notes(with_restoration=False)
     text_nodes, styled = _text_stage(group="04 HOI4 LoRA styling", x=1540)
     nodes.extend(text_nodes)
-    nodes.extend(_background_and_outputs(final_image=styled, x=4000))
+    output_nodes, final_preview = _background_and_outputs(final_image=styled, x=4000)
+    nodes.extend(output_nodes)
+    nodes.extend(
+        _comparison_row(
+            group="04 HOI4 LoRA styling",
+            x=3300,
+            y=900,
+            esrgan=None,
+            restored=None,
+            finals=[final_preview],
+            final_label="generated",
+        )
+    )
     groups = [group for group in _groups(has_source=False, has_restoration=False) if group.title != "01 Source and ESRGAN"]
     return Graph(
         workflow_id="hoi4_portrait_flux2_klein_9b_text_to_image",
@@ -1808,6 +1831,86 @@ def build_text_to_image() -> Graph:
             "restoration_order": [],
             "flux_restoration_default": False,
             "background_order": "after_final_lora_styled_decode",
+            "comparison_row": ["final_generated"],
+        },
+    )
+
+
+def build_batch() -> Graph:
+    """Process every image in input/hoi4_portraits_batch with one sampler."""
+
+    nodes = _source_nodes(include_processed_preview=True) + _model_nodes() + _beginner_notes(with_restoration=True)
+    batch_input = next(node for node in nodes if node.node_id == 5)
+    batch_input.class_type = "Hoi4BatchInput"
+    batch_input.title = "Load all portraits from input/hoi4_portraits_batch"
+    batch_input.size = (440, 180)
+    batch_input.inputs = {"input_folder": "hoi4_portraits_batch", "file_pattern": "*.png;*.jpg;*.jpeg;*.webp"}
+    batch_input.input_types = {"input_folder": "STRING", "file_pattern": "STRING"}
+    batch_input.outputs = ["images", "masks", "filenames"]
+    batch_input.output_types = ["IMAGE", "MASK", "STRING"]
+    batch_input.widgets = ["hoi4_portraits_batch", "*.png;*.jpg;*.jpeg;*.webp"]
+
+    restoration_nodes, restored = _adonis_restoration_stages(image=Link(8))
+    nodes.extend(restoration_nodes)
+    nodes.append(
+        _node(
+            32,
+            "ComfySwitchNode",
+            "Toggle FLUX restoration (on: Adonis Base then Post; off: ESRGAN only)",
+            "03 Optional FLUX.2 restoration",
+            (2450, 880),
+            size=(360, 150),
+            inputs={"switch": True, "on_false": Link(8), "on_true": restored},
+            input_types={"switch": "BOOLEAN", "on_false": "IMAGE", "on_true": "IMAGE"},
+            outputs=["output"],
+            output_types=["IMAGE"],
+            widgets=[True],
+        )
+    )
+    style_nodes, styled = _edit_stage(
+        id_start=40,
+        group="04 HOI4 LoRA styling",
+        x=5200,
+        image=Link(32),
+        model=Link(4),
+        prompt=STYLE_PROMPT,
+        negative=STYLE_NEGATIVE,
+        seed=42,
+        title_prefix="Batch HOI4 LoRA",
+        denoise=SOURCE_STYLE_DENOISE,
+        prompt_node_title="Editable batch prompt — applies independently to each input image",
+        sampler_name="euler",
+        steps=DEFAULT_STEPS,
+    )
+    nodes.extend(style_nodes)
+    output_nodes, final_preview = _background_and_outputs(final_image=styled, x=7000)
+    nodes.extend(output_nodes)
+    nodes.append(_note(805, "🖼️ Batch mode", BATCH_NOTE, "00 Welcome & setup", (100, 2560), size=(860, 600)))
+    nodes.extend(
+        _comparison_row(
+            group="04 HOI4 LoRA styling",
+            x=6800,
+            y=900,
+            esrgan=Link(8),
+            restored=Link(32),
+            finals=[final_preview],
+            final_label="batch",
+        )
+    )
+    return Graph(
+        workflow_id="hoi4_portrait_batch",
+        description="Batch portrait workflow: load a folder of source images, process each image, run one shared FLUX.2 Klein 9B sampler, and save PNG plus HOI4-ready DDS outputs.",
+        kind="batch_image_to_image",
+        nodes=nodes,
+        groups=_groups(has_source=True, has_restoration=True, candidate_count=1, background_x=7000),
+        metadata={
+            "restoration_order": ["RealESRGAN_x2plus", "optional_adonis_base", "optional_adonis_post"],
+            "flux_restoration_default": True,
+            "batch_input_folder": "input/hoi4_portraits_batch",
+            "batch_sampler_count": 1,
+            "output_folders": ["output/1024x1365", "output/156x210", "output/156x210/dds"],
+            "background_order": "after_final_lora_styled_decode",
+            "comparison_row": ["esrgan", "flux_restoration", "batch_final"],
         },
     )
 
@@ -1815,6 +1918,9 @@ def build_text_to_image() -> Graph:
 def _api_json(graph: Graph) -> dict[str, Any]:
     data: dict[str, Any] = {}
     for node in graph.nodes:
+        if node.class_type == "Note":
+            # Notes are frontend-only cards; they are not ComfyUI node classes.
+            continue
         inputs: dict[str, Any] = {}
         for name, value in node.inputs.items():
             inputs[name] = [str(value.node_id), value.slot] if isinstance(value, Link) else value
@@ -1866,6 +1972,24 @@ def _layout_positions(graph: Graph) -> dict[int, list[int]]:
                 positions[node.node_id][1] = desired_y
                 lane_y = desired_y + node.size[1] + UI_LAYOUT_PADDING
             lane_x += lane_width + horizontal_gap
+
+    # Pack the colored frames from left to right after the internal lanes have
+    # been normalized.  The hand-authored graph used to rely on guessed frame
+    # widths; a larger PreviewImage could therefore push into the next frame
+    # even when the node rectangles themselves were technically disjoint.
+    # Recomputing the frame origins from the actual node extents gives every
+    # stage the same 40 px inner margin and one explicit inter-frame gutter.
+    frame_cursor = 40
+    for group in graph.groups:
+        grouped = [node for node in graph.nodes if node.group == group.title]
+        if not grouped:
+            continue
+        left = min(positions[node.node_id][0] for node in grouped)
+        right = max(positions[node.node_id][0] + node.size[0] for node in grouped)
+        shift = frame_cursor + 40 - left
+        for node in grouped:
+            positions[node.node_id][0] += shift
+        frame_cursor += (right - left) + 80 + GROUP_LAYOUT_GAP
     return positions
 
 
@@ -1895,7 +2019,8 @@ def _ui_json(graph: Graph) -> dict[str, Any]:
         if not grouped_nodes:
             tightened_groups.append(group)
             continue
-        group_x, group_y, _, _ = group.bounding
+        group_x = min(layout_positions[node.node_id][0] for node in grouped_nodes) - 40
+        group_y = min(layout_positions[node.node_id][1] for node in grouped_nodes) - 40
         right = max(layout_positions[node.node_id][0] + node.size[0] for node in grouped_nodes) + 40
         bottom = max(layout_positions[node.node_id][1] + node.size[1] for node in grouped_nodes) + 40
         tightened_groups.append(
@@ -1991,12 +2116,7 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
 def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
     workflow_dir = root / "workflows"
     workflow_dir.mkdir(parents=True, exist_ok=True)
-    graphs = [
-        build_source(),
-        build_text_to_image(),
-        build_processing(),
-        *(build_source(comparison=comparison) for comparison in IDENTITY_COMPARISONS),
-    ]
+    graphs = [build_source(), build_text_to_image(), build_processing(), build_batch()]
     for stale in workflow_dir.glob("*.json"):
         stale.unlink()
     manifest_items: list[dict[str, Any]] = []
@@ -2021,6 +2141,7 @@ def build_all(root: Path = ROOT) -> list[dict[str, Any]]:
     manifest = {
         "schema_version": WORKFLOW_SCHEMA_VERSION,
         "base_model": BASE_MODEL,
+        "model_variants": {"full": BASE_MODEL, "fp8": FP8_MODEL, "gguf": GGUF_MODEL},
         "text_encoder": TEXT_ENCODER,
         "vae": VAE_MODEL,
         "style_lora": STYLE_LORA,

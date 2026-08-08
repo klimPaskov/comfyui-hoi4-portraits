@@ -29,10 +29,11 @@ def main(argv: list[str] | None = None) -> int:
     workflow_destination = comfy_root / "user" / "default" / "workflows" / "hoi4_portraits"
     installed = []
     for item in manifest["workflows"]:
-        source = ROOT / item["workflow_json"]
-        destination = workflow_destination / source.name
-        _copy(source, destination)
-        installed.append(str(destination))
+        for key in ("workflow_json", "api_json"):
+            source = ROOT / item[key]
+            destination = workflow_destination / source.name
+            _copy(source, destination)
+            installed.append(str(destination))
     for background in sorted((ROOT / "backgrounds").glob("*.png")):
         _copy(background, comfy_root / "input" / background.name)
     sample_source = ROOT / "source_portrait.jpg"

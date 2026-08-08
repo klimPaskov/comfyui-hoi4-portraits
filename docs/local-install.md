@@ -1,71 +1,70 @@
-# Local and RunPod installation
+# Local, RunPod, and Windows installation
 
 ## Requirements
 
 - ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
-- The 32 pinned model files occupy 28.20 GB decimal (26.27 GiB). PuLID also
-  prepares an 0.86 GB EVA-CLIP weight in the Hugging Face cache. A 32 GB
-  RunPod volume is the practical minimum for the complete checkpoint set;
-  keep generated outputs tidy while testing. The downloader writes directly to the ComfyUI
-  model folders and does not create a second model copy.
-- A 24 GB GPU is a sufficient practical target for the FP8 workflows with
-  normal offloading. An 18 GB GPU may work with more aggressive offloading and
-  a reduced test canvas; 16 GB can work similarly but is slow.
-  The upstream model card's roughly 29 GB figure is a conservative
-  full-resolution/no-offload guideline, not a hard minimum for this FP8 graph.
-- A Hugging Face account that has accepted the gated FLUX.2 Klein agreement.
+- A Hugging Face account that has accepted the gated distilled FLUX.2 Klein
+  agreement (only needed for the full and FP8 variants; GGUF is not gated).
+
+## Storage and VRAM requirements
+
+The installer downloads only the model variant you select plus the shared
+support files. **Shared support files** (Qwen 3 8B FP8 text encoder, FLUX.2
+VAE, the 2500-step LoRA, Adonis Base + Post, RealESRGAN, BiRefNet, and the two
+face detectors) total **11.8 GB**.
+
+| Install | Model file | Downloads | Total on disk* | Recommended VRAM |
+| --- | --- | --- | --- | --- |
+| Full distilled | `flux-2-klein-9b.safetensors` (18.2 GB) | 30.0 GB | ~40 GB free | 24+ GB |
+| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` (9.4 GB) | 21.2 GB | ~28 GB free | 16–20 GB |
+| GGUF Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` (5.9 GB) | 17.7 GB | ~24 GB free | 8–10 GB |
+| GGUF Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` (7.0 GB) | 18.8 GB | ~25 GB free | 10–14 GB |
+| GGUF Q6_K | `flux-2-klein-9b-Q6_K.gguf` (7.9 GB) | 19.7 GB | ~26 GB free | 12–16 GB |
+| GGUF Q8_0 | `flux-2-klein-9b-Q8_0.gguf` (10.0 GB) | 21.8 GB | ~28 GB free | 16+ GB |
+
+\* "Total on disk" is the download size plus a ~10 GB safety margin for
+ComfyUI itself, the Hugging Face cache, and a few generated outputs. The bare
+minimum for the **full** workflow is therefore about **35 GB free**; the
+**FP8** workflow about **25 GB free**; any **GGUF** workflow about
+**22–25 GB free**.
+
+VRAM guidance used by the installer wizard:
+
+- **8–16 GB** → GGUF (recommended quantization is auto-detected)
+- **16–20 GB** → FP8
+- **more than 20 GB** → full distilled
+
+The Qwen text encoder is 8.7 GB and is shared by every variant. ComfyUI
+offloads it to system RAM when VRAM is tight, so 8 GB GPUs work but are slow.
 
 ## Install into an existing ComfyUI
 
 ```bash
-python scripts/build_workflows.py
-python scripts/validate_workflows.py
 python scripts/install_workflows.py --comfyui-root /path/to/ComfyUI
-scripts/install_res4lyf.sh /path/to/ComfyUI
-scripts/install_flux2_klein_enhancer.sh /path/to/ComfyUI
-scripts/install_pulid_flux2.sh /path/to/ComfyUI /path/to/ComfyUI/python
-scripts/install_klein_edit_composite.sh /path/to/ComfyUI
-python scripts/download_models.py --comfyui-root /path/to/ComfyUI
+python scripts/apply_variant.py --comfyui-root /path/to/ComfyUI --variant fp8
+python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 ```
 
-The installer copies the three primary workflows and nine identity comparison
-workflows, installs their pinned extensions, and adds the bundled backgrounds
-and one sample source image. It does not replace the existing ComfyUI
-installation.
+`apply_variant.py` switches the installed workflows to the chosen distilled
+variant:
 
-The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest)
-also includes a model-free ZIP, a Windows x64 self-extractor, and the RunPod
-runtime archive. The executable only unpacks the project; ComfyUI and model
-weights remain separate.
+- `--variant full` → `UNETLoader` with `flux-2-klein-9b.safetensors`
+- `--variant fp8` → `UNETLoader` with `flux-2-klein-9b-fp8.safetensors`
+- `--variant gguf --gguf-quants Q5_K_M` → `UnetLoaderGGUF` with the selected
+  GGUF quantization (requires the [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF)
+  node pack, installed automatically by the installers)
 
-The downloader transfers independent model files in parallel, uses Hugging
-Face's accelerated resumable transport, and validates every downloaded model
-against the locked project metadata.
-
-## Hugging Face authentication
-
-Before downloading the gated base model:
-
-1. Open the [FLUX.2 Klein base 9B FP8 page](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B-fp8).
-2. Accept the model agreement.
-3. Create a [read-only Hugging Face token](https://huggingface.co/settings/tokens/new?tokenType=read).
-4. Run `hf auth login`, or set `HF_TOKEN` in the shell that runs the downloader.
-
-See the [Hugging Face guide](hugging-face.md) for local and RunPod setup. No
-token is written into this repository or a workflow.
+Pass `--variant` multiple times to prepare several variants; the first is
+applied to the four canonical workflows and the rest are emitted as
+ready-made `*_fp8.json` / `*_gguf.json` copies.
 
 ## RunPod
 
-On a RunPod image that already contains ComfyUI, the installer places the
-workflows in `user/default/workflows/hoi4_portraits`, installs the project nodes
-in `custom_nodes/hoi4_portraits`, installs the pinned RES4LYF
-samplers in `custom_nodes/RES4LYF`, installs identity preservation in
-`custom_nodes/ComfyUI-Flux2Klein-Enhancer`, installs PuLID and Klein edit
-compositing, copies the backgrounds and
-sample input into `input/`, and downloads every entry in `models.json` to
-the exact ComfyUI model folders (`diffusion_models`, `text_encoders`, `vae`,
-`loras`, `upscale_models`, and `background_removal`):
+On a RunPod image that already contains ComfyUI, the installer places the four
+workflows in `user/default/workflows/hoi4_portraits`, installs the project
+node pack (and ComfyUI-GGUF when GGUF is selected), copies backgrounds and a
+sample source into `input/`, and downloads the selected models:
 
 ```bash
 (
@@ -80,12 +79,16 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The final verification pass validates all 32 files. If a download is
-interrupted or a file was placed in the wrong folder,
-the installer stops instead of silently using it. `HF_TOKEN` is read only from
-the process environment and is never printed or saved. Confirm that
-`COMFY_ROOT` is the folder containing `main.py`; the `runpod-slim` template
-uses `/workspace/runpod-slim/ComfyUI`.
+The command defaults to the **full distilled** model. On a smaller GPU, pass
+the variant and quantization flags:
+
+```bash
+"$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q4_K_M,Q5_K_M
+```
+
+The final verification pass validates every downloaded file and the node pack.
+`HF_TOKEN` is read only from the process environment and is never printed or
+saved.
 
 Start ComfyUI after installation:
 
@@ -93,51 +96,51 @@ Start ComfyUI after installation:
 /workspace/hoi4-portrait-runpod/scripts/start_runpod.sh /workspace/runpod-slim/ComfyUI
 ```
 
-Startup validates ComfyUI's live node registry before it stays online. It
-stops with the exact missing node or sampler name if the installation did not
-load correctly.
-
-Supply `HF_TOKEN` to the pod environment before installation. The script does
-not print the token.
+Startup validates ComfyUI's live node registry and reports the exact missing
+node if something did not load.
 
 ## Windows
 
-From PowerShell:
+The release executable is a complete installer wizard, not just an unpacker:
+
+1. Run
+   `.\HOI4-Portrait-Workflows-3.0.0-windows-x64.exe`.
+2. It detects your GPU VRAM with `nvidia-smi` and pre-checks the recommended
+   variant (GGUF for 8–16 GB, FP8 for 16–20 GB, full distilled above 20 GB).
+3. Toggle any combination of variants — including all three, if you want every
+   distilled type available.
+4. If GGUF is selected, choose the quantization(s); the recommended one is
+   pre-checked (Q4_K_M ≤ 10 GB, Q5_K_M 10–14 GB, Q6_K 12–16 GB, Q8_0 16+ GB).
+5. It finds your ComfyUI (or you type its root) and runs the bundled
+   PowerShell installer, which installs the node packs, copies the workflows,
+   and downloads the selected models.
+
+The wizard works exactly like the RunPod command: after it finishes, restart
+ComfyUI and open **Workflows → hoi4_portraits**. Everything is ready out of
+the box.
+
+You can also run the installer script directly:
 
 ```powershell
-.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI"
+.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Variant fp8
 ```
 
-The release self-extractor accepts an empty destination directory:
-
-```powershell
-.\HOI4-Portrait-Workflows-2.6.1-windows-x64.exe -destination "C:\Users\you\Documents\HOI4-Portrait-Workflows-v2.6.1"
-```
-
-Use `-SkipModels` if the model files are already installed. Start with:
+Use `-Variant gguf -GgufQuants "Q5_K_M"` for GGUF, repeat `-Variant` for
+multiple variants, and pass `-SkipModels` if the model files are already
+installed. Start ComfyUI with:
 
 ```powershell
 .\scripts\start_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI"
 ```
 
-## Verify without downloading
+## Hugging Face authentication
 
-```bash
-python scripts/download_models.py --comfyui-root /path/to/ComfyUI --verify-only
-```
+Before downloading the gated full or FP8 distilled model:
 
-To verify or download only one file, repeat `--only` with its exact filename.
+1. Open the [FLUX.2 Klein 9B page](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B).
+2. Accept the model agreement.
+3. Create a [read-only Hugging Face token](https://huggingface.co/settings/tokens/new?tokenType=read).
+4. Run `hf auth login`, or set `HF_TOKEN` in the shell that runs the installer.
 
-## PNG to DDS
-
-The workflows intentionally save PNG. Convert an approved 156 × 210 PNG to
-DDS separately:
-
-```bash
-python -m pip install "Pillow>=10"
-python scripts/convert/png_to_dds.py input.png output.dds
-```
-
-The helper writes an uncompressed 32-bit BGRA DDS with no mipmaps. Keep the
-PNG if another modding tool or your game setup expects a different DDS
-compression format.
+See the [Hugging Face guide](hugging-face.md) for local and RunPod setup. No
+token is written into this repository or a workflow.
