@@ -102,7 +102,7 @@ Startup checks that every required node loaded and reports anything missing.
 The release executable is a complete installer wizard, not just an unpacker:
 
 1. Run
-   `.\HOI4-Portrait-Workflows-3.0.0-windows-x64.exe`.
+   `.\HOI4-Portrait-Workflows-v3.0.0-windows-x64.exe`.
 2. It detects your GPU VRAM with `nvidia-smi` and pre-checks the recommended
    variant (GGUF for 8–16 GB, FP8 for 16–20 GB, full above 20 GB).
 3. Toggle any combination of variants — including all three, if you want every

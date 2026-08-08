@@ -63,7 +63,7 @@ contains:
 ### Windows
 
 ```powershell
-.\HOI4-Portrait-Workflows-3.0.0-windows-x64.exe
+.\HOI4-Portrait-Workflows-v3.0.0-windows-x64.exe
 ```
 
 Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard
