@@ -116,7 +116,7 @@ SETUP_GUIDE_NOTE = (
     "The bundled installer places every file below for you. If you install "
     "manually, the workflow looks for these exact filenames:\n"
     "\n"
-    "🖼️  FLUX.2 Klein 9B (distilled — never the base model)\n"
+    "🖼️  FLUX.2 Klein 9B\n"
     "    ComfyUI/models/diffusion_models/\n"
     "    ├── flux-2-klein-9b.safetensors        · full BF16, 18.2 GB (24+ GB VRAM)\n"
     "    ├── flux-2-klein-9b-fp8.safetensors    · FP8, 9.4 GB (16–20 GB VRAM)\n"
@@ -140,7 +140,7 @@ SETUP_GUIDE_NOTE = (
     "    ComfyUI/models/background_removal/birefnet.safetensors\n"
     "    ComfyUI/models/detection/face_detection_yunet_2023mar.onnx\n"
     "\n"
-    "The GGUF and FP8 files are smaller variants of the same distilled model; "
+    "The GGUF and FP8 files are smaller variants of the same model; "
     "pick the one that fits your VRAM (the installer suggests one for you)."
 )
 
@@ -330,7 +330,7 @@ def _model_nodes(*, include_lora: bool = True, include_restoration_lokr: bool = 
         _node(
             1,
             "UNETLoader",
-            "Load FLUX.2 Klein 9B distilled",
+            "Load FLUX.2 Klein 9B",
             group,
             (1120, 120),
             inputs={"unet_name": BASE_MODEL, "weight_dtype": "default"},

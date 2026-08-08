@@ -19,7 +19,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --help|-h)
       echo "Usage: install_runpod.sh [COMFYUI_ROOT] [--variant full|fp8|gguf]... [--gguf-quants Q5_K_M,Q4_K_M,...]"
-      echo "Defaults to the full distilled FLUX.2 Klein 9B model."
+      echo "Defaults to the full FLUX.2 Klein 9B model."
       exit 0
       ;;
     *)
@@ -159,5 +159,5 @@ echo "Installed ${#VARIANTS[@]} model variant(s): ${VARIANTS[*]} (GGUF quants: $
 echo "Four workflows are under user/default/workflows/hoi4_portraits."
 echo "Restart ComfyUI, then open Workflows > hoi4_portraits."
 if [[ " ${VARIANTS[*]} " == *" full "* ]]; then
-  echo "Note: the full distilled model needs 24+ GB VRAM and a gated HF token (HF_TOKEN)."
+  echo "Note: the full model needs 24+ GB VRAM and a gated HF token (HF_TOKEN)."
 fi

@@ -4,7 +4,7 @@
 
 - ComfyUI with FLUX.2 Klein support.
 - Python 3.10 or newer for the helper scripts.
-- A Hugging Face account that has accepted the gated distilled FLUX.2 Klein
+- A Hugging Face account that has accepted the gated FLUX.2 Klein
   agreement (only needed for the full and FP8 variants; GGUF is not gated).
 
 ## Storage and VRAM requirements
@@ -16,8 +16,8 @@ face detectors) total **11.8 GB**.
 
 | Install | Model file | Downloads | Total on disk* | Recommended VRAM |
 | --- | --- | --- | --- | --- |
-| Full distilled | `flux-2-klein-9b.safetensors` (18.2 GB) | 30.0 GB | ~40 GB free | 24+ GB |
-| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` (9.4 GB) | 21.2 GB | ~28 GB free | 16–20 GB |
+| Full | `flux-2-klein-9b.safetensors` (18.2 GB) | 30.0 GB | ~40 GB free | 24+ GB |
+| FP8 | `flux-2-klein-9b-fp8.safetensors` (9.4 GB) | 21.2 GB | ~28 GB free | 16–20 GB |
 | GGUF Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` (5.9 GB) | 17.7 GB | ~24 GB free | 8–10 GB |
 | GGUF Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` (7.0 GB) | 18.8 GB | ~25 GB free | 10–14 GB |
 | GGUF Q6_K | `flux-2-klein-9b-Q6_K.gguf` (7.9 GB) | 19.7 GB | ~26 GB free | 12–16 GB |
@@ -33,7 +33,7 @@ VRAM guidance used by the installer wizard:
 
 - **8–16 GB** → GGUF (recommended quantization is auto-detected)
 - **16–20 GB** → FP8
-- **more than 20 GB** → full distilled
+- **more than 20 GB** → full
 
 The Qwen text encoder is 8.7 GB and is shared by every variant. ComfyUI
 offloads it to system RAM when VRAM is tight, so 8 GB GPUs work but are slow.
@@ -46,8 +46,7 @@ python scripts/apply_variant.py --comfyui-root /path/to/ComfyUI --variant fp8
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 ```
 
-`apply_variant.py` switches the installed workflows to the chosen distilled
-variant:
+The setup script switches the installed workflows to the chosen variant:
 
 - `--variant full` → `UNETLoader` with `flux-2-klein-9b.safetensors`
 - `--variant fp8` → `UNETLoader` with `flux-2-klein-9b-fp8.safetensors`
@@ -56,7 +55,7 @@ variant:
   node pack, installed automatically by the installers)
 
 Pass `--variant` multiple times to prepare several variants; the first is
-applied to the four canonical workflows and the rest are emitted as
+applied to the four main workflows and the rest are emitted as
 ready-made `*_fp8.json` / `*_gguf.json` copies.
 
 ## RunPod
@@ -79,16 +78,16 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The command defaults to the **full distilled** model. On a smaller GPU, pass
-the variant and quantization flags:
+The command defaults to the **full** model. On a smaller GPU, pass the variant
+and quantization flags:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q4_K_M,Q5_K_M
 ```
 
-The final verification pass validates every downloaded file and the node pack.
-`HF_TOKEN` is read only from the process environment and is never printed or
-saved.
+The final verification pass checks every downloaded file and the custom
+nodes. `HF_TOKEN` is read only from the process environment and is never
+printed or saved.
 
 Start ComfyUI after installation:
 
@@ -96,8 +95,7 @@ Start ComfyUI after installation:
 /workspace/hoi4-portrait-runpod/scripts/start_runpod.sh /workspace/runpod-slim/ComfyUI
 ```
 
-Startup validates ComfyUI's live node registry and reports the exact missing
-node if something did not load.
+Startup checks that every required node loaded and reports anything missing.
 
 ## Windows
 
@@ -106,9 +104,9 @@ The release executable is a complete installer wizard, not just an unpacker:
 1. Run
    `.\HOI4-Portrait-Workflows-3.0.0-windows-x64.exe`.
 2. It detects your GPU VRAM with `nvidia-smi` and pre-checks the recommended
-   variant (GGUF for 8–16 GB, FP8 for 16–20 GB, full distilled above 20 GB).
+   variant (GGUF for 8–16 GB, FP8 for 16–20 GB, full above 20 GB).
 3. Toggle any combination of variants — including all three, if you want every
-   distilled type available.
+   model type available.
 4. If GGUF is selected, choose the quantization(s); the recommended one is
    pre-checked (Q4_K_M ≤ 10 GB, Q5_K_M 10–14 GB, Q6_K 12–16 GB, Q8_0 16+ GB).
 5. It finds your ComfyUI (or you type its root) and runs the bundled
@@ -135,7 +133,7 @@ installed. Start ComfyUI with:
 
 ## Hugging Face authentication
 
-Before downloading the gated full or FP8 distilled model:
+Before downloading the gated full or FP8 model:
 
 1. Open the [FLUX.2 Klein 9B page](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B).
 2. Accept the model agreement.

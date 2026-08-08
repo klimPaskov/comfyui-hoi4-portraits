@@ -1,22 +1,21 @@
-# HOI4 portraits with the distilled FLUX.2 Klein 9B
+# HOI4 portraits with FLUX.2 Klein 9B
 
-[![CI](https://github.com/klimPaskov/comfyui-hoi4-portraits/actions/workflows/ci.yml/badge.svg)](https://github.com/klimPaskov/comfyui-hoi4-portraits/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
 
-Create Hearts of Iron IV-style leader portraits with ComfyUI using the
-**distilled** FLUX.2 Klein 9B model and the project's tuned 2500-step LoRA.
-The source workflow keeps the person's crop, pose, framing, and facial
-identity anchored, restores old photos, and styles three portrait candidates
-for comparison. The batch workflow turns a whole folder of photos into
-game-ready portraits in one queue.
+Create Hearts of Iron IV-style leader portraits with ComfyUI and the FLUX.2
+Klein 9B model plus the project's tuned 2500-step LoRA. The source workflow
+keeps the person's crop, pose, framing, and facial identity anchored, restores
+old photos, and styles three portrait candidates for comparison. The batch
+workflow turns a whole folder of photos into game-ready portraits in one
+queue.
 
 The same workflows open locally, on RunPod, and in Comfy Cloud. The installers
-detect your GPU VRAM and suggest the right model variant (GGUF / FP8 / full
-distilled), and every workflow saves **HOI4-ready 156×210 DDS files** that can
-be dropped straight into a mod's `gfx/portraits` folder.
+detect your GPU VRAM and suggest the right model variant (GGUF / FP8 / full),
+and every workflow saves **HOI4-ready 156×210 DDS files** that can be dropped
+straight into a mod's `gfx/portraits` folder.
 
-## Four default workflows
+## Four workflows
 
 | Workflow | Best for | What it runs |
 | --- | --- | --- |
@@ -24,9 +23,6 @@ be dropped straight into a mod's `gfx/portraits` folder.
 | [`hoi4_portrait_flux2_klein_9b_text_to_image.json`](workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json) | Fictional portrait without a photo | One HOI4 LoRA generation from a text prompt |
 | [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → optional Adonis restoration, no LoRA |
 | [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | One sampler processes every image in `input/hoi4_portraits_batch` |
-
-Matching [API-format graphs](workflows/) are included for Comfy Cloud MCP and
-local `/prompt` submission.
 
 Every workflow saves:
 
@@ -36,16 +32,15 @@ ComfyUI/output/156x210/       game-size PNG
 ComfyUI/output/156x210/dds/   HOI4-ready DDS (DXT5, no mipmaps)
 ```
 
-## Which model variant do I need?
+## Which model do I need?
 
-The project uses the **distilled** FLUX.2 Klein 9B model — never the base
-model. The installer downloads only the distilled variant you choose:
+The installer downloads only the model variant you choose:
 
 | Variant | File | Download size | VRAM |
 | --- | --- | --- | --- |
-| Full distilled | `flux-2-klein-9b.safetensors` | 18.2 GB | 24+ GB |
-| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 9.4 GB | 16–20 GB |
-| GGUF distilled | `flux-2-klein-9b-*.gguf` | 5.9–10.0 GB | 8–16 GB |
+| Full | `flux-2-klein-9b.safetensors` | 18.2 GB | 24+ GB |
+| FP8 | `flux-2-klein-9b-fp8.safetensors` | 9.4 GB | 16–20 GB |
+| GGUF | `flux-2-klein-9b-*.gguf` | 5.9–10.0 GB | 8–16 GB |
 
 Shared support files (Qwen text encoder, VAE, LoRA, Adonis LoKrs, RealESRGAN,
 BiRefNet, face detectors) add **11.8 GB** on top. Storage and VRAM
@@ -60,8 +55,8 @@ contains:
   recommended variant, lets you pick any combination (including all three),
   asks for GGUF quantizations when GGUF is selected, finds your ComfyUI, and
   installs workflows, custom nodes, and models;
-- a **RunPod runtime archive** whose command defaults to the full distilled
-  model and accepts `--variant full|fp8|gguf` plus `--gguf-quants`.
+- a **RunPod runtime archive** whose command defaults to the full model and
+  accepts `--variant full|fp8|gguf` plus `--gguf-quants`.
 
 ## Fastest start
 
@@ -71,7 +66,7 @@ contains:
 .\HOI4-Portrait-Workflows-3.0.0-windows-x64.exe
 ```
 
-Accept the FLUX.2 distilled agreement first (see below), then let the wizard
+Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard
 detect your VRAM and pre-check the recommended variant. It finds ComfyUI,
 installs the node packs, copies the workflows, and downloads the models. After
 restarting ComfyUI, open **Workflows → hoi4_portraits** and queue.
@@ -91,8 +86,8 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The RunPod command defaults to the full distilled model. For a GPU with
-limited VRAM, add the matching flags, for example:
+The RunPod command defaults to the full model. For a GPU with limited VRAM,
+add the matching flags, for example:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q5_K_M
@@ -110,8 +105,8 @@ python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 
 ## Hugging Face access
 
-The full and FP8 distilled FLUX.2 Klein files are gated. Before installing,
-accept the agreement on
+The full and FP8 FLUX.2 Klein files are gated. Before installing, accept the
+agreement on
 [`black-forest-labs/FLUX.2-klein-9B`](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B)
 (and [`...-9b-fp8`](https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8)
 for the FP8 variant) and create a
@@ -122,9 +117,9 @@ GGUF files are not gated.
 ## What the source workflow does
 
 These screenshots show the source, ESRGAN, optional restoration, three LoRA
-candidates, and the comparison row in the editor layout. The workflow opens
-with FLUX restoration enabled; queueing fills every preview with the
-completed image.
+candidates, and the comparison row in the editor. The workflow opens with
+FLUX restoration enabled; queueing fills every preview with the completed
+image.
 
 ![Source workflow overview](docs/assets/workflows/source-workflow-overview.jpg)
 
@@ -138,10 +133,10 @@ manual crop only when selecting one particular person.
 
 ![Source crop and RealESRGAN processing](docs/assets/workflows/step-1-source-processing.jpg)
 
-### 2. Load the distilled model and LoRA
+### 2. Load the model and LoRA
 
-This group loads the distilled FLUX.2 Klein 9B (full/FP8/GGUF), the Qwen text
-encoder, VAE, the 2500-step HOI4 LoRA, and the Adonis restoration LoKrs.
+This group loads FLUX.2 Klein 9B (full/FP8/GGUF), the Qwen text encoder, VAE,
+the 2500-step HOI4 LoRA, and the Adonis restoration LoKrs.
 
 ![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.jpg)
 
@@ -208,37 +203,16 @@ hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wear
 - [Getting started](docs/getting-started.md)
 - [Hugging Face model access and read-only token](docs/hugging-face.md)
 - [Workflow controls and graph structure](docs/workflows.md)
-- [Comfy Cloud and MCP](docs/comfy-cloud.md)
+- [Comfy Cloud](docs/comfy-cloud.md)
 - [Local and RunPod installation, storage and VRAM requirements](docs/local-install.md)
-- [Local test results and before/afters](docs/test-results.md)
-- [Testing](docs/testing.md)
 - [Contributing](CONTRIBUTING.md)
 - [Third-party model terms](THIRD_PARTY_LICENSES.md)
-
-## Checks
-
-- The four workflows are generated with matching API graphs from one
-  deterministic source.
-- Link endpoints, slot types, output nodes, visual groups, and node geometry are tested.
-- Node and group overlap checks pass with spacing margins.
-- The validator enforces the distilled model, the 2500-step LoRA, Euler/simple
-  at CFG 1 and 4 steps, exact prompts, no stretched output, and the three
-  output folders.
-- Comfy Cloud MCP no-spend preflight passes for the four primary API graphs.
-
-Run the same checks locally:
-
-```bash
-python scripts/build_workflows.py
-python scripts/validate_workflows.py
-python -m unittest discover -s tests -v
-```
 
 ## License and trademark
 
 Project-owned code, workflows, documentation, backgrounds, and the published
-LoRA are MIT licensed; third-party models retain their own terms. The distilled
-FLUX.2 Klein 9B model is gated and non-commercial; using the MIT-licensed
-workflow or LoRA does not remove those model restrictions. Hearts of Iron IV
-is a trademark of Paradox Interactive. This community project is not
-affiliated with or endorsed by Paradox Interactive.
+LoRA are MIT licensed; third-party models retain their own terms. The FLUX.2
+Klein 9B model is gated and non-commercial; using the MIT-licensed workflow or
+LoRA does not remove those model restrictions. Hearts of Iron IV is a
+trademark of Paradox Interactive. This community project is not affiliated
+with or endorsed by Paradox Interactive.

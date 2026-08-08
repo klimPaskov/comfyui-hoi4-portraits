@@ -120,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
         "--variant",
         action="append",
         choices=["full", "fp8", "gguf"],
-        help="Which distilled FLUX.2 Klein 9B variant(s) to install: full (BF16), fp8, or gguf. Repeat for multiple. Shared support models are always included.",
+        help="Which FLUX.2 Klein 9B variant(s) to install: full (BF16), fp8, or gguf. Repeat for multiple. Shared support models are always included.",
     )
     parser.add_argument(
         "--gguf-quants",

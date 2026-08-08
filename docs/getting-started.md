@@ -50,17 +50,17 @@ under `ComfyUI/models/`:
 | `background_removal/` | `birefnet.safetensors` |
 | `detection/` | `mediapipe_face_fp32.safetensors` and `face_detection_yunet_2023mar.onnx` |
 
-Find filenames, pinned sources, and sizes in
+Find filenames and sizes in
 [`models.json`](../models.json).
 
-Before downloading the gated full/FP8 distilled model, follow the
+Before downloading the gated full/FP8 model, follow the
 [Hugging Face access guide](hugging-face.md) to accept the agreement and
 create a read-only token. GGUF files are not gated.
 
 ## First run
 
-1. Open the workflow JSON, not the `.api.json` file, in the ComfyUI editor.
-   The **Setup guide** note on the left shows the exact model folders.
+1. Open the workflow JSON file in the ComfyUI editor. The **Setup guide** note
+   on the left shows the exact model folders.
 2. Check the model loaders. A red loader means the named file has not been
    installed.
 3. Select the source image and confirm the source / crop + ESRGAN previews.

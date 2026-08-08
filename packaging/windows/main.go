@@ -1,7 +1,7 @@
 // Command hoi4-portrait-setup extracts the model-free workflow package and
 // installs it into an existing ComfyUI with a VRAM-guided model variant.
 //
-// The wizard detects the GPU VRAM, pre-checks the recommended distilled
+// The wizard detects the GPU VRAM, pre-checks the recommended
 // FLUX.2 Klein 9B variant (gguf / fp8 / full), lets the user toggle any
 // combination, asks for GGUF quantizations when gguf is chosen, finds the
 // ComfyUI root, and then runs the bundled PowerShell installer exactly like
@@ -156,12 +156,12 @@ func askVariantMenu(vram float64) []string {
 	variants := []variant{
 		{key: "gguf", label: "GGUF (8-16 GB VRAM)", vr: recommended == "gguf"},
 		{key: "fp8", label: "FP8 (16-20 GB VRAM)", vr: recommended == "fp8"},
-		{key: "full", label: "Full distilled BF16 (24+ GB VRAM)", vr: recommended == "full"},
+		{key: "full", label: "Full BF16 (24+ GB VRAM)", vr: recommended == "full"},
 	}
 	for {
 		fmt.Println()
 		fmt.Printf("Detected VRAM: %s\n", vramLabel(vram))
-		fmt.Println("Which FLUX.2 Klein 9B distilled model(s) should be installed?")
+		fmt.Println("Which FLUX.2 Klein 9B model(s) should be installed?")
 		fmt.Println("Type the numbers you want (space separated) and press Enter. [x] = selected.")
 		for i, v := range variants {
 			marker := " "

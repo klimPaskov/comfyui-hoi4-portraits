@@ -6,8 +6,8 @@ The tuned checkpoint is the **2500-step** LoRA:
 hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors
 ```
 
-It targets the **distilled** FLUX.2 Klein 9B model (never the base model) and
-uses the trigger `hoi4_portrait`. Place the checkpoint under
+It targets FLUX.2 Klein 9B and uses the trigger `hoi4_portrait`. Place the
+checkpoint under
 `ComfyUI/models/loras/` and select it in `LoraLoaderModelOnly`.
 
 Comfy Cloud users should import the checkpoint through **Models → Import**,

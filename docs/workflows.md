@@ -5,16 +5,15 @@
 Every workflow keeps its complete pipeline visible in labeled stage groups and
 opens with a **Setup guide** column that explains the model folders, the
 sampler controls, and prompting. Controls and previews sit beside the stage
-they affect. All generation nodes are one advanced sampler card:
-
-`Hoi4PortraitSampler` exposes the seed, steps, CFG, FLUX guidance, sampling
-algorithm (Euler by default), scheduler (simple by default), denoise, and the
-advanced partial-step controls on a single node. Sampling is live — the editor
-shows the portrait being constructed while it runs.
+they affect. All generation nodes are one advanced sampler card that exposes
+the seed, steps, CFG, FLUX guidance, sampling algorithm (Euler by default),
+scheduler (simple by default), denoise, and the advanced partial-step controls
+on a single node. Sampling is live — the editor shows the portrait being
+constructed while it runs.
 
 The model stack is:
 
-1. `UNETLoader` — the **distilled** FLUX.2 Klein 9B (`flux-2-klein-9b.safetensors`
+1. `UNETLoader` — FLUX.2 Klein 9B (`flux-2-klein-9b.safetensors`
    for full, `flux-2-klein-9b-fp8.safetensors` for FP8, or
    `UnetLoaderGGUF` + `flux-2-klein-9b-*.gguf` for GGUF).
 2. `CLIPLoader` — Qwen 3 8B FP8 mixed with type `flux2`.
@@ -38,8 +37,8 @@ Groups run left to right:
    to `true`; **Toggle face processing** defaults to on. RealESRGAN upscales
    next (with an ESRGAN preview), and the crop + ESRGAN preview lets you verify
    framing before generation.
-3. **FLUX.2 Klein 9B models** — the distilled model, encoder, VAE, LoRA, and
-   Adonis LoKrs.
+3. **FLUX.2 Klein 9B models** — the model, encoder, VAE, LoRA, and Adonis
+   LoKrs.
 4. **Optional FLUX.2 restoration** — Adonis Base then Adonis Post reconstruct
    detail and colour. The red toggle is ON by default; turn it off for the
    direct ESRGAN output.

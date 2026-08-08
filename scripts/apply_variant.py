@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Switch the installed HOI4 workflows to a distilled-model variant.
+"""Switch the installed HOI4 workflows to a model variant.
 
 The repository keeps one canonical set of four workflows that load the full
-distilled FLUX.2 Klein 9B safetensors.  This helper rewrites the *installed*
-copies in ``user/default/workflows/hoi4_portraits`` so they load the variant
-that matches the user's VRAM:
+FLUX.2 Klein 9B safetensors.  This helper rewrites the *installed* copies in
+``user/default/workflows/hoi4_portraits`` so they load the variant that
+matches the user's VRAM:
 
 * ``full`` — ``flux-2-klein-9b.safetensors`` (BF16, 24+ GB VRAM)
 * ``fp8``  — ``flux-2-klein-9b-fp8.safetensors`` (16-20 GB VRAM)
@@ -83,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
         action="append",
         choices=["full", "fp8", "gguf"],
         default=[],
-        help="Distilled-model variant(s) to prepare. The first is applied to the canonical workflows; the rest are emitted as ready-made copies. Defaults to full.",
+        help="Model variant(s) to prepare. The first is applied to the four main workflows; the rest are emitted as ready-made copies. Defaults to full.",
     )
     parser.add_argument(
         "--gguf-quants",

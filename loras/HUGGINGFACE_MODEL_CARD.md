@@ -22,8 +22,8 @@ ComfyUI workflows. Trigger: `hoi4_portrait`.
 
 The tuned checkpoint is the 2500-step LoRA
 `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors`. It targets the
-**distilled** `black-forest-labs/FLUX.2-klein-9B` model (never the base
-model). The FP8 and GGUF distilled variants work with the same LoRA.
+`black-forest-labs/FLUX.2-klein-9B` model. The FP8 and GGUF variants work with
+the same LoRA.
 
 ## Workflow settings
 
