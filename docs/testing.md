@@ -36,7 +36,7 @@ The validator checks:
 - JSON shape and unique node/link IDs;
 - every link endpoint, source slot, target slot, and type;
 - supported workflow classes only (including frontend-only `Note` cards);
-- no obsolete identity/Krea/PuLID nodes;
+- no obsolete comparison-era node types (the validator rejects identity/Krea/PuLID classes);
 - required `SaveImage`/`Hoi4SaveDDS` outputs and the three output folders;
 - every stage and node visible together on the main canvas;
 - no overlapping or too-close cards;

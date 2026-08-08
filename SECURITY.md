@@ -3,8 +3,7 @@
 ## Supported version
 
 Security fixes target the latest public release and the repository's default
-branch. The archived v1 Krea workflows are preserved for reference and are not
-actively supported.
+branch.
 
 ## Reporting a vulnerability
 
