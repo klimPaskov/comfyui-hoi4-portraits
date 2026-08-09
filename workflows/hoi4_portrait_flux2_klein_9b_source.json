@@ -37,7 +37,7 @@
       "title": "🎛️ Beginner + advanced sampler guide",
       "pos": [
         80,
-        900
+        940
       ],
       "size": [
         720,
@@ -64,7 +64,7 @@
       "title": "✍️ Exact prompt and why restoration helps",
       "pos": [
         80,
-        1640
+        1720
       ],
       "size": [
         720,
@@ -90,7 +90,7 @@
       "type": "LoadImage",
       "title": "Load source portrait — upload or choose here",
       "pos": [
-        920,
+        960,
         100
       ],
       "size": [
@@ -143,8 +143,8 @@
       "type": "PreviewImage",
       "title": "Source preview",
       "pos": [
-        920,
-        760
+        960,
+        800
       ],
       "size": [
         600,
@@ -180,7 +180,7 @@
       "type": "LoadMediaPipeFaceLandmarker",
       "title": "Load face detector",
       "pos": [
-        1600,
+        1640,
         100
       ],
       "size": [
@@ -224,8 +224,8 @@
       "type": "MediaPipeFaceLandmarker",
       "title": "Detect portrait face — bounding box stays visible",
       "pos": [
-        1600,
-        240
+        1640,
+        260
       ],
       "size": [
         500,
@@ -310,8 +310,8 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet mask model",
       "pos": [
-        1600,
-        580
+        1640,
+        640
       ],
       "size": [
         440,
@@ -354,8 +354,8 @@
       "type": "RemoveBackground",
       "title": "Generate subject silhouette for crop",
       "pos": [
-        1600,
-        720
+        1640,
+        800
       ],
       "size": [
         360,
@@ -398,7 +398,7 @@
       "type": "AdaptivePortraitCrop",
       "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN",
       "pos": [
-        2140,
+        2180,
         100
       ],
       "size": [
@@ -538,8 +538,8 @@
       "type": "UpscaleModelLoader",
       "title": "Load RealESRGAN ×2",
       "pos": [
-        2140,
-        560
+        2180,
+        600
       ],
       "size": [
         400,
@@ -582,8 +582,8 @@
       "type": "ImageUpscaleWithModel",
       "title": "Run RealESRGAN ×2",
       "pos": [
-        2140,
-        700
+        2180,
+        760
       ],
       "size": [
         360,
@@ -626,8 +626,8 @@
       "type": "ImageScale",
       "title": "Normalize RealESRGAN result to 1024×1365",
       "pos": [
-        2140,
-        840
+        2180,
+        920
       ],
       "size": [
         400,
@@ -704,8 +704,8 @@
       "type": "LoadImage",
       "title": "Optional replacement background",
       "pos": [
-        1600,
-        1060
+        1640,
+        1180
       ],
       "size": [
         600,
@@ -756,7 +756,7 @@
       "type": "UNETLoader",
       "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target",
       "pos": [
-        2740,
+        2820,
         100
       ],
       "size": [
@@ -811,8 +811,8 @@
       "type": "ClipLoaderGGUF",
       "title": "Load Qwen3 8B Q8 text encoder",
       "pos": [
-        2740,
-        280
+        2820,
+        320
       ],
       "size": [
         440,
@@ -876,8 +876,8 @@
       "type": "VAELoader",
       "title": "Load FLUX.2 VAE",
       "pos": [
-        2740,
-        480
+        2820,
+        540
       ],
       "size": [
         440,
@@ -924,7 +924,7 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load HOI4 style LoRA — step 2500 only",
       "pos": [
-        3240,
+        3320,
         100
       ],
       "size": [
@@ -984,8 +984,8 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load Adonis Base LoRA",
       "pos": [
-        3240,
-        280
+        3320,
+        320
       ],
       "size": [
         500,
@@ -1042,8 +1042,8 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load Adonis Refine LoRA",
       "pos": [
-        3240,
-        460
+        3320,
+        540
       ],
       "size": [
         500,
@@ -1100,8 +1100,8 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet mask model",
       "pos": [
-        2740,
-        620
+        2820,
+        720
       ],
       "size": [
         440,
@@ -1146,7 +1146,7 @@
       "type": "ImageScaleToTotalPixelsX",
       "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos",
       "pos": [
-        3860,
+        3980,
         100
       ],
       "size": [
@@ -1236,8 +1236,8 @@
       "type": "CLIPTextEncode",
       "title": "Adonis positive prompt — uhdmanscale",
       "pos": [
-        3860,
-        380
+        3980,
+        420
       ],
       "size": [
         440,
@@ -1286,8 +1286,8 @@
       "type": "ConditioningZeroOut",
       "title": "Zero negative conditioning",
       "pos": [
-        3860,
-        680
+        3980,
+        760
       ],
       "size": [
         320,
@@ -1325,7 +1325,7 @@
       "type": "VAEEncode",
       "title": "Encode restored reference latent",
       "pos": [
-        4340,
+        4460,
         100
       ],
       "size": [
@@ -1370,8 +1370,8 @@
       "type": "ReferenceLatent",
       "title": "Positive reference latent",
       "pos": [
-        4340,
-        240
+        4460,
+        280
       ],
       "size": [
         320,
@@ -1414,8 +1414,8 @@
       "type": "ReferenceLatent",
       "title": "Negative reference latent",
       "pos": [
-        4340,
-        380
+        4460,
+        460
       ],
       "size": [
         320,
@@ -1458,8 +1458,8 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process",
       "pos": [
-        4340,
-        520
+        4460,
+        640
       ],
       "size": [
         360,
@@ -1520,7 +1520,7 @@
       "type": "SharkOptions_Beta",
       "title": "Adonis RES4LYF options — exact upstream",
       "pos": [
-        4740,
+        4860,
         100
       ],
       "size": [
@@ -1591,8 +1591,8 @@
       "type": "PrimitiveInt",
       "title": "Shared Adonis seed",
       "pos": [
-        4740,
-        320
+        4860,
+        360
       ],
       "size": [
         300,
@@ -1636,8 +1636,8 @@
       "type": "PrimitiveInt",
       "title": "Total Adonis steps",
       "pos": [
-        4740,
-        460
+        4860,
+        540
       ],
       "size": [
         300,
@@ -1681,7 +1681,7 @@
       "type": "ClownsharKSampler_Beta",
       "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)",
       "pos": [
-        5180,
+        5340,
         100
       ],
       "size": [
@@ -1850,7 +1850,7 @@
       "type": "ClownsharKSampler_Beta",
       "title": "Adonis Refine — live RES4LYF sampler (remaining steps)",
       "pos": [
-        5720,
+        5920,
         100
       ],
       "size": [
@@ -2019,8 +2019,8 @@
       "type": "VAEDecode",
       "title": "Decode Adonis Refine output",
       "pos": [
-        5720,
-        1240
+        5920,
+        1280
       ],
       "size": [
         300,
@@ -2063,15 +2063,15 @@
       "type": "ComfySwitchNode",
       "title": "Use Adonis restoration",
       "pos": [
-        6060,
-        1240
+        6300,
+        1280
       ],
       "size": [
         360,
         160
       ],
-      "color": "#80613d",
-      "bgcolor": "#5d472e",
+      "color": "#b84949",
+      "bgcolor": "#702f2f",
       "flags": {},
       "order": 34,
       "mode": 0,
@@ -2120,12 +2120,12 @@
       "type": "Hoi4PortraitSampler",
       "title": "Candidate 1 — advanced live style sampler",
       "pos": [
-        6540,
+        6820,
         100
       ],
       "size": [
         720,
-        740
+        780
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
@@ -2319,15 +2319,15 @@
       "type": "Hoi4BackgroundReplace",
       "title": "Candidate 1 — optional background replacement",
       "pos": [
-        7300,
+        7620,
         100
       ],
       "size": [
         500,
         260
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#b84949",
+      "bgcolor": "#702f2f",
       "flags": {},
       "order": 36,
       "mode": 0,
@@ -2378,8 +2378,8 @@
       "type": "ImageScale",
       "title": "Candidate 1 master — centered 1024×1365 crop",
       "pos": [
-        7300,
-        400
+        7620,
+        440
       ],
       "size": [
         400,
@@ -2455,8 +2455,8 @@
       "type": "ImageScale",
       "title": "Candidate 1 game — centered 156×210 crop",
       "pos": [
-        7300,
-        620
+        7620,
+        700
       ],
       "size": [
         400,
@@ -2533,7 +2533,7 @@
       "type": "SaveImage",
       "title": "Save candidate 1 master PNG",
       "pos": [
-        7920,
+        8280,
         100
       ],
       "size": [
@@ -2580,7 +2580,7 @@
       "type": "SaveImage",
       "title": "Save candidate 1 game PNG",
       "pos": [
-        8380,
+        8780,
         100
       ],
       "size": [
@@ -2627,7 +2627,7 @@
       "type": "Hoi4SaveDDS",
       "title": "Save candidate 1 DDS — DXT5, no mipmaps",
       "pos": [
-        8380,
+        8780,
         300
       ],
       "size": [
@@ -2683,12 +2683,12 @@
       "type": "Hoi4PortraitSampler",
       "title": "Candidate 2 — advanced live style sampler",
       "pos": [
-        6540,
-        880
+        6820,
+        960
       ],
       "size": [
         720,
-        740
+        780
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
@@ -2882,15 +2882,15 @@
       "type": "Hoi4BackgroundReplace",
       "title": "Candidate 2 — optional background replacement",
       "pos": [
-        7300,
-        880
+        7620,
+        960
       ],
       "size": [
         500,
         260
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#b84949",
+      "bgcolor": "#702f2f",
       "flags": {},
       "order": 43,
       "mode": 0,
@@ -2941,8 +2941,8 @@
       "type": "ImageScale",
       "title": "Candidate 2 master — centered 1024×1365 crop",
       "pos": [
-        7300,
-        1180
+        7620,
+        1300
       ],
       "size": [
         400,
@@ -3018,8 +3018,8 @@
       "type": "ImageScale",
       "title": "Candidate 2 game — centered 156×210 crop",
       "pos": [
-        7300,
-        1400
+        7620,
+        1560
       ],
       "size": [
         400,
@@ -3096,8 +3096,8 @@
       "type": "SaveImage",
       "title": "Save candidate 2 master PNG",
       "pos": [
-        7920,
-        520
+        8280,
+        580
       ],
       "size": [
         420,
@@ -3143,8 +3143,8 @@
       "type": "SaveImage",
       "title": "Save candidate 2 game PNG",
       "pos": [
-        8380,
-        520
+        8780,
+        580
       ],
       "size": [
         420,
@@ -3190,8 +3190,8 @@
       "type": "Hoi4SaveDDS",
       "title": "Save candidate 2 DDS — DXT5, no mipmaps",
       "pos": [
-        8380,
-        720
+        8780,
+        780
       ],
       "size": [
         420,
@@ -3246,12 +3246,12 @@
       "type": "Hoi4PortraitSampler",
       "title": "Candidate 3 — advanced live style sampler",
       "pos": [
-        6540,
-        1660
+        6820,
+        1820
       ],
       "size": [
         720,
-        740
+        780
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
@@ -3445,15 +3445,15 @@
       "type": "Hoi4BackgroundReplace",
       "title": "Candidate 3 — optional background replacement",
       "pos": [
-        7300,
-        1660
+        7620,
+        1820
       ],
       "size": [
         500,
         260
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#b84949",
+      "bgcolor": "#702f2f",
       "flags": {},
       "order": 50,
       "mode": 0,
@@ -3504,8 +3504,8 @@
       "type": "ImageScale",
       "title": "Candidate 3 master — centered 1024×1365 crop",
       "pos": [
-        7300,
-        1960
+        7620,
+        2160
       ],
       "size": [
         400,
@@ -3581,8 +3581,8 @@
       "type": "ImageScale",
       "title": "Candidate 3 game — centered 156×210 crop",
       "pos": [
-        7300,
-        2180
+        7620,
+        2420
       ],
       "size": [
         400,
@@ -3659,8 +3659,8 @@
       "type": "SaveImage",
       "title": "Save candidate 3 master PNG",
       "pos": [
-        7920,
-        940
+        8280,
+        1060
       ],
       "size": [
         420,
@@ -3706,8 +3706,8 @@
       "type": "SaveImage",
       "title": "Save candidate 3 game PNG",
       "pos": [
-        8380,
-        940
+        8780,
+        1060
       ],
       "size": [
         420,
@@ -3753,8 +3753,8 @@
       "type": "Hoi4SaveDDS",
       "title": "Save candidate 3 DDS — DXT5, no mipmaps",
       "pos": [
-        8380,
-        1140
+        8780,
+        1260
       ],
       "size": [
         420,
@@ -3809,8 +3809,8 @@
       "type": "PreviewImage",
       "title": "RealESRGAN prepared crop",
       "pos": [
-        2740,
-        1540
+        2820,
+        1640
       ],
       "size": [
         600,
@@ -3846,8 +3846,8 @@
       "type": "PreviewImage",
       "title": "Adonis Base → Refine restored",
       "pos": [
-        3380,
-        1540
+        3500,
+        1640
       ],
       "size": [
         600,
@@ -3883,8 +3883,8 @@
       "type": "PreviewImage",
       "title": "Final candidate 1 — 156×210",
       "pos": [
-        4020,
-        1540
+        4180,
+        1640
       ],
       "size": [
         600,
@@ -3920,8 +3920,8 @@
       "type": "PreviewImage",
       "title": "Final candidate 2 — 156×210",
       "pos": [
-        4660,
-        1540
+        4860,
+        1640
       ],
       "size": [
         600,
@@ -3957,8 +3957,8 @@
       "type": "PreviewImage",
       "title": "Final candidate 3 — 156×210",
       "pos": [
-        5300,
-        1540
+        5540,
+        1640
       ],
       "size": [
         600,
@@ -4648,7 +4648,7 @@
         40,
         40,
         800,
-        2420
+        2500
       ],
       "color": "#334155",
       "font_size": 28,
@@ -4660,10 +4660,10 @@
       "id": 2,
       "title": "01 Source processing — every node visible",
       "bounding": [
-        880,
+        920,
         40,
         1780,
-        1620
+        1740
       ],
       "color": "#365b41",
       "font_size": 28,
@@ -4675,10 +4675,10 @@
       "id": 3,
       "title": "02 Separate model loaders",
       "bounding": [
-        2700,
+        2780,
         40,
         1080,
-        720
+        820
       ],
       "color": "#365b73",
       "font_size": 28,
@@ -4690,10 +4690,10 @@
       "id": 4,
       "title": "03 Adonis Base → Refine — expanded upstream graph",
       "bounding": [
-        3820,
+        3940,
         40,
-        2640,
-        1400
+        2760,
+        1440
       ],
       "color": "#765b35",
       "font_size": 28,
@@ -4705,10 +4705,10 @@
       "id": 5,
       "title": "04 Three live style candidates",
       "bounding": [
-        6500,
+        6780,
         40,
-        1340,
-        2400
+        1380,
+        2600
       ],
       "color": "#654572",
       "font_size": 28,
@@ -4720,10 +4720,10 @@
       "id": 6,
       "title": "05 Automatic outputs",
       "bounding": [
-        7880,
+        8240,
         40,
-        960,
-        1330
+        1000,
+        1450
       ],
       "color": "#3d596f",
       "font_size": 28,
@@ -4735,9 +4735,9 @@
       "id": 7,
       "title": "06 Portrait comparison",
       "bounding": [
-        2700,
-        1480,
-        3240,
+        2780,
+        1580,
+        3400,
         910
       ],
       "color": "#334c61",

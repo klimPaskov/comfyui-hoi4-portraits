@@ -37,7 +37,7 @@
       "title": "🎛️ Sampler guide",
       "pos": [
         80,
-        1060
+        1100
       ],
       "size": [
         720,
@@ -63,8 +63,8 @@
       "type": "Hoi4BatchInput",
       "title": "Batch input folder — list output runs one portrait at a time",
       "pos": [
-        920,
-        380
+        960,
+        480
       ],
       "size": [
         700,
@@ -128,7 +128,7 @@
       "type": "LoadMediaPipeFaceLandmarker",
       "title": "Load face detector",
       "pos": [
-        1660,
+        1740,
         100
       ],
       "size": [
@@ -172,8 +172,8 @@
       "type": "MediaPipeFaceLandmarker",
       "title": "Detect portrait face — bounding box stays visible",
       "pos": [
-        1660,
-        240
+        1740,
+        260
       ],
       "size": [
         500,
@@ -258,8 +258,8 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet mask model",
       "pos": [
-        1660,
-        580
+        1740,
+        640
       ],
       "size": [
         440,
@@ -302,8 +302,8 @@
       "type": "RemoveBackground",
       "title": "Generate subject silhouette for crop",
       "pos": [
-        1660,
-        720
+        1740,
+        800
       ],
       "size": [
         360,
@@ -346,7 +346,7 @@
       "type": "AdaptivePortraitCrop",
       "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN",
       "pos": [
-        2200,
+        2280,
         100
       ],
       "size": [
@@ -486,8 +486,8 @@
       "type": "UpscaleModelLoader",
       "title": "Load RealESRGAN ×2",
       "pos": [
-        2200,
-        560
+        2280,
+        600
       ],
       "size": [
         400,
@@ -530,8 +530,8 @@
       "type": "ImageUpscaleWithModel",
       "title": "Run RealESRGAN ×2",
       "pos": [
-        2200,
-        700
+        2280,
+        760
       ],
       "size": [
         360,
@@ -574,8 +574,8 @@
       "type": "ImageScale",
       "title": "Normalize RealESRGAN result to 1024×1365",
       "pos": [
-        2200,
-        840
+        2280,
+        920
       ],
       "size": [
         400,
@@ -652,7 +652,7 @@
       "type": "UNETLoader",
       "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target",
       "pos": [
-        2800,
+        2920,
         100
       ],
       "size": [
@@ -707,8 +707,8 @@
       "type": "ClipLoaderGGUF",
       "title": "Load Qwen3 8B Q8 text encoder",
       "pos": [
-        2800,
-        280
+        2920,
+        320
       ],
       "size": [
         440,
@@ -770,8 +770,8 @@
       "type": "VAELoader",
       "title": "Load FLUX.2 VAE",
       "pos": [
-        2800,
-        480
+        2920,
+        540
       ],
       "size": [
         440,
@@ -816,7 +816,7 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load HOI4 style LoRA — step 2500 only",
       "pos": [
-        3300,
+        3420,
         100
       ],
       "size": [
@@ -874,8 +874,8 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load Adonis Base LoRA",
       "pos": [
-        3300,
-        280
+        3420,
+        320
       ],
       "size": [
         500,
@@ -932,8 +932,8 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load Adonis Refine LoRA",
       "pos": [
-        3300,
-        460
+        3420,
+        540
       ],
       "size": [
         500,
@@ -990,7 +990,7 @@
       "type": "ImageScaleToTotalPixelsX",
       "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos",
       "pos": [
-        3920,
+        4080,
         100
       ],
       "size": [
@@ -1080,8 +1080,8 @@
       "type": "CLIPTextEncode",
       "title": "Adonis positive prompt — uhdmanscale",
       "pos": [
-        3920,
-        380
+        4080,
+        420
       ],
       "size": [
         440,
@@ -1130,8 +1130,8 @@
       "type": "ConditioningZeroOut",
       "title": "Zero negative conditioning",
       "pos": [
-        3920,
-        680
+        4080,
+        760
       ],
       "size": [
         320,
@@ -1169,7 +1169,7 @@
       "type": "VAEEncode",
       "title": "Encode restored reference latent",
       "pos": [
-        4400,
+        4560,
         100
       ],
       "size": [
@@ -1214,8 +1214,8 @@
       "type": "ReferenceLatent",
       "title": "Positive reference latent",
       "pos": [
-        4400,
-        240
+        4560,
+        280
       ],
       "size": [
         320,
@@ -1258,8 +1258,8 @@
       "type": "ReferenceLatent",
       "title": "Negative reference latent",
       "pos": [
-        4400,
-        380
+        4560,
+        460
       ],
       "size": [
         320,
@@ -1302,8 +1302,8 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process",
       "pos": [
-        4400,
-        520
+        4560,
+        640
       ],
       "size": [
         360,
@@ -1364,7 +1364,7 @@
       "type": "SharkOptions_Beta",
       "title": "Adonis RES4LYF options — exact upstream",
       "pos": [
-        4800,
+        4960,
         100
       ],
       "size": [
@@ -1435,8 +1435,8 @@
       "type": "PrimitiveInt",
       "title": "Shared Adonis seed",
       "pos": [
-        4800,
-        320
+        4960,
+        360
       ],
       "size": [
         300,
@@ -1480,8 +1480,8 @@
       "type": "PrimitiveInt",
       "title": "Total Adonis steps",
       "pos": [
-        4800,
-        460
+        4960,
+        540
       ],
       "size": [
         300,
@@ -1525,7 +1525,7 @@
       "type": "ClownsharKSampler_Beta",
       "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)",
       "pos": [
-        5240,
+        5440,
         100
       ],
       "size": [
@@ -1694,7 +1694,7 @@
       "type": "ClownsharKSampler_Beta",
       "title": "Adonis Refine — live RES4LYF sampler (remaining steps)",
       "pos": [
-        5780,
+        6020,
         100
       ],
       "size": [
@@ -1863,8 +1863,8 @@
       "type": "VAEDecode",
       "title": "Decode Adonis Refine output",
       "pos": [
-        5780,
-        1240
+        6020,
+        1280
       ],
       "size": [
         300,
@@ -1907,15 +1907,15 @@
       "type": "ComfySwitchNode",
       "title": "Use Adonis restoration",
       "pos": [
-        6120,
-        1240
+        6400,
+        1280
       ],
       "size": [
         360,
         160
       ],
-      "color": "#80613d",
-      "bgcolor": "#5d472e",
+      "color": "#b84949",
+      "bgcolor": "#702f2f",
       "flags": {},
       "order": 30,
       "mode": 0,
@@ -1962,12 +1962,12 @@
       "type": "Hoi4PortraitSampler",
       "title": "Batch portrait — one advanced live sampler",
       "pos": [
-        6600,
+        6920,
         100
       ],
       "size": [
         720,
-        740
+        780
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
@@ -2161,7 +2161,7 @@
       "type": "ImageScale",
       "title": "Batch master — centered 1024×1365 crop",
       "pos": [
-        7360,
+        7720,
         100
       ],
       "size": [
@@ -2238,7 +2238,7 @@
       "type": "ImageScale",
       "title": "Batch game — centered 156×210 crop",
       "pos": [
-        7800,
+        8200,
         100
       ],
       "size": [
@@ -2316,8 +2316,8 @@
       "type": "SaveImage",
       "title": "Save every master PNG",
       "pos": [
-        7360,
-        320
+        7720,
+        360
       ],
       "size": [
         420,
@@ -2363,8 +2363,8 @@
       "type": "SaveImage",
       "title": "Save every game PNG",
       "pos": [
-        7800,
-        320
+        8200,
+        360
       ],
       "size": [
         420,
@@ -2410,8 +2410,8 @@
       "type": "Hoi4SaveDDS",
       "title": "Save every game DDS",
       "pos": [
-        7800,
-        520
+        8200,
+        600
       ],
       "size": [
         420,
@@ -2466,8 +2466,8 @@
       "type": "PreviewImage",
       "title": "RealESRGAN",
       "pos": [
-        6600,
-        900
+        6920,
+        960
       ],
       "size": [
         600,
@@ -2503,8 +2503,8 @@
       "type": "PreviewImage",
       "title": "Adonis restored",
       "pos": [
-        7240,
-        900
+        7600,
+        960
       ],
       "size": [
         600,
@@ -2540,8 +2540,8 @@
       "type": "PreviewImage",
       "title": "Final 156×210",
       "pos": [
-        7880,
-        900
+        8280,
+        960
       ],
       "size": [
         600,
@@ -2991,7 +2991,7 @@
         40,
         40,
         800,
-        1960
+        2000
       ],
       "color": "#334155",
       "font_size": 28,
@@ -3003,10 +3003,10 @@
       "id": 2,
       "title": "01 One-at-a-time source processing",
       "bounding": [
-        880,
+        920,
         40,
-        1840,
-        1020
+        1880,
+        1100
       ],
       "color": "#365b41",
       "font_size": 28,
@@ -3018,10 +3018,10 @@
       "id": 3,
       "title": "02 Separate model loaders",
       "bounding": [
-        2760,
+        2880,
         40,
         1080,
-        600
+        680
       ],
       "color": "#365b73",
       "font_size": 28,
@@ -3033,10 +3033,10 @@
       "id": 4,
       "title": "03 Adonis Base → Refine — expanded upstream graph",
       "bounding": [
-        3880,
+        4040,
         40,
-        2640,
-        1400
+        2760,
+        1440
       ],
       "color": "#765b35",
       "font_size": 28,
@@ -3048,10 +3048,10 @@
       "id": 5,
       "title": "04 One live sampler + visible outputs",
       "bounding": [
-        6560,
+        6880,
         40,
-        1960,
-        1710
+        2040,
+        1770
       ],
       "color": "#654572",
       "font_size": 28,

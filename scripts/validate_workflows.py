@@ -136,8 +136,8 @@ def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
         group_bounds[title] = bounds
         for other in (groups or [])[index + 1 :]:
             other_bounds = other.get("bounding", [])
-            if len(other_bounds) == 4 and _overlap(bounds, other_bounds, 40):
-                errors.append(f"{path}: visible groups overlap or lack a 40px gutter: {title} / {other.get('title')}")
+            if len(other_bounds) == 4 and _overlap(bounds, other_bounds, 80):
+                errors.append(f"{path}: visible groups overlap or lack an 80px gutter: {title} / {other.get('title')}")
     members_by_group: dict[str, list[dict[str, Any]]] = {title: [] for title in group_bounds}
     for node in nodes:
         group_name = node.get("properties", {}).get("hoi4_group")
@@ -170,8 +170,8 @@ def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
         box = [*node["pos"], *node["size"]]
         for other in nodes[index + 1 :]:
             other_box = [*other["pos"], *other["size"]]
-            if _overlap(box, other_box, 20):
-                errors.append(f"{path}: nodes {node['id']} and {other['id']} overlap or lack a 20px gutter")
+            if _overlap(box, other_box, 40):
+                errors.append(f"{path}: nodes {node['id']} and {other['id']} overlap or lack a 40px gutter")
     return errors
 
 
@@ -196,10 +196,10 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     is_processing = workflow_id == WORKFLOW_IDS[2]
     is_batch = workflow_id == WORKFLOW_IDS[3]
     compact_limits = {
-        WORKFLOW_IDS[0]: (8800, 2420),
-        WORKFLOW_IDS[1]: (4020, 1700),
-        WORKFLOW_IDS[2]: (8460, 1940),
-        WORKFLOW_IDS[3]: (8480, 1960),
+        WORKFLOW_IDS[0]: (9200, 2600),
+        WORKFLOW_IDS[1]: (4180, 1740),
+        WORKFLOW_IDS[2]: (8860, 1980),
+        WORKFLOW_IDS[3]: (8880, 2000),
     }
     if ui.get("groups") and workflow_id in compact_limits:
         left = min(group["bounding"][0] for group in ui["groups"])
@@ -257,6 +257,10 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
 
     for node in ui.get("nodes", []):
         if node.get("type") != "PreviewImage":
+            if node.get("type") in {"ComfySwitchNode", "Hoi4BackgroundReplace"}:
+                expected_color, expected_background = build_workflows.COLORS["switch"]
+                if [node.get("color"), node.get("bgcolor")] != [expected_color, expected_background]:
+                    errors.append(f"{path}: true/false switch node {node.get('id')} must be red")
             continue
         width, height = node.get("size", [0, 0])
         if [width, height] != [600, 810]:
@@ -273,8 +277,8 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         ordered = sorted(previews, key=lambda node: node["pos"][0])
         if len({node["pos"][1] for node in ordered}) != 1:
             errors.append(f"{path}: preview comparison in {group!r} must be one symmetric row")
-        if any(right["pos"][0] - (left["pos"][0] + left["size"][0]) != 40 for left, right in zip(ordered, ordered[1:])):
-            errors.append(f"{path}: preview comparison in {group!r} must use exact 40px gutters")
+        if any(right["pos"][0] - (left["pos"][0] + left["size"][0]) != 80 for left, right in zip(ordered, ordered[1:])):
+            errors.append(f"{path}: preview comparison in {group!r} must use exact 80px gutters")
 
     candidate_samplers = sorted(
         (node for node in ui.get("nodes", []) if node.get("title", "").startswith("Candidate ") and node.get("type") == "Hoi4PortraitSampler"),
@@ -283,8 +287,8 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     if candidate_samplers:
         if len({node["pos"][0] for node in candidate_samplers}) != 1:
             errors.append(f"{path}: candidate samplers must share one aligned column")
-        if any(lower["pos"][1] - (upper["pos"][1] + upper["size"][1]) != 40 for upper, lower in zip(candidate_samplers, candidate_samplers[1:])):
-            errors.append(f"{path}: candidate samplers must use exact 40px vertical gutters")
+        if any(lower["pos"][1] - (upper["pos"][1] + upper["size"][1]) != 80 for upper, lower in zip(candidate_samplers, candidate_samplers[1:])):
+            errors.append(f"{path}: candidate samplers must use exact 80px vertical gutters")
 
     for node in api.values():
         class_type = node["class_type"]
