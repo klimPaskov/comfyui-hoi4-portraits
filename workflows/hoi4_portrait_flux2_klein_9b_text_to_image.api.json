@@ -1,15 +1,15 @@
 {
-  "3": {
+  "2": {
     "inputs": {
       "unet_name": "flux-2-klein-9b.safetensors",
       "weight_dtype": "default"
     },
     "class_type": "UNETLoader",
     "_meta": {
-      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target"
+      "title": "FLUX.2 Klein 9B"
     }
   },
-  "4": {
+  "3": {
     "inputs": {
       "clip_name": "Qwen3-8B-Q8_0.gguf",
       "type": "flux2",
@@ -20,7 +20,7 @@
       "title": "Load Qwen3 8B Q8 text encoder"
     }
   },
-  "5": {
+  "4": {
     "inputs": {
       "vae_name": "flux2-vae.safetensors"
     },
@@ -29,21 +29,21 @@
       "title": "Load FLUX.2 VAE"
     }
   },
-  "6": {
+  "5": {
     "inputs": {
       "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
       "strength_model": 1.0,
       "model": [
-        "3",
+        "2",
         0
       ]
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load HOI4 style LoRA — step 2500 only"
+      "title": "HOI4 portrait style LoRA"
     }
   },
-  "7": {
+  "6": {
     "inputs": {
       "bg_removal_name": "birefnet.safetensors"
     },
@@ -52,7 +52,7 @@
       "title": "Load BiRefNet mask model"
     }
   },
-  "8": {
+  "7": {
     "inputs": {
       "mode": "text_to_image",
       "prompt": "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.",
@@ -71,32 +71,32 @@
       "end_at_step": 10000,
       "force_full_denoise": true,
       "model": [
-        "6",
+        "5",
         0
       ],
       "clip": [
-        "4",
+        "3",
         0
       ],
       "vae": [
-        "5",
+        "4",
         0
       ]
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Text-to-image — advanced live sampler"
+      "title": "Create portrait from text"
     }
   },
   "9": {
     "inputs": {
       "use_background": false,
       "image": [
-        "8",
+        "7",
         0
       ],
       "bg_removal_model": [
-        "7",
+        "6",
         0
       ],
       "background": [
@@ -106,7 +106,7 @@
     },
     "class_type": "Hoi4BackgroundReplace",
     "_meta": {
-      "title": "Optional background replacement"
+      "title": "Use replacement background"
     }
   },
   "10": {
@@ -122,7 +122,7 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Master — centered 1024×1365 crop"
+      "title": "Master portrait — 1024×1365"
     }
   },
   "11": {
@@ -138,7 +138,7 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Game — centered 156×210 crop"
+      "title": "Game portrait — 156×210"
     }
   },
   "12": {
@@ -147,7 +147,7 @@
     },
     "class_type": "LoadImage",
     "_meta": {
-      "title": "Optional replacement background"
+      "title": "Choose a replacement background"
     }
   },
   "13": {
@@ -179,7 +179,7 @@
   "15": {
     "inputs": {
       "filename_prefix": "156x210/dds/text_to_image",
-      "compression": "dxt5",
+      "format": "argb8888",
       "images": [
         "11",
         0
@@ -187,7 +187,7 @@
     },
     "class_type": "Hoi4SaveDDS",
     "_meta": {
-      "title": "Save game DDS — DXT5, no mipmaps"
+      "title": "Save game DDS"
     }
   },
   "16": {
@@ -199,7 +199,7 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Final 156×210 portrait"
+      "title": "Game portrait"
     }
   }
 }

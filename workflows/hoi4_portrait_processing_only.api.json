@@ -5,7 +5,7 @@
     },
     "class_type": "LoadImage",
     "_meta": {
-      "title": "Load source portrait"
+      "title": "Choose a source portrait"
     }
   },
   "4": {
@@ -34,7 +34,7 @@
     },
     "class_type": "MediaPipeFaceLandmarker",
     "_meta": {
-      "title": "Detect portrait face — bounding box stays visible"
+      "title": "Find the face"
     }
   },
   "6": {
@@ -89,7 +89,7 @@
     },
     "class_type": "AdaptivePortraitCrop",
     "_meta": {
-      "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN"
+      "title": "Crop portrait to 512×683"
     }
   },
   "9": {
@@ -130,7 +130,7 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Normalize RealESRGAN result to 1024×1365"
+      "title": "Resize prepared portrait to 1024×1365"
     }
   },
   "12": {
@@ -140,7 +140,7 @@
     },
     "class_type": "UNETLoader",
     "_meta": {
-      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target"
+      "title": "FLUX.2 Klein 9B"
     }
   },
   "13": {
@@ -174,7 +174,7 @@
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load Adonis Base LoRA"
+      "title": "Adonis Base LoRA"
     }
   },
   "16": {
@@ -188,7 +188,7 @@
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load Adonis Refine LoRA"
+      "title": "Adonis Refine LoRA"
     }
   },
   "17": {
@@ -204,7 +204,7 @@
     },
     "class_type": "ImageScaleToTotalPixelsX",
     "_meta": {
-      "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos"
+      "title": "Resize for restoration — 1.7 MP"
     }
   },
   "18": {
@@ -217,7 +217,7 @@
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
-      "title": "Adonis positive prompt — uhdmanscale"
+      "title": "Restoration prompt"
     }
   },
   "19": {
@@ -294,7 +294,7 @@
     },
     "class_type": "EmptyFlux2LatentImage",
     "_meta": {
-      "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process"
+      "title": "Restoration latent"
     }
   },
   "24": {
@@ -306,7 +306,7 @@
     },
     "class_type": "SharkOptions_Beta",
     "_meta": {
-      "title": "Adonis RES4LYF options — exact upstream"
+      "title": "Restoration sampler settings"
     }
   },
   "25": {
@@ -369,7 +369,7 @@
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)"
+      "title": "Restore details — Base pass (steps 1–5)"
     }
   },
   "28": {
@@ -402,7 +402,7 @@
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Adonis Refine — live RES4LYF sampler (remaining steps)"
+      "title": "Restore details — Refine pass"
     }
   },
   "29": {
@@ -435,10 +435,10 @@
     },
     "class_type": "ComfySwitchNode",
     "_meta": {
-      "title": "Use Adonis restoration"
+      "title": "Use restored portrait"
     }
   },
-  "31": {
+  "32": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
@@ -451,30 +451,30 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Restored master — centered 1024×1365 crop"
+      "title": "Restored master — 1024×1365"
     }
   },
-  "32": {
+  "33": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "31",
+        "32",
         0
       ]
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Restored game — centered 156×210 crop"
+      "title": "Game portrait — 156×210"
     }
   },
-  "33": {
+  "34": {
     "inputs": {
       "filename_prefix": "1024x1365/processing_only",
       "images": [
-        "31",
+        "32",
         0
       ]
     },
@@ -483,34 +483,34 @@
       "title": "Save restored master PNG"
     }
   },
-  "34": {
+  "35": {
     "inputs": {
       "filename_prefix": "156x210/processing_only",
       "images": [
-        "32",
+        "33",
         0
       ]
     },
     "class_type": "SaveImage",
     "_meta": {
-      "title": "Save restored game PNG"
+      "title": "Save game PNG"
     }
   },
-  "35": {
+  "36": {
     "inputs": {
       "filename_prefix": "156x210/dds/processing_only",
-      "compression": "dxt5",
+      "format": "argb8888",
       "images": [
-        "32",
+        "33",
         0
       ]
     },
     "class_type": "Hoi4SaveDDS",
     "_meta": {
-      "title": "Save restored game DDS"
+      "title": "Save game DDS"
     }
   },
-  "36": {
+  "38": {
     "inputs": {
       "images": [
         "11",
@@ -519,10 +519,10 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "RealESRGAN"
+      "title": "Prepared portrait"
     }
   },
-  "37": {
+  "39": {
     "inputs": {
       "images": [
         "30",
@@ -531,19 +531,19 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Adonis Base → Refine"
+      "title": "Restored portrait"
     }
   },
-  "38": {
+  "40": {
     "inputs": {
       "images": [
-        "32",
+        "33",
         0
       ]
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Final 156×210"
+      "title": "Game portrait"
     }
   }
 }

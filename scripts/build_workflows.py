@@ -40,53 +40,62 @@ RESTORATION_PROMPT = (
     "Output as professional high resolution color camera RAW image."
 )
 
-SETUP_NOTE = (
-    "📦 MODELS + FOLDERS\n\n"
-    "The installer places every file automatically. Manual locations:\n\n"
-    "ComfyUI/models/\n"
-    "├── diffusion_models/\n"
-    "│   └── flux-2-klein-9b.safetensors (distilled; never Base)\n"
-    "├── text_encoders/\n"
-    "│   └── Qwen3-8B-Q8_0.gguf\n"
-    "├── vae/\n"
-    "│   └── flux2-vae.safetensors\n"
-    "├── loras/\n"
-    "│   ├── hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n"
-    "│   ├── adonis_base.safetensors\n"
-    "│   └── adonis_refine.safetensors\n"
-    "├── upscale_models/RealESRGAN_x2plus.pth\n"
-    "├── background_removal/birefnet.safetensors\n"
-    "└── detection/mediapipe_face_fp32.safetensors\n\n"
-    "Model links and exact pinned revisions are in models.json. The installer selects full, FP8, or GGUF for your VRAM."
+def _build_setup_note() -> str:
+    catalog = json.loads((ROOT / "models.json").read_text())
+    downloads = []
+    for model in catalog["models"]:
+        variant = f" [{model['variant']}]" if model.get("variant") not in {None, "shared"} else ""
+        downloads.extend((f"⬇️ {model['filename']}{variant}", model["url"]))
+    return "\n".join(
+        (
+            "📦 FILES + DOWNLOADS",
+            "The installer can place these for you. If you install them by hand, use these folders:",
+            "",
+            "📂 ComfyUI/models/",
+            "├── 🧠 diffusion_models/ — choose one FLUX.2 file",
+            "├── 💬 text_encoders/ — Qwen3-8B-Q8_0.gguf",
+            "├── 🎨 vae/ — flux2-vae.safetensors",
+            "├── 🧩 loras/ — HOI4 style + Adonis Base + Adonis Refine",
+            "├── 🔎 upscale_models/ — RealESRGAN_x2plus.pth",
+            "├── ✂️ background_removal/ — birefnet.safetensors",
+            "└── 🙂 detection/ — MediaPipe + YuNet fallback",
+            "",
+            "Direct downloads:",
+            *downloads,
+        )
+    )
+
+
+SETUP_NOTE = _build_setup_note()
+
+PREP_NOTE = (
+    "🙂 Start with a clear portrait. The crop follows the face and leaves room for hats. "
+    "Use the manual crop controls only when the automatic crop misses."
 )
 
-SAMPLER_NOTE = (
-    "🎛️ SAMPLER — TUNED DEFAULTS\n\n"
-    "4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\n"
-    "Steps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. "
-    "Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\n"
-    "Only the purple style sampler combines controls. Model loading, source processing, Adonis Base, Adonis Refine, decoding, and output sizing stay visible as separate nodes. "
-    "ComfyUI's live latent callback shows both style and restoration construction while they run."
+RESTORE_NOTE = (
+    "✨ This cleans up blur, colour damage, and missing facial detail before styling. "
+    "Leave the red switch on for old or low-quality photos; turn it off for a clean modern image."
 )
 
-PROMPT_NOTE = (
-    "✍️ PROMPTING + RESTORATION\n\n"
-    f"Keep the source prompt exactly:\n{STYLE_PROMPT}\n\n"
-    "Only append short facts when necessary: ethnicity or skin colour, age/hair, and civilian/military/clerical clothing. "
-    "Do not re-describe the game style.\n\n"
-    "RealESRGAN prepares the crop. The expanded Adonis Base → Refine graph restores colour and facial detail first, so the style LoRA does not have to guess them. "
-    "Disable the visible restoration switch only for a clean modern photograph."
+STYLE_NOTE = (
+    f"🎨 Keep the prompt as: {STYLE_PROMPT}\n"
+    "Add only a few identity or clothing details if you need them. Change the seed for a different portrait."
+)
+
+TEXT_STYLE_NOTE = (
+    "🎨 Describe the person and clothing in one short sentence. The defaults are a good starting point: "
+    "4 steps, CFG 1, guidance 1, Euler, simple."
 )
 
 BATCH_NOTE = (
-    "🖼️ BATCH — ONE PORTRAIT AT A TIME\n\n"
-    "Drop PNG/JPG/JPEG/WebP files into ComfyUI/input/hoi4_portraits_batch/ and queue once. "
-    "The list output makes ComfyUI execute this one-sampler graph once per source.\n\n"
-    "Automatic outputs:\n"
-    "output/1024x1365/\n"
-    "output/156x210/\n"
-    "output/156x210/dds/\n\n"
-    "DDS is DXT5/BC3, 156×210, one top level, no mipmaps."
+    "🖼️ Put PNG, JPG, JPEG, or WebP files in input/hoi4_portraits_batch/ and queue once. "
+    "Each photo runs on its own and keeps the same settings."
+)
+
+OUTPUT_NOTE = (
+    "💾 The DDS is the game portrait: 156×210, A8R8G8B8, no mipmaps. "
+    "Move it to your mod's gfx/leaders/TAG/ folder and reference it from the portrait sprite."
 )
 
 COLORS = {
@@ -114,13 +123,15 @@ class Graph:
         self.links: list[list[Any]] = []
         self.groups: list[dict[str, Any]] = []
         self._group_titles: set[str] = set()
+        self._group_node_colors: dict[str, str] = {}
         self._node_id = 0
         self._link_id = 0
 
-    def group(self, title: str, color: str) -> None:
+    def group(self, title: str, color: str, node_color: str) -> None:
         if title in self._group_titles:
             raise ValueError(f"duplicate group title: {title}")
         self._group_titles.add(title)
+        self._group_node_colors[title] = node_color
         self.groups.append(
             {
                 "id": len(self.groups) + 1,
@@ -129,6 +140,7 @@ class Graph:
                 "color": color,
                 "font_size": 28,
                 "flags": {"collapsed": False},
+                "properties": {"hoi4_node_color": node_color},
             }
         )
 
@@ -143,13 +155,14 @@ class Graph:
         outputs: list[tuple[str, str]],
         widgets: list[Any],
         api_inputs: dict[str, Any],
-        color: str = "output",
+        color: str | None = None,
     ) -> Ref:
         if group not in self._group_titles:
             raise ValueError(f"unknown visible group: {group}")
         self._node_id += 1
         node_id = self._node_id
-        foreground, background = COLORS[color]
+        node_color = "switch" if color == "switch" else self._group_node_colors[group]
+        foreground, background = COLORS[node_color]
         ui_inputs = []
         for name, type_name, is_widget in inputs:
             item: dict[str, Any] = {"name": name, "type": type_name, "link": None}
@@ -220,7 +233,7 @@ class Graph:
             "style_lora": style_lora,
             "master_size": [1024, 1365],
             "game_size": [156, 210],
-            "dds": {"compression": "DXT5", "mipmaps": False},
+            "dds": {"format": "A8R8G8B8", "mipmaps": False},
             "frontendVersion": "1.24.2",
             "ds": {"scale": 0.72, "offset": [0, 0]},
         }
@@ -262,7 +275,7 @@ def _preview(g: Graph, title: str, pos: tuple[int, int], group: str) -> Ref:
 
 def _unet(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "UNETLoader", "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target", pos, (440, 130), group,
+        "UNETLoader", "FLUX.2 Klein 9B", pos, (440, 130), group,
         [("unet_name", "COMBO", True), ("weight_dtype", "COMBO", True)], [("MODEL", "MODEL")],
         [BASE_MODEL, "default"], {"unet_name": BASE_MODEL, "weight_dtype": "default"}, "model",
     )
@@ -303,7 +316,7 @@ def _face_loader(g: Graph, pos: tuple[int, int], group: str) -> Ref:
 def _face_detect(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     values = ["both", 1, 0.35, "empty"]
     return g.node(
-        "MediaPipeFaceLandmarker", "Detect portrait face — bounding box stays visible", pos, (500, 300), group,
+        "MediaPipeFaceLandmarker", "Find the face", pos, (500, 300), group,
         [("face_detection_model", "FACE_DETECTION_MODEL", False), ("image", "IMAGE", False),
          ("detector_variant", "COMBO", True), ("num_faces", "INT", True),
          ("min_confidence", "FLOAT", True), ("missing_frame_fallback", "COMBO", True)],
@@ -335,7 +348,7 @@ def _adaptive_crop(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     )
     values = [True, False, 0.0, 0.0, 1.0, 1.0, 0.9, True, 512, 683]
     return g.node(
-        "AdaptivePortraitCrop", "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN", pos, (480, 420), group,
+        "AdaptivePortraitCrop", "Crop portrait to 512×683", pos, (480, 420), group,
         [("image", "IMAGE", False), ("face_bboxes", "BOUNDING_BOX", False), ("subject_mask", "MASK", False),
          ("face_processing", "BOOLEAN", True), ("use_manual_crop", "BOOLEAN", True),
          ("manual_x", "FLOAT", True), ("manual_y", "FLOAT", True),
@@ -380,7 +393,7 @@ def _source_pipeline(g: Graph, source: Ref, group: str, *, x: int = 1600) -> Ref
     crop = _adaptive_crop(g, (x + 540, 100), group)
     upscale_loader = _upscale_loader(g, (x + 540, 600), group)
     upscale = _upscale(g, (x + 540, 760), group)
-    normalized = _image_scale(g, "Normalize RealESRGAN result to 1024×1365", 1024, 1365, (x + 540, 920), group)
+    normalized = _image_scale(g, "Resize prepared portrait to 1024×1365", 1024, 1365, (x + 540, 920), group)
     g.connect(face_loader, 0, detector, "face_detection_model")
     g.connect(source, 0, detector, "image")
     g.connect(mask_loader, 0, mask, "bg_removal_model")
@@ -397,7 +410,7 @@ def _source_pipeline(g: Graph, source: Ref, group: str, *, x: int = 1600) -> Ref
 def _scale_total(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     values = [1.7, 16, "crop", "lanczos"]
     return g.node(
-        "ImageScaleToTotalPixelsX", "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos", pos, (400, 240), group,
+        "ImageScaleToTotalPixelsX", "Resize for restoration — 1.7 MP", pos, (400, 240), group,
         [("image", "IMAGE", False), ("megapixels", "FLOAT", True), ("multiple_of", "INT", True),
          ("resize_mode", "COMBO", True), ("upscale_method", "COMBO", True)],
         [("image", "IMAGE"), ("width", "INT"), ("height", "INT")],
@@ -407,7 +420,7 @@ def _scale_total(g: Graph, pos: tuple[int, int], group: str) -> Ref:
 
 def _clip_encode(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "CLIPTextEncode", "Adonis positive prompt — uhdmanscale", pos, (440, 260), group,
+        "CLIPTextEncode", "Restoration prompt", pos, (440, 260), group,
         [("clip", "CLIP", False), ("text", "STRING", True)], [("CONDITIONING", "CONDITIONING")],
         [RESTORATION_PROMPT], {"text": RESTORATION_PROMPT}, "restore",
     )
@@ -438,7 +451,7 @@ def _reference(g: Graph, title: str, pos: tuple[int, int], group: str) -> Ref:
 def _empty_latent(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     values = [1024, 1024, 1]
     return g.node(
-        "EmptyFlux2LatentImage", "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process", pos, (360, 180), group,
+        "EmptyFlux2LatentImage", "Restoration latent", pos, (360, 180), group,
         [("width", "INT", True), ("height", "INT", True), ("batch_size", "INT", True)], [("LATENT", "LATENT")],
         values, dict(zip(("width", "height", "batch_size"), values)), "restore",
     )
@@ -447,7 +460,7 @@ def _empty_latent(g: Graph, pos: tuple[int, int], group: str) -> Ref:
 def _shark_options(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     values = ["laplacian", 1.0, 1.0, False]
     return g.node(
-        "SharkOptions_Beta", "Adonis RES4LYF options — exact upstream", pos, (400, 180), group,
+        "SharkOptions_Beta", "Restoration sampler settings", pos, (400, 180), group,
         [("noise_type_init", "COMBO", True), ("s_noise_init", "FLOAT", True),
          ("denoise_alt", "FLOAT", True), ("channelwise_cfg", "BOOLEAN", True)], [("options", "OPTIONS")],
         values, dict(zip(("noise_type_init", "s_noise_init", "denoise_alt", "channelwise_cfg"), values)), "restore",
@@ -503,10 +516,10 @@ def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *,
     options = _shark_options(g, (x + 880, 100), group)
     seed = _primitive_int(g, "Shared Adonis seed", 42, (x + 880, 360), group)
     steps = _primitive_int(g, "Total Adonis steps", 9, (x + 880, 540), group)
-    base = _adonis_sampler(g, "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)", (x + 1360, 100), group, refine=False)
-    refine = _adonis_sampler(g, "Adonis Refine — live RES4LYF sampler (remaining steps)", (x + 1940, 100), group, refine=True)
+    base = _adonis_sampler(g, "Restore details — Base pass (steps 1–5)", (x + 1360, 100), group, refine=False)
+    refine = _adonis_sampler(g, "Restore details — Refine pass", (x + 1940, 100), group, refine=True)
     decoded = _vae_decode(g, (x + 1940, 1280), group)
-    enabled = _switch(g, "Use Adonis restoration", True, (x + 2320, 1280), group)
+    enabled = _switch(g, "Use restored portrait", True, (x + 2320, 1280), group)
 
     g.connect(image, 0, scale, "image")
     g.connect(model["clip"], 0, prompt, "clip")
@@ -539,23 +552,23 @@ def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *,
     return enabled, scale
 
 
-def _model_pipeline(g: Graph, group: str, *, x: int, style: bool, adonis: bool, background: bool) -> dict[str, Ref]:
-    unet = _unet(g, (x, 100), group)
-    clip = _clip(g, (x, 320), group)
-    vae = _vae(g, (x, 540), group)
+def _model_pipeline(g: Graph, group: str, *, x: int, y: int = 100, style: bool, adonis: bool, background: bool) -> dict[str, Ref]:
+    unet = _unet(g, (x, y), group)
+    clip = _clip(g, (x, y + 220), group)
+    vae = _vae(g, (x, y + 440), group)
     result: dict[str, Ref] = {"unet": unet, "clip": clip, "vae": vae}
     if style:
-        style_lora = _lora(g, "Load HOI4 style LoRA — step 2500 only", STYLE_LORA, (x + 500, 100), group)
+        style_lora = _lora(g, "HOI4 portrait style LoRA", STYLE_LORA, (x + 500, y), group)
         g.connect(unet, 0, style_lora, "model")
         result["style"] = style_lora
     if adonis:
-        base = _lora(g, "Load Adonis Base LoRA", ADONIS_BASE, (x + 500, 320), group)
-        refine = _lora(g, "Load Adonis Refine LoRA", ADONIS_REFINE, (x + 500, 540), group)
+        base = _lora(g, "Adonis Base LoRA", ADONIS_BASE, (x + 500, y + 220), group)
+        refine = _lora(g, "Adonis Refine LoRA", ADONIS_REFINE, (x + 500, y + 440), group)
         g.connect(unet, 0, base, "model")
         g.connect(unet, 0, refine, "model")
         result.update({"adonis_base": base, "adonis_refine": refine})
     if background:
-        result["background_model"] = _background_model(g, (x, 720), group)
+        result["background_model"] = _background_model(g, (x, y + 620), group)
     return result
 
 
@@ -586,6 +599,26 @@ def _background_replace(g: Graph, title: str, pos: tuple[int, int], group: str) 
     )
 
 
+def _image_batch(g: Graph, title: str, first: Ref, second: Ref, pos: tuple[int, int], group: str) -> Ref:
+    node = g.node(
+        "ImageBatch", title, pos, (360, 100), group,
+        [("image1", "IMAGE", False), ("image2", "IMAGE", False)], [("IMAGE", "IMAGE")], [], {},
+    )
+    g.connect(first, 0, node, "image1")
+    g.connect(second, 0, node, "image2")
+    return node
+
+
+def _image_from_batch(g: Graph, title: str, image: Ref, index: int, pos: tuple[int, int], group: str) -> Ref:
+    node = g.node(
+        "ImageFromBatch", title, pos, (360, 140), group,
+        [("image", "IMAGE", False), ("batch_index", "INT", True), ("length", "INT", True)],
+        [("IMAGE", "IMAGE")], [index, 1], {"batch_index": index, "length": 1},
+    )
+    g.connect(image, 0, node, "image")
+    return node
+
+
 def _save_image(g: Graph, title: str, prefix: str, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
         "SaveImage", title, pos, (420, 150), group,
@@ -597,15 +630,15 @@ def _save_image(g: Graph, title: str, prefix: str, pos: tuple[int, int], group: 
 def _save_dds(g: Graph, title: str, prefix: str, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
         "Hoi4SaveDDS", title, pos, (420, 190), group,
-        [("images", "IMAGE", False), ("filename_prefix", "STRING", True), ("compression", "COMBO", True)], [("images", "IMAGE")],
-        [prefix, "dxt5"], {"filename_prefix": prefix, "compression": "dxt5"}, "output",
+        [("images", "IMAGE", False), ("filename_prefix", "STRING", True), ("format", "COMBO", True)], [("images", "IMAGE")],
+        [prefix, "argb8888"], {"filename_prefix": prefix, "format": "argb8888"}, "output",
     )
 
 
 def _batch_input(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     values = ["hoi4_portraits_batch", "*.png;*.jpg;*.jpeg;*.webp"]
     return g.node(
-        "Hoi4BatchInput", "Batch input folder — list output runs one portrait at a time", pos, (700, 260), group,
+        "Hoi4BatchInput", "Batch portrait folder", pos, (700, 260), group,
         [("input_folder", "STRING", True), ("file_pattern", "STRING", True)],
         [("images", "IMAGE"), ("masks", "MASK"), ("filenames", "STRING")], values,
         {"input_folder": values[0], "file_pattern": values[1]}, "source",
@@ -621,88 +654,102 @@ def _wire_style(g: Graph, model: dict[str, Ref], sampler: Ref, reference: Ref | 
 
 
 def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
-    g = Graph("hoi4_portrait_flux2_klein_9b_source", "HOI4 Portrait — source reference, three candidates")
-    g.group("00 Welcome & setup", "#334155")
-    g.group("01 Source processing — every node visible", "#365b41")
-    g.group("02 Separate model loaders", "#365b73")
-    g.group("03 Adonis Base → Refine — expanded upstream graph", "#765b35")
-    g.group("04 Three live style candidates", "#654572")
-    g.group("05 Automatic outputs", "#3d596f")
-    g.group("06 Portrait comparison", "#334c61")
+    g = Graph("hoi4_portrait_flux2_klein_9b_source", "HOI4 Portrait — source reference, three portraits")
+    g.group("00 Setup", "#334155", "note")
+    g.group("01 Prepare portrait", "#365b41", "source")
+    g.group("02 Models", "#365b73", "model")
+    g.group("03 Restore details", "#765b35", "restore")
+    g.group("04 Create three portraits", "#654572", "sample")
+    g.group("05 Save portraits", "#3d596f", "output")
+    g.group("06 Compare portraits", "#334c61", "output")
 
-    _note(g, "📦 Setup — models, variants, and folders", SETUP_NOTE, (80, 100), (720, 760), "00 Welcome & setup")
-    _note(g, "🎛️ Beginner + advanced sampler guide", SAMPLER_NOTE, (80, 940), (720, 700), "00 Welcome & setup")
-    _note(g, "✍️ Exact prompt and why restoration helps", PROMPT_NOTE, (80, 1720), (720, 780), "00 Welcome & setup")
+    _note(g, "📦 Files and downloads", SETUP_NOTE, (80, 100), (1320, 1100), "00 Setup")
 
-    source = _load_image(g, "Load source portrait — upload or choose here", "source_portrait.jpg", (960, 100), (600, 620), "01 Source processing — every node visible")
-    source_preview = _preview(g, "Source preview", (960, 800), "01 Source processing — every node visible")
+    source = _load_image(g, "Choose a source portrait", "source_portrait.jpg", (1560, 100), (600, 620), "01 Prepare portrait")
+    source_preview = _preview(g, "Source portrait", (1560, 800), "01 Prepare portrait")
     g.connect(source, 0, source_preview, "images")
-    esrgan = _source_pipeline(g, source, "01 Source processing — every node visible", x=1640)
-    background = _load_image(g, "Optional replacement background", "hoi4_leader_portrait_background.png", (1640, 1180), (600, 560), "01 Source processing — every node visible")
+    esrgan = _source_pipeline(g, source, "01 Prepare portrait", x=2240)
+    _note(g, "🙂 Cropping tip", PREP_NOTE, (2240, 1160), (1020, 180), "01 Prepare portrait")
 
-    model = _model_pipeline(g, "02 Separate model loaders", x=2820, style=True, adonis=True, background=True)
-    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Adonis Base → Refine — expanded upstream graph", x=3980)
+    model = _model_pipeline(g, "02 Models", x=1560, y=1800, style=True, adonis=True, background=True)
+    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=3420)
+    _note(g, "✨ When to restore", RESTORE_NOTE, (3420, 920), (440, 180), "03 Restore details")
+
+    portraits: list[Ref] = []
+    for index, (seed, y) in enumerate(((42, 100), (43, 960), (44, 1820)), start=1):
+        sampler = _style_sampler(g, f"Portrait {index}", (6940, y), "04 Create three portraits", mode="source_reference", prompt=STYLE_PROMPT, seed=seed)
+        _wire_style(g, model, sampler, restored)
+        portraits.append(sampler)
+
+    _note(g, "🎨 Prompt tip", STYLE_NOTE, (7740, 100), (600, 180), "04 Create three portraits")
+    first_pair = _image_batch(g, "Join portraits 1 and 2", portraits[0], portraits[1], (7740, 360), "04 Create three portraits")
+    all_portraits = _image_batch(g, "Add portrait 3", first_pair, portraits[2], (7740, 520), "04 Create three portraits")
+    background = _load_image(g, "Choose a replacement background", "hoi4_leader_portrait_background.png", (7740, 700), (600, 560), "04 Create three portraits")
+    replace = _background_replace(g, "Use replacement background", (7740, 1340), "04 Create three portraits")
+    g.connect(all_portraits, 0, replace, "image")
+    g.connect(model["background_model"], 0, replace, "bg_removal_model")
+    g.connect(background, 0, replace, "background")
 
     finals: list[Ref] = []
-    for index, (seed, y) in enumerate(((42, 100), (43, 960), (44, 1820)), start=1):
-        sampler = _style_sampler(g, f"Candidate {index} — advanced live style sampler", (6820, y), "04 Three live style candidates", mode="source_reference", prompt=STYLE_PROMPT, seed=seed)
-        replace = _background_replace(g, f"Candidate {index} — optional background replacement", (7620, y), "04 Three live style candidates")
-        master = _image_scale(g, f"Candidate {index} master — centered 1024×1365 crop", 1024, 1365, (7620, y + 340), "04 Three live style candidates")
-        game = _image_scale(g, f"Candidate {index} game — centered 156×210 crop", 156, 210, (7620, y + 600), "04 Three live style candidates")
-        _wire_style(g, model, sampler, restored)
-        g.connect(sampler, 0, replace, "image")
-        g.connect(model["background_model"], 0, replace, "bg_removal_model")
-        g.connect(background, 0, replace, "background")
-        g.connect(replace, 0, master, "image")
+    masters: list[Ref] = []
+    for index, y in enumerate((760, 1020, 1280), start=1):
+        portrait = _image_from_batch(g, f"Take portrait {index}", replace, index - 1, (8420, 100 + (index - 1) * 220), "04 Create three portraits")
+        master = _image_scale(g, f"Portrait {index} master — 1024×1365", 1024, 1365, (8420, y), "04 Create three portraits")
+        game = _image_scale(g, f"Portrait {index} game — 156×210", 156, 210, (8900, y), "04 Create three portraits")
+        g.connect(portrait, 0, master, "image")
         g.connect(master, 0, game, "image")
+        masters.append(master)
         finals.append(game)
 
+    for index, (master, game) in enumerate(zip(masters, finals), start=1):
         oy = 100 + (index - 1) * 480
-        save_master = _save_image(g, f"Save candidate {index} master PNG", f"1024x1365/candidate_{index}", (8280, oy), "05 Automatic outputs")
-        save_game = _save_image(g, f"Save candidate {index} game PNG", f"156x210/candidate_{index}", (8780, oy), "05 Automatic outputs")
-        save_dds = _save_dds(g, f"Save candidate {index} DDS — DXT5, no mipmaps", f"156x210/dds/candidate_{index}", (8780, oy + 200), "05 Automatic outputs")
+        save_master = _save_image(g, f"Save portrait {index} master PNG", f"1024x1365/portrait_{index}", (9460, oy), "05 Save portraits")
+        save_game = _save_image(g, f"Save portrait {index} game PNG", f"156x210/portrait_{index}", (9960, oy), "05 Save portraits")
+        save_dds = _save_dds(g, f"Save portrait {index} DDS", f"156x210/dds/portrait_{index}", (9960, oy + 200), "05 Save portraits")
         g.connect(master, 0, save_master, "images")
         g.connect(game, 0, save_game, "images")
         g.connect(game, 0, save_dds, "images")
+    _note(g, "💾 Using the DDS", OUTPUT_NOTE, (9460, 1680), (920, 180), "05 Save portraits")
 
     comparison = [
-        ("RealESRGAN prepared crop", esrgan),
-        ("Adonis Base → Refine restored", restored),
-        ("Final candidate 1 — 156×210", finals[0]),
-        ("Final candidate 2 — 156×210", finals[1]),
-        ("Final candidate 3 — 156×210", finals[2]),
+        ("Prepared portrait", esrgan),
+        ("Restored portrait", restored),
+        ("Portrait 1 — 156×210", finals[0]),
+        ("Portrait 2 — 156×210", finals[1]),
+        ("Portrait 3 — 156×210", finals[2]),
     ]
     for index, (title, ref) in enumerate(comparison):
-        preview = _preview(g, title, (2820 + index * 680, 1640), "06 Portrait comparison")
+        preview = _preview(g, title, (3420 + index * 680, 1700), "06 Compare portraits")
         g.connect(ref, 0, preview, "images")
     return g.serialize(style_lora=STYLE_LORA)
 
 
 def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
     g = Graph("hoi4_portrait_flux2_klein_9b_text_to_image", "HOI4 Portrait — text to image")
-    g.group("00 Notes", "#334155")
-    g.group("01 Separate model loaders", "#365b73")
-    g.group("02 One advanced live sampler", "#654572")
-    g.group("03 Visible background, sizing, saves, preview", "#3d596f")
-    _note(g, "📦 Setup", SETUP_NOTE, (80, 100), (720, 800), "00 Notes")
-    _note(g, "🎛️ Sampler guide", SAMPLER_NOTE, (80, 980), (720, 760), "00 Notes")
-    model = _model_pipeline(g, "01 Separate model loaders", x=960, style=True, adonis=False, background=True)
-    sampler = _style_sampler(g, "Text-to-image — advanced live sampler", (2120, 100), "02 One advanced live sampler", mode="text_to_image", prompt=TEXT_PROMPT, seed=42)
+    g.group("00 Setup", "#334155", "note")
+    g.group("01 Models", "#365b73", "model")
+    g.group("02 Create portrait", "#654572", "sample")
+    g.group("03 Finish and save", "#3d596f", "output")
+    _note(g, "📦 Files and downloads", SETUP_NOTE, (80, 100), (1320, 1100), "00 Setup")
+    model = _model_pipeline(g, "01 Models", x=1560, style=True, adonis=False, background=True)
+    sampler = _style_sampler(g, "Create portrait from text", (2720, 100), "02 Create portrait", mode="text_to_image", prompt=TEXT_PROMPT, seed=42)
+    _note(g, "🎨 Writing the prompt", TEXT_STYLE_NOTE, (2720, 960), (720, 180), "02 Create portrait")
     _wire_style(g, model, sampler, None)
 
-    replace = _background_replace(g, "Optional background replacement", (3000, 100), "03 Visible background, sizing, saves, preview")
-    master = _image_scale(g, "Master — centered 1024×1365 crop", 1024, 1365, (3000, 440), "03 Visible background, sizing, saves, preview")
-    game = _image_scale(g, "Game — centered 156×210 crop", 156, 210, (3000, 700), "03 Visible background, sizing, saves, preview")
-    background = _load_image(g, "Optional replacement background", "hoi4_leader_portrait_background.png", (3580, 100), (600, 560), "03 Visible background, sizing, saves, preview")
+    replace = _background_replace(g, "Use replacement background", (3600, 100), "03 Finish and save")
+    master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (3600, 440), "03 Finish and save")
+    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (3600, 700), "03 Finish and save")
+    background = _load_image(g, "Choose a replacement background", "hoi4_leader_portrait_background.png", (4180, 100), (600, 560), "03 Finish and save")
     g.connect(sampler, 0, replace, "image")
     g.connect(model["background_model"], 0, replace, "bg_removal_model")
     g.connect(background, 0, replace, "background")
     g.connect(replace, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save master PNG", "1024x1365/text_to_image", (3000, 960), "03 Visible background, sizing, saves, preview")
-    save_game = _save_image(g, "Save game PNG", "156x210/text_to_image", (3000, 1200), "03 Visible background, sizing, saves, preview")
-    save_dds = _save_dds(g, "Save game DDS — DXT5, no mipmaps", "156x210/dds/text_to_image", (3000, 1440), "03 Visible background, sizing, saves, preview")
-    preview = _preview(g, "Final 156×210 portrait", (3580, 740), "03 Visible background, sizing, saves, preview")
+    save_master = _save_image(g, "Save master PNG", "1024x1365/text_to_image", (3600, 960), "03 Finish and save")
+    save_game = _save_image(g, "Save game PNG", "156x210/text_to_image", (3600, 1200), "03 Finish and save")
+    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/text_to_image", (3600, 1440), "03 Finish and save")
+    preview = _preview(g, "Game portrait", (4180, 740), "03 Finish and save")
+    _note(g, "💾 Using the DDS", OUTPUT_NOTE, (4180, 1620), (600, 180), "03 Finish and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
@@ -712,60 +759,65 @@ def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
 
 def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     g = Graph("hoi4_portrait_processing_only", "HOI4 Portrait — processing and restoration only")
-    g.group("00 Notes", "#334155")
-    g.group("01 Source processing — every node visible", "#365b41")
-    g.group("02 Separate model loaders", "#365b73")
-    g.group("03 Adonis Base → Refine — expanded upstream graph", "#765b35")
-    g.group("04 Visible sizing, saves, comparison", "#3d596f")
-    _note(g, "📦 Setup", SETUP_NOTE, (80, 100), (720, 900), "00 Notes")
-    _note(g, "✨ Processing-only guide", PROMPT_NOTE, (80, 1080), (720, 900), "00 Notes")
-    source = _load_image(g, "Load source portrait", "source_portrait.jpg", (960, 340), (680, 620), "01 Source processing — every node visible")
-    esrgan = _source_pipeline(g, source, "01 Source processing — every node visible", x=1720)
-    model = _model_pipeline(g, "02 Separate model loaders", x=2900, style=False, adonis=True, background=False)
-    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Adonis Base → Refine — expanded upstream graph", x=4060)
-    master = _image_scale(g, "Restored master — centered 1024×1365 crop", 1024, 1365, (6900, 100), "04 Visible sizing, saves, comparison")
-    game = _image_scale(g, "Restored game — centered 156×210 crop", 156, 210, (7380, 100), "04 Visible sizing, saves, comparison")
+    g.group("00 Setup", "#334155", "note")
+    g.group("01 Prepare portrait", "#365b41", "source")
+    g.group("02 Models", "#365b73", "model")
+    g.group("03 Restore details", "#765b35", "restore")
+    g.group("04 Finish and save", "#3d596f", "output")
+    _note(g, "📦 Files and downloads", SETUP_NOTE, (80, 100), (1320, 1100), "00 Setup")
+    _note(g, "🙂 Cropping tip", PREP_NOTE, (1560, 100), (680, 180), "01 Prepare portrait")
+    source = _load_image(g, "Choose a source portrait", "source_portrait.jpg", (1560, 340), (680, 620), "01 Prepare portrait")
+    esrgan = _source_pipeline(g, source, "01 Prepare portrait", x=2320)
+    model = _model_pipeline(g, "02 Models", x=1560, y=1320, style=False, adonis=True, background=False)
+    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=3500)
+    _note(g, "✨ When to restore", RESTORE_NOTE, (3500, 920), (440, 180), "03 Restore details")
+    master = _image_scale(g, "Restored master — 1024×1365", 1024, 1365, (6340, 100), "04 Finish and save")
+    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (6820, 100), "04 Finish and save")
     g.connect(restored, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save restored master PNG", "1024x1365/processing_only", (7860, 100), "04 Visible sizing, saves, comparison")
-    save_game = _save_image(g, "Save restored game PNG", "156x210/processing_only", (7860, 340), "04 Visible sizing, saves, comparison")
-    save_dds = _save_dds(g, "Save restored game DDS", "156x210/dds/processing_only", (7860, 580), "04 Visible sizing, saves, comparison")
+    save_master = _save_image(g, "Save restored master PNG", "1024x1365/processing_only", (7300, 100), "04 Finish and save")
+    save_game = _save_image(g, "Save game PNG", "156x210/processing_only", (7300, 340), "04 Finish and save")
+    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/processing_only", (7300, 580), "04 Finish and save")
+    _note(g, "💾 Using the DDS", OUTPUT_NOTE, (7300, 840), (420, 180), "04 Finish and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
-    for index, (title, ref) in enumerate((("RealESRGAN", esrgan), ("Adonis Base → Refine", restored), ("Final 156×210", game))):
-        preview = _preview(g, title, (6900 + index * 680, 860), "04 Visible sizing, saves, comparison")
+    for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Game portrait", game))):
+        preview = _preview(g, title, (6340 + index * 680, 1120), "04 Finish and save")
         g.connect(ref, 0, preview, "images")
     return g.serialize(style_lora=None)
 
 
 def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     g = Graph("hoi4_portrait_batch", "HOI4 Portrait — batch input and output")
-    g.group("00 Batch guide", "#334155")
-    g.group("01 One-at-a-time source processing", "#365b41")
-    g.group("02 Separate model loaders", "#365b73")
-    g.group("03 Adonis Base → Refine — expanded upstream graph", "#765b35")
-    g.group("04 One live sampler + visible outputs", "#654572")
-    _note(g, "🖼️ Batch input and output", BATCH_NOTE, (80, 100), (720, 920), "00 Batch guide")
-    _note(g, "🎛️ Sampler guide", SAMPLER_NOTE, (80, 1100), (720, 900), "00 Batch guide")
-    batch = _batch_input(g, (960, 480), "01 One-at-a-time source processing")
-    esrgan = _source_pipeline(g, batch, "01 One-at-a-time source processing", x=1740)
-    model = _model_pipeline(g, "02 Separate model loaders", x=2920, style=True, adonis=True, background=False)
-    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Adonis Base → Refine — expanded upstream graph", x=4080)
-    sampler = _style_sampler(g, "Batch portrait — one advanced live sampler", (6920, 100), "04 One live sampler + visible outputs", mode="source_reference", prompt=STYLE_PROMPT, seed=42)
+    g.group("00 Setup", "#334155", "note")
+    g.group("01 Prepare portraits", "#365b41", "source")
+    g.group("02 Models", "#365b73", "model")
+    g.group("03 Restore details", "#765b35", "restore")
+    g.group("04 Create and save", "#654572", "sample")
+    _note(g, "📦 Files and downloads", SETUP_NOTE, (80, 100), (1320, 1100), "00 Setup")
+    _note(g, "🖼️ Batch folder", BATCH_NOTE, (1560, 100), (700, 180), "01 Prepare portraits")
+    batch = _batch_input(g, (1560, 480), "01 Prepare portraits")
+    esrgan = _source_pipeline(g, batch, "01 Prepare portraits", x=2340)
+    model = _model_pipeline(g, "02 Models", x=1560, y=1320, style=True, adonis=True, background=False)
+    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=3540)
+    _note(g, "✨ When to restore", RESTORE_NOTE, (3540, 920), (440, 180), "03 Restore details")
+    sampler = _style_sampler(g, "Create each portrait", (6380, 100), "04 Create and save", mode="source_reference", prompt=STYLE_PROMPT, seed=42)
+    _note(g, "🎨 Prompt tip", STYLE_NOTE, (6380, 960), (720, 180), "04 Create and save")
     _wire_style(g, model, sampler, restored)
-    master = _image_scale(g, "Batch master — centered 1024×1365 crop", 1024, 1365, (7720, 100), "04 One live sampler + visible outputs")
-    game = _image_scale(g, "Batch game — centered 156×210 crop", 156, 210, (8200, 100), "04 One live sampler + visible outputs")
+    master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (7180, 100), "04 Create and save")
+    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (7660, 100), "04 Create and save")
     g.connect(sampler, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save every master PNG", "1024x1365/batch", (7720, 360), "04 One live sampler + visible outputs")
-    save_game = _save_image(g, "Save every game PNG", "156x210/batch", (8200, 360), "04 One live sampler + visible outputs")
-    save_dds = _save_dds(g, "Save every game DDS", "156x210/dds/batch", (8200, 600), "04 One live sampler + visible outputs")
+    save_master = _save_image(g, "Save every master PNG", "1024x1365/batch", (7180, 360), "04 Create and save")
+    save_game = _save_image(g, "Save every game PNG", "156x210/batch", (7660, 360), "04 Create and save")
+    save_dds = _save_dds(g, "Save every game DDS", "156x210/dds/batch", (7660, 600), "04 Create and save")
+    _note(g, "💾 Using the DDS", OUTPUT_NOTE, (7660, 860), (600, 180), "04 Create and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
-    for index, (title, ref) in enumerate((("RealESRGAN", esrgan), ("Adonis restored", restored), ("Final 156×210", game))):
-        preview = _preview(g, title, (6920 + index * 680, 960), "04 One live sampler + visible outputs")
+    for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Game portrait", game))):
+        preview = _preview(g, title, (6380 + index * 680, 1220), "04 Create and save")
         g.connect(ref, 0, preview, "images")
     return g.serialize(style_lora=STYLE_LORA)
 

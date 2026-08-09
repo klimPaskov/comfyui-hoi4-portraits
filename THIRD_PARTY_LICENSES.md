@@ -9,7 +9,7 @@ hosting, or using them, read the current upstream terms for your use case.
 | ComfyUI | [comfyanonymous/ComfyUI](https://github.com/comfyanonymous/ComfyUI) | GPL-3.0 source project; not bundled here. |
 | ComfyUI-GGUF | [city96/ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) | Node extension installed from a pinned revision when the GGUF variant is selected; not bundled here. |
 | gguf text loader | [calcuis/gguf](https://github.com/calcuis/gguf) | Provides the exact `ClipLoaderGGUF` implementation serialized by the Adonis workflow. |
-| RES4LYF | [ClownsharkBatwing/RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) | Provides the Base → Refine live sampler topology used by Adonis. |
+| RES4LYF | [ClownsharkBatwing/RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) | Provides the Base → Refine restoration sampling used by Adonis. |
 | Scale Image to Total Pixels Advanced | [BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced](https://github.com/BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced) | Provides the exact 1.7 MP, multiple-of-16 preprocessing node used by Adonis. |
 | FLUX.2 Klein 9B distilled | [black-forest-labs/FLUX.2-klein-9B](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B), [FLUX.2-klein-9b-fp8](https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8), [drends/FLUX.2-klein-9B-GGUF](https://huggingface.co/drends/FLUX.2-klein-9B-GGUF) | Gated full/FP8 model (accept the agreement); GGUF is not gated. Follow each model repository's license. |
 | Qwen 3 8B Q8 GGUF encoder | [Qwen/Qwen3-8B-GGUF](https://huggingface.co/Qwen/Qwen3-8B-GGUF) | Apache-2.0; the workflow pins `Qwen3-8B-Q8_0.gguf`. |

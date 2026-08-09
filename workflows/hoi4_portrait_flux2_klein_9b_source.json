@@ -1,20 +1,20 @@
 {
   "id": "hoi4_portrait_flux2_klein_9b_source",
   "revision": 0,
-  "last_node_id": 61,
-  "last_link_id": 81,
+  "last_node_id": 66,
+  "last_link_id": 82,
   "nodes": [
     {
       "id": 1,
       "type": "Note",
-      "title": "📦 Setup — models, variants, and folders",
+      "title": "📦 Files and downloads",
       "pos": [
         80,
         100
       ],
       "size": [
-        720,
-        760
+        1320,
+        1100
       ],
       "color": "#475569",
       "bgcolor": "#334155",
@@ -25,72 +25,18 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
+        "hoi4_group": "00 Setup"
       },
       "widgets_values": [
-        "📦 MODELS + FOLDERS\n\nThe installer places every file automatically. Manual locations:\n\nComfyUI/models/\n├── diffusion_models/\n│   └── flux-2-klein-9b.safetensors (distilled; never Base)\n├── text_encoders/\n│   └── Qwen3-8B-Q8_0.gguf\n├── vae/\n│   └── flux2-vae.safetensors\n├── loras/\n│   ├── hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n│   ├── adonis_base.safetensors\n│   └── adonis_refine.safetensors\n├── upscale_models/RealESRGAN_x2plus.pth\n├── background_removal/birefnet.safetensors\n└── detection/mediapipe_face_fp32.safetensors\n\nModel links and exact pinned revisions are in models.json. The installer selects full, FP8, or GGUF for your VRAM."
+        "📦 FILES + DOWNLOADS\nThe installer can place these for you. If you install them by hand, use these folders:\n\n📂 ComfyUI/models/\n├── 🧠 diffusion_models/ — choose one FLUX.2 file\n├── 💬 text_encoders/ — Qwen3-8B-Q8_0.gguf\n├── 🎨 vae/ — flux2-vae.safetensors\n├── 🧩 loras/ — HOI4 style + Adonis Base + Adonis Refine\n├── 🔎 upscale_models/ — RealESRGAN_x2plus.pth\n├── ✂️ background_removal/ — birefnet.safetensors\n└── 🙂 detection/ — MediaPipe + YuNet fallback\n\nDirect downloads:\n⬇️ flux-2-klein-9b.safetensors [full]\nhttps://huggingface.co/black-forest-labs/FLUX.2-klein-9B/resolve/92196c8e11f7b6cf2b7493e037d8c5345c559216/flux-2-klein-9b.safetensors\n⬇️ flux-2-klein-9b-fp8.safetensors [fp8]\nhttps://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/902d9d510b51533e07729f19211414a3648b77d2/flux-2-klein-9b-fp8.safetensors\n⬇️ flux-2-klein-9b-Q4_K_M.gguf [gguf]\nhttps://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q4_K_M.gguf\n⬇️ flux-2-klein-9b-Q5_K_M.gguf [gguf]\nhttps://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q5_K_M.gguf\n⬇️ flux-2-klein-9b-Q6_K.gguf [gguf]\nhttps://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q6_K.gguf\n⬇️ flux-2-klein-9b-Q8_0.gguf [gguf]\nhttps://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q8_0.gguf\n⬇️ Qwen3-8B-Q8_0.gguf\nhttps://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/6cfbfc7d8ab95bf485c79fcc40be60930d5b4c8c/Qwen3-8B-Q8_0.gguf\n⬇️ flux2-vae.safetensors\nhttps://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors\n⬇️ hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\nhttps://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n⬇️ adonis_base.safetensors\nhttps://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors\n⬇️ adonis_refine.safetensors\nhttps://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_refine.safetensors\n⬇️ RealESRGAN_x2plus.pth\nhttps://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth\n⬇️ birefnet.safetensors\nhttps://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors\n⬇️ mediapipe_face_fp32.safetensors\nhttps://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors\n⬇️ face_detection_yunet_2023mar.onnx\nhttps://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
       ]
     },
     {
       "id": 2,
-      "type": "Note",
-      "title": "🎛️ Beginner + advanced sampler guide",
-      "pos": [
-        80,
-        940
-      ],
-      "size": [
-        720,
-        700
-      ],
-      "color": "#475569",
-      "bgcolor": "#334155",
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
-      },
-      "widgets_values": [
-        "🎛️ SAMPLER — TUNED DEFAULTS\n\n4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\nSteps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\nOnly the purple style sampler combines controls. Model loading, source processing, Adonis Base, Adonis Refine, decoding, and output sizing stay visible as separate nodes. ComfyUI's live latent callback shows both style and restoration construction while they run."
-      ]
-    },
-    {
-      "id": 3,
-      "type": "Note",
-      "title": "✍️ Exact prompt and why restoration helps",
-      "pos": [
-        80,
-        1720
-      ],
-      "size": [
-        720,
-        780
-      ],
-      "color": "#475569",
-      "bgcolor": "#334155",
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
-      },
-      "widgets_values": [
-        "✍️ PROMPTING + RESTORATION\n\nKeep the source prompt exactly:\nmake this portrait hoi4_portrait style\n\nOnly append short facts when necessary: ethnicity or skin colour, age/hair, and civilian/military/clerical clothing. Do not re-describe the game style.\n\nRealESRGAN prepares the crop. The expanded Adonis Base → Refine graph restores colour and facial detail first, so the style LoRA does not have to guess them. Disable the visible restoration switch only for a clean modern photograph."
-      ]
-    },
-    {
-      "id": 4,
       "type": "LoadImage",
-      "title": "Load source portrait — upload or choose here",
+      "title": "Choose a source portrait",
       "pos": [
-        960,
+        1560,
         100
       ],
       "size": [
@@ -100,7 +46,7 @@
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 3,
+      "order": 1,
       "mode": 0,
       "inputs": [
         {
@@ -131,7 +77,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
         "source_portrait.jpg",
@@ -139,21 +85,21 @@
       ]
     },
     {
-      "id": 5,
+      "id": 3,
       "type": "PreviewImage",
-      "title": "Source preview",
+      "title": "Source portrait",
       "pos": [
-        960,
+        1560,
         800
       ],
       "size": [
         600,
         810
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
       "flags": {},
-      "order": 4,
+      "order": 2,
       "mode": 0,
       "inputs": [
         {
@@ -171,16 +117,16 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": []
     },
     {
-      "id": 6,
+      "id": 4,
       "type": "LoadMediaPipeFaceLandmarker",
       "title": "Load face detector",
       "pos": [
-        1640,
+        2240,
         100
       ],
       "size": [
@@ -190,7 +136,7 @@
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 5,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
@@ -213,18 +159,18 @@
       ],
       "properties": {
         "Node name for S&R": "LoadMediaPipeFaceLandmarker",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
         "mediapipe_face_fp32.safetensors"
       ]
     },
     {
-      "id": 7,
+      "id": 5,
       "type": "MediaPipeFaceLandmarker",
-      "title": "Detect portrait face — bounding box stays visible",
+      "title": "Find the face",
       "pos": [
-        1640,
+        2240,
         260
       ],
       "size": [
@@ -234,7 +180,7 @@
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 6,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
@@ -296,7 +242,7 @@
       ],
       "properties": {
         "Node name for S&R": "MediaPipeFaceLandmarker",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
         "both",
@@ -306,21 +252,21 @@
       ]
     },
     {
-      "id": 8,
+      "id": 6,
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet mask model",
       "pos": [
-        1640,
+        2240,
         640
       ],
       "size": [
         440,
         100
       ],
-      "color": "#385d7a",
-      "bgcolor": "#29465c",
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
       "flags": {},
-      "order": 7,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -343,18 +289,18 @@
       ],
       "properties": {
         "Node name for S&R": "LoadBackgroundRemovalModel",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
         "birefnet.safetensors"
       ]
     },
     {
-      "id": 9,
+      "id": 7,
       "type": "RemoveBackground",
       "title": "Generate subject silhouette for crop",
       "pos": [
-        1640,
+        2240,
         800
       ],
       "size": [
@@ -364,7 +310,7 @@
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 8,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -389,16 +335,16 @@
       ],
       "properties": {
         "Node name for S&R": "RemoveBackground",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": []
     },
     {
-      "id": 10,
+      "id": 8,
       "type": "AdaptivePortraitCrop",
-      "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN",
+      "title": "Crop portrait to 512×683",
       "pos": [
-        2180,
+        2780,
         100
       ],
       "size": [
@@ -408,7 +354,7 @@
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 9,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -518,7 +464,7 @@
       ],
       "properties": {
         "Node name for S&R": "AdaptivePortraitCrop",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
         true,
@@ -534,11 +480,11 @@
       ]
     },
     {
-      "id": 11,
+      "id": 9,
       "type": "UpscaleModelLoader",
       "title": "Load RealESRGAN ×2",
       "pos": [
-        2180,
+        2780,
         600
       ],
       "size": [
@@ -548,7 +494,7 @@
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -571,18 +517,18 @@
       ],
       "properties": {
         "Node name for S&R": "UpscaleModelLoader",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
         "RealESRGAN_x2plus.pth"
       ]
     },
     {
-      "id": 12,
+      "id": 10,
       "type": "ImageUpscaleWithModel",
       "title": "Run RealESRGAN ×2",
       "pos": [
-        2180,
+        2780,
         760
       ],
       "size": [
@@ -592,7 +538,7 @@
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 11,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -617,26 +563,26 @@
       ],
       "properties": {
         "Node name for S&R": "ImageUpscaleWithModel",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": []
     },
     {
-      "id": 13,
+      "id": 11,
       "type": "ImageScale",
-      "title": "Normalize RealESRGAN result to 1024×1365",
+      "title": "Resize prepared portrait to 1024×1365",
       "pos": [
-        2180,
+        2780,
         920
       ],
       "size": [
         400,
         180
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
       "flags": {},
-      "order": 12,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -684,13 +630,13 @@
           "links": [
             15,
             39,
-            77
+            78
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "hoi4_group": "01 Source processing — every node visible"
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
         "lanczos",
@@ -700,64 +646,39 @@
       ]
     },
     {
-      "id": 14,
-      "type": "LoadImage",
-      "title": "Optional replacement background",
+      "id": 12,
+      "type": "Note",
+      "title": "🙂 Cropping tip",
       "pos": [
-        1640,
-        1180
+        2240,
+        1160
       ],
       "size": [
-        600,
-        560
+        1020,
+        180
       ],
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 13,
+      "order": 11,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "image"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            47,
-            59,
-            71
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
+      "inputs": [],
+      "outputs": [],
       "properties": {
-        "Node name for S&R": "LoadImage",
-        "hoi4_group": "01 Source processing — every node visible"
+        "Node name for S&R": "Note",
+        "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
-        "hoi4_leader_portrait_background.png",
-        "image"
+        "🙂 Start with a clear portrait. The crop follows the face and leaves room for hats. Use the manual crop controls only when the automatic crop misses."
       ]
     },
     {
-      "id": 15,
+      "id": 13,
       "type": "UNETLoader",
-      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target",
+      "title": "FLUX.2 Klein 9B",
       "pos": [
-        2820,
-        100
+        1560,
+        1800
       ],
       "size": [
         440,
@@ -766,7 +687,7 @@
       "color": "#385d7a",
       "bgcolor": "#29465c",
       "flags": {},
-      "order": 14,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -799,7 +720,7 @@
       ],
       "properties": {
         "Node name for S&R": "UNETLoader",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "flux-2-klein-9b.safetensors",
@@ -807,12 +728,12 @@
       ]
     },
     {
-      "id": 16,
+      "id": 14,
       "type": "ClipLoaderGGUF",
       "title": "Load Qwen3 8B Q8 text encoder",
       "pos": [
-        2820,
-        320
+        1560,
+        2020
       ],
       "size": [
         440,
@@ -821,7 +742,7 @@
       "color": "#385d7a",
       "bgcolor": "#29465c",
       "flags": {},
-      "order": 15,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -856,14 +777,14 @@
           "links": [
             16,
             42,
-            54,
-            66
+            46,
+            50
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ClipLoaderGGUF",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "Qwen3-8B-Q8_0.gguf",
@@ -872,12 +793,12 @@
       ]
     },
     {
-      "id": 17,
+      "id": 15,
       "type": "VAELoader",
       "title": "Load FLUX.2 VAE",
       "pos": [
-        2820,
-        540
+        1560,
+        2240
       ],
       "size": [
         440,
@@ -886,7 +807,7 @@
       "color": "#385d7a",
       "bgcolor": "#29465c",
       "flags": {},
-      "order": 16,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -906,26 +827,26 @@
             19,
             38,
             43,
-            55,
-            67
+            47,
+            51
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "VAELoader",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "flux2-vae.safetensors"
       ]
     },
     {
-      "id": 18,
+      "id": 16,
       "type": "LoraLoaderModelOnly",
-      "title": "Load HOI4 style LoRA — step 2500 only",
+      "title": "HOI4 portrait style LoRA",
       "pos": [
-        3320,
-        100
+        2060,
+        1800
       ],
       "size": [
         500,
@@ -934,7 +855,7 @@
       "color": "#385d7a",
       "bgcolor": "#29465c",
       "flags": {},
-      "order": 17,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -965,14 +886,14 @@
           "type": "MODEL",
           "links": [
             41,
-            53,
-            65
+            45,
+            49
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "LoraLoaderModelOnly",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
@@ -980,12 +901,12 @@
       ]
     },
     {
-      "id": 19,
+      "id": 17,
       "type": "LoraLoaderModelOnly",
-      "title": "Load Adonis Base LoRA",
+      "title": "Adonis Base LoRA",
       "pos": [
-        3320,
-        320
+        2060,
+        2020
       ],
       "size": [
         500,
@@ -994,7 +915,7 @@
       "color": "#385d7a",
       "bgcolor": "#29465c",
       "flags": {},
-      "order": 18,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -1030,7 +951,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoraLoaderModelOnly",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "adonis_base.safetensors",
@@ -1038,12 +959,12 @@
       ]
     },
     {
-      "id": 20,
+      "id": 18,
       "type": "LoraLoaderModelOnly",
-      "title": "Load Adonis Refine LoRA",
+      "title": "Adonis Refine LoRA",
       "pos": [
-        3320,
-        540
+        2060,
+        2240
       ],
       "size": [
         500,
@@ -1052,7 +973,7 @@
       "color": "#385d7a",
       "bgcolor": "#29465c",
       "flags": {},
-      "order": 19,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -1088,7 +1009,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoraLoaderModelOnly",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "adonis_refine.safetensors",
@@ -1096,12 +1017,12 @@
       ]
     },
     {
-      "id": 21,
+      "id": 19,
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet mask model",
       "pos": [
-        2820,
-        720
+        1560,
+        2420
       ],
       "size": [
         440,
@@ -1110,7 +1031,7 @@
       "color": "#385d7a",
       "bgcolor": "#29465c",
       "flags": {},
-      "order": 20,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -1127,26 +1048,24 @@
           "name": "bg_model",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            46,
-            58,
-            70
+            58
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "LoadBackgroundRemovalModel",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "birefnet.safetensors"
       ]
     },
     {
-      "id": 22,
+      "id": 20,
       "type": "ImageScaleToTotalPixelsX",
-      "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos",
+      "title": "Resize for restoration — 1.7 MP",
       "pos": [
-        3980,
+        3420,
         100
       ],
       "size": [
@@ -1156,7 +1075,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 21,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
@@ -1222,7 +1141,7 @@
       ],
       "properties": {
         "Node name for S&R": "ImageScaleToTotalPixelsX",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         1.7,
@@ -1232,11 +1151,11 @@
       ]
     },
     {
-      "id": 23,
+      "id": 21,
       "type": "CLIPTextEncode",
-      "title": "Adonis positive prompt — uhdmanscale",
+      "title": "Restoration prompt",
       "pos": [
-        3980,
+        3420,
         420
       ],
       "size": [
@@ -1246,7 +1165,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 22,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
@@ -1275,18 +1194,18 @@
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image."
       ]
     },
     {
-      "id": 24,
+      "id": 22,
       "type": "ConditioningZeroOut",
       "title": "Zero negative conditioning",
       "pos": [
-        3980,
+        3420,
         760
       ],
       "size": [
@@ -1296,7 +1215,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 23,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
@@ -1316,16 +1235,16 @@
       ],
       "properties": {
         "Node name for S&R": "ConditioningZeroOut",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
     {
-      "id": 25,
+      "id": 23,
       "type": "VAEEncode",
       "title": "Encode restored reference latent",
       "pos": [
-        4460,
+        3900,
         100
       ],
       "size": [
@@ -1335,7 +1254,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 24,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -1361,16 +1280,16 @@
       ],
       "properties": {
         "Node name for S&R": "VAEEncode",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
     {
-      "id": 26,
+      "id": 24,
       "type": "ReferenceLatent",
       "title": "Positive reference latent",
       "pos": [
-        4460,
+        3900,
         280
       ],
       "size": [
@@ -1380,7 +1299,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 25,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
@@ -1405,16 +1324,16 @@
       ],
       "properties": {
         "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
     {
-      "id": 27,
+      "id": 25,
       "type": "ReferenceLatent",
       "title": "Negative reference latent",
       "pos": [
-        4460,
+        3900,
         460
       ],
       "size": [
@@ -1424,7 +1343,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 26,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
@@ -1449,16 +1368,16 @@
       ],
       "properties": {
         "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
     {
-      "id": 28,
+      "id": 26,
       "type": "EmptyFlux2LatentImage",
-      "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process",
+      "title": "Restoration latent",
       "pos": [
-        4460,
+        3900,
         640
       ],
       "size": [
@@ -1468,7 +1387,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 27,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -1507,7 +1426,7 @@
       ],
       "properties": {
         "Node name for S&R": "EmptyFlux2LatentImage",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         1024,
@@ -1516,11 +1435,11 @@
       ]
     },
     {
-      "id": 29,
+      "id": 27,
       "type": "SharkOptions_Beta",
-      "title": "Adonis RES4LYF options — exact upstream",
+      "title": "Restoration sampler settings",
       "pos": [
-        4860,
+        4300,
         100
       ],
       "size": [
@@ -1530,7 +1449,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 28,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -1577,7 +1496,7 @@
       ],
       "properties": {
         "Node name for S&R": "SharkOptions_Beta",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         "laplacian",
@@ -1587,11 +1506,11 @@
       ]
     },
     {
-      "id": 30,
+      "id": 28,
       "type": "PrimitiveInt",
       "title": "Shared Adonis seed",
       "pos": [
-        4860,
+        4300,
         360
       ],
       "size": [
@@ -1601,7 +1520,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 29,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -1625,18 +1544,18 @@
       ],
       "properties": {
         "Node name for S&R": "PrimitiveInt",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         42
       ]
     },
     {
-      "id": 31,
+      "id": 29,
       "type": "PrimitiveInt",
       "title": "Total Adonis steps",
       "pos": [
-        4860,
+        4300,
         540
       ],
       "size": [
@@ -1646,7 +1565,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 30,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -1670,18 +1589,18 @@
       ],
       "properties": {
         "Node name for S&R": "PrimitiveInt",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         9
       ]
     },
     {
-      "id": 32,
+      "id": 30,
       "type": "ClownsharKSampler_Beta",
-      "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)",
+      "title": "Restore details — Base pass (steps 1–5)",
       "pos": [
-        5340,
+        4780,
         100
       ],
       "size": [
@@ -1691,7 +1610,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 31,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
@@ -1829,7 +1748,7 @@
       ],
       "properties": {
         "Node name for S&R": "ClownsharKSampler_Beta",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         0.8,
@@ -1846,11 +1765,11 @@
       ]
     },
     {
-      "id": 33,
+      "id": 31,
       "type": "ClownsharKSampler_Beta",
-      "title": "Adonis Refine — live RES4LYF sampler (remaining steps)",
+      "title": "Restore details — Refine pass",
       "pos": [
-        5920,
+        5360,
         100
       ],
       "size": [
@@ -1860,7 +1779,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 32,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
@@ -1998,7 +1917,7 @@
       ],
       "properties": {
         "Node name for S&R": "ClownsharKSampler_Beta",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         0.8,
@@ -2015,11 +1934,11 @@
       ]
     },
     {
-      "id": 34,
+      "id": 32,
       "type": "VAEDecode",
       "title": "Decode Adonis Refine output",
       "pos": [
-        5920,
+        5360,
         1280
       ],
       "size": [
@@ -2029,7 +1948,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 33,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
@@ -2054,16 +1973,16 @@
       ],
       "properties": {
         "Node name for S&R": "VAEDecode",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
     {
-      "id": 35,
+      "id": 33,
       "type": "ComfySwitchNode",
-      "title": "Use Adonis restoration",
+      "title": "Use restored portrait",
       "pos": [
-        6300,
+        5740,
         1280
       ],
       "size": [
@@ -2073,7 +1992,7 @@
       "color": "#b84949",
       "bgcolor": "#702f2f",
       "flags": {},
-      "order": 34,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
@@ -2101,26 +2020,53 @@
           "type": "IMAGE",
           "links": [
             44,
-            56,
-            68,
-            78
+            48,
+            52,
+            79
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ComfySwitchNode",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         true
       ]
     },
     {
-      "id": 36,
-      "type": "Hoi4PortraitSampler",
-      "title": "Candidate 1 — advanced live style sampler",
+      "id": 34,
+      "type": "Note",
+      "title": "✨ When to restore",
       "pos": [
-        6820,
+        3420,
+        920
+      ],
+      "size": [
+        440,
+        180
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note",
+        "hoi4_group": "03 Restore details"
+      },
+      "widgets_values": [
+        "✨ This cleans up blur, colour damage, and missing facial detail before styling. Leave the red switch on for old or low-quality photos; turn it off for a clean modern image."
+      ]
+    },
+    {
+      "id": 35,
+      "type": "Hoi4PortraitSampler",
+      "title": "Portrait 1",
+      "pos": [
+        6940,
         100
       ],
       "size": [
@@ -2130,7 +2076,7 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 35,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
@@ -2287,13 +2233,13 @@
           "name": "portrait",
           "type": "IMAGE",
           "links": [
-            45
+            53
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "04 Three live style candidates"
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
         "source_reference",
@@ -2315,375 +2261,11 @@
       ]
     },
     {
-      "id": 37,
-      "type": "Hoi4BackgroundReplace",
-      "title": "Candidate 1 — optional background replacement",
-      "pos": [
-        7620,
-        100
-      ],
-      "size": [
-        500,
-        260
-      ],
-      "color": "#b84949",
-      "bgcolor": "#702f2f",
-      "flags": {},
-      "order": 36,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 45
-        },
-        {
-          "name": "bg_removal_model",
-          "type": "BACKGROUND_REMOVAL",
-          "link": 46
-        },
-        {
-          "name": "use_background",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "use_background"
-          }
-        },
-        {
-          "name": "background",
-          "type": "IMAGE",
-          "link": 47
-        }
-      ],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            48
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Hoi4BackgroundReplace",
-        "hoi4_group": "04 Three live style candidates"
-      },
-      "widgets_values": [
-        false
-      ]
-    },
-    {
-      "id": 38,
-      "type": "ImageScale",
-      "title": "Candidate 1 master — centered 1024×1365 crop",
-      "pos": [
-        7620,
-        440
-      ],
-      "size": [
-        400,
-        180
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 37,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 48
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            49,
-            50
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Three live style candidates"
-      },
-      "widgets_values": [
-        "lanczos",
-        1024,
-        1365,
-        "center"
-      ]
-    },
-    {
-      "id": 39,
-      "type": "ImageScale",
-      "title": "Candidate 1 game — centered 156×210 crop",
-      "pos": [
-        7620,
-        700
-      ],
-      "size": [
-        400,
-        180
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 38,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 49
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            51,
-            52,
-            79
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Three live style candidates"
-      },
-      "widgets_values": [
-        "lanczos",
-        156,
-        210,
-        "center"
-      ]
-    },
-    {
-      "id": 40,
-      "type": "SaveImage",
-      "title": "Save candidate 1 master PNG",
-      "pos": [
-        8280,
-        100
-      ],
-      "size": [
-        420,
-        150
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 39,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 50
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Automatic outputs"
-      },
-      "widgets_values": [
-        "1024x1365/candidate_1"
-      ]
-    },
-    {
-      "id": 41,
-      "type": "SaveImage",
-      "title": "Save candidate 1 game PNG",
-      "pos": [
-        8780,
-        100
-      ],
-      "size": [
-        420,
-        150
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 40,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 51
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Automatic outputs"
-      },
-      "widgets_values": [
-        "156x210/candidate_1"
-      ]
-    },
-    {
-      "id": 42,
-      "type": "Hoi4SaveDDS",
-      "title": "Save candidate 1 DDS — DXT5, no mipmaps",
-      "pos": [
-        8780,
-        300
-      ],
-      "size": [
-        420,
-        190
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 41,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 52
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        },
-        {
-          "name": "compression",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "compression"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "05 Automatic outputs"
-      },
-      "widgets_values": [
-        "156x210/dds/candidate_1",
-        "dxt5"
-      ]
-    },
-    {
-      "id": 43,
+      "id": 36,
       "type": "Hoi4PortraitSampler",
-      "title": "Candidate 2 — advanced live style sampler",
+      "title": "Portrait 2",
       "pos": [
-        6820,
+        6940,
         960
       ],
       "size": [
@@ -2693,23 +2275,23 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 42,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 53
+          "link": 45
         },
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 54
+          "link": 46
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 55
+          "link": 47
         },
         {
           "name": "mode",
@@ -2842,7 +2424,7 @@
         {
           "name": "reference_image",
           "type": "IMAGE",
-          "link": 56
+          "link": 48
         }
       ],
       "outputs": [
@@ -2850,13 +2432,13 @@
           "name": "portrait",
           "type": "IMAGE",
           "links": [
-            57
+            54
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "04 Three live style candidates"
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
         "source_reference",
@@ -2878,12 +2460,376 @@
       ]
     },
     {
-      "id": 44,
-      "type": "Hoi4BackgroundReplace",
-      "title": "Candidate 2 — optional background replacement",
+      "id": 37,
+      "type": "Hoi4PortraitSampler",
+      "title": "Portrait 3",
       "pos": [
-        7620,
-        960
+        6940,
+        1820
+      ],
+      "size": [
+        720,
+        780
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 49
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 50
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 51
+        },
+        {
+          "name": "mode",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "mode"
+          }
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "prompt"
+          }
+        },
+        {
+          "name": "negative_prompt",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "negative_prompt"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "noise_seed",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "noise_seed"
+          }
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "steps"
+          }
+        },
+        {
+          "name": "cfg",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "cfg"
+          }
+        },
+        {
+          "name": "guidance",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "guidance"
+          }
+        },
+        {
+          "name": "sampling_algorithm",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "sampling_algorithm"
+          }
+        },
+        {
+          "name": "scheduler",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "scheduler"
+          }
+        },
+        {
+          "name": "denoise",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "denoise"
+          }
+        },
+        {
+          "name": "add_noise",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "add_noise"
+          }
+        },
+        {
+          "name": "start_at_step",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "start_at_step"
+          }
+        },
+        {
+          "name": "end_at_step",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "end_at_step"
+          }
+        },
+        {
+          "name": "force_full_denoise",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "force_full_denoise"
+          }
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 52
+        }
+      ],
+      "outputs": [
+        {
+          "name": "portrait",
+          "type": "IMAGE",
+          "links": [
+            56
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Hoi4PortraitSampler",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "source_reference",
+        "make this portrait hoi4_portrait style",
+        "",
+        1024,
+        1365,
+        44,
+        4,
+        1.0,
+        1.0,
+        "euler",
+        "simple",
+        1.0,
+        "enable",
+        0,
+        10000,
+        true
+      ]
+    },
+    {
+      "id": 38,
+      "type": "Note",
+      "title": "🎨 Prompt tip",
+      "pos": [
+        7740,
+        100
+      ],
+      "size": [
+        600,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "🎨 Keep the prompt as: make this portrait hoi4_portrait style\nAdd only a few identity or clothing details if you need them. Change the seed for a different portrait."
+      ]
+    },
+    {
+      "id": 39,
+      "type": "ImageBatch",
+      "title": "Join portraits 1 and 2",
+      "pos": [
+        7740,
+        360
+      ],
+      "size": [
+        360,
+        100
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 53
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            55
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 40,
+      "type": "ImageBatch",
+      "title": "Add portrait 3",
+      "pos": [
+        7740,
+        520
+      ],
+      "size": [
+        360,
+        100
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 55
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            57
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 41,
+      "type": "LoadImage",
+      "title": "Choose a replacement background",
+      "pos": [
+        7740,
+        700
+      ],
+      "size": [
+        600,
+        560
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "image"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            59
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "hoi4_leader_portrait_background.png",
+        "image"
+      ]
+    },
+    {
+      "id": 42,
+      "type": "Hoi4BackgroundReplace",
+      "title": "Use replacement background",
+      "pos": [
+        7740,
+        1340
       ],
       "size": [
         500,
@@ -2892,7 +2838,7 @@
       "color": "#b84949",
       "bgcolor": "#702f2f",
       "flags": {},
-      "order": 43,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
@@ -2924,34 +2870,36 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            60
+            60,
+            63,
+            66
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Hoi4BackgroundReplace",
-        "hoi4_group": "04 Three live style candidates"
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
         false
       ]
     },
     {
-      "id": 45,
-      "type": "ImageScale",
-      "title": "Candidate 2 master — centered 1024×1365 crop",
+      "id": 43,
+      "type": "ImageFromBatch",
+      "title": "Take portrait 1",
       "pos": [
-        7620,
-        1300
+        8420,
+        100
       ],
       "size": [
-        400,
-        180
+        360,
+        140
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 44,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
@@ -2960,35 +2908,19 @@
           "link": 60
         },
         {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
+          "name": "batch_index",
           "type": "INT",
           "link": null,
           "widget": {
-            "name": "width"
+            "name": "batch_index"
           }
         },
         {
-          "name": "height",
+          "name": "length",
           "type": "INT",
           "link": null,
           "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
+            "name": "length"
           }
         }
       ],
@@ -2997,38 +2929,35 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            61,
-            62
+            61
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Three live style candidates"
+        "Node name for S&R": "ImageFromBatch",
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
-        "lanczos",
-        1024,
-        1365,
-        "center"
+        0,
+        1
       ]
     },
     {
-      "id": 46,
+      "id": 44,
       "type": "ImageScale",
-      "title": "Candidate 2 game — centered 156×210 crop",
+      "title": "Portrait 1 master — 1024×1365",
       "pos": [
-        7620,
-        1560
+        8420,
+        760
       ],
       "size": [
         400,
         180
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 45,
+      "order": 43,
       "mode": 0,
       "inputs": [
         {
@@ -3074,228 +3003,51 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            63,
-            64,
-            80
+            62,
+            69
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Three live style candidates"
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
         "lanczos",
-        156,
-        210,
+        1024,
+        1365,
         "center"
       ]
     },
     {
-      "id": 47,
-      "type": "SaveImage",
-      "title": "Save candidate 2 master PNG",
+      "id": 45,
+      "type": "ImageScale",
+      "title": "Portrait 1 game — 156×210",
       "pos": [
-        8280,
-        580
+        8900,
+        760
       ],
       "size": [
-        420,
-        150
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 46,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 62
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Automatic outputs"
-      },
-      "widgets_values": [
-        "1024x1365/candidate_2"
-      ]
-    },
-    {
-      "id": 48,
-      "type": "SaveImage",
-      "title": "Save candidate 2 game PNG",
-      "pos": [
-        8780,
-        580
-      ],
-      "size": [
-        420,
-        150
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 47,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 63
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Automatic outputs"
-      },
-      "widgets_values": [
-        "156x210/candidate_2"
-      ]
-    },
-    {
-      "id": 49,
-      "type": "Hoi4SaveDDS",
-      "title": "Save candidate 2 DDS — DXT5, no mipmaps",
-      "pos": [
-        8780,
-        780
-      ],
-      "size": [
-        420,
-        190
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 48,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 64
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        },
-        {
-          "name": "compression",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "compression"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "05 Automatic outputs"
-      },
-      "widgets_values": [
-        "156x210/dds/candidate_2",
-        "dxt5"
-      ]
-    },
-    {
-      "id": 50,
-      "type": "Hoi4PortraitSampler",
-      "title": "Candidate 3 — advanced live style sampler",
-      "pos": [
-        6820,
-        1820
-      ],
-      "size": [
-        720,
-        780
+        400,
+        180
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 49,
+      "order": 44,
       "mode": 0,
       "inputs": [
         {
-          "name": "model",
-          "type": "MODEL",
-          "link": 65
+          "name": "image",
+          "type": "IMAGE",
+          "link": 62
         },
         {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 66
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 67
-        },
-        {
-          "name": "mode",
+          "name": "upscale_method",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "mode"
-          }
-        },
-        {
-          "name": "prompt",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "prompt"
-          }
-        },
-        {
-          "name": "negative_prompt",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "negative_prompt"
+            "name": "upscale_method"
           }
         },
         {
@@ -3315,212 +3067,193 @@
           }
         },
         {
-          "name": "noise_seed",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "noise_seed"
-          }
-        },
-        {
-          "name": "steps",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "steps"
-          }
-        },
-        {
-          "name": "cfg",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "cfg"
-          }
-        },
-        {
-          "name": "guidance",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "guidance"
-          }
-        },
-        {
-          "name": "sampling_algorithm",
+          "name": "crop",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "sampling_algorithm"
+            "name": "crop"
           }
-        },
-        {
-          "name": "scheduler",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "scheduler"
-          }
-        },
-        {
-          "name": "denoise",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "denoise"
-          }
-        },
-        {
-          "name": "add_noise",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "add_noise"
-          }
-        },
-        {
-          "name": "start_at_step",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "start_at_step"
-          }
-        },
-        {
-          "name": "end_at_step",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "end_at_step"
-          }
-        },
-        {
-          "name": "force_full_denoise",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "force_full_denoise"
-          }
-        },
-        {
-          "name": "reference_image",
-          "type": "IMAGE",
-          "link": 68
         }
       ],
       "outputs": [
         {
-          "name": "portrait",
+          "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            69
+            70,
+            71,
+            80
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "04 Three live style candidates"
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
-        "source_reference",
-        "make this portrait hoi4_portrait style",
-        "",
-        1024,
-        1365,
-        44,
-        4,
-        1.0,
-        1.0,
-        "euler",
-        "simple",
-        1.0,
-        "enable",
-        0,
-        10000,
-        true
+        "lanczos",
+        156,
+        210,
+        "center"
       ]
     },
     {
-      "id": 51,
-      "type": "Hoi4BackgroundReplace",
-      "title": "Candidate 3 — optional background replacement",
+      "id": 46,
+      "type": "ImageFromBatch",
+      "title": "Take portrait 2",
       "pos": [
-        7620,
-        1820
+        8420,
+        320
       ],
       "size": [
-        500,
-        260
+        360,
+        140
       ],
-      "color": "#b84949",
-      "bgcolor": "#702f2f",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 50,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 69
+          "link": 63
         },
         {
-          "name": "bg_removal_model",
-          "type": "BACKGROUND_REMOVAL",
-          "link": 70
-        },
-        {
-          "name": "use_background",
-          "type": "BOOLEAN",
+          "name": "batch_index",
+          "type": "INT",
           "link": null,
           "widget": {
-            "name": "use_background"
+            "name": "batch_index"
           }
         },
         {
-          "name": "background",
-          "type": "IMAGE",
-          "link": 71
+          "name": "length",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "length"
+          }
         }
       ],
       "outputs": [
         {
-          "name": "image",
+          "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            72
+            64
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Hoi4BackgroundReplace",
-        "hoi4_group": "04 Three live style candidates"
+        "Node name for S&R": "ImageFromBatch",
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
-        false
+        1,
+        1
       ]
     },
     {
-      "id": 52,
+      "id": 47,
       "type": "ImageScale",
-      "title": "Candidate 3 master — centered 1024×1365 crop",
+      "title": "Portrait 2 master — 1024×1365",
       "pos": [
-        7620,
-        2160
+        8420,
+        1020
       ],
       "size": [
         400,
         180
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 51,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 72
+          "link": 64
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            65,
+            72
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
+    },
+    {
+      "id": 48,
+      "type": "ImageScale",
+      "title": "Portrait 2 game — 156×210",
+      "pos": [
+        8900,
+        1020
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 65
         },
         {
           "name": "upscale_method",
@@ -3561,43 +3294,102 @@
           "type": "IMAGE",
           "links": [
             73,
-            74
+            74,
+            81
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Three live style candidates"
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
         "lanczos",
-        1024,
-        1365,
+        156,
+        210,
         "center"
       ]
     },
     {
-      "id": 53,
-      "type": "ImageScale",
-      "title": "Candidate 3 game — centered 156×210 crop",
+      "id": 49,
+      "type": "ImageFromBatch",
+      "title": "Take portrait 3",
       "pos": [
-        7620,
-        2420
+        8420,
+        540
       ],
       "size": [
-        400,
-        180
+        360,
+        140
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 52,
+      "order": 48,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 73
+          "link": 66
+        },
+        {
+          "name": "batch_index",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "batch_index"
+          }
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "length"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            67
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageFromBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": 50,
+      "type": "ImageScale",
+      "title": "Portrait 3 master — 1024×1365",
+      "pos": [
+        8420,
+        1280
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 49,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 67
         },
         {
           "name": "upscale_method",
@@ -3637,15 +3429,92 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            75,
-            76,
-            81
+            68,
+            75
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Three live style candidates"
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
+    },
+    {
+      "id": 51,
+      "type": "ImageScale",
+      "title": "Portrait 3 game — 156×210",
+      "pos": [
+        8900,
+        1280
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 50,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 68
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            76,
+            77,
+            82
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
         "lanczos",
@@ -3655,12 +3524,12 @@
       ]
     },
     {
-      "id": 54,
+      "id": 52,
       "type": "SaveImage",
-      "title": "Save candidate 3 master PNG",
+      "title": "Save portrait 1 master PNG",
       "pos": [
-        8280,
-        1060
+        9460,
+        100
       ],
       "size": [
         420,
@@ -3669,13 +3538,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 53,
+      "order": 51,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 74
+          "link": 69
         },
         {
           "name": "filename_prefix",
@@ -3695,19 +3564,122 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Automatic outputs"
+        "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "1024x1365/candidate_3"
+        "1024x1365/portrait_1"
+      ]
+    },
+    {
+      "id": 53,
+      "type": "SaveImage",
+      "title": "Save portrait 1 game PNG",
+      "pos": [
+        9960,
+        100
+      ],
+      "size": [
+        420,
+        150
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 52,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 70
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "156x210/portrait_1"
+      ]
+    },
+    {
+      "id": 54,
+      "type": "Hoi4SaveDDS",
+      "title": "Save portrait 1 DDS",
+      "pos": [
+        9960,
+        300
+      ],
+      "size": [
+        420,
+        190
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 53,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 71
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        },
+        {
+          "name": "format",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "format"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Hoi4SaveDDS",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "156x210/dds/portrait_1",
+        "argb8888"
       ]
     },
     {
       "id": 55,
       "type": "SaveImage",
-      "title": "Save candidate 3 game PNG",
+      "title": "Save portrait 2 master PNG",
       "pos": [
-        8780,
-        1060
+        9460,
+        580
       ],
       "size": [
         420,
@@ -3717,6 +3689,156 @@
       "bgcolor": "#344b5c",
       "flags": {},
       "order": 54,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 72
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "1024x1365/portrait_2"
+      ]
+    },
+    {
+      "id": 56,
+      "type": "SaveImage",
+      "title": "Save portrait 2 game PNG",
+      "pos": [
+        9960,
+        580
+      ],
+      "size": [
+        420,
+        150
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 55,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 73
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "156x210/portrait_2"
+      ]
+    },
+    {
+      "id": 57,
+      "type": "Hoi4SaveDDS",
+      "title": "Save portrait 2 DDS",
+      "pos": [
+        9960,
+        780
+      ],
+      "size": [
+        420,
+        190
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 56,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 74
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        },
+        {
+          "name": "format",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "format"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Hoi4SaveDDS",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "156x210/dds/portrait_2",
+        "argb8888"
+      ]
+    },
+    {
+      "id": 58,
+      "type": "SaveImage",
+      "title": "Save portrait 3 master PNG",
+      "pos": [
+        9460,
+        1060
+      ],
+      "size": [
+        420,
+        150
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 57,
       "mode": 0,
       "inputs": [
         {
@@ -3742,28 +3864,28 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Automatic outputs"
+        "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/candidate_3"
+        "1024x1365/portrait_3"
       ]
     },
     {
-      "id": 56,
-      "type": "Hoi4SaveDDS",
-      "title": "Save candidate 3 DDS — DXT5, no mipmaps",
+      "id": 59,
+      "type": "SaveImage",
+      "title": "Save portrait 3 game PNG",
       "pos": [
-        8780,
-        1260
+        9960,
+        1060
       ],
       "size": [
         420,
-        190
+        150
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 55,
+      "order": 58,
       "mode": 0,
       "inputs": [
         {
@@ -3778,13 +3900,60 @@
           "widget": {
             "name": "filename_prefix"
           }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "156x210/portrait_3"
+      ]
+    },
+    {
+      "id": 60,
+      "type": "Hoi4SaveDDS",
+      "title": "Save portrait 3 DDS",
+      "pos": [
+        9960,
+        1260
+      ],
+      "size": [
+        420,
+        190
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 59,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 77
         },
         {
-          "name": "compression",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        },
+        {
+          "name": "format",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "compression"
+            "name": "format"
           }
         }
       ],
@@ -3797,57 +3966,47 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "05 Automatic outputs"
+        "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/dds/candidate_3",
-        "dxt5"
+        "156x210/dds/portrait_3",
+        "argb8888"
       ]
     },
     {
-      "id": 57,
-      "type": "PreviewImage",
-      "title": "RealESRGAN prepared crop",
+      "id": 61,
+      "type": "Note",
+      "title": "💾 Using the DDS",
       "pos": [
-        2820,
-        1640
+        9460,
+        1680
       ],
       "size": [
-        600,
-        810
+        920,
+        180
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 56,
+      "order": 60,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 77
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
+      "inputs": [],
+      "outputs": [],
       "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Portrait comparison"
+        "Node name for S&R": "Note",
+        "hoi4_group": "05 Save portraits"
       },
-      "widgets_values": []
+      "widgets_values": [
+        "💾 The DDS is the game portrait: 156×210, A8R8G8B8, no mipmaps. Move it to your mod's gfx/leaders/TAG/ folder and reference it from the portrait sprite."
+      ]
     },
     {
-      "id": 58,
+      "id": 62,
       "type": "PreviewImage",
-      "title": "Adonis Base → Refine restored",
+      "title": "Prepared portrait",
       "pos": [
-        3500,
-        1640
+        3420,
+        1700
       ],
       "size": [
         600,
@@ -3856,7 +4015,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 57,
+      "order": 61,
       "mode": 0,
       "inputs": [
         {
@@ -3874,17 +4033,17 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Portrait comparison"
+        "hoi4_group": "06 Compare portraits"
       },
       "widgets_values": []
     },
     {
-      "id": 59,
+      "id": 63,
       "type": "PreviewImage",
-      "title": "Final candidate 1 — 156×210",
+      "title": "Restored portrait",
       "pos": [
-        4180,
-        1640
+        4100,
+        1700
       ],
       "size": [
         600,
@@ -3893,7 +4052,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 58,
+      "order": 62,
       "mode": 0,
       "inputs": [
         {
@@ -3911,17 +4070,17 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Portrait comparison"
+        "hoi4_group": "06 Compare portraits"
       },
       "widgets_values": []
     },
     {
-      "id": 60,
+      "id": 64,
       "type": "PreviewImage",
-      "title": "Final candidate 2 — 156×210",
+      "title": "Portrait 1 — 156×210",
       "pos": [
-        4860,
-        1640
+        4780,
+        1700
       ],
       "size": [
         600,
@@ -3930,7 +4089,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 59,
+      "order": 63,
       "mode": 0,
       "inputs": [
         {
@@ -3948,17 +4107,17 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Portrait comparison"
+        "hoi4_group": "06 Compare portraits"
       },
       "widgets_values": []
     },
     {
-      "id": 61,
+      "id": 65,
       "type": "PreviewImage",
-      "title": "Final candidate 3 — 156×210",
+      "title": "Portrait 2 — 156×210",
       "pos": [
-        5540,
-        1640
+        5460,
+        1700
       ],
       "size": [
         600,
@@ -3967,7 +4126,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 60,
+      "order": 64,
       "mode": 0,
       "inputs": [
         {
@@ -3985,7 +4144,44 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Portrait comparison"
+        "hoi4_group": "06 Compare portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 66,
+      "type": "PreviewImage",
+      "title": "Portrait 3 — 156×210",
+      "pos": [
+        6140,
+        1700
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 65,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 82
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "06 Compare portraits"
       },
       "widgets_values": []
     }
@@ -3993,478 +4189,494 @@
   "links": [
     [
       1,
-      4,
+      2,
       0,
-      5,
+      3,
       0,
       "IMAGE"
     ],
     [
       2,
-      6,
+      4,
       0,
-      7,
+      5,
       0,
       "FACE_DETECTION_MODEL"
     ],
     [
       3,
-      4,
+      2,
       0,
-      7,
+      5,
       1,
       "IMAGE"
     ],
     [
       4,
-      8,
+      6,
       0,
-      9,
+      7,
       0,
       "BACKGROUND_REMOVAL"
     ],
     [
       5,
-      4,
+      2,
       0,
-      9,
+      7,
       1,
       "IMAGE"
     ],
     [
       6,
-      4,
+      2,
       0,
-      10,
+      8,
       0,
       "IMAGE"
     ],
     [
       7,
-      7,
+      5,
       1,
-      10,
+      8,
       1,
       "BOUNDING_BOX"
     ],
     [
       8,
-      9,
+      7,
       0,
-      10,
+      8,
       2,
       "MASK"
     ],
     [
       9,
-      11,
+      9,
       0,
-      12,
+      10,
       0,
       "UPSCALE_MODEL"
     ],
     [
       10,
-      10,
+      8,
       0,
-      12,
+      10,
       1,
       "IMAGE"
     ],
     [
       11,
-      12,
+      10,
       0,
-      13,
+      11,
       0,
       "IMAGE"
     ],
     [
       12,
-      15,
+      13,
       0,
-      18,
+      16,
       0,
       "MODEL"
     ],
     [
       13,
-      15,
+      13,
       0,
-      19,
+      17,
       0,
       "MODEL"
     ],
     [
       14,
-      15,
+      13,
       0,
-      20,
+      18,
       0,
       "MODEL"
     ],
     [
       15,
-      13,
+      11,
       0,
-      22,
+      20,
       0,
       "IMAGE"
     ],
     [
       16,
-      16,
+      14,
       0,
-      23,
+      21,
       0,
       "CLIP"
     ],
     [
       17,
-      23,
+      21,
       0,
-      24,
+      22,
       0,
       "CONDITIONING"
     ],
     [
       18,
-      22,
+      20,
       0,
-      25,
+      23,
       0,
       "IMAGE"
     ],
     [
       19,
-      17,
+      15,
       0,
-      25,
+      23,
       1,
       "VAE"
     ],
     [
       20,
-      23,
+      21,
       0,
-      26,
+      24,
       0,
       "CONDITIONING"
     ],
     [
       21,
-      25,
+      23,
       0,
-      26,
+      24,
       1,
       "LATENT"
     ],
     [
       22,
-      24,
+      22,
       0,
-      27,
+      25,
       0,
       "CONDITIONING"
     ],
     [
       23,
-      25,
+      23,
       0,
-      27,
+      25,
       1,
       "LATENT"
     ],
     [
       24,
-      22,
+      20,
       1,
-      28,
+      26,
       0,
       "INT"
     ],
     [
       25,
-      22,
+      20,
       2,
-      28,
+      26,
       1,
       "INT"
     ],
     [
       26,
-      19,
+      17,
       0,
-      32,
+      30,
       0,
       "MODEL"
     ],
     [
       27,
-      26,
+      24,
       0,
-      32,
+      30,
       1,
       "CONDITIONING"
     ],
     [
       28,
-      27,
+      25,
       0,
-      32,
+      30,
       2,
       "CONDITIONING"
     ],
     [
       29,
-      28,
+      26,
       0,
-      32,
+      30,
       3,
       "LATENT"
     ],
     [
       30,
-      29,
+      27,
       0,
-      32,
+      30,
       4,
       "OPTIONS"
     ],
     [
       31,
-      31,
+      29,
       0,
-      32,
+      30,
       8,
       "INT"
     ],
     [
       32,
-      30,
+      28,
       0,
-      32,
+      30,
       12,
       "INT"
     ],
     [
       33,
-      20,
+      18,
       0,
-      33,
+      31,
       0,
       "MODEL"
     ],
     [
       34,
-      32,
+      30,
       0,
-      33,
+      31,
       3,
       "LATENT"
     ],
     [
       35,
-      31,
+      29,
       0,
-      33,
+      31,
       8,
       "INT"
     ],
     [
       36,
-      30,
+      28,
       0,
-      33,
+      31,
       12,
       "INT"
     ],
     [
       37,
-      33,
+      31,
       0,
-      34,
+      32,
       0,
       "LATENT"
     ],
     [
       38,
-      17,
+      15,
       0,
-      34,
+      32,
       1,
       "VAE"
     ],
     [
       39,
-      13,
+      11,
       0,
-      35,
+      33,
       1,
       "IMAGE"
     ],
     [
       40,
-      34,
+      32,
       0,
-      35,
+      33,
       2,
       "IMAGE"
     ],
     [
       41,
-      18,
+      16,
       0,
-      36,
+      35,
       0,
       "MODEL"
     ],
     [
       42,
-      16,
+      14,
       0,
-      36,
+      35,
       1,
       "CLIP"
     ],
     [
       43,
-      17,
+      15,
       0,
-      36,
+      35,
       2,
       "VAE"
     ],
     [
       44,
-      35,
+      33,
       0,
-      36,
+      35,
       19,
       "IMAGE"
     ],
     [
       45,
+      16,
+      0,
       36,
       0,
-      37,
-      0,
-      "IMAGE"
+      "MODEL"
     ],
     [
       46,
-      21,
+      14,
       0,
-      37,
+      36,
       1,
-      "BACKGROUND_REMOVAL"
+      "CLIP"
     ],
     [
       47,
-      14,
+      15,
       0,
-      37,
-      3,
-      "IMAGE"
+      36,
+      2,
+      "VAE"
     ],
     [
       48,
-      37,
+      33,
       0,
-      38,
-      0,
+      36,
+      19,
       "IMAGE"
     ],
     [
       49,
-      38,
+      16,
+      0,
+      37,
+      0,
+      "MODEL"
+    ],
+    [
+      50,
+      14,
+      0,
+      37,
+      1,
+      "CLIP"
+    ],
+    [
+      51,
+      15,
+      0,
+      37,
+      2,
+      "VAE"
+    ],
+    [
+      52,
+      33,
+      0,
+      37,
+      19,
+      "IMAGE"
+    ],
+    [
+      53,
+      35,
       0,
       39,
       0,
       "IMAGE"
     ],
     [
-      50,
-      38,
+      54,
+      36,
+      0,
+      39,
+      1,
+      "IMAGE"
+    ],
+    [
+      55,
+      39,
       0,
       40,
       0,
       "IMAGE"
     ],
     [
-      51,
-      39,
-      0,
-      41,
-      0,
-      "IMAGE"
-    ],
-    [
-      52,
-      39,
-      0,
-      42,
-      0,
-      "IMAGE"
-    ],
-    [
-      53,
-      18,
-      0,
-      43,
-      0,
-      "MODEL"
-    ],
-    [
-      54,
-      16,
-      0,
-      43,
-      1,
-      "CLIP"
-    ],
-    [
-      55,
-      17,
-      0,
-      43,
-      2,
-      "VAE"
-    ],
-    [
       56,
-      35,
+      37,
       0,
-      43,
-      19,
+      40,
+      1,
       "IMAGE"
     ],
     [
       57,
-      43,
+      40,
       0,
-      44,
+      42,
       0,
       "IMAGE"
     ],
     [
       58,
-      21,
+      19,
       0,
-      44,
+      42,
       1,
       "BACKGROUND_REMOVAL"
     ],
     [
       59,
-      14,
+      41,
       0,
-      44,
+      42,
       3,
       "IMAGE"
     ],
     [
       60,
+      42,
+      0,
+      43,
+      0,
+      "IMAGE"
+    ],
+    [
+      61,
+      43,
+      0,
+      44,
+      0,
+      "IMAGE"
+    ],
+    [
+      62,
       44,
       0,
       45,
@@ -4472,26 +4684,10 @@
       "IMAGE"
     ],
     [
-      61,
-      45,
-      0,
-      46,
-      0,
-      "IMAGE"
-    ],
-    [
-      62,
-      45,
-      0,
-      47,
-      0,
-      "IMAGE"
-    ],
-    [
       63,
-      46,
+      42,
       0,
-      48,
+      46,
       0,
       "IMAGE"
     ],
@@ -4499,143 +4695,151 @@
       64,
       46,
       0,
-      49,
+      47,
       0,
       "IMAGE"
     ],
     [
       65,
-      18,
+      47,
       0,
-      50,
+      48,
       0,
-      "MODEL"
+      "IMAGE"
     ],
     [
       66,
-      16,
+      42,
       0,
-      50,
-      1,
-      "CLIP"
+      49,
+      0,
+      "IMAGE"
     ],
     [
       67,
-      17,
+      49,
       0,
       50,
-      2,
-      "VAE"
+      0,
+      "IMAGE"
     ],
     [
       68,
-      35,
-      0,
       50,
-      19,
+      0,
+      51,
+      0,
       "IMAGE"
     ],
     [
       69,
-      50,
+      44,
       0,
-      51,
+      52,
       0,
       "IMAGE"
     ],
     [
       70,
-      21,
-      0,
-      51,
-      1,
-      "BACKGROUND_REMOVAL"
-    ],
-    [
-      71,
-      14,
-      0,
-      51,
-      3,
-      "IMAGE"
-    ],
-    [
-      72,
-      51,
-      0,
-      52,
-      0,
-      "IMAGE"
-    ],
-    [
-      73,
-      52,
+      45,
       0,
       53,
       0,
       "IMAGE"
     ],
     [
-      74,
-      52,
+      71,
+      45,
       0,
       54,
       0,
       "IMAGE"
     ],
     [
-      75,
-      53,
+      72,
+      47,
       0,
       55,
       0,
       "IMAGE"
     ],
     [
-      76,
-      53,
+      73,
+      48,
       0,
       56,
       0,
       "IMAGE"
     ],
     [
-      77,
-      13,
+      74,
+      48,
       0,
       57,
       0,
       "IMAGE"
     ],
     [
-      78,
-      35,
+      75,
+      50,
       0,
       58,
       0,
       "IMAGE"
     ],
     [
-      79,
-      39,
+      76,
+      51,
       0,
       59,
       0,
       "IMAGE"
     ],
     [
-      80,
-      46,
+      77,
+      51,
       0,
       60,
       0,
       "IMAGE"
     ],
     [
-      81,
-      53,
+      78,
+      11,
       0,
-      61,
+      62,
+      0,
+      "IMAGE"
+    ],
+    [
+      79,
+      33,
+      0,
+      63,
+      0,
+      "IMAGE"
+    ],
+    [
+      80,
+      45,
+      0,
+      64,
+      0,
+      "IMAGE"
+    ],
+    [
+      81,
+      48,
+      0,
+      65,
+      0,
+      "IMAGE"
+    ],
+    [
+      82,
+      51,
+      0,
+      66,
       0,
       "IMAGE"
     ]
@@ -4643,40 +4847,46 @@
   "groups": [
     {
       "id": 1,
-      "title": "00 Welcome & setup",
+      "title": "00 Setup",
       "bounding": [
         40,
         40,
-        800,
-        2500
+        1400,
+        1200
       ],
       "color": "#334155",
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "note"
       }
     },
     {
       "id": 2,
-      "title": "01 Source processing — every node visible",
+      "title": "01 Prepare portrait",
       "bounding": [
-        920,
+        1520,
         40,
         1780,
-        1740
+        1610
       ],
       "color": "#365b41",
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "source"
       }
     },
     {
       "id": 3,
-      "title": "02 Separate model loaders",
+      "title": "02 Models",
       "bounding": [
-        2780,
-        40,
+        1520,
+        1740,
         1080,
         820
       ],
@@ -4684,13 +4894,16 @@
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "model"
       }
     },
     {
       "id": 4,
-      "title": "03 Adonis Base → Refine — expanded upstream graph",
+      "title": "03 Restore details",
       "bounding": [
-        3940,
+        3380,
         40,
         2760,
         1440
@@ -4699,44 +4912,53 @@
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "restore"
       }
     },
     {
       "id": 5,
-      "title": "04 Three live style candidates",
+      "title": "04 Create three portraits",
       "bounding": [
-        6780,
+        6900,
         40,
-        1380,
+        2440,
         2600
       ],
       "color": "#654572",
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "sample"
       }
     },
     {
       "id": 6,
-      "title": "05 Automatic outputs",
+      "title": "05 Save portraits",
       "bounding": [
-        8240,
+        9420,
         40,
         1000,
-        1450
+        1860
       ],
       "color": "#3d596f",
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "output"
       }
     },
     {
       "id": 7,
-      "title": "06 Portrait comparison",
+      "title": "06 Compare portraits",
       "bounding": [
-        2780,
-        1580,
+        3380,
+        1640,
         3400,
         910
       ],
@@ -4744,13 +4966,16 @@
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "output"
       }
     }
   ],
   "config": {},
   "extra": {
     "workflow_id": "hoi4_portrait_flux2_klein_9b_source",
-    "title": "HOI4 Portrait — source reference, three candidates",
+    "title": "HOI4 Portrait — source reference, three portraits",
     "schema_version": "3.1.0",
     "base_model": "flux-2-klein-9b.safetensors",
     "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
@@ -4763,7 +4988,7 @@
       210
     ],
     "dds": {
-      "compression": "DXT5",
+      "format": "A8R8G8B8",
       "mipmaps": false
     },
     "frontendVersion": "1.24.2",

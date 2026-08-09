@@ -1,26 +1,26 @@
 {
-  "4": {
+  "2": {
     "inputs": {
       "image": "source_portrait.jpg"
     },
     "class_type": "LoadImage",
     "_meta": {
-      "title": "Load source portrait — upload or choose here"
+      "title": "Choose a source portrait"
     }
   },
-  "5": {
+  "3": {
     "inputs": {
       "images": [
-        "4",
+        "2",
         0
       ]
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Source preview"
+      "title": "Source portrait"
     }
   },
-  "6": {
+  "4": {
     "inputs": {
       "model_name": "mediapipe_face_fp32.safetensors"
     },
@@ -29,27 +29,27 @@
       "title": "Load face detector"
     }
   },
-  "7": {
+  "5": {
     "inputs": {
       "detector_variant": "both",
       "num_faces": 1,
       "min_confidence": 0.35,
       "missing_frame_fallback": "empty",
       "face_detection_model": [
-        "6",
+        "4",
         0
       ],
       "image": [
-        "4",
+        "2",
         0
       ]
     },
     "class_type": "MediaPipeFaceLandmarker",
     "_meta": {
-      "title": "Detect portrait face — bounding box stays visible"
+      "title": "Find the face"
     }
   },
-  "8": {
+  "6": {
     "inputs": {
       "bg_removal_name": "birefnet.safetensors"
     },
@@ -58,14 +58,14 @@
       "title": "Load BiRefNet mask model"
     }
   },
-  "9": {
+  "7": {
     "inputs": {
       "bg_removal_model": [
-        "8",
+        "6",
         0
       ],
       "image": [
-        "4",
+        "2",
         0
       ]
     },
@@ -74,7 +74,7 @@
       "title": "Generate subject silhouette for crop"
     }
   },
-  "10": {
+  "8": {
     "inputs": {
       "face_processing": true,
       "use_manual_crop": false,
@@ -87,24 +87,24 @@
       "output_width": 512,
       "output_height": 683,
       "image": [
-        "4",
+        "2",
         0
       ],
       "face_bboxes": [
-        "7",
+        "5",
         1
       ],
       "subject_mask": [
-        "9",
+        "7",
         0
       ]
     },
     "class_type": "AdaptivePortraitCrop",
     "_meta": {
-      "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN"
+      "title": "Crop portrait to 512×683"
     }
   },
-  "11": {
+  "9": {
     "inputs": {
       "model_name": "RealESRGAN_x2plus.pth"
     },
@@ -113,14 +113,14 @@
       "title": "Load RealESRGAN ×2"
     }
   },
-  "12": {
+  "10": {
     "inputs": {
       "upscale_model": [
-        "11",
+        "9",
         0
       ],
       "image": [
-        "10",
+        "8",
         0
       ]
     },
@@ -129,42 +129,33 @@
       "title": "Run RealESRGAN ×2"
     }
   },
-  "13": {
+  "11": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "12",
+        "10",
         0
       ]
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Normalize RealESRGAN result to 1024×1365"
+      "title": "Resize prepared portrait to 1024×1365"
     }
   },
-  "14": {
-    "inputs": {
-      "image": "hoi4_leader_portrait_background.png"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Optional replacement background"
-    }
-  },
-  "15": {
+  "13": {
     "inputs": {
       "unet_name": "flux-2-klein-9b.safetensors",
       "weight_dtype": "default"
     },
     "class_type": "UNETLoader",
     "_meta": {
-      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target"
+      "title": "FLUX.2 Klein 9B"
     }
   },
-  "16": {
+  "14": {
     "inputs": {
       "clip_name": "Qwen3-8B-Q8_0.gguf",
       "type": "flux2",
@@ -175,7 +166,7 @@
       "title": "Load Qwen3 8B Q8 text encoder"
     }
   },
-  "17": {
+  "15": {
     "inputs": {
       "vae_name": "flux2-vae.safetensors"
     },
@@ -184,49 +175,49 @@
       "title": "Load FLUX.2 VAE"
     }
   },
-  "18": {
+  "16": {
     "inputs": {
       "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
       "strength_model": 1.0,
       "model": [
-        "15",
+        "13",
         0
       ]
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load HOI4 style LoRA — step 2500 only"
+      "title": "HOI4 portrait style LoRA"
     }
   },
-  "19": {
+  "17": {
     "inputs": {
       "lora_name": "adonis_base.safetensors",
       "strength_model": 1.0,
       "model": [
-        "15",
+        "13",
         0
       ]
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load Adonis Base LoRA"
+      "title": "Adonis Base LoRA"
     }
   },
-  "20": {
+  "18": {
     "inputs": {
       "lora_name": "adonis_refine.safetensors",
       "strength_model": 1.0,
       "model": [
-        "15",
+        "13",
         0
       ]
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load Adonis Refine LoRA"
+      "title": "Adonis Refine LoRA"
     }
   },
-  "21": {
+  "19": {
     "inputs": {
       "bg_removal_name": "birefnet.safetensors"
     },
@@ -235,39 +226,39 @@
       "title": "Load BiRefNet mask model"
     }
   },
-  "22": {
+  "20": {
     "inputs": {
       "megapixels": 1.7,
       "multiple_of": 16,
       "resize_mode": "crop",
       "upscale_method": "lanczos",
       "image": [
-        "13",
+        "11",
         0
       ]
     },
     "class_type": "ImageScaleToTotalPixelsX",
     "_meta": {
-      "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos"
+      "title": "Resize for restoration — 1.7 MP"
     }
   },
-  "23": {
+  "21": {
     "inputs": {
       "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image.",
       "clip": [
-        "16",
+        "14",
         0
       ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
-      "title": "Adonis positive prompt — uhdmanscale"
+      "title": "Restoration prompt"
     }
   },
-  "24": {
+  "22": {
     "inputs": {
       "conditioning": [
-        "23",
+        "21",
         0
       ]
     },
@@ -276,14 +267,14 @@
       "title": "Zero negative conditioning"
     }
   },
-  "25": {
+  "23": {
     "inputs": {
       "pixels": [
-        "22",
+        "20",
         0
       ],
       "vae": [
-        "17",
+        "15",
         0
       ]
     },
@@ -292,14 +283,14 @@
       "title": "Encode restored reference latent"
     }
   },
-  "26": {
+  "24": {
     "inputs": {
       "conditioning": [
-        "23",
+        "21",
         0
       ],
       "latent": [
-        "25",
+        "23",
         0
       ]
     },
@@ -308,14 +299,14 @@
       "title": "Positive reference latent"
     }
   },
-  "27": {
+  "25": {
     "inputs": {
       "conditioning": [
-        "24",
+        "22",
         0
       ],
       "latent": [
-        "25",
+        "23",
         0
       ]
     },
@@ -324,24 +315,24 @@
       "title": "Negative reference latent"
     }
   },
-  "28": {
+  "26": {
     "inputs": {
       "width": [
-        "22",
+        "20",
         1
       ],
       "height": [
-        "22",
+        "20",
         2
       ],
       "batch_size": 1
     },
     "class_type": "EmptyFlux2LatentImage",
     "_meta": {
-      "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process"
+      "title": "Restoration latent"
     }
   },
-  "29": {
+  "27": {
     "inputs": {
       "noise_type_init": "laplacian",
       "s_noise_init": 1.0,
@@ -350,10 +341,10 @@
     },
     "class_type": "SharkOptions_Beta",
     "_meta": {
-      "title": "Adonis RES4LYF options — exact upstream"
+      "title": "Restoration sampler settings"
     }
   },
-  "30": {
+  "28": {
     "inputs": {
       "value": 42
     },
@@ -362,7 +353,7 @@
       "title": "Shared Adonis seed"
     }
   },
-  "31": {
+  "29": {
     "inputs": {
       "value": 9
     },
@@ -371,92 +362,92 @@
       "title": "Total Adonis steps"
     }
   },
-  "32": {
+  "30": {
     "inputs": {
       "eta": 0.8,
       "sampler_name": "exponential/res_2s",
       "scheduler": "simple",
       "steps": [
-        "31",
+        "29",
         0
       ],
       "steps_to_run": 5,
       "cfg": 1.0,
       "denoise": 1.0,
       "seed": [
-        "30",
+        "28",
         0
       ],
       "control_after_generate": "fixed",
       "sampler_mode": "standard",
       "bongmath": true,
       "model": [
-        "19",
+        "17",
         0
       ],
       "positive": [
-        "26",
+        "24",
         0
       ],
       "negative": [
-        "27",
+        "25",
         0
       ],
       "latent_image": [
-        "28",
+        "26",
         0
       ],
       "options": [
-        "29",
+        "27",
         0
       ]
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)"
+      "title": "Restore details — Base pass (steps 1–5)"
     }
   },
-  "33": {
+  "31": {
     "inputs": {
       "eta": 0.8,
       "sampler_name": "exponential/res_2s",
       "scheduler": "simple",
       "steps": [
-        "31",
+        "29",
         0
       ],
       "steps_to_run": -1,
       "cfg": 1.0,
       "denoise": 1.0,
       "seed": [
-        "30",
+        "28",
         0
       ],
       "control_after_generate": "fixed",
       "sampler_mode": "resample",
       "bongmath": true,
       "model": [
-        "20",
+        "18",
         0
       ],
       "latent_image": [
-        "32",
+        "30",
         0
       ]
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Adonis Refine — live RES4LYF sampler (remaining steps)"
+      "title": "Restore details — Refine pass"
     }
   },
-  "34": {
+  "32": {
     "inputs": {
       "samples": [
-        "33",
+        "31",
         0
       ],
       "vae": [
-        "17",
+        "15",
         0
       ]
     },
@@ -465,24 +456,24 @@
       "title": "Decode Adonis Refine output"
     }
   },
-  "35": {
+  "33": {
     "inputs": {
       "switch": true,
       "on_false": [
-        "13",
+        "11",
         0
       ],
       "on_true": [
-        "34",
+        "32",
         0
       ]
     },
     "class_type": "ComfySwitchNode",
     "_meta": {
-      "title": "Use Adonis restoration"
+      "title": "Use restored portrait"
     }
   },
-  "36": {
+  "35": {
     "inputs": {
       "mode": "source_reference",
       "prompt": "make this portrait hoi4_portrait style",
@@ -501,121 +492,28 @@
       "end_at_step": 10000,
       "force_full_denoise": true,
       "model": [
-        "18",
-        0
-      ],
-      "clip": [
         "16",
         0
       ],
+      "clip": [
+        "14",
+        0
+      ],
       "vae": [
-        "17",
+        "15",
         0
       ],
       "reference_image": [
-        "35",
+        "33",
         0
       ]
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Candidate 1 — advanced live style sampler"
+      "title": "Portrait 1"
     }
   },
-  "37": {
-    "inputs": {
-      "use_background": false,
-      "image": [
-        "36",
-        0
-      ],
-      "bg_removal_model": [
-        "21",
-        0
-      ],
-      "background": [
-        "14",
-        0
-      ]
-    },
-    "class_type": "Hoi4BackgroundReplace",
-    "_meta": {
-      "title": "Candidate 1 — optional background replacement"
-    }
-  },
-  "38": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center",
-      "image": [
-        "37",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Candidate 1 master — centered 1024×1365 crop"
-    }
-  },
-  "39": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
-      "crop": "center",
-      "image": [
-        "38",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Candidate 1 game — centered 156×210 crop"
-    }
-  },
-  "40": {
-    "inputs": {
-      "filename_prefix": "1024x1365/candidate_1",
-      "images": [
-        "38",
-        0
-      ]
-    },
-    "class_type": "SaveImage",
-    "_meta": {
-      "title": "Save candidate 1 master PNG"
-    }
-  },
-  "41": {
-    "inputs": {
-      "filename_prefix": "156x210/candidate_1",
-      "images": [
-        "39",
-        0
-      ]
-    },
-    "class_type": "SaveImage",
-    "_meta": {
-      "title": "Save candidate 1 game PNG"
-    }
-  },
-  "42": {
-    "inputs": {
-      "filename_prefix": "156x210/dds/candidate_1",
-      "compression": "dxt5",
-      "images": [
-        "39",
-        0
-      ]
-    },
-    "class_type": "Hoi4SaveDDS",
-    "_meta": {
-      "title": "Save candidate 1 DDS — DXT5, no mipmaps"
-    }
-  },
-  "43": {
+  "36": {
     "inputs": {
       "mode": "source_reference",
       "prompt": "make this portrait hoi4_portrait style",
@@ -634,121 +532,28 @@
       "end_at_step": 10000,
       "force_full_denoise": true,
       "model": [
-        "18",
-        0
-      ],
-      "clip": [
         "16",
         0
       ],
+      "clip": [
+        "14",
+        0
+      ],
       "vae": [
-        "17",
+        "15",
         0
       ],
       "reference_image": [
-        "35",
+        "33",
         0
       ]
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Candidate 2 — advanced live style sampler"
+      "title": "Portrait 2"
     }
   },
-  "44": {
-    "inputs": {
-      "use_background": false,
-      "image": [
-        "43",
-        0
-      ],
-      "bg_removal_model": [
-        "21",
-        0
-      ],
-      "background": [
-        "14",
-        0
-      ]
-    },
-    "class_type": "Hoi4BackgroundReplace",
-    "_meta": {
-      "title": "Candidate 2 — optional background replacement"
-    }
-  },
-  "45": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center",
-      "image": [
-        "44",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Candidate 2 master — centered 1024×1365 crop"
-    }
-  },
-  "46": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
-      "crop": "center",
-      "image": [
-        "45",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Candidate 2 game — centered 156×210 crop"
-    }
-  },
-  "47": {
-    "inputs": {
-      "filename_prefix": "1024x1365/candidate_2",
-      "images": [
-        "45",
-        0
-      ]
-    },
-    "class_type": "SaveImage",
-    "_meta": {
-      "title": "Save candidate 2 master PNG"
-    }
-  },
-  "48": {
-    "inputs": {
-      "filename_prefix": "156x210/candidate_2",
-      "images": [
-        "46",
-        0
-      ]
-    },
-    "class_type": "SaveImage",
-    "_meta": {
-      "title": "Save candidate 2 game PNG"
-    }
-  },
-  "49": {
-    "inputs": {
-      "filename_prefix": "156x210/dds/candidate_2",
-      "compression": "dxt5",
-      "images": [
-        "46",
-        0
-      ]
-    },
-    "class_type": "Hoi4SaveDDS",
-    "_meta": {
-      "title": "Save candidate 2 DDS — DXT5, no mipmaps"
-    }
-  },
-  "50": {
+  "37": {
     "inputs": {
       "mode": "source_reference",
       "prompt": "make this portrait hoi4_portrait style",
@@ -767,178 +572,405 @@
       "end_at_step": 10000,
       "force_full_denoise": true,
       "model": [
-        "18",
-        0
-      ],
-      "clip": [
         "16",
         0
       ],
+      "clip": [
+        "14",
+        0
+      ],
       "vae": [
-        "17",
+        "15",
         0
       ],
       "reference_image": [
-        "35",
+        "33",
         0
       ]
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Candidate 3 — advanced live style sampler"
+      "title": "Portrait 3"
     }
   },
-  "51": {
+  "39": {
+    "inputs": {
+      "image1": [
+        "35",
+        0
+      ],
+      "image2": [
+        "36",
+        0
+      ]
+    },
+    "class_type": "ImageBatch",
+    "_meta": {
+      "title": "Join portraits 1 and 2"
+    }
+  },
+  "40": {
+    "inputs": {
+      "image1": [
+        "39",
+        0
+      ],
+      "image2": [
+        "37",
+        0
+      ]
+    },
+    "class_type": "ImageBatch",
+    "_meta": {
+      "title": "Add portrait 3"
+    }
+  },
+  "41": {
+    "inputs": {
+      "image": "hoi4_leader_portrait_background.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Choose a replacement background"
+    }
+  },
+  "42": {
     "inputs": {
       "use_background": false,
       "image": [
-        "50",
+        "40",
         0
       ],
       "bg_removal_model": [
-        "21",
+        "19",
         0
       ],
       "background": [
-        "14",
+        "41",
         0
       ]
     },
     "class_type": "Hoi4BackgroundReplace",
     "_meta": {
-      "title": "Candidate 3 — optional background replacement"
+      "title": "Use replacement background"
     }
   },
-  "52": {
+  "43": {
+    "inputs": {
+      "batch_index": 0,
+      "length": 1,
+      "image": [
+        "42",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Take portrait 1"
+    }
+  },
+  "44": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "51",
+        "43",
         0
       ]
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Candidate 3 master — centered 1024×1365 crop"
+      "title": "Portrait 1 master — 1024×1365"
     }
   },
-  "53": {
+  "45": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "52",
+        "44",
         0
       ]
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Candidate 3 game — centered 156×210 crop"
+      "title": "Portrait 1 game — 156×210"
+    }
+  },
+  "46": {
+    "inputs": {
+      "batch_index": 1,
+      "length": 1,
+      "image": [
+        "42",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Take portrait 2"
+    }
+  },
+  "47": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "46",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 2 master — 1024×1365"
+    }
+  },
+  "48": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "47",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 2 game — 156×210"
+    }
+  },
+  "49": {
+    "inputs": {
+      "batch_index": 2,
+      "length": 1,
+      "image": [
+        "42",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Take portrait 3"
+    }
+  },
+  "50": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "49",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 3 master — 1024×1365"
+    }
+  },
+  "51": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "50",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 3 game — 156×210"
+    }
+  },
+  "52": {
+    "inputs": {
+      "filename_prefix": "1024x1365/portrait_1",
+      "images": [
+        "44",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save portrait 1 master PNG"
+    }
+  },
+  "53": {
+    "inputs": {
+      "filename_prefix": "156x210/portrait_1",
+      "images": [
+        "45",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save portrait 1 game PNG"
     }
   },
   "54": {
     "inputs": {
-      "filename_prefix": "1024x1365/candidate_3",
+      "filename_prefix": "156x210/dds/portrait_1",
+      "format": "argb8888",
       "images": [
-        "52",
-        0
-      ]
-    },
-    "class_type": "SaveImage",
-    "_meta": {
-      "title": "Save candidate 3 master PNG"
-    }
-  },
-  "55": {
-    "inputs": {
-      "filename_prefix": "156x210/candidate_3",
-      "images": [
-        "53",
-        0
-      ]
-    },
-    "class_type": "SaveImage",
-    "_meta": {
-      "title": "Save candidate 3 game PNG"
-    }
-  },
-  "56": {
-    "inputs": {
-      "filename_prefix": "156x210/dds/candidate_3",
-      "compression": "dxt5",
-      "images": [
-        "53",
+        "45",
         0
       ]
     },
     "class_type": "Hoi4SaveDDS",
     "_meta": {
-      "title": "Save candidate 3 DDS — DXT5, no mipmaps"
+      "title": "Save portrait 1 DDS"
+    }
+  },
+  "55": {
+    "inputs": {
+      "filename_prefix": "1024x1365/portrait_2",
+      "images": [
+        "47",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save portrait 2 master PNG"
+    }
+  },
+  "56": {
+    "inputs": {
+      "filename_prefix": "156x210/portrait_2",
+      "images": [
+        "48",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save portrait 2 game PNG"
     }
   },
   "57": {
     "inputs": {
+      "filename_prefix": "156x210/dds/portrait_2",
+      "format": "argb8888",
       "images": [
-        "13",
+        "48",
         0
       ]
     },
-    "class_type": "PreviewImage",
+    "class_type": "Hoi4SaveDDS",
     "_meta": {
-      "title": "RealESRGAN prepared crop"
+      "title": "Save portrait 2 DDS"
     }
   },
   "58": {
     "inputs": {
+      "filename_prefix": "1024x1365/portrait_3",
       "images": [
-        "35",
+        "50",
         0
       ]
     },
-    "class_type": "PreviewImage",
+    "class_type": "SaveImage",
     "_meta": {
-      "title": "Adonis Base → Refine restored"
+      "title": "Save portrait 3 master PNG"
     }
   },
   "59": {
     "inputs": {
+      "filename_prefix": "156x210/portrait_3",
       "images": [
-        "39",
+        "51",
         0
       ]
     },
-    "class_type": "PreviewImage",
+    "class_type": "SaveImage",
     "_meta": {
-      "title": "Final candidate 1 — 156×210"
+      "title": "Save portrait 3 game PNG"
     }
   },
   "60": {
     "inputs": {
+      "filename_prefix": "156x210/dds/portrait_3",
+      "format": "argb8888",
       "images": [
-        "46",
+        "51",
         0
       ]
     },
-    "class_type": "PreviewImage",
+    "class_type": "Hoi4SaveDDS",
     "_meta": {
-      "title": "Final candidate 2 — 156×210"
+      "title": "Save portrait 3 DDS"
     }
   },
-  "61": {
+  "62": {
     "inputs": {
       "images": [
-        "53",
+        "11",
         0
       ]
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Final candidate 3 — 156×210"
+      "title": "Prepared portrait"
+    }
+  },
+  "63": {
+    "inputs": {
+      "images": [
+        "33",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Restored portrait"
+    }
+  },
+  "64": {
+    "inputs": {
+      "images": [
+        "45",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Portrait 1 — 156×210"
+    }
+  },
+  "65": {
+    "inputs": {
+      "images": [
+        "48",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Portrait 2 — 156×210"
+    }
+  },
+  "66": {
+    "inputs": {
+      "images": [
+        "51",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Portrait 3 — 156×210"
     }
   }
 }

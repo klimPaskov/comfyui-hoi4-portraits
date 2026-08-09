@@ -12,11 +12,11 @@ This repository documents one current, internally consistent package.
 
 ## Workflow contract
 
-- Source reference: three live style candidates and a five-card comparison row
-- Text to image: one live sampler and one final portrait
+- Source reference: three style candidates and a five-card comparison row
+- Text to image: one sampler and one final portrait
 - Processing only: RealESRGAN plus exact Adonis Base → Refine, no style LoRA
 - Batch: list input, one sampler, sequential per-source execution
-- Output: 1024×1365 PNG, centered 156×210 PNG, 156×210 DXT5 DDS with no mipmaps
+- Output: 1024×1365 PNG, centered 156×210 PNG, 156×210 A8R8G8B8 DDS with no mipmaps
 
 ## Installation contract
 

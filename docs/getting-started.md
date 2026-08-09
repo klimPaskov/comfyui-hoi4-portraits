@@ -61,9 +61,9 @@ create a read-only token. GGUF files are not gated.
 
 1. Open the workflow JSON file in the ComfyUI editor. The **Setup guide** note
    on the left shows the exact model folders.
-2. Check the visible diffusion-model loader. The installer sets it to the
+2. Check the diffusion-model loader below the green preparation stage. The installer sets it to the
    selected full, FP8, or GGUF variant. Qwen Q8, VAE, and every LoRA have
-   their own visible loaders beside it.
+   their own loaders beside it.
 3. Select the source image and confirm the explicit source and RealESRGAN previews.
    Adjust **Face zoom** if needed, or use the manual crop for a specific
    person.
@@ -103,4 +103,4 @@ rendering.
 | Too much body | Increase **Face zoom**; `0.90` is the default and `1.00` is the closest safe framing. |
 | Style is weak | Keep `hoi4_portrait` in the prompt, confirm LoRA strength is `1.00`, and keep the crop clean. |
 | Monochrome result | Enable **FLUX restoration** so natural colour is restored before LoRA styling. |
-| Game crashes on the DDS | Confirm the file is 156×210 DXT5 with no mipmaps (the workflow's default output). |
+| Game crashes on the DDS | Confirm the file is 156×210 A8R8G8B8 with no mipmaps (the workflow's default output). |

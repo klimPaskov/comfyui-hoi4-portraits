@@ -6,7 +6,7 @@
     },
     "class_type": "Hoi4BatchInput",
     "_meta": {
-      "title": "Batch input folder — list output runs one portrait at a time"
+      "title": "Batch portrait folder"
     }
   },
   "4": {
@@ -35,7 +35,7 @@
     },
     "class_type": "MediaPipeFaceLandmarker",
     "_meta": {
-      "title": "Detect portrait face — bounding box stays visible"
+      "title": "Find the face"
     }
   },
   "6": {
@@ -90,7 +90,7 @@
     },
     "class_type": "AdaptivePortraitCrop",
     "_meta": {
-      "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN"
+      "title": "Crop portrait to 512×683"
     }
   },
   "9": {
@@ -131,7 +131,7 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Normalize RealESRGAN result to 1024×1365"
+      "title": "Resize prepared portrait to 1024×1365"
     }
   },
   "12": {
@@ -141,7 +141,7 @@
     },
     "class_type": "UNETLoader",
     "_meta": {
-      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target"
+      "title": "FLUX.2 Klein 9B"
     }
   },
   "13": {
@@ -175,7 +175,7 @@
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load HOI4 style LoRA — step 2500 only"
+      "title": "HOI4 portrait style LoRA"
     }
   },
   "16": {
@@ -189,7 +189,7 @@
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load Adonis Base LoRA"
+      "title": "Adonis Base LoRA"
     }
   },
   "17": {
@@ -203,7 +203,7 @@
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Load Adonis Refine LoRA"
+      "title": "Adonis Refine LoRA"
     }
   },
   "18": {
@@ -219,7 +219,7 @@
     },
     "class_type": "ImageScaleToTotalPixelsX",
     "_meta": {
-      "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos"
+      "title": "Resize for restoration — 1.7 MP"
     }
   },
   "19": {
@@ -232,7 +232,7 @@
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
-      "title": "Adonis positive prompt — uhdmanscale"
+      "title": "Restoration prompt"
     }
   },
   "20": {
@@ -309,7 +309,7 @@
     },
     "class_type": "EmptyFlux2LatentImage",
     "_meta": {
-      "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process"
+      "title": "Restoration latent"
     }
   },
   "25": {
@@ -321,7 +321,7 @@
     },
     "class_type": "SharkOptions_Beta",
     "_meta": {
-      "title": "Adonis RES4LYF options — exact upstream"
+      "title": "Restoration sampler settings"
     }
   },
   "26": {
@@ -384,7 +384,7 @@
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)"
+      "title": "Restore details — Base pass (steps 1–5)"
     }
   },
   "29": {
@@ -417,7 +417,7 @@
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Adonis Refine — live RES4LYF sampler (remaining steps)"
+      "title": "Restore details — Refine pass"
     }
   },
   "30": {
@@ -450,10 +450,10 @@
     },
     "class_type": "ComfySwitchNode",
     "_meta": {
-      "title": "Use Adonis restoration"
+      "title": "Use restored portrait"
     }
   },
-  "32": {
+  "33": {
     "inputs": {
       "mode": "source_reference",
       "prompt": "make this portrait hoi4_portrait style",
@@ -490,46 +490,46 @@
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Batch portrait — one advanced live sampler"
+      "title": "Create each portrait"
     }
   },
-  "33": {
+  "35": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "32",
+        "33",
         0
       ]
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Batch master — centered 1024×1365 crop"
+      "title": "Master portrait — 1024×1365"
     }
   },
-  "34": {
+  "36": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "33",
+        "35",
         0
       ]
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Batch game — centered 156×210 crop"
+      "title": "Game portrait — 156×210"
     }
   },
-  "35": {
+  "37": {
     "inputs": {
       "filename_prefix": "1024x1365/batch",
       "images": [
-        "33",
+        "35",
         0
       ]
     },
@@ -538,11 +538,11 @@
       "title": "Save every master PNG"
     }
   },
-  "36": {
+  "38": {
     "inputs": {
       "filename_prefix": "156x210/batch",
       "images": [
-        "34",
+        "36",
         0
       ]
     },
@@ -551,12 +551,12 @@
       "title": "Save every game PNG"
     }
   },
-  "37": {
+  "39": {
     "inputs": {
       "filename_prefix": "156x210/dds/batch",
-      "compression": "dxt5",
+      "format": "argb8888",
       "images": [
-        "34",
+        "36",
         0
       ]
     },
@@ -565,7 +565,7 @@
       "title": "Save every game DDS"
     }
   },
-  "38": {
+  "41": {
     "inputs": {
       "images": [
         "11",
@@ -574,10 +574,10 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "RealESRGAN"
+      "title": "Prepared portrait"
     }
   },
-  "39": {
+  "42": {
     "inputs": {
       "images": [
         "31",
@@ -586,19 +586,19 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Adonis restored"
+      "title": "Restored portrait"
     }
   },
-  "40": {
+  "43": {
     "inputs": {
       "images": [
-        "34",
+        "36",
         0
       ]
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Final 156×210"
+      "title": "Game portrait"
     }
   }
 }

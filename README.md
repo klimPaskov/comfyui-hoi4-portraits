@@ -12,8 +12,8 @@ queue.
 
 The same workflows open locally, on RunPod, and in Comfy Cloud. The installers
 detect your GPU VRAM and suggest the right model variant (GGUF / FP8 / full),
-and every workflow saves **HOI4-ready 156×210 DDS files** that can be dropped
-straight into a mod's `gfx/portraits` folder.
+and every workflow saves **HOI4-ready 156×210 DDS files** for a mod's
+`gfx/leaders/TAG/` folder.
 
 ## Four workflows
 
@@ -29,7 +29,7 @@ Every workflow saves:
 ```text
 ComfyUI/output/1024x1365/     full-res master PNG
 ComfyUI/output/156x210/       game-size PNG
-ComfyUI/output/156x210/dds/   HOI4-ready DDS (DXT5, no mipmaps)
+ComfyUI/output/156x210/dds/   HOI4-ready DDS (A8R8G8B8, no mipmaps)
 ```
 
 ## Which model do I need?
@@ -118,28 +118,27 @@ GGUF files are not gated.
 
 ## What the source workflow does
 
-The editor screenshots below come from the four installed workflows in a live
-ComfyUI registry with all required node classes present.
+The workflow is arranged from left to right in clear, colour-coded stages.
 
 ![Source workflow overview](docs/assets/workflows/audit/source-overview.png)
 
 1. **Source and ESRGAN:** load the portrait, confirm the large source preview,
    tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then inspect the
    dedicated ESRGAN preview.
-2. **Restoration:** the fully visible restoration group follows the upstream
+2. **Restoration:** the restoration group follows the upstream
    [`Adonis_Workflow.json`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/Adonis_Workflow.json)
-   topology: 1.7 MP Lanczos crop, Qwen 3 8B Q8 GGUF, a visible Adonis Base
-   sampler for the first
-   five steps, and a visible Adonis Refine sampler for the remainder of a nine-step RES4LYF
+   topology: 1.7 MP Lanczos crop, Qwen 3 8B Q8 GGUF, an Adonis Base sampler
+   for the first five steps, and an Adonis Refine sampler for the remainder of a nine-step RES4LYF
    schedule. The switch opens enabled; bypass it for a direct ESRGAN input.
 3. **Style:** three independent candidates use the exact 2500-step LoRA. Each
-   candidate has one advanced live sampler card with CFG `1`, guidance `1`,
+   candidate has one sampler card with CFG `1`, guidance `1`,
    four steps, Euler, simple scheduling, denoise, seed behavior, and partial
    step controls.
 4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and
-   all three finals together. Background replacement runs after generation.
+   all three finals together. One shared background switch applies the same
+   choice to all three portraits after generation.
    Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a
-   unique 156×210 DXT5 DDS with no mipmaps.
+   unique 156×210 A8R8G8B8 DDS with no mipmaps.
 
 The other three workflow canvases use the same stage colors and controls:
 

@@ -366,7 +366,7 @@ class PortraitIdentityMask:
 
 
 class Hoi4PortraitSampler:
-    """Complete distilled FLUX.2 portrait generation on one live sampler card."""
+    """Generate a distilled FLUX.2 portrait from a prompt or source image."""
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -507,8 +507,8 @@ class Hoi4PortraitSampler:
     FUNCTION = "sample"
     CATEGORY = "HOI4 portraits/sampling"
     DESCRIPTION = (
-        "Complete advanced FLUX.2 Klein portrait sampler with prompt, source-reference/text mode, "
-        "guidance, CFG, seed, steps, sampler, scheduler, denoise, and ComfyUI live previews."
+        "FLUX.2 Klein portrait generator with prompt, source-reference/text mode, guidance, CFG, "
+        "seed, steps, sampler, scheduler, and denoise controls."
     )
 
     def sample(
@@ -632,7 +632,7 @@ class Hoi4BackgroundReplace:
     RETURN_NAMES = ("image",)
     FUNCTION = "replace"
     CATEGORY = "HOI4 portraits/output"
-    DESCRIPTION = "Optional BiRefNet subject mask and background composite. Sizing and game crops remain separate visible nodes."
+    DESCRIPTION = "Optional BiRefNet subject mask and background composite."
 
     def replace(self, image, bg_removal_model, use_background, background=None):
         if not bool(use_background):
@@ -706,18 +706,11 @@ class Hoi4BatchInput:
 class Hoi4SaveDDS:
     """Save a 156x210 portrait as a HOI4-compatible DDS.
 
-    Hearts of Iron IV reads 156x210 portrait textures in the classic DXT5
-    (BC3) block-compressed DDS format with no mipmaps.  That is the format the
-    in-game engine expects and the one the community tools (paint.net DXT5,
-    Kadaif BC3, GIMP DXT5) produce, so dropping the output straight into a
-    ``gfx/portraits`` folder will not crash the game.  Pillow writes the
-    standard DDS header with the ``DXT5`` FOURCC and a single top-level
-    mipmap, which keeps the file small (about 32 KB) and immediately usable.
-
-    ``compression`` lets advanced users pick the classic uncompressed ARGB8
-    profile instead (larger files, zero loss), which the engine also accepts.
-    Keeping this in a node means the workflow emits the game asset in
-    addition to the review PNG instead of relying on a second conversion tool.
+    Vanilla leader portraits are 156x210, uncompressed A8R8G8B8 textures with
+    no mipmaps.  Pillow writes that DDS profile from an RGBA image using the
+    same 32-bit masks as the game files: R=0x00ff0000, G=0x0000ff00,
+    B=0x000000ff, A=0xff000000.  DXT5 remains available for older mods that
+    deliberately use block-compressed portraits, but it is not the default.
     """
 
     @classmethod
@@ -732,10 +725,10 @@ class Hoi4SaveDDS:
                         "tooltip": "Output subfolder and filename prefix inside ComfyUI's output folder. '156x210/dds/...' matches the workflow's game-ready folder.",
                     },
                 ),
-                "compression": (
-                    ["dxt5", "uncompressed"],
+                "format": (
+                    ["argb8888", "dxt5"],
                     {
-                        "tooltip": "DXT5 (BC3) is the HOI4 standard, ~32 KB, no mipmaps. 'uncompressed' writes ARGB8 which also works but is ~3x larger.",
+                        "tooltip": "A8R8G8B8 is the vanilla HOI4 leader-portrait format. Both choices use one 156x210 image with no mipmaps.",
                     },
                 ),
             }
@@ -745,9 +738,9 @@ class Hoi4SaveDDS:
     RETURN_NAMES = ("images",)
     FUNCTION = "save"
     CATEGORY = "HOI4 portraits/output"
-    DESCRIPTION = "Save 156x210 DXT5 (BC3) DDS files with no mipmaps for HOI4."
+    DESCRIPTION = "Save vanilla-style 156x210 A8R8G8B8 DDS portraits with no mipmaps for HOI4."
 
-    def save(self, images, filename_prefix, compression="dxt5"):
+    def save(self, images, filename_prefix, format="argb8888"):
         output_dir = Path(folder_paths.get_output_directory())
         prefix = Path(str(filename_prefix))
         if prefix.is_absolute() or ".." in prefix.parts:
@@ -759,14 +752,16 @@ class Hoi4SaveDDS:
                 raise ValueError(
                     f"HOI4 DDS output must be 156x210; received {array.shape[1]}x{array.shape[0]}."
                 )
-            image = Image.fromarray(array[:, :, :3])
+            rgb = array[:, :, :3]
+            alpha = np.full((array.shape[0], array.shape[1], 1), 255, dtype=np.uint8)
+            image = Image.fromarray(np.concatenate((rgb, alpha), axis=2))
             output_folder, filename, counter, _, _ = folder_paths.get_save_image_path(
                 str(prefix), str(output_dir), array.shape[1], array.shape[0]
             )
             target_folder = Path(output_folder)
             target_folder.mkdir(parents=True, exist_ok=True)
             target = target_folder / f"{filename}_{counter + index:05d}.dds"
-            if compression == "dxt5":
+            if format == "dxt5":
                 image.save(target, format="DDS", pixel_format="DXT5")
             else:
                 image.save(target, format="DDS")
@@ -785,8 +780,8 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AdaptivePortraitCrop": "Adaptive Portrait Crop",
     "PortraitIdentityMask": "Portrait Identity Mask",
-    "Hoi4PortraitSampler": "HOI4 Portrait Sampler (advanced)",
+    "Hoi4PortraitSampler": "HOI4 Portrait Sampler",
     "Hoi4BackgroundReplace": "HOI4 Optional Background Replacement",
     "Hoi4BatchInput": "HOI4 Batch Input Folder",
-    "Hoi4SaveDDS": "HOI4 Save DDS (156x210)",
+    "Hoi4SaveDDS": "HOI4 Save DDS Portrait (156x210)",
 }

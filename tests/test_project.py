@@ -29,7 +29,7 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {61, 16, 38, 40})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {66, 17, 40, 43})
 
     def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
@@ -58,6 +58,7 @@ class WorkflowTests(unittest.TestCase):
         for required in ("UNETLoader", "ClipLoaderGGUF", "VAELoader", "ImageUpscaleWithModel"):
             self.assertEqual(sum(node["class_type"] == required for node in source.values()), 1, required)
         self.assertEqual(sum(node["class_type"] == "LoraLoaderModelOnly" for node in source.values()), 3)
+        self.assertEqual(sum(node["class_type"] == "Hoi4BackgroundReplace" for node in source.values()), 1)
 
     def test_source_comparison_and_outputs_are_exact(self) -> None:
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.json").read_text())
@@ -66,8 +67,8 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(len(previews), 6)
         self.assertTrue(all(node["size"] == [600, 810] for node in previews))
         titles = {node["title"] for node in previews}
-        self.assertTrue({"Source preview", "RealESRGAN prepared crop", "Adonis Base → Refine restored"}.issubset(titles))
-        self.assertEqual(sum(title.startswith("Final candidate") for title in titles), 3)
+        self.assertTrue({"Source portrait", "Prepared portrait", "Restored portrait"}.issubset(titles))
+        self.assertEqual(sum(title.startswith("Portrait ") for title in titles), 3)
         masters = [node for node in api.values() if node["class_type"] == "ImageScale" and "master" in node["_meta"]["title"]]
         games = [node for node in api.values() if node["class_type"] == "ImageScale" and "game" in node["_meta"]["title"]]
         self.assertEqual(len(masters), 3)
@@ -76,7 +77,12 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue(all([node["inputs"]["width"], node["inputs"]["height"], node["inputs"]["crop"]] == [156, 210, "center"] for node in games))
         dds = [node for node in api.values() if node["class_type"] == "Hoi4SaveDDS"]
         self.assertEqual(len(dds), 3)
-        self.assertTrue(all(node["inputs"]["compression"] == "dxt5" for node in dds))
+        self.assertTrue(all(node["inputs"]["format"] == "argb8888" for node in dds))
+        background_id, background = next((node_id, node) for node_id, node in api.items() if node["class_type"] == "Hoi4BackgroundReplace")
+        self.assertEqual(api[background["inputs"]["image"][0]]["class_type"], "ImageBatch")
+        extracts = [node for node in api.values() if node["class_type"] == "ImageFromBatch"]
+        self.assertEqual(len(extracts), 3)
+        self.assertTrue(all(node["inputs"]["image"][0] == background_id for node in extracts))
 
     def test_adonis_defaults_match_the_upstream_base_refine_graph(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_processing_only.api.json").read_text())
@@ -178,19 +184,25 @@ class CustomNodeTests(unittest.TestCase):
             self.assertEqual(tuple(game.shape), (1, 210, 156, 3))
             self.assertGreater(float(game.std()), 0.05)
 
-    def test_dds_is_dxt5_156x210_with_no_mipmap_chain(self) -> None:
+    def test_dds_matches_vanilla_argb8888_portrait_profile(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             module = self._load_module(root)
             image = torch.rand((1, 210, 156, 3), dtype=torch.float32)
-            module.Hoi4SaveDDS().save(image, "156x210/dds/test", "dxt5")
+            module.Hoi4SaveDDS().save(image, "156x210/dds/test", "argb8888")
             dds = next((root / "output/156x210/dds").glob("*.dds"))
             data = dds.read_bytes()
             self.assertEqual(data[:4], b"DDS ")
-            self.assertEqual(data[84:88], b"DXT5")
+            self.assertEqual(data[84:88], b"\x00\x00\x00\x00")
             self.assertEqual(int.from_bytes(data[12:16], "little"), 210)
             self.assertEqual(int.from_bytes(data[16:20], "little"), 156)
             self.assertEqual(int.from_bytes(data[28:32], "little"), 0)
+            self.assertEqual(int.from_bytes(data[80:84], "little"), 0x41)
+            self.assertEqual(int.from_bytes(data[88:92], "little"), 32)
+            self.assertEqual(int.from_bytes(data[92:96], "little"), 0x00FF0000)
+            self.assertEqual(int.from_bytes(data[96:100], "little"), 0x0000FF00)
+            self.assertEqual(int.from_bytes(data[100:104], "little"), 0x000000FF)
+            self.assertEqual(int.from_bytes(data[104:108], "little"), 0xFF000000)
 
     def test_batch_input_returns_list_items_for_one_by_one_execution(self) -> None:
         source = (ROOT / "custom_nodes/hoi4_portraits/__init__.py").read_text()

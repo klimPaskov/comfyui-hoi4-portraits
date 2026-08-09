@@ -48,6 +48,8 @@ ALLOWED_NODES = {
     "ComfySwitchNode",
     "Hoi4PortraitSampler",
     "Hoi4BackgroundReplace",
+    "ImageBatch",
+    "ImageFromBatch",
     "Hoi4BatchInput",
     "Hoi4SaveDDS",
 }
@@ -196,10 +198,10 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     is_processing = workflow_id == WORKFLOW_IDS[2]
     is_batch = workflow_id == WORKFLOW_IDS[3]
     compact_limits = {
-        WORKFLOW_IDS[0]: (9200, 2600),
-        WORKFLOW_IDS[1]: (4180, 1740),
+        WORKFLOW_IDS[0]: (10400, 2600),
+        WORKFLOW_IDS[1]: (4800, 1800),
         WORKFLOW_IDS[2]: (8860, 1980),
-        WORKFLOW_IDS[3]: (8880, 2000),
+        WORKFLOW_IDS[3]: (8880, 2040),
     }
     if ui.get("groups") and workflow_id in compact_limits:
         left = min(group["bounding"][0] for group in ui["groups"])
@@ -216,8 +218,8 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: only distilled FLUX.2 Klein is allowed")
     if ui.get("extra", {}).get("master_size") != [1024, 1365] or ui.get("extra", {}).get("game_size") != [156, 210]:
         errors.append(f"{path}: master/game dimensions are wrong")
-    if ui.get("extra", {}).get("dds") != {"compression": "DXT5", "mipmaps": False}:
-        errors.append(f"{path}: DDS policy must be DXT5 with no mipmaps")
+    if ui.get("extra", {}).get("dds") != {"format": "A8R8G8B8", "mipmaps": False}:
+        errors.append(f"{path}: DDS policy must be vanilla-style A8R8G8B8 with no mipmaps")
 
     counts: dict[str, int] = {}
     for node in api.values():
@@ -240,6 +242,32 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: batch workflow needs one list-output input card")
     if is_source and counts.get("PreviewImage", 0) != 6:
         errors.append(f"{path}: source workflow needs source preview plus the five-card comparison row")
+    expected_background_controls = 1 if is_source or is_text else 0
+    if counts.get("Hoi4BackgroundReplace", 0) != expected_background_controls:
+        errors.append(f"{path}: expected {expected_background_controls} shared background true/false control(s)")
+    if is_source and (counts.get("ImageBatch", 0) != 2 or counts.get("ImageFromBatch", 0) != 3):
+        errors.append(f"{path}: the shared background control must batch and split all three portraits")
+
+    setup_nodes = [
+        node for node in ui.get("nodes", [])
+        if node.get("properties", {}).get("hoi4_group") == "00 Setup"
+    ]
+    if len(setup_nodes) != 1 or setup_nodes[0].get("type") != "Note":
+        errors.append(f"{path}: the left setup group must contain exactly one note")
+    else:
+        setup_text = str((setup_nodes[0].get("widgets_values") or [""])[0])
+        catalog = json.loads((build_workflows.ROOT / "models.json").read_text())
+        missing_urls = [model["url"] for model in catalog["models"] if model["url"] not in setup_text]
+        if missing_urls:
+            errors.append(f"{path}: setup note is missing {len(missing_urls)} model download link(s)")
+
+    groups_by_title = {group.get("title"): group for group in ui.get("groups", [])}
+    if not is_text:
+        prep_title = "01 Prepare portraits" if is_batch else "01 Prepare portrait"
+        prep = groups_by_title.get(prep_title, {}).get("bounding")
+        models = groups_by_title.get("02 Models", {}).get("bounding")
+        if prep and models and models[1] < prep[1] + prep[3] + 80:
+            errors.append(f"{path}: model loaders must sit below the green preparation group")
 
     expected_adonis_nodes = 0 if is_text else 1
     for class_type, multiplier in {
@@ -255,12 +283,27 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         if counts.get(class_type, 0) != expected_adonis_nodes * multiplier:
             errors.append(f"{path}: expanded Adonis graph needs {expected_adonis_nodes * multiplier} visible {class_type} node(s)")
 
+    forbidden_public_words = re.compile(r"\b(?:live|advanced|expanded|visible)\b", re.IGNORECASE)
     for node in ui.get("nodes", []):
+        public_text = node.get("title", "")
+        if node.get("type") == "Note":
+            public_text += " " + str((node.get("widgets_values") or [""])[0])
+            if node.get("properties", {}).get("hoi4_group") != "00 Setup":
+                width, height = node.get("size", [0, 0])
+                if width > 1020 or height > 180:
+                    errors.append(f"{path}: explanation note {node.get('id')} must stay compact")
+        if forbidden_public_words.search(public_text):
+            errors.append(f"{path}: node {node.get('id')} contains meta wording")
+
+        group_name = node.get("properties", {}).get("hoi4_group")
+        theme = groups_by_title.get(group_name, {}).get("properties", {}).get("hoi4_node_color")
+        expected_theme = "switch" if node.get("type") in {"ComfySwitchNode", "Hoi4BackgroundReplace"} else theme
+        if expected_theme in build_workflows.COLORS:
+            expected_color, expected_background = build_workflows.COLORS[expected_theme]
+            if [node.get("color"), node.get("bgcolor")] != [expected_color, expected_background]:
+                errors.append(f"{path}: node {node.get('id')} color does not match {group_name}")
+
         if node.get("type") != "PreviewImage":
-            if node.get("type") in {"ComfySwitchNode", "Hoi4BackgroundReplace"}:
-                expected_color, expected_background = build_workflows.COLORS["switch"]
-                if [node.get("color"), node.get("bgcolor")] != [expected_color, expected_background]:
-                    errors.append(f"{path}: true/false switch node {node.get('id')} must be red")
             continue
         width, height = node.get("size", [0, 0])
         if [width, height] != [600, 810]:
@@ -281,7 +324,11 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
             errors.append(f"{path}: preview comparison in {group!r} must use exact 80px gutters")
 
     candidate_samplers = sorted(
-        (node for node in ui.get("nodes", []) if node.get("title", "").startswith("Candidate ") and node.get("type") == "Hoi4PortraitSampler"),
+        (
+            node for node in ui.get("nodes", [])
+            if node.get("properties", {}).get("hoi4_group") == "04 Create three portraits"
+            and node.get("type") == "Hoi4PortraitSampler"
+        ),
         key=lambda node: node["pos"][1],
     )
     if candidate_samplers:
@@ -325,7 +372,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
             exact = {"megapixels": 1.7, "multiple_of": 16, "resize_mode": "crop", "upscale_method": "lanczos"}
             if any(inputs.get(key) != value for key, value in exact.items()):
                 errors.append(f"{path}: visible Adonis pre-process settings changed")
-        elif class_type == "CLIPTextEncode" and "Adonis" in node.get("_meta", {}).get("title", ""):
+        elif class_type == "CLIPTextEncode" and not is_text:
             if inputs.get("text") != build_workflows.RESTORATION_PROMPT:
                 errors.append(f"{path}: exact Adonis prompt changed")
         elif class_type == "SharkOptions_Beta":
@@ -356,7 +403,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
             if "156×210" in title and [inputs.get("width"), inputs.get("height"), inputs.get("crop")] != [156, 210, "center"]:
                 errors.append(f"{path}: game output must be a centered 156×210 crop")
         elif class_type == "Hoi4SaveDDS":
-            if inputs.get("compression") != "dxt5" or not str(inputs.get("filename_prefix", "")).startswith("156x210/dds/"):
+            if inputs.get("format") != "argb8888" or not str(inputs.get("filename_prefix", "")).startswith("156x210/dds/"):
                 errors.append(f"{path}: DDS output is not game-ready")
 
     primitive_values = {

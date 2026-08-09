@@ -1,20 +1,20 @@
 {
   "id": "hoi4_portrait_batch",
   "revision": 0,
-  "last_node_id": 40,
+  "last_node_id": 43,
   "last_link_id": 51,
   "nodes": [
     {
       "id": 1,
       "type": "Note",
-      "title": "🖼️ Batch input and output",
+      "title": "📦 Files and downloads",
       "pos": [
         80,
         100
       ],
       "size": [
-        720,
-        920
+        1320,
+        1100
       ],
       "color": "#475569",
       "bgcolor": "#334155",
@@ -25,26 +25,26 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Batch guide"
+        "hoi4_group": "00 Setup"
       },
       "widgets_values": [
-        "🖼️ BATCH — ONE PORTRAIT AT A TIME\n\nDrop PNG/JPG/JPEG/WebP files into ComfyUI/input/hoi4_portraits_batch/ and queue once. The list output makes ComfyUI execute this one-sampler graph once per source.\n\nAutomatic outputs:\noutput/1024x1365/\noutput/156x210/\noutput/156x210/dds/\n\nDDS is DXT5/BC3, 156×210, one top level, no mipmaps."
+        "📦 FILES + DOWNLOADS\nThe installer can place these for you. If you install them by hand, use these folders:\n\n📂 ComfyUI/models/\n├── 🧠 diffusion_models/ — choose one FLUX.2 file\n├── 💬 text_encoders/ — Qwen3-8B-Q8_0.gguf\n├── 🎨 vae/ — flux2-vae.safetensors\n├── 🧩 loras/ — HOI4 style + Adonis Base + Adonis Refine\n├── 🔎 upscale_models/ — RealESRGAN_x2plus.pth\n├── ✂️ background_removal/ — birefnet.safetensors\n└── 🙂 detection/ — MediaPipe + YuNet fallback\n\nDirect downloads:\n⬇️ flux-2-klein-9b.safetensors [full]\nhttps://huggingface.co/black-forest-labs/FLUX.2-klein-9B/resolve/92196c8e11f7b6cf2b7493e037d8c5345c559216/flux-2-klein-9b.safetensors\n⬇️ flux-2-klein-9b-fp8.safetensors [fp8]\nhttps://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/902d9d510b51533e07729f19211414a3648b77d2/flux-2-klein-9b-fp8.safetensors\n⬇️ flux-2-klein-9b-Q4_K_M.gguf [gguf]\nhttps://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q4_K_M.gguf\n⬇️ flux-2-klein-9b-Q5_K_M.gguf [gguf]\nhttps://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q5_K_M.gguf\n⬇️ flux-2-klein-9b-Q6_K.gguf [gguf]\nhttps://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q6_K.gguf\n⬇️ flux-2-klein-9b-Q8_0.gguf [gguf]\nhttps://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q8_0.gguf\n⬇️ Qwen3-8B-Q8_0.gguf\nhttps://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/6cfbfc7d8ab95bf485c79fcc40be60930d5b4c8c/Qwen3-8B-Q8_0.gguf\n⬇️ flux2-vae.safetensors\nhttps://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors\n⬇️ hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\nhttps://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n⬇️ adonis_base.safetensors\nhttps://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors\n⬇️ adonis_refine.safetensors\nhttps://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_refine.safetensors\n⬇️ RealESRGAN_x2plus.pth\nhttps://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth\n⬇️ birefnet.safetensors\nhttps://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors\n⬇️ mediapipe_face_fp32.safetensors\nhttps://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors\n⬇️ face_detection_yunet_2023mar.onnx\nhttps://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
       ]
     },
     {
       "id": 2,
       "type": "Note",
-      "title": "🎛️ Sampler guide",
+      "title": "🖼️ Batch folder",
       "pos": [
-        80,
-        1100
+        1560,
+        100
       ],
       "size": [
-        720,
-        900
+        700,
+        180
       ],
-      "color": "#475569",
-      "bgcolor": "#334155",
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
       "flags": {},
       "order": 1,
       "mode": 0,
@@ -52,18 +52,18 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Batch guide"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": [
-        "🎛️ SAMPLER — TUNED DEFAULTS\n\n4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\nSteps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\nOnly the purple style sampler combines controls. Model loading, source processing, Adonis Base, Adonis Refine, decoding, and output sizing stay visible as separate nodes. ComfyUI's live latent callback shows both style and restoration construction while they run."
+        "🖼️ Put PNG, JPG, JPEG, or WebP files in input/hoi4_portraits_batch/ and queue once. Each photo runs on its own and keeps the same settings."
       ]
     },
     {
       "id": 3,
       "type": "Hoi4BatchInput",
-      "title": "Batch input folder — list output runs one portrait at a time",
+      "title": "Batch portrait folder",
       "pos": [
-        960,
+        1560,
         480
       ],
       "size": [
@@ -116,7 +116,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4BatchInput",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": [
         "hoi4_portraits_batch",
@@ -128,7 +128,7 @@
       "type": "LoadMediaPipeFaceLandmarker",
       "title": "Load face detector",
       "pos": [
-        1740,
+        2340,
         100
       ],
       "size": [
@@ -161,7 +161,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadMediaPipeFaceLandmarker",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": [
         "mediapipe_face_fp32.safetensors"
@@ -170,9 +170,9 @@
     {
       "id": 5,
       "type": "MediaPipeFaceLandmarker",
-      "title": "Detect portrait face — bounding box stays visible",
+      "title": "Find the face",
       "pos": [
-        1740,
+        2340,
         260
       ],
       "size": [
@@ -244,7 +244,7 @@
       ],
       "properties": {
         "Node name for S&R": "MediaPipeFaceLandmarker",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": [
         "both",
@@ -258,15 +258,15 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet mask model",
       "pos": [
-        1740,
+        2340,
         640
       ],
       "size": [
         440,
         100
       ],
-      "color": "#385d7a",
-      "bgcolor": "#29465c",
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
       "flags": {},
       "order": 5,
       "mode": 0,
@@ -291,7 +291,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadBackgroundRemovalModel",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": [
         "birefnet.safetensors"
@@ -302,7 +302,7 @@
       "type": "RemoveBackground",
       "title": "Generate subject silhouette for crop",
       "pos": [
-        1740,
+        2340,
         800
       ],
       "size": [
@@ -337,16 +337,16 @@
       ],
       "properties": {
         "Node name for S&R": "RemoveBackground",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": []
     },
     {
       "id": 8,
       "type": "AdaptivePortraitCrop",
-      "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN",
+      "title": "Crop portrait to 512×683",
       "pos": [
-        2280,
+        2880,
         100
       ],
       "size": [
@@ -466,7 +466,7 @@
       ],
       "properties": {
         "Node name for S&R": "AdaptivePortraitCrop",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": [
         true,
@@ -486,7 +486,7 @@
       "type": "UpscaleModelLoader",
       "title": "Load RealESRGAN ×2",
       "pos": [
-        2280,
+        2880,
         600
       ],
       "size": [
@@ -519,7 +519,7 @@
       ],
       "properties": {
         "Node name for S&R": "UpscaleModelLoader",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": [
         "RealESRGAN_x2plus.pth"
@@ -530,7 +530,7 @@
       "type": "ImageUpscaleWithModel",
       "title": "Run RealESRGAN ×2",
       "pos": [
-        2280,
+        2880,
         760
       ],
       "size": [
@@ -565,24 +565,24 @@
       ],
       "properties": {
         "Node name for S&R": "ImageUpscaleWithModel",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": []
     },
     {
       "id": 11,
       "type": "ImageScale",
-      "title": "Normalize RealESRGAN result to 1024×1365",
+      "title": "Resize prepared portrait to 1024×1365",
       "pos": [
-        2280,
+        2880,
         920
       ],
       "size": [
         400,
         180
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
       "flags": {},
       "order": 10,
       "mode": 0,
@@ -638,7 +638,7 @@
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "hoi4_group": "01 One-at-a-time source processing"
+        "hoi4_group": "01 Prepare portraits"
       },
       "widgets_values": [
         "lanczos",
@@ -650,10 +650,10 @@
     {
       "id": 12,
       "type": "UNETLoader",
-      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target",
+      "title": "FLUX.2 Klein 9B",
       "pos": [
-        2920,
-        100
+        1560,
+        1320
       ],
       "size": [
         440,
@@ -695,7 +695,7 @@
       ],
       "properties": {
         "Node name for S&R": "UNETLoader",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "flux-2-klein-9b.safetensors",
@@ -707,8 +707,8 @@
       "type": "ClipLoaderGGUF",
       "title": "Load Qwen3 8B Q8 text encoder",
       "pos": [
-        2920,
-        320
+        1560,
+        1540
       ],
       "size": [
         440,
@@ -757,7 +757,7 @@
       ],
       "properties": {
         "Node name for S&R": "ClipLoaderGGUF",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "Qwen3-8B-Q8_0.gguf",
@@ -770,8 +770,8 @@
       "type": "VAELoader",
       "title": "Load FLUX.2 VAE",
       "pos": [
-        2920,
-        540
+        1560,
+        1760
       ],
       "size": [
         440,
@@ -805,7 +805,7 @@
       ],
       "properties": {
         "Node name for S&R": "VAELoader",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "flux2-vae.safetensors"
@@ -814,10 +814,10 @@
     {
       "id": 15,
       "type": "LoraLoaderModelOnly",
-      "title": "Load HOI4 style LoRA — step 2500 only",
+      "title": "HOI4 portrait style LoRA",
       "pos": [
-        3420,
-        100
+        2060,
+        1320
       ],
       "size": [
         500,
@@ -862,7 +862,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoraLoaderModelOnly",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
@@ -872,10 +872,10 @@
     {
       "id": 16,
       "type": "LoraLoaderModelOnly",
-      "title": "Load Adonis Base LoRA",
+      "title": "Adonis Base LoRA",
       "pos": [
-        3420,
-        320
+        2060,
+        1540
       ],
       "size": [
         500,
@@ -920,7 +920,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoraLoaderModelOnly",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "adonis_base.safetensors",
@@ -930,10 +930,10 @@
     {
       "id": 17,
       "type": "LoraLoaderModelOnly",
-      "title": "Load Adonis Refine LoRA",
+      "title": "Adonis Refine LoRA",
       "pos": [
-        3420,
-        540
+        2060,
+        1760
       ],
       "size": [
         500,
@@ -978,7 +978,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoraLoaderModelOnly",
-        "hoi4_group": "02 Separate model loaders"
+        "hoi4_group": "02 Models"
       },
       "widgets_values": [
         "adonis_refine.safetensors",
@@ -988,9 +988,9 @@
     {
       "id": 18,
       "type": "ImageScaleToTotalPixelsX",
-      "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos",
+      "title": "Resize for restoration — 1.7 MP",
       "pos": [
-        4080,
+        3540,
         100
       ],
       "size": [
@@ -1066,7 +1066,7 @@
       ],
       "properties": {
         "Node name for S&R": "ImageScaleToTotalPixelsX",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         1.7,
@@ -1078,9 +1078,9 @@
     {
       "id": 19,
       "type": "CLIPTextEncode",
-      "title": "Adonis positive prompt — uhdmanscale",
+      "title": "Restoration prompt",
       "pos": [
-        4080,
+        3540,
         420
       ],
       "size": [
@@ -1119,7 +1119,7 @@
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image."
@@ -1130,7 +1130,7 @@
       "type": "ConditioningZeroOut",
       "title": "Zero negative conditioning",
       "pos": [
-        4080,
+        3540,
         760
       ],
       "size": [
@@ -1160,7 +1160,7 @@
       ],
       "properties": {
         "Node name for S&R": "ConditioningZeroOut",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
@@ -1169,7 +1169,7 @@
       "type": "VAEEncode",
       "title": "Encode restored reference latent",
       "pos": [
-        4560,
+        4020,
         100
       ],
       "size": [
@@ -1205,7 +1205,7 @@
       ],
       "properties": {
         "Node name for S&R": "VAEEncode",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
@@ -1214,7 +1214,7 @@
       "type": "ReferenceLatent",
       "title": "Positive reference latent",
       "pos": [
-        4560,
+        4020,
         280
       ],
       "size": [
@@ -1249,7 +1249,7 @@
       ],
       "properties": {
         "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
@@ -1258,7 +1258,7 @@
       "type": "ReferenceLatent",
       "title": "Negative reference latent",
       "pos": [
-        4560,
+        4020,
         460
       ],
       "size": [
@@ -1293,16 +1293,16 @@
       ],
       "properties": {
         "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
     {
       "id": 24,
       "type": "EmptyFlux2LatentImage",
-      "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process",
+      "title": "Restoration latent",
       "pos": [
-        4560,
+        4020,
         640
       ],
       "size": [
@@ -1351,7 +1351,7 @@
       ],
       "properties": {
         "Node name for S&R": "EmptyFlux2LatentImage",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         1024,
@@ -1362,9 +1362,9 @@
     {
       "id": 25,
       "type": "SharkOptions_Beta",
-      "title": "Adonis RES4LYF options — exact upstream",
+      "title": "Restoration sampler settings",
       "pos": [
-        4960,
+        4420,
         100
       ],
       "size": [
@@ -1421,7 +1421,7 @@
       ],
       "properties": {
         "Node name for S&R": "SharkOptions_Beta",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         "laplacian",
@@ -1435,7 +1435,7 @@
       "type": "PrimitiveInt",
       "title": "Shared Adonis seed",
       "pos": [
-        4960,
+        4420,
         360
       ],
       "size": [
@@ -1469,7 +1469,7 @@
       ],
       "properties": {
         "Node name for S&R": "PrimitiveInt",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         42
@@ -1480,7 +1480,7 @@
       "type": "PrimitiveInt",
       "title": "Total Adonis steps",
       "pos": [
-        4960,
+        4420,
         540
       ],
       "size": [
@@ -1514,7 +1514,7 @@
       ],
       "properties": {
         "Node name for S&R": "PrimitiveInt",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         9
@@ -1523,9 +1523,9 @@
     {
       "id": 28,
       "type": "ClownsharKSampler_Beta",
-      "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)",
+      "title": "Restore details — Base pass (steps 1–5)",
       "pos": [
-        5440,
+        4900,
         100
       ],
       "size": [
@@ -1673,7 +1673,7 @@
       ],
       "properties": {
         "Node name for S&R": "ClownsharKSampler_Beta",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         0.8,
@@ -1692,9 +1692,9 @@
     {
       "id": 29,
       "type": "ClownsharKSampler_Beta",
-      "title": "Adonis Refine — live RES4LYF sampler (remaining steps)",
+      "title": "Restore details — Refine pass",
       "pos": [
-        6020,
+        5480,
         100
       ],
       "size": [
@@ -1842,7 +1842,7 @@
       ],
       "properties": {
         "Node name for S&R": "ClownsharKSampler_Beta",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         0.8,
@@ -1863,7 +1863,7 @@
       "type": "VAEDecode",
       "title": "Decode Adonis Refine output",
       "pos": [
-        6020,
+        5480,
         1280
       ],
       "size": [
@@ -1898,16 +1898,16 @@
       ],
       "properties": {
         "Node name for S&R": "VAEDecode",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": []
     },
     {
       "id": 31,
       "type": "ComfySwitchNode",
-      "title": "Use Adonis restoration",
+      "title": "Use restored portrait",
       "pos": [
-        6400,
+        5860,
         1280
       ],
       "size": [
@@ -1951,7 +1951,7 @@
       ],
       "properties": {
         "Node name for S&R": "ComfySwitchNode",
-        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+        "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
         true
@@ -1959,10 +1959,37 @@
     },
     {
       "id": 32,
-      "type": "Hoi4PortraitSampler",
-      "title": "Batch portrait — one advanced live sampler",
+      "type": "Note",
+      "title": "✨ When to restore",
       "pos": [
-        6920,
+        3540,
+        920
+      ],
+      "size": [
+        440,
+        180
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note",
+        "hoi4_group": "03 Restore details"
+      },
+      "widgets_values": [
+        "✨ This cleans up blur, colour damage, and missing facial detail before styling. Leave the red switch on for old or low-quality photos; turn it off for a clean modern image."
+      ]
+    },
+    {
+      "id": 33,
+      "type": "Hoi4PortraitSampler",
+      "title": "Create each portrait",
+      "pos": [
+        6380,
         100
       ],
       "size": [
@@ -1972,7 +1999,7 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 31,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
@@ -2135,7 +2162,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": [
         "source_reference",
@@ -2157,21 +2184,48 @@
       ]
     },
     {
-      "id": 33,
-      "type": "ImageScale",
-      "title": "Batch master — centered 1024×1365 crop",
+      "id": 34,
+      "type": "Note",
+      "title": "🎨 Prompt tip",
       "pos": [
-        7720,
+        6380,
+        960
+      ],
+      "size": [
+        720,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note",
+        "hoi4_group": "04 Create and save"
+      },
+      "widgets_values": [
+        "🎨 Keep the prompt as: make this portrait hoi4_portrait style\nAdd only a few identity or clothing details if you need them. Change the seed for a different portrait."
+      ]
+    },
+    {
+      "id": 35,
+      "type": "ImageScale",
+      "title": "Master portrait — 1024×1365",
+      "pos": [
+        7180,
         100
       ],
       "size": [
         400,
         180
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 32,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
@@ -2224,7 +2278,7 @@
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": [
         "lanczos",
@@ -2234,21 +2288,21 @@
       ]
     },
     {
-      "id": 34,
+      "id": 36,
       "type": "ImageScale",
-      "title": "Batch game — centered 156×210 crop",
+      "title": "Game portrait — 156×210",
       "pos": [
-        8200,
+        7660,
         100
       ],
       "size": [
         400,
         180
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 33,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
@@ -2302,7 +2356,7 @@
       ],
       "properties": {
         "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": [
         "lanczos",
@@ -2312,21 +2366,21 @@
       ]
     },
     {
-      "id": 35,
+      "id": 37,
       "type": "SaveImage",
       "title": "Save every master PNG",
       "pos": [
-        7720,
+        7180,
         360
       ],
       "size": [
         420,
         150
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 34,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
@@ -2352,28 +2406,28 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": [
         "1024x1365/batch"
       ]
     },
     {
-      "id": 36,
+      "id": 38,
       "type": "SaveImage",
       "title": "Save every game PNG",
       "pos": [
-        8200,
+        7660,
         360
       ],
       "size": [
         420,
         150
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 35,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
@@ -2399,28 +2453,28 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": [
         "156x210/batch"
       ]
     },
     {
-      "id": 37,
+      "id": 39,
       "type": "Hoi4SaveDDS",
       "title": "Save every game DDS",
       "pos": [
-        8200,
+        7660,
         600
       ],
       "size": [
         420,
         190
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 36,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
@@ -2437,11 +2491,11 @@
           }
         },
         {
-          "name": "compression",
+          "name": "format",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "compression"
+            "name": "format"
           }
         }
       ],
@@ -2454,29 +2508,56 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": [
         "156x210/dds/batch",
-        "dxt5"
+        "argb8888"
       ]
     },
     {
-      "id": 38,
-      "type": "PreviewImage",
-      "title": "RealESRGAN",
+      "id": 40,
+      "type": "Note",
+      "title": "💾 Using the DDS",
       "pos": [
-        6920,
-        960
+        7660,
+        860
+      ],
+      "size": [
+        600,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note",
+        "hoi4_group": "04 Create and save"
+      },
+      "widgets_values": [
+        "💾 The DDS is the game portrait: 156×210, A8R8G8B8, no mipmaps. Move it to your mod's gfx/leaders/TAG/ folder and reference it from the portrait sprite."
+      ]
+    },
+    {
+      "id": 41,
+      "type": "PreviewImage",
+      "title": "Prepared portrait",
+      "pos": [
+        6380,
+        1220
       ],
       "size": [
         600,
         810
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 37,
+      "order": 40,
       "mode": 0,
       "inputs": [
         {
@@ -2494,26 +2575,26 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": []
     },
     {
-      "id": 39,
+      "id": 42,
       "type": "PreviewImage",
-      "title": "Adonis restored",
+      "title": "Restored portrait",
       "pos": [
-        7600,
-        960
+        7060,
+        1220
       ],
       "size": [
         600,
         810
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 38,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
@@ -2531,26 +2612,26 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": []
     },
     {
-      "id": 40,
+      "id": 43,
       "type": "PreviewImage",
-      "title": "Final 156×210",
+      "title": "Game portrait",
       "pos": [
-        8280,
-        960
+        7740,
+        1220
       ],
       "size": [
         600,
         810
       ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
-      "order": 39,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
@@ -2568,7 +2649,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "04 One live sampler + visible outputs"
+        "hoi4_group": "04 Create and save"
       },
       "widgets_values": []
     }
@@ -2890,7 +2971,7 @@
       40,
       15,
       0,
-      32,
+      33,
       0,
       "MODEL"
     ],
@@ -2898,7 +2979,7 @@
       41,
       13,
       0,
-      32,
+      33,
       1,
       "CLIP"
     ],
@@ -2906,7 +2987,7 @@
       42,
       14,
       0,
-      32,
+      33,
       2,
       "VAE"
     ],
@@ -2914,28 +2995,12 @@
       43,
       31,
       0,
-      32,
+      33,
       19,
       "IMAGE"
     ],
     [
       44,
-      32,
-      0,
-      33,
-      0,
-      "IMAGE"
-    ],
-    [
-      45,
-      33,
-      0,
-      34,
-      0,
-      "IMAGE"
-    ],
-    [
-      46,
       33,
       0,
       35,
@@ -2943,18 +3008,34 @@
       "IMAGE"
     ],
     [
-      47,
-      34,
+      45,
+      35,
       0,
       36,
       0,
       "IMAGE"
     ],
     [
-      48,
-      34,
+      46,
+      35,
       0,
       37,
+      0,
+      "IMAGE"
+    ],
+    [
+      47,
+      36,
+      0,
+      38,
+      0,
+      "IMAGE"
+    ],
+    [
+      48,
+      36,
+      0,
+      39,
       0,
       "IMAGE"
     ],
@@ -2962,7 +3043,7 @@
       49,
       11,
       0,
-      38,
+      41,
       0,
       "IMAGE"
     ],
@@ -2970,15 +3051,15 @@
       50,
       31,
       0,
-      39,
+      42,
       0,
       "IMAGE"
     ],
     [
       51,
-      34,
+      36,
       0,
-      40,
+      43,
       0,
       "IMAGE"
     ]
@@ -2986,24 +3067,27 @@
   "groups": [
     {
       "id": 1,
-      "title": "00 Batch guide",
+      "title": "00 Setup",
       "bounding": [
         40,
         40,
-        800,
-        2000
+        1400,
+        1200
       ],
       "color": "#334155",
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "note"
       }
     },
     {
       "id": 2,
-      "title": "01 One-at-a-time source processing",
+      "title": "01 Prepare portraits",
       "bounding": [
-        920,
+        1520,
         40,
         1880,
         1100
@@ -3012,14 +3096,17 @@
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "source"
       }
     },
     {
       "id": 3,
-      "title": "02 Separate model loaders",
+      "title": "02 Models",
       "bounding": [
-        2880,
-        40,
+        1520,
+        1260,
         1080,
         680
       ],
@@ -3027,13 +3114,16 @@
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "model"
       }
     },
     {
       "id": 4,
-      "title": "03 Adonis Base → Refine — expanded upstream graph",
+      "title": "03 Restore details",
       "bounding": [
-        4040,
+        3500,
         40,
         2760,
         1440
@@ -3042,21 +3132,27 @@
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "restore"
       }
     },
     {
       "id": 5,
-      "title": "04 One live sampler + visible outputs",
+      "title": "04 Create and save",
       "bounding": [
-        6880,
+        6340,
         40,
         2040,
-        1770
+        2030
       ],
       "color": "#654572",
       "font_size": 28,
       "flags": {
         "collapsed": false
+      },
+      "properties": {
+        "hoi4_node_color": "sample"
       }
     }
   ],
@@ -3076,7 +3172,7 @@
       210
     ],
     "dds": {
-      "compression": "DXT5",
+      "format": "A8R8G8B8",
       "mipmaps": false
     },
     "frontendVersion": "1.24.2",
