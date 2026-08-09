@@ -34,8 +34,9 @@ needed for the source, text-to-image, and batch workflows.
    select them in the loaders. Upload one background from
    [`backgrounds/`](../backgrounds/) only if you enable background
    replacement (it is off by default).
-3. Confirm the source preview and the crop + ESRGAN preview. **Face zoom**
-   defaults to `0.90`; lower values keep more of the body. **Preserve
+3. The upload card already shows the source; compare the prepared result in
+   the portrait row below. **Face zoom** defaults to `0.90`; lower values keep
+   more of the body. **Preserve
    hat/headwear** defaults to `true`. Turn off **Toggle face processing** to
    keep a full multi-person composition. FLUX restoration opens enabled.
 4. Keep the source prompt exactly as

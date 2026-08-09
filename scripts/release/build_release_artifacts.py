@@ -107,9 +107,11 @@ def _runpod_files() -> dict[str, Path]:
             files[f"workflows/{path.name}"] = path
     for path in sorted((ROOT / "backgrounds").glob("*.png")):
         files[f"backgrounds/{path.name}"] = path
-    for path in sorted((ROOT / "custom_nodes" / "hoi4_portraits").iterdir()):
+    custom_node_root = ROOT / "custom_nodes" / "hoi4_portraits"
+    for path in sorted(custom_node_root.rglob("*")):
         if path.is_file():
-            files[f"custom_nodes/hoi4_portraits/{path.name}"] = path
+            relative = path.relative_to(custom_node_root).as_posix()
+            files[f"custom_nodes/hoi4_portraits/{relative}"] = path
     for name in sorted(RUNPOD_SCRIPTS):
         files[f"scripts/{name}"] = ROOT / "scripts" / name
     missing = [archive_path for archive_path, source in files.items() if not source.is_file()]

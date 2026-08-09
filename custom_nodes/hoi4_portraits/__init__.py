@@ -17,6 +17,7 @@ from PIL import Image, ImageOps
 
 ASPECT = 1024 / 1365
 YUNET_MODEL = "face_detection_yunet_2023mar.onnx"
+WEB_DIRECTORY = "./web"
 
 
 def _resize_center_crop(image: torch.Tensor, width: int, height: int) -> torch.Tensor:
@@ -365,213 +366,20 @@ class PortraitIdentityMask:
         return (torch.stack(masks).clamp(0, 1),)
 
 
-class Hoi4PortraitSampler:
-    """Generate a distilled FLUX.2 portrait from a prompt or source image."""
+class Hoi4SetupGuide:
+    """Frontend-only download and folder guide shown at the start of a workflow."""
 
     @classmethod
     def INPUT_TYPES(cls):
-        try:
-            from comfy.samplers import KSampler
+        return {"required": {}}
 
-            samplers = list(KSampler.SAMPLERS)
-            schedulers = list(KSampler.SCHEDULERS)
-        except Exception:
-            samplers = ["euler"]
-            schedulers = ["simple"]
-        if "euler" not in samplers:
-            samplers.insert(0, "euler")
-        if "simple" not in schedulers:
-            schedulers.insert(0, "simple")
-        return {
-            "required": {
-                "model": ("MODEL",),
-                "clip": ("CLIP",),
-                "vae": ("VAE",),
-                "mode": (["source_reference", "text_to_image"], {"default": "source_reference"}),
-                "prompt": (
-                    "STRING",
-                    {
-                        "multiline": True,
-                        "dynamicPrompts": True,
-                        "default": "make this portrait hoi4_portrait style",
-                        "tooltip": "Keep this exact trigger phrase; append only short identity or clothing details when needed.",
-                    },
-                ),
-                "negative_prompt": ("STRING", {"multiline": True, "default": ""}),
-                "width": ("INT", {"default": 1024, "min": 16, "max": 16384, "step": 16}),
-                "height": ("INT", {"default": 1365, "min": 16, "max": 16384, "step": 1}),
-                "noise_seed": (
-                    "INT",
-                    {
-                        "default": 42,
-                        "min": 0,
-                        "max": 0xFFFFFFFFFFFFFFFF,
-                        "control_after_generate": True,
-                        "tooltip": "Random source for the initial noise. Change it (or let 'randomize' pick one) to get a different portrait from the same prompt.",
-                    },
-                ),
-                "steps": (
-                    "INT",
-                    {
-                        "default": 4,
-                        "min": 1,
-                        "max": 10000,
-                        "tooltip": "How many denoising steps the sampler runs. More steps = more refined detail but slower. The project default of 4 is tuned for the HOI4 style LoRA.",
-                    },
-                ),
-                "cfg": (
-                    "FLOAT",
-                    {
-                        "default": 1.0,
-                        "min": 0.0,
-                        "max": 100.0,
-                        "step": 0.1,
-                        "round": 0.01,
-                        "tooltip": "How strongly the model follows the prompt. Higher values apply the HOI4 style more sharply; the tuned default for this workflow is 1.0.",
-                    },
-                ),
-                "guidance": (
-                    "FLOAT",
-                    {
-                        "default": 1.0,
-                        "min": 0.0,
-                        "max": 100.0,
-                        "step": 0.1,
-                        "round": 0.01,
-                        "tooltip": "FLUX.2 guidance scale. Like CFG it controls prompt adherence; FLUX.2 Klein works best at low values (default 1.0).",
-                    },
-                ),
-                "sampling_algorithm": (
-                    samplers,
-                    {
-                        "tooltip": "The sampling algorithm (sampler) itself. 'euler' is the tuned default; switch to 'euler_ancestral', 'dpmpp_2m' or any installed sampler for experiments.",
-                    },
-                ),
-                "scheduler": (
-                    schedulers,
-                    {
-                        "tooltip": "How the denoise strength is scheduled across the steps. 'simple' is the tuned FLUX.2 default; 'karras' or 'sgm_uniform' change the schedule.",
-                    },
-                ),
-                "denoise": (
-                    "FLOAT",
-                    {
-                        "default": 1.0,
-                        "min": 0.0,
-                        "max": 1.0,
-                        "step": 0.01,
-                        "round": 0.01,
-                        "tooltip": "Fraction of the noise removed. 1.0 means a full generation from the reference latent; lower values keep more of the source structure.",
-                    },
-                ),
-                "add_noise": (
-                    ["enable", "disable"],
-                    {
-                        "tooltip": "Whether new noise is added before sampling. Keep 'enable'; 'disable' is only for img2img refinement at low denoise.",
-                    },
-                ),
-                "start_at_step": (
-                    "INT",
-                    {
-                        "default": 0,
-                        "min": 0,
-                        "max": 10000,
-                        "advanced": True,
-                        "tooltip": "Advanced: first step of sampling to run. Leave at 0.",
-                    },
-                ),
-                "end_at_step": (
-                    "INT",
-                    {
-                        "default": 10000,
-                        "min": 0,
-                        "max": 10000,
-                        "advanced": True,
-                        "tooltip": "Advanced: last step of sampling to run. Leave at 10000 to run the full range.",
-                    },
-                ),
-                "force_full_denoise": (
-                    "BOOLEAN",
-                    {
-                        "default": True,
-                        "advanced": True,
-                        "tooltip": "Advanced: force the sampler to denoise the final step fully. Keep enabled.",
-                    },
-                ),
-            },
-            "optional": {"reference_image": ("IMAGE",)},
-        }
+    RETURN_TYPES = ()
+    FUNCTION = "show"
+    CATEGORY = "HOI4 portraits/setup"
+    DESCRIPTION = "Clickable model downloads and their ComfyUI folder locations."
 
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("portrait",)
-    FUNCTION = "sample"
-    CATEGORY = "HOI4 portraits/sampling"
-    DESCRIPTION = (
-        "FLUX.2 Klein portrait generator with prompt, source-reference/text mode, guidance, CFG, "
-        "seed, steps, sampler, scheduler, and denoise controls."
-    )
-
-    def sample(
-        self,
-        model,
-        clip,
-        vae,
-        mode,
-        prompt,
-        negative_prompt,
-        width,
-        height,
-        noise_seed,
-        steps,
-        cfg,
-        guidance,
-        sampling_algorithm,
-        scheduler,
-        denoise,
-        add_noise="enable",
-        start_at_step=0,
-        end_at_step=10000,
-        force_full_denoise=True,
-        reference_image=None,
-    ):
-        # Imports are local so the node pack can be imported by the release
-        # validator without requiring a running ComfyUI process.
-        import node_helpers
-        import nodes
-
-        positive = nodes.CLIPTextEncode().encode(clip, str(prompt))[0]
-        negative = nodes.CLIPTextEncode().encode(clip, str(negative_prompt))[0]
-        if mode == "source_reference":
-            if reference_image is None:
-                raise ValueError("source_reference mode requires a reference_image connection.")
-            latent_image = nodes.VAEEncode().encode(vae, reference_image)[0]
-            reference_node = _registered_node("ReferenceLatent")
-            positive = _node_output_values(reference_node.execute(positive, latent_image))[0]
-            negative = _node_output_values(reference_node.execute(negative, latent_image))[0]
-        else:
-            empty_node = _registered_node("EmptyFlux2LatentImage")
-            latent_image = _node_output_values(
-                empty_node.execute(int(width), int(height), 1)
-            )[0]
-
-        guided_positive = node_helpers.conditioning_set_values(positive, {"guidance": float(guidance)})
-        samples = nodes.common_ksampler(
-            model,
-            int(noise_seed),
-            int(steps),
-            float(cfg),
-            sampling_algorithm,
-            scheduler,
-            guided_positive,
-            negative,
-            latent_image,
-            denoise=float(denoise),
-            disable_noise=add_noise == "disable",
-            start_step=int(start_at_step),
-            last_step=int(end_at_step),
-            force_full_denoise=bool(force_full_denoise),
-        )[0]
-        return nodes.VAEDecode().decode(vae, samples)
+    def show(self):
+        return ()
 
 
 def _node_output_values(value: Any) -> tuple[Any, ...]:
@@ -772,7 +580,7 @@ class Hoi4SaveDDS:
 NODE_CLASS_MAPPINGS = {
     "AdaptivePortraitCrop": AdaptivePortraitCrop,
     "PortraitIdentityMask": PortraitIdentityMask,
-    "Hoi4PortraitSampler": Hoi4PortraitSampler,
+    "Hoi4SetupGuide": Hoi4SetupGuide,
     "Hoi4BackgroundReplace": Hoi4BackgroundReplace,
     "Hoi4BatchInput": Hoi4BatchInput,
     "Hoi4SaveDDS": Hoi4SaveDDS,
@@ -780,7 +588,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AdaptivePortraitCrop": "Adaptive Portrait Crop",
     "PortraitIdentityMask": "Portrait Identity Mask",
-    "Hoi4PortraitSampler": "HOI4 Portrait Sampler",
+    "Hoi4SetupGuide": "📂 Setup and downloads",
     "Hoi4BackgroundReplace": "HOI4 Optional Background Replacement",
     "Hoi4BatchInput": "HOI4 Batch Input Folder",
     "Hoi4SaveDDS": "HOI4 Save DDS Portrait (156x210)",

@@ -18,7 +18,6 @@ except ImportError:
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_IDS = tuple(build_workflows.BUILDERS)
 ALLOWED_NODES = {
-    "Note",
     "LoadImage",
     "PreviewImage",
     "SaveImage",
@@ -45,8 +44,10 @@ ALLOWED_NODES = {
     "PrimitiveInt",
     "ClownsharKSampler_Beta",
     "VAEDecode",
+    "FluxGuidance",
+    "KSampler",
     "ComfySwitchNode",
-    "Hoi4PortraitSampler",
+    "Hoi4SetupGuide",
     "Hoi4BackgroundReplace",
     "ImageBatch",
     "ImageFromBatch",
@@ -182,7 +183,7 @@ def _api_errors(path: Path, api: dict[str, Any]) -> list[str]:
     if not api:
         return [f"{path}: API graph is empty"]
     for node_id, node in api.items():
-        if not node_id.isdigit() or node.get("class_type") not in ALLOWED_NODES - {"Note"}:
+        if not node_id.isdigit() or node.get("class_type") not in ALLOWED_NODES:
             errors.append(f"{path}: invalid API node {node_id}: {node.get('class_type')!r}")
         for value in node.get("inputs", {}).values():
             if isinstance(value, list) and len(value) == 2 and isinstance(value[0], str) and value[0] not in api:
@@ -198,10 +199,10 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     is_processing = workflow_id == WORKFLOW_IDS[2]
     is_batch = workflow_id == WORKFLOW_IDS[3]
     compact_limits = {
-        WORKFLOW_IDS[0]: (10400, 2600),
-        WORKFLOW_IDS[1]: (4800, 1800),
-        WORKFLOW_IDS[2]: (8860, 1980),
-        WORKFLOW_IDS[3]: (8880, 2040),
+        WORKFLOW_IDS[0]: (10700, 2750),
+        WORKFLOW_IDS[1]: (5680, 1630),
+        WORKFLOW_IDS[2]: (7520, 1860),
+        WORKFLOW_IDS[3]: (8960, 1860),
     }
     if ui.get("groups") and workflow_id in compact_limits:
         left = min(group["bounding"][0] for group in ui["groups"])
@@ -225,9 +226,15 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     for node in api.values():
         counts[node["class_type"]] = counts.get(node["class_type"], 0) + 1
     expected_samplers = 3 if is_source else 0 if is_processing else 1
-    if counts.get("Hoi4PortraitSampler", 0) != expected_samplers:
-        errors.append(f"{path}: expected {expected_samplers} focused style sampler(s)")
-    forbidden_merged = {"Hoi4ModelStack", "Hoi4SourcePrep", "Hoi4AdonisRestoration", "Hoi4FinalOutput"}
+    if counts.get("KSampler", 0) != expected_samplers:
+        errors.append(f"{path}: expected {expected_samplers} standard ComfyUI KSampler node(s)")
+    forbidden_merged = {
+        "Hoi4ModelStack",
+        "Hoi4SourcePrep",
+        "Hoi4AdonisRestoration",
+        "Hoi4FinalOutput",
+        "Hoi4PortraitSampler",
+    }
     merged = sorted(node_type for node_type in forbidden_merged if counts.get(node_type, 0))
     if merged:
         errors.append(f"{path}: oversized merged nodes are forbidden: {', '.join(merged)}")
@@ -240,8 +247,8 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: expected {expected_loras} separately visible LoRA loaders")
     if is_batch and counts.get("Hoi4BatchInput", 0) != 1:
         errors.append(f"{path}: batch workflow needs one list-output input card")
-    if is_source and counts.get("PreviewImage", 0) != 6:
-        errors.append(f"{path}: source workflow needs source preview plus the five-card comparison row")
+    if is_source and counts.get("PreviewImage", 0) != 5:
+        errors.append(f"{path}: source workflow needs exactly the five-card comparison row")
     expected_background_controls = 1 if is_source or is_text else 0
     if counts.get("Hoi4BackgroundReplace", 0) != expected_background_controls:
         errors.append(f"{path}: expected {expected_background_controls} shared background true/false control(s)")
@@ -252,14 +259,18 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         node for node in ui.get("nodes", [])
         if node.get("properties", {}).get("hoi4_group") == "00 Setup"
     ]
-    if len(setup_nodes) != 1 or setup_nodes[0].get("type") != "Note":
-        errors.append(f"{path}: the left setup group must contain exactly one note")
+    if len(setup_nodes) != 1 or setup_nodes[0].get("type") != "Hoi4SetupGuide":
+        errors.append(f"{path}: the left setup group must contain exactly one setup guide")
     else:
-        setup_text = str((setup_nodes[0].get("widgets_values") or [""])[0])
+        if setup_nodes[0].get("size") != list(build_workflows.SETUP_GUIDE_SIZE):
+            errors.append(f"{path}: setup guide must stay narrow and tall")
+        setup_source = (build_workflows.ROOT / "custom_nodes/hoi4_portraits/web/setup_guide.js").read_text()
         catalog = json.loads((build_workflows.ROOT / "models.json").read_text())
-        missing_urls = [model["url"] for model in catalog["models"] if model["url"] not in setup_text]
+        missing_urls = [model["url"] for model in catalog["models"] if model["url"] not in setup_source]
         if missing_urls:
-            errors.append(f"{path}: setup note is missing {len(missing_urls)} model download link(s)")
+            errors.append(f"{path}: setup guide is missing {len(missing_urls)} clickable model download link(s)")
+    if any(node.get("type") == "Note" for node in ui.get("nodes", [])):
+        errors.append(f"{path}: workflow notes are forbidden; keep explanations in the setup guide or node titles")
 
     groups_by_title = {group.get("title"): group for group in ui.get("groups", [])}
     if not is_text:
@@ -269,6 +280,13 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         if prep and models and models[1] < prep[1] + prep[3] + 80:
             errors.append(f"{path}: model loaders must sit below the green preparation group")
 
+    restore_nodes = [
+        node for node in ui.get("nodes", [])
+        if node.get("properties", {}).get("hoi4_group") == "03 Restore details"
+    ]
+    restore_counts: dict[str, int] = {}
+    for node in restore_nodes:
+        restore_counts[node["type"]] = restore_counts.get(node["type"], 0) + 1
     expected_adonis_nodes = 0 if is_text else 1
     for class_type, multiplier in {
         "ImageScaleToTotalPixelsX": 1,
@@ -280,18 +298,12 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         "ClownsharKSampler_Beta": 2,
         "VAEDecode": 1,
     }.items():
-        if counts.get(class_type, 0) != expected_adonis_nodes * multiplier:
+        if restore_counts.get(class_type, 0) != expected_adonis_nodes * multiplier:
             errors.append(f"{path}: expanded Adonis graph needs {expected_adonis_nodes * multiplier} visible {class_type} node(s)")
 
     forbidden_public_words = re.compile(r"\b(?:live|advanced|expanded|visible)\b", re.IGNORECASE)
     for node in ui.get("nodes", []):
         public_text = node.get("title", "")
-        if node.get("type") == "Note":
-            public_text += " " + str((node.get("widgets_values") or [""])[0])
-            if node.get("properties", {}).get("hoi4_group") != "00 Setup":
-                width, height = node.get("size", [0, 0])
-                if width > 1020 or height > 180:
-                    errors.append(f"{path}: explanation note {node.get('id')} must stay compact")
         if forbidden_public_words.search(public_text):
             errors.append(f"{path}: node {node.get('id')} contains meta wording")
 
@@ -320,14 +332,14 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         ordered = sorted(previews, key=lambda node: node["pos"][0])
         if len({node["pos"][1] for node in ordered}) != 1:
             errors.append(f"{path}: preview comparison in {group!r} must be one symmetric row")
-        if any(right["pos"][0] - (left["pos"][0] + left["size"][0]) != 80 for left, right in zip(ordered, ordered[1:])):
-            errors.append(f"{path}: preview comparison in {group!r} must use exact 80px gutters")
+        if any(right["pos"][0] - (left["pos"][0] + left["size"][0]) != 40 for left, right in zip(ordered, ordered[1:])):
+            errors.append(f"{path}: preview comparison in {group!r} must use exact 40px gutters")
 
     candidate_samplers = sorted(
         (
             node for node in ui.get("nodes", [])
             if node.get("properties", {}).get("hoi4_group") == "04 Create three portraits"
-            and node.get("type") == "Hoi4PortraitSampler"
+            and node.get("type") == "KSampler"
         ),
         key=lambda node: node["pos"][1],
     )
@@ -357,24 +369,29 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
                 errors.append(f"{path}: processing-only must not load the style LoRA")
             if is_text and filename in {build_workflows.ADONIS_BASE, build_workflows.ADONIS_REFINE}:
                 errors.append(f"{path}: text-to-image must not load Adonis LoRAs")
-        elif class_type == "Hoi4PortraitSampler":
-            exact = {"steps": 4, "cfg": 1.0, "guidance": 1.0, "sampling_algorithm": "euler", "scheduler": "simple", "denoise": 1.0}
+        elif class_type == "KSampler":
+            exact = {"steps": 4, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0}
             for key, expected in exact.items():
                 if inputs.get(key) != expected:
                     errors.append(f"{path}: sampler {key} must default to {expected!r}")
-            expected_prompt = build_workflows.TEXT_PROMPT if is_text else build_workflows.STYLE_PROMPT
-            expected_mode = "text_to_image" if is_text else "source_reference"
-            if inputs.get("prompt") != expected_prompt or inputs.get("mode") != expected_mode:
-                errors.append(f"{path}: sampler mode or exact prompt changed")
-            if not is_text and "reference_image" not in inputs:
-                errors.append(f"{path}: source sampler is missing its reference image")
+            if any(not isinstance(inputs.get(name), list) for name in ("model", "positive", "negative", "latent_image")):
+                errors.append(f"{path}: standard sampler inputs must remain visibly connected")
+        elif class_type == "FluxGuidance" and inputs.get("guidance") != 1.0:
+            errors.append(f"{path}: FLUX guidance must default to 1.0")
         elif class_type == "ImageScaleToTotalPixelsX":
             exact = {"megapixels": 1.7, "multiple_of": 16, "resize_mode": "crop", "upscale_method": "lanczos"}
             if any(inputs.get(key) != value for key, value in exact.items()):
                 errors.append(f"{path}: visible Adonis pre-process settings changed")
-        elif class_type == "CLIPTextEncode" and not is_text:
-            if inputs.get("text") != build_workflows.RESTORATION_PROMPT:
+        elif class_type == "CLIPTextEncode":
+            title = node.get("_meta", {}).get("title", "")
+            if title == "Restoration prompt" and inputs.get("text") != build_workflows.RESTORATION_PROMPT:
                 errors.append(f"{path}: exact Adonis prompt changed")
+            elif title == "Portrait prompt":
+                expected_prompt = build_workflows.TEXT_PROMPT if is_text else build_workflows.STYLE_PROMPT
+                if inputs.get("text") != expected_prompt:
+                    errors.append(f"{path}: exact portrait prompt changed")
+            elif title == "Negative prompt" and inputs.get("text") != "":
+                errors.append(f"{path}: negative portrait prompt must stay empty")
         elif class_type == "SharkOptions_Beta":
             exact = {"noise_type_init": "laplacian", "s_noise_init": 1.0, "denoise_alt": 1.0, "channelwise_cfg": False}
             if any(inputs.get(key) != value for key, value in exact.items()):

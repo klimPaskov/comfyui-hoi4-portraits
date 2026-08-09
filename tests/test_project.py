@@ -29,7 +29,7 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {66, 17, 40, 43})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {70, 20, 37, 46})
 
     def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
@@ -42,17 +42,20 @@ class WorkflowTests(unittest.TestCase):
     def test_exact_prompts_and_only_focused_custom_nodes(self) -> None:
         source = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text())
         text = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_text_to_image.api.json").read_text())
-        source_samplers = [node for node in source.values() if node["class_type"] == "Hoi4PortraitSampler"]
+        source_samplers = [node for node in source.values() if node["class_type"] == "KSampler"]
         self.assertEqual(len(source_samplers), 3)
-        self.assertEqual({node["inputs"]["prompt"] for node in source_samplers}, {build_workflows.STYLE_PROMPT})
-        self.assertEqual({node["inputs"]["noise_seed"] for node in source_samplers}, {42, 43, 44})
-        text_sampler = next(node for node in text.values() if node["class_type"] == "Hoi4PortraitSampler")
-        self.assertEqual(text_sampler["inputs"]["prompt"], build_workflows.TEXT_PROMPT)
+        self.assertEqual({node["inputs"]["seed"] for node in source_samplers}, {42, 43, 44})
+        text_sampler = next(node for node in text.values() if node["class_type"] == "KSampler")
         for sampler in source_samplers + [text_sampler]:
             self.assertEqual(
-                [sampler["inputs"][name] for name in ("steps", "cfg", "guidance", "sampling_algorithm", "scheduler")],
-                [4, 1.0, 1.0, "euler", "simple"],
+                [sampler["inputs"][name] for name in ("steps", "cfg", "sampler_name", "scheduler", "denoise")],
+                [4, 1.0, "euler", "simple", 1.0],
             )
+        source_prompts = [node for node in source.values() if node["class_type"] == "CLIPTextEncode" and node["_meta"]["title"] == "Portrait prompt"]
+        text_prompt = next(node for node in text.values() if node["class_type"] == "CLIPTextEncode" and node["_meta"]["title"] == "Portrait prompt")
+        self.assertEqual({node["inputs"]["text"] for node in source_prompts}, {build_workflows.STYLE_PROMPT})
+        self.assertEqual(text_prompt["inputs"]["text"], build_workflows.TEXT_PROMPT)
+        self.assertTrue(all(node["inputs"]["guidance"] == 1.0 for node in source.values() if node["class_type"] == "FluxGuidance"))
         forbidden = {"Hoi4ModelStack", "Hoi4SourcePrep", "Hoi4AdonisRestoration", "Hoi4FinalOutput"}
         self.assertFalse(any(node["class_type"] in forbidden for node in source.values()))
         for required in ("UNETLoader", "ClipLoaderGGUF", "VAELoader", "ImageUpscaleWithModel"):
@@ -64,10 +67,10 @@ class WorkflowTests(unittest.TestCase):
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.json").read_text())
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text())
         previews = [node for node in ui["nodes"] if node["type"] == "PreviewImage"]
-        self.assertEqual(len(previews), 6)
+        self.assertEqual(len(previews), 5)
         self.assertTrue(all(node["size"] == [600, 810] for node in previews))
         titles = {node["title"] for node in previews}
-        self.assertTrue({"Source portrait", "Prepared portrait", "Restored portrait"}.issubset(titles))
+        self.assertTrue({"Prepared portrait", "Restored portrait"}.issubset(titles))
         self.assertEqual(sum(title.startswith("Portrait ") for title in titles), 3)
         masters = [node for node in api.values() if node["class_type"] == "ImageScale" and "master" in node["_meta"]["title"]]
         games = [node for node in api.values() if node["class_type"] == "ImageScale" and "game" in node["_meta"]["title"]]
@@ -102,7 +105,7 @@ class WorkflowTests(unittest.TestCase):
     def test_batch_has_one_sampler_and_all_three_output_types(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.api.json").read_text())
         self.assertEqual(sum(node["class_type"] == "Hoi4BatchInput" for node in api.values()), 1)
-        self.assertEqual(sum(node["class_type"] == "Hoi4PortraitSampler" for node in api.values()), 1)
+        self.assertEqual(sum(node["class_type"] == "KSampler" for node in api.values()), 1)
         prefixes = [node["inputs"].get("filename_prefix", "") for node in api.values()]
         self.assertTrue(any(str(prefix).startswith("1024x1365/") for prefix in prefixes))
         self.assertTrue(any(str(prefix).startswith("156x210/") for prefix in prefixes))
@@ -127,6 +130,7 @@ class InstallerTests(unittest.TestCase):
             self.assertEqual([path.stem for path in installed], sorted(build_workflows.BUILDERS))
             self.assertFalse((target / "identity_test_bad.json").exists())
             self.assertTrue((comfy_root / "custom_nodes/hoi4_portraits/__init__.py").is_file())
+            self.assertTrue((comfy_root / "custom_nodes/hoi4_portraits/web/setup_guide.js").is_file())
             self.assertTrue((comfy_root / "input/source_portrait.jpg").is_file())
             self.assertTrue((comfy_root / "input/hoi4_leader_portrait_background.png").is_file())
             self.assertTrue((comfy_root / "input/hoi4_portraits_batch").is_dir())
@@ -209,7 +213,8 @@ class CustomNodeTests(unittest.TestCase):
         self.assertIn("OUTPUT_IS_LIST = (True, True, True)", source)
         self.assertNotIn('"Hoi4ModelStack": Hoi4ModelStack', source)
         self.assertNotIn('"Hoi4FinalOutput": Hoi4FinalOutput', source)
-        self.assertIn('"Hoi4PortraitSampler": Hoi4PortraitSampler', source)
+        self.assertNotIn("Hoi4PortraitSampler", source)
+        self.assertIn('"Hoi4SetupGuide": Hoi4SetupGuide', source)
         self.assertIn('"Hoi4BackgroundReplace": Hoi4BackgroundReplace', source)
 
 

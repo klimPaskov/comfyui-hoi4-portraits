@@ -6,11 +6,12 @@ Every processing step stays on the main canvas. The coloured groups follow the
 same order as the portrait: preparation, models, restoration, styling, and
 saving.
 
-Only operations that are genuinely one control surface remain custom nodes:
+The main visible controls are:
 
-| Focused custom node | Responsibility |
+| Control | Responsibility |
 | --- | --- |
-| `HOI4 Portrait Sampler` | Prompt, reference/text mode, seed, steps, CFG, guidance, sampler, scheduler, denoise, and partial-step controls |
+| `📂 Setup and downloads` | Narrow dark-brown card with a clear folder tree and clickable model downloads |
+| `KSampler` | Standard ComfyUI sampler with seed, 4 steps, CFG 1, Euler, simple scheduling, and full denoise |
 | `Adaptive Portrait Crop` | Automatic, centered, or manual portrait framing with headwear protection |
 | `HOI4 Optional Background Replacement` | One optional BiRefNet background-replacement operation; sizing remains separate |
 | `HOI4 Batch Input Folder` | List output that executes one source at a time |
@@ -46,11 +47,11 @@ Base and Refine share the same seed (`42`) and total-step (`9`) controls.
 
 ## Source workflow
 
-The source canvas has 66 nodes in seven groups:
+The source canvas has 70 nodes in seven groups:
 
-1. one setup note with model folders and direct download links;
-2. source loader, tall source preview, face detection, subject mask, focused
-   crop controls, and RealESRGAN;
+1. one narrow setup card with model folders and clickable downloads;
+2. source loader, face detection, subject mask, focused crop controls, and
+   RealESRGAN—the upload card itself already shows the source;
 3. six model/LoRA loaders below the green preparation group;
 4. the Adonis Base → Refine restoration path;
 5. three style samplers, one shared background switch, and separate output sizing;
@@ -69,8 +70,8 @@ through the red switch and can be disabled for a clean modern photo.
 
 ## Text-to-image workflow
 
-This 17-node graph keeps the diffusion model, Qwen encoder, VAE, and style
-LoRA loaders separate. It runs one focused style sampler, then shows optional
+This 20-node graph keeps the diffusion model, Qwen encoder, VAE, and style
+LoRA loaders separate. It runs one standard ComfyUI sampler, then shows optional
 background replacement, master sizing, game sizing, all three saves, and one
 tall final preview. Its exact prompt is:
 
@@ -80,15 +81,15 @@ hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wear
 
 ## Processing-only workflow
 
-This 40-node graph includes source preparation and the entire Adonis topology.
+This 37-node graph includes source preparation and the entire Adonis topology.
 It does not load the style LoRA. RealESRGAN, restored, and final 156×210
 portraits appear together in the comparison row.
 
 ## Batch workflow
 
-This 43-node graph reads compatible images from
+This 46-node graph reads compatible images from
 `ComfyUI/input/hoi4_portraits_batch/`. `HOI4 Batch Input` returns list items,
-so ComfyUI handles one source at a time. There is one style sampler and one set
+so ComfyUI handles one source at a time. There is one standard sampler and one set
 of final saves.
 
 ## Output contract

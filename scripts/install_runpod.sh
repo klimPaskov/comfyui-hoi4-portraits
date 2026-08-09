@@ -135,7 +135,7 @@ if spec is None or spec.loader is None:
     raise RuntimeError(f"cannot load {node_path}")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-for required in ("AdaptivePortraitCrop", "Hoi4PortraitSampler", "Hoi4BackgroundReplace", "Hoi4BatchInput", "Hoi4SaveDDS"):
+for required in ("AdaptivePortraitCrop", "Hoi4SetupGuide", "Hoi4BackgroundReplace", "Hoi4BatchInput", "Hoi4SaveDDS"):
     if required not in module.NODE_CLASS_MAPPINGS:
         raise RuntimeError(f"{required} did not register")
 print(f"Verified the hoi4_portraits node pack with {sys.executable}")

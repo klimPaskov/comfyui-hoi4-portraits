@@ -1,4 +1,11 @@
 {
+  "1": {
+    "inputs": {},
+    "class_type": "Hoi4SetupGuide",
+    "_meta": {
+      "title": "📂 Setup and downloads"
+    }
+  },
   "2": {
     "inputs": {
       "unet_name": "flux-2-klein-9b.safetensors",
@@ -54,28 +61,88 @@
   },
   "7": {
     "inputs": {
-      "mode": "text_to_image",
-      "prompt": "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.",
-      "negative_prompt": "",
+      "text": "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.",
+      "clip": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Portrait prompt"
+    }
+  },
+  "8": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative prompt"
+    }
+  },
+  "9": {
+    "inputs": {
+      "guidance": 1.0,
+      "conditioning": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance",
+    "_meta": {
+      "title": "Prompt guidance — 1"
+    }
+  },
+  "10": {
+    "inputs": {
       "width": 1024,
       "height": 1365,
-      "noise_seed": 42,
+      "batch_size": 1
+    },
+    "class_type": "EmptyFlux2LatentImage",
+    "_meta": {
+      "title": "Empty 1024×1365 portrait latent"
+    }
+  },
+  "11": {
+    "inputs": {
+      "seed": 42,
       "steps": 4,
       "cfg": 1.0,
-      "guidance": 1.0,
-      "sampling_algorithm": "euler",
+      "sampler_name": "euler",
       "scheduler": "simple",
       "denoise": 1.0,
-      "add_noise": "enable",
-      "start_at_step": 0,
-      "end_at_step": 10000,
-      "force_full_denoise": true,
       "model": [
         "5",
         0
       ],
-      "clip": [
-        "3",
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "latent_image": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "Portrait sampling"
+    }
+  },
+  "12": {
+    "inputs": {
+      "samples": [
+        "11",
         0
       ],
       "vae": [
@@ -83,16 +150,16 @@
         0
       ]
     },
-    "class_type": "Hoi4PortraitSampler",
+    "class_type": "VAEDecode",
     "_meta": {
-      "title": "Create portrait from text"
+      "title": "Decode portrait"
     }
   },
-  "9": {
+  "13": {
     "inputs": {
       "use_background": false,
       "image": [
-        "7",
+        "12",
         0
       ],
       "bg_removal_model": [
@@ -100,7 +167,7 @@
         0
       ],
       "background": [
-        "12",
+        "16",
         0
       ]
     },
@@ -109,14 +176,14 @@
       "title": "Use replacement background"
     }
   },
-  "10": {
+  "14": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "9",
+        "13",
         0
       ]
     },
@@ -125,14 +192,14 @@
       "title": "Master portrait — 1024×1365"
     }
   },
-  "11": {
+  "15": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "10",
+        "14",
         0
       ]
     },
@@ -141,7 +208,7 @@
       "title": "Game portrait — 156×210"
     }
   },
-  "12": {
+  "16": {
     "inputs": {
       "image": "hoi4_leader_portrait_background.png"
     },
@@ -150,11 +217,11 @@
       "title": "Choose a replacement background"
     }
   },
-  "13": {
+  "17": {
     "inputs": {
       "filename_prefix": "1024x1365/text_to_image",
       "images": [
-        "10",
+        "14",
         0
       ]
     },
@@ -163,11 +230,11 @@
       "title": "Save master PNG"
     }
   },
-  "14": {
+  "18": {
     "inputs": {
       "filename_prefix": "156x210/text_to_image",
       "images": [
-        "11",
+        "15",
         0
       ]
     },
@@ -176,12 +243,12 @@
       "title": "Save game PNG"
     }
   },
-  "15": {
+  "19": {
     "inputs": {
       "filename_prefix": "156x210/dds/text_to_image",
       "format": "argb8888",
       "images": [
-        "11",
+        "15",
         0
       ]
     },
@@ -190,10 +257,10 @@
       "title": "Save game DDS"
     }
   },
-  "16": {
+  "20": {
     "inputs": {
       "images": [
-        "11",
+        "15",
         0
       ]
     },

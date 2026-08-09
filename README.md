@@ -122,18 +122,17 @@ The workflow is arranged from left to right in clear, colour-coded stages.
 
 ![Source workflow overview](docs/assets/workflows/audit/source-overview.png)
 
-1. **Source and ESRGAN:** load the portrait, confirm the large source preview,
-   tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then inspect the
-   dedicated ESRGAN preview.
+1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and
+   **Preserve hat/headwear**, then compare the prepared result below. The
+   upload node already shows the source, so there is no duplicate preview.
 2. **Restoration:** the restoration group follows the upstream
    [`Adonis_Workflow.json`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/Adonis_Workflow.json)
    topology: 1.7 MP Lanczos crop, Qwen 3 8B Q8 GGUF, an Adonis Base sampler
    for the first five steps, and an Adonis Refine sampler for the remainder of a nine-step RES4LYF
    schedule. The switch opens enabled; bypass it for a direct ESRGAN input.
 3. **Style:** three independent candidates use the exact 2500-step LoRA. Each
-   candidate has one sampler card with CFG `1`, guidance `1`,
-   four steps, Euler, simple scheduling, denoise, seed behavior, and partial
-   step controls.
+   candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`,
+   four steps, Euler, simple scheduling, full denoise, and its own seed.
 4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and
    all three finals together. One shared background switch applies the same
    choice to all three portraits after generation.

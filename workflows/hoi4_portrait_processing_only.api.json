@@ -1,5 +1,12 @@
 {
-  "3": {
+  "1": {
+    "inputs": {},
+    "class_type": "Hoi4SetupGuide",
+    "_meta": {
+      "title": "📂 Setup and downloads"
+    }
+  },
+  "2": {
     "inputs": {
       "image": "source_portrait.jpg"
     },
@@ -8,7 +15,7 @@
       "title": "Choose a source portrait"
     }
   },
-  "4": {
+  "3": {
     "inputs": {
       "model_name": "mediapipe_face_fp32.safetensors"
     },
@@ -17,18 +24,18 @@
       "title": "Load face detector"
     }
   },
-  "5": {
+  "4": {
     "inputs": {
       "detector_variant": "both",
       "num_faces": 1,
       "min_confidence": 0.35,
       "missing_frame_fallback": "empty",
       "face_detection_model": [
-        "4",
+        "3",
         0
       ],
       "image": [
-        "3",
+        "2",
         0
       ]
     },
@@ -37,7 +44,7 @@
       "title": "Find the face"
     }
   },
-  "6": {
+  "5": {
     "inputs": {
       "bg_removal_name": "birefnet.safetensors"
     },
@@ -46,14 +53,14 @@
       "title": "Load BiRefNet mask model"
     }
   },
-  "7": {
+  "6": {
     "inputs": {
       "bg_removal_model": [
-        "6",
+        "5",
         0
       ],
       "image": [
-        "3",
+        "2",
         0
       ]
     },
@@ -62,7 +69,7 @@
       "title": "Generate subject silhouette for crop"
     }
   },
-  "8": {
+  "7": {
     "inputs": {
       "face_processing": true,
       "use_manual_crop": false,
@@ -75,15 +82,15 @@
       "output_width": 512,
       "output_height": 683,
       "image": [
-        "3",
+        "2",
         0
       ],
       "face_bboxes": [
-        "5",
+        "4",
         1
       ],
       "subject_mask": [
-        "7",
+        "6",
         0
       ]
     },
@@ -92,7 +99,7 @@
       "title": "Crop portrait to 512×683"
     }
   },
-  "9": {
+  "8": {
     "inputs": {
       "model_name": "RealESRGAN_x2plus.pth"
     },
@@ -101,14 +108,14 @@
       "title": "Load RealESRGAN ×2"
     }
   },
-  "10": {
+  "9": {
     "inputs": {
       "upscale_model": [
-        "9",
+        "8",
         0
       ],
       "image": [
-        "8",
+        "7",
         0
       ]
     },
@@ -117,14 +124,14 @@
       "title": "Run RealESRGAN ×2"
     }
   },
-  "11": {
+  "10": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "10",
+        "9",
         0
       ]
     },
@@ -133,7 +140,7 @@
       "title": "Resize prepared portrait to 1024×1365"
     }
   },
-  "12": {
+  "11": {
     "inputs": {
       "unet_name": "flux-2-klein-9b.safetensors",
       "weight_dtype": "default"
@@ -143,7 +150,7 @@
       "title": "FLUX.2 Klein 9B"
     }
   },
-  "13": {
+  "12": {
     "inputs": {
       "clip_name": "Qwen3-8B-Q8_0.gguf",
       "type": "flux2",
@@ -154,7 +161,7 @@
       "title": "Load Qwen3 8B Q8 text encoder"
     }
   },
-  "14": {
+  "13": {
     "inputs": {
       "vae_name": "flux2-vae.safetensors"
     },
@@ -163,12 +170,12 @@
       "title": "Load FLUX.2 VAE"
     }
   },
-  "15": {
+  "14": {
     "inputs": {
       "lora_name": "adonis_base.safetensors",
       "strength_model": 1.0,
       "model": [
-        "12",
+        "11",
         0
       ]
     },
@@ -177,12 +184,12 @@
       "title": "Adonis Base LoRA"
     }
   },
-  "16": {
+  "15": {
     "inputs": {
       "lora_name": "adonis_refine.safetensors",
       "strength_model": 1.0,
       "model": [
-        "12",
+        "11",
         0
       ]
     },
@@ -191,14 +198,14 @@
       "title": "Adonis Refine LoRA"
     }
   },
-  "17": {
+  "16": {
     "inputs": {
       "megapixels": 1.7,
       "multiple_of": 16,
       "resize_mode": "crop",
       "upscale_method": "lanczos",
       "image": [
-        "11",
+        "10",
         0
       ]
     },
@@ -207,11 +214,11 @@
       "title": "Resize for restoration — 1.7 MP"
     }
   },
-  "18": {
+  "17": {
     "inputs": {
       "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image.",
       "clip": [
-        "13",
+        "12",
         0
       ]
     },
@@ -220,10 +227,10 @@
       "title": "Restoration prompt"
     }
   },
-  "19": {
+  "18": {
     "inputs": {
       "conditioning": [
-        "18",
+        "17",
         0
       ]
     },
@@ -232,20 +239,36 @@
       "title": "Zero negative conditioning"
     }
   },
-  "20": {
+  "19": {
     "inputs": {
       "pixels": [
-        "17",
+        "16",
         0
       ],
       "vae": [
-        "14",
+        "13",
         0
       ]
     },
     "class_type": "VAEEncode",
     "_meta": {
       "title": "Encode restored reference latent"
+    }
+  },
+  "20": {
+    "inputs": {
+      "conditioning": [
+        "17",
+        0
+      ],
+      "latent": [
+        "19",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Positive reference latent"
     }
   },
   "21": {
@@ -255,23 +278,7 @@
         0
       ],
       "latent": [
-        "20",
-        0
-      ]
-    },
-    "class_type": "ReferenceLatent",
-    "_meta": {
-      "title": "Positive reference latent"
-    }
-  },
-  "22": {
-    "inputs": {
-      "conditioning": [
         "19",
-        0
-      ],
-      "latent": [
-        "20",
         0
       ]
     },
@@ -280,14 +287,14 @@
       "title": "Negative reference latent"
     }
   },
-  "23": {
+  "22": {
     "inputs": {
       "width": [
-        "17",
+        "16",
         1
       ],
       "height": [
-        "17",
+        "16",
         2
       ],
       "batch_size": 1
@@ -297,7 +304,7 @@
       "title": "Restoration latent"
     }
   },
-  "24": {
+  "23": {
     "inputs": {
       "noise_type_init": "laplacian",
       "s_noise_init": 1.0,
@@ -309,7 +316,7 @@
       "title": "Restoration sampler settings"
     }
   },
-  "25": {
+  "24": {
     "inputs": {
       "value": 42
     },
@@ -318,7 +325,7 @@
       "title": "Shared Adonis seed"
     }
   },
-  "26": {
+  "25": {
     "inputs": {
       "value": 9
     },
@@ -327,43 +334,43 @@
       "title": "Total Adonis steps"
     }
   },
-  "27": {
+  "26": {
     "inputs": {
       "eta": 0.8,
       "sampler_name": "exponential/res_2s",
       "scheduler": "simple",
       "steps": [
-        "26",
+        "25",
         0
       ],
       "steps_to_run": 5,
       "cfg": 1.0,
       "denoise": 1.0,
       "seed": [
-        "25",
+        "24",
         0
       ],
       "control_after_generate": "fixed",
       "sampler_mode": "standard",
       "bongmath": true,
       "model": [
-        "15",
+        "14",
         0
       ],
       "positive": [
-        "21",
+        "20",
         0
       ],
       "negative": [
-        "22",
+        "21",
         0
       ],
       "latent_image": [
-        "23",
+        "22",
         0
       ],
       "options": [
-        "24",
+        "23",
         0
       ]
     },
@@ -372,31 +379,31 @@
       "title": "Restore details — Base pass (steps 1–5)"
     }
   },
-  "28": {
+  "27": {
     "inputs": {
       "eta": 0.8,
       "sampler_name": "exponential/res_2s",
       "scheduler": "simple",
       "steps": [
-        "26",
+        "25",
         0
       ],
       "steps_to_run": -1,
       "cfg": 1.0,
       "denoise": 1.0,
       "seed": [
-        "25",
+        "24",
         0
       ],
       "control_after_generate": "fixed",
       "sampler_mode": "resample",
       "bongmath": true,
       "model": [
-        "16",
+        "15",
         0
       ],
       "latent_image": [
-        "27",
+        "26",
         0
       ]
     },
@@ -405,31 +412,31 @@
       "title": "Restore details — Refine pass"
     }
   },
-  "29": {
+  "28": {
     "inputs": {
       "samples": [
-        "28",
+        "27",
         0
       ],
       "vae": [
-        "14",
+        "13",
         0
       ]
     },
     "class_type": "VAEDecode",
     "_meta": {
-      "title": "Decode Adonis Refine output"
+      "title": "Decode restored portrait"
     }
   },
-  "30": {
+  "29": {
     "inputs": {
       "switch": true,
       "on_false": [
-        "11",
+        "10",
         0
       ],
       "on_true": [
-        "29",
+        "28",
         0
       ]
     },
@@ -438,14 +445,14 @@
       "title": "Use restored portrait"
     }
   },
-  "32": {
+  "30": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "30",
+        "29",
         0
       ]
     },
@@ -454,14 +461,14 @@
       "title": "Restored master — 1024×1365"
     }
   },
-  "33": {
+  "31": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "32",
+        "30",
         0
       ]
     },
@@ -470,11 +477,11 @@
       "title": "Game portrait — 156×210"
     }
   },
-  "34": {
+  "32": {
     "inputs": {
       "filename_prefix": "1024x1365/processing_only",
       "images": [
-        "32",
+        "30",
         0
       ]
     },
@@ -483,11 +490,11 @@
       "title": "Save restored master PNG"
     }
   },
-  "35": {
+  "33": {
     "inputs": {
       "filename_prefix": "156x210/processing_only",
       "images": [
-        "33",
+        "31",
         0
       ]
     },
@@ -496,12 +503,12 @@
       "title": "Save game PNG"
     }
   },
-  "36": {
+  "34": {
     "inputs": {
       "filename_prefix": "156x210/dds/processing_only",
       "format": "argb8888",
       "images": [
-        "33",
+        "31",
         0
       ]
     },
@@ -510,10 +517,10 @@
       "title": "Save game DDS"
     }
   },
-  "38": {
+  "35": {
     "inputs": {
       "images": [
-        "11",
+        "10",
         0
       ]
     },
@@ -522,10 +529,10 @@
       "title": "Prepared portrait"
     }
   },
-  "39": {
+  "36": {
     "inputs": {
       "images": [
-        "30",
+        "29",
         0
       ]
     },
@@ -534,10 +541,10 @@
       "title": "Restored portrait"
     }
   },
-  "40": {
+  "37": {
     "inputs": {
       "images": [
-        "33",
+        "31",
         0
       ]
     },

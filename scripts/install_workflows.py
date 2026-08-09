@@ -55,9 +55,9 @@ def main(argv: list[str] | None = None) -> int:
     legacy_custom_node = comfy_root / "custom_nodes" / "adaptive_portrait_crop"
     if legacy_custom_node.is_dir():
         shutil.rmtree(legacy_custom_node)
-    for source in sorted(custom_node_source.iterdir()):
-        if source.is_file():
-            _copy(source, custom_node_destination / source.name)
+    for source in sorted(custom_node_source.rglob("*")):
+        if source.is_file() and "__pycache__" not in source.parts:
+            _copy(source, custom_node_destination / source.relative_to(custom_node_source))
     print(
         json.dumps(
             {

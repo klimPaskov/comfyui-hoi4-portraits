@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ALWAYS_REQUIRED = {
     "AdaptivePortraitCrop",
     "Hoi4BatchInput",
-    "Hoi4PortraitSampler",
+    "Hoi4SetupGuide",
     "Hoi4BackgroundReplace",
     "Hoi4SaveDDS",
 }
