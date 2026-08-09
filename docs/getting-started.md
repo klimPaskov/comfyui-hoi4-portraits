@@ -61,8 +61,9 @@ create a read-only token. GGUF files are not gated.
 
 1. Open the workflow JSON file in the ComfyUI editor. The **Setup guide** note
    on the left shows the exact model folders.
-2. Check the single **HOI4 Distilled Model Stack** card. Its first field is
-   the installed full, FP8, or GGUF diffusion-model variant.
+2. Check the visible diffusion-model loader. The installer sets it to the
+   selected full, FP8, or GGUF variant. Qwen Q8, VAE, and every LoRA have
+   their own visible loaders beside it.
 3. Select the source image and confirm the explicit source and RealESRGAN previews.
    Adjust **Face zoom** if needed, or use the manual crop for a specific
    person.

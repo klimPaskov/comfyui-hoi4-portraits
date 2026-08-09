@@ -22,104 +22,467 @@
   },
   "6": {
     "inputs": {
-      "face_processing": true,
-      "face_zoom": 0.9,
-      "preserve_headwear": true,
-      "use_manual_crop": false,
-      "manual_x": 0.0,
-      "manual_y": 0.0,
-      "manual_width": 1.0,
-      "manual_height": 1.0,
-      "face_model": "mediapipe_face_fp32.safetensors",
-      "subject_model": "birefnet.safetensors",
-      "upscale_model": "RealESRGAN_x2plus.pth",
+      "model_name": "mediapipe_face_fp32.safetensors"
+    },
+    "class_type": "LoadMediaPipeFaceLandmarker",
+    "_meta": {
+      "title": "Load face detector"
+    }
+  },
+  "7": {
+    "inputs": {
+      "detector_variant": "both",
+      "num_faces": 1,
+      "min_confidence": 0.35,
+      "missing_frame_fallback": "empty",
+      "face_detection_model": [
+        "6",
+        0
+      ],
       "image": [
         "4",
         0
       ]
     },
-    "class_type": "Hoi4SourcePrep",
+    "class_type": "MediaPipeFaceLandmarker",
     "_meta": {
-      "title": "Source prep — face/manual crop + headwear + RealESRGAN"
-    }
-  },
-  "7": {
-    "inputs": {
-      "diffusion_model": "flux-2-klein-9b.safetensors",
-      "text_encoder": "Qwen3-8B-Q8_0.gguf",
-      "vae_name": "flux2-vae.safetensors",
-      "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-      "style_strength": 1.0,
-      "load_restoration": true,
-      "adonis_base": "adonis_base.safetensors",
-      "adonis_refine": "adonis_refine.safetensors",
-      "weight_dtype": "default",
-      "text_encoder_device": "default"
-    },
-    "class_type": "Hoi4ModelStack",
-    "_meta": {
-      "title": "Distilled FLUX.2 Klein stack — full / FP8 / GGUF"
+      "title": "Detect portrait face — bounding box stays visible"
     }
   },
   "8": {
     "inputs": {
-      "enabled": true,
-      "prompt": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image.",
-      "noise_seed": 42,
-      "megapixels": 1.7,
-      "multiple_of": 16,
-      "resize_mode": "crop",
-      "upscale_method": "lanczos",
-      "eta": 0.8,
-      "sampling_algorithm": "exponential/res_2s",
-      "scheduler": "simple",
-      "total_steps": 9,
-      "base_steps_to_run": 5,
-      "cfg": 1.0,
-      "denoise": 1.0,
-      "base_sampling_mode": "standard",
-      "refine_sampling_mode": "resample",
-      "noise_type": "gaussian",
-      "initial_noise_scale": 1.0,
-      "alternate_denoise": 1.0,
-      "channelwise_cfg": false,
-      "bongmath": true,
-      "base_model": [
-        "7",
-        1
-      ],
-      "refine_model": [
-        "7",
-        2
-      ],
-      "clip": [
-        "7",
-        3
-      ],
-      "vae": [
-        "7",
-        4
-      ],
-      "image": [
-        "6",
-        2
-      ]
+      "bg_removal_name": "birefnet.safetensors"
     },
-    "class_type": "Hoi4AdonisRestoration",
+    "class_type": "LoadBackgroundRemovalModel",
     "_meta": {
-      "title": "Adonis Base → Refine — exact upstream topology + live controls"
+      "title": "Load BiRefNet mask model"
     }
   },
   "9": {
+    "inputs": {
+      "bg_removal_model": [
+        "8",
+        0
+      ],
+      "image": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "RemoveBackground",
+    "_meta": {
+      "title": "Generate subject silhouette for crop"
+    }
+  },
+  "10": {
+    "inputs": {
+      "face_processing": true,
+      "use_manual_crop": false,
+      "manual_x": 0.0,
+      "manual_y": 0.0,
+      "manual_width": 1.0,
+      "manual_height": 1.0,
+      "zoom": 0.9,
+      "preserve_headwear": true,
+      "output_width": 512,
+      "output_height": 683,
+      "image": [
+        "4",
+        0
+      ],
+      "face_bboxes": [
+        "7",
+        1
+      ],
+      "subject_mask": [
+        "9",
+        0
+      ]
+    },
+    "class_type": "AdaptivePortraitCrop",
+    "_meta": {
+      "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN"
+    }
+  },
+  "11": {
+    "inputs": {
+      "model_name": "RealESRGAN_x2plus.pth"
+    },
+    "class_type": "UpscaleModelLoader",
+    "_meta": {
+      "title": "Load RealESRGAN ×2"
+    }
+  },
+  "12": {
+    "inputs": {
+      "upscale_model": [
+        "11",
+        0
+      ],
+      "image": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "ImageUpscaleWithModel",
+    "_meta": {
+      "title": "Run RealESRGAN ×2"
+    }
+  },
+  "13": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Normalize RealESRGAN result to 1024×1365"
+    }
+  },
+  "14": {
     "inputs": {
       "image": "hoi4_leader_portrait_background.png"
     },
     "class_type": "LoadImage",
     "_meta": {
-      "title": "Optional replacement background (toggle is inside each final card)"
+      "title": "Optional replacement background"
     }
   },
-  "10": {
+  "15": {
+    "inputs": {
+      "unet_name": "flux-2-klein-9b.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target"
+    }
+  },
+  "16": {
+    "inputs": {
+      "clip_name": "Qwen3-8B-Q8_0.gguf",
+      "type": "flux2",
+      "device": "default"
+    },
+    "class_type": "ClipLoaderGGUF",
+    "_meta": {
+      "title": "Load Qwen3 8B Q8 text encoder"
+    }
+  },
+  "17": {
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load FLUX.2 VAE"
+    }
+  },
+  "18": {
+    "inputs": {
+      "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+      "strength_model": 1.0,
+      "model": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load HOI4 style LoRA — step 2500 only"
+    }
+  },
+  "19": {
+    "inputs": {
+      "lora_name": "adonis_base.safetensors",
+      "strength_model": 1.0,
+      "model": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load Adonis Base LoRA"
+    }
+  },
+  "20": {
+    "inputs": {
+      "lora_name": "adonis_refine.safetensors",
+      "strength_model": 1.0,
+      "model": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load Adonis Refine LoRA"
+    }
+  },
+  "21": {
+    "inputs": {
+      "bg_removal_name": "birefnet.safetensors"
+    },
+    "class_type": "LoadBackgroundRemovalModel",
+    "_meta": {
+      "title": "Load BiRefNet mask model"
+    }
+  },
+  "22": {
+    "inputs": {
+      "megapixels": 1.7,
+      "multiple_of": 16,
+      "resize_mode": "crop",
+      "upscale_method": "lanczos",
+      "image": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixelsX",
+    "_meta": {
+      "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos"
+    }
+  },
+  "23": {
+    "inputs": {
+      "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image.",
+      "clip": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Adonis positive prompt — uhdmanscale"
+    }
+  },
+  "24": {
+    "inputs": {
+      "conditioning": [
+        "23",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Zero negative conditioning"
+    }
+  },
+  "25": {
+    "inputs": {
+      "pixels": [
+        "22",
+        0
+      ],
+      "vae": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "Encode restored reference latent"
+    }
+  },
+  "26": {
+    "inputs": {
+      "conditioning": [
+        "23",
+        0
+      ],
+      "latent": [
+        "25",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Positive reference latent"
+    }
+  },
+  "27": {
+    "inputs": {
+      "conditioning": [
+        "24",
+        0
+      ],
+      "latent": [
+        "25",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Negative reference latent"
+    }
+  },
+  "28": {
+    "inputs": {
+      "width": [
+        "22",
+        1
+      ],
+      "height": [
+        "22",
+        2
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyFlux2LatentImage",
+    "_meta": {
+      "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process"
+    }
+  },
+  "29": {
+    "inputs": {
+      "noise_type_init": "laplacian",
+      "s_noise_init": 1.0,
+      "denoise_alt": 1.0,
+      "channelwise_cfg": false
+    },
+    "class_type": "SharkOptions_Beta",
+    "_meta": {
+      "title": "Adonis RES4LYF options — exact upstream"
+    }
+  },
+  "30": {
+    "inputs": {
+      "value": 42
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Shared Adonis seed"
+    }
+  },
+  "31": {
+    "inputs": {
+      "value": 9
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Total Adonis steps"
+    }
+  },
+  "32": {
+    "inputs": {
+      "eta": 0.8,
+      "sampler_name": "exponential/res_2s",
+      "scheduler": "simple",
+      "steps": [
+        "31",
+        0
+      ],
+      "steps_to_run": 5,
+      "cfg": 1.0,
+      "denoise": 1.0,
+      "seed": [
+        "30",
+        0
+      ],
+      "control_after_generate": "fixed",
+      "sampler_mode": "standard",
+      "bongmath": true,
+      "model": [
+        "19",
+        0
+      ],
+      "positive": [
+        "26",
+        0
+      ],
+      "negative": [
+        "27",
+        0
+      ],
+      "latent_image": [
+        "28",
+        0
+      ],
+      "options": [
+        "29",
+        0
+      ]
+    },
+    "class_type": "ClownsharKSampler_Beta",
+    "_meta": {
+      "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)"
+    }
+  },
+  "33": {
+    "inputs": {
+      "eta": 0.8,
+      "sampler_name": "exponential/res_2s",
+      "scheduler": "simple",
+      "steps": [
+        "31",
+        0
+      ],
+      "steps_to_run": -1,
+      "cfg": 1.0,
+      "denoise": 1.0,
+      "seed": [
+        "30",
+        0
+      ],
+      "control_after_generate": "fixed",
+      "sampler_mode": "resample",
+      "bongmath": true,
+      "model": [
+        "20",
+        0
+      ],
+      "latent_image": [
+        "32",
+        0
+      ]
+    },
+    "class_type": "ClownsharKSampler_Beta",
+    "_meta": {
+      "title": "Adonis Refine — live RES4LYF sampler (remaining steps)"
+    }
+  },
+  "34": {
+    "inputs": {
+      "samples": [
+        "33",
+        0
+      ],
+      "vae": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "Decode Adonis Refine output"
+    }
+  },
+  "35": {
+    "inputs": {
+      "switch": true,
+      "on_false": [
+        "13",
+        0
+      ],
+      "on_true": [
+        "34",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Use Adonis restoration"
+    }
+  },
+  "36": {
     "inputs": {
       "mode": "source_reference",
       "prompt": "make this portrait hoi4_portrait style",
@@ -138,54 +501,85 @@
       "end_at_step": 10000,
       "force_full_denoise": true,
       "model": [
-        "7",
+        "18",
         0
       ],
       "clip": [
-        "7",
-        3
+        "16",
+        0
       ],
       "vae": [
-        "7",
-        4
+        "17",
+        0
       ],
       "reference_image": [
-        "8",
+        "35",
         0
       ]
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Candidate 1 — one advanced live sampler card"
+      "title": "Candidate 1 — advanced live style sampler"
     }
   },
-  "11": {
+  "37": {
     "inputs": {
       "use_background": false,
-      "background_model": "birefnet.safetensors",
-      "master_width": 1024,
-      "master_height": 1365,
-      "game_width": 156,
-      "game_height": 210,
       "image": [
-        "10",
+        "36",
+        0
+      ],
+      "bg_removal_model": [
+        "21",
         0
       ],
       "background": [
-        "9",
+        "14",
         0
       ]
     },
-    "class_type": "Hoi4FinalOutput",
+    "class_type": "Hoi4BackgroundReplace",
     "_meta": {
-      "title": "Candidate 1 — background + centered master/game crops"
+      "title": "Candidate 1 — optional background replacement"
     }
   },
-  "12": {
+  "38": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "37",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Candidate 1 master — centered 1024×1365 crop"
+    }
+  },
+  "39": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "38",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Candidate 1 game — centered 156×210 crop"
+    }
+  },
+  "40": {
     "inputs": {
       "filename_prefix": "1024x1365/candidate_1",
       "images": [
-        "11",
+        "38",
         0
       ]
     },
@@ -194,12 +588,12 @@
       "title": "Save candidate 1 master PNG"
     }
   },
-  "13": {
+  "41": {
     "inputs": {
       "filename_prefix": "156x210/candidate_1",
       "images": [
-        "11",
-        1
+        "39",
+        0
       ]
     },
     "class_type": "SaveImage",
@@ -207,21 +601,21 @@
       "title": "Save candidate 1 game PNG"
     }
   },
-  "14": {
+  "42": {
     "inputs": {
       "filename_prefix": "156x210/dds/candidate_1",
       "compression": "dxt5",
       "images": [
-        "11",
-        1
+        "39",
+        0
       ]
     },
     "class_type": "Hoi4SaveDDS",
     "_meta": {
-      "title": "Save candidate 1 game DDS — DXT5, no mipmaps"
+      "title": "Save candidate 1 DDS — DXT5, no mipmaps"
     }
   },
-  "15": {
+  "43": {
     "inputs": {
       "mode": "source_reference",
       "prompt": "make this portrait hoi4_portrait style",
@@ -240,54 +634,85 @@
       "end_at_step": 10000,
       "force_full_denoise": true,
       "model": [
-        "7",
+        "18",
         0
       ],
       "clip": [
-        "7",
-        3
+        "16",
+        0
       ],
       "vae": [
-        "7",
-        4
+        "17",
+        0
       ],
       "reference_image": [
-        "8",
+        "35",
         0
       ]
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Candidate 2 — one advanced live sampler card"
+      "title": "Candidate 2 — advanced live style sampler"
     }
   },
-  "16": {
+  "44": {
     "inputs": {
       "use_background": false,
-      "background_model": "birefnet.safetensors",
-      "master_width": 1024,
-      "master_height": 1365,
-      "game_width": 156,
-      "game_height": 210,
       "image": [
-        "15",
+        "43",
+        0
+      ],
+      "bg_removal_model": [
+        "21",
         0
       ],
       "background": [
-        "9",
+        "14",
         0
       ]
     },
-    "class_type": "Hoi4FinalOutput",
+    "class_type": "Hoi4BackgroundReplace",
     "_meta": {
-      "title": "Candidate 2 — background + centered master/game crops"
+      "title": "Candidate 2 — optional background replacement"
     }
   },
-  "17": {
+  "45": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "44",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Candidate 2 master — centered 1024×1365 crop"
+    }
+  },
+  "46": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "45",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Candidate 2 game — centered 156×210 crop"
+    }
+  },
+  "47": {
     "inputs": {
       "filename_prefix": "1024x1365/candidate_2",
       "images": [
-        "16",
+        "45",
         0
       ]
     },
@@ -296,12 +721,12 @@
       "title": "Save candidate 2 master PNG"
     }
   },
-  "18": {
+  "48": {
     "inputs": {
       "filename_prefix": "156x210/candidate_2",
       "images": [
-        "16",
-        1
+        "46",
+        0
       ]
     },
     "class_type": "SaveImage",
@@ -309,21 +734,21 @@
       "title": "Save candidate 2 game PNG"
     }
   },
-  "19": {
+  "49": {
     "inputs": {
       "filename_prefix": "156x210/dds/candidate_2",
       "compression": "dxt5",
       "images": [
-        "16",
-        1
+        "46",
+        0
       ]
     },
     "class_type": "Hoi4SaveDDS",
     "_meta": {
-      "title": "Save candidate 2 game DDS — DXT5, no mipmaps"
+      "title": "Save candidate 2 DDS — DXT5, no mipmaps"
     }
   },
-  "20": {
+  "50": {
     "inputs": {
       "mode": "source_reference",
       "prompt": "make this portrait hoi4_portrait style",
@@ -342,54 +767,85 @@
       "end_at_step": 10000,
       "force_full_denoise": true,
       "model": [
-        "7",
+        "18",
         0
       ],
       "clip": [
-        "7",
-        3
+        "16",
+        0
       ],
       "vae": [
-        "7",
-        4
+        "17",
+        0
       ],
       "reference_image": [
-        "8",
+        "35",
         0
       ]
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Candidate 3 — one advanced live sampler card"
+      "title": "Candidate 3 — advanced live style sampler"
     }
   },
-  "21": {
+  "51": {
     "inputs": {
       "use_background": false,
-      "background_model": "birefnet.safetensors",
-      "master_width": 1024,
-      "master_height": 1365,
-      "game_width": 156,
-      "game_height": 210,
       "image": [
-        "20",
+        "50",
+        0
+      ],
+      "bg_removal_model": [
+        "21",
         0
       ],
       "background": [
-        "9",
+        "14",
         0
       ]
     },
-    "class_type": "Hoi4FinalOutput",
+    "class_type": "Hoi4BackgroundReplace",
     "_meta": {
-      "title": "Candidate 3 — background + centered master/game crops"
+      "title": "Candidate 3 — optional background replacement"
     }
   },
-  "22": {
+  "52": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "51",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Candidate 3 master — centered 1024×1365 crop"
+    }
+  },
+  "53": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "52",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Candidate 3 game — centered 156×210 crop"
+    }
+  },
+  "54": {
     "inputs": {
       "filename_prefix": "1024x1365/candidate_3",
       "images": [
-        "21",
+        "52",
         0
       ]
     },
@@ -398,12 +854,12 @@
       "title": "Save candidate 3 master PNG"
     }
   },
-  "23": {
+  "55": {
     "inputs": {
       "filename_prefix": "156x210/candidate_3",
       "images": [
-        "21",
-        1
+        "53",
+        0
       ]
     },
     "class_type": "SaveImage",
@@ -411,25 +867,25 @@
       "title": "Save candidate 3 game PNG"
     }
   },
-  "24": {
+  "56": {
     "inputs": {
       "filename_prefix": "156x210/dds/candidate_3",
       "compression": "dxt5",
       "images": [
-        "21",
-        1
+        "53",
+        0
       ]
     },
     "class_type": "Hoi4SaveDDS",
     "_meta": {
-      "title": "Save candidate 3 game DDS — DXT5, no mipmaps"
+      "title": "Save candidate 3 DDS — DXT5, no mipmaps"
     }
   },
-  "25": {
+  "57": {
     "inputs": {
       "images": [
-        "6",
-        2
+        "13",
+        0
       ]
     },
     "class_type": "PreviewImage",
@@ -437,10 +893,10 @@
       "title": "RealESRGAN prepared crop"
     }
   },
-  "26": {
+  "58": {
     "inputs": {
       "images": [
-        "8",
+        "35",
         0
       ]
     },
@@ -449,11 +905,11 @@
       "title": "Adonis Base → Refine restored"
     }
   },
-  "27": {
+  "59": {
     "inputs": {
       "images": [
-        "11",
-        1
+        "39",
+        0
       ]
     },
     "class_type": "PreviewImage",
@@ -461,11 +917,11 @@
       "title": "Final candidate 1 — 156×210"
     }
   },
-  "28": {
+  "60": {
     "inputs": {
       "images": [
-        "16",
-        1
+        "46",
+        0
       ]
     },
     "class_type": "PreviewImage",
@@ -473,11 +929,11 @@
       "title": "Final candidate 2 — 156×210"
     }
   },
-  "29": {
+  "61": {
     "inputs": {
       "images": [
-        "21",
-        1
+        "53",
+        0
       ]
     },
     "class_type": "PreviewImage",

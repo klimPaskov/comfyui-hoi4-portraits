@@ -1,23 +1,58 @@
 {
   "3": {
     "inputs": {
-      "diffusion_model": "flux-2-klein-9b.safetensors",
-      "text_encoder": "Qwen3-8B-Q8_0.gguf",
-      "vae_name": "flux2-vae.safetensors",
-      "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-      "style_strength": 1.0,
-      "load_restoration": false,
-      "adonis_base": "adonis_base.safetensors",
-      "adonis_refine": "adonis_refine.safetensors",
-      "weight_dtype": "default",
-      "text_encoder_device": "default"
+      "unet_name": "flux-2-klein-9b.safetensors",
+      "weight_dtype": "default"
     },
-    "class_type": "Hoi4ModelStack",
+    "class_type": "UNETLoader",
     "_meta": {
-      "title": "Distilled FLUX.2 Klein stack — full / FP8 / GGUF"
+      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target"
     }
   },
   "4": {
+    "inputs": {
+      "clip_name": "Qwen3-8B-Q8_0.gguf",
+      "type": "flux2",
+      "device": "default"
+    },
+    "class_type": "ClipLoaderGGUF",
+    "_meta": {
+      "title": "Load Qwen3 8B Q8 text encoder"
+    }
+  },
+  "5": {
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load FLUX.2 VAE"
+    }
+  },
+  "6": {
+    "inputs": {
+      "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+      "strength_model": 1.0,
+      "model": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load HOI4 style LoRA — step 2500 only"
+    }
+  },
+  "7": {
+    "inputs": {
+      "bg_removal_name": "birefnet.safetensors"
+    },
+    "class_type": "LoadBackgroundRemovalModel",
+    "_meta": {
+      "title": "Load BiRefNet mask model"
+    }
+  },
+  "8": {
     "inputs": {
       "mode": "text_to_image",
       "prompt": "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.",
@@ -36,24 +71,24 @@
       "end_at_step": 10000,
       "force_full_denoise": true,
       "model": [
-        "3",
+        "6",
         0
       ],
       "clip": [
-        "3",
-        3
+        "4",
+        0
       ],
       "vae": [
-        "3",
-        4
+        "5",
+        0
       ]
     },
     "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "Text-to-image — one advanced live sampler"
+      "title": "Text-to-image — advanced live sampler"
     }
   },
-  "5": {
+  "9": {
     "inputs": {
       "image": "hoi4_leader_portrait_background.png"
     },
@@ -62,33 +97,64 @@
       "title": "Optional replacement background"
     }
   },
-  "6": {
+  "10": {
     "inputs": {
       "use_background": false,
-      "background_model": "birefnet.safetensors",
-      "master_width": 1024,
-      "master_height": 1365,
-      "game_width": 156,
-      "game_height": 210,
       "image": [
-        "4",
+        "8",
+        0
+      ],
+      "bg_removal_model": [
+        "7",
         0
       ],
       "background": [
-        "5",
+        "9",
         0
       ]
     },
-    "class_type": "Hoi4FinalOutput",
+    "class_type": "Hoi4BackgroundReplace",
     "_meta": {
-      "title": "Centered 1024×1365 master + 156×210 game crop"
+      "title": "Optional background replacement"
     }
   },
-  "7": {
+  "11": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Master — centered 1024×1365 crop"
+    }
+  },
+  "12": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Game — centered 156×210 crop"
+    }
+  },
+  "13": {
     "inputs": {
       "filename_prefix": "1024x1365/text_to_image",
       "images": [
-        "6",
+        "11",
         0
       ]
     },
@@ -97,12 +163,12 @@
       "title": "Save master PNG"
     }
   },
-  "8": {
+  "14": {
     "inputs": {
       "filename_prefix": "156x210/text_to_image",
       "images": [
-        "6",
-        1
+        "12",
+        0
       ]
     },
     "class_type": "SaveImage",
@@ -110,13 +176,13 @@
       "title": "Save game PNG"
     }
   },
-  "9": {
+  "15": {
     "inputs": {
       "filename_prefix": "156x210/dds/text_to_image",
       "compression": "dxt5",
       "images": [
-        "6",
-        1
+        "12",
+        0
       ]
     },
     "class_type": "Hoi4SaveDDS",
@@ -124,11 +190,11 @@
       "title": "Save game DDS — DXT5, no mipmaps"
     }
   },
-  "10": {
+  "16": {
     "inputs": {
       "images": [
-        "6",
-        1
+        "12",
+        0
       ]
     },
     "class_type": "PreviewImage",

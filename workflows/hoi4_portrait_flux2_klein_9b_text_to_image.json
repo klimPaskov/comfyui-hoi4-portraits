@@ -1,8 +1,8 @@
 {
   "id": "hoi4_portrait_flux2_klein_9b_text_to_image",
   "revision": 0,
-  "last_node_id": 10,
-  "last_link_id": 9,
+  "last_node_id": 16,
+  "last_link_id": 13,
   "nodes": [
     {
       "id": 1,
@@ -13,7 +13,7 @@
         100
       ],
       "size": [
-        700,
+        720,
         800
       ],
       "color": "#475569",
@@ -25,7 +25,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_stage": "00 Notes"
+        "hoi4_group": "00 Notes"
       },
       "widgets_values": [
         "📦 MODELS + FOLDERS\n\nThe installer places every file automatically. Manual locations:\n\nComfyUI/models/\n├── diffusion_models/\n│   └── flux-2-klein-9b.safetensors (distilled; never Base)\n├── text_encoders/\n│   └── Qwen3-8B-Q8_0.gguf\n├── vae/\n│   └── flux2-vae.safetensors\n├── loras/\n│   ├── hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n│   ├── adonis_base.safetensors\n│   └── adonis_refine.safetensors\n├── upscale_models/RealESRGAN_x2plus.pth\n├── background_removal/birefnet.safetensors\n└── detection/mediapipe_face_fp32.safetensors\n\nModel links and exact pinned revisions are in models.json. The installer selects full, FP8, or GGUF for your VRAM."
@@ -40,7 +40,7 @@
         980
       ],
       "size": [
-        700,
+        720,
         760
       ],
       "color": "#475569",
@@ -52,23 +52,23 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_stage": "00 Notes"
+        "hoi4_group": "00 Notes"
       },
       "widgets_values": [
-        "🎛️ SAMPLER — TUNED DEFAULTS\n\n4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\nSteps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\nThe purple sampler is deliberately one advanced card. ComfyUI's live latent callback shows the portrait being constructed while it runs."
+        "🎛️ SAMPLER — TUNED DEFAULTS\n\n4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\nSteps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\nOnly the purple style sampler combines controls. Model loading, source processing, Adonis Base, Adonis Refine, decoding, and output sizing stay visible as separate nodes. ComfyUI's live latent callback shows both style and restoration construction while they run."
       ]
     },
     {
       "id": 3,
-      "type": "Hoi4ModelStack",
-      "title": "Distilled FLUX.2 Klein stack — full / FP8 / GGUF",
+      "type": "UNETLoader",
+      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target",
       "pos": [
-        920,
+        940,
         100
       ],
       "size": [
-        820,
-        720
+        440,
+        130
       ],
       "color": "#385d7a",
       "bgcolor": "#29465c",
@@ -77,67 +77,11 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "diffusion_model",
-          "type": "STRING",
+          "name": "unet_name",
+          "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "diffusion_model"
-          }
-        },
-        {
-          "name": "text_encoder",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "text_encoder"
-          }
-        },
-        {
-          "name": "vae_name",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "vae_name"
-          }
-        },
-        {
-          "name": "style_lora",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "style_lora"
-          }
-        },
-        {
-          "name": "style_strength",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "style_strength"
-          }
-        },
-        {
-          "name": "load_restoration",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "load_restoration"
-          }
-        },
-        {
-          "name": "adonis_base",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "adonis_base"
-          }
-        },
-        {
-          "name": "adonis_refine",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "adonis_refine"
+            "name": "unet_name"
           }
         },
         {
@@ -147,72 +91,240 @@
           "widget": {
             "name": "weight_dtype"
           }
-        },
+        }
+      ],
+      "outputs": [
         {
-          "name": "text_encoder_device",
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader",
+        "hoi4_group": "01 Separate model loaders"
+      },
+      "widgets_values": [
+        "flux-2-klein-9b.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "ClipLoaderGGUF",
+      "title": "Load Qwen3 8B Q8 text encoder",
+      "pos": [
+        940,
+        300
+      ],
+      "size": [
+        440,
+        150
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip_name",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "text_encoder_device"
+            "name": "clip_name"
+          }
+        },
+        {
+          "name": "type",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "type"
+          }
+        },
+        {
+          "name": "device",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "device"
           }
         }
       ],
       "outputs": [
         {
-          "name": "style_model",
-          "type": "MODEL",
-          "links": [
-            1
-          ]
-        },
-        {
-          "name": "adonis_base_model",
-          "type": "MODEL",
-          "links": null
-        },
-        {
-          "name": "adonis_refine_model",
-          "type": "MODEL",
-          "links": null
-        },
-        {
-          "name": "clip",
+          "name": "CLIP",
           "type": "CLIP",
-          "links": [
-            2
-          ]
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
           "links": [
             3
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Hoi4ModelStack",
-        "hoi4_stage": "01 Model + one live sampler"
+        "Node name for S&R": "ClipLoaderGGUF",
+        "hoi4_group": "01 Separate model loaders"
       },
       "widgets_values": [
-        "flux-2-klein-9b.safetensors",
         "Qwen3-8B-Q8_0.gguf",
-        "flux2-vae.safetensors",
-        "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-        1.0,
-        false,
-        "adonis_base.safetensors",
-        "adonis_refine.safetensors",
-        "default",
+        "flux2",
         "default"
       ]
     },
     {
-      "id": 4,
-      "type": "Hoi4PortraitSampler",
-      "title": "Text-to-image — one advanced live sampler",
+      "id": 5,
+      "type": "VAELoader",
+      "title": "Load FLUX.2 VAE",
       "pos": [
-        1800,
+        940,
+        520
+      ],
+      "size": [
+        440,
+        100
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "vae_name"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "hoi4_group": "01 Separate model loaders"
+      },
+      "widgets_values": [
+        "flux2-vae.safetensors"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoraLoaderModelOnly",
+      "title": "Load HOI4 style LoRA — step 2500 only",
+      "pos": [
+        1440,
+        100
+      ],
+      "size": [
+        500,
+        140
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "lora_name"
+          }
+        },
+        {
+          "name": "strength_model",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "strength_model"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoaderModelOnly",
+        "hoi4_group": "01 Separate model loaders"
+      },
+      "widgets_values": [
+        "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+        1.0
+      ]
+    },
+    {
+      "id": 7,
+      "type": "LoadBackgroundRemovalModel",
+      "title": "Load BiRefNet mask model",
+      "pos": [
+        940,
+        700
+      ],
+      "size": [
+        440,
+        100
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bg_removal_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "bg_removal_name"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bg_model",
+          "type": "BACKGROUND_REMOVAL",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadBackgroundRemovalModel",
+        "hoi4_group": "01 Separate model loaders"
+      },
+      "widgets_values": [
+        "birefnet.safetensors"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "Hoi4PortraitSampler",
+      "title": "Text-to-image — advanced live sampler",
+      "pos": [
+        2080,
         100
       ],
       "size": [
@@ -222,23 +334,23 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 3,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 1
+          "link": 2
         },
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 2
+          "link": 3
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 3
+          "link": 4
         },
         {
           "name": "mode",
@@ -379,13 +491,13 @@
           "name": "portrait",
           "type": "IMAGE",
           "links": [
-            4
+            5
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_stage": "01 Model + one live sampler"
+        "hoi4_group": "02 One advanced live sampler"
       },
       "widgets_values": [
         "text_to_image",
@@ -407,21 +519,21 @@
       ]
     },
     {
-      "id": 5,
+      "id": 9,
       "type": "LoadImage",
       "title": "Optional replacement background",
       "pos": [
-        2720,
+        2940,
         100
       ],
       "size": [
-        620,
+        600,
         560
       ],
       "color": "#446a4d",
       "bgcolor": "#304c38",
       "flags": {},
-      "order": 4,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -438,7 +550,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            5
+            7
           ]
         },
         {
@@ -449,7 +561,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "hoi4_stage": "02 Final output"
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
       },
       "widgets_values": [
         "hoi4_leader_portrait_background.png",
@@ -457,27 +569,32 @@
       ]
     },
     {
-      "id": 6,
-      "type": "Hoi4FinalOutput",
-      "title": "Centered 1024×1365 master + 156×210 game crop",
+      "id": 10,
+      "type": "Hoi4BackgroundReplace",
+      "title": "Optional background replacement",
       "pos": [
-        3420,
+        3580,
         100
       ],
       "size": [
-        600,
-        500
+        500,
+        260
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 5,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 4
+          "link": 5
+        },
+        {
+          "name": "bg_removal_model",
+          "type": "BACKGROUND_REMOVAL",
+          "link": 6
         },
         {
           "name": "use_background",
@@ -488,88 +605,189 @@
           }
         },
         {
-          "name": "background_model",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "background_model"
-          }
-        },
-        {
-          "name": "master_width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "master_width"
-          }
-        },
-        {
-          "name": "master_height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "master_height"
-          }
-        },
-        {
-          "name": "game_width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "game_width"
-          }
-        },
-        {
-          "name": "game_height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "game_height"
-          }
-        },
-        {
           "name": "background",
           "type": "IMAGE",
-          "link": 5
+          "link": 7
         }
       ],
       "outputs": [
         {
-          "name": "master_1024x1365",
+          "name": "image",
           "type": "IMAGE",
           "links": [
-            6
-          ]
-        },
-        {
-          "name": "game_156x210",
-          "type": "IMAGE",
-          "links": [
-            7,
-            8,
-            9
+            8
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Hoi4FinalOutput",
-        "hoi4_stage": "02 Final output"
+        "Node name for S&R": "Hoi4BackgroundReplace",
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
       },
       "widgets_values": [
-        false,
-        "birefnet.safetensors",
-        1024,
-        1365,
-        156,
-        210
+        false
       ]
     },
     {
-      "id": 7,
+      "id": 11,
+      "type": "ImageScale",
+      "title": "Master — centered 1024×1365 crop",
+      "pos": [
+        4120,
+        100
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            9,
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "ImageScale",
+      "title": "Game — centered 156×210 crop",
+      "pos": [
+        4580,
+        100
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 9
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            11,
+            12,
+            13
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
+      },
+      "widgets_values": [
+        "lanczos",
+        156,
+        210,
+        "center"
+      ]
+    },
+    {
+      "id": 13,
       "type": "SaveImage",
       "title": "Save master PNG",
       "pos": [
-        2720,
+        2940,
         760
       ],
       "size": [
@@ -579,13 +797,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 6,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 6
+          "link": 10
         },
         {
           "name": "filename_prefix",
@@ -605,18 +823,18 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_stage": "02 Final output"
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
       },
       "widgets_values": [
         "1024x1365/text_to_image"
       ]
     },
     {
-      "id": 8,
+      "id": 14,
       "type": "SaveImage",
       "title": "Save game PNG",
       "pos": [
-        3180,
+        3400,
         760
       ],
       "size": [
@@ -626,13 +844,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 7,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 7
+          "link": 11
         },
         {
           "name": "filename_prefix",
@@ -652,18 +870,18 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_stage": "02 Final output"
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
       },
       "widgets_values": [
         "156x210/text_to_image"
       ]
     },
     {
-      "id": 9,
+      "id": 15,
       "type": "Hoi4SaveDDS",
       "title": "Save game DDS — DXT5, no mipmaps",
       "pos": [
-        3640,
+        3860,
         760
       ],
       "size": [
@@ -673,13 +891,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 8,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 8
+          "link": 12
         },
         {
           "name": "filename_prefix",
@@ -707,7 +925,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_stage": "02 Final output"
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
       },
       "widgets_values": [
         "156x210/dds/text_to_image",
@@ -715,12 +933,12 @@
       ]
     },
     {
-      "id": 10,
+      "id": 16,
       "type": "PreviewImage",
       "title": "Final 156×210 portrait",
       "pos": [
-        2880,
-        1050
+        4460,
+        760
       ],
       "size": [
         600,
@@ -729,13 +947,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 9,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 9
+          "link": 13
         }
       ],
       "outputs": [
@@ -747,7 +965,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_stage": "02 Final output"
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
       },
       "widgets_values": []
     }
@@ -757,76 +975,169 @@
       1,
       3,
       0,
-      4,
+      6,
       0,
       "MODEL"
     ],
     [
       2,
-      3,
+      6,
+      0,
+      8,
+      0,
+      "MODEL"
+    ],
+    [
       3,
       4,
+      0,
+      8,
       1,
       "CLIP"
     ],
     [
-      3,
-      3,
       4,
-      4,
+      5,
+      0,
+      8,
       2,
       "VAE"
     ],
     [
-      4,
-      4,
-      0,
-      6,
-      0,
-      "IMAGE"
-    ],
-    [
       5,
-      5,
-      0,
-      6,
-      7,
-      "IMAGE"
-    ],
-    [
-      6,
-      6,
-      0,
-      7,
-      0,
-      "IMAGE"
-    ],
-    [
-      7,
-      6,
-      1,
       8,
       0,
-      "IMAGE"
-    ],
-    [
-      8,
-      6,
-      1,
-      9,
-      0,
-      "IMAGE"
-    ],
-    [
-      9,
-      6,
-      1,
       10,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      7,
+      0,
+      10,
+      1,
+      "BACKGROUND_REMOVAL"
+    ],
+    [
+      7,
+      9,
+      0,
+      10,
+      3,
+      "IMAGE"
+    ],
+    [
+      8,
+      10,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      11,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      12,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      12,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      12,
+      0,
+      16,
       0,
       "IMAGE"
     ]
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": 1,
+      "title": "00 Notes",
+      "bounding": [
+        40,
+        40,
+        800,
+        2020
+      ],
+      "color": "#334155",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    },
+    {
+      "id": 2,
+      "title": "01 Separate model loaders",
+      "bounding": [
+        880,
+        40,
+        1120,
+        2020
+      ],
+      "color": "#365b73",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    },
+    {
+      "id": 3,
+      "title": "02 One advanced live sampler",
+      "bounding": [
+        2040,
+        40,
+        800,
+        2020
+      ],
+      "color": "#654572",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    },
+    {
+      "id": 4,
+      "title": "03 Visible background, sizing, saves, preview",
+      "bounding": [
+        2880,
+        40,
+        2220,
+        2020
+      ],
+      "color": "#3d596f",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    }
+  ],
   "config": {},
   "extra": {
     "workflow_id": "hoi4_portrait_flux2_klein_9b_text_to_image",

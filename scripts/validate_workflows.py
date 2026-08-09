@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the four compact editor and API workflows."""
+"""Validate the four expanded, fully visible editor and API workflows."""
 
 from __future__ import annotations
 
@@ -22,11 +22,32 @@ ALLOWED_NODES = {
     "LoadImage",
     "PreviewImage",
     "SaveImage",
-    "Hoi4ModelStack",
-    "Hoi4SourcePrep",
+    "UNETLoader",
+    "UnetLoaderGGUF",
+    "ClipLoaderGGUF",
+    "VAELoader",
+    "LoraLoaderModelOnly",
+    "LoadMediaPipeFaceLandmarker",
+    "MediaPipeFaceLandmarker",
+    "LoadBackgroundRemovalModel",
+    "RemoveBackground",
+    "AdaptivePortraitCrop",
+    "UpscaleModelLoader",
+    "ImageUpscaleWithModel",
+    "ImageScale",
+    "ImageScaleToTotalPixelsX",
+    "CLIPTextEncode",
+    "ConditioningZeroOut",
+    "VAEEncode",
+    "ReferenceLatent",
+    "EmptyFlux2LatentImage",
+    "SharkOptions_Beta",
+    "PrimitiveInt",
+    "ClownsharKSampler_Beta",
+    "VAEDecode",
+    "ComfySwitchNode",
     "Hoi4PortraitSampler",
-    "Hoi4AdonisRestoration",
-    "Hoi4FinalOutput",
+    "Hoi4BackgroundReplace",
     "Hoi4BatchInput",
     "Hoi4SaveDDS",
 }
@@ -63,10 +84,8 @@ def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
     groups = ui.get("groups")
     if not nodes:
         return [f"{path}: nodes must be non-empty"]
-    if not isinstance(groups, list):
-        errors.append(f"{path}: groups must be an empty list")
-    elif groups:
-        errors.append(f"{path}: collapsible canvas groups are not allowed")
+    if not isinstance(groups, list) or not groups:
+        errors.append(f"{path}: visible canvas groups must be present")
     if "definitions" in ui:
         errors.append(f"{path}: subgraphs/definitions are not allowed; the whole workflow must stay visible")
     by_id = {node.get("id"): node for node in nodes}
@@ -104,6 +123,32 @@ def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
         for item in node.get("outputs", []):
             if any(link_id not in link_ids for link_id in item.get("links") or []):
                 errors.append(f"{path}: node {node.get('id')} references a missing output link")
+
+    group_bounds: dict[str, list[float]] = {}
+    for index, group in enumerate(groups or []):
+        title = group.get("title")
+        bounds = group.get("bounding")
+        if not isinstance(title, str) or not isinstance(bounds, list) or len(bounds) != 4:
+            errors.append(f"{path}: malformed visible group {group!r}")
+            continue
+        if group.get("flags", {}).get("collapsed") is not False:
+            errors.append(f"{path}: group {title!r} must be explicitly expanded")
+        group_bounds[title] = bounds
+        for other in (groups or [])[index + 1 :]:
+            other_bounds = other.get("bounding", [])
+            if len(other_bounds) == 4 and _overlap(bounds, other_bounds):
+                errors.append(f"{path}: visible groups overlap: {title} / {other.get('title')}")
+    for node in nodes:
+        group_name = node.get("properties", {}).get("hoi4_group")
+        bounds = group_bounds.get(group_name)
+        if bounds is None:
+            errors.append(f"{path}: node {node.get('id')} is not assigned to a visible group")
+            continue
+        nx, ny = node["pos"]
+        nw, nh = node["size"]
+        gx, gy, gw, gh = bounds
+        if nx < gx + 20 or ny < gy + 20 or nx + nw > gx + gw - 20 or ny + nh > gy + gh - 20:
+            errors.append(f"{path}: node {node.get('id')} extends outside {group_name}")
 
     for index, node in enumerate(nodes):
         box = [*node["pos"], *node["size"]]
@@ -146,16 +191,36 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         counts[node["class_type"]] = counts.get(node["class_type"], 0) + 1
     expected_samplers = 3 if is_source else 0 if is_processing else 1
     if counts.get("Hoi4PortraitSampler", 0) != expected_samplers:
-        errors.append(f"{path}: expected {expected_samplers} sampler card(s)")
-    expected_restorers = 0 if is_text else 1
-    if counts.get("Hoi4AdonisRestoration", 0) != expected_restorers:
-        errors.append(f"{path}: expected {expected_restorers} Adonis card(s)")
-    if counts.get("Hoi4ModelStack", 0) != 1 or counts.get("Hoi4FinalOutput", 0) != (3 if is_source else 1):
-        errors.append(f"{path}: model/final logical card count is incorrect")
+        errors.append(f"{path}: expected {expected_samplers} focused style sampler(s)")
+    forbidden_merged = {"Hoi4ModelStack", "Hoi4SourcePrep", "Hoi4AdonisRestoration", "Hoi4FinalOutput"}
+    merged = sorted(node_type for node_type in forbidden_merged if counts.get(node_type, 0))
+    if merged:
+        errors.append(f"{path}: oversized merged nodes are forbidden: {', '.join(merged)}")
+    if counts.get("UNETLoader", 0) + counts.get("UnetLoaderGGUF", 0) != 1:
+        errors.append(f"{path}: workflow needs one visible diffusion-model loader")
+    if counts.get("ClipLoaderGGUF", 0) != 1 or counts.get("VAELoader", 0) != 1:
+        errors.append(f"{path}: Qwen Q8 and VAE loaders must remain separately visible")
+    expected_loras = 1 if is_text else 2 if is_processing else 3
+    if counts.get("LoraLoaderModelOnly", 0) != expected_loras:
+        errors.append(f"{path}: expected {expected_loras} separately visible LoRA loaders")
     if is_batch and counts.get("Hoi4BatchInput", 0) != 1:
         errors.append(f"{path}: batch workflow needs one list-output input card")
     if is_source and counts.get("PreviewImage", 0) != 6:
         errors.append(f"{path}: source workflow needs source preview plus the five-card comparison row")
+
+    expected_adonis_nodes = 0 if is_text else 1
+    for class_type, multiplier in {
+        "ImageScaleToTotalPixelsX": 1,
+        "ConditioningZeroOut": 1,
+        "VAEEncode": 1,
+        "ReferenceLatent": 2,
+        "EmptyFlux2LatentImage": 1,
+        "SharkOptions_Beta": 1,
+        "ClownsharKSampler_Beta": 2,
+        "VAEDecode": 1,
+    }.items():
+        if counts.get(class_type, 0) != expected_adonis_nodes * multiplier:
+            errors.append(f"{path}: expanded Adonis graph needs {expected_adonis_nodes * multiplier} visible {class_type} node(s)")
 
     for node in ui.get("nodes", []):
         if node.get("type") != "PreviewImage":
@@ -167,24 +232,23 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     for node in api.values():
         class_type = node["class_type"]
         inputs = node.get("inputs", {})
-        if class_type == "Hoi4ModelStack":
-            exact = {
-                "diffusion_model": build_workflows.BASE_MODEL,
-                "text_encoder": build_workflows.TEXT_ENCODER,
-                "vae_name": build_workflows.VAE_MODEL,
-                "style_lora": build_workflows.STYLE_LORA,
-                "adonis_base": build_workflows.ADONIS_BASE,
-                "adonis_refine": build_workflows.ADONIS_REFINE,
-            }
-            for key, expected in exact.items():
-                if inputs.get(key) != expected:
-                    errors.append(f"{path}: model stack {key} must be {expected}")
-            if is_processing and inputs.get("style_strength") != 0.0:
-                errors.append(f"{path}: processing-only must bypass the style LoRA")
-            if is_text and inputs.get("load_restoration") is not False:
+        if class_type in {"UNETLoader", "UnetLoaderGGUF"}:
+            if inputs.get("unet_name") != build_workflows.BASE_MODEL:
+                errors.append(f"{path}: visible model loader must use {build_workflows.BASE_MODEL}")
+        elif class_type == "ClipLoaderGGUF":
+            if inputs.get("clip_name") != build_workflows.TEXT_ENCODER or inputs.get("type") != "flux2":
+                errors.append(f"{path}: visible text encoder must be Qwen3 Q8 in FLUX.2 mode")
+        elif class_type == "VAELoader" and inputs.get("vae_name") != build_workflows.VAE_MODEL:
+            errors.append(f"{path}: visible VAE loader changed")
+        elif class_type == "LoraLoaderModelOnly":
+            filename = inputs.get("lora_name")
+            allowed = {build_workflows.STYLE_LORA, build_workflows.ADONIS_BASE, build_workflows.ADONIS_REFINE}
+            if filename not in allowed or inputs.get("strength_model") != 1.0:
+                errors.append(f"{path}: unexpected visible LoRA loader {filename!r}")
+            if is_processing and filename == build_workflows.STYLE_LORA:
+                errors.append(f"{path}: processing-only must not load the style LoRA")
+            if is_text and filename in {build_workflows.ADONIS_BASE, build_workflows.ADONIS_REFINE}:
                 errors.append(f"{path}: text-to-image must not load Adonis LoRAs")
-            if not is_text and inputs.get("load_restoration") is not True:
-                errors.append(f"{path}: source processing must load Adonis Base + Refine")
         elif class_type == "Hoi4PortraitSampler":
             exact = {"steps": 4, "cfg": 1.0, "guidance": 1.0, "sampling_algorithm": "euler", "scheduler": "simple", "denoise": 1.0}
             for key, expected in exact.items():
@@ -196,27 +260,51 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
                 errors.append(f"{path}: sampler mode or exact prompt changed")
             if not is_text and "reference_image" not in inputs:
                 errors.append(f"{path}: source sampler is missing its reference image")
-        elif class_type == "Hoi4AdonisRestoration":
+        elif class_type == "ImageScaleToTotalPixelsX":
+            exact = {"megapixels": 1.7, "multiple_of": 16, "resize_mode": "crop", "upscale_method": "lanczos"}
+            if any(inputs.get(key) != value for key, value in exact.items()):
+                errors.append(f"{path}: visible Adonis pre-process settings changed")
+        elif class_type == "CLIPTextEncode" and "Adonis" in node.get("_meta", {}).get("title", ""):
+            if inputs.get("text") != build_workflows.RESTORATION_PROMPT:
+                errors.append(f"{path}: exact Adonis prompt changed")
+        elif class_type == "SharkOptions_Beta":
+            exact = {"noise_type_init": "laplacian", "s_noise_init": 1.0, "denoise_alt": 1.0, "channelwise_cfg": False}
+            if any(inputs.get(key) != value for key, value in exact.items()):
+                errors.append(f"{path}: exact upstream Shark options changed")
+        elif class_type == "ClownsharKSampler_Beta":
+            title = node.get("_meta", {}).get("title", "")
+            refine = "Refine" in title
             exact = {
-                "enabled": True, "prompt": build_workflows.RESTORATION_PROMPT, "megapixels": 1.7,
-                "multiple_of": 16, "resize_mode": "crop", "upscale_method": "lanczos", "eta": 0.8,
-                "sampling_algorithm": "exponential/res_2s", "scheduler": "simple", "total_steps": 9,
-                "base_steps_to_run": 5, "cfg": 1.0, "denoise": 1.0, "base_sampling_mode": "standard",
-                "refine_sampling_mode": "resample", "noise_type": "gaussian", "initial_noise_scale": 1.0,
-                "alternate_denoise": 1.0, "channelwise_cfg": False, "bongmath": True,
+                "eta": 0.8,
+                "sampler_name": "exponential/res_2s",
+                "scheduler": "simple",
+                "steps_to_run": -1 if refine else 5,
+                "cfg": 1.0,
+                "denoise": 1.0,
+                "sampler_mode": "resample" if refine else "standard",
+                "bongmath": True,
             }
-            for key, expected in exact.items():
-                if inputs.get(key) != expected:
-                    errors.append(f"{path}: Adonis {key} must be {expected!r}")
-        elif class_type == "Hoi4FinalOutput":
-            if [inputs.get("master_width"), inputs.get("master_height"), inputs.get("game_width"), inputs.get("game_height")] != [1024, 1365, 156, 210]:
-                errors.append(f"{path}: final output sizes changed")
+            if any(inputs.get(key) != value for key, value in exact.items()):
+                errors.append(f"{path}: exact visible Adonis {'Refine' if refine else 'Base'} sampler settings changed")
+            if not isinstance(inputs.get("steps"), list) or not isinstance(inputs.get("seed"), list):
+                errors.append(f"{path}: Adonis sampler must share visible step and seed nodes")
+        elif class_type == "ImageScale":
+            title = node.get("_meta", {}).get("title", "")
+            if "1024×1365" in title and [inputs.get("width"), inputs.get("height"), inputs.get("crop")] != [1024, 1365, "center"]:
+                errors.append(f"{path}: master output must be a centered 1024×1365 crop")
+            if "156×210" in title and [inputs.get("width"), inputs.get("height"), inputs.get("crop")] != [156, 210, "center"]:
+                errors.append(f"{path}: game output must be a centered 156×210 crop")
         elif class_type == "Hoi4SaveDDS":
             if inputs.get("compression") != "dxt5" or not str(inputs.get("filename_prefix", "")).startswith("156x210/dds/"):
                 errors.append(f"{path}: DDS output is not game-ready")
 
-    if any(node["class_type"] in {"ImageScale", "ImageScaleBy", "ImageUpscaleWithModel", "UNETLoader", "UnetLoaderGGUF"} for node in api.values()):
-        errors.append(f"{path}: graph contains redundant low-level loader/upscale nodes")
+    primitive_values = {
+        node.get("_meta", {}).get("title"): node.get("inputs", {}).get("value")
+        for node in api.values()
+        if node.get("class_type") == "PrimitiveInt"
+    }
+    if not is_text and primitive_values != {"Shared Adonis seed": 42, "Total Adonis steps": 9}:
+        errors.append(f"{path}: visible shared Adonis seed/step controls changed")
     if is_processing and ui.get("extra", {}).get("style_lora") is not None:
         errors.append(f"{path}: processing-only metadata advertises a style LoRA")
     if not is_processing and ui.get("extra", {}).get("style_lora") != build_workflows.STYLE_LORA:

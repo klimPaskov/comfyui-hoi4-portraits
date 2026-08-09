@@ -2,9 +2,9 @@
 """Verify that a running ComfyUI exposes every node and sampler we use.
 
 The required node set is derived from the installed workflows in
-``user/default/workflows/hoi4_portraits``. The compact model-stack card
-selects safetensors or GGUF internally. Frontend-only ``Note`` cards are
-ignored.
+``user/default/workflows/hoi4_portraits``. Model loaders and the full Adonis
+topology are serialized directly on the visible canvas. Frontend-only
+``Note`` cards are ignored.
 """
 
 from __future__ import annotations
@@ -22,14 +22,10 @@ ROOT = Path(__file__).resolve().parents[1]
 # (the API graph skips them, but the editor still needs them).
 ALWAYS_REQUIRED = {
     "AdaptivePortraitCrop",
-    "Hoi4ModelStack",
-    "Hoi4SourcePrep",
     "Hoi4BatchInput",
     "Hoi4PortraitSampler",
-    "Hoi4AdonisRestoration",
-    "Hoi4FinalOutput",
+    "Hoi4BackgroundReplace",
     "Hoi4SaveDDS",
-    "PortraitIdentityMask",
 }
 
 UPSTREAM_ADONIS_REQUIRED = {
@@ -44,6 +40,7 @@ UPSTREAM_ADONIS_REQUIRED = {
     "ReferenceLatent",
     "RemoveBackground",
     "SharkOptions_Beta",
+    "PrimitiveInt",
     "UnetLoaderGGUF",
     "UpscaleModelLoader",
 }

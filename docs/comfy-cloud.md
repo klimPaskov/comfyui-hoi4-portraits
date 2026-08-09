@@ -19,7 +19,7 @@ Import it from its hosted source:
    when you want restoration.
 4. Select model type **LoRA** and target folder `loras`.
 5. Wait for the exact filenames to appear in the model library, then select
-   them on the **HOI4 Distilled Model Stack** card.
+   them on the separate visible style, Adonis Base, and Adonis Refine LoRA loaders.
 
 Model import requires a Comfy Cloud Creator or Pro plan. The FLUX.2 Klein 9B
 stack, RealESRGAN, and BiRefNet are present in the Cloud catalog.

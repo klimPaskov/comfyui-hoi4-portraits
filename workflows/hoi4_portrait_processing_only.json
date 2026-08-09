@@ -1,8 +1,8 @@
 {
   "id": "hoi4_portrait_processing_only",
   "revision": 0,
-  "last_node_id": 13,
-  "last_link_id": 13,
+  "last_node_id": 38,
+  "last_link_id": 46,
   "nodes": [
     {
       "id": 1,
@@ -13,7 +13,7 @@
         100
       ],
       "size": [
-        700,
+        720,
         900
       ],
       "color": "#475569",
@@ -25,7 +25,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_stage": "00 Notes"
+        "hoi4_group": "00 Notes"
       },
       "widgets_values": [
         "📦 MODELS + FOLDERS\n\nThe installer places every file automatically. Manual locations:\n\nComfyUI/models/\n├── diffusion_models/\n│   └── flux-2-klein-9b.safetensors (distilled; never Base)\n├── text_encoders/\n│   └── Qwen3-8B-Q8_0.gguf\n├── vae/\n│   └── flux2-vae.safetensors\n├── loras/\n│   ├── hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n│   ├── adonis_base.safetensors\n│   └── adonis_refine.safetensors\n├── upscale_models/RealESRGAN_x2plus.pth\n├── background_removal/birefnet.safetensors\n└── detection/mediapipe_face_fp32.safetensors\n\nModel links and exact pinned revisions are in models.json. The installer selects full, FP8, or GGUF for your VRAM."
@@ -40,7 +40,7 @@
         1080
       ],
       "size": [
-        700,
+        720,
         900
       ],
       "color": "#475569",
@@ -52,10 +52,10 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_stage": "00 Notes"
+        "hoi4_group": "00 Notes"
       },
       "widgets_values": [
-        "✍️ PROMPTING + RESTORATION\n\nKeep the source prompt exactly:\nmake this portrait hoi4_portrait style\n\nOnly append short facts when necessary: ethnicity or skin colour, age/hair, and civilian/military/clerical clothing. Do not re-describe the game style.\n\nRealESRGAN prepares the crop. Adonis Base → Refine can restore colour and facial detail first, so the style LoRA does not have to guess them. Bypass Adonis only for a clean modern photograph."
+        "✍️ PROMPTING + RESTORATION\n\nKeep the source prompt exactly:\nmake this portrait hoi4_portrait style\n\nOnly append short facts when necessary: ethnicity or skin colour, age/hair, and civilian/military/clerical clothing. Do not re-describe the game style.\n\nRealESRGAN prepares the crop. The expanded Adonis Base → Refine graph restores colour and facial detail first, so the style LoRA does not have to guess them. Disable the visible restoration switch only for a clean modern photograph."
       ]
     },
     {
@@ -90,7 +90,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            1
+            2,
+            4,
+            5
           ]
         },
         {
@@ -101,7 +103,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "hoi4_stage": "01 Source + processing"
+        "hoi4_group": "01 Source processing — every node visible"
       },
       "widgets_values": [
         "source_portrait.jpg",
@@ -110,15 +112,15 @@
     },
     {
       "id": 4,
-      "type": "Hoi4SourcePrep",
-      "title": "Source prep — face/manual crop + headwear + RealESRGAN",
+      "type": "LoadMediaPipeFaceLandmarker",
+      "title": "Load face detector",
       "pos": [
-        1650,
+        1640,
         100
       ],
       "size": [
-        680,
-        760
+        400,
+        100
       ],
       "color": "#446a4d",
       "bgcolor": "#304c38",
@@ -127,9 +129,237 @@
       "mode": 0,
       "inputs": [
         {
+          "name": "model_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "model_name"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "FACE_DETECTION_MODEL",
+          "type": "FACE_DETECTION_MODEL",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadMediaPipeFaceLandmarker",
+        "hoi4_group": "01 Source processing — every node visible"
+      },
+      "widgets_values": [
+        "mediapipe_face_fp32.safetensors"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "MediaPipeFaceLandmarker",
+      "title": "Detect portrait face — bounding box stays visible",
+      "pos": [
+        1640,
+        250
+      ],
+      "size": [
+        500,
+        300
+      ],
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "face_detection_model",
+          "type": "FACE_DETECTION_MODEL",
+          "link": 1
+        },
+        {
           "name": "image",
           "type": "IMAGE",
-          "link": 1
+          "link": 2
+        },
+        {
+          "name": "detector_variant",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "detector_variant"
+          }
+        },
+        {
+          "name": "num_faces",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "num_faces"
+          }
+        },
+        {
+          "name": "min_confidence",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "min_confidence"
+          }
+        },
+        {
+          "name": "missing_frame_fallback",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "missing_frame_fallback"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "face_landmarks",
+          "type": "FACE_LANDMARKS",
+          "links": null
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MediaPipeFaceLandmarker",
+        "hoi4_group": "01 Source processing — every node visible"
+      },
+      "widgets_values": [
+        "both",
+        1,
+        0.35,
+        "empty"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoadBackgroundRemovalModel",
+      "title": "Load BiRefNet mask model",
+      "pos": [
+        1640,
+        610
+      ],
+      "size": [
+        440,
+        100
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bg_removal_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "bg_removal_name"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bg_model",
+          "type": "BACKGROUND_REMOVAL",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadBackgroundRemovalModel",
+        "hoi4_group": "01 Source processing — every node visible"
+      },
+      "widgets_values": [
+        "birefnet.safetensors"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "RemoveBackground",
+      "title": "Generate subject silhouette for crop",
+      "pos": [
+        1640,
+        760
+      ],
+      "size": [
+        360,
+        100
+      ],
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bg_removal_model",
+          "type": "BACKGROUND_REMOVAL",
+          "link": 3
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RemoveBackground",
+        "hoi4_group": "01 Source processing — every node visible"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "AdaptivePortraitCrop",
+      "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN",
+      "pos": [
+        2180,
+        250
+      ],
+      "size": [
+        480,
+        420
+      ],
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 5
+        },
+        {
+          "name": "face_bboxes",
+          "type": "BOUNDING_BOX",
+          "link": 6
+        },
+        {
+          "name": "subject_mask",
+          "type": "MASK",
+          "link": 7
         },
         {
           "name": "face_processing",
@@ -137,22 +367,6 @@
           "link": null,
           "widget": {
             "name": "face_processing"
-          }
-        },
-        {
-          "name": "face_zoom",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "face_zoom"
-          }
-        },
-        {
-          "name": "preserve_headwear",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "preserve_headwear"
           }
         },
         {
@@ -196,148 +410,254 @@
           }
         },
         {
-          "name": "face_model",
-          "type": "STRING",
+          "name": "zoom",
+          "type": "FLOAT",
           "link": null,
           "widget": {
-            "name": "face_model"
+            "name": "zoom"
           }
         },
         {
-          "name": "subject_model",
-          "type": "STRING",
+          "name": "preserve_headwear",
+          "type": "BOOLEAN",
           "link": null,
           "widget": {
-            "name": "subject_model"
+            "name": "preserve_headwear"
           }
         },
         {
-          "name": "upscale_model",
-          "type": "STRING",
+          "name": "output_width",
+          "type": "INT",
           "link": null,
           "widget": {
-            "name": "upscale_model"
+            "name": "output_width"
+          }
+        },
+        {
+          "name": "output_height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "output_height"
           }
         }
       ],
       "outputs": [
         {
-          "name": "source",
-          "type": "IMAGE",
-          "links": null
-        },
-        {
-          "name": "crop",
-          "type": "IMAGE",
-          "links": null
-        },
-        {
-          "name": "esrgan",
+          "name": "portrait",
           "type": "IMAGE",
           "links": [
-            6,
-            11
+            9
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Hoi4SourcePrep",
-        "hoi4_stage": "01 Source + processing"
+        "Node name for S&R": "AdaptivePortraitCrop",
+        "hoi4_group": "01 Source processing — every node visible"
       },
       "widgets_values": [
-        true,
-        0.9,
         true,
         false,
         0.0,
         0.0,
         1.0,
         1.0,
-        "mediapipe_face_fp32.safetensors",
-        "birefnet.safetensors",
+        0.9,
+        true,
+        512,
+        683
+      ]
+    },
+    {
+      "id": 9,
+      "type": "UpscaleModelLoader",
+      "title": "Load RealESRGAN ×2",
+      "pos": [
+        2180,
+        730
+      ],
+      "size": [
+        400,
+        100
+      ],
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "model_name"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "UPSCALE_MODEL",
+          "type": "UPSCALE_MODEL",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UpscaleModelLoader",
+        "hoi4_group": "01 Source processing — every node visible"
+      },
+      "widgets_values": [
         "RealESRGAN_x2plus.pth"
       ]
     },
     {
-      "id": 5,
-      "type": "Hoi4ModelStack",
-      "title": "Distilled FLUX.2 Klein stack — full / FP8 / GGUF",
+      "id": 10,
+      "type": "ImageUpscaleWithModel",
+      "title": "Run RealESRGAN ×2",
       "pos": [
-        2480,
+        2180,
+        880
+      ],
+      "size": [
+        360,
+        100
+      ],
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 8
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageUpscaleWithModel",
+        "hoi4_group": "01 Source processing — every node visible"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "ImageScale",
+      "title": "Normalize RealESRGAN result to 1024×1365",
+      "pos": [
+        2180,
+        1030
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 10
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            13,
+            37,
+            44
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "01 Source processing — every node visible"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "UNETLoader",
+      "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target",
+      "pos": [
+        2740,
         100
       ],
       "size": [
-        820,
-        720
+        440,
+        130
       ],
       "color": "#385d7a",
       "bgcolor": "#29465c",
       "flags": {},
-      "order": 4,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
-          "name": "diffusion_model",
-          "type": "STRING",
+          "name": "unet_name",
+          "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "diffusion_model"
-          }
-        },
-        {
-          "name": "text_encoder",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "text_encoder"
-          }
-        },
-        {
-          "name": "vae_name",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "vae_name"
-          }
-        },
-        {
-          "name": "style_lora",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "style_lora"
-          }
-        },
-        {
-          "name": "style_strength",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "style_strength"
-          }
-        },
-        {
-          "name": "load_restoration",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "load_restoration"
-          }
-        },
-        {
-          "name": "adonis_base",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "adonis_base"
-          }
-        },
-        {
-          "name": "adonis_refine",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "adonis_refine"
+            "name": "unet_name"
           }
         },
         {
@@ -347,134 +667,272 @@
           "widget": {
             "name": "weight_dtype"
           }
-        },
+        }
+      ],
+      "outputs": [
         {
-          "name": "text_encoder_device",
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            11,
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader",
+        "hoi4_group": "02 Separate model loaders"
+      },
+      "widgets_values": [
+        "flux-2-klein-9b.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "ClipLoaderGGUF",
+      "title": "Load Qwen3 8B Q8 text encoder",
+      "pos": [
+        2740,
+        300
+      ],
+      "size": [
+        440,
+        150
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip_name",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "text_encoder_device"
+            "name": "clip_name"
+          }
+        },
+        {
+          "name": "type",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "type"
+          }
+        },
+        {
+          "name": "device",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "device"
           }
         }
       ],
       "outputs": [
         {
-          "name": "style_model",
-          "type": "MODEL",
-          "links": null
-        },
-        {
-          "name": "adonis_base_model",
-          "type": "MODEL",
-          "links": [
-            2
-          ]
-        },
-        {
-          "name": "adonis_refine_model",
-          "type": "MODEL",
-          "links": [
-            3
-          ]
-        },
-        {
-          "name": "clip",
+          "name": "CLIP",
           "type": "CLIP",
           "links": [
-            4
-          ]
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "links": [
-            5
+            14
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Hoi4ModelStack",
-        "hoi4_stage": "02 Exact Adonis restoration"
+        "Node name for S&R": "ClipLoaderGGUF",
+        "hoi4_group": "02 Separate model loaders"
       },
       "widgets_values": [
-        "flux-2-klein-9b.safetensors",
         "Qwen3-8B-Q8_0.gguf",
-        "flux2-vae.safetensors",
-        "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-        0.0,
-        true,
-        "adonis_base.safetensors",
-        "adonis_refine.safetensors",
-        "default",
+        "flux2",
         "default"
       ]
     },
     {
-      "id": 6,
-      "type": "Hoi4AdonisRestoration",
-      "title": "Adonis Base → Refine — exact upstream topology + live controls",
+      "id": 14,
+      "type": "VAELoader",
+      "title": "Load FLUX.2 VAE",
       "pos": [
-        3340,
+        2740,
+        520
+      ],
+      "size": [
+        440,
+        100
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "vae_name"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            17,
+            36
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "hoi4_group": "02 Separate model loaders"
+      },
+      "widgets_values": [
+        "flux2-vae.safetensors"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "LoraLoaderModelOnly",
+      "title": "Load Adonis Base LoRA",
+      "pos": [
+        3240,
+        320
+      ],
+      "size": [
+        500,
+        140
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 11
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "lora_name"
+          }
+        },
+        {
+          "name": "strength_model",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "strength_model"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoaderModelOnly",
+        "hoi4_group": "02 Separate model loaders"
+      },
+      "widgets_values": [
+        "adonis_base.safetensors",
+        1.0
+      ]
+    },
+    {
+      "id": 16,
+      "type": "LoraLoaderModelOnly",
+      "title": "Load Adonis Refine LoRA",
+      "pos": [
+        3240,
+        540
+      ],
+      "size": [
+        500,
+        140
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 12
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "lora_name"
+          }
+        },
+        {
+          "name": "strength_model",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "strength_model"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoaderModelOnly",
+        "hoi4_group": "02 Separate model loaders"
+      },
+      "widgets_values": [
+        "adonis_refine.safetensors",
+        1.0
+      ]
+    },
+    {
+      "id": 17,
+      "type": "ImageScaleToTotalPixelsX",
+      "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos",
+      "pos": [
+        4000,
         100
       ],
       "size": [
-        860,
-        1120
+        400,
+        240
       ],
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 5,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
-          "name": "base_model",
-          "type": "MODEL",
-          "link": 2
-        },
-        {
-          "name": "refine_model",
-          "type": "MODEL",
-          "link": 3
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 4
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 5
-        },
-        {
           "name": "image",
           "type": "IMAGE",
-          "link": 6
-        },
-        {
-          "name": "enabled",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "enabled"
-          }
-        },
-        {
-          "name": "prompt",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "prompt"
-          }
-        },
-        {
-          "name": "noise_seed",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "noise_seed"
-          }
+          "link": 13
         },
         {
           "name": "megapixels",
@@ -507,6 +965,529 @@
           "widget": {
             "name": "upscale_method"
           }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            22
+          ]
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScaleToTotalPixelsX",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": [
+        1.7,
+        16,
+        "crop",
+        "lanczos"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CLIPTextEncode",
+      "title": "Adonis positive prompt — uhdmanscale",
+      "pos": [
+        4000,
+        400
+      ],
+      "size": [
+        440,
+        260
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 14
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            15,
+            18
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": [
+        "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image."
+      ]
+    },
+    {
+      "id": 19,
+      "type": "ConditioningZeroOut",
+      "title": "Zero negative conditioning",
+      "pos": [
+        4000,
+        720
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ConditioningZeroOut",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 20,
+      "type": "VAEEncode",
+      "title": "Encode restored reference latent",
+      "pos": [
+        4480,
+        100
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 16
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            19,
+            21
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "ReferenceLatent",
+      "title": "Positive reference latent",
+      "pos": [
+        4480,
+        260
+      ],
+      "size": [
+        320,
+        100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 18
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "ReferenceLatent",
+      "title": "Negative reference latent",
+      "pos": [
+        4480,
+        420
+      ],
+      "size": [
+        320,
+        100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 20
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "EmptyFlux2LatentImage",
+      "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process",
+      "pos": [
+        4480,
+        580
+      ],
+      "size": [
+        360,
+        180
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 22,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 23,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "batch_size"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyFlux2LatentImage",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1
+      ]
+    },
+    {
+      "id": 24,
+      "type": "SharkOptions_Beta",
+      "title": "Adonis RES4LYF options — exact upstream",
+      "pos": [
+        4820,
+        100
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise_type_init",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "noise_type_init"
+          }
+        },
+        {
+          "name": "s_noise_init",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "s_noise_init"
+          }
+        },
+        {
+          "name": "denoise_alt",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "denoise_alt"
+          }
+        },
+        {
+          "name": "channelwise_cfg",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "channelwise_cfg"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "options",
+          "type": "OPTIONS",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SharkOptions_Beta",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": [
+        "laplacian",
+        1.0,
+        1.0,
+        false
+      ]
+    },
+    {
+      "id": 25,
+      "type": "PrimitiveInt",
+      "title": "Shared Adonis seed",
+      "pos": [
+        4860,
+        340
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "value"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            30,
+            34
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PrimitiveInt",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": [
+        42
+      ]
+    },
+    {
+      "id": 26,
+      "type": "PrimitiveInt",
+      "title": "Total Adonis steps",
+      "pos": [
+        4860,
+        500
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "value"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            29,
+            33
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PrimitiveInt",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": [
+        9
+      ]
+    },
+    {
+      "id": 27,
+      "type": "ClownsharKSampler_Beta",
+      "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)",
+      "pos": [
+        5240,
+        100
+      ],
+      "size": [
+        500,
+        1100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 24
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 25
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 26
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 27
+        },
+        {
+          "name": "options",
+          "type": "OPTIONS",
+          "link": 28
         },
         {
           "name": "eta",
@@ -517,35 +1498,35 @@
           }
         },
         {
-          "name": "sampling_algorithm",
-          "type": "STRING",
+          "name": "sampler_name",
+          "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "sampling_algorithm"
+            "name": "sampler_name"
           }
         },
         {
           "name": "scheduler",
-          "type": "STRING",
+          "type": "COMBO",
           "link": null,
           "widget": {
             "name": "scheduler"
           }
         },
         {
-          "name": "total_steps",
+          "name": "steps",
           "type": "INT",
-          "link": null,
+          "link": 29,
           "widget": {
-            "name": "total_steps"
+            "name": "steps"
           }
         },
         {
-          "name": "base_steps_to_run",
+          "name": "steps_to_run",
           "type": "INT",
           "link": null,
           "widget": {
-            "name": "base_steps_to_run"
+            "name": "steps_to_run"
           }
         },
         {
@@ -565,51 +1546,27 @@
           }
         },
         {
-          "name": "base_sampling_mode",
+          "name": "seed",
+          "type": "INT",
+          "link": 30,
+          "widget": {
+            "name": "seed"
+          }
+        },
+        {
+          "name": "control_after_generate",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "base_sampling_mode"
+            "name": "control_after_generate"
           }
         },
         {
-          "name": "refine_sampling_mode",
+          "name": "sampler_mode",
           "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "refine_sampling_mode"
-          }
-        },
-        {
-          "name": "noise_type",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "noise_type"
-          }
-        },
-        {
-          "name": "initial_noise_scale",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "initial_noise_scale"
-          }
-        },
-        {
-          "name": "alternate_denoise",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "alternate_denoise"
-          }
-        },
-        {
-          "name": "channelwise_cfg",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "channelwise_cfg"
+            "name": "sampler_mode"
           }
         },
         {
@@ -623,31 +1580,28 @@
       ],
       "outputs": [
         {
-          "name": "restored",
-          "type": "IMAGE",
+          "name": "output",
+          "type": "LATENT",
           "links": [
-            7,
-            12
+            32
           ]
         },
         {
-          "name": "preprocessed",
-          "type": "IMAGE",
+          "name": "denoised",
+          "type": "LATENT",
+          "links": null
+        },
+        {
+          "name": "options",
+          "type": "OPTIONS",
           "links": null
         }
       ],
       "properties": {
-        "Node name for S&R": "Hoi4AdonisRestoration",
-        "hoi4_stage": "02 Exact Adonis restoration"
+        "Node name for S&R": "ClownsharKSampler_Beta",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
       },
       "widgets_values": [
-        true,
-        "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image.",
-        42,
-        1.7,
-        16,
-        "crop",
-        "lanczos",
         0.8,
         "exponential/res_2s",
         "simple",
@@ -655,129 +1609,441 @@
         5,
         1.0,
         1.0,
+        42,
+        "fixed",
         "standard",
-        "resample",
-        "gaussian",
-        1.0,
-        1.0,
-        false,
         true
       ]
     },
     {
-      "id": 7,
-      "type": "Hoi4FinalOutput",
-      "title": "Centered master + game crop (no style LoRA)",
+      "id": 28,
+      "type": "ClownsharKSampler_Beta",
+      "title": "Adonis Refine — live RES4LYF sampler (remaining steps)",
       "pos": [
-        4320,
+        5800,
         100
       ],
       "size": [
-        600,
-        500
+        500,
+        1100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 31
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": null
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": null
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 32
+        },
+        {
+          "name": "options",
+          "type": "OPTIONS",
+          "link": null
+        },
+        {
+          "name": "eta",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "eta"
+          }
+        },
+        {
+          "name": "sampler_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "sampler_name"
+          }
+        },
+        {
+          "name": "scheduler",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "scheduler"
+          }
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "link": 33,
+          "widget": {
+            "name": "steps"
+          }
+        },
+        {
+          "name": "steps_to_run",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "steps_to_run"
+          }
+        },
+        {
+          "name": "cfg",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "cfg"
+          }
+        },
+        {
+          "name": "denoise",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "denoise"
+          }
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": 34,
+          "widget": {
+            "name": "seed"
+          }
+        },
+        {
+          "name": "control_after_generate",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "control_after_generate"
+          }
+        },
+        {
+          "name": "sampler_mode",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "sampler_mode"
+          }
+        },
+        {
+          "name": "bongmath",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "bongmath"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            35
+          ]
+        },
+        {
+          "name": "denoised",
+          "type": "LATENT",
+          "links": null
+        },
+        {
+          "name": "options",
+          "type": "OPTIONS",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ClownsharKSampler_Beta",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": [
+        0.8,
+        "exponential/res_2s",
+        "simple",
+        9,
+        -1,
+        1.0,
+        1.0,
+        42,
+        "fixed",
+        "resample",
+        true
+      ]
+    },
+    {
+      "id": 29,
+      "type": "VAEDecode",
+      "title": "Decode Adonis Refine output",
+      "pos": [
+        5800,
+        1280
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 35
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 30,
+      "type": "ComfySwitchNode",
+      "title": "Use Adonis restoration",
+      "pos": [
+        6160,
+        1280
+      ],
+      "size": [
+        360,
+        160
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "switch"
+          }
+        },
+        {
+          "name": "on_false",
+          "type": "IMAGE",
+          "link": 37
+        },
+        {
+          "name": "on_true",
+          "type": "IMAGE",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            39,
+            45
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ComfySwitchNode",
+        "hoi4_group": "03 Adonis Base → Refine — expanded upstream graph"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 31,
+      "type": "ImageScale",
+      "title": "Restored master — centered 1024×1365 crop",
+      "pos": [
+        6660,
+        100
+      ],
+      "size": [
+        400,
+        180
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 6,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 7
+          "link": 39
         },
         {
-          "name": "use_background",
-          "type": "BOOLEAN",
+          "name": "upscale_method",
+          "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "use_background"
+            "name": "upscale_method"
           }
         },
         {
-          "name": "background_model",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "background_model"
-          }
-        },
-        {
-          "name": "master_width",
+          "name": "width",
           "type": "INT",
           "link": null,
           "widget": {
-            "name": "master_width"
+            "name": "width"
           }
         },
         {
-          "name": "master_height",
+          "name": "height",
           "type": "INT",
           "link": null,
           "widget": {
-            "name": "master_height"
+            "name": "height"
           }
         },
         {
-          "name": "game_width",
-          "type": "INT",
+          "name": "crop",
+          "type": "COMBO",
           "link": null,
           "widget": {
-            "name": "game_width"
+            "name": "crop"
           }
-        },
-        {
-          "name": "game_height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "game_height"
-          }
-        },
-        {
-          "name": "background",
-          "type": "IMAGE",
-          "link": null
         }
       ],
       "outputs": [
         {
-          "name": "master_1024x1365",
+          "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            8
-          ]
-        },
-        {
-          "name": "game_156x210",
-          "type": "IMAGE",
-          "links": [
-            9,
-            10,
-            13
+            40,
+            41
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "Hoi4FinalOutput",
-        "hoi4_stage": "03 Outputs + comparison"
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Visible sizing, saves, comparison"
       },
       "widgets_values": [
-        false,
-        "birefnet.safetensors",
+        "lanczos",
         1024,
         1365,
-        156,
-        210
+        "center"
       ]
     },
     {
-      "id": 8,
+      "id": 32,
+      "type": "ImageScale",
+      "title": "Restored game — centered 156×210 crop",
+      "pos": [
+        7120,
+        100
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 40
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            42,
+            43,
+            46
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Visible sizing, saves, comparison"
+      },
+      "widgets_values": [
+        "lanczos",
+        156,
+        210,
+        "center"
+      ]
+    },
+    {
+      "id": 33,
       "type": "SaveImage",
       "title": "Save restored master PNG",
       "pos": [
-        4960,
+        7580,
         100
       ],
       "size": [
@@ -787,13 +2053,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 7,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 8
+          "link": 41
         },
         {
           "name": "filename_prefix",
@@ -813,19 +2079,19 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_stage": "03 Outputs + comparison"
+        "hoi4_group": "04 Visible sizing, saves, comparison"
       },
       "widgets_values": [
         "1024x1365/processing_only"
       ]
     },
     {
-      "id": 9,
+      "id": 34,
       "type": "SaveImage",
       "title": "Save restored game PNG",
       "pos": [
-        5420,
-        100
+        7580,
+        310
       ],
       "size": [
         420,
@@ -834,13 +2100,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 8,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 9
+          "link": 42
         },
         {
           "name": "filename_prefix",
@@ -860,19 +2126,19 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_stage": "03 Outputs + comparison"
+        "hoi4_group": "04 Visible sizing, saves, comparison"
       },
       "widgets_values": [
         "156x210/processing_only"
       ]
     },
     {
-      "id": 10,
+      "id": 35,
       "type": "Hoi4SaveDDS",
       "title": "Save restored game DDS",
       "pos": [
-        5880,
-        100
+        7580,
+        520
       ],
       "size": [
         420,
@@ -881,13 +2147,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 9,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 10
+          "link": 43
         },
         {
           "name": "filename_prefix",
@@ -915,7 +2181,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_stage": "03 Outputs + comparison"
+        "hoi4_group": "04 Visible sizing, saves, comparison"
       },
       "widgets_values": [
         "156x210/dds/processing_only",
@@ -923,12 +2189,12 @@
       ]
     },
     {
-      "id": 11,
+      "id": 36,
       "type": "PreviewImage",
       "title": "RealESRGAN",
       "pos": [
-        4320,
-        760
+        6660,
+        900
       ],
       "size": [
         600,
@@ -937,13 +2203,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 10,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 11
+          "link": 44
         }
       ],
       "outputs": [
@@ -955,17 +2221,17 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_stage": "03 Outputs + comparison"
+        "hoi4_group": "04 Visible sizing, saves, comparison"
       },
       "widgets_values": []
     },
     {
-      "id": 12,
+      "id": 37,
       "type": "PreviewImage",
       "title": "Adonis Base → Refine",
       "pos": [
-        4980,
-        760
+        7320,
+        900
       ],
       "size": [
         600,
@@ -974,13 +2240,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 11,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 12
+          "link": 45
         }
       ],
       "outputs": [
@@ -992,17 +2258,17 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_stage": "03 Outputs + comparison"
+        "hoi4_group": "04 Visible sizing, saves, comparison"
       },
       "widgets_values": []
     },
     {
-      "id": 13,
+      "id": 38,
       "type": "PreviewImage",
       "title": "Final 156×210",
       "pos": [
-        5640,
-        760
+        7980,
+        900
       ],
       "size": [
         600,
@@ -1011,13 +2277,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 12,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 13
+          "link": 46
         }
       ],
       "outputs": [
@@ -1029,7 +2295,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_stage": "03 Outputs + comparison"
+        "hoi4_group": "04 Visible sizing, saves, comparison"
       },
       "widgets_values": []
     }
@@ -1037,110 +2303,450 @@
   "links": [
     [
       1,
+      4,
+      0,
+      5,
+      0,
+      "FACE_DETECTION_MODEL"
+    ],
+    [
+      2,
       3,
       0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      6,
+      0,
+      7,
+      0,
+      "BACKGROUND_REMOVAL"
+    ],
+    [
       4,
+      3,
+      0,
+      7,
+      1,
+      "IMAGE"
+    ],
+    [
+      5,
+      3,
+      0,
+      8,
       0,
       "IMAGE"
     ],
     [
-      2,
+      6,
       5,
       1,
-      6,
+      8,
+      1,
+      "BOUNDING_BOX"
+    ],
+    [
+      7,
+      7,
+      0,
+      8,
+      2,
+      "MASK"
+    ],
+    [
+      8,
+      9,
+      0,
+      10,
+      0,
+      "UPSCALE_MODEL"
+    ],
+    [
+      9,
+      8,
+      0,
+      10,
+      1,
+      "IMAGE"
+    ],
+    [
+      10,
+      10,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      12,
+      0,
+      15,
       0,
       "MODEL"
     ],
     [
-      3,
-      5,
-      2,
-      6,
-      1,
+      12,
+      12,
+      0,
+      16,
+      0,
       "MODEL"
     ],
     [
-      4,
-      5,
-      3,
-      6,
-      2,
+      13,
+      11,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      13,
+      0,
+      18,
+      0,
       "CLIP"
     ],
     [
-      5,
-      5,
-      4,
-      6,
-      3,
+      15,
+      18,
+      0,
+      19,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      16,
+      17,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      14,
+      0,
+      20,
+      1,
       "VAE"
     ],
     [
-      6,
-      4,
+      18,
+      18,
+      0,
+      21,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      19,
+      20,
+      0,
+      21,
+      1,
+      "LATENT"
+    ],
+    [
+      20,
+      19,
+      0,
+      22,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      21,
+      20,
+      0,
+      22,
+      1,
+      "LATENT"
+    ],
+    [
+      22,
+      17,
+      1,
+      23,
+      0,
+      "INT"
+    ],
+    [
+      23,
+      17,
       2,
-      6,
-      4,
-      "IMAGE"
-    ],
-    [
-      7,
-      6,
-      0,
-      7,
-      0,
-      "IMAGE"
-    ],
-    [
-      8,
-      7,
-      0,
-      8,
-      0,
-      "IMAGE"
-    ],
-    [
-      9,
-      7,
+      23,
       1,
-      9,
-      0,
-      "IMAGE"
+      "INT"
     ],
     [
-      10,
-      7,
+      24,
+      15,
+      0,
+      27,
+      0,
+      "MODEL"
+    ],
+    [
+      25,
+      21,
+      0,
+      27,
       1,
-      10,
-      0,
-      "IMAGE"
+      "CONDITIONING"
     ],
     [
-      11,
-      4,
+      26,
+      22,
+      0,
+      27,
       2,
+      "CONDITIONING"
+    ],
+    [
+      27,
+      23,
+      0,
+      27,
+      3,
+      "LATENT"
+    ],
+    [
+      28,
+      24,
+      0,
+      27,
+      4,
+      "OPTIONS"
+    ],
+    [
+      29,
+      26,
+      0,
+      27,
+      8,
+      "INT"
+    ],
+    [
+      30,
+      25,
+      0,
+      27,
+      12,
+      "INT"
+    ],
+    [
+      31,
+      16,
+      0,
+      28,
+      0,
+      "MODEL"
+    ],
+    [
+      32,
+      27,
+      0,
+      28,
+      3,
+      "LATENT"
+    ],
+    [
+      33,
+      26,
+      0,
+      28,
+      8,
+      "INT"
+    ],
+    [
+      34,
+      25,
+      0,
+      28,
+      12,
+      "INT"
+    ],
+    [
+      35,
+      28,
+      0,
+      29,
+      0,
+      "LATENT"
+    ],
+    [
+      36,
+      14,
+      0,
+      29,
+      1,
+      "VAE"
+    ],
+    [
+      37,
       11,
       0,
-      "IMAGE"
-    ],
-    [
-      12,
-      6,
-      0,
-      12,
-      0,
-      "IMAGE"
-    ],
-    [
-      13,
-      7,
+      30,
       1,
-      13,
+      "IMAGE"
+    ],
+    [
+      38,
+      29,
+      0,
+      30,
+      2,
+      "IMAGE"
+    ],
+    [
+      39,
+      30,
+      0,
+      31,
+      0,
+      "IMAGE"
+    ],
+    [
+      40,
+      31,
+      0,
+      32,
+      0,
+      "IMAGE"
+    ],
+    [
+      41,
+      31,
+      0,
+      33,
+      0,
+      "IMAGE"
+    ],
+    [
+      42,
+      32,
+      0,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      43,
+      32,
+      0,
+      35,
+      0,
+      "IMAGE"
+    ],
+    [
+      44,
+      11,
+      0,
+      36,
+      0,
+      "IMAGE"
+    ],
+    [
+      45,
+      30,
+      0,
+      37,
+      0,
+      "IMAGE"
+    ],
+    [
+      46,
+      32,
+      0,
+      38,
       0,
       "IMAGE"
     ]
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": 1,
+      "title": "00 Notes",
+      "bounding": [
+        40,
+        40,
+        800,
+        2820
+      ],
+      "color": "#334155",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    },
+    {
+      "id": 2,
+      "title": "01 Source processing — every node visible",
+      "bounding": [
+        880,
+        40,
+        1800,
+        2820
+      ],
+      "color": "#365b41",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    },
+    {
+      "id": 3,
+      "title": "02 Separate model loaders",
+      "bounding": [
+        2680,
+        40,
+        1220,
+        2820
+      ],
+      "color": "#365b73",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    },
+    {
+      "id": 4,
+      "title": "03 Adonis Base → Refine — expanded upstream graph",
+      "bounding": [
+        3940,
+        40,
+        2620,
+        2820
+      ],
+      "color": "#765b35",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    },
+    {
+      "id": 5,
+      "title": "04 Visible sizing, saves, comparison",
+      "bounding": [
+        6600,
+        40,
+        2020,
+        2820
+      ],
+      "color": "#3d596f",
+      "font_size": 28,
+      "flags": {
+        "collapsed": false
+      }
+    }
+  ],
   "config": {},
   "extra": {
     "workflow_id": "hoi4_portrait_processing_only",

@@ -10,8 +10,8 @@ matches the user's VRAM:
 * ``fp8``  — ``flux-2-klein-9b-fp8.safetensors`` (16-20 GB VRAM)
 * ``gguf`` — a GGUF quantization loaded by ``UnetLoaderGGUF`` (8-16 GB VRAM)
 
-The compact workflow keeps variant selection inside ``Hoi4ModelStack``. This
-helper rewrites that card's ``diffusion_model`` value in installed copies.
+Each workflow keeps its diffusion-model loader visible. This helper rewrites
+that node between ``UNETLoader`` and ``UnetLoaderGGUF`` in installed copies.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 FULL_MODEL = "flux-2-klein-9b.safetensors"
 FP8_MODEL = "flux-2-klein-9b-fp8.safetensors"
 GGUF_QUANTS = ("Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0")
-LOADER_CLASSES = {"Hoi4ModelStack", "UNETLoader", "UnetLoaderGGUF"}
+LOADER_CLASSES = {"UNETLoader", "UnetLoaderGGUF"}
 WORKFLOW_IDS = (
     "hoi4_portrait_flux2_klein_9b_source",
     "hoi4_portrait_flux2_klein_9b_text_to_image",
@@ -45,13 +45,6 @@ def _patch_ui(path: Path, model_name: str, loader_class: str) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     for node in data.get("nodes", []):
         if node.get("type") not in LOADER_CLASSES:
-            continue
-        if node.get("type") == "Hoi4ModelStack":
-            widgets = list(node.get("widgets_values", []))
-            if not widgets:
-                raise ValueError(f"{path}: Hoi4ModelStack has no diffusion_model widget")
-            widgets[0] = model_name
-            node["widgets_values"] = widgets
             continue
         node["type"] = loader_class
         node.setdefault("properties", {})["Node name for S&R"] = loader_class
@@ -86,9 +79,6 @@ def _patch_api(path: Path, model_name: str, loader_class: str) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     for node in data.values():
         if not isinstance(node, dict) or node.get("class_type") not in LOADER_CLASSES:
-            continue
-        if node.get("class_type") == "Hoi4ModelStack":
-            node.setdefault("inputs", {})["diffusion_model"] = model_name
             continue
         node["class_type"] = loader_class
         node["inputs"] = {k: v for k, v in node.get("inputs", {}).items() if k != "weight_dtype"}

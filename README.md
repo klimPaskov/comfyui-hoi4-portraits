@@ -126,10 +126,11 @@ ComfyUI registry with all required node classes present.
 1. **Source and ESRGAN:** load the portrait, confirm the large source preview,
    tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then inspect the
    dedicated ESRGAN preview.
-2. **Restoration:** the compact restoration card follows the upstream
+2. **Restoration:** the fully visible restoration group follows the upstream
    [`Adonis_Workflow.json`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/Adonis_Workflow.json)
-   topology: 1.7 MP Lanczos crop, Qwen 3 8B Q8 GGUF, Adonis Base for the first
-   five steps, and Adonis Refine for the remainder of a nine-step RES4LYF
+   topology: 1.7 MP Lanczos crop, Qwen 3 8B Q8 GGUF, a visible Adonis Base
+   sampler for the first
+   five steps, and a visible Adonis Refine sampler for the remainder of a nine-step RES4LYF
    schedule. The switch opens enabled; bypass it for a direct ESRGAN input.
 3. **Style:** three independent candidates use the exact 2500-step LoRA. Each
    candidate has one advanced live sampler card with CFG `1`, guidance `1`,

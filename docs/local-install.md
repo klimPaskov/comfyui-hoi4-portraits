@@ -47,15 +47,15 @@ python scripts/apply_variant.py --comfyui-root /path/to/ComfyUI --variant fp8
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 ```
 
-The setup script changes the `diffusion_model` field on every installed
-**HOI4 Distilled Model Stack** card:
+The setup script changes the visible diffusion-model loader in every installed
+workflow:
 
 - `--variant full` → `flux-2-klein-9b.safetensors`
 - `--variant fp8` → `flux-2-klein-9b-fp8.safetensors`
 - `--variant gguf --gguf-quants Q5_K_M` → the selected
   `flux-2-klein-9b-*.gguf` quantization
 
-The card uses the native safetensors loader or the pinned
+The workflow uses the native safetensors loader or the pinned
 [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) diffusion loader at
 runtime according to the filename.
 

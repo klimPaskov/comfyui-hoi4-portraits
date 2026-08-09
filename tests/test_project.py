@@ -29,16 +29,17 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {29, 10, 13, 14})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {61, 16, 38, 40})
 
-    def test_every_node_stays_visible_without_collapsible_groups(self) -> None:
+    def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
             path = WORKFLOW_DIR / f"{workflow_id}.json"
             ui = json.loads(path.read_text())
-            self.assertEqual(ui["groups"], [], path.name)
+            self.assertTrue(ui["groups"], path.name)
+            self.assertTrue(all(group["flags"] == {"collapsed": False} for group in ui["groups"]))
             self.assertNotIn("definitions", ui, path.name)
 
-    def test_exact_prompts_and_compact_logical_cards(self) -> None:
+    def test_exact_prompts_and_only_focused_custom_nodes(self) -> None:
         source = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text())
         text = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_text_to_image.api.json").read_text())
         source_samplers = [node for node in source.values() if node["class_type"] == "Hoi4PortraitSampler"]
@@ -52,8 +53,11 @@ class WorkflowTests(unittest.TestCase):
                 [sampler["inputs"][name] for name in ("steps", "cfg", "guidance", "sampling_algorithm", "scheduler")],
                 [4, 1.0, 1.0, "euler", "simple"],
             )
-        self.assertEqual(sum(node["class_type"] == "Hoi4ModelStack" for node in source.values()), 1)
-        self.assertFalse(any(node["class_type"] in {"UNETLoader", "UnetLoaderGGUF", "ImageUpscaleWithModel"} for node in source.values()))
+        forbidden = {"Hoi4ModelStack", "Hoi4SourcePrep", "Hoi4AdonisRestoration", "Hoi4FinalOutput"}
+        self.assertFalse(any(node["class_type"] in forbidden for node in source.values()))
+        for required in ("UNETLoader", "ClipLoaderGGUF", "VAELoader", "ImageUpscaleWithModel"):
+            self.assertEqual(sum(node["class_type"] == required for node in source.values()), 1, required)
+        self.assertEqual(sum(node["class_type"] == "LoraLoaderModelOnly" for node in source.values()), 3)
 
     def test_source_comparison_and_outputs_are_exact(self) -> None:
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.json").read_text())
@@ -64,39 +68,30 @@ class WorkflowTests(unittest.TestCase):
         titles = {node["title"] for node in previews}
         self.assertTrue({"Source preview", "RealESRGAN prepared crop", "Adonis Base → Refine restored"}.issubset(titles))
         self.assertEqual(sum(title.startswith("Final candidate") for title in titles), 3)
-        finals = [node for node in api.values() if node["class_type"] == "Hoi4FinalOutput"]
-        self.assertEqual(len(finals), 3)
-        for node in finals:
-            self.assertEqual(
-                [node["inputs"][key] for key in ("master_width", "master_height", "game_width", "game_height")],
-                [1024, 1365, 156, 210],
-            )
+        masters = [node for node in api.values() if node["class_type"] == "ImageScale" and "master" in node["_meta"]["title"]]
+        games = [node for node in api.values() if node["class_type"] == "ImageScale" and "game" in node["_meta"]["title"]]
+        self.assertEqual(len(masters), 3)
+        self.assertEqual(len(games), 3)
+        self.assertTrue(all([node["inputs"]["width"], node["inputs"]["height"], node["inputs"]["crop"]] == [1024, 1365, "center"] for node in masters))
+        self.assertTrue(all([node["inputs"]["width"], node["inputs"]["height"], node["inputs"]["crop"]] == [156, 210, "center"] for node in games))
         dds = [node for node in api.values() if node["class_type"] == "Hoi4SaveDDS"]
         self.assertEqual(len(dds), 3)
         self.assertTrue(all(node["inputs"]["compression"] == "dxt5" for node in dds))
 
     def test_adonis_defaults_match_the_upstream_base_refine_graph(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_processing_only.api.json").read_text())
-        restore = next(node for node in api.values() if node["class_type"] == "Hoi4AdonisRestoration")
-        expected = {
-            "prompt": build_workflows.RESTORATION_PROMPT,
-            "megapixels": 1.7,
-            "multiple_of": 16,
-            "resize_mode": "crop",
-            "upscale_method": "lanczos",
-            "eta": 0.8,
-            "sampling_algorithm": "exponential/res_2s",
-            "scheduler": "simple",
-            "total_steps": 9,
-            "base_steps_to_run": 5,
-            "base_sampling_mode": "standard",
-            "refine_sampling_mode": "resample",
-            "noise_type": "gaussian",
-            "channelwise_cfg": False,
-            "bongmath": True,
-        }
-        for key, value in expected.items():
-            self.assertEqual(restore["inputs"][key], value, key)
+        scale = next(node for node in api.values() if node["class_type"] == "ImageScaleToTotalPixelsX")
+        self.assertEqual([scale["inputs"][key] for key in ("megapixels", "multiple_of", "resize_mode", "upscale_method")], [1.7, 16, "crop", "lanczos"])
+        options = next(node for node in api.values() if node["class_type"] == "SharkOptions_Beta")
+        self.assertEqual([options["inputs"][key] for key in ("noise_type_init", "s_noise_init", "denoise_alt", "channelwise_cfg")], ["laplacian", 1.0, 1.0, False])
+        samplers = [node for node in api.values() if node["class_type"] == "ClownsharKSampler_Beta"]
+        self.assertEqual(len(samplers), 2)
+        base = next(node for node in samplers if "Base" in node["_meta"]["title"])
+        refine = next(node for node in samplers if "Refine" in node["_meta"]["title"])
+        self.assertEqual([base["inputs"][key] for key in ("eta", "sampler_name", "scheduler", "steps_to_run", "cfg", "denoise", "sampler_mode", "bongmath")], [0.8, "exponential/res_2s", "simple", 5, 1.0, 1.0, "standard", True])
+        self.assertEqual([refine["inputs"][key] for key in ("eta", "sampler_name", "scheduler", "steps_to_run", "cfg", "denoise", "sampler_mode", "bongmath")], [0.8, "exponential/res_2s", "simple", -1, 1.0, 1.0, "resample", True])
+        self.assertNotIn("positive", refine["inputs"])
+        self.assertNotIn("negative", refine["inputs"])
 
     def test_batch_has_one_sampler_and_all_three_output_types(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.api.json").read_text())
@@ -131,7 +126,7 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue((comfy_root / "input/hoi4_portraits_batch").is_dir())
             self.assertTrue((comfy_root / "output/156x210/dds").is_dir())
 
-    def test_variant_selector_patches_the_model_stack_and_preserves_personal_files(self) -> None:
+    def test_variant_selector_patches_visible_model_loader_and_preserves_personal_files(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             comfy_root = self._comfy_root(directory)
             self.assertEqual(install_workflows.main(["--comfyui-root", str(comfy_root)]), 0)
@@ -144,11 +139,11 @@ class InstallerTests(unittest.TestCase):
             )
             self.assertEqual(result, 0)
             source = json.loads((target / "hoi4_portrait_flux2_klein_9b_source.json").read_text())
-            stack = next(node for node in source["nodes"] if node["type"] == "Hoi4ModelStack")
-            self.assertEqual(stack["widgets_values"][0], "flux-2-klein-9b-fp8.safetensors")
+            loader = next(node for node in source["nodes"] if node["type"] == "UNETLoader")
+            self.assertEqual(loader["widgets_values"][0], "flux-2-klein-9b-fp8.safetensors")
             gguf = json.loads((target / "hoi4_portrait_flux2_klein_9b_source_gguf.json").read_text())
-            gguf_stack = next(node for node in gguf["nodes"] if node["type"] == "Hoi4ModelStack")
-            self.assertEqual(gguf_stack["widgets_values"][0], "flux-2-klein-9b-Q5_K_M.gguf")
+            gguf_loader = next(node for node in gguf["nodes"] if node["type"] == "UnetLoaderGGUF")
+            self.assertEqual(gguf_loader["widgets_values"][0], "flux-2-klein-9b-Q5_K_M.gguf")
             self.assertEqual(personal.read_bytes(), before)
 
 
@@ -173,11 +168,12 @@ class CustomNodeTests(unittest.TestCase):
         spec.loader.exec_module(module)
         return module
 
-    def test_center_crop_and_final_output_never_stretch(self) -> None:
+    def test_center_crop_never_stretches(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             module = self._load_module(Path(directory))
             image = torch.linspace(0, 1, 300).view(1, 1, 300, 1).repeat(1, 100, 1, 3)
-            master, game = module.Hoi4FinalOutput().finish(image, False, "birefnet.safetensors", 1024, 1365, 156, 210)
+            master = module._resize_center_crop(image, 1024, 1365)
+            game = module._resize_center_crop(master, 156, 210)
             self.assertEqual(tuple(master.shape), (1, 1365, 1024, 3))
             self.assertEqual(tuple(game.shape), (1, 210, 156, 3))
             self.assertGreater(float(game.std()), 0.05)
@@ -199,8 +195,10 @@ class CustomNodeTests(unittest.TestCase):
     def test_batch_input_returns_list_items_for_one_by_one_execution(self) -> None:
         source = (ROOT / "custom_nodes/hoi4_portraits/__init__.py").read_text()
         self.assertIn("OUTPUT_IS_LIST = (True, True, True)", source)
-        self.assertIn('"Hoi4ModelStack": Hoi4ModelStack', source)
-        self.assertIn('"Hoi4FinalOutput": Hoi4FinalOutput', source)
+        self.assertNotIn('"Hoi4ModelStack": Hoi4ModelStack', source)
+        self.assertNotIn('"Hoi4FinalOutput": Hoi4FinalOutput', source)
+        self.assertIn('"Hoi4PortraitSampler": Hoi4PortraitSampler', source)
+        self.assertIn('"Hoi4BackgroundReplace": Hoi4BackgroundReplace', source)
 
 
 if __name__ == "__main__":

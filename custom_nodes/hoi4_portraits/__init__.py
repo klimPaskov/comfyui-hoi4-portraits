@@ -204,6 +204,15 @@ class AdaptivePortraitCrop:
                 "image": ("IMAGE",),
                 "face_bboxes": ("BOUNDING_BOX",),
                 "subject_mask": ("MASK",),
+                "face_processing": (
+                    "BOOLEAN",
+                    {"default": True, "label_on": "use detected face", "label_off": "use centered crop"},
+                ),
+                "use_manual_crop": ("BOOLEAN", {"default": False}),
+                "manual_x": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01, "advanced": True}),
+                "manual_y": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01, "advanced": True}),
+                "manual_width": ("FLOAT", {"default": 1.0, "min": 0.05, "max": 1.0, "step": 0.01, "advanced": True}),
+                "manual_height": ("FLOAT", {"default": 1.0, "min": 0.05, "max": 1.0, "step": 0.01, "advanced": True}),
                 "zoom": (
                     "FLOAT",
                     {
@@ -223,6 +232,26 @@ class AdaptivePortraitCrop:
                         "tooltip": "When enabled, the subject silhouette protects the complete hat or headwear. Disable it for a normal face-led crop that may cut oversized headwear.",
                     },
                 ),
+                "output_width": (
+                    "INT",
+                    {
+                        "default": 1024,
+                        "min": 64,
+                        "max": 8192,
+                        "step": 1,
+                        "tooltip": "Crop width before RealESRGAN. The public workflows use 512 for a true 2× preparation pass.",
+                    },
+                ),
+                "output_height": (
+                    "INT",
+                    {
+                        "default": 1365,
+                        "min": 64,
+                        "max": 8192,
+                        "step": 1,
+                        "tooltip": "Crop height before RealESRGAN. The public workflows use 683 for a true 2× preparation pass.",
+                    },
+                ),
             }
         }
 
@@ -232,7 +261,31 @@ class AdaptivePortraitCrop:
     CATEGORY = "image/transform"
     DESCRIPTION = "Adaptive head-and-shoulders crop with optional headwear preservation."
 
-    def crop(self, image, face_bboxes, subject_mask, zoom, preserve_headwear=True):
+    def crop(
+        self,
+        image,
+        face_bboxes,
+        subject_mask,
+        face_processing=True,
+        use_manual_crop=False,
+        manual_x=0.0,
+        manual_y=0.0,
+        manual_width=1.0,
+        manual_height=1.0,
+        zoom=0.9,
+        preserve_headwear=True,
+        output_width=1024,
+        output_height=1365,
+    ):
+        if bool(use_manual_crop):
+            height, width = int(image.shape[1]), int(image.shape[2])
+            left = min(width - 1, max(0, round(float(manual_x) * width)))
+            top = min(height - 1, max(0, round(float(manual_y) * height)))
+            right = min(width, max(left + 1, round((float(manual_x) + float(manual_width)) * width)))
+            bottom = min(height, max(top + 1, round((float(manual_y) + float(manual_height)) * height)))
+            return (_resize_center_crop(image[:, top:bottom, left:right, :], int(output_width), int(output_height)),)
+        if not bool(face_processing):
+            return (_resize_center_crop(image, int(output_width), int(output_height)),)
         if not isinstance(face_bboxes, list):
             face_bboxes = [[face_bboxes]]
         elif face_bboxes and isinstance(face_bboxes[0], dict):
@@ -255,7 +308,13 @@ class AdaptivePortraitCrop:
             )
             left, top, right, bottom = box
             crop = frame[top:bottom, left:right, :].permute(2, 0, 1).unsqueeze(0)
-            resized = functional.interpolate(crop, size=(1365, 1024), mode="bicubic", align_corners=False, antialias=True)
+            resized = functional.interpolate(
+                crop,
+                size=(int(output_height), int(output_width)),
+                mode="bicubic",
+                align_corners=False,
+                antialias=True,
+            )
             outputs.append(resized.squeeze(0).permute(1, 2, 0))
         return (torch.stack(outputs).clamp(0, 1),)
 
@@ -304,198 +363,6 @@ class PortraitIdentityMask:
             mask = cv2.GaussianBlur(mask, (blur, blur), 0)
             masks.append(torch.from_numpy(mask))
         return (torch.stack(masks).clamp(0, 1),)
-
-
-class Hoi4ModelStack:
-    """Load the complete distilled FLUX.2 Klein stack on one logical card."""
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "diffusion_model": (
-                    "STRING",
-                    {
-                        "default": "flux-2-klein-9b.safetensors",
-                        "tooltip": "Distilled FLUX.2 Klein 9B only. The installer rewrites this to full, FP8, or the selected GGUF quant.",
-                    },
-                ),
-                "text_encoder": (
-                    "STRING",
-                    {"default": "Qwen3-8B-Q8_0.gguf"},
-                ),
-                "vae_name": ("STRING", {"default": "flux2-vae.safetensors"}),
-                "style_lora": (
-                    "STRING",
-                    {"default": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors"},
-                ),
-                "style_strength": (
-                    "FLOAT",
-                    {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.01},
-                ),
-                "load_restoration": (
-                    "BOOLEAN",
-                    {
-                        "default": True,
-                        "label_on": "load Adonis Base + Refine",
-                        "label_off": "style model only",
-                    },
-                ),
-                "adonis_base": ("STRING", {"default": "adonis_base.safetensors"}),
-                "adonis_refine": ("STRING", {"default": "adonis_refine.safetensors"}),
-                "weight_dtype": (
-                    ["default", "fp8_e4m3fn", "fp8_e4m3fn_fast", "fp8_e5m2"],
-                    {"default": "default", "advanced": True},
-                ),
-                "text_encoder_device": (
-                    ["default", "cpu"],
-                    {"default": "default", "advanced": True},
-                ),
-            }
-        }
-
-    RETURN_TYPES = ("MODEL", "MODEL", "MODEL", "CLIP", "VAE")
-    RETURN_NAMES = ("style_model", "adonis_base_model", "adonis_refine_model", "clip", "vae")
-    FUNCTION = "load"
-    CATEGORY = "HOI4 portraits/models"
-    DESCRIPTION = "One pinned distilled FLUX.2 Klein stack: model variant, Qwen Q8, VAE, step-2500 style LoRA, and Adonis Base/Refine."
-
-    def load(
-        self,
-        diffusion_model,
-        text_encoder,
-        vae_name,
-        style_lora,
-        style_strength,
-        load_restoration,
-        adonis_base,
-        adonis_refine,
-        weight_dtype="default",
-        text_encoder_device="default",
-    ):
-        import nodes
-
-        if "klein-base" in str(diffusion_model).casefold():
-            raise ValueError("Base FLUX.2 Klein checkpoints are unsupported; choose a distilled 9B variant.")
-        if str(diffusion_model).casefold().endswith(".gguf"):
-            model = _node_output_values(
-                _registered_node("UnetLoaderGGUF")().load_unet(str(diffusion_model))
-            )[0]
-        else:
-            model = nodes.UNETLoader().load_unet(str(diffusion_model), str(weight_dtype))[0]
-        clip_loader = _registered_node("ClipLoaderGGUF")()
-        clip = _node_output_values(
-            clip_loader.load_clip(str(text_encoder), "flux2", str(text_encoder_device))
-        )[0]
-        vae = nodes.VAELoader().load_vae(str(vae_name))[0]
-        style_model = (
-            nodes.LoraLoaderModelOnly().load_lora_model_only(
-                model, str(style_lora), float(style_strength)
-            )[0]
-            if float(style_strength) != 0.0
-            else model
-        )
-        if bool(load_restoration):
-            base_model = nodes.LoraLoaderModelOnly().load_lora_model_only(
-                model, str(adonis_base), 1.0
-            )[0]
-            refine_model = nodes.LoraLoaderModelOnly().load_lora_model_only(
-                model, str(adonis_refine), 1.0
-            )[0]
-        else:
-            base_model = refine_model = model
-        return style_model, base_model, refine_model, clip, vae
-
-
-class Hoi4SourcePrep:
-    """Face-aware crop and RealESRGAN on one card with inspectable outputs."""
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "image": ("IMAGE",),
-                "face_processing": (
-                    "BOOLEAN",
-                    {"default": True, "label_on": "face crop", "label_off": "center crop"},
-                ),
-                "face_zoom": (
-                    "FLOAT",
-                    {"default": 0.90, "min": 0.0, "max": 1.0, "step": 0.05},
-                ),
-                "preserve_headwear": (
-                    "BOOLEAN",
-                    {"default": True, "label_on": "preserve hat/headwear", "label_off": "face-led crop"},
-                ),
-                "use_manual_crop": ("BOOLEAN", {"default": False}),
-                "manual_x": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01, "advanced": True}),
-                "manual_y": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01, "advanced": True}),
-                "manual_width": ("FLOAT", {"default": 1.0, "min": 0.05, "max": 1.0, "step": 0.01, "advanced": True}),
-                "manual_height": ("FLOAT", {"default": 1.0, "min": 0.05, "max": 1.0, "step": 0.01, "advanced": True}),
-                "face_model": ("STRING", {"default": "mediapipe_face_fp32.safetensors", "advanced": True}),
-                "subject_model": ("STRING", {"default": "birefnet.safetensors", "advanced": True}),
-                "upscale_model": ("STRING", {"default": "RealESRGAN_x2plus.pth", "advanced": True}),
-            }
-        }
-
-    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE")
-    RETURN_NAMES = ("source", "crop", "esrgan")
-    FUNCTION = "prepare"
-    CATEGORY = "HOI4 portraits/processing"
-    DESCRIPTION = "One source-processing card: automatic/manual crop, headwear protection, and RealESRGAN. Outputs remain separately previewable."
-
-    def prepare(
-        self,
-        image,
-        face_processing,
-        face_zoom,
-        preserve_headwear,
-        use_manual_crop,
-        manual_x,
-        manual_y,
-        manual_width,
-        manual_height,
-        face_model,
-        subject_model,
-        upscale_model,
-    ):
-        if bool(use_manual_crop):
-            height, width = int(image.shape[1]), int(image.shape[2])
-            left = min(width - 1, max(0, round(float(manual_x) * width)))
-            top = min(height - 1, max(0, round(float(manual_y) * height)))
-            right = min(width, max(left + 1, round((float(manual_x) + float(manual_width)) * width)))
-            bottom = min(height, max(top + 1, round((float(manual_y) + float(manual_height)) * height)))
-            crop = _resize_center_crop(image[:, top:bottom, left:right, :], 1024, 1365)
-        elif bool(face_processing):
-            detector = _node_output_values(
-                _registered_node("LoadMediaPipeFaceLandmarker").execute(str(face_model))
-            )[0]
-            detected = _node_output_values(
-                _registered_node("MediaPipeFaceLandmarker").execute(
-                    detector, image, "both", 1, 0.35, "empty"
-                )
-            )
-            boxes = detected[1]
-            background_model = _node_output_values(
-                _registered_node("LoadBackgroundRemovalModel").execute(str(subject_model))
-            )[0]
-            subject_mask = _node_output_values(
-                _registered_node("RemoveBackground").execute(background_model, image)
-            )[0]
-            crop = AdaptivePortraitCrop().crop(
-                image, boxes, subject_mask, float(face_zoom), bool(preserve_headwear)
-            )[0]
-        else:
-            crop = _resize_center_crop(image, 1024, 1365)
-
-        upscale = _node_output_values(
-            _registered_node("UpscaleModelLoader").execute(str(upscale_model))
-        )[0]
-        upscaled = _node_output_values(
-            _registered_node("ImageUpscaleWithModel").execute(upscale, crop)
-        )[0]
-        esrgan = _resize_center_crop(upscaled, 1024, 1365)
-        return image, crop, esrgan
 
 
 class Hoi4PortraitSampler:
@@ -711,9 +578,9 @@ def _node_output_values(value: Any) -> tuple[Any, ...]:
     """Normalize V1 tuples/dicts and V3 ``NodeOutput`` values.
 
     The upstream Adonis graph mixes classic ComfyUI nodes with the V3
-    RES4LYF sampler. Keeping the adapter here lets the compact restoration
-    node execute the same graph on supported ComfyUI releases without
-    changing any sampling settings.
+    RES4LYF sampler. This adapter is shared by the focused custom nodes that
+    invoke registered ComfyUI operations while keeping the public workflow
+    topology expanded and inspectable.
     """
 
     if hasattr(value, "result"):
@@ -740,347 +607,54 @@ def _registered_node(class_type: str):
     return node_class
 
 
-class Hoi4AdonisRestoration:
-    """Compact execution of the upstream ``Adonis_Workflow.json`` sampler.
-
-    The visible card replaces the upstream 21-node subgraph, but the executed
-    topology is preserved: scale to 1.7 MP on a 16-pixel grid, encode the
-    source as a positive and zeroed-negative reference, start from an empty
-    FLUX.2 latent, run Adonis Base for five of nine RES4LYF steps, then run
-    the remaining steps with Adonis Refine in resample mode. RES4LYF supplies
-    ComfyUI's in-progress latent previews, so both phases remain visible while
-    this node runs.
-    """
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "base_model": ("MODEL",),
-                "refine_model": ("MODEL",),
-                "clip": ("CLIP",),
-                "vae": ("VAE",),
-                "image": ("IMAGE",),
-                "enabled": (
-                    "BOOLEAN",
-                    {
-                        "default": True,
-                        "label_on": "Adonis Base → Refine",
-                        "label_off": "bypass restoration",
-                        "tooltip": "Disable for a clean modern source that only needs the RealESRGAN preparation pass.",
-                    },
-                ),
-                "prompt": (
-                    "STRING",
-                    {
-                        "multiline": True,
-                        "dynamicPrompts": True,
-                        "default": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.",
-                        "tooltip": "The upstream Adonis restoration prompt. Keep 'uhdmanscale' at the beginning; add explicit object colours for monochrome sources when needed.",
-                    },
-                ),
-                "noise_seed": (
-                    "INT",
-                    {
-                        "default": 42,
-                        "min": 0,
-                        "max": 0xFFFFFFFFFFFFFFFF,
-                        "control_after_generate": True,
-                        "tooltip": "Shared seed used by the Adonis Base and Refine phases.",
-                    },
-                ),
-                "megapixels": (
-                    "FLOAT",
-                    {
-                        "default": 1.7,
-                        "min": 0.0,
-                        "max": 16.0,
-                        "step": 0.01,
-                        "tooltip": "Upstream Adonis preprocessing target. 1.7 MP is the exact workflow default.",
-                    },
-                ),
-                "multiple_of": (
-                    "INT",
-                    {
-                        "default": 16,
-                        "min": 1,
-                        "max": 128,
-                        "step": 1,
-                        "advanced": True,
-                    },
-                ),
-                "resize_mode": (["crop", "pad", "stretch"], {"default": "crop"}),
-                "upscale_method": (
-                    ["lanczos", "bicubic", "bilinear", "area", "nearest-exact"],
-                    {"default": "lanczos"},
-                ),
-                "eta": (
-                    "FLOAT",
-                    {
-                        "default": 0.8,
-                        "min": -100.0,
-                        "max": 100.0,
-                        "step": 0.01,
-                        "tooltip": "RES4LYF noise amount. 0.8 is the exact Adonis workflow value.",
-                    },
-                ),
-                "sampling_algorithm": (
-                    "STRING",
-                    {
-                        "default": "exponential/res_2s",
-                        "tooltip": "RES4LYF sampler name. The exact Adonis default is exponential/res_2s; advanced users may enter another installed RES4LYF sampler.",
-                    },
-                ),
-                "scheduler": (
-                    "STRING",
-                    {
-                        "default": "simple",
-                        "tooltip": "RES4LYF sigma scheduler. The exact Adonis workflow uses simple.",
-                    },
-                ),
-                "total_steps": (
-                    "INT",
-                    {
-                        "default": 9,
-                        "min": 1,
-                        "max": 10000,
-                        "tooltip": "Total shared schedule length for both restoration phases.",
-                    },
-                ),
-                "base_steps_to_run": (
-                    "INT",
-                    {
-                        "default": 5,
-                        "min": 1,
-                        "max": 10000,
-                        "tooltip": "The Base phase runs the first five steps; Refine completes the schedule.",
-                    },
-                ),
-                "cfg": (
-                    "FLOAT",
-                    {
-                        "default": 1.0,
-                        "min": -100.0,
-                        "max": 100.0,
-                        "step": 0.01,
-                    },
-                ),
-                "denoise": (
-                    "FLOAT",
-                    {
-                        "default": 1.0,
-                        "min": 0.0,
-                        "max": 1.0,
-                        "step": 0.01,
-                    },
-                ),
-                "base_sampling_mode": (["standard", "resample", "unsample"], {"default": "standard"}),
-                "refine_sampling_mode": (["resample", "standard", "unsample"], {"default": "resample"}),
-                "noise_type": (
-                    "STRING",
-                    {"default": "gaussian", "advanced": True},
-                ),
-                "initial_noise_scale": (
-                    "FLOAT",
-                    {"default": 1.0, "min": -10000.0, "max": 10000.0, "step": 0.01, "advanced": True},
-                ),
-                "alternate_denoise": (
-                    "FLOAT",
-                    {"default": 1.0, "min": -10000.0, "max": 10000.0, "step": 0.01, "advanced": True},
-                ),
-                "channelwise_cfg": ("BOOLEAN", {"default": False, "advanced": True}),
-                "bongmath": ("BOOLEAN", {"default": True, "advanced": True}),
-            }
-        }
-
-    RETURN_TYPES = ("IMAGE", "IMAGE")
-    RETURN_NAMES = ("restored", "preprocessed")
-    FUNCTION = "restore"
-    CATEGORY = "HOI4 portraits/restoration"
-    DESCRIPTION = (
-        "Exact compact execution of n8te0/adonis_flux2klein/Adonis_Workflow.json: "
-        "1.7 MP preprocessing, reference conditioning, Adonis Base then Refine, "
-        "and live RES4LYF sampling previews."
-    )
-
-    def restore(
-        self,
-        base_model,
-        refine_model,
-        clip,
-        vae,
-        image,
-        enabled,
-        prompt,
-        noise_seed,
-        megapixels,
-        multiple_of,
-        resize_mode,
-        upscale_method,
-        eta,
-        sampling_algorithm,
-        scheduler,
-        total_steps,
-        base_steps_to_run,
-        cfg,
-        denoise,
-        base_sampling_mode,
-        refine_sampling_mode,
-        noise_type,
-        initial_noise_scale,
-        alternate_denoise,
-        channelwise_cfg,
-        bongmath,
-    ):
-        import nodes
-
-        if not bool(enabled):
-            bypassed = _resize_center_crop(image, 1024, 1365)
-            return bypassed, bypassed
-
-        scale_node = _registered_node("ImageScaleToTotalPixelsX")()
-        scale_result = scale_node.upscale(
-            image=image,
-            upscale_method=upscale_method,
-            megapixels=float(megapixels),
-            multiple_of=int(multiple_of),
-            resize_mode=resize_mode,
-        )
-        preprocessed, width, height = _node_output_values(scale_result)[:3]
-
-        positive = nodes.CLIPTextEncode().encode(clip, prompt)[0]
-        negative = nodes.ConditioningZeroOut().zero_out(positive)[0]
-        reference = nodes.VAEEncode().encode(vae, preprocessed)[0]
-        reference_node = _registered_node("ReferenceLatent")
-        positive = _node_output_values(reference_node.execute(positive, reference))[0]
-        negative = _node_output_values(reference_node.execute(negative, reference))[0]
-        latent = _node_output_values(
-            _registered_node("EmptyFlux2LatentImage").execute(
-                int(width), int(height), batch_size=int(preprocessed.shape[0])
-            )
-        )[0]
-
-        options_node = _registered_node("SharkOptions_Beta")()
-        options = _node_output_values(
-            options_node.main(
-                noise_type_init=noise_type,
-                s_noise_init=float(initial_noise_scale),
-                denoise_alt=float(alternate_denoise),
-                channelwise_cfg=bool(channelwise_cfg),
-            )
-        )[0]
-        sampler = _registered_node("ClownsharKSampler_Beta")
-        base_latent = _node_output_values(
-            sampler.execute(
-                model=base_model,
-                positive=positive,
-                negative=negative,
-                latent_image=latent,
-                eta=float(eta),
-                sampler_name=str(sampling_algorithm),
-                scheduler=str(scheduler),
-                steps=int(total_steps),
-                steps_to_run=int(base_steps_to_run),
-                denoise=float(denoise),
-                cfg=float(cfg),
-                seed=int(noise_seed),
-                sampler_mode=base_sampling_mode,
-                bongmath=bool(bongmath),
-                options=options,
-            )
-        )[0]
-        refined_latent = _node_output_values(
-            sampler.execute(
-                model=refine_model,
-                positive=positive,
-                negative=negative,
-                latent_image=base_latent,
-                eta=float(eta),
-                sampler_name=str(sampling_algorithm),
-                scheduler=str(scheduler),
-                steps=int(total_steps),
-                steps_to_run=-1,
-                denoise=float(denoise),
-                cfg=float(cfg),
-                seed=int(noise_seed),
-                sampler_mode=refine_sampling_mode,
-                bongmath=bool(bongmath),
-                options=options,
-            )
-        )[0]
-        restored = nodes.VAEDecode().decode(vae, refined_latent)[0]
-        return restored, preprocessed
-
-
-class Hoi4FinalOutput:
-    """Optional subject-background composite plus exact master and game crops."""
+class Hoi4BackgroundReplace:
+    """One focused operation: optionally replace the generated background."""
 
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "image": ("IMAGE",),
+                "bg_removal_model": ("BACKGROUND_REMOVAL",),
                 "use_background": (
                     "BOOLEAN",
                     {
                         "default": False,
-                        "label_on": "composite supplied background",
+                        "label_on": "use supplied background",
                         "label_off": "keep generated background",
                     },
                 ),
-                "background_model": (
-                    "STRING",
-                    {"default": "birefnet.safetensors", "advanced": True},
-                ),
-                "master_width": ("INT", {"default": 1024, "min": 16, "max": 8192, "step": 1, "advanced": True}),
-                "master_height": ("INT", {"default": 1365, "min": 16, "max": 8192, "step": 1, "advanced": True}),
-                "game_width": ("INT", {"default": 156, "min": 16, "max": 2048, "step": 1}),
-                "game_height": ("INT", {"default": 210, "min": 16, "max": 2048, "step": 1}),
             },
             "optional": {"background": ("IMAGE",)},
         }
 
-    RETURN_TYPES = ("IMAGE", "IMAGE")
-    RETURN_NAMES = ("master_1024x1365", "game_156x210")
-    FUNCTION = "finish"
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "replace"
     CATEGORY = "HOI4 portraits/output"
-    DESCRIPTION = "Optional BiRefNet background replacement followed by centered 1024×1365 and 156×210 crops. Never stretches the portrait."
+    DESCRIPTION = "Optional BiRefNet subject mask and background composite. Sizing and game crops remain separate visible nodes."
 
-    def finish(
-        self,
-        image,
-        use_background,
-        background_model,
-        master_width,
-        master_height,
-        game_width,
-        game_height,
-        background=None,
-    ):
-        master = _resize_center_crop(image, int(master_width), int(master_height))
-        if bool(use_background):
-            if background is None:
-                raise ValueError("Background replacement is enabled but no background image is connected.")
-            model = _node_output_values(
-                _registered_node("LoadBackgroundRemovalModel").execute(str(background_model))
-            )[0]
-            mask = _node_output_values(
-                _registered_node("RemoveBackground").execute(model, master)
-            )[0]
-            if mask.ndim == 2:
-                mask = mask.unsqueeze(0)
-            mask = functional.interpolate(
-                mask.unsqueeze(1).float(),
-                size=(int(master_height), int(master_width)),
-                mode="bilinear",
-                align_corners=False,
-            ).movedim(1, -1).clamp(0, 1)
-            backdrop = _resize_center_crop(background, int(master_width), int(master_height))
-            if backdrop.shape[0] == 1 and master.shape[0] > 1:
-                backdrop = backdrop.repeat(master.shape[0], 1, 1, 1)
-            master = master * mask + backdrop[: master.shape[0]] * (1.0 - mask)
-        game = _resize_center_crop(master, int(game_width), int(game_height))
-        return master.clamp(0, 1), game.clamp(0, 1)
+    def replace(self, image, bg_removal_model, use_background, background=None):
+        if not bool(use_background):
+            return (image,)
+        if background is None:
+            raise ValueError("Background replacement is enabled but no background image is connected.")
+        mask = _node_output_values(
+            _registered_node("RemoveBackground").execute(bg_removal_model, image)
+        )[0]
+        if mask.ndim == 2:
+            mask = mask.unsqueeze(0)
+        height, width = int(image.shape[1]), int(image.shape[2])
+        mask = functional.interpolate(
+            mask.unsqueeze(1).float(),
+            size=(height, width),
+            mode="bilinear",
+            align_corners=False,
+        ).movedim(1, -1).clamp(0, 1)
+        backdrop = _resize_center_crop(background, width, height)
+        if backdrop.shape[0] == 1 and image.shape[0] > 1:
+            backdrop = backdrop.repeat(image.shape[0], 1, 1, 1)
+        return ((image * mask + backdrop[: image.shape[0]] * (1.0 - mask)).clamp(0, 1),)
 
 
 class Hoi4BatchInput:
@@ -1203,22 +777,16 @@ class Hoi4SaveDDS:
 NODE_CLASS_MAPPINGS = {
     "AdaptivePortraitCrop": AdaptivePortraitCrop,
     "PortraitIdentityMask": PortraitIdentityMask,
-    "Hoi4ModelStack": Hoi4ModelStack,
-    "Hoi4SourcePrep": Hoi4SourcePrep,
     "Hoi4PortraitSampler": Hoi4PortraitSampler,
-    "Hoi4AdonisRestoration": Hoi4AdonisRestoration,
-    "Hoi4FinalOutput": Hoi4FinalOutput,
+    "Hoi4BackgroundReplace": Hoi4BackgroundReplace,
     "Hoi4BatchInput": Hoi4BatchInput,
     "Hoi4SaveDDS": Hoi4SaveDDS,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AdaptivePortraitCrop": "Adaptive Portrait Crop",
     "PortraitIdentityMask": "Portrait Identity Mask",
-    "Hoi4ModelStack": "HOI4 Distilled Model Stack",
-    "Hoi4SourcePrep": "HOI4 Source Prep (crop + ESRGAN)",
     "Hoi4PortraitSampler": "HOI4 Portrait Sampler (advanced)",
-    "Hoi4AdonisRestoration": "HOI4 Adonis Restoration (exact advanced)",
-    "Hoi4FinalOutput": "HOI4 Final Output (master + game)",
+    "Hoi4BackgroundReplace": "HOI4 Optional Background Replacement",
     "Hoi4BatchInput": "HOI4 Batch Input Folder",
     "Hoi4SaveDDS": "HOI4 Save DDS (156x210)",
 }
