@@ -37,7 +37,7 @@
       "title": "🎛️ Sampler guide",
       "pos": [
         80,
-        980
+        940
       ],
       "size": [
         720,
@@ -63,7 +63,7 @@
       "type": "UNETLoader",
       "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target",
       "pos": [
-        940,
+        920,
         100
       ],
       "size": [
@@ -116,8 +116,8 @@
       "type": "ClipLoaderGGUF",
       "title": "Load Qwen3 8B Q8 text encoder",
       "pos": [
-        940,
-        300
+        920,
+        280
       ],
       "size": [
         440,
@@ -178,8 +178,8 @@
       "type": "VAELoader",
       "title": "Load FLUX.2 VAE",
       "pos": [
-        940,
-        520
+        920,
+        480
       ],
       "size": [
         440,
@@ -222,7 +222,7 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load HOI4 style LoRA — step 2500 only",
       "pos": [
-        1440,
+        1420,
         100
       ],
       "size": [
@@ -280,8 +280,8 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet mask model",
       "pos": [
-        940,
-        700
+        920,
+        620
       ],
       "size": [
         440,
@@ -324,7 +324,7 @@
       "type": "Hoi4PortraitSampler",
       "title": "Text-to-image — advanced live sampler",
       "pos": [
-        2080,
+        2040,
         100
       ],
       "size": [
@@ -520,60 +520,10 @@
     },
     {
       "id": 9,
-      "type": "LoadImage",
-      "title": "Optional replacement background",
-      "pos": [
-        2940,
-        100
-      ],
-      "size": [
-        600,
-        560
-      ],
-      "color": "#446a4d",
-      "bgcolor": "#304c38",
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "image"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            7
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage",
-        "hoi4_group": "03 Visible background, sizing, saves, preview"
-      },
-      "widgets_values": [
-        "hoi4_leader_portrait_background.png",
-        "image"
-      ]
-    },
-    {
-      "id": 10,
       "type": "Hoi4BackgroundReplace",
       "title": "Optional background replacement",
       "pos": [
-        3580,
+        2880,
         100
       ],
       "size": [
@@ -583,7 +533,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -628,12 +578,12 @@
       ]
     },
     {
-      "id": 11,
+      "id": 10,
       "type": "ImageScale",
       "title": "Master — centered 1024×1365 crop",
       "pos": [
-        4120,
-        100
+        2880,
+        400
       ],
       "size": [
         400,
@@ -642,7 +592,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 10,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -705,12 +655,12 @@
       ]
     },
     {
-      "id": 12,
+      "id": 11,
       "type": "ImageScale",
       "title": "Game — centered 156×210 crop",
       "pos": [
-        4580,
-        100
+        2880,
+        620
       ],
       "size": [
         400,
@@ -719,7 +669,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 11,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -783,12 +733,62 @@
       ]
     },
     {
+      "id": 12,
+      "type": "LoadImage",
+      "title": "Optional replacement background",
+      "pos": [
+        3420,
+        100
+      ],
+      "size": [
+        600,
+        560
+      ],
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "image"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage",
+        "hoi4_group": "03 Visible background, sizing, saves, preview"
+      },
+      "widgets_values": [
+        "hoi4_leader_portrait_background.png",
+        "image"
+      ]
+    },
+    {
       "id": 13,
       "type": "SaveImage",
       "title": "Save master PNG",
       "pos": [
-        2940,
-        760
+        2880,
+        840
       ],
       "size": [
         420,
@@ -834,8 +834,8 @@
       "type": "SaveImage",
       "title": "Save game PNG",
       "pos": [
-        3400,
-        760
+        2880,
+        1040
       ],
       "size": [
         420,
@@ -881,8 +881,8 @@
       "type": "Hoi4SaveDDS",
       "title": "Save game DDS — DXT5, no mipmaps",
       "pos": [
-        3860,
-        760
+        2880,
+        1240
       ],
       "size": [
         420,
@@ -937,8 +937,8 @@
       "type": "PreviewImage",
       "title": "Final 156×210 portrait",
       "pos": [
-        4460,
-        760
+        3420,
+        700
       ],
       "size": [
         600,
@@ -1007,7 +1007,7 @@
       5,
       8,
       0,
-      10,
+      9,
       0,
       "IMAGE"
     ],
@@ -1015,37 +1015,37 @@
       6,
       7,
       0,
-      10,
+      9,
       1,
       "BACKGROUND_REMOVAL"
     ],
     [
       7,
-      9,
+      12,
       0,
-      10,
+      9,
       3,
       "IMAGE"
     ],
     [
       8,
-      10,
+      9,
       0,
-      11,
+      10,
       0,
       "IMAGE"
     ],
     [
       9,
-      11,
+      10,
       0,
-      12,
+      11,
       0,
       "IMAGE"
     ],
     [
       10,
-      11,
+      10,
       0,
       13,
       0,
@@ -1053,7 +1053,7 @@
     ],
     [
       11,
-      12,
+      11,
       0,
       14,
       0,
@@ -1061,7 +1061,7 @@
     ],
     [
       12,
-      12,
+      11,
       0,
       15,
       0,
@@ -1069,7 +1069,7 @@
     ],
     [
       13,
-      12,
+      11,
       0,
       16,
       0,
@@ -1084,7 +1084,7 @@
         40,
         40,
         800,
-        2020
+        1700
       ],
       "color": "#334155",
       "font_size": 28,
@@ -1098,8 +1098,8 @@
       "bounding": [
         880,
         40,
-        1120,
-        2020
+        1080,
+        720
       ],
       "color": "#365b73",
       "font_size": 28,
@@ -1111,10 +1111,10 @@
       "id": 3,
       "title": "02 One advanced live sampler",
       "bounding": [
-        2040,
+        2000,
         40,
         800,
-        2020
+        840
       ],
       "color": "#654572",
       "font_size": 28,
@@ -1126,10 +1126,10 @@
       "id": 4,
       "title": "03 Visible background, sizing, saves, preview",
       "bounding": [
-        2880,
+        2840,
         40,
-        2220,
-        2020
+        1220,
+        1510
       ],
       "color": "#3d596f",
       "font_size": 28,

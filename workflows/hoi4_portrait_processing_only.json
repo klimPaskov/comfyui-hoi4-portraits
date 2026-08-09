@@ -37,7 +37,7 @@
       "title": "✨ Processing-only guide",
       "pos": [
         80,
-        1080
+        1040
       ],
       "size": [
         720,
@@ -64,7 +64,7 @@
       "title": "Load source portrait",
       "pos": [
         920,
-        100
+        300
       ],
       "size": [
         680,
@@ -160,7 +160,7 @@
       "title": "Detect portrait face — bounding box stays visible",
       "pos": [
         1640,
-        250
+        240
       ],
       "size": [
         500,
@@ -246,7 +246,7 @@
       "title": "Load BiRefNet mask model",
       "pos": [
         1640,
-        610
+        580
       ],
       "size": [
         440,
@@ -290,7 +290,7 @@
       "title": "Generate subject silhouette for crop",
       "pos": [
         1640,
-        760
+        720
       ],
       "size": [
         360,
@@ -334,7 +334,7 @@
       "title": "Portrait crop — automatic / centered / manual, 512×683 before 2× ESRGAN",
       "pos": [
         2180,
-        250
+        100
       ],
       "size": [
         480,
@@ -474,7 +474,7 @@
       "title": "Load RealESRGAN ×2",
       "pos": [
         2180,
-        730
+        560
       ],
       "size": [
         400,
@@ -518,7 +518,7 @@
       "title": "Run RealESRGAN ×2",
       "pos": [
         2180,
-        880
+        700
       ],
       "size": [
         360,
@@ -562,7 +562,7 @@
       "title": "Normalize RealESRGAN result to 1024×1365",
       "pos": [
         2180,
-        1030
+        840
       ],
       "size": [
         400,
@@ -639,7 +639,7 @@
       "type": "UNETLoader",
       "title": "Load distilled FLUX.2 Klein 9B — full / FP8 / GGUF installer target",
       "pos": [
-        2740,
+        2780,
         100
       ],
       "size": [
@@ -693,8 +693,8 @@
       "type": "ClipLoaderGGUF",
       "title": "Load Qwen3 8B Q8 text encoder",
       "pos": [
-        2740,
-        300
+        2780,
+        280
       ],
       "size": [
         440,
@@ -755,8 +755,8 @@
       "type": "VAELoader",
       "title": "Load FLUX.2 VAE",
       "pos": [
-        2740,
-        520
+        2780,
+        480
       ],
       "size": [
         440,
@@ -800,8 +800,8 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load Adonis Base LoRA",
       "pos": [
-        3240,
-        320
+        3280,
+        280
       ],
       "size": [
         500,
@@ -858,8 +858,8 @@
       "type": "LoraLoaderModelOnly",
       "title": "Load Adonis Refine LoRA",
       "pos": [
-        3240,
-        540
+        3280,
+        460
       ],
       "size": [
         500,
@@ -916,7 +916,7 @@
       "type": "ImageScaleToTotalPixelsX",
       "title": "Adonis pre-process — exact 1.7 MP, multiple of 16, crop, Lanczos",
       "pos": [
-        4000,
+        3900,
         100
       ],
       "size": [
@@ -1006,8 +1006,8 @@
       "type": "CLIPTextEncode",
       "title": "Adonis positive prompt — uhdmanscale",
       "pos": [
-        4000,
-        400
+        3900,
+        380
       ],
       "size": [
         440,
@@ -1056,8 +1056,8 @@
       "type": "ConditioningZeroOut",
       "title": "Zero negative conditioning",
       "pos": [
-        4000,
-        720
+        3900,
+        680
       ],
       "size": [
         320,
@@ -1095,7 +1095,7 @@
       "type": "VAEEncode",
       "title": "Encode restored reference latent",
       "pos": [
-        4480,
+        4380,
         100
       ],
       "size": [
@@ -1140,8 +1140,8 @@
       "type": "ReferenceLatent",
       "title": "Positive reference latent",
       "pos": [
-        4480,
-        260
+        4380,
+        240
       ],
       "size": [
         320,
@@ -1184,8 +1184,8 @@
       "type": "ReferenceLatent",
       "title": "Negative reference latent",
       "pos": [
-        4480,
-        420
+        4380,
+        380
       ],
       "size": [
         320,
@@ -1228,8 +1228,8 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Empty FLUX.2 latent — dimensions come from 1.7 MP pre-process",
       "pos": [
-        4480,
-        580
+        4380,
+        520
       ],
       "size": [
         360,
@@ -1290,7 +1290,7 @@
       "type": "SharkOptions_Beta",
       "title": "Adonis RES4LYF options — exact upstream",
       "pos": [
-        4820,
+        4780,
         100
       ],
       "size": [
@@ -1361,8 +1361,8 @@
       "type": "PrimitiveInt",
       "title": "Shared Adonis seed",
       "pos": [
-        4860,
-        340
+        4780,
+        320
       ],
       "size": [
         300,
@@ -1406,8 +1406,8 @@
       "type": "PrimitiveInt",
       "title": "Total Adonis steps",
       "pos": [
-        4860,
-        500
+        4780,
+        460
       ],
       "size": [
         300,
@@ -1451,7 +1451,7 @@
       "type": "ClownsharKSampler_Beta",
       "title": "Adonis Base — live RES4LYF sampler (first 5 of 9 steps)",
       "pos": [
-        5240,
+        5220,
         100
       ],
       "size": [
@@ -1620,7 +1620,7 @@
       "type": "ClownsharKSampler_Beta",
       "title": "Adonis Refine — live RES4LYF sampler (remaining steps)",
       "pos": [
-        5800,
+        5760,
         100
       ],
       "size": [
@@ -1789,8 +1789,8 @@
       "type": "VAEDecode",
       "title": "Decode Adonis Refine output",
       "pos": [
-        5800,
-        1280
+        5760,
+        1240
       ],
       "size": [
         300,
@@ -1833,8 +1833,8 @@
       "type": "ComfySwitchNode",
       "title": "Use Adonis restoration",
       "pos": [
-        6160,
-        1280
+        6100,
+        1240
       ],
       "size": [
         360,
@@ -1888,7 +1888,7 @@
       "type": "ImageScale",
       "title": "Restored master — centered 1024×1365 crop",
       "pos": [
-        6660,
+        6580,
         100
       ],
       "size": [
@@ -1965,7 +1965,7 @@
       "type": "ImageScale",
       "title": "Restored game — centered 156×210 crop",
       "pos": [
-        7120,
+        7020,
         100
       ],
       "size": [
@@ -2043,7 +2043,7 @@
       "type": "SaveImage",
       "title": "Save restored master PNG",
       "pos": [
-        7580,
+        7460,
         100
       ],
       "size": [
@@ -2090,8 +2090,8 @@
       "type": "SaveImage",
       "title": "Save restored game PNG",
       "pos": [
-        7580,
-        310
+        7460,
+        300
       ],
       "size": [
         420,
@@ -2137,8 +2137,8 @@
       "type": "Hoi4SaveDDS",
       "title": "Save restored game DDS",
       "pos": [
-        7580,
-        520
+        7460,
+        500
       ],
       "size": [
         420,
@@ -2193,8 +2193,8 @@
       "type": "PreviewImage",
       "title": "RealESRGAN",
       "pos": [
-        6660,
-        900
+        6580,
+        760
       ],
       "size": [
         600,
@@ -2230,8 +2230,8 @@
       "type": "PreviewImage",
       "title": "Adonis Base → Refine",
       "pos": [
-        7320,
-        900
+        7220,
+        760
       ],
       "size": [
         600,
@@ -2267,8 +2267,8 @@
       "type": "PreviewImage",
       "title": "Final 156×210",
       "pos": [
-        7980,
-        900
+        7860,
+        760
       ],
       "size": [
         600,
@@ -2678,7 +2678,7 @@
         40,
         40,
         800,
-        2820
+        1940
       ],
       "color": "#334155",
       "font_size": 28,
@@ -2692,8 +2692,8 @@
       "bounding": [
         880,
         40,
-        1800,
-        2820
+        1820,
+        1020
       ],
       "color": "#365b41",
       "font_size": 28,
@@ -2705,10 +2705,10 @@
       "id": 3,
       "title": "02 Separate model loaders",
       "bounding": [
-        2680,
+        2740,
         40,
-        1220,
-        2820
+        1080,
+        600
       ],
       "color": "#365b73",
       "font_size": 28,
@@ -2720,10 +2720,10 @@
       "id": 4,
       "title": "03 Adonis Base → Refine — expanded upstream graph",
       "bounding": [
-        3940,
+        3860,
         40,
-        2620,
-        2820
+        2640,
+        1400
       ],
       "color": "#765b35",
       "font_size": 28,
@@ -2735,10 +2735,10 @@
       "id": 5,
       "title": "04 Visible sizing, saves, comparison",
       "bounding": [
-        6600,
+        6540,
         40,
-        2020,
-        2820
+        1960,
+        1570
       ],
       "color": "#3d596f",
       "font_size": 28,

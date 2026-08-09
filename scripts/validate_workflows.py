@@ -136,19 +136,35 @@ def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
         group_bounds[title] = bounds
         for other in (groups or [])[index + 1 :]:
             other_bounds = other.get("bounding", [])
-            if len(other_bounds) == 4 and _overlap(bounds, other_bounds):
-                errors.append(f"{path}: visible groups overlap: {title} / {other.get('title')}")
+            if len(other_bounds) == 4 and _overlap(bounds, other_bounds, 40):
+                errors.append(f"{path}: visible groups overlap or lack a 40px gutter: {title} / {other.get('title')}")
+    members_by_group: dict[str, list[dict[str, Any]]] = {title: [] for title in group_bounds}
     for node in nodes:
         group_name = node.get("properties", {}).get("hoi4_group")
         bounds = group_bounds.get(group_name)
         if bounds is None:
             errors.append(f"{path}: node {node.get('id')} is not assigned to a visible group")
             continue
+        members_by_group[group_name].append(node)
         nx, ny = node["pos"]
         nw, nh = node["size"]
+        if nx % 20 or ny % 20:
+            errors.append(f"{path}: node {node.get('id')} is off the symmetric 20px layout grid")
         gx, gy, gw, gh = bounds
         if nx < gx + 20 or ny < gy + 20 or nx + nw > gx + gw - 20 or ny + nh > gy + gh - 20:
             errors.append(f"{path}: node {node.get('id')} extends outside {group_name}")
+
+    for title, members in members_by_group.items():
+        if not members:
+            errors.append(f"{path}: visible group {title!r} is empty")
+            continue
+        left = min(node["pos"][0] for node in members)
+        top = min(node["pos"][1] for node in members)
+        right = max(node["pos"][0] + node["size"][0] for node in members)
+        bottom = max(node["pos"][1] + node["size"][1] for node in members)
+        expected = [left - 40, top - 60, right - left + 80, bottom - top + 100]
+        if group_bounds[title] != expected:
+            errors.append(f"{path}: group {title!r} is not tightly fitted with symmetric gutters")
 
     for index, node in enumerate(nodes):
         box = [*node["pos"], *node["size"]]
@@ -179,6 +195,23 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     is_text = workflow_id == WORKFLOW_IDS[1]
     is_processing = workflow_id == WORKFLOW_IDS[2]
     is_batch = workflow_id == WORKFLOW_IDS[3]
+    compact_limits = {
+        WORKFLOW_IDS[0]: (8800, 2420),
+        WORKFLOW_IDS[1]: (4020, 1700),
+        WORKFLOW_IDS[2]: (8460, 1940),
+        WORKFLOW_IDS[3]: (8480, 1960),
+    }
+    if ui.get("groups") and workflow_id in compact_limits:
+        left = min(group["bounding"][0] for group in ui["groups"])
+        top = min(group["bounding"][1] for group in ui["groups"])
+        right = max(group["bounding"][0] + group["bounding"][2] for group in ui["groups"])
+        bottom = max(group["bounding"][1] + group["bounding"][3] for group in ui["groups"])
+        maximum_width, maximum_height = compact_limits[workflow_id]
+        if right - left > maximum_width or bottom - top > maximum_height:
+            errors.append(
+                f"{path}: workflow canvas is no longer compact "
+                f"({right - left}×{bottom - top}, maximum {maximum_width}×{maximum_height})"
+            )
     if ui.get("extra", {}).get("base_model") != build_workflows.BASE_MODEL or "klein-base" in json.dumps(ui).casefold():
         errors.append(f"{path}: only distilled FLUX.2 Klein is allowed")
     if ui.get("extra", {}).get("master_size") != [1024, 1365] or ui.get("extra", {}).get("game_size") != [156, 210]:
@@ -228,6 +261,30 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         width, height = node.get("size", [0, 0])
         if [width, height] != [600, 810]:
             errors.append(f"{path}: portrait preview {node.get('id')} must be 600×810")
+
+    previews_by_group: dict[str, list[dict[str, Any]]] = {}
+    for node in ui.get("nodes", []):
+        if node.get("type") == "PreviewImage":
+            group = node.get("properties", {}).get("hoi4_group", "")
+            previews_by_group.setdefault(group, []).append(node)
+    for group, previews in previews_by_group.items():
+        if len(previews) < 3:
+            continue
+        ordered = sorted(previews, key=lambda node: node["pos"][0])
+        if len({node["pos"][1] for node in ordered}) != 1:
+            errors.append(f"{path}: preview comparison in {group!r} must be one symmetric row")
+        if any(right["pos"][0] - (left["pos"][0] + left["size"][0]) != 40 for left, right in zip(ordered, ordered[1:])):
+            errors.append(f"{path}: preview comparison in {group!r} must use exact 40px gutters")
+
+    candidate_samplers = sorted(
+        (node for node in ui.get("nodes", []) if node.get("title", "").startswith("Candidate ") and node.get("type") == "Hoi4PortraitSampler"),
+        key=lambda node: node["pos"][1],
+    )
+    if candidate_samplers:
+        if len({node["pos"][0] for node in candidate_samplers}) != 1:
+            errors.append(f"{path}: candidate samplers must share one aligned column")
+        if any(lower["pos"][1] - (upper["pos"][1] + upper["size"][1]) != 40 for upper, lower in zip(candidate_samplers, candidate_samplers[1:])):
+            errors.append(f"{path}: candidate samplers must use exact 40px vertical gutters")
 
     for node in api.values():
         class_type = node["class_type"]

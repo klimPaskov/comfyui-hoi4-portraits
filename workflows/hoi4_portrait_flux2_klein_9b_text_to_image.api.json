@@ -90,15 +90,6 @@
   },
   "9": {
     "inputs": {
-      "image": "hoi4_leader_portrait_background.png"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Optional replacement background"
-    }
-  },
-  "10": {
-    "inputs": {
       "use_background": false,
       "image": [
         "8",
@@ -109,7 +100,7 @@
         0
       ],
       "background": [
-        "9",
+        "12",
         0
       ]
     },
@@ -118,14 +109,14 @@
       "title": "Optional background replacement"
     }
   },
-  "11": {
+  "10": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "10",
+        "9",
         0
       ]
     },
@@ -134,14 +125,14 @@
       "title": "Master — centered 1024×1365 crop"
     }
   },
-  "12": {
+  "11": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "11",
+        "10",
         0
       ]
     },
@@ -150,11 +141,20 @@
       "title": "Game — centered 156×210 crop"
     }
   },
+  "12": {
+    "inputs": {
+      "image": "hoi4_leader_portrait_background.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Optional replacement background"
+    }
+  },
   "13": {
     "inputs": {
       "filename_prefix": "1024x1365/text_to_image",
       "images": [
-        "11",
+        "10",
         0
       ]
     },
@@ -167,7 +167,7 @@
     "inputs": {
       "filename_prefix": "156x210/text_to_image",
       "images": [
-        "12",
+        "11",
         0
       ]
     },
@@ -181,7 +181,7 @@
       "filename_prefix": "156x210/dds/text_to_image",
       "compression": "dxt5",
       "images": [
-        "12",
+        "11",
         0
       ]
     },
@@ -193,7 +193,7 @@
   "16": {
     "inputs": {
       "images": [
-        "12",
+        "11",
         0
       ]
     },
