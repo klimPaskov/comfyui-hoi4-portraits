@@ -8,10 +8,14 @@ hosting, or using them, read the current upstream terms for your use case.
 | --- | --- | --- |
 | ComfyUI | [comfyanonymous/ComfyUI](https://github.com/comfyanonymous/ComfyUI) | GPL-3.0 source project; not bundled here. |
 | ComfyUI-GGUF | [city96/ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) | Node extension installed from a pinned revision when the GGUF variant is selected; not bundled here. |
+| gguf text loader | [calcuis/gguf](https://github.com/calcuis/gguf) | Provides the exact `ClipLoaderGGUF` implementation serialized by the Adonis workflow. |
+| RES4LYF | [ClownsharkBatwing/RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) | Provides the Base → Refine live sampler topology used by Adonis. |
+| Scale Image to Total Pixels Advanced | [BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced](https://github.com/BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced) | Provides the exact 1.7 MP, multiple-of-16 preprocessing node used by Adonis. |
 | FLUX.2 Klein 9B distilled | [black-forest-labs/FLUX.2-klein-9B](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B), [FLUX.2-klein-9b-fp8](https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8), [drends/FLUX.2-klein-9B-GGUF](https://huggingface.co/drends/FLUX.2-klein-9B-GGUF) | Gated full/FP8 model (accept the agreement); GGUF is not gated. Follow each model repository's license. |
-| Qwen 3 8B FP8 mixed encoder and FLUX.2 VAE | [Comfy-Org/flux2-klein-9B](https://huggingface.co/Comfy-Org/flux2-klein-9B) | Follow the source model cards and file-specific upstream terms. |
+| Qwen 3 8B Q8 GGUF encoder | [Qwen/Qwen3-8B-GGUF](https://huggingface.co/Qwen/Qwen3-8B-GGUF) | Apache-2.0; the workflow pins `Qwen3-8B-Q8_0.gguf`. |
+| FLUX.2 VAE | [Comfy-Org/flux2-klein-9B](https://huggingface.co/Comfy-Org/flux2-klein-9B) | Follow the source model card and file-specific upstream terms. |
 | RealESRGAN x2plus | [xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | Model and code terms are maintained upstream. |
-| Adonis Base and Post LoKrs | [n8te0/adonis_flux2klein](https://huggingface.co/n8te0/adonis_flux2klein) | Optional restoration adapters. Follow the model repository's terms. |
+| Adonis Base and Refine LoKrs | [n8te0/adonis_flux2klein](https://huggingface.co/n8te0/adonis_flux2klein) | Restoration adapters used with the repository's exact `Adonis_Workflow.json` topology. |
 | HOI4 portrait LoRA | [Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora) | MIT; the project publishes this adapter. |
 | BiRefNet | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet) | Follow the model repository and original BiRefNet terms. |
 | MediaPipe face detection | [Comfy-Org/mediapipe](https://huggingface.co/Comfy-Org/mediapipe) | Apache-2.0. |

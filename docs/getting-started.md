@@ -42,10 +42,10 @@ under `ComfyUI/models/`:
 | Folder | File |
 | --- | --- |
 | `diffusion_models/` | `flux-2-klein-9b.safetensors` (full), `flux-2-klein-9b-fp8.safetensors` (FP8), or `flux-2-klein-9b-Q5_K_M.gguf` (GGUF) |
-| `text_encoders/` | `qwen_3_8b_fp8mixed.safetensors` |
+| `text_encoders/` | `Qwen3-8B-Q8_0.gguf` |
 | `vae/` | `flux2-vae.safetensors` |
 | `loras/` | `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` (tuned 2500-step LoRA) |
-| `loras/` | `adonis_base.safetensors` and `adonis_post.safetensors` (optional restoration) |
+| `loras/` | `adonis_base.safetensors` and `adonis_refine.safetensors` (optional restoration) |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
 | `detection/` | `mediapipe_face_fp32.safetensors` and `face_detection_yunet_2023mar.onnx` |
@@ -61,9 +61,9 @@ create a read-only token. GGUF files are not gated.
 
 1. Open the workflow JSON file in the ComfyUI editor. The **Setup guide** note
    on the left shows the exact model folders.
-2. Check the model loaders. A red loader means the named file has not been
-   installed.
-3. Select the source image and confirm the source / crop + ESRGAN previews.
+2. Check the single **HOI4 Distilled Model Stack** card. Its first field is
+   the installed full, FP8, or GGUF diffusion-model variant.
+3. Select the source image and confirm the explicit source and RealESRGAN previews.
    Adjust **Face zoom** if needed, or use the manual crop for a specific
    person.
 4. Keep the default prompt `make this portrait hoi4_portrait style`. Append a

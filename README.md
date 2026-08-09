@@ -38,12 +38,13 @@ The installer downloads only the model variant you choose:
 
 | Variant | File | Download size | VRAM |
 | --- | --- | --- | --- |
-| Full | `flux-2-klein-9b.safetensors` | 18.2 GB | 24+ GB |
+| Full | `flux-2-klein-9b.safetensors` | 18.2 GB | above 20 GB |
 | FP8 | `flux-2-klein-9b-fp8.safetensors` | 9.4 GB | 16–20 GB |
 | GGUF | `flux-2-klein-9b-*.gguf` | 5.9–10.0 GB | 8–16 GB |
 
-Shared support files (Qwen text encoder, VAE, LoRA, Adonis LoKrs, RealESRGAN,
-BiRefNet, face detectors) add **11.8 GB** on top. Storage and VRAM
+Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, LoRA, Adonis Base and
+Refine LoKrs, RealESRGAN, BiRefNet, face detectors) add **11.97 GB** on top.
+The full install's exact model payload is **30.12 GB (28.05 GiB)**. Storage and VRAM
 requirements for each install are documented in
 [`docs/local-install.md`](docs/local-install.md).
 
@@ -63,7 +64,7 @@ contains:
 ### Windows
 
 ```powershell
-.\HOI4-Portrait-Workflows-v3.0.0-windows-x64.exe
+.\HOI4-Portrait-Workflows-v3.1.0-windows-x64.exe
 ```
 
 Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard
@@ -99,6 +100,7 @@ add the matching flags, for example:
 git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
 cd comfyui-hoi4-portraits
 python scripts/install_workflows.py --comfyui-root /path/to/ComfyUI
+python scripts/install_custom_node_packs.py --comfyui-root /path/to/ComfyUI
 python scripts/apply_variant.py --comfyui-root /path/to/ComfyUI --variant fp8
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 ```
@@ -116,63 +118,35 @@ GGUF files are not gated.
 
 ## What the source workflow does
 
-These screenshots show the source, ESRGAN, optional restoration, three LoRA
-candidates, and the comparison row in the editor. The workflow opens with
-FLUX restoration enabled; queueing fills every preview with the completed
-image.
+The editor screenshots below come from the four installed workflows in a live
+ComfyUI registry with all required node classes present.
 
-![Source workflow overview](docs/assets/workflows/source-workflow-overview.jpg)
+![Source workflow overview](docs/assets/workflows/audit/source-overview.png)
 
-### 1. Crop and restore the source
+1. **Source and ESRGAN:** load the portrait, confirm the large source preview,
+   tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then inspect the
+   dedicated ESRGAN preview.
+2. **Restoration:** the compact restoration card follows the upstream
+   [`Adonis_Workflow.json`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/Adonis_Workflow.json)
+   topology: 1.7 MP Lanczos crop, Qwen 3 8B Q8 GGUF, Adonis Base for the first
+   five steps, and Adonis Refine for the remainder of a nine-step RES4LYF
+   schedule. The switch opens enabled; bypass it for a direct ESRGAN input.
+3. **Style:** three independent candidates use the exact 2500-step LoRA. Each
+   candidate has one advanced live sampler card with CFG `1`, guidance `1`,
+   four steps, Euler, simple scheduling, denoise, seed behavior, and partial
+   step controls.
+4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and
+   all three finals together. Background replacement runs after generation.
+   Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a
+   unique 156×210 DXT5 DDS with no mipmaps.
 
-Load the portrait and confirm the source preview. **Face zoom** defaults to
-`0.90`; lower values retain more body. **Preserve hat/headwear** defaults to
-`true`; disable it for a normal face-led crop. **Toggle face processing**
-defaults to on; turn it off to keep a full multi-person composition. Use the
-manual crop only when selecting one particular person.
+The other three workflow canvases use the same stage colors and controls:
 
-![Source crop and RealESRGAN processing](docs/assets/workflows/step-1-source-processing.jpg)
+![Text-to-image workflow overview](docs/assets/workflows/audit/text-overview.png)
 
-### 2. Load the model and LoRA
+![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview.png)
 
-This group loads FLUX.2 Klein 9B (full/FP8/GGUF), the Qwen text encoder, VAE,
-the 2500-step HOI4 LoRA, and the Adonis restoration LoKrs.
-
-![FLUX.2 Klein model and LoRA setup](docs/assets/workflows/step-2-model-setup.jpg)
-
-### 3. Optionally restore with FLUX.2
-
-RealESRGAN upscales first, then the optional Adonis Base → Post pass rebuilds
-skin, hair, and colour. Its red switch opens enabled; turn it off for the
-direct ESRGAN result.
-
-![Optional FLUX.2 restoration stage](docs/assets/workflows/step-3-flux-restoration.jpg)
-
-### 4. Apply the portrait LoRA
-
-The processed portrait becomes the reference and starting image for three
-independent LoRA passes, one per seed. Each branch has an editable prompt and
-one advanced sampler card (CFG, guidance, seed, steps, sampling algorithm,
-scheduler, denoise — the tuned defaults are CFG 1, guidance 1, 4 steps, Euler,
-simple). Sampling is live: watch the portrait being constructed.
-
-![Portrait LoRA styling stage](docs/assets/workflows/step-4-lora-styling.jpg)
-
-### 5. Compare, then replace the background (optional)
-
-Below the LoRA cards, a comparison row shows the ESRGAN result, the restoration
-pass, and all three game-size finals side by side. Background replacement runs
-only after generation and is off by default.
-
-![Portrait comparison and background stage](docs/assets/workflows/step-5-background-replacement.jpg)
-
-### 6. Save PNG and DDS
-
-Every workflow writes a full-res master PNG, a 156×210 game PNG, and a
-156×210 **DXT5 DDS with no mipmaps** — the exact format HOI4 reads, so the
-file can be dropped into `gfx/portraits` without a crash.
-
-![Preview and output stage](docs/assets/workflows/step-6-preview-and-save.jpg)
+![Batch workflow overview](docs/assets/workflows/audit/batch-overview.png)
 
 ## Prompting
 

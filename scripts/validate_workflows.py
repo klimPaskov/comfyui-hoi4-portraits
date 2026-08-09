@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the public HOI4 workflow graphs and their editor layout."""
+"""Validate the four compact editor and API workflows."""
 
 from __future__ import annotations
 
@@ -9,57 +9,30 @@ import re
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[1]
-BASE_MODEL = "flux-2-klein-9b.safetensors"
-STYLE_LORA = "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors"
-DEFAULT_STEPS = 4
-DEFAULT_CFG = 1.0
-DEFAULT_GUIDANCE = 1.0
-CANVAS_WIDTH = 1024
-CANVAS_HEIGHT = 1365
-GAME_WIDTH = 156
-GAME_HEIGHT = 210
-LAYOUT_NODE_PADDING = 16
-GROUP_NODE_PADDING = 24
+try:
+    from . import build_workflows
+except ImportError:
+    import build_workflows
 
+
+ROOT = Path(__file__).resolve().parents[1]
+WORKFLOW_IDS = tuple(build_workflows.BUILDERS)
 ALLOWED_NODES = {
-    "AdaptivePortraitCrop",
-    "ComfySwitchNode",
-    "CropByBBoxes",
-    "Hoi4BatchInput",
-    "Hoi4PortraitSampler",
-    "Hoi4SaveDDS",
-    "ImageCompositeMasked",
-    "ImageScale",
-    "ImageScaleToMaxDimension",
-    "ImageUpscaleWithModel",
-    "LoadBackgroundRemovalModel",
-    "LoadImage",
-    "LoadMediaPipeFaceLandmarker",
-    "LoraLoaderModelOnly",
-    "MediaPipeFaceLandmarker",
     "Note",
+    "LoadImage",
     "PreviewImage",
-    "PrimitiveBoolean",
-    "PrimitiveBoundingBox",
-    "RemoveBackground",
     "SaveImage",
-    "UNETLoader",
-    "UpscaleModelLoader",
-    "VAEDecode",
-    "VAEEncode",
-    "VAELoader",
-    "CLIPLoader",
-    "CLIPTextEncode",
-    "EmptyFlux2LatentImage",
-    "ReferenceLatent",
-    "ComfySwitchNode",
+    "Hoi4ModelStack",
+    "Hoi4SourcePrep",
+    "Hoi4PortraitSampler",
+    "Hoi4AdonisRestoration",
+    "Hoi4FinalOutput",
+    "Hoi4BatchInput",
+    "Hoi4SaveDDS",
 }
 
 
 def _non_person_prompt_terms(prompt: str) -> list[str]:
-    """Keep the public helper used by the project's documentation tests."""
-
     forbidden = {
         "hearts of iron": r"\bhearts of iron\b",
         "grand-strategy": r"\bgrand-strategy\b",
@@ -72,7 +45,7 @@ def _non_person_prompt_terms(prompt: str) -> list[str]:
     return sorted(label for label, pattern in forbidden.items() if re.search(pattern, prompt.casefold()))
 
 
-def _overlap(a: list[float], b: list[float], *, padding: float = 0) -> bool:
+def _overlap(a: list[float], b: list[float], padding: float = 0) -> bool:
     ax, ay, aw, ah = a
     bx, by, bw, bh = b
     return not (
@@ -83,225 +56,197 @@ def _overlap(a: list[float], b: list[float], *, padding: float = 0) -> bool:
     )
 
 
-def _ancestors(api: dict[str, Any], node_id: str) -> set[str]:
-    found: set[str] = set()
-    pending = [node_id]
-    while pending:
-        current = pending.pop()
-        for value in api.get(current, {}).get("inputs", {}).values():
-            if isinstance(value, list) and len(value) == 2 and isinstance(value[0], str) and value[0] not in found:
-                found.add(value[0])
-                pending.append(value[0])
-    return found
-
-
-def _validate_ui(path: Path, ui: dict[str, Any]) -> list[str]:
+def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    nodes = ui.get("nodes")
-    links = ui.get("links")
-    groups = ui.get("groups")
-    if not isinstance(nodes, list) or not nodes:
-        return [f"{path}: nodes must be a non-empty list"]
-    if not isinstance(links, list):
-        errors.append(f"{path}: links must be a list")
-    if not isinstance(groups, list) or not groups:
-        errors.append(f"{path}: groups must be a non-empty list")
-    if ui.get("definitions"):
-        errors.append(f"{path}: workflow stages must remain visible on the main canvas")
-
+    nodes = ui.get("nodes", [])
+    links = ui.get("links", [])
+    groups = ui.get("groups", [])
+    if not nodes or not groups:
+        return [f"{path}: nodes and groups must be non-empty"]
     by_id = {node.get("id"): node for node in nodes}
     if len(by_id) != len(nodes) or None in by_id:
-        errors.append(f"{path}: node ids must be present and unique")
-
-    link_by_id: dict[int, list[Any]] = {}
-    for link in links or []:
+        errors.append(f"{path}: UI node ids are missing or duplicated")
+    link_ids: set[int] = set()
+    for link in links:
         if not isinstance(link, list) or len(link) != 6:
             errors.append(f"{path}: malformed link {link!r}")
             continue
         link_id, source_id, source_slot, target_id, target_slot, link_type = link
-        if link_id in link_by_id:
+        if link_id in link_ids:
             errors.append(f"{path}: duplicate link id {link_id}")
-        link_by_id[link_id] = link
+        link_ids.add(link_id)
         source = by_id.get(source_id)
         target = by_id.get(target_id)
         if source is None or target is None:
             errors.append(f"{path}: link {link_id} has a missing endpoint")
             continue
-        outputs = source.get("outputs", [])
-        inputs = target.get("inputs", [])
-        if not isinstance(source_slot, int) or not 0 <= source_slot < len(outputs):
-            errors.append(f"{path}: link {link_id} has an invalid source slot")
-        elif outputs[source_slot].get("type") != link_type:
-            errors.append(f"{path}: link {link_id} source type mismatch")
-        if not isinstance(target_slot, int) or not 0 <= target_slot < len(inputs):
-            errors.append(f"{path}: link {link_id} has an invalid target slot")
-        elif inputs[target_slot].get("type") not in {link_type, "IMAGE", "COMFY_MATCHTYPE_V3"}:
-            errors.append(f"{path}: link {link_id} target type mismatch")
-
+        try:
+            if source["outputs"][source_slot]["type"] != link_type:
+                errors.append(f"{path}: link {link_id} source type mismatch")
+            if target["inputs"][target_slot]["type"] != link_type:
+                errors.append(f"{path}: link {link_id} target type mismatch")
+        except (IndexError, KeyError, TypeError):
+            errors.append(f"{path}: link {link_id} has an invalid slot")
     for node in nodes:
-        class_type = str(node.get("type", ""))
-        if class_type not in ALLOWED_NODES:
-            errors.append(f"{path}: unapproved node {class_type!r}")
-        if "krea" in class_type.casefold() or "identity" in class_type.casefold() or "pulid" in class_type.casefold():
-            errors.append(f"{path}: obsolete identity/Krea node {class_type!r}")
+        if node.get("type") not in ALLOWED_NODES:
+            errors.append(f"{path}: unapproved node {node.get('type')!r}")
         if node.get("mode") != 0:
-            errors.append(f"{path}: node {node.get('id')} is unexpectedly bypassed")
-        for input_item in node.get("inputs", []):
-            if input_item.get("link") is not None and input_item["link"] not in link_by_id:
+            errors.append(f"{path}: node {node.get('id')} is disabled or bypassed")
+        for item in node.get("inputs", []):
+            if item.get("link") is not None and item["link"] not in link_ids:
                 errors.append(f"{path}: node {node.get('id')} references a missing input link")
-        for output in node.get("outputs", []):
-            for output_link in output.get("links") or []:
-                if output_link not in link_by_id:
-                    errors.append(f"{path}: node {node.get('id')} references a missing output link")
+        for item in node.get("outputs", []):
+            if any(link_id not in link_ids for link_id in item.get("links") or []):
+                errors.append(f"{path}: node {node.get('id')} references a missing output link")
 
-    group_bounds = {group.get("title"): group.get("bounding") for group in groups or []}
-    for index, group in enumerate(groups or []):
-        bounds = group.get("bounding")
-        if not (isinstance(bounds, list) and len(bounds) == 4):
-            errors.append(f"{path}: group {group.get('title')} has invalid bounds")
-            continue
-        for other in (groups or [])[index + 1 :]:
-            other_bounds = other.get("bounding")
-            if isinstance(other_bounds, list) and len(other_bounds) == 4 and _overlap(bounds, other_bounds):
-                errors.append(f"{path}: groups overlap: {group.get('title')} and {other.get('title')}")
-
+    group_bounds = {group["title"]: group["bounding"] for group in groups}
+    for index, group in enumerate(groups):
+        for other in groups[index + 1 :]:
+            if _overlap(group["bounding"], other["bounding"]):
+                errors.append(f"{path}: groups overlap: {group['title']} / {other['title']}")
     for node in nodes:
         group_name = node.get("properties", {}).get("hoi4_group")
         bounds = group_bounds.get(group_name)
         if bounds is None:
-            errors.append(f"{path}: node {node.get('id')} has no valid group")
+            errors.append(f"{path}: node {node.get('id')} is not assigned to a group")
             continue
-        nx, ny = node.get("pos", [0, 0])
-        nw, nh = node.get("size", [0, 0])
+        nx, ny = node["pos"]
+        nw, nh = node["size"]
         gx, gy, gw, gh = bounds
-        if nx < gx + GROUP_NODE_PADDING or ny < gy + GROUP_NODE_PADDING or nx + nw > gx + gw - GROUP_NODE_PADDING or ny + nh > gy + gh - GROUP_NODE_PADDING:
-            errors.append(f"{path}: node {node.get('id')} extends outside group {group_name}")
-
+        if nx < gx + 20 or ny < gy + 20 or nx + nw > gx + gw - 20 or ny + nh > gy + gh - 20:
+            errors.append(f"{path}: node {node.get('id')} extends outside {group_name}")
     for index, node in enumerate(nodes):
-        a = [*node.get("pos", [0, 0]), *node.get("size", [0, 0])]
+        box = [*node["pos"], *node["size"]]
         for other in nodes[index + 1 :]:
-            b = [*other.get("pos", [0, 0]), *other.get("size", [0, 0])]
-            if _overlap(a, b, padding=LAYOUT_NODE_PADDING):
-                errors.append(f"{path}: nodes overlap or have insufficient gutter: {node.get('id')} and {other.get('id')}")
+            other_box = [*other["pos"], *other["size"]]
+            if _overlap(box, other_box, 20):
+                errors.append(f"{path}: nodes {node['id']} and {other['id']} overlap or lack a 20px gutter")
     return errors
 
 
-def _validate_api(path: Path, api: dict[str, Any]) -> list[str]:
+def _api_errors(path: Path, api: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if not api:
         return [f"{path}: API graph is empty"]
     for node_id, node in api.items():
-        if not node_id.isdigit() or not isinstance(node, dict):
-            errors.append(f"{path}: invalid API node key {node_id!r}")
-            continue
-        class_type = str(node.get("class_type", ""))
-        if class_type not in ALLOWED_NODES:
-            errors.append(f"{path}: API graph uses unapproved node {class_type!r}")
+        if not node_id.isdigit() or node.get("class_type") not in ALLOWED_NODES - {"Note"}:
+            errors.append(f"{path}: invalid API node {node_id}: {node.get('class_type')!r}")
         for value in node.get("inputs", {}).values():
             if isinstance(value, list) and len(value) == 2 and isinstance(value[0], str) and value[0] not in api:
                 errors.append(f"{path}: node {node_id} references missing node {value[0]}")
-    if not any(node.get("class_type") in {"SaveImage", "Hoi4SaveDDS"} for node in api.values()):
-        errors.append(f"{path}: graph has no output node")
     return errors
 
 
-def _validate_policy(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[str]:
+def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    extra = ui.get("extra", {})
-    workflow_id = str(extra.get("workflow_id", ""))
-    is_processing = workflow_id == "hoi4_portrait_processing_only"
-    is_text = workflow_id.endswith("text_to_image")
-    is_batch = workflow_id == "hoi4_portrait_batch"
-    if extra.get("base_model") != BASE_MODEL or BASE_MODEL in {"flux-2-klein-base-9b-fp8.safetensors", "flux-2-klein-base-9b.safetensors"}:
-        errors.append(f"{path}: only the distilled FLUX.2 Klein 9B model is allowed")
-    if "base" in str(extra.get("base_model", "")).casefold():
-        errors.append(f"{path}: base FLUX model was selected")
-    if is_processing and extra.get("style_lora") is not None:
-        errors.append(f"{path}: processing workflow must not advertise a style LoRA")
-    if not is_processing and extra.get("style_lora") != STYLE_LORA:
-        errors.append(f"{path}: workflow must use the 2500-step LoRA")
-    if extra.get("master_size") != [CANVAS_WIDTH, CANVAS_HEIGHT] or extra.get("game_size") != [GAME_WIDTH, GAME_HEIGHT]:
-        errors.append(f"{path}: output dimensions are incorrect")
-    for node_id, node in api.items():
-        if node.get("class_type") == "LoraLoaderModelOnly" and str(node.get("inputs", {}).get("lora_name", "")).startswith("hoi4_portrait"):
-            if node.get("inputs", {}).get("lora_name") != STYLE_LORA or node.get("inputs", {}).get("strength_model") != 1.0:
-                errors.append(f"{path}: style LoRA must be 2500 at strength 1.00")
-    restoration_loaders = [node for node in api.values() if node.get("class_type") == "LoraLoaderModelOnly" and node.get("inputs", {}).get("lora_name") in {"adonis_base.safetensors", "adonis_post.safetensors"}]
-    if is_text and restoration_loaders:
-        errors.append(f"{path}: text-to-image must not load Adonis")
-    if not is_text and not is_processing and not is_batch and len(restoration_loaders) != 2:
-        errors.append(f"{path}: source workflow must load Adonis Base and Post")
-    if is_processing or is_batch:
-        if len(restoration_loaders) != 2:
-            errors.append(f"{path}: restoration workflow must load Adonis Base and Post")
+    workflow_id = ui.get("extra", {}).get("workflow_id")
+    is_source = workflow_id == WORKFLOW_IDS[0]
+    is_text = workflow_id == WORKFLOW_IDS[1]
+    is_processing = workflow_id == WORKFLOW_IDS[2]
+    is_batch = workflow_id == WORKFLOW_IDS[3]
+    if ui.get("extra", {}).get("base_model") != build_workflows.BASE_MODEL or "klein-base" in json.dumps(ui).casefold():
+        errors.append(f"{path}: only distilled FLUX.2 Klein is allowed")
+    if ui.get("extra", {}).get("master_size") != [1024, 1365] or ui.get("extra", {}).get("game_size") != [156, 210]:
+        errors.append(f"{path}: master/game dimensions are wrong")
+    if ui.get("extra", {}).get("dds") != {"compression": "DXT5", "mipmaps": False}:
+        errors.append(f"{path}: DDS policy must be DXT5 with no mipmaps")
 
-    samplers = [node for node in api.values() if node.get("class_type") == "Hoi4PortraitSampler"]
-    expected_count = 1 if is_text else 2 if is_processing else 3 if is_batch else 5
-    if len(samplers) != expected_count:
-        errors.append(f"{path}: expected {expected_count} merged sampler cards, found {len(samplers)}")
-    for sampler in samplers:
-        inputs = sampler.get("inputs", {})
-        for name, expected in (("steps", DEFAULT_STEPS), ("cfg", DEFAULT_CFG), ("guidance", DEFAULT_GUIDANCE), ("sampling_algorithm", "euler"), ("scheduler", "simple"), ("denoise", 1.0)):
-            if inputs.get(name) != expected:
-                errors.append(f"{path}: sampler {name} must default to {expected!r}")
-    if is_batch and extra.get("batch_sampler_count") != 1:
-        errors.append(f"{path}: batch metadata must advertise one sampler")
-    if not is_processing and not is_batch and not is_text:
-        prompt = str(api.get("40", {}).get("inputs", {}).get("text", ""))
-        if prompt != "make this portrait hoi4_portrait style":
-            errors.append(f"{path}: source prompt is not the exact editable default")
-    if is_text and api.get("20", {}).get("inputs", {}).get("text") != "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.":
-        errors.append(f"{path}: text-to-image prompt is not the documented example")
-    if any(node.get("class_type") == "ImageScale" and node.get("inputs", {}).get("crop") == "stretch" for node in api.values()):
-        errors.append(f"{path}: output scaling must not stretch")
-    output_prefixes = [str(node.get("inputs", {}).get("filename_prefix", "")) for node in api.values() if node.get("class_type") in {"SaveImage", "Hoi4SaveDDS"}]
-    for folder in ("1024x1365/", "156x210/", "156x210/dds/"):
-        if not any(prefix.startswith(folder) for prefix in output_prefixes):
-            errors.append(f"{path}: missing output folder {folder}")
-    if not any(node.get("class_type") == "Hoi4SaveDDS" for node in api.values()):
-        errors.append(f"{path}: missing HOI4 DDS output node")
-    needs_processing_preview = not is_text
-    if needs_processing_preview and not any(node.get("class_type") == "PreviewImage" and "crop + ESRGAN" in str(node.get("_meta", {}).get("title", "")) for node in api.values()):
-        errors.append(f"{path}: missing crop + ESRGAN preview")
+    counts: dict[str, int] = {}
     for node in api.values():
-        if node.get("class_type") == "ComfySwitchNode" and "restoration" in str(node.get("_meta", {}).get("title", "")).casefold():
-            if node.get("inputs", {}).get("switch") is not True:
-                errors.append(f"{path}: restoration toggle must be enabled by default")
-    if is_batch and not any(node.get("class_type") == "Hoi4BatchInput" for node in api.values()):
-        errors.append(f"{path}: batch graph needs the folder input node")
+        counts[node["class_type"]] = counts.get(node["class_type"], 0) + 1
+    expected_samplers = 3 if is_source else 0 if is_processing else 1
+    if counts.get("Hoi4PortraitSampler", 0) != expected_samplers:
+        errors.append(f"{path}: expected {expected_samplers} sampler card(s)")
+    expected_restorers = 0 if is_text else 1
+    if counts.get("Hoi4AdonisRestoration", 0) != expected_restorers:
+        errors.append(f"{path}: expected {expected_restorers} Adonis card(s)")
+    if counts.get("Hoi4ModelStack", 0) != 1 or counts.get("Hoi4FinalOutput", 0) != (3 if is_source else 1):
+        errors.append(f"{path}: model/final logical card count is incorrect")
+    if is_batch and counts.get("Hoi4BatchInput", 0) != 1:
+        errors.append(f"{path}: batch workflow needs one list-output input card")
+    if is_source and counts.get("PreviewImage", 0) != 6:
+        errors.append(f"{path}: source workflow needs source preview plus the five-card comparison row")
+
+    for node in api.values():
+        class_type = node["class_type"]
+        inputs = node.get("inputs", {})
+        if class_type == "Hoi4ModelStack":
+            exact = {
+                "diffusion_model": build_workflows.BASE_MODEL,
+                "text_encoder": build_workflows.TEXT_ENCODER,
+                "vae_name": build_workflows.VAE_MODEL,
+                "style_lora": build_workflows.STYLE_LORA,
+                "adonis_base": build_workflows.ADONIS_BASE,
+                "adonis_refine": build_workflows.ADONIS_REFINE,
+            }
+            for key, expected in exact.items():
+                if inputs.get(key) != expected:
+                    errors.append(f"{path}: model stack {key} must be {expected}")
+            if is_processing and inputs.get("style_strength") != 0.0:
+                errors.append(f"{path}: processing-only must bypass the style LoRA")
+            if is_text and inputs.get("load_restoration") is not False:
+                errors.append(f"{path}: text-to-image must not load Adonis LoRAs")
+            if not is_text and inputs.get("load_restoration") is not True:
+                errors.append(f"{path}: source processing must load Adonis Base + Refine")
+        elif class_type == "Hoi4PortraitSampler":
+            exact = {"steps": 4, "cfg": 1.0, "guidance": 1.0, "sampling_algorithm": "euler", "scheduler": "simple", "denoise": 1.0}
+            for key, expected in exact.items():
+                if inputs.get(key) != expected:
+                    errors.append(f"{path}: sampler {key} must default to {expected!r}")
+            expected_prompt = build_workflows.TEXT_PROMPT if is_text else build_workflows.STYLE_PROMPT
+            expected_mode = "text_to_image" if is_text else "source_reference"
+            if inputs.get("prompt") != expected_prompt or inputs.get("mode") != expected_mode:
+                errors.append(f"{path}: sampler mode or exact prompt changed")
+            if not is_text and "reference_image" not in inputs:
+                errors.append(f"{path}: source sampler is missing its reference image")
+        elif class_type == "Hoi4AdonisRestoration":
+            exact = {
+                "enabled": True, "prompt": build_workflows.RESTORATION_PROMPT, "megapixels": 1.7,
+                "multiple_of": 16, "resize_mode": "crop", "upscale_method": "lanczos", "eta": 0.8,
+                "sampling_algorithm": "exponential/res_2s", "scheduler": "simple", "total_steps": 9,
+                "base_steps_to_run": 5, "cfg": 1.0, "denoise": 1.0, "base_sampling_mode": "standard",
+                "refine_sampling_mode": "resample", "noise_type": "gaussian", "initial_noise_scale": 1.0,
+                "alternate_denoise": 1.0, "channelwise_cfg": False, "bongmath": True,
+            }
+            for key, expected in exact.items():
+                if inputs.get(key) != expected:
+                    errors.append(f"{path}: Adonis {key} must be {expected!r}")
+        elif class_type == "Hoi4FinalOutput":
+            if [inputs.get("master_width"), inputs.get("master_height"), inputs.get("game_width"), inputs.get("game_height")] != [1024, 1365, 156, 210]:
+                errors.append(f"{path}: final output sizes changed")
+        elif class_type == "Hoi4SaveDDS":
+            if inputs.get("compression") != "dxt5" or not str(inputs.get("filename_prefix", "")).startswith("156x210/dds/"):
+                errors.append(f"{path}: DDS output is not game-ready")
+
+    if any(node["class_type"] in {"ImageScale", "ImageScaleBy", "ImageUpscaleWithModel", "UNETLoader", "UnetLoaderGGUF"} for node in api.values()):
+        errors.append(f"{path}: graph contains redundant low-level loader/upscale nodes")
+    if is_processing and ui.get("extra", {}).get("style_lora") is not None:
+        errors.append(f"{path}: processing-only metadata advertises a style LoRA")
+    if not is_processing and ui.get("extra", {}).get("style_lora") != build_workflows.STYLE_LORA:
+        errors.append(f"{path}: step-2500 style LoRA metadata is missing")
     return errors
 
 
 def validate_all(root: Path = ROOT) -> dict[str, Any]:
     workflow_dir = root / "workflows"
     errors: list[str] = []
-    try:
-        manifest = json.loads((workflow_dir / "manifest.json").read_text(encoding="utf-8"))
-    except Exception as exc:
-        return {"status": "FAIL", "errors": [f"{workflow_dir / 'manifest.json'}: {exc}"], "workflows": []}
-    items = manifest.get("workflows", [])
-    expected_ids = {
-        "hoi4_portrait_flux2_klein_9b_source",
-        "hoi4_portrait_flux2_klein_9b_text_to_image",
-        "hoi4_portrait_processing_only",
-        "hoi4_portrait_batch",
-    }
-    if {item.get("workflow_id") for item in items} != expected_ids:
-        errors.append(f"{workflow_dir / 'manifest.json'}: exactly four default workflows are required")
-    reports: list[dict[str, Any]] = []
-    for item in items:
-        ui_path = root / item["workflow_json"]
-        api_path = root / item["api_json"]
-        try:
-            ui = json.loads(ui_path.read_text(encoding="utf-8"))
-            api = json.loads(api_path.read_text(encoding="utf-8"))
-        except Exception as exc:
-            errors.append(f"{item.get('workflow_id')}: {exc}")
+    details: list[dict[str, Any]] = []
+    actual_ui = {path.stem for path in workflow_dir.glob("*.json") if not path.name.endswith(".api.json") and path.name != "manifest.json"}
+    if actual_ui != set(WORKFLOW_IDS):
+        errors.append(f"{workflow_dir}: expected exactly four editor workflows, found {sorted(actual_ui)}")
+    for workflow_id in WORKFLOW_IDS:
+        ui_path = workflow_dir / f"{workflow_id}.json"
+        api_path = workflow_dir / f"{workflow_id}.api.json"
+        if not ui_path.is_file() or not api_path.is_file():
+            errors.append(f"{workflow_id}: editor/API pair is incomplete")
             continue
-        workflow_errors = _validate_ui(ui_path, ui) + _validate_api(api_path, api) + _validate_policy(ui_path, ui, api)
-        errors.extend(workflow_errors)
-        reports.append({"workflow_id": item["workflow_id"], "node_count": len(ui.get("nodes", [])), "link_count": len(ui.get("links", [])), "status": "PASS" if not workflow_errors else "FAIL", "errors": workflow_errors})
-    return {"status": "PASS" if not errors else "FAIL", "errors": errors, "workflows": reports}
+        ui = json.loads(ui_path.read_text(encoding="utf-8"))
+        api = json.loads(api_path.read_text(encoding="utf-8"))
+        errors.extend(_ui_errors(ui_path, ui))
+        errors.extend(_api_errors(api_path, api))
+        errors.extend(_policy_errors(ui_path, ui, api))
+        details.append({"id": workflow_id, "nodes": len(ui["nodes"]), "links": len(ui["links"])})
+    return {"status": "PASS" if not errors else "FAIL", "errors": errors, "workflows": details}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -309,7 +254,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=ROOT)
     args = parser.parse_args(argv)
     result = validate_all(args.root.resolve())
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0 if result["status"] == "PASS" else 1
 
 

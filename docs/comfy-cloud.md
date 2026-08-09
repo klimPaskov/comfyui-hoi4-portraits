@@ -15,9 +15,11 @@ Import it from its hosted source:
 3. Paste the URL for
    [`hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors`](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors).
    Import [`adonis_base.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_base.safetensors)
-   and `adonis_post.safetensors` when you want optional restoration.
+   and [`adonis_refine.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_refine.safetensors)
+   when you want restoration.
 4. Select model type **LoRA** and target folder `loras`.
-5. Wait for the exact filename to appear in `LoraLoaderModelOnly`.
+5. Wait for the exact filenames to appear in the model library, then select
+   them on the **HOI4 Distilled Model Stack** card.
 
 Model import requires a Comfy Cloud Creator or Pro plan. The FLUX.2 Klein 9B
 stack, RealESRGAN, and BiRefNet are present in the Cloud catalog.

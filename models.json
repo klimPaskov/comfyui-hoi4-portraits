@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0.0",
+  "schema_version": "3.1.0",
   "base_model": "flux-2-klein-9b.safetensors",
   "model_variants": {
     "full": {
@@ -31,7 +31,7 @@
       }
     }
   },
-  "text_encoder": "qwen_3_8b_fp8mixed.safetensors",
+  "text_encoder": "Qwen3-8B-Q8_0.gguf",
   "vae": "flux2-vae.safetensors",
   "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
   "master_size": [
@@ -56,7 +56,7 @@
       "sha256": "0975d6b77b5f510b99547d6724a208e36527df654e8f6134f59ece3f9f30da58",
       "license": "FLUX Non-Commercial License",
       "requires_huggingface_auth": true,
-      "recommended_vram": "24+ GB"
+      "recommended_vram": ">20 GB"
     },
     {
       "name": "FLUX.2 Klein 9B (FP8)",
@@ -134,17 +134,17 @@
       "recommended_vram": "16+ GB"
     },
     {
-      "name": "Qwen 3 8B FP8 mixed text encoder",
-      "filename": "qwen_3_8b_fp8mixed.safetensors",
+      "name": "Qwen 3 8B Q8 GGUF text encoder",
+      "filename": "Qwen3-8B-Q8_0.gguf",
       "directory": "text_encoders",
       "variant": "shared",
       "quant": null,
-      "source": "Comfy-Org/flux2-klein-9B",
-      "revision": "23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83",
-      "url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
-      "size_bytes": 8664848742,
-      "sha256": "abad16806e0cbabc54e0325d6565847443fe396d5f0be38bb3cd3fe75a1201d6",
-      "license": "See upstream repository",
+      "source": "Qwen/Qwen3-8B-GGUF",
+      "revision": "6cfbfc7d8ab95bf485c79fcc40be60930d5b4c8c",
+      "url": "https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/6cfbfc7d8ab95bf485c79fcc40be60930d5b4c8c/Qwen3-8B-Q8_0.gguf",
+      "size_bytes": 8709518112,
+      "sha256": "408b955510e196121c1c375201744783b5c9a43c7956d73fc78df54c66e883d6",
+      "license": "Apache-2.0",
       "requires_huggingface_auth": false
     },
     {
@@ -190,16 +190,16 @@
       "requires_huggingface_auth": false
     },
     {
-      "name": "Adonis Post restoration LoKr",
-      "filename": "adonis_post.safetensors",
+      "name": "Adonis Refine restoration LoKr",
+      "filename": "adonis_refine.safetensors",
       "directory": "loras",
       "variant": "shared",
       "quant": null,
       "source": "n8te0/adonis_flux2klein",
       "revision": "515ecf66717d14309a055811b3d478cdfa59bbda",
-      "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_post.safetensors",
-      "size_bytes": 926976144,
-      "sha256": "cf27c972eae1570a3c66500140a74b730c9f7bb079a141b7ae1595a9363d7b63",
+      "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_refine.safetensors",
+      "size_bytes": 1036034472,
+      "sha256": "dd6ee4f7f49bf610f06a20570ea047fdd8c498c92494bb5ec2c1180c609e2478",
       "license": "See upstream repository",
       "requires_huggingface_auth": false
     },

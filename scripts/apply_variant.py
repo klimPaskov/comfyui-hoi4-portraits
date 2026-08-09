@@ -6,12 +6,12 @@ FLUX.2 Klein 9B safetensors.  This helper rewrites the *installed* copies in
 ``user/default/workflows/hoi4_portraits`` so they load the variant that
 matches the user's VRAM:
 
-* ``full`` — ``flux-2-klein-9b.safetensors`` (BF16, 24+ GB VRAM)
+* ``full`` — ``flux-2-klein-9b.safetensors`` (BF16, more than 20 GB VRAM)
 * ``fp8``  — ``flux-2-klein-9b-fp8.safetensors`` (16-20 GB VRAM)
 * ``gguf`` — a GGUF quantization loaded by ``UnetLoaderGGUF`` (8-16 GB VRAM)
 
-Both the editor (``.json``) and the API (``.api.json``) copies are patched so
-the workflow runs identically from the UI or from ``/prompt``.
+The compact workflow keeps variant selection inside ``Hoi4ModelStack``. This
+helper rewrites that card's ``diffusion_model`` value in installed copies.
 """
 
 from __future__ import annotations
@@ -24,6 +24,13 @@ ROOT = Path(__file__).resolve().parents[1]
 FULL_MODEL = "flux-2-klein-9b.safetensors"
 FP8_MODEL = "flux-2-klein-9b-fp8.safetensors"
 GGUF_QUANTS = ("Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0")
+LOADER_CLASSES = {"Hoi4ModelStack", "UNETLoader", "UnetLoaderGGUF"}
+WORKFLOW_IDS = (
+    "hoi4_portrait_flux2_klein_9b_source",
+    "hoi4_portrait_flux2_klein_9b_text_to_image",
+    "hoi4_portrait_processing_only",
+    "hoi4_portrait_batch",
+)
 
 
 def _gguf_filename(quant: str) -> str:
@@ -37,21 +44,40 @@ def _gguf_filename(quant: str) -> str:
 def _patch_ui(path: Path, model_name: str, loader_class: str) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     for node in data.get("nodes", []):
-        if node.get("type") != "UNETLoader":
+        if node.get("type") not in LOADER_CLASSES:
+            continue
+        if node.get("type") == "Hoi4ModelStack":
+            widgets = list(node.get("widgets_values", []))
+            if not widgets:
+                raise ValueError(f"{path}: Hoi4ModelStack has no diffusion_model widget")
+            widgets[0] = model_name
+            node["widgets_values"] = widgets
             continue
         node["type"] = loader_class
-        node["properties"]["Node name for S&R"] = loader_class
+        node.setdefault("properties", {})["Node name for S&R"] = loader_class
         if loader_class == "UnetLoaderGGUF":
             node["widgets_values"] = [model_name]
             node["inputs"] = [
                 item for item in node.get("inputs", []) if item.get("name") != "weight_dtype"
             ]
-        else:
-            if node["widgets_values"]:
-                node["widgets_values"][0] = model_name
-            for item in node.get("inputs", []):
+            for item in node["inputs"]:
                 if item.get("name") == "unet_name":
                     item["widget"] = {"name": "unet_name"}
+        else:
+            node["widgets_values"] = [model_name, "default"]
+            inputs = [item for item in node.get("inputs", []) if item.get("name") != "weight_dtype"]
+            for item in inputs:
+                if item.get("name") == "unet_name":
+                    item["widget"] = {"name": "unet_name"}
+            inputs.append(
+                {
+                    "name": "weight_dtype",
+                    "type": "COMBO",
+                    "widget": {"name": "weight_dtype"},
+                    "link": None,
+                }
+            )
+            node["inputs"] = inputs
     data.setdefault("extra", {})["base_model"] = model_name
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
@@ -59,11 +85,16 @@ def _patch_ui(path: Path, model_name: str, loader_class: str) -> None:
 def _patch_api(path: Path, model_name: str, loader_class: str) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     for node in data.values():
-        if not isinstance(node, dict) or node.get("class_type") != "UNETLoader":
+        if not isinstance(node, dict) or node.get("class_type") not in LOADER_CLASSES:
+            continue
+        if node.get("class_type") == "Hoi4ModelStack":
+            node.setdefault("inputs", {})["diffusion_model"] = model_name
             continue
         node["class_type"] = loader_class
         node["inputs"] = {k: v for k, v in node.get("inputs", {}).items() if k != "weight_dtype"}
         node["inputs"]["unet_name"] = model_name
+        if loader_class == "UNETLoader":
+            node["inputs"]["weight_dtype"] = "default"
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
@@ -103,10 +134,18 @@ def main(argv: list[str] | None = None) -> int:
     primary_quant = quants[0] if primary == "gguf" else None
     model_name, loader_class = _variant_model(primary, primary_quant or "Q5_K_M")
 
+    canonical_paths = []
+    for workflow_id in WORKFLOW_IDS:
+        ui_path = workflow_dir / f"{workflow_id}.json"
+        if not ui_path.is_file():
+            parser.error(f"installed workflow file not found: {ui_path}")
+        canonical_paths.append(ui_path)
+        api_path = workflow_dir / f"{workflow_id}.api.json"
+        if api_path.is_file():
+            canonical_paths.append(api_path)
+
     patched = []
-    for path in sorted(workflow_dir.glob("*.json")):
-        if path.name == "manifest.json":
-            continue
+    for path in canonical_paths:
         if path.name.endswith(".api.json"):
             _patch_api(path, model_name, loader_class)
         else:
@@ -117,13 +156,9 @@ def main(argv: list[str] | None = None) -> int:
     for variant in variants[1:]:
         quant = quants[0] if variant == "gguf" else None
         copy_model, copy_loader = _variant_model(variant, quant or "Q5_K_M")
-        for path in sorted(workflow_dir.glob("*.json")):
-            if path.name == "manifest.json":
-                continue
+        for path in canonical_paths:
             suffix = ".api.json" if path.name.endswith(".api.json") else ".json"
             base = path.name[: -len(suffix)]
-            if base.endswith((".full", ".fp8", ".gguf")):
-                continue
             target = path.with_name(f"{base}_{variant}{suffix}")
             target.write_bytes(path.read_bytes())
             if suffix == ".api.json":

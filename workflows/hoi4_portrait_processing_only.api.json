@@ -1,700 +1,195 @@
 {
-  "5": {
-    "class_type": "LoadImage",
+  "3": {
     "inputs": {
       "image": "source_portrait.jpg"
     },
+    "class_type": "LoadImage",
     "_meta": {
-      "title": "Load source portrait — upload or pick your photo here"
+      "title": "Load source portrait"
     }
   },
-  "9": {
-    "class_type": "ImageScaleToMaxDimension",
+  "4": {
     "inputs": {
+      "face_processing": true,
+      "face_zoom": 0.9,
+      "preserve_headwear": true,
+      "use_manual_crop": false,
+      "manual_x": 0.0,
+      "manual_y": 0.0,
+      "manual_width": 1.0,
+      "manual_height": 1.0,
+      "face_model": "mediapipe_face_fp32.safetensors",
+      "subject_model": "birefnet.safetensors",
+      "upscale_model": "RealESRGAN_x2plus.pth",
       "image": [
-        "5",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "largest_size": 1024
-    },
-    "_meta": {
-      "title": "Normalize source for face detection"
-    }
-  },
-  "12": {
-    "class_type": "LoadMediaPipeFaceLandmarker",
-    "inputs": {
-      "model_name": "mediapipe_face_fp32.safetensors"
-    },
-    "_meta": {
-      "title": "Load MediaPipe face detector"
-    }
-  },
-  "13": {
-    "class_type": "MediaPipeFaceLandmarker",
-    "inputs": {
-      "face_detection_model": [
-        "12",
-        0
-      ],
-      "image": [
-        "9",
-        0
-      ],
-      "detector_variant": "both",
-      "num_faces": 1,
-      "min_confidence": 0.3,
-      "missing_frame_fallback": "empty"
-    },
-    "_meta": {
-      "title": "Find the portrait subject"
-    }
-  },
-  "11": {
-    "class_type": "AdaptivePortraitCrop",
-    "inputs": {
-      "image": [
-        "9",
-        0
-      ],
-      "face_bboxes": [
-        "13",
-        1
-      ],
-      "subject_mask": [
-        "156",
-        0
-      ],
-      "zoom": 0.9,
-      "preserve_headwear": true
-    },
-    "_meta": {
-      "title": "Face zoom 0.90 — preserve headwear: true"
-    }
-  },
-  "155": {
-    "class_type": "LoadBackgroundRemovalModel",
-    "inputs": {
-      "bg_removal_name": "birefnet.safetensors"
-    },
-    "_meta": {
-      "title": "Load subject silhouette model"
-    }
-  },
-  "156": {
-    "class_type": "RemoveBackground",
-    "inputs": {
-      "bg_removal_model": [
-        "155",
-        0
-      ],
-      "image": [
-        "9",
+        "3",
         0
       ]
     },
+    "class_type": "Hoi4SourcePrep",
     "_meta": {
-      "title": "Measure the complete head and headwear silhouette"
+      "title": "Source prep — face/manual crop + headwear + RealESRGAN"
     }
   },
-  "15": {
-    "class_type": "PrimitiveBoundingBox",
+  "5": {
     "inputs": {
-      "x": 128,
-      "y": 0,
-      "width": 768,
-      "height": 1024
+      "diffusion_model": "flux-2-klein-9b.safetensors",
+      "text_encoder": "Qwen3-8B-Q8_0.gguf",
+      "vae_name": "flux2-vae.safetensors",
+      "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+      "style_strength": 0.0,
+      "load_restoration": true,
+      "adonis_base": "adonis_base.safetensors",
+      "adonis_refine": "adonis_refine.safetensors",
+      "weight_dtype": "default",
+      "text_encoder_device": "default"
     },
+    "class_type": "Hoi4ModelStack",
     "_meta": {
-      "title": "Manual crop box for difficult sources"
-    }
-  },
-  "16": {
-    "class_type": "CropByBBoxes",
-    "inputs": {
-      "image": [
-        "9",
-        0
-      ],
-      "bboxes": [
-        "15",
-        0
-      ],
-      "output_width": 1024,
-      "output_height": 1365,
-      "padding": 0,
-      "keep_aspect": "stretch"
-    },
-    "_meta": {
-      "title": "Apply manual head-and-shoulders crop"
-    }
-  },
-  "18": {
-    "class_type": "ComfySwitchNode",
-    "inputs": {
-      "switch": false,
-      "on_false": [
-        "11",
-        0
-      ],
-      "on_true": [
-        "16",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Manual crop override — off uses automatic crop"
-    }
-  },
-  "17": {
-    "class_type": "ComfySwitchNode",
-    "inputs": {
-      "switch": true,
-      "on_false": [
-        "9",
-        0
-      ],
-      "on_true": [
-        "18",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Toggle face processing (on: face crop; off: keep full composition)"
+      "title": "Distilled FLUX.2 Klein stack — full / FP8 / GGUF"
     }
   },
   "6": {
-    "class_type": "UpscaleModelLoader",
     "inputs": {
-      "model_name": "RealESRGAN_x2plus.pth"
+      "enabled": true,
+      "prompt": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image.",
+      "noise_seed": 42,
+      "megapixels": 1.7,
+      "multiple_of": 16,
+      "resize_mode": "crop",
+      "upscale_method": "lanczos",
+      "eta": 0.8,
+      "sampling_algorithm": "exponential/res_2s",
+      "scheduler": "simple",
+      "total_steps": 9,
+      "base_steps_to_run": 5,
+      "cfg": 1.0,
+      "denoise": 1.0,
+      "base_sampling_mode": "standard",
+      "refine_sampling_mode": "resample",
+      "noise_type": "gaussian",
+      "initial_noise_scale": 1.0,
+      "alternate_denoise": 1.0,
+      "channelwise_cfg": false,
+      "bongmath": true,
+      "base_model": [
+        "5",
+        1
+      ],
+      "refine_model": [
+        "5",
+        2
+      ],
+      "clip": [
+        "5",
+        3
+      ],
+      "vae": [
+        "5",
+        4
+      ],
+      "image": [
+        "4",
+        2
+      ]
     },
+    "class_type": "Hoi4AdonisRestoration",
     "_meta": {
-      "title": "Load RealESRGAN x2"
+      "title": "Adonis Base → Refine — exact upstream topology + live controls"
     }
   },
   "7": {
-    "class_type": "ImageUpscaleWithModel",
     "inputs": {
-      "upscale_model": [
-        "6",
-        0
-      ],
+      "use_background": false,
+      "background_model": "birefnet.safetensors",
+      "master_width": 1024,
+      "master_height": 1365,
+      "game_width": 156,
+      "game_height": 210,
       "image": [
-        "17",
+        "6",
         0
       ]
     },
+    "class_type": "Hoi4FinalOutput",
     "_meta": {
-      "title": "Restore and upscale with ESRGAN"
+      "title": "Centered master + game crop (no style LoRA)"
     }
   },
   "8": {
-    "class_type": "ImageScale",
     "inputs": {
-      "image": [
+      "filename_prefix": "1024x1365/processing_only",
+      "images": [
         "7",
         0
-      ],
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center"
+      ]
     },
+    "class_type": "SaveImage",
     "_meta": {
-      "title": "Fit portrait to the 1024 x 1365 work canvas"
+      "title": "Save restored master PNG"
+    }
+  },
+  "9": {
+    "inputs": {
+      "filename_prefix": "156x210/processing_only",
+      "images": [
+        "7",
+        1
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save restored game PNG"
     }
   },
   "10": {
-    "class_type": "PreviewImage",
+    "inputs": {
+      "filename_prefix": "156x210/dds/processing_only",
+      "compression": "dxt5",
+      "images": [
+        "7",
+        1
+      ]
+    },
+    "class_type": "Hoi4SaveDDS",
+    "_meta": {
+      "title": "Save restored game DDS"
+    }
+  },
+  "11": {
     "inputs": {
       "images": [
-        "8",
+        "4",
+        2
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "RealESRGAN"
+    }
+  },
+  "12": {
+    "inputs": {
+      "images": [
+        "6",
         0
       ]
     },
+    "class_type": "PreviewImage",
     "_meta": {
-      "title": "Preview crop + ESRGAN only — before FLUX restoration"
+      "title": "Adonis Base → Refine"
     }
   },
-  "501": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "5",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview original source"
-    }
-  },
-  "502": {
-    "class_type": "PreviewImage",
+  "13": {
     "inputs": {
       "images": [
         "7",
-        0
+        1
       ]
     },
-    "_meta": {
-      "title": "Preview ESRGAN upscale"
-    }
-  },
-  "1": {
-    "class_type": "UNETLoader",
-    "inputs": {
-      "unet_name": "flux-2-klein-9b.safetensors",
-      "weight_dtype": "default"
-    },
-    "_meta": {
-      "title": "Load FLUX.2 Klein 9B"
-    }
-  },
-  "2": {
-    "class_type": "CLIPLoader",
-    "inputs": {
-      "clip_name": "qwen_3_8b_fp8mixed.safetensors",
-      "type": "flux2",
-      "device": "default"
-    },
-    "_meta": {
-      "title": "Load Qwen 3 8B text encoder"
-    }
-  },
-  "3": {
-    "class_type": "VAELoader",
-    "inputs": {
-      "vae_name": "flux2-vae.safetensors"
-    },
-    "_meta": {
-      "title": "Load FLUX.2 VAE"
-    }
-  },
-  "191": {
-    "class_type": "LoraLoaderModelOnly",
-    "inputs": {
-      "model": [
-        "1",
-        0
-      ],
-      "lora_name": "adonis_base.safetensors",
-      "strength_model": 1.0
-    },
-    "_meta": {
-      "title": "Apply Adonis restoration LoKr — strength editable here"
-    }
-  },
-  "192": {
-    "class_type": "LoraLoaderModelOnly",
-    "inputs": {
-      "model": [
-        "1",
-        0
-      ],
-      "lora_name": "adonis_post.safetensors",
-      "strength_model": 1.0
-    },
-    "_meta": {
-      "title": "Load Adonis Post restoration LoKr"
-    }
-  },
-  "20": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "2",
-        0
-      ],
-      "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. Output as professional high resolution color camera RAW image. fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality."
-    },
-    "_meta": {
-      "title": "Adonis Base restoration instructions"
-    }
-  },
-  "21": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "2",
-        0
-      ],
-      "text": ""
-    },
-    "_meta": {
-      "title": "Adonis Base restoration negative"
-    }
-  },
-  "22": {
-    "class_type": "VAEEncode",
-    "inputs": {
-      "pixels": [
-        "8",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Encode adonis base restoration reference"
-    }
-  },
-  "23": {
-    "class_type": "ReferenceLatent",
-    "inputs": {
-      "conditioning": [
-        "20",
-        0
-      ],
-      "latent": [
-        "22",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Attach reference to positive conditioning"
-    }
-  },
-  "24": {
-    "class_type": "ReferenceLatent",
-    "inputs": {
-      "conditioning": [
-        "21",
-        0
-      ],
-      "latent": [
-        "22",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Attach reference to negative conditioning"
-    }
-  },
-  "31": {
-    "class_type": "VAEDecode",
-    "inputs": {
-      "samples": [
-        "30",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Decode adonis base restoration result"
-    }
-  },
-  "35": {
     "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "31",
-        0
-      ]
-    },
     "_meta": {
-      "title": "Preview Adonis Base restoration"
-    }
-  },
-  "30": {
-    "class_type": "Hoi4PortraitSampler",
-    "inputs": {
-      "model": [
-        "191",
-        0
-      ],
-      "positive": [
-        "23",
-        0
-      ],
-      "negative": [
-        "24",
-        0
-      ],
-      "latent_image": [
-        "22",
-        0
-      ],
-      "noise_seed": 17,
-      "steps": 4,
-      "cfg": 1.0,
-      "guidance": 1.0,
-      "sampling_algorithm": "euler",
-      "scheduler": "simple",
-      "denoise": 1.0,
-      "add_noise": "enable",
-      "start_at_step": 0,
-      "end_at_step": 10000,
-      "force_full_denoise": true
-    },
-    "_meta": {
-      "title": "Adonis Base restoration — sampler and generation controls"
-    }
-  },
-  "400": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "2",
-        0
-      ],
-      "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures. Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity. Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression. On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions. Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur. Output as professional high resolution color camera RAW image. clean natural skin, hair and body texture, no jpeg artifacts, no checkerboard pattern, male portrait."
-    },
-    "_meta": {
-      "title": "Adonis Post restoration instructions"
-    }
-  },
-  "401": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "2",
-        0
-      ],
-      "text": ""
-    },
-    "_meta": {
-      "title": "Adonis Post restoration negative"
-    }
-  },
-  "402": {
-    "class_type": "VAEEncode",
-    "inputs": {
-      "pixels": [
-        "31",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Encode adonis post restoration reference"
-    }
-  },
-  "403": {
-    "class_type": "ReferenceLatent",
-    "inputs": {
-      "conditioning": [
-        "400",
-        0
-      ],
-      "latent": [
-        "402",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Attach reference to positive conditioning"
-    }
-  },
-  "404": {
-    "class_type": "ReferenceLatent",
-    "inputs": {
-      "conditioning": [
-        "401",
-        0
-      ],
-      "latent": [
-        "402",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Attach reference to negative conditioning"
-    }
-  },
-  "411": {
-    "class_type": "VAEDecode",
-    "inputs": {
-      "samples": [
-        "410",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Decode adonis post restoration result"
-    }
-  },
-  "415": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "411",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview Adonis Post restoration"
-    }
-  },
-  "410": {
-    "class_type": "Hoi4PortraitSampler",
-    "inputs": {
-      "model": [
-        "192",
-        0
-      ],
-      "positive": [
-        "403",
-        0
-      ],
-      "negative": [
-        "404",
-        0
-      ],
-      "latent_image": [
-        "402",
-        0
-      ],
-      "noise_seed": 17,
-      "steps": 4,
-      "cfg": 1.0,
-      "guidance": 1.0,
-      "sampling_algorithm": "euler",
-      "scheduler": "simple",
-      "denoise": 1.0,
-      "add_noise": "enable",
-      "start_at_step": 0,
-      "end_at_step": 10000,
-      "force_full_denoise": true
-    },
-    "_meta": {
-      "title": "Adonis Post restoration — sampler and generation controls"
-    }
-  },
-  "32": {
-    "class_type": "ComfySwitchNode",
-    "inputs": {
-      "switch": true,
-      "on_false": [
-        "8",
-        0
-      ],
-      "on_true": [
-        "411",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Toggle FLUX restoration (on: ESRGAN then FLUX; off: keep ESRGAN output)"
-    }
-  },
-  "71": {
-    "class_type": "SaveImage",
-    "inputs": {
-      "images": [
-        "32",
-        0
-      ],
-      "filename_prefix": "1024x1365/processed"
-    },
-    "_meta": {
-      "title": "Save 1024 x 1365 processed PNG"
-    }
-  },
-  "72": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "32",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
-      "crop": "center"
-    },
-    "_meta": {
-      "title": "Resize to HOI4 156 x 210"
-    }
-  },
-  "73": {
-    "class_type": "SaveImage",
-    "inputs": {
-      "images": [
-        "72",
-        0
-      ],
-      "filename_prefix": "156x210/processed"
-    },
-    "_meta": {
-      "title": "Save processed game-size PNG"
-    }
-  },
-  "74": {
-    "class_type": "Hoi4SaveDDS",
-    "inputs": {
-      "images": [
-        "72",
-        0
-      ],
-      "filename_prefix": "156x210/dds/processed"
-    },
-    "_meta": {
-      "title": "Save processed HOI4-ready DDS"
-    }
-  },
-  "75": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "72",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 624,
-      "height": 840,
-      "crop": "disabled"
-    },
-    "_meta": {
-      "title": "Enlarge processed preview for clarity (does not change saved files)"
-    }
-  },
-  "600": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "8",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview ESRGAN restored source (before LoRA)"
-    }
-  },
-  "601": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "32",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview FLUX.2 restoration pass (Adonis)"
-    }
-  },
-  "602": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "75",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Final portrait processed — 156 x 210 (game size)"
+      "title": "Final 156×210"
     }
   }
 }

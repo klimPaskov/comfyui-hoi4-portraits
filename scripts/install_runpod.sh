@@ -2,7 +2,6 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-GGUF_REVISION="6ea2651e7df66d7585f6ffee804b20e92fb38b8a"
 
 VARIANTS=()
 GGUF_QUANTS="Q5_K_M"
@@ -98,21 +97,9 @@ if ! "${PYTHON_BIN}" -c "import huggingface_hub, hf_xet" >/dev/null 2>&1; then
   fi
 fi
 
-if [[ " ${VARIANTS[*]} " == *" gguf "* ]]; then
-  echo "Installing the ComfyUI-GGUF node pack for the GGUF variant..."
-  GGUF_DIR="${COMFY_ROOT}/custom_nodes/ComfyUI-GGUF"
-  if [[ -d "${GGUF_DIR}/.git" ]]; then
-    git -C "${GGUF_DIR}" fetch --depth 1 origin "${GGUF_REVISION}"
-  elif [[ -d "${GGUF_DIR}" ]]; then
-    echo "${GGUF_DIR} exists but is not a Git checkout. Move it aside, then rerun this installer." >&2
-    exit 1
-  else
-    git clone --filter=blob:none --no-checkout https://github.com/city96/ComfyUI-GGUF.git "${GGUF_DIR}"
-    git -C "${GGUF_DIR}" fetch --depth 1 origin "${GGUF_REVISION}"
-  fi
-  git -C "${GGUF_DIR}" checkout --detach "${GGUF_REVISION}"
-  "${PYTHON_BIN}" -m pip install -r "${GGUF_DIR}/requirements.txt"
-fi
+echo "Installing the exact Adonis workflow dependencies..."
+"${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_custom_node_packs.py" \
+  --comfyui-root "${COMFY_ROOT}"
 
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_workflows.py" --comfyui-root "${COMFY_ROOT}"
 
@@ -148,7 +135,7 @@ if spec is None or spec.loader is None:
     raise RuntimeError(f"cannot load {node_path}")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-for required in ("AdaptivePortraitCrop", "PortraitIdentityMask", "Hoi4PortraitSampler", "Hoi4BatchInput", "Hoi4SaveDDS"):
+for required in ("AdaptivePortraitCrop", "PortraitIdentityMask", "Hoi4ModelStack", "Hoi4SourcePrep", "Hoi4PortraitSampler", "Hoi4AdonisRestoration", "Hoi4FinalOutput", "Hoi4BatchInput", "Hoi4SaveDDS"):
     if required not in module.NODE_CLASS_MAPPINGS:
         raise RuntimeError(f"{required} did not register")
 print(f"Verified the hoi4_portraits node pack with {sys.executable}")
@@ -159,5 +146,5 @@ echo "Installed ${#VARIANTS[@]} model variant(s): ${VARIANTS[*]} (GGUF quants: $
 echo "Four workflows are under user/default/workflows/hoi4_portraits."
 echo "Restart ComfyUI, then open Workflows > hoi4_portraits."
 if [[ " ${VARIANTS[*]} " == *" full "* ]]; then
-  echo "Note: the full model needs 24+ GB VRAM and a gated HF token (HF_TOKEN)."
+  echo "Note: the full model is selected above 20 GB VRAM and needs a gated HF token (HF_TOKEN)."
 fi

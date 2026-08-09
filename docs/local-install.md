@@ -9,25 +9,25 @@
 
 ## Storage and VRAM requirements
 
-The installer downloads only the model variant you select plus the shared
-support files. **Shared support files** (Qwen 3 8B FP8 text encoder, FLUX.2
-VAE, the 2500-step LoRA, Adonis Base + Post, RealESRGAN, BiRefNet, and the two
-face detectors) total **11.8 GB**.
+The installer downloads only the selected distilled model variant plus the
+shared support set. The shared set is **11,966,369,598 bytes (11.97 GB / 11.14
+GiB)**: Qwen 3 8B Q8 GGUF, FLUX.2 VAE, the 2500-step style LoRA, Adonis Base
+and Refine, RealESRGAN, BiRefNet, and both face detectors.
 
-| Install | Model file | Downloads | Total on disk* | Recommended VRAM |
+| Install | Variant file | Exact model payload | Practical free space | VRAM selection |
 | --- | --- | --- | --- | --- |
-| Full | `flux-2-klein-9b.safetensors` (18.2 GB) | 30.0 GB | ~40 GB free | 24+ GB |
-| FP8 | `flux-2-klein-9b-fp8.safetensors` (9.4 GB) | 21.2 GB | ~28 GB free | 16–20 GB |
-| GGUF Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` (5.9 GB) | 17.7 GB | ~24 GB free | 8–10 GB |
-| GGUF Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` (7.0 GB) | 18.8 GB | ~25 GB free | 10–14 GB |
-| GGUF Q6_K | `flux-2-klein-9b-Q6_K.gguf` (7.9 GB) | 19.7 GB | ~26 GB free | 12–16 GB |
-| GGUF Q8_0 | `flux-2-klein-9b-Q8_0.gguf` (10.0 GB) | 21.8 GB | ~28 GB free | 16+ GB |
+| Full | `flux-2-klein-9b.safetensors` | 30.124 GB / 28.055 GiB | 40 GB | more than 20 GB |
+| FP8 | `flux-2-klein-9b-fp8.safetensors` | 21.399 GB / 19.930 GiB | 30 GB | 16–20 GB |
+| GGUF Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` | 17.876 GB / 16.649 GiB | 25 GB | 8–10 GB |
+| GGUF Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` | 18.985 GB / 17.681 GiB | 26 GB | 10–14 GB |
+| GGUF Q6_K | `flux-2-klein-9b-Q6_K.gguf` | 19.832 GB / 18.470 GiB | 27 GB | 12–16 GB |
+| GGUF Q8_0 | `flux-2-klein-9b-Q8_0.gguf` | 21.945 GB / 20.438 GiB | 30 GB | 16+ GB |
 
-\* "Total on disk" is the download size plus a ~10 GB safety margin for
-ComfyUI itself, the Hugging Face cache, and a few generated outputs. The bare
-minimum for the **full** workflow is therefore about **35 GB free**; the
-**FP8** workflow about **25 GB free**; any **GGUF** workflow about
-**22–25 GB free**.
+The bare minimum for the full workflow's model files is therefore
+**30,123,554,766 bytes (30.12 GB / 28.05 GiB)**. Keep about **40 GB free** for
+the model payload, ComfyUI package, Hugging Face metadata/cache behavior, and
+generated images. For multiple variants, count the shared set once: full +
+FP8 + GGUF Q5_K_M is **46.58 GB** of model files.
 
 VRAM guidance used by the installer wizard:
 
@@ -42,17 +42,22 @@ offloads it to system RAM when VRAM is tight, so 8 GB GPUs work but are slow.
 
 ```bash
 python scripts/install_workflows.py --comfyui-root /path/to/ComfyUI
+python scripts/install_custom_node_packs.py --comfyui-root /path/to/ComfyUI
 python scripts/apply_variant.py --comfyui-root /path/to/ComfyUI --variant fp8
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 ```
 
-The setup script switches the installed workflows to the chosen variant:
+The setup script changes the `diffusion_model` field on every installed
+**HOI4 Distilled Model Stack** card:
 
-- `--variant full` → `UNETLoader` with `flux-2-klein-9b.safetensors`
-- `--variant fp8` → `UNETLoader` with `flux-2-klein-9b-fp8.safetensors`
-- `--variant gguf --gguf-quants Q5_K_M` → `UnetLoaderGGUF` with the selected
-  GGUF quantization (requires the [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF)
-  node pack, installed automatically by the installers)
+- `--variant full` → `flux-2-klein-9b.safetensors`
+- `--variant fp8` → `flux-2-klein-9b-fp8.safetensors`
+- `--variant gguf --gguf-quants Q5_K_M` → the selected
+  `flux-2-klein-9b-*.gguf` quantization
+
+The card uses the native safetensors loader or the pinned
+[ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) diffusion loader at
+runtime according to the filename.
 
 Pass `--variant` multiple times to prepare several variants; the first is
 applied to the four main workflows and the rest are emitted as
@@ -62,8 +67,9 @@ ready-made `*_fp8.json` / `*_gguf.json` copies.
 
 On a RunPod image that already contains ComfyUI, the installer places the four
 workflows in `user/default/workflows/hoi4_portraits`, installs the project
-node pack (and ComfyUI-GGUF when GGUF is selected), copies backgrounds and a
-sample source into `input/`, and downloads the selected models:
+node pack plus the pinned Adonis/RES4LYF dependencies, copies the bundled
+backgrounds and sample source into `input/`, creates the batch/output folders,
+and downloads the selected models:
 
 ```bash
 (
@@ -102,7 +108,7 @@ Startup checks that every required node loaded and reports anything missing.
 The release executable is a complete installer wizard, not just an unpacker:
 
 1. Run
-   `.\HOI4-Portrait-Workflows-v3.0.0-windows-x64.exe`.
+   `.\HOI4-Portrait-Workflows-v3.1.0-windows-x64.exe`.
 2. It detects your GPU VRAM with `nvidia-smi` and pre-checks the recommended
    variant (GGUF for 8–16 GB, FP8 for 16–20 GB, full above 20 GB).
 3. Toggle any combination of variants — including all three, if you want every
@@ -120,12 +126,12 @@ the box.
 You can also run the installer script directly:
 
 ```powershell
-.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Variant fp8
+.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Variant "fp8"
 ```
 
-Use `-Variant gguf -GgufQuants "Q5_K_M"` for GGUF, repeat `-Variant` for
-multiple variants, and pass `-SkipModels` if the model files are already
-installed. Start ComfyUI with:
+Use `-Variant "gguf" -GgufQuants "Q5_K_M"` for GGUF or
+`-Variant "full,fp8,gguf"` for several model types. Pass `-SkipModels` if the
+model files are already installed. Start ComfyUI with:
 
 ```powershell
 .\scripts\start_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI"

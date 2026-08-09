@@ -2,9 +2,9 @@
 """Verify that a running ComfyUI exposes every node and sampler we use.
 
 The required node set is derived from the installed workflows in
-``user/default/workflows/hoi4_portraits``, so it automatically covers the
-full, fp8, and GGUF variants (``UnetLoaderGGUF`` is only required when a GGUF
-workflow copy was installed).  Frontend-only ``Note`` cards are ignored.
+``user/default/workflows/hoi4_portraits``. The compact model-stack card
+selects safetensors or GGUF internally. Frontend-only ``Note`` cards are
+ignored.
 """
 
 from __future__ import annotations
@@ -22,13 +22,39 @@ ROOT = Path(__file__).resolve().parents[1]
 # (the API graph skips them, but the editor still needs them).
 ALWAYS_REQUIRED = {
     "AdaptivePortraitCrop",
+    "Hoi4ModelStack",
+    "Hoi4SourcePrep",
     "Hoi4BatchInput",
     "Hoi4PortraitSampler",
+    "Hoi4AdonisRestoration",
+    "Hoi4FinalOutput",
     "Hoi4SaveDDS",
     "PortraitIdentityMask",
 }
 
+UPSTREAM_ADONIS_REQUIRED = {
+    "ClipLoaderGGUF",
+    "ClownsharKSampler_Beta",
+    "EmptyFlux2LatentImage",
+    "ImageScaleToTotalPixelsX",
+    "ImageUpscaleWithModel",
+    "LoadBackgroundRemovalModel",
+    "LoadMediaPipeFaceLandmarker",
+    "MediaPipeFaceLandmarker",
+    "ReferenceLatent",
+    "RemoveBackground",
+    "SharkOptions_Beta",
+    "UnetLoaderGGUF",
+    "UpscaleModelLoader",
+}
+
 FRONTEND_ONLY = {"Note"}
+WORKFLOW_IDS = {
+    "hoi4_portrait_flux2_klein_9b_source",
+    "hoi4_portrait_flux2_klein_9b_text_to_image",
+    "hoi4_portrait_processing_only",
+    "hoi4_portrait_batch",
+}
 
 
 def _workflow_node_types(comfy_root: Path) -> set[str]:
@@ -37,6 +63,9 @@ def _workflow_node_types(comfy_root: Path) -> set[str]:
     if not workflow_dir.is_dir():
         return required
     for path in workflow_dir.glob("*.json"):
+        workflow_id = path.name.removesuffix(".api.json").removesuffix(".json")
+        if workflow_id not in WORKFLOW_IDS:
+            continue
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
@@ -61,7 +90,7 @@ def main() -> int:
     args = parser.parse_args()
 
     comfy_root = args.comfyui_root or ROOT / "comfyui"
-    required_nodes = _workflow_node_types(comfy_root.resolve())
+    required_nodes = _workflow_node_types(comfy_root.resolve()) | UPSTREAM_ADONIS_REQUIRED
     endpoint = args.url.rstrip("/") + "/object_info"
     try:
         with urllib.request.urlopen(endpoint, timeout=30) as response:
@@ -75,10 +104,13 @@ def main() -> int:
     if isinstance(sampler_info, list) and len(sampler_info) > 1 and isinstance(sampler_info[1], dict):
         sampler_options = set(sampler_info[1].get("options", []))
     missing_samplers = sorted({"euler"} - sampler_options)
-    scheduler_info = object_info.get("KSamplerSelect", {}).get("input", {}).get("required", {}).get("scheduler")
+    scheduler_info = object_info.get("KSampler", {}).get("input", {}).get("required", {}).get("scheduler")
     scheduler_options: set[str] = set()
-    if isinstance(scheduler_info, list) and len(scheduler_info) > 1 and isinstance(scheduler_info[1], dict):
-        scheduler_options = set(scheduler_info[1].get("options", []))
+    if isinstance(scheduler_info, list) and scheduler_info:
+        if isinstance(scheduler_info[0], list):
+            scheduler_options = set(scheduler_info[0])
+        elif len(scheduler_info) > 1 and isinstance(scheduler_info[1], dict):
+            scheduler_options = set(scheduler_info[1].get("options", []))
     missing_schedulers = sorted({"simple"} - scheduler_options)
 
     if missing_nodes or missing_samplers or missing_schedulers:

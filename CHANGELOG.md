@@ -1,230 +1,40 @@
-# Changelog
+# Package manifest
 
-All notable project changes are recorded here.
+This repository documents one current, internally consistent package.
 
-## 3.0.0 — 2026-08-08
+## Release identity
 
-- Rebuilt around the **distilled** FLUX.2 Klein 9B model; the base model was
-  removed everywhere (builder, validator, model lock, docs, installers).
-- Kept the tuned **2500-step** HOI4 LoRA as the only bundled checkpoint.
-- Tuned every generation branch to **Euler, simple, CFG 1, guidance 1,
-  4 steps, denoise 1.0** and made the sampling process live in the editor.
-- Removed the redundant normalize-to-canvas node after the LoRA decode; the
-  game-size output now resizes normally and center-crops without stretching.
-- Added a source preview, an ESRGAN preview, and a **comparison row**
-  (ESRGAN + restoration + the three 156×210 finals side by side) with
-  enlarged-for-display game previews.
-- Added beginner **Setup guide** notes: model folders with emojis, sampler
-  controls (steps/CFG/guidance), why the restoration pass helps, and the
-  prompting guide with the exact default prompt.
-- Added the **batch** workflow as a default: drop a folder of photos into
-  `input/hoi4_portraits_batch`, one sampler, and outputs to
-  `output/1024x1365/`, `output/156x210/`, and `output/156x210/dds/`.
-- Every workflow now saves game-ready **156×210 DXT5 DDS (no mipmaps)** via
-  the `Hoi4SaveDDS` node, with an optional uncompressed profile.
-- Advanced sampler card renamed its sampler control to **sampling algorithm**
-  and documents every control with tooltips.
-- Removed the nine identity comparison workflows, PuLID/InsightFace/RES4LYF/
-  Enhancer/Composite dependencies, and their docs.
-- Installers detect VRAM and suggest the distilled variant: **GGUF** 8–16 GB,
-  **FP8** 16–20 GB, **full** 24+ GB. Multiple variants and GGUF
-  quantizations are multi-select; RunPod defaults to full distilled.
-- The Windows release executable is now a full installer wizard (VRAM
-  detection, variant and quantization checkboxes, ComfyUI discovery, and
-  automated install) instead of a bare unpacker.
-- Added `apply_variant.py` to switch installed workflows between full/FP8/GGUF
-  (with ready-made copies for multiple variants) and `ComfyUI-GGUF` support.
-- Documented exact storage and VRAM requirements per install (full ≈ 30 GB
-  download / ~40 GB free; FP8 ≈ 21 GB / ~28 GB free; GGUF ≈ 18–22 GB /
-  ~25 GB free).
+- Version: `3.1.0`
+- Public workflows: exactly four
+- Model family: distilled FLUX.2 Klein 9B only
+- Style checkpoint: step 2500 only
+- Default sampler: Euler, simple, four steps, CFG 1, guidance 1, denoise 1
 
-## 2.6.1 — 2026-08-05
+## Workflow contract
 
-- Fixed the PuLID runtime installation by pinning compatible ONNX and
-  `ml_dtypes` versions on RunPod and Windows.
-- Added an early dependency check so incompatible environments stop before
-  downloading the EVA-CLIP model.
+- Source reference: three live style candidates and a five-card comparison row
+- Text to image: one live sampler and one final portrait
+- Processing only: RealESRGAN plus exact Adonis Base → Refine, no style LoRA
+- Batch: list input, one sampler, sequential per-source execution
+- Output: 1024×1365 PNG, centered 156×210 PNG, 156×210 DXT5 DDS with no mipmaps
 
-## 2.6.0 — 2026-08-05
+## Installation contract
 
-- Added nine source-workflow variants for controlled identity-preservation
-  comparison while holding the HOI4 checkpoint and generation policy fixed.
-- Added pinned RunPod installation for the comparison adapters, PuLID Flux2,
-  InsightFace AntelopeV2, EVA-CLIP, and Klein edit compositing.
-- Added masked MID and HARD feature-transfer profiles using the source face and
-  head region without removing the full native reference conditioning.
-- Extended layout, registry, model, installer, and graph validation across the
-  complete comparison package.
+- GGUF for 8–16 GB VRAM, with selectable Q4_K_M/Q5_K_M/Q6_K/Q8_0 quants
+- FP8 for 16–20 GB VRAM
+- Full distilled weights above 20 GB VRAM
+- RunPod defaults to full distilled
+- Windows detects NVIDIA VRAM, preselects the matching variant, supports
+  multi-variant installs, finds ComfyUI, installs pinned node packs, and
+  downloads the selected model set
 
-## 2.5.0 — 2026-08-05
+## Exact dependencies
 
-- Selected training step 2250 as the default HOI4 portrait LoRA and retained
-  only steps 2000, 2250, and 2500 for comparison.
-- Added source-reference feature transfer and doubled reference conditioning
-  to improve identity consistency across the three portrait candidates.
-- Added the optional Adonis restoration LoKr after RealESRGAN and kept FLUX
-  restoration disabled by default.
-- Added the pinned FLUX.2 Klein Enhancer extension to local, Windows, and
-  RunPod installation paths.
+- `calcuis/gguf` for `ClipLoaderGGUF`
+- `city96/ComfyUI-GGUF` for GGUF diffusion weights
+- `ClownsharkBatwing/RES4LYF` for live Adonis sampling
+- `BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced` for exact Adonis preprocessing
 
-## 2.4.11 — 2026-08-05
-
-- Renamed the bundled custom-node package to `hoi4_portraits` to reflect its
-  crop and FLUX.2 sampling nodes.
-- Updated local, Windows, RunPod, and Comfy Cloud installation paths to the
-  new package name.
-
-## 2.4.10 — 2026-08-05
-
-- Combined seed, sampler, steps, denoise, CFG, guidance, and canvas size into
-  one visible sampling node per generation branch.
-- Tightened every workflow group to its actual contents and removed unused
-  space below the nodes.
-- Reduced the public source workflow from 96 to 72 visible nodes without
-  hiding its processing stages or previews.
-
-## 2.4.9 — 2026-08-05
-
-- Restored fully visible workflow canvases with colored stage frames and no
-  collapsible subgraph wrappers.
-- Merged LoRA strength into the LoRA loader and the manual-crop toggle into its
-  image switch.
-- Added live RunPod node and sampler validation after ComfyUI starts.
-
-## 2.4.8 — 2026-08-05
-
-- Reorganized the editor workflows into compact native stage cards with
-  separate source candidates and collision-checked internal layouts.
-- Made RunPod installation and restart use the same detected ComfyUI Python,
-  with checks for the crop node and pinned RES4LYF sampler sources.
-- Added an Apple MPS precision guard for the RES sampler extension; CUDA keeps
-  its upstream precision behavior.
-- Replaced the workflow screenshots and expanded live-editor validation.
-
-## 2.4.7 — 2026-08-05
-
-- Set the three source candidates to Euler/6 steps, `res_2s`/4 steps, and
-  `res_2m`/8 steps.
-- Added the pinned RES4LYF sampler extension to the RunPod and Windows
-  installers.
-
-## 2.4.6 — 2026-08-04
-
-- Set restoration and LoRA styling to denoise 1.00, six steps, CFG 1, and FLUX
-  guidance 1.
-- Set the visible LoRA strength default to 1.00.
-
-## 2.4.5 — 2026-08-04
-
-- Added all seven retrained LoRA checkpoints to the RunPod and local model
-  installer for controlled checkpoint comparison.
-- Selected the 1500-step retrained checkpoint as the initial workflow LoRA.
-
-## 2.4.4 — 2026-08-04
-
-- Set all three source styling passes to full denoise `1.00`, matching the
-  sampling schedule used for the accepted gallery examples.
-
-## 2.4.3 — 2026-08-04
-
-- Added a visible LoRA strength control with a `0.70` starting value.
-- Set source styling denoise to `0.80` for stronger identity preservation without starving the eight-step style pass.
-- Kept color restoration in the optional pre-styling restoration pass.
-
-## 2.4.2 — 2026-08-04
-
-- Corrected every image-edit sampler to use the active denoise sigma schedule.
-- Added parallel, resumable Hugging Face/Xet model transfers to the installers.
-
-## 2.4.1 — 2026-08-04
-
-- Set source LoRA strength and editable denoise controls to `1.00`.
-- Added three independent candidate prompts with the concise identity default;
-  editing one prompt affects only its own candidate branch.
-
-## 2.4.0 — 2026-08-04
-
-- Added automatic face detection with a one-click manual crop override for
-  blurry, distant, and multi-person source images.
-- Added the pinned MediaPipe detector to the model installer and RunPod paths.
-- Replaced generated source descriptions with a fixed identity-preservation
-  instruction; text-to-image keeps concise manual prompting guidance.
-- Made FLUX restoration and background replacement controls red and kept both
-  disabled by default.
-- Regenerated the workflow diagrams and extended structural and crop tests.
-
-## 2.3.0 — 2026-08-03
-
-- Published the three-workflow set as source, text-to-image, and
-  `hoi4_portrait_processing_only`; the processing-only graph is last in the
-  README table and does not load the LoRA.
-- Updated the RunPod, Windows PowerShell, and Windows self-extractor paths to
-  install the current workflows and pinned model files without custom nodes.
-- Added a model-free ZIP and Windows x64 executable to the release
-  package.
-- Refreshed release metadata and documentation for the current filenames,
-  model defaults, and portable core-node graph design.
-
-## 2.2.0 — 2026-08-02
-
-- Added an adjustable, built-in head-and-shoulders crop before RealESRGAN in
-  both source workflows, with a preview checkpoint before FLUX runs.
-- Changed image-to-image sampling to start from the encoded processed source
-  instead of an empty latent, substantially reducing pose and framing drift.
-- Set the selected defaults to LoRA strength `0.7`, Euler, six steps, and CFG 5;
-  added fixed-seed 6/8/10/20-step comparison evidence.
-- Replaced the prior gallery with three full-restoration triptychs, three
-  ESRGAN-only triptychs, and three no-input portraits made from the latest
-  supplied sources.
-- Extended structural tests for crop order, source-latent ancestry, defaults,
-  prompt policy, and non-overlapping workflow layout.
-- Restored the canonical MIT license text so GitHub can identify the repository
-  license; third-party and base-model restrictions remain documented separately.
-
-## 2.1.0 — 2026-08-01
-
-- Changed every default LoRA strength to `0.8`, with `0.7` documented as the
-  lighter identity-preserving option.
-- Replaced style/game/background/rendering prompt examples with a strict
-  person-only positive-prompt contract after the `hoi4_portrait,` trigger.
-- Added validator and unit-test regressions for LoRA strength and forbidden
-  positive-prompt language.
-- Completed actual local inference with the project LoRA: five full-
-  restoration portraits, five ESRGAN-only portraits, five no-input portraits,
-  seven controlled setting variants, and a post-final background run.
-- Added ten three-stage comparison boards, a five-portrait text-to-image board,
-  a settings matrix, and documented reduced-resource test conditions.
-- Confirmed Euler / 20 steps / CFG 5 matches ComfyUI's native FLUX.2 Klein 9B
-  Base workflow; DPM++ 2M and Heun brought no gain in the reduced local pilot.
-
-## 2.0.1 — 2026-08-01
-
-- Fixed optional background compositing to consume the foreground mask from
-  `RemoveBackground` directly. The previous inversion swapped the subject and
-  background regions.
-- Added a regression check that rejects inverted or indirect foreground-mask
-  wiring.
-- Recorded successful Comfy Cloud GPU execution of all three workflow shapes
-  with a zero-strength catalog LoRA used as a mechanical substitute.
-
-## 2.0.0 — 2026-08-01
-
-- Rebuilt every default workflow around FLUX.2 Klein base 9B and the new
-  `hoi4_portrait` LoRA.
-- Added full-power, ESRGAN-only, and text-to-image workflows in editor and API
-  formats.
-- Made full-power restoration run RealESRGAN first, followed by a lazy,
-  switchable FLUX.2 restoration pass.
-- Moved optional background removal/compositing after the final LoRA-styled
-  decode.
-- Removed the repository node extension pack and sidecar services; the graphs
-  remain portable across supported ComfyUI environments.
-- Published the LoRA and model card on Hugging Face.
-- Added deterministic workflow generation, structural/layout checks, pinned
-  model locks, installers, tests, and Comfy Cloud guidance.
-- Moved the Krea-based workflows out of the default experience; they remain
-  available only through the archived v1.0.0 release.
-
-## 1.0.0 — 2026-07-31
-
-- Initial public Krea/Qwen-based workflow release.
+Pinned commits, model revisions, sizes, hashes, and licenses are in
+[`models.json`](models.json), [`scripts/install_custom_node_packs.py`](scripts/install_custom_node_packs.py),
+and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).

@@ -134,7 +134,7 @@ func recommendedQuant(vram float64) string {
 		return "Q4_K_M"
 	case vram <= 14:
 		return "Q5_K_M"
-	case vram <= 18:
+	case vram <= 16:
 		return "Q6_K"
 	default:
 		return "Q8_0"
@@ -156,7 +156,7 @@ func askVariantMenu(vram float64) []string {
 	variants := []variant{
 		{key: "gguf", label: "GGUF (8-16 GB VRAM)", vr: recommended == "gguf"},
 		{key: "fp8", label: "FP8 (16-20 GB VRAM)", vr: recommended == "fp8"},
-		{key: "full", label: "Full BF16 (24+ GB VRAM)", vr: recommended == "full"},
+		{key: "full", label: "Full BF16 (>20 GB VRAM)", vr: recommended == "full"},
 	}
 	for {
 		fmt.Println()
@@ -187,23 +187,15 @@ func askVariantMenu(vram float64) []string {
 				valid = false
 				break
 			}
-			selected[variants[n-1].key] = !variants[n-1].vr
+			selected[variants[n-1].key] = true
 		}
 		if !valid {
 			fmt.Println("Please enter valid numbers.")
 			continue
 		}
-		// Each typed number toggles that variant from its current state;
-		// untyped variants keep their current state. Returning empty keeps
-		// the recommended selection.
 		result := []string{}
 		for _, v := range variants {
-			desired, toggled := selected[v.key]
-			if toggled {
-				if desired {
-					result = append(result, v.key)
-				}
-			} else if v.vr {
+			if selected[v.key] {
 				result = append(result, v.key)
 			}
 		}
@@ -228,8 +220,8 @@ func askQuantMenu(vram float64) []string {
 	}{
 		{key: "Q4_K_M", selected: vram <= 10},
 		{key: "Q5_K_M", selected: vram > 10 && vram <= 14},
-		{key: "Q6_K", selected: vram > 14 && vram <= 18},
-		{key: "Q8_0", selected: vram > 18},
+		{key: "Q6_K", selected: vram > 14 && vram <= 16},
+		{key: "Q8_0", selected: vram > 16},
 	}
 	recommended := recommendedQuant(vram)
 	for {
@@ -268,7 +260,7 @@ func askQuantMenu(vram float64) []string {
 		}
 		result := []string{}
 		for _, q := range quants {
-			if selected[q.key] || (len(selected) == 0 && q.selected) {
+			if selected[q.key] {
 				result = append(result, q.key)
 			}
 		}
@@ -318,9 +310,7 @@ func runInstaller(destination, comfyRoot string, variants, quants []string) {
 		"-NoProfile", "-ExecutionPolicy", "Bypass",
 		"-File", ps1,
 		"-ComfyUIRoot", comfyRoot,
-	}
-	for _, v := range variants {
-		args = append(args, "-Variant", v)
+		"-Variant", strings.Join(variants, ","),
 	}
 	args = append(args, "-GgufQuants", strings.Join(quants, ","))
 	cmd := exec.Command("powershell.exe", args...)
@@ -362,7 +352,9 @@ func main() {
 			break
 		}
 	}
-	sort.Strings(variants)
+	sort.SliceStable(variants, func(i, j int) bool {
+		return variants[i] == recommendedVariant(vram) && variants[j] != recommendedVariant(vram)
+	})
 	sort.Strings(quants)
 	fmt.Println()
 	fmt.Printf("Selected variants: %s\n", strings.Join(variants, ", "))

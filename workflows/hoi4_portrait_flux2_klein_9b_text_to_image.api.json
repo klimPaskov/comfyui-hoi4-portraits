@@ -1,132 +1,29 @@
 {
-  "1": {
-    "class_type": "UNETLoader",
-    "inputs": {
-      "unet_name": "flux-2-klein-9b.safetensors",
-      "weight_dtype": "default"
-    },
-    "_meta": {
-      "title": "Load FLUX.2 Klein 9B"
-    }
-  },
-  "2": {
-    "class_type": "CLIPLoader",
-    "inputs": {
-      "clip_name": "qwen_3_8b_fp8mixed.safetensors",
-      "type": "flux2",
-      "device": "default"
-    },
-    "_meta": {
-      "title": "Load Qwen 3 8B text encoder"
-    }
-  },
   "3": {
-    "class_type": "VAELoader",
     "inputs": {
-      "vae_name": "flux2-vae.safetensors"
+      "diffusion_model": "flux-2-klein-9b.safetensors",
+      "text_encoder": "Qwen3-8B-Q8_0.gguf",
+      "vae_name": "flux2-vae.safetensors",
+      "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+      "style_strength": 1.0,
+      "load_restoration": false,
+      "adonis_base": "adonis_base.safetensors",
+      "adonis_refine": "adonis_refine.safetensors",
+      "weight_dtype": "default",
+      "text_encoder_device": "default"
     },
+    "class_type": "Hoi4ModelStack",
     "_meta": {
-      "title": "Load FLUX.2 VAE"
+      "title": "Distilled FLUX.2 Klein stack — full / FP8 / GGUF"
     }
   },
   "4": {
-    "class_type": "LoraLoaderModelOnly",
     "inputs": {
-      "model": [
-        "1",
-        0
-      ],
-      "lora_name": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-      "strength_model": 1.0
-    },
-    "_meta": {
-      "title": "Apply HOI4 LoRA — strength editable here"
-    }
-  },
-  "20": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "2",
-        0
-      ],
-      "text": "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket."
-    },
-    "_meta": {
-      "title": "Describe only the person"
-    }
-  },
-  "21": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "2",
-        0
-      ],
-      "text": ""
-    },
-    "_meta": {
-      "title": "Negative prompt"
-    }
-  },
-  "22": {
-    "class_type": "EmptyFlux2LatentImage",
-    "inputs": {
+      "mode": "text_to_image",
+      "prompt": "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.",
+      "negative_prompt": "",
       "width": 1024,
       "height": 1365,
-      "batch_size": 1
-    },
-    "_meta": {
-      "title": "Set 1024 x 1365 portrait canvas"
-    }
-  },
-  "28": {
-    "class_type": "VAEDecode",
-    "inputs": {
-      "samples": [
-        "27",
-        0
-      ],
-      "vae": [
-        "3",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Decode final styled portrait"
-    }
-  },
-  "29": {
-    "class_type": "PreviewImage",
-    "inputs": {
-      "images": [
-        "28",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Preview generated portrait (live while sampling)"
-    }
-  },
-  "27": {
-    "class_type": "Hoi4PortraitSampler",
-    "inputs": {
-      "model": [
-        "4",
-        0
-      ],
-      "positive": [
-        "20",
-        0
-      ],
-      "negative": [
-        "21",
-        0
-      ],
-      "latent_image": [
-        "22",
-        0
-      ],
       "noise_seed": 42,
       "steps": 4,
       "cfg": 1.0,
@@ -137,183 +34,106 @@
       "add_noise": "enable",
       "start_at_step": 0,
       "end_at_step": 10000,
-      "force_full_denoise": true
+      "force_full_denoise": true,
+      "model": [
+        "3",
+        0
+      ],
+      "clip": [
+        "3",
+        3
+      ],
+      "vae": [
+        "3",
+        4
+      ]
     },
+    "class_type": "Hoi4PortraitSampler",
     "_meta": {
-      "title": "HOI4 portrait — sampler and generation controls"
+      "title": "Text-to-image — one advanced live sampler"
     }
   },
-  "60": {
-    "class_type": "LoadImage",
+  "5": {
     "inputs": {
       "image": "hoi4_leader_portrait_background.png"
     },
+    "class_type": "LoadImage",
     "_meta": {
-      "title": "Load replacement background"
+      "title": "Optional replacement background"
     }
   },
-  "61": {
-    "class_type": "ImageScale",
+  "6": {
     "inputs": {
+      "use_background": false,
+      "background_model": "birefnet.safetensors",
+      "master_width": 1024,
+      "master_height": 1365,
+      "game_width": 156,
+      "game_height": 210,
       "image": [
-        "60",
+        "4",
         0
       ],
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center"
-    },
-    "_meta": {
-      "title": "Fit background to final master canvas"
-    }
-  },
-  "62": {
-    "class_type": "LoadBackgroundRemovalModel",
-    "inputs": {
-      "bg_removal_name": "birefnet.safetensors"
-    },
-    "_meta": {
-      "title": "Load BiRefNet foreground model"
-    }
-  },
-  "63": {
-    "class_type": "RemoveBackground",
-    "inputs": {
-      "bg_removal_model": [
-        "62",
-        0
-      ],
-      "image": [
-        "28",
+      "background": [
+        "5",
         0
       ]
     },
+    "class_type": "Hoi4FinalOutput",
     "_meta": {
-      "title": "Mask the final styled portrait"
+      "title": "Centered 1024×1365 master + 156×210 game crop"
     }
   },
-  "65": {
-    "class_type": "ImageCompositeMasked",
+  "7": {
     "inputs": {
-      "destination": [
-        "61",
-        0
-      ],
-      "source": [
-        "28",
-        0
-      ],
-      "x": 0,
-      "y": 0,
-      "resize_source": true,
-      "mask": [
-        "63",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Composite only after the styled portrait exists"
-    }
-  },
-  "66": {
-    "class_type": "ComfySwitchNode",
-    "inputs": {
-      "switch": false,
-      "on_false": [
-        "28",
-        0
-      ],
-      "on_true": [
-        "65",
-        0
-      ]
-    },
-    "_meta": {
-      "title": "Toggle replacement background (off by default)"
-    }
-  },
-  "71": {
-    "class_type": "SaveImage",
-    "inputs": {
+      "filename_prefix": "1024x1365/text_to_image",
       "images": [
-        "66",
+        "6",
         0
-      ],
-      "filename_prefix": "1024x1365/portrait"
+      ]
     },
-    "_meta": {
-      "title": "Save 1024 x 1365 master PNG"
-    }
-  },
-  "72": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "66",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
-      "crop": "center"
-    },
-    "_meta": {
-      "title": "Resize to HOI4 156 x 210"
-    }
-  },
-  "73": {
     "class_type": "SaveImage",
-    "inputs": {
-      "images": [
-        "72",
-        0
-      ],
-      "filename_prefix": "156x210/portrait"
-    },
     "_meta": {
-      "title": "Save game-size portrait PNG"
+      "title": "Save master PNG"
     }
   },
-  "74": {
+  "8": {
+    "inputs": {
+      "filename_prefix": "156x210/text_to_image",
+      "images": [
+        "6",
+        1
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save game PNG"
+    }
+  },
+  "9": {
+    "inputs": {
+      "filename_prefix": "156x210/dds/text_to_image",
+      "compression": "dxt5",
+      "images": [
+        "6",
+        1
+      ]
+    },
     "class_type": "Hoi4SaveDDS",
-    "inputs": {
-      "images": [
-        "72",
-        0
-      ],
-      "filename_prefix": "156x210/dds/portrait"
-    },
     "_meta": {
-      "title": "Save HOI4-ready 156 x 210 DDS"
+      "title": "Save game DDS — DXT5, no mipmaps"
     }
   },
-  "75": {
-    "class_type": "ImageScale",
-    "inputs": {
-      "image": [
-        "72",
-        0
-      ],
-      "upscale_method": "lanczos",
-      "width": 624,
-      "height": 840,
-      "crop": "disabled"
-    },
-    "_meta": {
-      "title": "Enlarge game preview for clarity (does not change saved files)"
-    }
-  },
-  "600": {
-    "class_type": "PreviewImage",
+  "10": {
     "inputs": {
       "images": [
-        "75",
-        0
+        "6",
+        1
       ]
     },
+    "class_type": "PreviewImage",
     "_meta": {
-      "title": "Final portrait generated — 156 x 210 (game size)"
+      "title": "Final 156×210 portrait"
     }
   }
 }

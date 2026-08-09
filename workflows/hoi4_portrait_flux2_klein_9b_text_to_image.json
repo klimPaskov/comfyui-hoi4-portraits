@@ -1,31 +1,143 @@
 {
-  "last_node_id": 802,
-  "last_link_id": 24,
+  "id": "hoi4_portrait_flux2_klein_9b_text_to_image",
+  "revision": 0,
+  "last_node_id": 10,
+  "last_link_id": 9,
   "nodes": [
     {
       "id": 1,
-      "type": "UNETLoader",
-      "title": "Load FLUX.2 Klein 9B",
+      "type": "Note",
+      "title": "📦 Setup",
       "pos": [
-        1160,
-        120
-      ],
-      "size": [
-        300,
+        80,
         100
       ],
-      "color": "#3f789e",
-      "bgcolor": "#3f789e",
+      "size": [
+        700,
+        800
+      ],
+      "color": "#475569",
+      "bgcolor": "#334155",
       "flags": {},
       "order": 0,
       "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note",
+        "hoi4_group": "00 Notes"
+      },
+      "widgets_values": [
+        "📦 MODELS + FOLDERS\n\nThe installer places every file automatically. Manual locations:\n\nComfyUI/models/\n├── diffusion_models/\n│   └── flux-2-klein-9b.safetensors (distilled; never Base)\n├── text_encoders/\n│   └── Qwen3-8B-Q8_0.gguf\n├── vae/\n│   └── flux2-vae.safetensors\n├── loras/\n│   ├── hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n│   ├── adonis_base.safetensors\n│   └── adonis_refine.safetensors\n├── upscale_models/RealESRGAN_x2plus.pth\n├── background_removal/birefnet.safetensors\n└── detection/mediapipe_face_fp32.safetensors\n\nModel links and exact pinned revisions are in models.json. The installer selects full, FP8, or GGUF for your VRAM."
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Note",
+      "title": "🎛️ Sampler guide",
+      "pos": [
+        80,
+        980
+      ],
+      "size": [
+        700,
+        760
+      ],
+      "color": "#475569",
+      "bgcolor": "#334155",
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note",
+        "hoi4_group": "00 Notes"
+      },
+      "widgets_values": [
+        "🎛️ SAMPLER — TUNED DEFAULTS\n\n4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\nSteps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\nThe purple sampler is deliberately one advanced card. ComfyUI's live latent callback shows the portrait being constructed while it runs."
+      ]
+    },
+    {
+      "id": 3,
+      "type": "Hoi4ModelStack",
+      "title": "Distilled FLUX.2 Klein stack — full / FP8 / GGUF",
+      "pos": [
+        920,
+        100
+      ],
+      "size": [
+        820,
+        720
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 2,
+      "mode": 0,
       "inputs": [
         {
-          "name": "unet_name",
-          "type": "COMBO",
+          "name": "diffusion_model",
+          "type": "STRING",
           "link": null,
           "widget": {
-            "name": "unet_name"
+            "name": "diffusion_model"
+          }
+        },
+        {
+          "name": "text_encoder",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "text_encoder"
+          }
+        },
+        {
+          "name": "vae_name",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "vae_name"
+          }
+        },
+        {
+          "name": "style_lora",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "style_lora"
+          }
+        },
+        {
+          "name": "style_strength",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "style_strength"
+          }
+        },
+        {
+          "name": "load_restoration",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "load_restoration"
+          }
+        },
+        {
+          "name": "adonis_base",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "adonis_base"
+          }
+        },
+        {
+          "name": "adonis_refine",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "adonis_refine"
           }
         },
         {
@@ -35,168 +147,80 @@
           "widget": {
             "name": "weight_dtype"
           }
+        },
+        {
+          "name": "text_encoder_device",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "text_encoder_device"
+          }
         }
       ],
       "outputs": [
         {
-          "name": "MODEL",
+          "name": "style_model",
           "type": "MODEL",
           "links": [
             1
           ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "UNETLoader",
-        "hoi4_group": "02 FLUX.2 Klein 9B models",
-        "models": [
-          {
-            "name": "flux-2-klein-9b.safetensors",
-            "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9B/resolve/92196c8e11f7b6cf2b7493e037d8c5345c559216/flux-2-klein-9b.safetensors",
-            "directory": "diffusion_models"
-          }
-        ]
-      },
-      "widgets_values": [
-        "flux-2-klein-9b.safetensors",
-        "default"
-      ]
-    },
-    {
-      "id": 2,
-      "type": "CLIPLoader",
-      "title": "Load Qwen 3 8B text encoder",
-      "pos": [
-        1160,
-        370
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#3f789e",
-      "bgcolor": "#3f789e",
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "clip_name"
-          }
         },
         {
-          "name": "type",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "type"
-          }
+          "name": "adonis_base_model",
+          "type": "MODEL",
+          "links": null
         },
         {
-          "name": "device",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "device"
-          }
-        }
-      ],
-      "outputs": [
+          "name": "adonis_refine_model",
+          "type": "MODEL",
+          "links": null
+        },
         {
-          "name": "CLIP",
+          "name": "clip",
           "type": "CLIP",
           "links": [
-            2,
+            2
+          ]
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "links": [
             3
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "CLIPLoader",
-        "hoi4_group": "02 FLUX.2 Klein 9B models",
-        "models": [
-          {
-            "name": "qwen_3_8b_fp8mixed.safetensors",
-            "url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
-            "directory": "text_encoders"
-          }
-        ]
+        "Node name for S&R": "Hoi4ModelStack",
+        "hoi4_group": "01 Model + one live sampler"
       },
       "widgets_values": [
-        "qwen_3_8b_fp8mixed.safetensors",
-        "flux2",
+        "flux-2-klein-9b.safetensors",
+        "Qwen3-8B-Q8_0.gguf",
+        "flux2-vae.safetensors",
+        "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+        1.0,
+        false,
+        "adonis_base.safetensors",
+        "adonis_refine.safetensors",
+        "default",
         "default"
       ]
     },
     {
-      "id": 3,
-      "type": "VAELoader",
-      "title": "Load FLUX.2 VAE",
+      "id": 4,
+      "type": "Hoi4PortraitSampler",
+      "title": "Text-to-image — one advanced live sampler",
       "pos": [
-        1160,
-        620
-      ],
-      "size": [
-        300,
+        1800,
         100
       ],
-      "color": "#3f789e",
-      "bgcolor": "#3f789e",
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "vae_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "vae_name"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            5
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAELoader",
-        "hoi4_group": "02 FLUX.2 Klein 9B models",
-        "models": [
-          {
-            "name": "flux2-vae.safetensors",
-            "url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors",
-            "directory": "vae"
-          }
-        ]
-      },
-      "widgets_values": [
-        "flux2-vae.safetensors"
-      ]
-    },
-    {
-      "id": 4,
-      "type": "LoraLoaderModelOnly",
-      "title": "Apply HOI4 LoRA — strength editable here",
-      "pos": [
-        1160,
-        870
-      ],
       "size": [
-        300,
-        130
+        720,
+        740
       ],
-      "color": "#3f789e",
-      "bgcolor": "#3f789e",
+      "color": "#705080",
+      "bgcolor": "#523b60",
       "flags": {},
       "order": 3,
       "mode": 0,
@@ -207,244 +231,39 @@
           "link": 1
         },
         {
-          "name": "lora_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "lora_name"
-          }
-        },
-        {
-          "name": "strength_model",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "strength_model"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            7
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoraLoaderModelOnly",
-        "hoi4_group": "02 FLUX.2 Klein 9B models",
-        "models": [
-          {
-            "name": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-            "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-            "directory": "loras"
-          }
-        ]
-      },
-      "widgets_values": [
-        "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-        1.0
-      ]
-    },
-    {
-      "id": 800,
-      "type": "Note",
-      "title": "📦 Setup guide — models and ComfyUI folders",
-      "pos": [
-        80,
-        100
-      ],
-      "size": [
-        860,
-        940
-      ],
-      "color": "#6b7280",
-      "bgcolor": "#6b7280",
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
-      },
-      "widgets_values": [
-        "📦 HOI4 PORTRAIT WORKFLOW — MODEL SETUP\n\nThe bundled installer places every file below for you. If you install manually, the workflow looks for these exact filenames:\n\n🖼️  FLUX.2 Klein 9B\n    ComfyUI/models/diffusion_models/\n    ├── flux-2-klein-9b.safetensors        · full BF16, 18.2 GB (24+ GB VRAM)\n    ├── flux-2-klein-9b-fp8.safetensors    · FP8, 9.4 GB (16–20 GB VRAM)\n    └── flux-2-klein-9b-Q5_K_M.gguf        · GGUF, 7.0 GB (8–16 GB VRAM)\n\n🧠  Qwen 3 8B text encoder\n    ComfyUI/models/text_encoders/qwen_3_8b_fp8mixed.safetensors\n\n🎨  FLUX.2 VAE\n    ComfyUI/models/vae/flux2-vae.safetensors\n\n🎭  HOI4 style LoRA — step 2500 (the tuned checkpoint)\n    ComfyUI/models/loras/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n\n✨  Adonis restoration LoKrs (optional pass)\n    ComfyUI/models/loras/adonis_base.safetensors\n    ComfyUI/models/loras/adonis_post.safetensors\n\n🔍  Support models\n    ComfyUI/models/upscale_models/RealESRGAN_x2plus.pth\n    ComfyUI/models/background_removal/birefnet.safetensors\n    ComfyUI/models/detection/face_detection_yunet_2023mar.onnx\n\nThe GGUF and FP8 files are smaller variants of the same model; pick the one that fits your VRAM (the installer suggests one for you)."
-      ]
-    },
-    {
-      "id": 801,
-      "type": "Note",
-      "title": "🎛️ Sampler controls — what steps and CFG do",
-      "pos": [
-        80,
-        1190
-      ],
-      "size": [
-        860,
-        660
-      ],
-      "color": "#6b7280",
-      "bgcolor": "#6b7280",
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
-      },
-      "widgets_values": [
-        "🎛️  SAMPLER CONTROLS — WHAT THEY DO\n\nEvery generation node is one advanced sampler card. The tuned defaults for this workflow are: CFG 1.0, guidance 1.0, 4 steps, Euler sampler, simple scheduler, denoise 1.0.\n\n• Steps — how many denoising passes run. More steps = more detail but slower generation. The style LoRA is trained for 4 steps; going much higher mostly slows things down.\n• CFG — how strongly the model follows your prompt. Higher values apply the HOI4 style more sharply (try 2–3 if you want a stronger look).\n• Guidance — FLUX.2's own prompt-following scale. Klein works best at low values (default 1.0).\n• Seed — the random source. Change it (or hit randomize) for a different portrait from the same prompt.\n• Sampling algorithm — the sampler itself. Euler is the tuned default; advanced users can switch (e.g. euler_ancestral, dpmpp_2m).\n• Scheduler — how denoise strength is scheduled across steps. Simple is the FLUX.2 default.\n\nSampling is LIVE: watch the portrait being constructed in the preview cards while it runs."
-      ]
-    },
-    {
-      "id": 802,
-      "type": "Note",
-      "title": "✍️ Prompting guide",
-      "pos": [
-        80,
-        2000
-      ],
-      "size": [
-        860,
-        560
-      ],
-      "color": "#6b7280",
-      "bgcolor": "#6b7280",
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
-      },
-      "widgets_values": [
-        "✍️  WHAT TO PROMPT\n\nKeep the default prompt exactly as-is:\n    make this portrait hoi4_portrait style\n\nThat short phrase already triggers the trained HOI4 look. You can safely append a short description when the model needs help:\n\n• Ethnicity or skin colour — if the skin tone comes out wrong.\n• Civilian / military / clerical clothing — if it helps the outfit.\n• Age, hair, or facial hair — if the portrait drifts.\n\nExample:\n    make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, wearing a military uniform\n\nDon't describe the game, background, lighting, or rendering — the LoRA handles those."
-      ]
-    },
-    {
-      "id": 20,
-      "type": "CLIPTextEncode",
-      "title": "Describe only the person",
-      "pos": [
-        1680,
-        120
-      ],
-      "size": [
-        450,
-        300
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
           "name": "clip",
           "type": "CLIP",
           "link": 2
         },
         {
-          "name": "text",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "text"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            8
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": [
-        "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket."
-      ]
-    },
-    {
-      "id": 21,
-      "type": "CLIPTextEncode",
-      "title": "Negative prompt",
-      "pos": [
-        1680,
-        570
-      ],
-      "size": [
-        450,
-        190
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
+          "name": "vae",
+          "type": "VAE",
           "link": 3
         },
         {
-          "name": "text",
+          "name": "mode",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "mode"
+          }
+        },
+        {
+          "name": "prompt",
           "type": "STRING",
           "link": null,
           "widget": {
-            "name": "text"
+            "name": "prompt"
           }
-        }
-      ],
-      "outputs": [
+        },
         {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            9
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": [
-        ""
-      ]
-    },
-    {
-      "id": 22,
-      "type": "EmptyFlux2LatentImage",
-      "title": "Set 1024 x 1365 portrait canvas",
-      "pos": [
-        2300,
-        120
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
+          "name": "negative_prompt",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "negative_prompt"
+          }
+        },
         {
           "name": "width",
           "type": "INT",
@@ -460,156 +279,6 @@
           "widget": {
             "name": "height"
           }
-        },
-        {
-          "name": "batch_size",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "batch_size"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            10
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "EmptyFlux2LatentImage",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": [
-        1024,
-        1365,
-        1
-      ]
-    },
-    {
-      "id": 28,
-      "type": "VAEDecode",
-      "title": "Decode final styled portrait",
-      "pos": [
-        3460,
-        500
-      ],
-      "size": [
-        300,
-        120
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 4
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 5
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            6,
-            13,
-            15,
-            17
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 29,
-      "type": "PreviewImage",
-      "title": "Preview generated portrait (live while sampling)",
-      "pos": [
-        3460,
-        770
-      ],
-      "size": [
-        560,
-        680
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 6
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "04 HOI4 LoRA styling"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 27,
-      "type": "Hoi4PortraitSampler",
-      "title": "HOI4 portrait — sampler and generation controls",
-      "pos": [
-        2770,
-        270
-      ],
-      "size": [
-        520,
-        420
-      ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 7
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 8
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 9
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 10
         },
         {
           "name": "noise_seed",
@@ -698,12 +367,17 @@
           "widget": {
             "name": "force_full_denoise"
           }
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": null
         }
       ],
       "outputs": [
         {
-          "name": "samples",
-          "type": "LATENT",
+          "name": "portrait",
+          "type": "IMAGE",
           "links": [
             4
           ]
@@ -711,9 +385,14 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "01 Model + one live sampler"
       },
       "widgets_values": [
+        "text_to_image",
+        "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.",
+        "",
+        1024,
+        1365,
         42,
         4,
         1.0,
@@ -728,21 +407,21 @@
       ]
     },
     {
-      "id": 60,
+      "id": 5,
       "type": "LoadImage",
-      "title": "Load replacement background",
+      "title": "Optional replacement background",
       "pos": [
-        5030,
-        120
+        2720,
+        100
       ],
       "size": [
-        340,
-        300
+        620,
+        560
       ],
-      "color": "#8d5b5b",
-      "bgcolor": "#8d5b5b",
+      "color": "#446a4d",
+      "bgcolor": "#304c38",
       "flags": {},
-      "order": 13,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
@@ -759,7 +438,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            11
+            5
           ]
         },
         {
@@ -770,7 +449,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "hoi4_group": "05 Optional background - after generation"
+        "hoi4_group": "02 Final output"
       },
       "widgets_values": [
         "hoi4_leader_portrait_background.png",
@@ -778,455 +457,135 @@
       ]
     },
     {
-      "id": 61,
-      "type": "ImageScale",
-      "title": "Fit background to final master canvas",
+      "id": 6,
+      "type": "Hoi4FinalOutput",
+      "title": "Centered 1024×1365 master + 156×210 game crop",
       "pos": [
-        5030,
-        570
+        3420,
+        100
       ],
       "size": [
-        340,
-        150
+        600,
+        500
       ],
-      "color": "#8d5b5b",
-      "bgcolor": "#8d5b5b",
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
       "flags": {},
-      "order": 14,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 11
+          "link": 4
         },
         {
-          "name": "upscale_method",
-          "type": "COMBO",
+          "name": "use_background",
+          "type": "BOOLEAN",
           "link": null,
           "widget": {
-            "name": "upscale_method"
+            "name": "use_background"
           }
         },
         {
-          "name": "width",
+          "name": "background_model",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "background_model"
+          }
+        },
+        {
+          "name": "master_width",
           "type": "INT",
           "link": null,
           "widget": {
-            "name": "width"
+            "name": "master_width"
           }
         },
         {
-          "name": "height",
+          "name": "master_height",
           "type": "INT",
           "link": null,
           "widget": {
-            "name": "height"
+            "name": "master_height"
           }
         },
         {
-          "name": "crop",
-          "type": "COMBO",
+          "name": "game_width",
+          "type": "INT",
           "link": null,
           "widget": {
-            "name": "crop"
+            "name": "game_width"
           }
+        },
+        {
+          "name": "game_height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "game_height"
+          }
+        },
+        {
+          "name": "background",
+          "type": "IMAGE",
+          "link": 5
         }
       ],
       "outputs": [
         {
-          "name": "IMAGE",
+          "name": "master_1024x1365",
           "type": "IMAGE",
           "links": [
-            14
+            6
+          ]
+        },
+        {
+          "name": "game_156x210",
+          "type": "IMAGE",
+          "links": [
+            7,
+            8,
+            9
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "05 Optional background - after generation"
+        "Node name for S&R": "Hoi4FinalOutput",
+        "hoi4_group": "02 Final output"
       },
       "widgets_values": [
-        "lanczos",
+        false,
+        "birefnet.safetensors",
         1024,
         1365,
-        "center"
-      ]
-    },
-    {
-      "id": 62,
-      "type": "LoadBackgroundRemovalModel",
-      "title": "Load BiRefNet foreground model",
-      "pos": [
-        5540,
-        120
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#8d5b5b",
-      "bgcolor": "#8d5b5b",
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "bg_removal_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "bg_removal_name"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "BACKGROUND_REMOVAL",
-          "type": "BACKGROUND_REMOVAL",
-          "links": [
-            12
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadBackgroundRemovalModel",
-        "hoi4_group": "05 Optional background - after generation",
-        "models": [
-          {
-            "name": "birefnet.safetensors",
-            "url": "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
-            "directory": "background_removal"
-          }
-        ]
-      },
-      "widgets_values": [
-        "birefnet.safetensors"
-      ]
-    },
-    {
-      "id": 63,
-      "type": "RemoveBackground",
-      "title": "Mask the final styled portrait",
-      "pos": [
-        5540,
-        370
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#8d5b5b",
-      "bgcolor": "#8d5b5b",
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "bg_removal_model",
-          "type": "BACKGROUND_REMOVAL",
-          "link": 12
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 13
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            16
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "RemoveBackground",
-        "hoi4_group": "05 Optional background - after generation"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 65,
-      "type": "ImageCompositeMasked",
-      "title": "Composite only after the styled portrait exists",
-      "pos": [
-        6010,
-        250
-      ],
-      "size": [
-        360,
-        180
-      ],
-      "color": "#8d5b5b",
-      "bgcolor": "#8d5b5b",
-      "flags": {},
-      "order": 17,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "destination",
-          "type": "IMAGE",
-          "link": 14
-        },
-        {
-          "name": "source",
-          "type": "IMAGE",
-          "link": 15
-        },
-        {
-          "name": "x",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "x"
-          }
-        },
-        {
-          "name": "y",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "y"
-          }
-        },
-        {
-          "name": "resize_source",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "resize_source"
-          }
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 16
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            18
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageCompositeMasked",
-        "hoi4_group": "05 Optional background - after generation"
-      },
-      "widgets_values": [
-        0,
-        0,
-        true
-      ]
-    },
-    {
-      "id": 66,
-      "type": "ComfySwitchNode",
-      "title": "Toggle replacement background (off by default)",
-      "pos": [
-        6010,
-        580
-      ],
-      "size": [
-        360,
-        130
-      ],
-      "color": "#b91c1c",
-      "bgcolor": "#7f1d1d",
-      "flags": {},
-      "order": 18,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "switch",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "switch"
-          }
-        },
-        {
-          "name": "on_false",
-          "type": "IMAGE",
-          "link": 17
-        },
-        {
-          "name": "on_true",
-          "type": "IMAGE",
-          "link": 18
-        }
-      ],
-      "outputs": [
-        {
-          "name": "output",
-          "type": "IMAGE",
-          "links": [
-            19,
-            20
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ComfySwitchNode",
-        "hoi4_group": "05 Optional background - after generation"
-      },
-      "widgets_values": [
-        false
-      ]
-    },
-    {
-      "id": 71,
-      "type": "SaveImage",
-      "title": "Save 1024 x 1365 master PNG",
-      "pos": [
-        7100,
-        120
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#596b82",
-      "bgcolor": "#596b82",
-      "flags": {},
-      "order": 19,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 19
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "hoi4_group": "06 Preview and save"
-      },
-      "widgets_values": [
-        "1024x1365/portrait"
-      ]
-    },
-    {
-      "id": 72,
-      "type": "ImageScale",
-      "title": "Resize to HOI4 156 x 210",
-      "pos": [
-        7100,
-        370
-      ],
-      "size": [
-        340,
-        150
-      ],
-      "color": "#596b82",
-      "bgcolor": "#596b82",
-      "flags": {},
-      "order": 20,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 20
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            21,
-            22,
-            23
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "06 Preview and save"
-      },
-      "widgets_values": [
-        "lanczos",
         156,
-        210,
-        "center"
+        210
       ]
     },
     {
-      "id": 73,
+      "id": 7,
       "type": "SaveImage",
-      "title": "Save game-size portrait PNG",
+      "title": "Save master PNG",
       "pos": [
-        7100,
-        670
+        2720,
+        760
       ],
       "size": [
-        300,
-        100
+        420,
+        150
       ],
-      "color": "#596b82",
-      "bgcolor": "#596b82",
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
       "flags": {},
-      "order": 21,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 21
+          "link": 6
         },
         {
           "name": "filename_prefix",
@@ -1246,34 +605,34 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "06 Preview and save"
+        "hoi4_group": "02 Final output"
       },
       "widgets_values": [
-        "156x210/portrait"
+        "1024x1365/text_to_image"
       ]
     },
     {
-      "id": 74,
-      "type": "Hoi4SaveDDS",
-      "title": "Save HOI4-ready 156 x 210 DDS",
+      "id": 8,
+      "type": "SaveImage",
+      "title": "Save game PNG",
       "pos": [
-        7100,
-        920
+        3180,
+        760
       ],
       "size": [
-        360,
+        420,
         150
       ],
-      "color": "#596b82",
-      "bgcolor": "#596b82",
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
       "flags": {},
-      "order": 22,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 22
+          "link": 7
         },
         {
           "name": "filename_prefix",
@@ -1287,116 +646,96 @@
       "outputs": [
         {
           "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "hoi4_group": "02 Final output"
+      },
+      "widgets_values": [
+        "156x210/text_to_image"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "Hoi4SaveDDS",
+      "title": "Save game DDS — DXT5, no mipmaps",
+      "pos": [
+        3640,
+        760
+      ],
+      "size": [
+        420,
+        190
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        },
+        {
+          "name": "compression",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "compression"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
           "type": "IMAGE",
           "links": null
         }
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "06 Preview and save"
+        "hoi4_group": "02 Final output"
       },
       "widgets_values": [
-        "156x210/dds/portrait"
+        "156x210/dds/text_to_image",
+        "dxt5"
       ]
     },
     {
-      "id": 75,
-      "type": "ImageScale",
-      "title": "Enlarge game preview for clarity (does not change saved files)",
-      "pos": [
-        6590,
-        320
-      ],
-      "size": [
-        340,
-        150
-      ],
-      "color": "#596b82",
-      "bgcolor": "#596b82",
-      "flags": {},
-      "order": 23,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 23
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            24
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "06 Preview and save"
-      },
-      "widgets_values": [
-        "lanczos",
-        624,
-        840,
-        "disabled"
-      ]
-    },
-    {
-      "id": 600,
+      "id": 10,
       "type": "PreviewImage",
-      "title": "Final portrait generated — 156 x 210 (game size)",
+      "title": "Final 156×210 portrait",
       "pos": [
-        4190,
-        900
+        2880,
+        1050
       ],
       "size": [
-        620,
+        1200,
         760
       ],
-      "color": "#7a568e",
-      "bgcolor": "#7a568e",
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
       "flags": {},
-      "order": 24,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 24
+          "link": 9
         }
       ],
       "outputs": [
@@ -1408,7 +747,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "04 HOI4 LoRA styling"
+        "hoi4_group": "02 Final output"
       },
       "widgets_values": []
     }
@@ -1416,7 +755,7 @@
   "links": [
     [
       1,
-      1,
+      3,
       0,
       4,
       0,
@@ -1424,265 +763,115 @@
     ],
     [
       2,
-      2,
-      0,
-      20,
-      0,
-      "CLIP"
-    ],
-    [
       3,
-      2,
-      0,
-      21,
-      0,
-      "CLIP"
-    ],
-    [
+      3,
       4,
-      27,
-      0,
-      28,
-      0,
-      "LATENT"
+      1,
+      "CLIP"
     ],
     [
-      5,
       3,
-      0,
-      28,
-      1,
+      3,
+      4,
+      4,
+      2,
       "VAE"
     ],
     [
-      6,
-      28,
+      4,
+      4,
       0,
-      29,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      7,
+      "IMAGE"
+    ],
+    [
+      6,
+      6,
+      0,
+      7,
       0,
       "IMAGE"
     ],
     [
       7,
-      4,
+      6,
+      1,
+      8,
       0,
-      27,
-      0,
-      "MODEL"
+      "IMAGE"
     ],
     [
       8,
-      20,
-      0,
-      27,
+      6,
       1,
-      "CONDITIONING"
+      9,
+      0,
+      "IMAGE"
     ],
     [
       9,
-      21,
-      0,
-      27,
-      2,
-      "CONDITIONING"
-    ],
-    [
+      6,
+      1,
       10,
-      22,
-      0,
-      27,
-      3,
-      "LATENT"
-    ],
-    [
-      11,
-      60,
-      0,
-      61,
-      0,
-      "IMAGE"
-    ],
-    [
-      12,
-      62,
-      0,
-      63,
-      0,
-      "BACKGROUND_REMOVAL"
-    ],
-    [
-      13,
-      28,
-      0,
-      63,
-      1,
-      "IMAGE"
-    ],
-    [
-      14,
-      61,
-      0,
-      65,
-      0,
-      "IMAGE"
-    ],
-    [
-      15,
-      28,
-      0,
-      65,
-      1,
-      "IMAGE"
-    ],
-    [
-      16,
-      63,
-      0,
-      65,
-      5,
-      "MASK"
-    ],
-    [
-      17,
-      28,
-      0,
-      66,
-      1,
-      "IMAGE"
-    ],
-    [
-      18,
-      65,
-      0,
-      66,
-      2,
-      "IMAGE"
-    ],
-    [
-      19,
-      66,
-      0,
-      71,
-      0,
-      "IMAGE"
-    ],
-    [
-      20,
-      66,
-      0,
-      72,
-      0,
-      "IMAGE"
-    ],
-    [
-      21,
-      72,
-      0,
-      73,
-      0,
-      "IMAGE"
-    ],
-    [
-      22,
-      72,
-      0,
-      74,
-      0,
-      "IMAGE"
-    ],
-    [
-      23,
-      72,
-      0,
-      75,
-      0,
-      "IMAGE"
-    ],
-    [
-      24,
-      75,
-      0,
-      600,
       0,
       "IMAGE"
     ]
   ],
   "groups": [
     {
-      "title": "00 Welcome & setup",
+      "id": 1,
+      "title": "00 Notes",
       "bounding": [
         40,
-        60,
-        940,
-        2540
+        40,
+        780,
+        1880
       ],
-      "color": "#6b7280",
-      "font_size": 24,
+      "color": "#334155",
+      "font_size": 28,
       "flags": {}
     },
     {
-      "title": "02 FLUX.2 Klein 9B models",
+      "id": 2,
+      "title": "01 Model + one live sampler",
       "bounding": [
-        1120,
-        80,
-        380,
-        960
+        860,
+        40,
+        1760,
+        1880
       ],
-      "color": "#3f789e",
-      "font_size": 24,
+      "color": "#5d416c",
+      "font_size": 28,
       "flags": {}
     },
     {
-      "title": "04 HOI4 LoRA styling",
+      "id": 3,
+      "title": "02 Final output",
       "bounding": [
-        1640,
-        80,
-        3210,
-        1620
+        2660,
+        40,
+        1760,
+        1880
       ],
-      "color": "#7a568e",
-      "font_size": 24,
-      "flags": {}
-    },
-    {
-      "title": "05 Optional background - after generation",
-      "bounding": [
-        4990,
-        80,
-        1420,
-        680
-      ],
-      "color": "#8d5b5b",
-      "font_size": 24,
-      "flags": {}
-    },
-    {
-      "title": "06 Preview and save",
-      "bounding": [
-        6550,
-        80,
-        950,
-        1030
-      ],
-      "color": "#596b82",
-      "font_size": 24,
+      "color": "#3d596f",
+      "font_size": 28,
       "flags": {}
     }
   ],
   "config": {},
   "extra": {
-    "ds": {
-      "scale": 0.45,
-      "offset": [
-        120,
-        120
-      ]
-    },
     "workflow_id": "hoi4_portrait_flux2_klein_9b_text_to_image",
-    "description": "Text-to-image HOI4 leader workflow using FLUX.2 Klein 9B and the project LoRA, with optional background replacement only after generation.",
-    "workflow_kind": "text_to_image",
-    "project": "comfyui-hoi4-portraits",
-    "graph_version": "3.0.0",
+    "title": "HOI4 Portrait — text to image",
+    "schema_version": "3.1.0",
     "base_model": "flux-2-klein-9b.safetensors",
     "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
     "master_size": [
@@ -1693,16 +882,18 @@
       156,
       210
     ],
-    "game_resize_policy": "lanczos_center_crop",
-    "core_nodes_only": true,
-    "comfy_cloud_ready": true,
-    "restoration_order": [],
-    "flux_restoration_default": false,
-    "background_order": "after_final_lora_styled_decode",
-    "comparison_row": [
-      "final_generated"
-    ],
-    "editor_layout": "flat_grouped_canvas"
+    "dds": {
+      "compression": "DXT5",
+      "mipmaps": false
+    },
+    "frontendVersion": "1.24.2",
+    "ds": {
+      "scale": 0.72,
+      "offset": [
+        0,
+        0
+      ]
+    }
   },
   "version": 0.4
 }
