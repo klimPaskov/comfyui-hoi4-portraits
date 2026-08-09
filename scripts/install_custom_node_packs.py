@@ -23,8 +23,8 @@ class NodePack:
 
 
 NODE_PACKS = (
-    # Adonis_Workflow.json serializes cnr_id=gguf, ver=2.8.2. This is the
-    # exact calcuis loader that provides ClipLoaderGGUF with its device input.
+    # The current Adonis Base + Post GGUF workflow serializes cnr_id=gguf,
+    # ver=2.8.2. This is the exact calcuis ClipLoaderGGUF implementation.
     NodePack(
         "gguf",
         "https://github.com/calcuis/gguf.git",

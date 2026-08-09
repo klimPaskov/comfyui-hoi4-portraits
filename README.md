@@ -19,9 +19,9 @@ and every workflow saves **HOI4-ready 156×210 DDS files** for a mod's
 
 | Workflow | Best for | What it runs |
 | --- | --- | --- |
-| [`hoi4_portrait_flux2_klein_9b_source.json`](workflows/hoi4_portrait_flux2_klein_9b_source.json) | Identity-preserving portrait from a photo | RealESRGAN → optional Adonis restoration → **three** HOI4 LoRA candidates |
+| [`hoi4_portrait_flux2_klein_9b_source.json`](workflows/hoi4_portrait_flux2_klein_9b_source.json) | Identity-preserving portrait from a photo | RealESRGAN → Adonis Base + Post restoration → **three** HOI4 LoRA candidates |
 | [`hoi4_portrait_flux2_klein_9b_text_to_image.json`](workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json) | Fictional portrait without a photo | One HOI4 LoRA generation from a text prompt |
-| [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → optional Adonis restoration, no LoRA |
+| [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → Adonis Base + Post restoration, no style LoRA |
 | [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | One sampler processes every image in `input/hoi4_portraits_batch` |
 
 Every workflow saves:
@@ -42,9 +42,12 @@ The installer downloads only the model variant you choose:
 | FP8 | `flux-2-klein-9b-fp8.safetensors` | 9.4 GB | 16–20 GB |
 | GGUF | `flux-2-klein-9b-*.gguf` | 5.9–10.0 GB | 8–16 GB |
 
-Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, LoRA, Adonis Base and
-Refine LoKrs, RealESRGAN, BiRefNet, face detectors) add **11.97 GB** on top.
-The full install's exact model payload is **30.12 GB (28.05 GiB)**. Storage and VRAM
+Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, the style LoRA, all
+three Adonis LoKrs, RealESRGAN, BiRefNet, and face detectors) add **12.89 GB**
+on top. Every variant install keeps all four LoRAs: the step-2500 HOI4 style
+LoRA plus Adonis Base, Refine, and Post. Refine stays installed as the
+official alternative first pass; the default graph uses Base → Post.
+The full install's exact model payload is **31.05 GB (28.92 GiB)**. Storage and VRAM
 requirements for each install are documented in
 [`docs/local-install.md`](docs/local-install.md).
 
@@ -64,7 +67,7 @@ contains:
 ### Windows
 
 ```powershell
-.\HOI4-Portrait-Workflows-v3.1.0-windows-x64.exe
+.\HOI4-Portrait-Workflows-3.1.0-windows-x64.exe
 ```
 
 Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard
@@ -120,16 +123,19 @@ GGUF files are not gated.
 
 The workflow is arranged from left to right in clear, colour-coded stages.
 
-![Source workflow overview](docs/assets/workflows/audit/source-overview.png)
+![Source workflow overview](docs/assets/workflows/audit/source-overview-2026-08-10.jpg)
 
 1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and
    **Preserve hat/headwear**, then compare the prepared result below. The
    upload node already shows the source, so there is no duplicate preview.
-2. **Restoration:** the restoration group follows the upstream
-   [`Adonis_Workflow.json`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/Adonis_Workflow.json)
-   topology: 1.7 MP Lanczos crop, Qwen 3 8B Q8 GGUF, an Adonis Base sampler
-   for the first five steps, and an Adonis Refine sampler for the remainder of a nine-step RES4LYF
-   schedule. The switch opens enabled; bypass it for a direct ESRGAN input.
+2. **Restoration:** the restoration group fully expands the current upstream
+   [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json).
+   It keeps the official fixed, Base, and Post prompts, 1.7 MP Lanczos crop,
+   reference conditioning, shared empty latent, seed, nine-step control, and
+   Shark options. Adonis Base performs the first generation; its latent feeds
+   both Post reference branches, and Adonis Post performs a second full
+   generation before the final VAE decode. The intermediate Base result is
+   visible inside the restoration group.
 3. **Style:** three independent candidates use the exact 2500-step LoRA. Each
    candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`,
    four steps, Euler, simple scheduling, full denoise, and its own seed.
@@ -141,11 +147,11 @@ The workflow is arranged from left to right in clear, colour-coded stages.
 
 The other three workflow canvases use the same stage colors and controls:
 
-![Text-to-image workflow overview](docs/assets/workflows/audit/text-overview.png)
+![Text-to-image workflow overview](docs/assets/workflows/audit/text-overview-2026-08-10.jpg)
 
-![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview.png)
+![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview-2026-08-10.jpg)
 
-![Batch workflow overview](docs/assets/workflows/audit/batch-overview.png)
+![Batch workflow overview](docs/assets/workflows/audit/batch-overview-2026-08-10.jpg)
 
 ## Prompting
 

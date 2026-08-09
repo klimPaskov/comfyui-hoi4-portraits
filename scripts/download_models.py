@@ -111,6 +111,32 @@ def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) ->
     return "downloaded"
 
 
+def _selected_model_entries(
+    manifest: dict[str, Any],
+    selected: set[str],
+    selected_variants: set[str],
+    selected_quants: set[str],
+) -> list[dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    for entry in manifest["models"]:
+        if selected and entry["filename"] not in selected:
+            continue
+        variant = str(entry.get("variant", "shared"))
+        if selected_variants:
+            if variant == "shared":
+                pass
+            elif variant not in selected_variants:
+                continue
+            elif (
+                variant == "gguf"
+                and selected_quants
+                and str(entry.get("quant", "")) not in selected_quants
+            ):
+                continue
+        entries.append(entry)
+    return entries
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--comfyui-root", required=True, type=Path)
@@ -120,12 +146,18 @@ def main(argv: list[str] | None = None) -> int:
         "--variant",
         action="append",
         choices=["full", "fp8", "gguf"],
-        help="Which FLUX.2 Klein 9B variant(s) to install: full (BF16), fp8, or gguf. Repeat for multiple. Shared support models are always included.",
+        help=(
+            "Which FLUX.2 Klein 9B variant(s) to install: full (BF16), fp8, or gguf. "
+            "Repeat for multiple. Shared support models, including all four LoRAs, are always included."
+        ),
     )
     parser.add_argument(
         "--gguf-quants",
         default="",
-        help="Comma-separated GGUF quantizations to install, e.g. Q4_K_M,Q5_K_M. Only used with --variant gguf. Defaults to every listed quantization.",
+        help=(
+            "Comma-separated GGUF quantizations to install, e.g. Q4_K_M,Q5_K_M. "
+            "Only used with --variant gguf. Defaults to every listed quantization."
+        ),
     )
     parser.add_argument("--workers", type=int, default=4, help="Parallel model checks/downloads (default: 4)")
     args = parser.parse_args(argv)
@@ -139,17 +171,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.workers < 1:
         parser.error("--workers must be at least 1")
     jobs = []
-    for entry in manifest["models"]:
-        if selected and entry["filename"] not in selected:
-            continue
-        variant = str(entry.get("variant", "shared"))
-        if selected_variants:
-            if variant == "shared":
-                pass
-            elif variant not in selected_variants:
-                continue
-            elif variant == "gguf" and selected_quants and str(entry.get("quant", "")) not in selected_quants:
-                continue
+    for entry in _selected_model_entries(manifest, selected, selected_variants, selected_quants):
         destination = comfy_root / "models" / entry["directory"] / entry["filename"]
         jobs.append((entry, destination))
 

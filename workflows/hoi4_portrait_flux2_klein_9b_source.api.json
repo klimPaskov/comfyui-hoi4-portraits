@@ -200,7 +200,7 @@
   },
   "16": {
     "inputs": {
-      "lora_name": "adonis_refine.safetensors",
+      "lora_name": "adonis_post.safetensors",
       "strength_model": 1.0,
       "model": [
         "11",
@@ -209,7 +209,7 @@
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Adonis Refine LoRA"
+      "title": "Adonis Post LoRA"
     }
   },
   "17": {
@@ -239,7 +239,7 @@
   },
   "19": {
     "inputs": {
-      "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image.",
+      "text": "fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality., uhdmanscale. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution camera RAW image.",
       "clip": [
         "12",
         0
@@ -247,7 +247,7 @@
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
-      "title": "Restoration prompt"
+      "title": "Adonis Base prompt"
     }
   },
   "20": {
@@ -291,7 +291,7 @@
     },
     "class_type": "ReferenceLatent",
     "_meta": {
-      "title": "Positive reference latent"
+      "title": "Base positive reference"
     }
   },
   "23": {
@@ -307,7 +307,7 @@
     },
     "class_type": "ReferenceLatent",
     "_meta": {
-      "title": "Negative reference latent"
+      "title": "Base negative reference"
     }
   },
   "24": {
@@ -354,7 +354,7 @@
     },
     "class_type": "PrimitiveInt",
     "_meta": {
-      "title": "Total Adonis steps"
+      "title": "Steps per Adonis model"
     }
   },
   "28": {
@@ -366,14 +366,13 @@
         "27",
         0
       ],
-      "steps_to_run": 5,
+      "steps_to_run": -1,
       "cfg": 1.0,
       "denoise": 1.0,
       "seed": [
         "26",
         0
       ],
-      "control_after_generate": "fixed",
       "sampler_mode": "standard",
       "bongmath": true,
       "model": [
@@ -392,19 +391,104 @@
         "24",
         0
       ],
-      "options": [
+      "options_group.options0": [
         "25",
         0
       ]
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Restore details — Base pass (steps 1–5)"
+      "title": "Restore details — Adonis Base"
     }
   },
   "29": {
     "inputs": {
-      "eta": 0.8,
+      "text": "clean natural skin, hair and body texture, no jpeg artifacts, no checkerboard pattern, male portrait., uhdmanscale. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution camera RAW image.",
+      "clip": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Adonis Post prompt"
+    }
+  },
+  "30": {
+    "inputs": {
+      "conditioning": [
+        "29",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Zero negative conditioning"
+    }
+  },
+  "31": {
+    "inputs": {
+      "conditioning": [
+        "29",
+        0
+      ],
+      "latent": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Post positive reference"
+    }
+  },
+  "32": {
+    "inputs": {
+      "conditioning": [
+        "30",
+        0
+      ],
+      "latent": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Post negative reference"
+    }
+  },
+  "33": {
+    "inputs": {
+      "samples": [
+        "28",
+        0
+      ],
+      "vae": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "Decode Adonis Base result"
+    }
+  },
+  "34": {
+    "inputs": {
+      "images": [
+        "33",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Adonis Base preview"
+    }
+  },
+  "35": {
+    "inputs": {
+      "eta": 0.5,
       "sampler_name": "exponential/res_2s",
       "scheduler": "simple",
       "steps": [
@@ -418,27 +502,38 @@
         "26",
         0
       ],
-      "control_after_generate": "fixed",
-      "sampler_mode": "resample",
+      "sampler_mode": "standard",
       "bongmath": true,
       "model": [
         "16",
         0
       ],
+      "positive": [
+        "31",
+        0
+      ],
+      "negative": [
+        "32",
+        0
+      ],
       "latent_image": [
-        "28",
+        "24",
+        0
+      ],
+      "options_group.options0": [
+        "25",
         0
       ]
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Restore details — Refine pass"
+      "title": "Finish details — Adonis Post"
     }
   },
-  "30": {
+  "36": {
     "inputs": {
       "samples": [
-        "29",
+        "35",
         0
       ],
       "vae": [
@@ -451,24 +546,7 @@
       "title": "Decode restored portrait"
     }
   },
-  "31": {
-    "inputs": {
-      "switch": true,
-      "on_false": [
-        "10",
-        0
-      ],
-      "on_true": [
-        "30",
-        0
-      ]
-    },
-    "class_type": "ComfySwitchNode",
-    "_meta": {
-      "title": "Use restored portrait"
-    }
-  },
-  "32": {
+  "37": {
     "inputs": {
       "text": "make this portrait hoi4_portrait style",
       "clip": [
@@ -481,7 +559,7 @@
       "title": "Portrait prompt"
     }
   },
-  "33": {
+  "38": {
     "inputs": {
       "text": "",
       "clip": [
@@ -494,11 +572,11 @@
       "title": "Negative prompt"
     }
   },
-  "34": {
+  "39": {
     "inputs": {
       "guidance": 1.0,
       "conditioning": [
-        "32",
+        "37",
         0
       ]
     },
@@ -507,10 +585,10 @@
       "title": "Prompt guidance — 1"
     }
   },
-  "35": {
+  "40": {
     "inputs": {
       "pixels": [
-        "31",
+        "36",
         0
       ],
       "vae": [
@@ -523,14 +601,14 @@
       "title": "Encode portrait reference"
     }
   },
-  "36": {
+  "41": {
     "inputs": {
       "conditioning": [
-        "34",
+        "39",
         0
       ],
       "latent": [
-        "35",
+        "40",
         0
       ]
     },
@@ -539,14 +617,14 @@
       "title": "Positive portrait reference"
     }
   },
-  "37": {
+  "42": {
     "inputs": {
       "conditioning": [
-        "33",
+        "38",
         0
       ],
       "latent": [
-        "35",
+        "40",
         0
       ]
     },
@@ -555,7 +633,7 @@
       "title": "Negative portrait reference"
     }
   },
-  "38": {
+  "43": {
     "inputs": {
       "seed": 42,
       "steps": 4,
@@ -568,15 +646,15 @@
         0
       ],
       "positive": [
-        "36",
+        "41",
         0
       ],
       "negative": [
-        "37",
+        "42",
         0
       ],
       "latent_image": [
-        "35",
+        "40",
         0
       ]
     },
@@ -585,10 +663,10 @@
       "title": "Portrait 1 sampling"
     }
   },
-  "39": {
+  "44": {
     "inputs": {
       "samples": [
-        "38",
+        "43",
         0
       ],
       "vae": [
@@ -601,7 +679,7 @@
       "title": "Decode portrait"
     }
   },
-  "40": {
+  "45": {
     "inputs": {
       "seed": 43,
       "steps": 4,
@@ -614,15 +692,15 @@
         0
       ],
       "positive": [
-        "36",
+        "41",
         0
       ],
       "negative": [
-        "37",
+        "42",
         0
       ],
       "latent_image": [
-        "35",
+        "40",
         0
       ]
     },
@@ -631,10 +709,10 @@
       "title": "Portrait 2 sampling"
     }
   },
-  "41": {
+  "46": {
     "inputs": {
       "samples": [
-        "40",
+        "45",
         0
       ],
       "vae": [
@@ -647,7 +725,7 @@
       "title": "Decode portrait"
     }
   },
-  "42": {
+  "47": {
     "inputs": {
       "seed": 44,
       "steps": 4,
@@ -660,15 +738,15 @@
         0
       ],
       "positive": [
-        "36",
+        "41",
         0
       ],
       "negative": [
-        "37",
+        "42",
         0
       ],
       "latent_image": [
-        "35",
+        "40",
         0
       ]
     },
@@ -677,10 +755,10 @@
       "title": "Portrait 3 sampling"
     }
   },
-  "43": {
+  "48": {
     "inputs": {
       "samples": [
-        "42",
+        "47",
         0
       ],
       "vae": [
@@ -693,14 +771,14 @@
       "title": "Decode portrait"
     }
   },
-  "44": {
+  "49": {
     "inputs": {
       "image1": [
-        "39",
+        "44",
         0
       ],
       "image2": [
-        "41",
+        "46",
         0
       ]
     },
@@ -709,14 +787,14 @@
       "title": "Join portraits 1 and 2"
     }
   },
-  "45": {
+  "50": {
     "inputs": {
       "image1": [
-        "44",
+        "49",
         0
       ],
       "image2": [
-        "43",
+        "48",
         0
       ]
     },
@@ -725,7 +803,7 @@
       "title": "Add portrait 3"
     }
   },
-  "46": {
+  "51": {
     "inputs": {
       "image": "hoi4_leader_portrait_background.png"
     },
@@ -734,11 +812,11 @@
       "title": "Choose a replacement background"
     }
   },
-  "47": {
+  "52": {
     "inputs": {
       "use_background": false,
       "image": [
-        "45",
+        "50",
         0
       ],
       "bg_removal_model": [
@@ -746,7 +824,7 @@
         0
       ],
       "background": [
-        "46",
+        "51",
         0
       ]
     },
@@ -755,12 +833,12 @@
       "title": "Use replacement background"
     }
   },
-  "48": {
+  "53": {
     "inputs": {
       "batch_index": 0,
       "length": 1,
       "image": [
-        "47",
+        "52",
         0
       ]
     },
@@ -769,14 +847,14 @@
       "title": "Take portrait 1"
     }
   },
-  "49": {
+  "54": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "48",
+        "53",
         0
       ]
     },
@@ -785,87 +863,11 @@
       "title": "Portrait 1 master — 1024×1365"
     }
   },
-  "50": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
-      "crop": "center",
-      "image": [
-        "49",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Portrait 1 game — 156×210"
-    }
-  },
-  "51": {
-    "inputs": {
-      "batch_index": 1,
-      "length": 1,
-      "image": [
-        "47",
-        0
-      ]
-    },
-    "class_type": "ImageFromBatch",
-    "_meta": {
-      "title": "Take portrait 2"
-    }
-  },
-  "52": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
-      "crop": "center",
-      "image": [
-        "51",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Portrait 2 master — 1024×1365"
-    }
-  },
-  "53": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
-      "crop": "center",
-      "image": [
-        "52",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Portrait 2 game — 156×210"
-    }
-  },
-  "54": {
-    "inputs": {
-      "batch_index": 2,
-      "length": 1,
-      "image": [
-        "47",
-        0
-      ]
-    },
-    "class_type": "ImageFromBatch",
-    "_meta": {
-      "title": "Take portrait 3"
-    }
-  },
   "55": {
     "inputs": {
       "upscale_method": "lanczos",
-      "width": 1024,
-      "height": 1365,
+      "width": 156,
+      "height": 210,
       "crop": "center",
       "image": [
         "54",
@@ -874,17 +876,93 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Portrait 3 master — 1024×1365"
+      "title": "Portrait 1 game — 156×210"
     }
   },
   "56": {
+    "inputs": {
+      "batch_index": 1,
+      "length": 1,
+      "image": [
+        "52",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Take portrait 2"
+    }
+  },
+  "57": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "56",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 2 master — 1024×1365"
+    }
+  },
+  "58": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "55",
+        "57",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 2 game — 156×210"
+    }
+  },
+  "59": {
+    "inputs": {
+      "batch_index": 2,
+      "length": 1,
+      "image": [
+        "52",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Take portrait 3"
+    }
+  },
+  "60": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "59",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 3 master — 1024×1365"
+    }
+  },
+  "61": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "60",
         0
       ]
     },
@@ -893,11 +971,11 @@
       "title": "Portrait 3 game — 156×210"
     }
   },
-  "57": {
+  "62": {
     "inputs": {
       "filename_prefix": "1024x1365/portrait_1",
       "images": [
-        "49",
+        "54",
         0
       ]
     },
@@ -906,11 +984,11 @@
       "title": "Save portrait 1 master PNG"
     }
   },
-  "58": {
+  "63": {
     "inputs": {
       "filename_prefix": "156x210/portrait_1",
       "images": [
-        "50",
+        "55",
         0
       ]
     },
@@ -919,12 +997,12 @@
       "title": "Save portrait 1 game PNG"
     }
   },
-  "59": {
+  "64": {
     "inputs": {
       "filename_prefix": "156x210/dds/portrait_1",
       "format": "argb8888",
       "images": [
-        "50",
+        "55",
         0
       ]
     },
@@ -933,11 +1011,11 @@
       "title": "Save portrait 1 DDS"
     }
   },
-  "60": {
+  "65": {
     "inputs": {
       "filename_prefix": "1024x1365/portrait_2",
       "images": [
-        "52",
+        "57",
         0
       ]
     },
@@ -946,11 +1024,11 @@
       "title": "Save portrait 2 master PNG"
     }
   },
-  "61": {
+  "66": {
     "inputs": {
       "filename_prefix": "156x210/portrait_2",
       "images": [
-        "53",
+        "58",
         0
       ]
     },
@@ -959,12 +1037,12 @@
       "title": "Save portrait 2 game PNG"
     }
   },
-  "62": {
+  "67": {
     "inputs": {
       "filename_prefix": "156x210/dds/portrait_2",
       "format": "argb8888",
       "images": [
-        "53",
+        "58",
         0
       ]
     },
@@ -973,11 +1051,11 @@
       "title": "Save portrait 2 DDS"
     }
   },
-  "63": {
+  "68": {
     "inputs": {
       "filename_prefix": "1024x1365/portrait_3",
       "images": [
-        "55",
+        "60",
         0
       ]
     },
@@ -986,11 +1064,11 @@
       "title": "Save portrait 3 master PNG"
     }
   },
-  "64": {
+  "69": {
     "inputs": {
       "filename_prefix": "156x210/portrait_3",
       "images": [
-        "56",
+        "61",
         0
       ]
     },
@@ -999,12 +1077,12 @@
       "title": "Save portrait 3 game PNG"
     }
   },
-  "65": {
+  "70": {
     "inputs": {
       "filename_prefix": "156x210/dds/portrait_3",
       "format": "argb8888",
       "images": [
-        "56",
+        "61",
         0
       ]
     },
@@ -1013,7 +1091,7 @@
       "title": "Save portrait 3 DDS"
     }
   },
-  "66": {
+  "71": {
     "inputs": {
       "images": [
         "10",
@@ -1025,10 +1103,10 @@
       "title": "Prepared portrait"
     }
   },
-  "67": {
+  "72": {
     "inputs": {
       "images": [
-        "31",
+        "36",
         0
       ]
     },
@@ -1037,10 +1115,10 @@
       "title": "Restored portrait"
     }
   },
-  "68": {
+  "73": {
     "inputs": {
       "images": [
-        "50",
+        "55",
         0
       ]
     },
@@ -1049,10 +1127,10 @@
       "title": "Portrait 1 — 156×210"
     }
   },
-  "69": {
+  "74": {
     "inputs": {
       "images": [
-        "53",
+        "58",
         0
       ]
     },
@@ -1061,10 +1139,10 @@
       "title": "Portrait 2 — 156×210"
     }
   },
-  "70": {
+  "75": {
     "inputs": {
       "images": [
-        "56",
+        "61",
         0
       ]
     },

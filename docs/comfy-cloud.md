@@ -14,12 +14,15 @@ Import it from its hosted source:
 2. Choose **Import**.
 3. Paste the URL for
    [`hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors`](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/blob/main/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors).
-   Import [`adonis_base.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_base.safetensors)
-   and [`adonis_refine.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_refine.safetensors)
+   Import [`adonis_base.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_base.safetensors),
+   [`adonis_refine.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_refine.safetensors),
+   and [`adonis_post.safetensors`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post.safetensors)
    when you want restoration.
 4. Select model type **LoRA** and target folder `loras`.
 5. Wait for the exact filenames to appear in the model library, then select
-   them on the separate visible style, Adonis Base, and Adonis Refine LoRA loaders.
+   them on the separate visible style, Adonis Base, and Adonis Post LoRA loaders.
+   Refine is downloaded for the supported alternative first pass but is not
+   selected by the default workflow.
 
 Model import requires a Comfy Cloud Creator or Pro plan. The FLUX.2 Klein 9B
 stack, RealESRGAN, and BiRefNet are present in the Cloud catalog.
@@ -38,7 +41,7 @@ needed for the source, text-to-image, and batch workflows.
    the portrait row below. **Face zoom** defaults to `0.90`; lower values keep
    more of the body. **Preserve
    hat/headwear** defaults to `true`. Turn off **Toggle face processing** to
-   keep a full multi-person composition. FLUX restoration opens enabled.
+   keep a full multi-person composition. Adonis Base and Post run before styling.
 4. Keep the source prompt exactly as
    `make this portrait hoi4_portrait style` and append only deliberate
    changes. The text-to-image workflow uses the exact example prompt

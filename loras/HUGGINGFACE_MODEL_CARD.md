@@ -28,24 +28,31 @@ FP8, and GGUF variants. FLUX.2 Klein Base variants are unsupported.
 
 ## Required stack
 
-The compact **HOI4 Distilled Model Stack** card loads:
+The workflow's separate model-loader nodes load:
 
 1. `flux-2-klein-9b.safetensors`, `flux-2-klein-9b-fp8.safetensors`, or one
    `flux-2-klein-9b-*.gguf` diffusion model;
 2. `Qwen3-8B-Q8_0.gguf` through `calcuis/gguf` `ClipLoaderGGUF`, type `flux2`;
 3. `flux2-vae.safetensors`;
 4. the step-2500 style LoRA;
-5. optional `adonis_base.safetensors` and `adonis_refine.safetensors` for
-   pre-style restoration.
+5. `adonis_base.safetensors` and `adonis_post.safetensors` for the default
+   pre-style restoration path; `adonis_refine.safetensors` remains installed
+   as the official alternative first pass.
+
+The installers download all four LoRAs for every full, FP8, or
+GGUF installation, even when a particular workflow does not execute every
+LoRA.
 
 The style sampler defaults are CFG `1`, guidance `1`, Euler, simple, four
-steps, and denoise `1`. Prompt, seed, noise behavior, sampler, scheduler, and
-partial-step controls are on one advanced node. ComfyUI's native latent
-callback supplies live construction previews.
+steps, and denoise `1`. Prompt encoding, FLUX guidance, reference latent,
+standard ComfyUI `KSampler`, and VAE decode remain separate visible nodes.
+ComfyUI's native sampler preview shows construction progress.
 
 For source portraits, RealESRGAN follows the centered face-aware crop. The
-optional restoration card executes the exact upstream Adonis 1.7 MP
-Base → Refine topology before style sampling. Final output is a centered
+restoration group executes the complete current upstream Adonis 1.7 MP
+Base → Post topology before style sampling. The Base latent becomes Post
+reference conditioning and both generations share the seed, nine-step control,
+empty latent, and Shark options. Final output is a centered
 1024×1365 master and a non-stretched 156×210 game crop.
 
 ## Source prompt

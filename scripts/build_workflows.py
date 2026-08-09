@@ -19,6 +19,9 @@ VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors"
 ADONIS_BASE = "adonis_base.safetensors"
 ADONIS_REFINE = "adonis_refine.safetensors"
+ADONIS_POST = "adonis_post.safetensors"
+ADONIS_REVISION = "515ecf66717d14309a055811b3d478cdfa59bbda"
+ADONIS_WORKFLOW = "adonis_post_workflows/Adonis_Base_Post_gguf.json"
 ESRGAN_MODEL = "RealESRGAN_x2plus.pth"
 BACKGROUND_MODEL = "birefnet.safetensors"
 FACE_MODEL = "mediapipe_face_fp32.safetensors"
@@ -28,17 +31,21 @@ TEXT_PROMPT = (
     "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, "
     "wearing a plain civilian jacket."
 )
-RESTORATION_PROMPT = (
-    "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\n"
-    "Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, "
-    "remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\n"
+ADONIS_FIXED_PROMPT = (
+    "uhdmanscale. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. "
+    "Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. "
+    "Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\n"
     "Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\n"
     "Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\n"
-    "On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\n"
-    "On hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\n"
-    "Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\n"
-    "Output as professional high resolution color camera RAW image."
+    "On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. "
+    "On hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\n"
+    "Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover lip definition, and skin texture from motion blur.\n\n"
+    "Output as professional high resolution camera RAW image."
 )
+ADONIS_BASE_PROMPT = "fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality."
+ADONIS_POST_PROMPT = "clean natural skin, hair and body texture, no jpeg artifacts, no checkerboard pattern, male portrait."
+ADONIS_BASE_COMBINED_PROMPT = f"{ADONIS_BASE_PROMPT}, {ADONIS_FIXED_PROMPT}"
+ADONIS_POST_COMBINED_PROMPT = f"{ADONIS_POST_PROMPT}, {ADONIS_FIXED_PROMPT}"
 
 SETUP_GUIDE_SIZE = (620, 1400)
 
@@ -136,7 +143,15 @@ class Graph:
             self.api[str(node_id)] = {"inputs": dict(api_inputs), "class_type": class_type, "_meta": {"title": title}}
         return Ref(node_id)
 
-    def connect(self, source: Ref, source_slot: int, target: Ref, target_input: str) -> None:
+    def connect(
+        self,
+        source: Ref,
+        source_slot: int,
+        target: Ref,
+        target_input: str,
+        *,
+        api_target_input: str | None = None,
+    ) -> None:
         source_node = self.nodes[source.node_id - 1]
         target_node = self.nodes[target.node_id - 1]
         target_slot = next(index for index, item in enumerate(target_node["inputs"]) if item["name"] == target_input)
@@ -148,7 +163,7 @@ class Graph:
         if source_node["outputs"][source_slot]["links"] is None:
             source_node["outputs"][source_slot]["links"] = []
         source_node["outputs"][source_slot]["links"].append(link_id)
-        self.api[str(target.node_id)]["inputs"][target_input] = [str(source.node_id), source_slot]
+        self.api[str(target.node_id)]["inputs"][api_target_input or target_input] = [str(source.node_id), source_slot]
 
     def _fit_groups(self) -> None:
         """Wrap every visible group tightly around its nodes with equal gutters."""
@@ -169,6 +184,10 @@ class Graph:
 
     def serialize(self, *, style_lora: str | None) -> tuple[dict[str, Any], dict[str, Any]]:
         self._fit_groups()
+        uses_adonis = any(
+            node.get("type") == "LoraLoaderModelOnly" and ADONIS_POST in node.get("widgets_values", [])
+            for node in self.nodes
+        )
         extra = {
             "workflow_id": self.workflow_id,
             "title": self.title,
@@ -178,6 +197,12 @@ class Graph:
             "master_size": [1024, 1365],
             "game_size": [156, 210],
             "dds": {"format": "A8R8G8B8", "mipmaps": False},
+            "adonis": {
+                "source": "n8te0/adonis_flux2klein",
+                "revision": ADONIS_REVISION,
+                "workflow": ADONIS_WORKFLOW,
+                "passes": ["adonis_base.safetensors", "adonis_post.safetensors"],
+            } if uses_adonis else None,
             "frontendVersion": "1.24.2",
             "ds": {"scale": 0.72, "offset": [0, 0]},
         }
@@ -365,11 +390,11 @@ def _scale_total(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     )
 
 
-def _clip_encode(g: Graph, pos: tuple[int, int], group: str) -> Ref:
+def _clip_encode(g: Graph, title: str, prompt: str, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "CLIPTextEncode", "Restoration prompt", pos, (440, 260), group,
+        "CLIPTextEncode", title, pos, (440, 260), group,
         [("clip", "CLIP", False), ("text", "STRING", True)], [("CONDITIONING", "CONDITIONING")],
-        [RESTORATION_PROMPT], {"text": RESTORATION_PROMPT}, "restore",
+        [prompt], {"text": prompt}, "restore",
     )
 
 
@@ -421,11 +446,13 @@ def _primitive_int(g: Graph, title: str, value: int, pos: tuple[int, int], group
     )
 
 
-def _adonis_sampler(g: Graph, title: str, pos: tuple[int, int], group: str, *, refine: bool) -> Ref:
-    values = [0.8, "exponential/res_2s", "simple", 9, -1 if refine else 5, 1.0, 1.0, 42, "fixed", "resample" if refine else "standard", True]
+def _adonis_sampler(g: Graph, title: str, pos: tuple[int, int], group: str, *, post: bool) -> Ref:
+    values = [0.5 if post else 0.8, "exponential/res_2s", "simple", 8 if post else 9, -1, 1.0, 1.0, 42, "fixed", "standard", True]
     names = ("eta", "sampler_name", "scheduler", "steps", "steps_to_run", "cfg", "denoise", "seed", "control_after_generate", "sampler_mode", "bongmath")
+    api_values = dict(zip(names, values))
+    api_values.pop("control_after_generate")
     return g.node(
-        "ClownsharKSampler_Beta", title, pos, (500, 1100), group,
+        "ClownsharKSampler_Beta", title, pos, (400, 1100), group,
         [("model", "MODEL", False), ("positive", "CONDITIONING", False), ("negative", "CONDITIONING", False),
          ("latent_image", "LATENT", False), ("options", "OPTIONS", False),
          ("eta", "FLOAT", True), ("sampler_name", "COMBO", True), ("scheduler", "COMBO", True),
@@ -433,70 +460,93 @@ def _adonis_sampler(g: Graph, title: str, pos: tuple[int, int], group: str, *, r
          ("denoise", "FLOAT", True), ("seed", "INT", True), ("control_after_generate", "COMBO", True),
          ("sampler_mode", "COMBO", True), ("bongmath", "BOOLEAN", True)],
         [("output", "LATENT"), ("denoised", "LATENT"), ("options", "OPTIONS")],
-        values, dict(zip(names, values)), "restore",
+        values, api_values, "restore",
     )
 
 
-def _vae_decode(g: Graph, pos: tuple[int, int], group: str, title: str = "Decode restored portrait") -> Ref:
+def _vae_decode(
+    g: Graph,
+    pos: tuple[int, int],
+    group: str,
+    title: str = "Decode restored portrait",
+    size: tuple[int, int] = (300, 100),
+) -> Ref:
     return g.node(
-        "VAEDecode", title, pos, (300, 100), group,
+        "VAEDecode", title, pos, size, group,
         [("samples", "LATENT", False), ("vae", "VAE", False)], [("IMAGE", "IMAGE")], [], {}, "restore",
     )
 
 
-def _switch(g: Graph, title: str, enabled: bool, pos: tuple[int, int], group: str) -> Ref:
+def _adonis_base_preview(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "ComfySwitchNode", title, pos, (360, 160), group,
-        [("switch", "BOOLEAN", True), ("on_false", "IMAGE", False), ("on_true", "IMAGE", False)], [("IMAGE", "IMAGE")],
-        [enabled], {"switch": enabled}, "switch",
+        "PreviewImage", "Adonis Base preview", pos, (440, 594), group,
+        [("images", "IMAGE", False)], [("IMAGE", "IMAGE")], [], {}, "restore",
     )
 
 
 def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *, x: int = 4000) -> tuple[Ref, Ref]:
     scale = _scale_total(g, (x, 100), group)
-    prompt = _clip_encode(g, (x, 420), group)
-    negative = _zero_conditioning(g, (x, 760), group)
+    base_prompt = _clip_encode(g, "Adonis Base prompt", ADONIS_BASE_COMBINED_PROMPT, (x, 420), group)
+    base_negative = _zero_conditioning(g, (x, 760), group)
     encoded = _vae_encode(g, (x + 480, 100), group)
-    positive_ref = _reference(g, "Positive reference latent", (x + 480, 280), group)
-    negative_ref = _reference(g, "Negative reference latent", (x + 480, 460), group)
+    base_positive_ref = _reference(g, "Base positive reference", (x + 480, 280), group)
+    base_negative_ref = _reference(g, "Base negative reference", (x + 480, 460), group)
     empty = _empty_latent(g, (x + 480, 640), group)
     options = _shark_options(g, (x + 880, 100), group)
     seed = _primitive_int(g, "Shared Adonis seed", 42, (x + 880, 360), group)
-    steps = _primitive_int(g, "Total Adonis steps", 9, (x + 880, 540), group)
-    base = _adonis_sampler(g, "Restore details — Base pass (steps 1–5)", (x + 1360, 100), group, refine=False)
-    refine = _adonis_sampler(g, "Restore details — Refine pass", (x + 1940, 100), group, refine=True)
-    decoded = _vae_decode(g, (x + 1940, 1280), group)
-    enabled = _switch(g, "Use restored portrait", True, (x + 2320, 1280), group)
+    steps = _primitive_int(g, "Steps per Adonis model", 9, (x + 880, 540), group)
+    base = _adonis_sampler(g, "Restore details — Adonis Base", (x + 1320, 100), group, post=False)
+
+    post_prompt = _clip_encode(g, "Adonis Post prompt", ADONIS_POST_COMBINED_PROMPT, (x + 1780, 100), group)
+    post_negative = _zero_conditioning(g, (x + 1780, 440), group)
+    post_positive_ref = _reference(g, "Post positive reference", (x + 1780, 600), group)
+    post_negative_ref = _reference(g, "Post negative reference", (x + 1780, 780), group)
+    base_decoded = _vae_decode(g, (x + 1780, 960), group, "Decode Adonis Base result", (260, 100))
+    base_preview = _adonis_base_preview(g, (x + 1780, 1120), group)
+    post = _adonis_sampler(g, "Finish details — Adonis Post", (x + 2260, 100), group, post=True)
+    decoded = _vae_decode(g, (x + 2260, 1280), group, size=(260, 100))
 
     g.connect(image, 0, scale, "image")
-    g.connect(model["clip"], 0, prompt, "clip")
-    g.connect(prompt, 0, negative, "conditioning")
+    g.connect(model["clip"], 0, base_prompt, "clip")
+    g.connect(base_prompt, 0, base_negative, "conditioning")
     g.connect(scale, 0, encoded, "pixels")
     g.connect(model["vae"], 0, encoded, "vae")
-    g.connect(prompt, 0, positive_ref, "conditioning")
-    g.connect(encoded, 0, positive_ref, "latent")
-    g.connect(negative, 0, negative_ref, "conditioning")
-    g.connect(encoded, 0, negative_ref, "latent")
+    g.connect(base_prompt, 0, base_positive_ref, "conditioning")
+    g.connect(encoded, 0, base_positive_ref, "latent")
+    g.connect(base_negative, 0, base_negative_ref, "conditioning")
+    g.connect(encoded, 0, base_negative_ref, "latent")
     g.connect(scale, 1, empty, "width")
     g.connect(scale, 2, empty, "height")
 
     g.connect(model["adonis_base"], 0, base, "model")
-    g.connect(positive_ref, 0, base, "positive")
-    g.connect(negative_ref, 0, base, "negative")
+    g.connect(base_positive_ref, 0, base, "positive")
+    g.connect(base_negative_ref, 0, base, "negative")
     g.connect(empty, 0, base, "latent_image")
-    g.connect(options, 0, base, "options")
+    g.connect(options, 0, base, "options", api_target_input="options_group.options0")
     g.connect(steps, 0, base, "steps")
     g.connect(seed, 0, base, "seed")
 
-    g.connect(model["adonis_refine"], 0, refine, "model")
-    g.connect(base, 0, refine, "latent_image")
-    g.connect(steps, 0, refine, "steps")
-    g.connect(seed, 0, refine, "seed")
-    g.connect(refine, 0, decoded, "samples")
+    g.connect(base, 0, base_decoded, "samples")
+    g.connect(model["vae"], 0, base_decoded, "vae")
+    g.connect(base_decoded, 0, base_preview, "images")
+
+    g.connect(model["clip"], 0, post_prompt, "clip")
+    g.connect(post_prompt, 0, post_negative, "conditioning")
+    g.connect(post_prompt, 0, post_positive_ref, "conditioning")
+    g.connect(base, 0, post_positive_ref, "latent")
+    g.connect(post_negative, 0, post_negative_ref, "conditioning")
+    g.connect(base, 0, post_negative_ref, "latent")
+
+    g.connect(model["adonis_post"], 0, post, "model")
+    g.connect(post_positive_ref, 0, post, "positive")
+    g.connect(post_negative_ref, 0, post, "negative")
+    g.connect(empty, 0, post, "latent_image")
+    g.connect(options, 0, post, "options", api_target_input="options_group.options0")
+    g.connect(steps, 0, post, "steps")
+    g.connect(seed, 0, post, "seed")
+    g.connect(post, 0, decoded, "samples")
     g.connect(model["vae"], 0, decoded, "vae")
-    g.connect(image, 0, enabled, "on_false")
-    g.connect(decoded, 0, enabled, "on_true")
-    return enabled, scale
+    return decoded, scale
 
 
 def _model_pipeline(g: Graph, group: str, *, x: int, y: int = 100, style: bool, adonis: bool, background: bool) -> dict[str, Ref]:
@@ -510,10 +560,10 @@ def _model_pipeline(g: Graph, group: str, *, x: int, y: int = 100, style: bool, 
         result["style"] = style_lora
     if adonis:
         base = _lora(g, "Adonis Base LoRA", ADONIS_BASE, (x + 500, y + 220), group)
-        refine = _lora(g, "Adonis Refine LoRA", ADONIS_REFINE, (x + 500, y + 440), group)
+        post = _lora(g, "Adonis Post LoRA", ADONIS_POST, (x + 500, y + 440), group)
         g.connect(unet, 0, base, "model")
-        g.connect(unet, 0, refine, "model")
-        result.update({"adonis_base": base, "adonis_refine": refine})
+        g.connect(unet, 0, post, "model")
+        result.update({"adonis_base": base, "adonis_post": post})
     if background:
         result["background_model"] = _background_model(g, (x, y + 620), group)
     return result

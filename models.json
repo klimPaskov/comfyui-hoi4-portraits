@@ -204,6 +204,20 @@
       "requires_huggingface_auth": false
     },
     {
+      "name": "Adonis Post restoration LoKr",
+      "filename": "adonis_post.safetensors",
+      "directory": "loras",
+      "variant": "shared",
+      "quant": null,
+      "source": "n8te0/adonis_flux2klein",
+      "revision": "515ecf66717d14309a055811b3d478cdfa59bbda",
+      "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_post.safetensors",
+      "size_bytes": 926976144,
+      "sha256": "cf27c972eae1570a3c66500140a74b730c9f7bb079a141b7ae1595a9363d7b63",
+      "license": "See upstream repository",
+      "requires_huggingface_auth": false
+    },
+    {
       "name": "RealESRGAN x2plus",
       "filename": "RealESRGAN_x2plus.pth",
       "directory": "upscale_models",

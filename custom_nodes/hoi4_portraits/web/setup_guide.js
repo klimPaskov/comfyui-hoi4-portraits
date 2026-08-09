@@ -27,6 +27,7 @@ const downloads = [
       ["HOI4 portrait LoRA — step 2500", "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors"],
       ["Adonis Base", "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors"],
       ["Adonis Refine", "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_refine.safetensors"],
+      ["Adonis Post", "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_post.safetensors"],
     ],
   },
   {
@@ -58,11 +59,11 @@ function makeSetupCard() {
     "border-radius:8px",
     "background:#3f2f24",
     "color:#f4e7d3",
-    "font:18px/1.3 system-ui,sans-serif",
+    "font:17px/1.25 system-ui,sans-serif",
   ].join(";");
 
   const intro = document.createElement("div");
-  intro.innerHTML = "<strong style='font-size:22px'>Put these in ComfyUI/models</strong><br><span style='color:#d9c3a8'>Choose one FLUX.2 model. Download everything else.</span>";
+  intro.innerHTML = "<strong style='font-size:22px'>Put these in ComfyUI/models</strong><br><span style='color:#d9c3a8'>Choose one FLUX.2 model. Grab everything else.</span>";
   card.append(intro);
 
   const root = document.createElement("div");

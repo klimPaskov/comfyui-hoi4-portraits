@@ -9,12 +9,18 @@ This repository documents one current, internally consistent package.
 - Model family: distilled FLUX.2 Klein 9B only
 - Style checkpoint: step 2500 only
 - Default sampler: Euler, simple, four steps, CFG 1, guidance 1, denoise 1
+- Sampling UI: standard ComfyUI `KSampler`; the retired project sampler is not registered
+- Setup UI: one narrow dark-brown card with a folder tree and 16 clickable downloads
+- Restoration: current upstream Adonis Base → Post graph, with the Base
+  intermediate preview and both official prompt branches
+- Shared LoRAs: HOI4 step 2500 plus Adonis Base, Refine, and Post
 
 ## Workflow contract
 
 - Source reference: three style candidates and a five-card comparison row
+- Source upload: shown once in the loader, with no duplicate preview card
 - Text to image: one sampler and one final portrait
-- Processing only: RealESRGAN plus exact Adonis Base → Refine, no style LoRA
+- Processing only: RealESRGAN plus complete current Adonis Base → Post, no style LoRA
 - Batch: list input, one sampler, sequential per-source execution
 - Output: 1024×1365 PNG, centered 156×210 PNG, 156×210 A8R8G8B8 DDS with no mipmaps
 
@@ -32,7 +38,7 @@ This repository documents one current, internally consistent package.
 
 - `calcuis/gguf` for `ClipLoaderGGUF`
 - `city96/ComfyUI-GGUF` for GGUF diffusion weights
-- `ClownsharkBatwing/RES4LYF` for live Adonis sampling
+- `ClownsharkBatwing/RES4LYF` for Adonis Base → Post sampling
 - `BigStationW/ComfyUi-Scale-Image-to-Total-Pixels-Advanced` for exact Adonis preprocessing
 
 Pinned commits, model revisions, sizes, hashes, and licenses are in

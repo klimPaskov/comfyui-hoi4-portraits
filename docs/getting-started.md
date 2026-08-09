@@ -3,7 +3,7 @@
 ## Choose a workflow
 
 - Use **source** for an identity-preserving portrait from a reference photo.
-  It crops, upscales with RealESRGAN, optionally runs the Adonis restoration
+  It crops, upscales with RealESRGAN, runs the Adonis Base + Post restoration
   pass, and produces **three** HOI4-style candidates for comparison.
 - Use **processing** when you need the crop/upscale/restoration result without
   LoRA styling.
@@ -45,7 +45,7 @@ under `ComfyUI/models/`:
 | `text_encoders/` | `Qwen3-8B-Q8_0.gguf` |
 | `vae/` | `flux2-vae.safetensors` |
 | `loras/` | `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` (tuned 2500-step LoRA) |
-| `loras/` | `adonis_base.safetensors` and `adonis_refine.safetensors` (optional restoration) |
+| `loras/` | `adonis_base.safetensors`, `adonis_refine.safetensors`, and `adonis_post.safetensors` |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
 | `detection/` | `mediapipe_face_fp32.safetensors` and `face_detection_yunet_2023mar.onnx` |
@@ -59,14 +59,15 @@ create a read-only token. GGUF files are not gated.
 
 ## First run
 
-1. Open the workflow JSON file in the ComfyUI editor. The **Setup guide** note
-   on the left shows the exact model folders.
+1. Open the workflow JSON file in the ComfyUI editor. The narrow dark-brown
+   **Setup and downloads** card on the left shows the exact folder tree and
+   gives you clickable links for every required model.
 2. Check the diffusion-model loader below the green preparation stage. The installer sets it to the
    selected full, FP8, or GGUF variant. Qwen Q8, VAE, and every LoRA have
    their own loaders beside it.
-3. Select the source image and confirm the explicit source and RealESRGAN previews.
-   Adjust **Face zoom** if needed, or use the manual crop for a specific
-   person.
+3. Select the source image; the upload card already shows it. Check the
+   prepared portrait in the comparison row, then adjust **Face zoom** if
+   needed or use the manual crop for a specific person.
 4. Keep the default prompt `make this portrait hoi4_portrait style`. Append a
    short description only when the model needs help (see the Prompting guide).
 5. Leave background replacement off for the first run.
@@ -98,9 +99,9 @@ rendering.
 | Symptom | Likely fix |
 | --- | --- |
 | Loader is red | Install/import the exact filename from `models.json`, then restart ComfyUI. |
-| Out of memory | Install the GGUF or FP8 variant, disable FLUX restoration, or use a larger GPU. |
+| Out of memory | Install the GGUF or FP8 variant, reduce batch work, or use a larger GPU. |
 | Wrong person | Use the manual crop to select that person, or turn face processing off. |
 | Too much body | Increase **Face zoom**; `0.90` is the default and `1.00` is the closest safe framing. |
 | Style is weak | Keep `hoi4_portrait` in the prompt, confirm LoRA strength is `1.00`, and keep the crop clean. |
-| Monochrome result | Enable **FLUX restoration** so natural colour is restored before LoRA styling. |
+| Monochrome result | Keep the Base/Post colour wording unless black and white is intended. |
 | Game crashes on the DDS | Confirm the file is 156×210 A8R8G8B8 with no mipmaps (the workflow's default output). |

@@ -1352,6 +1352,7 @@
       "format": "A8R8G8B8",
       "mipmaps": false
     },
+    "adonis": null,
     "frontendVersion": "1.24.2",
     "ds": {
       "scale": 0.72,

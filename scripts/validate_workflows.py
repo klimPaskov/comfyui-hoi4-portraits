@@ -221,6 +221,14 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: master/game dimensions are wrong")
     if ui.get("extra", {}).get("dds") != {"format": "A8R8G8B8", "mipmaps": False}:
         errors.append(f"{path}: DDS policy must be vanilla-style A8R8G8B8 with no mipmaps")
+    expected_adonis_metadata = None if is_text else {
+        "source": "n8te0/adonis_flux2klein",
+        "revision": build_workflows.ADONIS_REVISION,
+        "workflow": build_workflows.ADONIS_WORKFLOW,
+        "passes": [build_workflows.ADONIS_BASE, build_workflows.ADONIS_POST],
+    }
+    if ui.get("extra", {}).get("adonis") != expected_adonis_metadata:
+        errors.append(f"{path}: pinned Adonis source metadata changed")
 
     counts: dict[str, int] = {}
     for node in api.values():
@@ -247,8 +255,14 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: expected {expected_loras} separately visible LoRA loaders")
     if is_batch and counts.get("Hoi4BatchInput", 0) != 1:
         errors.append(f"{path}: batch workflow needs one list-output input card")
-    if is_source and counts.get("PreviewImage", 0) != 5:
-        errors.append(f"{path}: source workflow needs exactly the five-card comparison row")
+    if is_source:
+        source_comparison = [
+            node for node in ui.get("nodes", [])
+            if node.get("type") == "PreviewImage"
+            and node.get("properties", {}).get("hoi4_group") == "06 Compare portraits"
+        ]
+        if len(source_comparison) != 5:
+            errors.append(f"{path}: source workflow needs exactly the five-card comparison row")
     expected_background_controls = 1 if is_source or is_text else 0
     if counts.get("Hoi4BackgroundReplace", 0) != expected_background_controls:
         errors.append(f"{path}: expected {expected_background_controls} shared background true/false control(s)")
@@ -290,13 +304,14 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     expected_adonis_nodes = 0 if is_text else 1
     for class_type, multiplier in {
         "ImageScaleToTotalPixelsX": 1,
-        "ConditioningZeroOut": 1,
+        "CLIPTextEncode": 2,
+        "ConditioningZeroOut": 2,
         "VAEEncode": 1,
-        "ReferenceLatent": 2,
+        "ReferenceLatent": 4,
         "EmptyFlux2LatentImage": 1,
         "SharkOptions_Beta": 1,
         "ClownsharKSampler_Beta": 2,
-        "VAEDecode": 1,
+        "VAEDecode": 2,
     }.items():
         if restore_counts.get(class_type, 0) != expected_adonis_nodes * multiplier:
             errors.append(f"{path}: expanded Adonis graph needs {expected_adonis_nodes * multiplier} visible {class_type} node(s)")
@@ -318,8 +333,12 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         if node.get("type") != "PreviewImage":
             continue
         width, height = node.get("size", [0, 0])
-        if [width, height] != [600, 810]:
-            errors.append(f"{path}: portrait preview {node.get('id')} must be 600×810")
+        expected_preview_size = [440, 594] if node.get("title") == "Adonis Base preview" else [600, 810]
+        if [width, height] != expected_preview_size:
+            errors.append(
+                f"{path}: portrait preview {node.get('id')} must be "
+                f"{expected_preview_size[0]}×{expected_preview_size[1]}"
+            )
 
     previews_by_group: dict[str, list[dict[str, Any]]] = {}
     for node in ui.get("nodes", []):
@@ -362,12 +381,12 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
             errors.append(f"{path}: visible VAE loader changed")
         elif class_type == "LoraLoaderModelOnly":
             filename = inputs.get("lora_name")
-            allowed = {build_workflows.STYLE_LORA, build_workflows.ADONIS_BASE, build_workflows.ADONIS_REFINE}
+            allowed = {build_workflows.STYLE_LORA, build_workflows.ADONIS_BASE, build_workflows.ADONIS_POST}
             if filename not in allowed or inputs.get("strength_model") != 1.0:
                 errors.append(f"{path}: unexpected visible LoRA loader {filename!r}")
             if is_processing and filename == build_workflows.STYLE_LORA:
                 errors.append(f"{path}: processing-only must not load the style LoRA")
-            if is_text and filename in {build_workflows.ADONIS_BASE, build_workflows.ADONIS_REFINE}:
+            if is_text and filename in {build_workflows.ADONIS_BASE, build_workflows.ADONIS_POST}:
                 errors.append(f"{path}: text-to-image must not load Adonis LoRAs")
         elif class_type == "KSampler":
             exact = {"steps": 4, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0}
@@ -384,8 +403,10 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
                 errors.append(f"{path}: visible Adonis pre-process settings changed")
         elif class_type == "CLIPTextEncode":
             title = node.get("_meta", {}).get("title", "")
-            if title == "Restoration prompt" and inputs.get("text") != build_workflows.RESTORATION_PROMPT:
-                errors.append(f"{path}: exact Adonis prompt changed")
+            if title == "Adonis Base prompt" and inputs.get("text") != build_workflows.ADONIS_BASE_COMBINED_PROMPT:
+                errors.append(f"{path}: exact Adonis Base prompt changed")
+            elif title == "Adonis Post prompt" and inputs.get("text") != build_workflows.ADONIS_POST_COMBINED_PROMPT:
+                errors.append(f"{path}: exact Adonis Post prompt changed")
             elif title == "Portrait prompt":
                 expected_prompt = build_workflows.TEXT_PROMPT if is_text else build_workflows.STYLE_PROMPT
                 if inputs.get("text") != expected_prompt:
@@ -398,21 +419,22 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
                 errors.append(f"{path}: exact upstream Shark options changed")
         elif class_type == "ClownsharKSampler_Beta":
             title = node.get("_meta", {}).get("title", "")
-            refine = "Refine" in title
+            post = "Post" in title
             exact = {
-                "eta": 0.8,
+                "eta": 0.5 if post else 0.8,
                 "sampler_name": "exponential/res_2s",
                 "scheduler": "simple",
-                "steps_to_run": -1 if refine else 5,
+                "steps_to_run": -1,
                 "cfg": 1.0,
                 "denoise": 1.0,
-                "sampler_mode": "resample" if refine else "standard",
+                "sampler_mode": "standard",
                 "bongmath": True,
             }
             if any(inputs.get(key) != value for key, value in exact.items()):
-                errors.append(f"{path}: exact visible Adonis {'Refine' if refine else 'Base'} sampler settings changed")
-            if not isinstance(inputs.get("steps"), list) or not isinstance(inputs.get("seed"), list):
-                errors.append(f"{path}: Adonis sampler must share visible step and seed nodes")
+                errors.append(f"{path}: exact visible Adonis {'Post' if post else 'Base'} sampler settings changed")
+            linked = ("model", "positive", "negative", "latent_image", "options_group.options0", "steps", "seed")
+            if any(not isinstance(inputs.get(name), list) for name in linked):
+                errors.append(f"{path}: Adonis sampler inputs must remain visibly connected")
         elif class_type == "ImageScale":
             title = node.get("_meta", {}).get("title", "")
             if "1024×1365" in title and [inputs.get("width"), inputs.get("height"), inputs.get("crop")] != [1024, 1365, "center"]:
@@ -428,7 +450,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         for node in api.values()
         if node.get("class_type") == "PrimitiveInt"
     }
-    if not is_text and primitive_values != {"Shared Adonis seed": 42, "Total Adonis steps": 9}:
+    if not is_text and primitive_values != {"Shared Adonis seed": 42, "Steps per Adonis model": 9}:
         errors.append(f"{path}: visible shared Adonis seed/step controls changed")
     if is_processing and ui.get("extra", {}).get("style_lora") is not None:
         errors.append(f"{path}: processing-only metadata advertises a style LoRA")

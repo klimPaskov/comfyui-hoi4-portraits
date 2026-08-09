@@ -7,7 +7,7 @@
       "title": "HOI4 Portrait — source reference, three portraits",
       "workflow": "hoi4_portrait_flux2_klein_9b_source.json",
       "api_workflow": "hoi4_portrait_flux2_klein_9b_source.api.json",
-      "nodes": 70
+      "nodes": 75
     },
     {
       "id": "hoi4_portrait_flux2_klein_9b_text_to_image",
@@ -21,14 +21,14 @@
       "title": "HOI4 Portrait — processing and restoration only",
       "workflow": "hoi4_portrait_processing_only.json",
       "api_workflow": "hoi4_portrait_processing_only.api.json",
-      "nodes": 37
+      "nodes": 42
     },
     {
       "id": "hoi4_portrait_batch",
       "title": "HOI4 Portrait — batch input and output",
       "workflow": "hoi4_portrait_batch.json",
       "api_workflow": "hoi4_portrait_batch.api.json",
-      "nodes": 46
+      "nodes": 51
     }
   ]
 }

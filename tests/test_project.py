@@ -10,7 +10,7 @@ from pathlib import Path
 
 import torch
 
-from scripts import apply_variant, build_workflows, install_workflows, validate_workflows
+from scripts import apply_variant, build_workflows, download_models, install_workflows, validate_workflows
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,7 +29,7 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {70, 20, 37, 46})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {75, 20, 42, 51})
 
     def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
@@ -66,7 +66,11 @@ class WorkflowTests(unittest.TestCase):
     def test_source_comparison_and_outputs_are_exact(self) -> None:
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.json").read_text())
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text())
-        previews = [node for node in ui["nodes"] if node["type"] == "PreviewImage"]
+        previews = [
+            node for node in ui["nodes"]
+            if node["type"] == "PreviewImage"
+            and node.get("properties", {}).get("hoi4_group") == "06 Compare portraits"
+        ]
         self.assertEqual(len(previews), 5)
         self.assertTrue(all(node["size"] == [600, 810] for node in previews))
         titles = {node["title"] for node in previews}
@@ -87,7 +91,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(len(extracts), 3)
         self.assertTrue(all(node["inputs"]["image"][0] == background_id for node in extracts))
 
-    def test_adonis_defaults_match_the_upstream_base_refine_graph(self) -> None:
+    def test_adonis_defaults_match_the_upstream_base_post_graph(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_processing_only.api.json").read_text())
         scale = next(node for node in api.values() if node["class_type"] == "ImageScaleToTotalPixelsX")
         self.assertEqual([scale["inputs"][key] for key in ("megapixels", "multiple_of", "resize_mode", "upscale_method")], [1.7, 16, "crop", "lanczos"])
@@ -96,11 +100,15 @@ class WorkflowTests(unittest.TestCase):
         samplers = [node for node in api.values() if node["class_type"] == "ClownsharKSampler_Beta"]
         self.assertEqual(len(samplers), 2)
         base = next(node for node in samplers if "Base" in node["_meta"]["title"])
-        refine = next(node for node in samplers if "Refine" in node["_meta"]["title"])
-        self.assertEqual([base["inputs"][key] for key in ("eta", "sampler_name", "scheduler", "steps_to_run", "cfg", "denoise", "sampler_mode", "bongmath")], [0.8, "exponential/res_2s", "simple", 5, 1.0, 1.0, "standard", True])
-        self.assertEqual([refine["inputs"][key] for key in ("eta", "sampler_name", "scheduler", "steps_to_run", "cfg", "denoise", "sampler_mode", "bongmath")], [0.8, "exponential/res_2s", "simple", -1, 1.0, 1.0, "resample", True])
-        self.assertNotIn("positive", refine["inputs"])
-        self.assertNotIn("negative", refine["inputs"])
+        post = next(node for node in samplers if "Post" in node["_meta"]["title"])
+        self.assertEqual([base["inputs"][key] for key in ("eta", "sampler_name", "scheduler", "steps_to_run", "cfg", "denoise", "sampler_mode", "bongmath")], [0.8, "exponential/res_2s", "simple", -1, 1.0, 1.0, "standard", True])
+        self.assertEqual([post["inputs"][key] for key in ("eta", "sampler_name", "scheduler", "steps_to_run", "cfg", "denoise", "sampler_mode", "bongmath")], [0.5, "exponential/res_2s", "simple", -1, 1.0, 1.0, "standard", True])
+        self.assertEqual(base["inputs"]["steps"], post["inputs"]["steps"])
+        self.assertEqual(base["inputs"]["seed"], post["inputs"]["seed"])
+        self.assertEqual(base["inputs"]["latent_image"], post["inputs"]["latent_image"])
+        post_refs = [api[post["inputs"][name][0]] for name in ("positive", "negative")]
+        self.assertTrue(all(node["class_type"] == "ReferenceLatent" for node in post_refs))
+        self.assertTrue(all(node["inputs"]["latent"][0] == next(node_id for node_id, node in api.items() if node is base) for node in post_refs))
 
     def test_batch_has_one_sampler_and_all_three_output_types(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.api.json").read_text())
@@ -135,6 +143,28 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue((comfy_root / "input/hoi4_leader_portrait_background.png").is_file())
             self.assertTrue((comfy_root / "input/hoi4_portraits_batch").is_dir())
             self.assertTrue((comfy_root / "output/156x210/dds").is_dir())
+
+    def test_every_variant_install_keeps_all_four_loras(self) -> None:
+        manifest = json.loads((ROOT / "models.json").read_text())
+        expected = {
+            "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+            "adonis_base.safetensors",
+            "adonis_refine.safetensors",
+            "adonis_post.safetensors",
+        }
+        for variant in ("full", "fp8", "gguf"):
+            entries = download_models._selected_model_entries(
+                manifest, set(), {variant}, {"Q5_K_M"}
+            )
+            installed_loras = {entry["filename"] for entry in entries if entry["directory"] == "loras"}
+            self.assertEqual(installed_loras, expected, variant)
+            self.assertTrue(
+                all(
+                    entry["variant"] == "shared"
+                    for entry in entries
+                    if entry["directory"] == "loras"
+                )
+            )
 
     def test_variant_selector_patches_visible_model_loader_and_preserves_personal_files(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

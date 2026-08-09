@@ -186,7 +186,7 @@
   },
   "15": {
     "inputs": {
-      "lora_name": "adonis_refine.safetensors",
+      "lora_name": "adonis_post.safetensors",
       "strength_model": 1.0,
       "model": [
         "11",
@@ -195,7 +195,7 @@
     },
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
-      "title": "Adonis Refine LoRA"
+      "title": "Adonis Post LoRA"
     }
   },
   "16": {
@@ -216,7 +216,7 @@
   },
   "17": {
     "inputs": {
-      "text": "uhdmanscale, fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality.\n\nRemove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail.\n\nOn hair and body hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover eye detail, lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution color camera RAW image.",
+      "text": "fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality., uhdmanscale. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution camera RAW image.",
       "clip": [
         "12",
         0
@@ -224,7 +224,7 @@
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
-      "title": "Restoration prompt"
+      "title": "Adonis Base prompt"
     }
   },
   "18": {
@@ -268,7 +268,7 @@
     },
     "class_type": "ReferenceLatent",
     "_meta": {
-      "title": "Positive reference latent"
+      "title": "Base positive reference"
     }
   },
   "21": {
@@ -284,7 +284,7 @@
     },
     "class_type": "ReferenceLatent",
     "_meta": {
-      "title": "Negative reference latent"
+      "title": "Base negative reference"
     }
   },
   "22": {
@@ -331,7 +331,7 @@
     },
     "class_type": "PrimitiveInt",
     "_meta": {
-      "title": "Total Adonis steps"
+      "title": "Steps per Adonis model"
     }
   },
   "26": {
@@ -343,14 +343,13 @@
         "25",
         0
       ],
-      "steps_to_run": 5,
+      "steps_to_run": -1,
       "cfg": 1.0,
       "denoise": 1.0,
       "seed": [
         "24",
         0
       ],
-      "control_after_generate": "fixed",
       "sampler_mode": "standard",
       "bongmath": true,
       "model": [
@@ -369,19 +368,104 @@
         "22",
         0
       ],
-      "options": [
+      "options_group.options0": [
         "23",
         0
       ]
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Restore details — Base pass (steps 1–5)"
+      "title": "Restore details — Adonis Base"
     }
   },
   "27": {
     "inputs": {
-      "eta": 0.8,
+      "text": "clean natural skin, hair and body texture, no jpeg artifacts, no checkerboard pattern, male portrait., uhdmanscale. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution camera RAW image.",
+      "clip": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Adonis Post prompt"
+    }
+  },
+  "28": {
+    "inputs": {
+      "conditioning": [
+        "27",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Zero negative conditioning"
+    }
+  },
+  "29": {
+    "inputs": {
+      "conditioning": [
+        "27",
+        0
+      ],
+      "latent": [
+        "26",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Post positive reference"
+    }
+  },
+  "30": {
+    "inputs": {
+      "conditioning": [
+        "28",
+        0
+      ],
+      "latent": [
+        "26",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Post negative reference"
+    }
+  },
+  "31": {
+    "inputs": {
+      "samples": [
+        "26",
+        0
+      ],
+      "vae": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "Decode Adonis Base result"
+    }
+  },
+  "32": {
+    "inputs": {
+      "images": [
+        "31",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Adonis Base preview"
+    }
+  },
+  "33": {
+    "inputs": {
+      "eta": 0.5,
       "sampler_name": "exponential/res_2s",
       "scheduler": "simple",
       "steps": [
@@ -395,27 +479,38 @@
         "24",
         0
       ],
-      "control_after_generate": "fixed",
-      "sampler_mode": "resample",
+      "sampler_mode": "standard",
       "bongmath": true,
       "model": [
         "15",
         0
       ],
+      "positive": [
+        "29",
+        0
+      ],
+      "negative": [
+        "30",
+        0
+      ],
       "latent_image": [
-        "26",
+        "22",
+        0
+      ],
+      "options_group.options0": [
+        "23",
         0
       ]
     },
     "class_type": "ClownsharKSampler_Beta",
     "_meta": {
-      "title": "Restore details — Refine pass"
+      "title": "Finish details — Adonis Post"
     }
   },
-  "28": {
+  "34": {
     "inputs": {
       "samples": [
-        "27",
+        "33",
         0
       ],
       "vae": [
@@ -428,31 +523,14 @@
       "title": "Decode restored portrait"
     }
   },
-  "29": {
-    "inputs": {
-      "switch": true,
-      "on_false": [
-        "10",
-        0
-      ],
-      "on_true": [
-        "28",
-        0
-      ]
-    },
-    "class_type": "ComfySwitchNode",
-    "_meta": {
-      "title": "Use restored portrait"
-    }
-  },
-  "30": {
+  "35": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "29",
+        "34",
         0
       ]
     },
@@ -461,14 +539,14 @@
       "title": "Restored master — 1024×1365"
     }
   },
-  "31": {
+  "36": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "30",
+        "35",
         0
       ]
     },
@@ -477,11 +555,11 @@
       "title": "Game portrait — 156×210"
     }
   },
-  "32": {
+  "37": {
     "inputs": {
       "filename_prefix": "1024x1365/processing_only",
       "images": [
-        "30",
+        "35",
         0
       ]
     },
@@ -490,11 +568,11 @@
       "title": "Save restored master PNG"
     }
   },
-  "33": {
+  "38": {
     "inputs": {
       "filename_prefix": "156x210/processing_only",
       "images": [
-        "31",
+        "36",
         0
       ]
     },
@@ -503,12 +581,12 @@
       "title": "Save game PNG"
     }
   },
-  "34": {
+  "39": {
     "inputs": {
       "filename_prefix": "156x210/dds/processing_only",
       "format": "argb8888",
       "images": [
-        "31",
+        "36",
         0
       ]
     },
@@ -517,7 +595,7 @@
       "title": "Save game DDS"
     }
   },
-  "35": {
+  "40": {
     "inputs": {
       "images": [
         "10",
@@ -529,10 +607,10 @@
       "title": "Prepared portrait"
     }
   },
-  "36": {
+  "41": {
     "inputs": {
       "images": [
-        "29",
+        "34",
         0
       ]
     },
@@ -541,10 +619,10 @@
       "title": "Restored portrait"
     }
   },
-  "37": {
+  "42": {
     "inputs": {
       "images": [
-        "31",
+        "36",
         0
       ]
     },
