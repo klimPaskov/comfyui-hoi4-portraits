@@ -25,7 +25,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Notes"
+        "hoi4_stage": "00 Notes"
       },
       "widgets_values": [
         "📦 MODELS + FOLDERS\n\nThe installer places every file automatically. Manual locations:\n\nComfyUI/models/\n├── diffusion_models/\n│   └── flux-2-klein-9b.safetensors (distilled; never Base)\n├── text_encoders/\n│   └── Qwen3-8B-Q8_0.gguf\n├── vae/\n│   └── flux2-vae.safetensors\n├── loras/\n│   ├── hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n│   ├── adonis_base.safetensors\n│   └── adonis_refine.safetensors\n├── upscale_models/RealESRGAN_x2plus.pth\n├── background_removal/birefnet.safetensors\n└── detection/mediapipe_face_fp32.safetensors\n\nModel links and exact pinned revisions are in models.json. The installer selects full, FP8, or GGUF for your VRAM."
@@ -52,7 +52,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Notes"
+        "hoi4_stage": "00 Notes"
       },
       "widgets_values": [
         "✍️ PROMPTING + RESTORATION\n\nKeep the source prompt exactly:\nmake this portrait hoi4_portrait style\n\nOnly append short facts when necessary: ethnicity or skin colour, age/hair, and civilian/military/clerical clothing. Do not re-describe the game style.\n\nRealESRGAN prepares the crop. Adonis Base → Refine can restore colour and facial detail first, so the style LoRA does not have to guess them. Bypass Adonis only for a clean modern photograph."
@@ -101,7 +101,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "hoi4_group": "01 Source + processing"
+        "hoi4_stage": "01 Source + processing"
       },
       "widgets_values": [
         "source_portrait.jpg",
@@ -242,7 +242,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SourcePrep",
-        "hoi4_group": "01 Source + processing"
+        "hoi4_stage": "01 Source + processing"
       },
       "widgets_values": [
         true,
@@ -394,7 +394,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4ModelStack",
-        "hoi4_group": "02 Exact Adonis restoration"
+        "hoi4_stage": "02 Exact Adonis restoration"
       },
       "widgets_values": [
         "flux-2-klein-9b.safetensors",
@@ -638,7 +638,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4AdonisRestoration",
-        "hoi4_group": "02 Exact Adonis restoration"
+        "hoi4_stage": "02 Exact Adonis restoration"
       },
       "widgets_values": [
         true,
@@ -761,7 +761,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4FinalOutput",
-        "hoi4_group": "03 Outputs + comparison"
+        "hoi4_stage": "03 Outputs + comparison"
       },
       "widgets_values": [
         false,
@@ -813,7 +813,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "03 Outputs + comparison"
+        "hoi4_stage": "03 Outputs + comparison"
       },
       "widgets_values": [
         "1024x1365/processing_only"
@@ -860,7 +860,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "03 Outputs + comparison"
+        "hoi4_stage": "03 Outputs + comparison"
       },
       "widgets_values": [
         "156x210/processing_only"
@@ -915,7 +915,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "03 Outputs + comparison"
+        "hoi4_stage": "03 Outputs + comparison"
       },
       "widgets_values": [
         "156x210/dds/processing_only",
@@ -931,8 +931,8 @@
         760
       ],
       "size": [
-        640,
-        820
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -955,7 +955,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "03 Outputs + comparison"
+        "hoi4_stage": "03 Outputs + comparison"
       },
       "widgets_values": []
     },
@@ -964,12 +964,12 @@
       "type": "PreviewImage",
       "title": "Adonis Base → Refine",
       "pos": [
-        5010,
+        4980,
         760
       ],
       "size": [
-        640,
-        820
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -992,7 +992,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "03 Outputs + comparison"
+        "hoi4_stage": "03 Outputs + comparison"
       },
       "widgets_values": []
     },
@@ -1001,12 +1001,12 @@
       "type": "PreviewImage",
       "title": "Final 156×210",
       "pos": [
-        5700,
+        5640,
         760
       ],
       "size": [
-        640,
-        820
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -1029,7 +1029,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "03 Outputs + comparison"
+        "hoi4_stage": "03 Outputs + comparison"
       },
       "widgets_values": []
     }
@@ -1140,60 +1140,7 @@
       "IMAGE"
     ]
   ],
-  "groups": [
-    {
-      "id": 1,
-      "title": "00 Notes",
-      "bounding": [
-        40,
-        40,
-        780,
-        2200
-      ],
-      "color": "#334155",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 2,
-      "title": "01 Source + processing",
-      "bounding": [
-        860,
-        40,
-        1520,
-        2200
-      ],
-      "color": "#365b41",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 3,
-      "title": "02 Exact Adonis restoration",
-      "bounding": [
-        2420,
-        40,
-        1800,
-        2200
-      ],
-      "color": "#6b5538",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 4,
-      "title": "03 Outputs + comparison",
-      "bounding": [
-        4260,
-        40,
-        2160,
-        2200
-      ],
-      "color": "#3d596f",
-      "font_size": 28,
-      "flags": {}
-    }
-  ],
+  "groups": [],
   "config": {},
   "extra": {
     "workflow_id": "hoi4_portrait_processing_only",

@@ -110,14 +110,13 @@ class Graph:
         self.nodes: list[dict[str, Any]] = []
         self.api: dict[str, dict[str, Any]] = {}
         self.links: list[list[Any]] = []
-        self.groups: list[dict[str, Any]] = []
+        self.stages: set[str] = set()
         self._node_id = 0
         self._link_id = 0
 
-    def group(self, title: str, bounds: tuple[int, int, int, int], color: str) -> None:
-        self.groups.append(
-            {"id": len(self.groups) + 1, "title": title, "bounding": list(bounds), "color": color, "font_size": 28, "flags": {}}
-        )
+    def stage(self, title: str) -> None:
+        """Register a logical stage without creating a collapsible canvas group."""
+        self.stages.add(title)
 
     def node(
         self,
@@ -125,13 +124,15 @@ class Graph:
         title: str,
         pos: tuple[int, int],
         size: tuple[int, int],
-        group: str,
+        stage: str,
         inputs: list[tuple[str, str, bool]],
         outputs: list[tuple[str, str]],
         widgets: list[Any],
         api_inputs: dict[str, Any],
         color: str = "output",
     ) -> Ref:
+        if stage not in self.stages:
+            raise ValueError(f"unknown visible stage: {stage}")
         self._node_id += 1
         node_id = self._node_id
         foreground, background = COLORS[color]
@@ -156,7 +157,7 @@ class Graph:
                 "mode": 0,
                 "inputs": ui_inputs,
                 "outputs": ui_outputs,
-                "properties": {"Node name for S&R": class_type, "hoi4_group": group},
+                "properties": {"Node name for S&R": class_type, "hoi4_stage": stage},
                 "widgets_values": widgets,
             }
         )
@@ -199,7 +200,9 @@ class Graph:
             "last_link_id": self._link_id,
             "nodes": self.nodes,
             "links": self.links,
-            "groups": self.groups,
+            # Keep every node visible on the main canvas. ComfyUI canvas groups can
+            # be collapsed, so this project deliberately serializes none of them.
+            "groups": [],
             "config": {},
             "extra": extra,
             "version": 0.4,
@@ -207,23 +210,23 @@ class Graph:
         return ui, self.api
 
 
-def _note(graph: Graph, title: str, text: str, pos: tuple[int, int], size: tuple[int, int], group: str) -> Ref:
-    return graph.node("Note", title, pos, size, group, [], [], [text], {}, "note")
+def _note(graph: Graph, title: str, text: str, pos: tuple[int, int], size: tuple[int, int], stage: str) -> Ref:
+    return graph.node("Note", title, pos, size, stage, [], [], [text], {}, "note")
 
 
-def _load_image(graph: Graph, title: str, filename: str, pos: tuple[int, int], size: tuple[int, int], group: str) -> Ref:
+def _load_image(graph: Graph, title: str, filename: str, pos: tuple[int, int], size: tuple[int, int], stage: str) -> Ref:
     return graph.node(
-        "LoadImage", title, pos, size, group,
+        "LoadImage", title, pos, size, stage,
         [("image", "COMBO", True)], [("IMAGE", "IMAGE"), ("MASK", "MASK")],
         [filename, "image"], {"image": filename}, "source",
     )
 
 
-def _preview(graph: Graph, title: str, pos: tuple[int, int], size: tuple[int, int], group: str) -> Ref:
-    return graph.node("PreviewImage", title, pos, size, group, [("images", "IMAGE", False)], [("IMAGE", "IMAGE")], [], {}, "output")
+def _preview(graph: Graph, title: str, pos: tuple[int, int], size: tuple[int, int], stage: str) -> Ref:
+    return graph.node("PreviewImage", title, pos, size, stage, [("images", "IMAGE", False)], [("IMAGE", "IMAGE")], [], {}, "output")
 
 
-def _model_stack(graph: Graph, pos: tuple[int, int], group: str, *, style_strength: float, restoration: bool) -> Ref:
+def _model_stack(graph: Graph, pos: tuple[int, int], stage: str, *, style_strength: float, restoration: bool) -> Ref:
     values = [BASE_MODEL, TEXT_ENCODER, VAE_MODEL, STYLE_LORA, style_strength, restoration, ADONIS_BASE, ADONIS_REFINE, "default", "default"]
     names = [
         ("diffusion_model", "STRING"), ("text_encoder", "STRING"), ("vae_name", "STRING"),
@@ -232,14 +235,14 @@ def _model_stack(graph: Graph, pos: tuple[int, int], group: str, *, style_streng
         ("text_encoder_device", "COMBO"),
     ]
     return graph.node(
-        "Hoi4ModelStack", "Distilled FLUX.2 Klein stack — full / FP8 / GGUF", pos, (820, 720), group,
+        "Hoi4ModelStack", "Distilled FLUX.2 Klein stack — full / FP8 / GGUF", pos, (820, 720), stage,
         [(name, type_name, True) for name, type_name in names],
         [("style_model", "MODEL"), ("adonis_base_model", "MODEL"), ("adonis_refine_model", "MODEL"), ("clip", "CLIP"), ("vae", "VAE")],
         values, dict(zip((name for name, _ in names), values)), "model",
     )
 
 
-def _source_prep(graph: Graph, pos: tuple[int, int], group: str) -> Ref:
+def _source_prep(graph: Graph, pos: tuple[int, int], stage: str) -> Ref:
     widgets = [True, 0.90, True, False, 0.0, 0.0, 1.0, 1.0, FACE_MODEL, BACKGROUND_MODEL, ESRGAN_MODEL]
     widget_names = [
         ("face_processing", "BOOLEAN"), ("face_zoom", "FLOAT"), ("preserve_headwear", "BOOLEAN"),
@@ -248,14 +251,14 @@ def _source_prep(graph: Graph, pos: tuple[int, int], group: str) -> Ref:
         ("subject_model", "STRING"), ("upscale_model", "STRING"),
     ]
     return graph.node(
-        "Hoi4SourcePrep", "Source prep — face/manual crop + headwear + RealESRGAN", pos, (680, 760), group,
+        "Hoi4SourcePrep", "Source prep — face/manual crop + headwear + RealESRGAN", pos, (680, 760), stage,
         [("image", "IMAGE", False)] + [(name, type_name, True) for name, type_name in widget_names],
         [("source", "IMAGE"), ("crop", "IMAGE"), ("esrgan", "IMAGE")], widgets,
         dict(zip((name for name, _ in widget_names), widgets)), "source",
     )
 
 
-def _restorer(graph: Graph, pos: tuple[int, int], group: str, *, enabled: bool = True) -> Ref:
+def _restorer(graph: Graph, pos: tuple[int, int], stage: str, *, enabled: bool = True) -> Ref:
     widget_names = [
         ("enabled", "BOOLEAN"), ("prompt", "STRING"), ("noise_seed", "INT"), ("megapixels", "FLOAT"),
         ("multiple_of", "INT"), ("resize_mode", "COMBO"), ("upscale_method", "COMBO"), ("eta", "FLOAT"),
@@ -267,7 +270,7 @@ def _restorer(graph: Graph, pos: tuple[int, int], group: str, *, enabled: bool =
     ]
     values = [enabled, RESTORATION_PROMPT, 42, 1.7, 16, "crop", "lanczos", 0.8, "exponential/res_2s", "simple", 9, 5, 1.0, 1.0, "standard", "resample", "gaussian", 1.0, 1.0, False, True]
     return graph.node(
-        "Hoi4AdonisRestoration", "Adonis Base → Refine — exact upstream topology + live controls", pos, (860, 1120), group,
+        "Hoi4AdonisRestoration", "Adonis Base → Refine — exact upstream topology + live controls", pos, (860, 1120), stage,
         [("base_model", "MODEL", False), ("refine_model", "MODEL", False), ("clip", "CLIP", False), ("vae", "VAE", False), ("image", "IMAGE", False)]
         + [(name, type_name, True) for name, type_name in widget_names],
         [("restored", "IMAGE"), ("preprocessed", "IMAGE")], values,
@@ -275,7 +278,7 @@ def _restorer(graph: Graph, pos: tuple[int, int], group: str, *, enabled: bool =
     )
 
 
-def _sampler(graph: Graph, title: str, pos: tuple[int, int], group: str, *, mode: str, prompt: str, seed: int) -> Ref:
+def _sampler(graph: Graph, title: str, pos: tuple[int, int], stage: str, *, mode: str, prompt: str, seed: int) -> Ref:
     widget_names = [
         ("mode", "COMBO"), ("prompt", "STRING"), ("negative_prompt", "STRING"), ("width", "INT"),
         ("height", "INT"), ("noise_seed", "INT"), ("steps", "INT"), ("cfg", "FLOAT"),
@@ -285,7 +288,7 @@ def _sampler(graph: Graph, title: str, pos: tuple[int, int], group: str, *, mode
     ]
     values = [mode, prompt, "", 1024, 1365, seed, 4, 1.0, 1.0, "euler", "simple", 1.0, "enable", 0, 10000, True]
     return graph.node(
-        "Hoi4PortraitSampler", title, pos, (720, 740), group,
+        "Hoi4PortraitSampler", title, pos, (720, 740), stage,
         [("model", "MODEL", False), ("clip", "CLIP", False), ("vae", "VAE", False)]
         + [(name, type_name, True) for name, type_name in widget_names]
         + [("reference_image", "IMAGE", False)],
@@ -293,40 +296,40 @@ def _sampler(graph: Graph, title: str, pos: tuple[int, int], group: str, *, mode
     )
 
 
-def _final_output(graph: Graph, title: str, pos: tuple[int, int], group: str) -> Ref:
+def _final_output(graph: Graph, title: str, pos: tuple[int, int], stage: str) -> Ref:
     names = [
         ("use_background", "BOOLEAN"), ("background_model", "STRING"), ("master_width", "INT"),
         ("master_height", "INT"), ("game_width", "INT"), ("game_height", "INT"),
     ]
     values = [False, BACKGROUND_MODEL, 1024, 1365, 156, 210]
     return graph.node(
-        "Hoi4FinalOutput", title, pos, (600, 500), group,
+        "Hoi4FinalOutput", title, pos, (600, 500), stage,
         [("image", "IMAGE", False)] + [(name, type_name, True) for name, type_name in names] + [("background", "IMAGE", False)],
         [("master_1024x1365", "IMAGE"), ("game_156x210", "IMAGE")], values,
         dict(zip((name for name, _ in names), values)), "output",
     )
 
 
-def _save_image(graph: Graph, title: str, prefix: str, pos: tuple[int, int], group: str) -> Ref:
+def _save_image(graph: Graph, title: str, prefix: str, pos: tuple[int, int], stage: str) -> Ref:
     return graph.node(
-        "SaveImage", title, pos, (420, 150), group,
+        "SaveImage", title, pos, (420, 150), stage,
         [("images", "IMAGE", False), ("filename_prefix", "STRING", True)], [("IMAGE", "IMAGE")],
         [prefix], {"filename_prefix": prefix}, "output",
     )
 
 
-def _save_dds(graph: Graph, title: str, prefix: str, pos: tuple[int, int], group: str) -> Ref:
+def _save_dds(graph: Graph, title: str, prefix: str, pos: tuple[int, int], stage: str) -> Ref:
     return graph.node(
-        "Hoi4SaveDDS", title, pos, (420, 190), group,
+        "Hoi4SaveDDS", title, pos, (420, 190), stage,
         [("images", "IMAGE", False), ("filename_prefix", "STRING", True), ("compression", "COMBO", True)], [("images", "IMAGE")],
         [prefix, "dxt5"], {"filename_prefix": prefix, "compression": "dxt5"}, "output",
     )
 
 
-def _batch_input(graph: Graph, pos: tuple[int, int], group: str) -> Ref:
+def _batch_input(graph: Graph, pos: tuple[int, int], stage: str) -> Ref:
     values = ["hoi4_portraits_batch", "*.png;*.jpg;*.jpeg;*.webp"]
     return graph.node(
-        "Hoi4BatchInput", "Batch input folder — list output runs one file at a time", pos, (700, 260), group,
+        "Hoi4BatchInput", "Batch input folder — list output runs one file at a time", pos, (700, 260), stage,
         [("input_folder", "STRING", True), ("file_pattern", "STRING", True)],
         [("images", "IMAGE"), ("masks", "MASK"), ("filenames", "STRING")], values,
         {"input_folder": values[0], "file_pattern": values[1]}, "source",
@@ -354,20 +357,23 @@ def _wire_outputs(graph: Graph, image: Ref, final: Ref, background: Ref | None) 
 
 def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
     graph = Graph("hoi4_portrait_flux2_klein_9b_source", "HOI4 Portrait — source reference, three candidates")
-    graph.group("00 Welcome & setup", (40, 40, 800, 2700), "#334155")
-    graph.group("01 Source + RealESRGAN", (880, 40, 780, 2700), "#365b41")
-    graph.group("02 Models + Adonis", (1700, 40, 940, 2700), "#6b5538")
-    graph.group("03 Three live HOI4 candidates", (2680, 40, 2240, 2700), "#5d416c")
-    graph.group("04 Automatic outputs", (4960, 40, 1440, 2700), "#3d596f")
-    graph.group("05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3", (880, 2800, 5520, 900), "#334c61")
+    for stage in (
+        "00 Welcome & setup",
+        "01 Source + RealESRGAN",
+        "02 Models + Adonis",
+        "03 Three live HOI4 candidates",
+        "04 Automatic outputs",
+        "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3",
+    ):
+        graph.stage(stage)
 
     _note(graph, "📦 Setup — models, variants, and folders", SETUP_NOTE, (80, 100), (720, 760), "00 Welcome & setup")
     _note(graph, "🎛️ Beginner + advanced sampler guide", SAMPLER_NOTE, (80, 940), (720, 700), "00 Welcome & setup")
     _note(graph, "✍️ Exact prompt and why restoration helps", PROMPT_NOTE, (80, 1720), (720, 780), "00 Welcome & setup")
 
     source = _load_image(graph, "Load source portrait — upload or choose here", "source_portrait.jpg", (920, 100), (700, 620), "01 Source + RealESRGAN")
-    source_preview = _preview(graph, "Source preview", (960, 790), (620, 650), "01 Source + RealESRGAN")
-    prep = _source_prep(graph, (920, 1520), "01 Source + RealESRGAN")
+    source_preview = _preview(graph, "Source preview", (960, 790), (600, 810), "01 Source + RealESRGAN")
+    prep = _source_prep(graph, (920, 1650), "01 Source + RealESRGAN")
     graph.connect(source, 0, source_preview, "images")
     graph.connect(source, 0, prep, "image")
 
@@ -402,16 +408,15 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
         ("Final candidate 3 — 156×210", finals[2], 1),
     ]
     for index, (title, ref, slot) in enumerate(comparison):
-        preview = _preview(graph, title, (930 + index * 1090, 2870), (1000, 740), "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3")
+        preview = _preview(graph, title, (930 + index * 660, 2870), (600, 810), "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3")
         graph.connect(ref, slot, preview, "images")
     return graph.serialize(style_lora=STYLE_LORA)
 
 
 def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
     graph = Graph("hoi4_portrait_flux2_klein_9b_text_to_image", "HOI4 Portrait — text to image")
-    graph.group("00 Notes", (40, 40, 780, 1880), "#334155")
-    graph.group("01 Model + one live sampler", (860, 40, 1760, 1880), "#5d416c")
-    graph.group("02 Final output", (2660, 40, 1760, 1880), "#3d596f")
+    for stage in ("00 Notes", "01 Model + one live sampler", "02 Final output"):
+        graph.stage(stage)
     _note(graph, "📦 Setup", SETUP_NOTE, (80, 100), (700, 800), "00 Notes")
     _note(graph, "🎛️ Sampler guide", SAMPLER_NOTE, (80, 980), (700, 760), "00 Notes")
     stack = _model_stack(graph, (920, 100), "01 Model + one live sampler", style_strength=1.0, restoration=False)
@@ -423,7 +428,7 @@ def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
     master = _save_image(graph, "Save master PNG", "1024x1365/text_to_image", (2720, 760), "02 Final output")
     game = _save_image(graph, "Save game PNG", "156x210/text_to_image", (3180, 760), "02 Final output")
     dds = _save_dds(graph, "Save game DDS — DXT5, no mipmaps", "156x210/dds/text_to_image", (3640, 760), "02 Final output")
-    preview = _preview(graph, "Final 156×210 portrait", (2880, 1050), (1200, 760), "02 Final output")
+    preview = _preview(graph, "Final 156×210 portrait", (2880, 1050), (600, 810), "02 Final output")
     graph.connect(final, 0, master, "images")
     graph.connect(final, 1, game, "images")
     graph.connect(final, 1, dds, "images")
@@ -433,10 +438,8 @@ def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
 
 def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     graph = Graph("hoi4_portrait_processing_only", "HOI4 Portrait — processing and restoration only")
-    graph.group("00 Notes", (40, 40, 780, 2200), "#334155")
-    graph.group("01 Source + processing", (860, 40, 1520, 2200), "#365b41")
-    graph.group("02 Exact Adonis restoration", (2420, 40, 1800, 2200), "#6b5538")
-    graph.group("03 Outputs + comparison", (4260, 40, 2160, 2200), "#3d596f")
+    for stage in ("00 Notes", "01 Source + processing", "02 Exact Adonis restoration", "03 Outputs + comparison"):
+        graph.stage(stage)
     _note(graph, "📦 Setup", SETUP_NOTE, (80, 100), (700, 900), "00 Notes")
     _note(graph, "✨ Processing-only guide", PROMPT_NOTE, (80, 1080), (700, 900), "00 Notes")
     source = _load_image(graph, "Load source portrait", "source_portrait.jpg", (920, 100), (680, 620), "01 Source + processing")
@@ -455,17 +458,15 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     graph.connect(final, 1, game, "images")
     graph.connect(final, 1, dds, "images")
     for index, (title, ref, slot) in enumerate((("RealESRGAN", prep, 2), ("Adonis Base → Refine", restore, 0), ("Final 156×210", final, 1))):
-        preview = _preview(graph, title, (4320 + index * 690, 760), (640, 820), "03 Outputs + comparison")
+        preview = _preview(graph, title, (4320 + index * 660, 760), (600, 810), "03 Outputs + comparison")
         graph.connect(ref, slot, preview, "images")
     return graph.serialize(style_lora=None)
 
 
 def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     graph = Graph("hoi4_portrait_batch", "HOI4 Portrait — batch input and output")
-    graph.group("00 Batch guide", (40, 40, 780, 2200), "#334155")
-    graph.group("01 One-at-a-time source prep", (860, 40, 1500, 2200), "#365b41")
-    graph.group("02 Models + exact Adonis", (2400, 40, 1840, 2200), "#6b5538")
-    graph.group("03 One live sampler + outputs", (4280, 40, 2140, 2200), "#5d416c")
+    for stage in ("00 Batch guide", "01 One-at-a-time source prep", "02 Models + exact Adonis", "03 One live sampler + outputs"):
+        graph.stage(stage)
     _note(graph, "🖼️ Batch input and output", BATCH_NOTE, (80, 100), (700, 920), "00 Batch guide")
     _note(graph, "🎛️ Sampler guide", SAMPLER_NOTE, (80, 1100), (700, 900), "00 Batch guide")
     batch = _batch_input(graph, (920, 100), "01 One-at-a-time source prep")
@@ -487,7 +488,7 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     graph.connect(final, 1, game, "images")
     graph.connect(final, 1, dds, "images")
     for index, (title, ref, slot) in enumerate((("RealESRGAN", prep, 2), ("Adonis restored", restore, 0), ("Final 156×210", final, 1))):
-        preview = _preview(graph, title, (4340 + index * 690, 920), (640, 820), "03 One live sampler + outputs")
+        preview = _preview(graph, title, (4340 + index * 660, 920), (600, 810), "03 One live sampler + outputs")
         graph.connect(ref, slot, preview, "images")
     return graph.serialize(style_lora=STYLE_LORA)
 

@@ -25,14 +25,17 @@ The tuned style settings are CFG `1`, guidance `1`, **Euler**, **simple**,
 
 ## Source workflow
 
-The source canvas has 29 nodes in six non-overlapping groups:
+The source canvas has 29 nodes arranged as six visible stages. There are no
+collapsible group containers or hidden subgraphs, so the entire workflow stays
+visible on the main canvas:
 
 1. beginner setup, sampler, prompt, and restoration notes;
 2. large source loader, explicit source preview, face/manual crop, and RealESRGAN;
 3. one model-stack card and one exact Adonis Base → Refine card;
 4. three independent live sampler cards plus centered final-output cards;
 5. automatic PNG and DDS saves for every candidate;
-6. one comparison row: RealESRGAN, Adonis restoration, and three final 156×210 portraits.
+6. one compact portrait-ratio comparison row: RealESRGAN, Adonis restoration,
+   and three final 156×210 portraits.
 
 Every source sampler uses the exact prompt:
 

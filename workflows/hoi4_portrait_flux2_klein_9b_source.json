@@ -25,7 +25,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
+        "hoi4_stage": "00 Welcome & setup"
       },
       "widgets_values": [
         "📦 MODELS + FOLDERS\n\nThe installer places every file automatically. Manual locations:\n\nComfyUI/models/\n├── diffusion_models/\n│   └── flux-2-klein-9b.safetensors (distilled; never Base)\n├── text_encoders/\n│   └── Qwen3-8B-Q8_0.gguf\n├── vae/\n│   └── flux2-vae.safetensors\n├── loras/\n│   ├── hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n│   ├── adonis_base.safetensors\n│   └── adonis_refine.safetensors\n├── upscale_models/RealESRGAN_x2plus.pth\n├── background_removal/birefnet.safetensors\n└── detection/mediapipe_face_fp32.safetensors\n\nModel links and exact pinned revisions are in models.json. The installer selects full, FP8, or GGUF for your VRAM."
@@ -52,7 +52,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
+        "hoi4_stage": "00 Welcome & setup"
       },
       "widgets_values": [
         "🎛️ SAMPLER — TUNED DEFAULTS\n\n4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\nSteps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\nThe purple sampler is deliberately one advanced card. ComfyUI's live latent callback shows the portrait being constructed while it runs."
@@ -79,7 +79,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Welcome & setup"
+        "hoi4_stage": "00 Welcome & setup"
       },
       "widgets_values": [
         "✍️ PROMPTING + RESTORATION\n\nKeep the source prompt exactly:\nmake this portrait hoi4_portrait style\n\nOnly append short facts when necessary: ethnicity or skin colour, age/hair, and civilian/military/clerical clothing. Do not re-describe the game style.\n\nRealESRGAN prepares the crop. Adonis Base → Refine can restore colour and facial detail first, so the style LoRA does not have to guess them. Bypass Adonis only for a clean modern photograph."
@@ -129,7 +129,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "hoi4_group": "01 Source + RealESRGAN"
+        "hoi4_stage": "01 Source + RealESRGAN"
       },
       "widgets_values": [
         "source_portrait.jpg",
@@ -145,8 +145,8 @@
         790
       ],
       "size": [
-        620,
-        650
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -169,7 +169,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "01 Source + RealESRGAN"
+        "hoi4_stage": "01 Source + RealESRGAN"
       },
       "widgets_values": []
     },
@@ -179,7 +179,7 @@
       "title": "Source prep — face/manual crop + headwear + RealESRGAN",
       "pos": [
         920,
-        1520
+        1650
       ],
       "size": [
         680,
@@ -307,7 +307,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SourcePrep",
-        "hoi4_group": "01 Source + RealESRGAN"
+        "hoi4_stage": "01 Source + RealESRGAN"
       },
       "widgets_values": [
         true,
@@ -469,7 +469,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4ModelStack",
-        "hoi4_group": "02 Models + Adonis"
+        "hoi4_stage": "02 Models + Adonis"
       },
       "widgets_values": [
         "flux-2-klein-9b.safetensors",
@@ -715,7 +715,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4AdonisRestoration",
-        "hoi4_group": "02 Models + Adonis"
+        "hoi4_stage": "02 Models + Adonis"
       },
       "widgets_values": [
         true,
@@ -786,7 +786,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "hoi4_group": "03 Three live HOI4 candidates"
+        "hoi4_stage": "03 Three live HOI4 candidates"
       },
       "widgets_values": [
         "hoi4_leader_portrait_background.png",
@@ -971,7 +971,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "03 Three live HOI4 candidates"
+        "hoi4_stage": "03 Three live HOI4 candidates"
       },
       "widgets_values": [
         "source_reference",
@@ -1089,7 +1089,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4FinalOutput",
-        "hoi4_group": "03 Three live HOI4 candidates"
+        "hoi4_stage": "03 Three live HOI4 candidates"
       },
       "widgets_values": [
         false,
@@ -1141,7 +1141,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "1024x1365/candidate_1"
@@ -1188,7 +1188,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "156x210/candidate_1"
@@ -1243,7 +1243,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "156x210/dds/candidate_1",
@@ -1428,7 +1428,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "03 Three live HOI4 candidates"
+        "hoi4_stage": "03 Three live HOI4 candidates"
       },
       "widgets_values": [
         "source_reference",
@@ -1546,7 +1546,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4FinalOutput",
-        "hoi4_group": "03 Three live HOI4 candidates"
+        "hoi4_stage": "03 Three live HOI4 candidates"
       },
       "widgets_values": [
         false,
@@ -1598,7 +1598,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "1024x1365/candidate_2"
@@ -1645,7 +1645,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "156x210/candidate_2"
@@ -1700,7 +1700,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "156x210/dds/candidate_2",
@@ -1885,7 +1885,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "03 Three live HOI4 candidates"
+        "hoi4_stage": "03 Three live HOI4 candidates"
       },
       "widgets_values": [
         "source_reference",
@@ -2003,7 +2003,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4FinalOutput",
-        "hoi4_group": "03 Three live HOI4 candidates"
+        "hoi4_stage": "03 Three live HOI4 candidates"
       },
       "widgets_values": [
         false,
@@ -2055,7 +2055,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "1024x1365/candidate_3"
@@ -2102,7 +2102,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "156x210/candidate_3"
@@ -2157,7 +2157,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "04 Automatic outputs"
+        "hoi4_stage": "04 Automatic outputs"
       },
       "widgets_values": [
         "156x210/dds/candidate_3",
@@ -2173,8 +2173,8 @@
         2870
       ],
       "size": [
-        1000,
-        740
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -2197,7 +2197,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
+        "hoi4_stage": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
       },
       "widgets_values": []
     },
@@ -2206,12 +2206,12 @@
       "type": "PreviewImage",
       "title": "Adonis Base → Refine restored",
       "pos": [
-        2020,
+        1590,
         2870
       ],
       "size": [
-        1000,
-        740
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -2234,7 +2234,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
+        "hoi4_stage": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
       },
       "widgets_values": []
     },
@@ -2243,12 +2243,12 @@
       "type": "PreviewImage",
       "title": "Final candidate 1 — 156×210",
       "pos": [
-        3110,
+        2250,
         2870
       ],
       "size": [
-        1000,
-        740
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -2271,7 +2271,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
+        "hoi4_stage": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
       },
       "widgets_values": []
     },
@@ -2280,12 +2280,12 @@
       "type": "PreviewImage",
       "title": "Final candidate 2 — 156×210",
       "pos": [
-        4200,
+        2910,
         2870
       ],
       "size": [
-        1000,
-        740
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -2308,7 +2308,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
+        "hoi4_stage": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
       },
       "widgets_values": []
     },
@@ -2317,12 +2317,12 @@
       "type": "PreviewImage",
       "title": "Final candidate 3 — 156×210",
       "pos": [
-        5290,
+        3570,
         2870
       ],
       "size": [
-        1000,
-        740
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -2345,7 +2345,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
+        "hoi4_stage": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3"
       },
       "widgets_values": []
     }
@@ -2664,86 +2664,7 @@
       "IMAGE"
     ]
   ],
-  "groups": [
-    {
-      "id": 1,
-      "title": "00 Welcome & setup",
-      "bounding": [
-        40,
-        40,
-        800,
-        2700
-      ],
-      "color": "#334155",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 2,
-      "title": "01 Source + RealESRGAN",
-      "bounding": [
-        880,
-        40,
-        780,
-        2700
-      ],
-      "color": "#365b41",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 3,
-      "title": "02 Models + Adonis",
-      "bounding": [
-        1700,
-        40,
-        940,
-        2700
-      ],
-      "color": "#6b5538",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 4,
-      "title": "03 Three live HOI4 candidates",
-      "bounding": [
-        2680,
-        40,
-        2240,
-        2700
-      ],
-      "color": "#5d416c",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 5,
-      "title": "04 Automatic outputs",
-      "bounding": [
-        4960,
-        40,
-        1440,
-        2700
-      ],
-      "color": "#3d596f",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 6,
-      "title": "05 Compare: ESRGAN · Adonis · final 1 · final 2 · final 3",
-      "bounding": [
-        880,
-        2800,
-        5520,
-        900
-      ],
-      "color": "#334c61",
-      "font_size": 28,
-      "flags": {}
-    }
-  ],
+  "groups": [],
   "config": {},
   "extra": {
     "workflow_id": "hoi4_portrait_flux2_klein_9b_source",

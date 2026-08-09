@@ -60,9 +60,15 @@ def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     nodes = ui.get("nodes", [])
     links = ui.get("links", [])
-    groups = ui.get("groups", [])
-    if not nodes or not groups:
-        return [f"{path}: nodes and groups must be non-empty"]
+    groups = ui.get("groups")
+    if not nodes:
+        return [f"{path}: nodes must be non-empty"]
+    if not isinstance(groups, list):
+        errors.append(f"{path}: groups must be an empty list")
+    elif groups:
+        errors.append(f"{path}: collapsible canvas groups are not allowed")
+    if "definitions" in ui:
+        errors.append(f"{path}: subgraphs/definitions are not allowed; the whole workflow must stay visible")
     by_id = {node.get("id"): node for node in nodes}
     if len(by_id) != len(nodes) or None in by_id:
         errors.append(f"{path}: UI node ids are missing or duplicated")
@@ -99,22 +105,6 @@ def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
             if any(link_id not in link_ids for link_id in item.get("links") or []):
                 errors.append(f"{path}: node {node.get('id')} references a missing output link")
 
-    group_bounds = {group["title"]: group["bounding"] for group in groups}
-    for index, group in enumerate(groups):
-        for other in groups[index + 1 :]:
-            if _overlap(group["bounding"], other["bounding"]):
-                errors.append(f"{path}: groups overlap: {group['title']} / {other['title']}")
-    for node in nodes:
-        group_name = node.get("properties", {}).get("hoi4_group")
-        bounds = group_bounds.get(group_name)
-        if bounds is None:
-            errors.append(f"{path}: node {node.get('id')} is not assigned to a group")
-            continue
-        nx, ny = node["pos"]
-        nw, nh = node["size"]
-        gx, gy, gw, gh = bounds
-        if nx < gx + 20 or ny < gy + 20 or nx + nw > gx + gw - 20 or ny + nh > gy + gh - 20:
-            errors.append(f"{path}: node {node.get('id')} extends outside {group_name}")
     for index, node in enumerate(nodes):
         box = [*node["pos"], *node["size"]]
         for other in nodes[index + 1 :]:
@@ -166,6 +156,13 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: batch workflow needs one list-output input card")
     if is_source and counts.get("PreviewImage", 0) != 6:
         errors.append(f"{path}: source workflow needs source preview plus the five-card comparison row")
+
+    for node in ui.get("nodes", []):
+        if node.get("type") != "PreviewImage":
+            continue
+        width, height = node.get("size", [0, 0])
+        if [width, height] != [600, 810]:
+            errors.append(f"{path}: portrait preview {node.get('id')} must be 600×810")
 
     for node in api.values():
         class_type = node["class_type"]

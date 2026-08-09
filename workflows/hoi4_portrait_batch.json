@@ -25,7 +25,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Batch guide"
+        "hoi4_stage": "00 Batch guide"
       },
       "widgets_values": [
         "🖼️ BATCH — ONE PORTRAIT AT A TIME\n\nDrop PNG/JPG/JPEG/WebP files into ComfyUI/input/hoi4_portraits_batch/ and queue once. The list output makes ComfyUI execute this single-sampler graph once per source.\n\nAutomatic outputs:\noutput/1024x1365/\noutput/156x210/\noutput/156x210/dds/\n\nDDS is DXT5/BC3, 156×210, one top level, no mipmaps."
@@ -52,7 +52,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Batch guide"
+        "hoi4_stage": "00 Batch guide"
       },
       "widgets_values": [
         "🎛️ SAMPLER — TUNED DEFAULTS\n\n4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\nSteps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\nThe purple sampler is deliberately one advanced card. ComfyUI's live latent callback shows the portrait being constructed while it runs."
@@ -114,7 +114,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4BatchInput",
-        "hoi4_group": "01 One-at-a-time source prep"
+        "hoi4_stage": "01 One-at-a-time source prep"
       },
       "widgets_values": [
         "hoi4_portraits_batch",
@@ -255,7 +255,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SourcePrep",
-        "hoi4_group": "01 One-at-a-time source prep"
+        "hoi4_stage": "01 One-at-a-time source prep"
       },
       "widgets_values": [
         true,
@@ -411,7 +411,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4ModelStack",
-        "hoi4_group": "02 Models + exact Adonis"
+        "hoi4_stage": "02 Models + exact Adonis"
       },
       "widgets_values": [
         "flux-2-klein-9b.safetensors",
@@ -655,7 +655,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4AdonisRestoration",
-        "hoi4_group": "02 Models + exact Adonis"
+        "hoi4_stage": "02 Models + exact Adonis"
       },
       "widgets_values": [
         true,
@@ -859,7 +859,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "03 One live sampler + outputs"
+        "hoi4_stage": "03 One live sampler + outputs"
       },
       "widgets_values": [
         "source_reference",
@@ -977,7 +977,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4FinalOutput",
-        "hoi4_group": "03 One live sampler + outputs"
+        "hoi4_stage": "03 One live sampler + outputs"
       },
       "widgets_values": [
         false,
@@ -1029,7 +1029,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "03 One live sampler + outputs"
+        "hoi4_stage": "03 One live sampler + outputs"
       },
       "widgets_values": [
         "1024x1365/batch"
@@ -1076,7 +1076,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "03 One live sampler + outputs"
+        "hoi4_stage": "03 One live sampler + outputs"
       },
       "widgets_values": [
         "156x210/batch"
@@ -1131,7 +1131,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "03 One live sampler + outputs"
+        "hoi4_stage": "03 One live sampler + outputs"
       },
       "widgets_values": [
         "156x210/dds/batch",
@@ -1147,8 +1147,8 @@
         920
       ],
       "size": [
-        640,
-        820
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -1171,7 +1171,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "03 One live sampler + outputs"
+        "hoi4_stage": "03 One live sampler + outputs"
       },
       "widgets_values": []
     },
@@ -1180,12 +1180,12 @@
       "type": "PreviewImage",
       "title": "Adonis restored",
       "pos": [
-        5030,
+        5000,
         920
       ],
       "size": [
-        640,
-        820
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -1208,7 +1208,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "03 One live sampler + outputs"
+        "hoi4_stage": "03 One live sampler + outputs"
       },
       "widgets_values": []
     },
@@ -1217,12 +1217,12 @@
       "type": "PreviewImage",
       "title": "Final 156×210",
       "pos": [
-        5720,
+        5660,
         920
       ],
       "size": [
-        640,
-        820
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -1245,7 +1245,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "03 One live sampler + outputs"
+        "hoi4_stage": "03 One live sampler + outputs"
       },
       "widgets_values": []
     }
@@ -1388,60 +1388,7 @@
       "IMAGE"
     ]
   ],
-  "groups": [
-    {
-      "id": 1,
-      "title": "00 Batch guide",
-      "bounding": [
-        40,
-        40,
-        780,
-        2200
-      ],
-      "color": "#334155",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 2,
-      "title": "01 One-at-a-time source prep",
-      "bounding": [
-        860,
-        40,
-        1500,
-        2200
-      ],
-      "color": "#365b41",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 3,
-      "title": "02 Models + exact Adonis",
-      "bounding": [
-        2400,
-        40,
-        1840,
-        2200
-      ],
-      "color": "#6b5538",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 4,
-      "title": "03 One live sampler + outputs",
-      "bounding": [
-        4280,
-        40,
-        2140,
-        2200
-      ],
-      "color": "#5d416c",
-      "font_size": 28,
-      "flags": {}
-    }
-  ],
+  "groups": [],
   "config": {},
   "extra": {
     "workflow_id": "hoi4_portrait_batch",

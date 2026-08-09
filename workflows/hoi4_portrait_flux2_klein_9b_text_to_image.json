@@ -25,7 +25,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Notes"
+        "hoi4_stage": "00 Notes"
       },
       "widgets_values": [
         "📦 MODELS + FOLDERS\n\nThe installer places every file automatically. Manual locations:\n\nComfyUI/models/\n├── diffusion_models/\n│   └── flux-2-klein-9b.safetensors (distilled; never Base)\n├── text_encoders/\n│   └── Qwen3-8B-Q8_0.gguf\n├── vae/\n│   └── flux2-vae.safetensors\n├── loras/\n│   ├── hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors\n│   ├── adonis_base.safetensors\n│   └── adonis_refine.safetensors\n├── upscale_models/RealESRGAN_x2plus.pth\n├── background_removal/birefnet.safetensors\n└── detection/mediapipe_face_fp32.safetensors\n\nModel links and exact pinned revisions are in models.json. The installer selects full, FP8, or GGUF for your VRAM."
@@ -52,7 +52,7 @@
       "outputs": [],
       "properties": {
         "Node name for S&R": "Note",
-        "hoi4_group": "00 Notes"
+        "hoi4_stage": "00 Notes"
       },
       "widgets_values": [
         "🎛️ SAMPLER — TUNED DEFAULTS\n\n4 steps · CFG 1 · guidance 1 · Euler · simple · denoise 1\n\nSteps control denoising detail and time. CFG controls how sharply the prompt — here, the HOI4 style trigger — is followed. Seed changes the result. Guidance is FLUX.2 prompt strength. Sampler and scheduler are independent controls: Euler is the algorithm; simple is the schedule.\n\nThe purple sampler is deliberately one advanced card. ComfyUI's live latent callback shows the portrait being constructed while it runs."
@@ -192,7 +192,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4ModelStack",
-        "hoi4_group": "01 Model + one live sampler"
+        "hoi4_stage": "01 Model + one live sampler"
       },
       "widgets_values": [
         "flux-2-klein-9b.safetensors",
@@ -385,7 +385,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4PortraitSampler",
-        "hoi4_group": "01 Model + one live sampler"
+        "hoi4_stage": "01 Model + one live sampler"
       },
       "widgets_values": [
         "text_to_image",
@@ -449,7 +449,7 @@
       ],
       "properties": {
         "Node name for S&R": "LoadImage",
-        "hoi4_group": "02 Final output"
+        "hoi4_stage": "02 Final output"
       },
       "widgets_values": [
         "hoi4_leader_portrait_background.png",
@@ -553,7 +553,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4FinalOutput",
-        "hoi4_group": "02 Final output"
+        "hoi4_stage": "02 Final output"
       },
       "widgets_values": [
         false,
@@ -605,7 +605,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "02 Final output"
+        "hoi4_stage": "02 Final output"
       },
       "widgets_values": [
         "1024x1365/text_to_image"
@@ -652,7 +652,7 @@
       ],
       "properties": {
         "Node name for S&R": "SaveImage",
-        "hoi4_group": "02 Final output"
+        "hoi4_stage": "02 Final output"
       },
       "widgets_values": [
         "156x210/text_to_image"
@@ -707,7 +707,7 @@
       ],
       "properties": {
         "Node name for S&R": "Hoi4SaveDDS",
-        "hoi4_group": "02 Final output"
+        "hoi4_stage": "02 Final output"
       },
       "widgets_values": [
         "156x210/dds/text_to_image",
@@ -723,8 +723,8 @@
         1050
       ],
       "size": [
-        1200,
-        760
+        600,
+        810
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -747,7 +747,7 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage",
-        "hoi4_group": "02 Final output"
+        "hoi4_stage": "02 Final output"
       },
       "widgets_values": []
     }
@@ -826,47 +826,7 @@
       "IMAGE"
     ]
   ],
-  "groups": [
-    {
-      "id": 1,
-      "title": "00 Notes",
-      "bounding": [
-        40,
-        40,
-        780,
-        1880
-      ],
-      "color": "#334155",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 2,
-      "title": "01 Model + one live sampler",
-      "bounding": [
-        860,
-        40,
-        1760,
-        1880
-      ],
-      "color": "#5d416c",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 3,
-      "title": "02 Final output",
-      "bounding": [
-        2660,
-        40,
-        1760,
-        1880
-      ],
-      "color": "#3d596f",
-      "font_size": 28,
-      "flags": {}
-    }
-  ],
+  "groups": [],
   "config": {},
   "extra": {
     "workflow_id": "hoi4_portrait_flux2_klein_9b_text_to_image",

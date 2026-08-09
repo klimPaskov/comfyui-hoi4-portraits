@@ -31,6 +31,13 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
         self.assertEqual({item["nodes"] for item in result["workflows"]}, {29, 10, 13, 14})
 
+    def test_every_node_stays_visible_without_collapsible_groups(self) -> None:
+        for workflow_id in build_workflows.BUILDERS:
+            path = WORKFLOW_DIR / f"{workflow_id}.json"
+            ui = json.loads(path.read_text())
+            self.assertEqual(ui["groups"], [], path.name)
+            self.assertNotIn("definitions", ui, path.name)
+
     def test_exact_prompts_and_compact_logical_cards(self) -> None:
         source = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text())
         text = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_text_to_image.api.json").read_text())
@@ -53,6 +60,7 @@ class WorkflowTests(unittest.TestCase):
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text())
         previews = [node for node in ui["nodes"] if node["type"] == "PreviewImage"]
         self.assertEqual(len(previews), 6)
+        self.assertTrue(all(node["size"] == [600, 810] for node in previews))
         titles = {node["title"] for node in previews}
         self.assertTrue({"Source preview", "RealESRGAN prepared crop", "Adonis Base → Refine restored"}.issubset(titles))
         self.assertEqual(sum(title.startswith("Final candidate") for title in titles), 3)
