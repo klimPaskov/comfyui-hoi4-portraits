@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import glob
-import os
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
@@ -466,7 +465,7 @@ class Hoi4BackgroundReplace:
 
 
 class Hoi4BatchInput:
-    """Load all compatible images in an input subfolder as one image batch."""
+    """Load compatible images as list items for one-by-one workflow execution."""
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -482,15 +481,33 @@ class Hoi4BatchInput:
     OUTPUT_IS_LIST = (True, True, True)
     FUNCTION = "load_batch"
     CATEGORY = "HOI4 portraits/input"
-    DESCRIPTION = "Load every image in input/hoi4_portraits_batch for one shared workflow run."
+    DESCRIPTION = "Rescan input/hoi4_portraits_batch on every queue and process each matching image once."
+
+    @classmethod
+    def IS_CHANGED(cls, input_folder, file_pattern):
+        # A folder is external mutable state. Never reuse a cached list: every
+        # queue must see additions/removals and must reach the automatic savers.
+        return float("nan")
 
     def load_batch(self, input_folder, file_pattern):
-        root = Path(folder_paths.get_input_directory()) / input_folder
+        input_root = Path(folder_paths.get_input_directory()).resolve()
+        root = (input_root / str(input_folder)).resolve()
+        if root != input_root and input_root not in root.parents:
+            raise ValueError("Batch input folder must stay inside the ComfyUI input folder.")
+        if not root.is_dir():
+            raise RuntimeError(f"Batch input folder does not exist: {root}")
         patterns = [item.strip() for item in str(file_pattern).split(";") if item.strip()]
-        paths: list[Path] = []
-        for pattern in patterns or ["*"]:
-            paths.extend(Path(path) for path in glob.glob(str(root / pattern)))
-        paths = sorted({path.resolve() for path in paths if path.is_file()})
+        folded_patterns = [pattern.casefold() for pattern in patterns or ["*"]]
+        paths = sorted(
+            {
+                resolved
+                for path in root.iterdir()
+                if path.is_file()
+                and any(fnmatch(path.name.casefold(), pattern) for pattern in folded_patterns)
+                and root in (resolved := path.resolve()).parents
+            },
+            key=lambda path: (path.name.casefold(), path.name),
+        )
         if not paths:
             raise RuntimeError(f"No input images found in {root} matching {file_pattern!r}.")
 
@@ -503,7 +520,7 @@ class Hoi4BatchInput:
         for image in images:
             array = np.asarray(image, dtype=np.float32) / 255.0
             tensors.append(torch.from_numpy(array).unsqueeze(0))
-            masks.append(torch.zeros((1, 64, 64), dtype=torch.float32))
+            masks.append(torch.zeros((1, image.height, image.width), dtype=torch.float32))
         return (
             [tensor.clamp(0, 1) for tensor in tensors],
             masks,
@@ -545,6 +562,7 @@ class Hoi4SaveDDS:
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("images",)
     FUNCTION = "save"
+    OUTPUT_NODE = True
     CATEGORY = "HOI4 portraits/output"
     DESCRIPTION = "Save vanilla-style 156x210 A8R8G8B8 DDS portraits with no mipmaps for HOI4."
 
@@ -553,8 +571,10 @@ class Hoi4SaveDDS:
         prefix = Path(str(filename_prefix))
         if prefix.is_absolute() or ".." in prefix.parts:
             raise ValueError("DDS filename_prefix must stay inside the ComfyUI output folder.")
-        saved: list[Path] = []
-        for index, tensor in enumerate(images):
+        if format not in {"argb8888", "dxt5"}:
+            raise ValueError(f"Unsupported DDS format: {format!r}")
+        prepared: list[Image.Image] = []
+        for tensor in images:
             array = (tensor.detach().cpu().numpy().clip(0, 1) * 255.0 + 0.5).astype(np.uint8)
             if array.ndim != 3 or array.shape[0] != 210 or array.shape[1] != 156:
                 raise ValueError(
@@ -562,18 +582,20 @@ class Hoi4SaveDDS:
                 )
             rgb = array[:, :, :3]
             alpha = np.full((array.shape[0], array.shape[1], 1), 255, dtype=np.uint8)
-            image = Image.fromarray(np.concatenate((rgb, alpha), axis=2))
-            output_folder, filename, counter, _, _ = folder_paths.get_save_image_path(
-                str(prefix), str(output_dir), array.shape[1], array.shape[0]
-            )
-            target_folder = Path(output_folder)
-            target_folder.mkdir(parents=True, exist_ok=True)
+            prepared.append(Image.fromarray(np.concatenate((rgb, alpha), axis=2)))
+        if not prepared:
+            return (images,)
+        output_folder, filename, counter, _, _ = folder_paths.get_save_image_path(
+            str(prefix), str(output_dir), 156, 210
+        )
+        target_folder = Path(output_folder)
+        target_folder.mkdir(parents=True, exist_ok=True)
+        for index, image in enumerate(prepared):
             target = target_folder / f"{filename}_{counter + index:05d}.dds"
             if format == "dxt5":
                 image.save(target, format="DDS", pixel_format="DXT5")
             else:
                 image.save(target, format="DDS")
-            saved.append(target)
         return (images,)
 
 

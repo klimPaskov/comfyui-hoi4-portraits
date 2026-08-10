@@ -32,6 +32,11 @@ ComfyUI/output/156x210/       game-size PNG
 ComfyUI/output/156x210/dds/   HOI4-ready DDS (A8R8G8B8, no mipmaps)
 ```
 
+The PNG and DDS nodes are automatic terminal outputs. One queue run writes
+every result, and ComfyUI's counters keep later runs from overwriting earlier
+files. The batch folder is rescanned on every queue and processed in stable
+filename order.
+
 ## Which model do I need?
 
 The installer downloads only the model variant you choose:

@@ -109,17 +109,25 @@ def main() -> int:
         elif len(scheduler_info) > 1 and isinstance(scheduler_info[1], dict):
             scheduler_options = set(scheduler_info[1].get("options", []))
     missing_schedulers = sorted({"simple"} - scheduler_options)
+    contract_errors: list[str] = []
+    if object_info.get("Hoi4BatchInput", {}).get("output_is_list") != [True, True, True]:
+        contract_errors.append("Hoi4BatchInput must expose list outputs for one-by-one batch execution")
+    for class_type in ("SaveImage", "Hoi4SaveDDS"):
+        if object_info.get(class_type, {}).get("output_node") is not True:
+            contract_errors.append(f"{class_type} must be registered as an automatic terminal output")
 
-    if missing_nodes or missing_samplers or missing_schedulers:
+    if missing_nodes or missing_samplers or missing_schedulers or contract_errors:
         if missing_nodes:
             print("Missing workflow nodes: " + ", ".join(missing_nodes))
         if missing_samplers:
             print("Missing samplers: " + ", ".join(missing_samplers))
         if missing_schedulers:
             print("Missing schedulers: " + ", ".join(missing_schedulers))
+        for error in contract_errors:
+            print("Invalid workflow contract: " + error)
         print("ComfyUI must be restarted after running the installer.")
         return 1
-    print("Validated the live ComfyUI registry: all workflow nodes and samplers are available.")
+    print("Validated the live ComfyUI registry: list batching, automatic savers, nodes, and samplers are available.")
     return 0
 
 

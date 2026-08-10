@@ -99,8 +99,9 @@ portraits appear together in the comparison row.
 
 This 50-node graph reads compatible images from
 `ComfyUI/input/hoi4_portraits_batch/`. `HOI4 Batch Input` returns list items,
-so ComfyUI handles one source at a time. There is one standard sampler and one set
-of final saves.
+so ComfyUI handles one source at a time in stable, case-insensitive filename
+order. It rescans the folder on every queue instead of reusing a cached file
+list. There is one standard sampler and one set of automatic final saves.
 
 ## Output contract
 
@@ -111,6 +112,10 @@ ComfyUI/output/1024x1365/     master PNG
 ComfyUI/output/156x210/       centered game PNG
 ComfyUI/output/156x210/dds/   156×210 A8R8G8B8 DDS, no mipmaps
 ```
+
+Both native PNG savers and `HOI4 Save DDS` are terminal output nodes. Queueing
+the workflow therefore executes every connected save branch automatically;
+numbered counters prevent repeated runs from overwriting existing portraits.
 
 Master and game sizing use separate `ImageScale` nodes with Lanczos
 resampling and center cropping. The portrait is never stretched, and there is

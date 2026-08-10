@@ -54,7 +54,9 @@ Base → Post topology before style sampling. The Base latent becomes Post
 reference conditioning and both generations share the seed, nine-step control,
 empty latent, and Shark options. One red switch enables or bypasses the whole
 restoration result and defaults to enabled. Final output is a centered
-1024×1365 master and a non-stretched 156×210 game crop.
+1024×1365 master and a non-stretched 156×210 game crop. Terminal output nodes
+automatically save both PNG sizes and the HOI4-ready DDS; the batch input
+rescans its folder on every queue.
 
 ## Source prompt
 

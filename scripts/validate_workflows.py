@@ -253,6 +253,31 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     expected_loras = 1 if is_text else 2 if is_processing else 3
     if counts.get("LoraLoaderModelOnly", 0) != expected_loras:
         errors.append(f"{path}: expected {expected_loras} separately visible LoRA loaders")
+    expected_png_savers = 6 if is_source else 2
+    expected_dds_savers = 3 if is_source else 1
+    if counts.get("SaveImage", 0) != expected_png_savers:
+        errors.append(f"{path}: expected {expected_png_savers} automatic PNG saver(s)")
+    if counts.get("Hoi4SaveDDS", 0) != expected_dds_savers:
+        errors.append(f"{path}: expected {expected_dds_savers} automatic DDS saver(s)")
+    save_prefixes: list[str] = []
+    for node in api.values():
+        if node.get("class_type") not in {"SaveImage", "Hoi4SaveDDS"}:
+            continue
+        inputs = node.get("inputs", {})
+        prefix = str(inputs.get("filename_prefix", ""))
+        save_prefixes.append(prefix)
+        image_link = inputs.get("images")
+        source = api.get(image_link[0], {}) if isinstance(image_link, list) and image_link else {}
+        if source.get("class_type") != "ImageScale":
+            errors.append(f"{path}: automatic saver {prefix!r} must receive a sized portrait")
+            continue
+        source_inputs = source.get("inputs", {})
+        expected_size = (1024, 1365) if prefix.startswith("1024x1365/") else (156, 210)
+        actual_size = (source_inputs.get("width"), source_inputs.get("height"))
+        if actual_size != expected_size:
+            errors.append(f"{path}: automatic saver {prefix!r} receives {actual_size}, expected {expected_size}")
+    if len(save_prefixes) != len(set(save_prefixes)):
+        errors.append(f"{path}: automatic save prefixes must be unique")
     if is_batch and counts.get("Hoi4BatchInput", 0) != 1:
         errors.append(f"{path}: batch workflow needs one list-output input card")
     if is_source:

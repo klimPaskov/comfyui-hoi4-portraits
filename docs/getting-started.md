@@ -10,7 +10,9 @@
 - Use **text to image** for a fictional portrait without a reference photo.
 - Use **batch** to drop a whole folder of photos into
   `ComfyUI/input/hoi4_portraits_batch/` and process them one by one with one
-  sampler, saving PNGs and HOI4-ready DDS files.
+  sampler. Supported extensions are matched case-insensitively, and each queue
+  run rescans the folder and automatically saves master PNGs, game PNGs, and
+  HOI4-ready DDS files.
 
 ## Prepare a source image
 

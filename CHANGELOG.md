@@ -21,7 +21,10 @@ This repository documents one current, internally consistent package.
 - Source upload: shown once in the loader, with no duplicate preview card
 - Text to image: one sampler and one final portrait
 - Processing only: RealESRGAN plus complete current Adonis Base → Post, no style LoRA
-- Batch: list input, one sampler, sequential per-source execution
+- Batch: per-queue folder rescan, deterministic case-insensitive list input,
+  one sampler, and sequential per-source execution
+- Automatic saving: master PNG, game PNG, and DDS branches are terminal
+  outputs with non-overwriting numbered filenames
 - Layout: compact 40 px node gutters, 80 px group gutters, aligned top-stage
   heights, and tightly packed model/restoration/style sections
 - Output: 1024×1365 PNG, centered 156×210 PNG, 156×210 A8R8G8B8 DDS with no mipmaps

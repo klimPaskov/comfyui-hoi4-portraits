@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import math
 import sys
 import tempfile
 import types
@@ -9,6 +10,7 @@ import unittest
 from pathlib import Path
 
 import torch
+from PIL import Image
 
 from scripts import apply_variant, build_workflows, download_models, install_workflows, validate_workflows
 
@@ -120,10 +122,17 @@ class WorkflowTests(unittest.TestCase):
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.api.json").read_text())
         self.assertEqual(sum(node["class_type"] == "Hoi4BatchInput" for node in api.values()), 1)
         self.assertEqual(sum(node["class_type"] == "KSampler" for node in api.values()), 1)
+        self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 2)
+        self.assertEqual(sum(node["class_type"] == "Hoi4SaveDDS" for node in api.values()), 1)
         prefixes = [node["inputs"].get("filename_prefix", "") for node in api.values()]
         self.assertTrue(any(str(prefix).startswith("1024x1365/") for prefix in prefixes))
         self.assertTrue(any(str(prefix).startswith("156x210/") for prefix in prefixes))
         self.assertTrue(any(str(prefix).startswith("156x210/dds/") for prefix in prefixes))
+        for node in api.values():
+            if node["class_type"] not in {"SaveImage", "Hoi4SaveDDS"}:
+                continue
+            source = api[node["inputs"]["images"][0]]
+            self.assertEqual(source["class_type"], "ImageScale")
 
 
 class InstallerTests(unittest.TestCase):
@@ -203,7 +212,10 @@ class CustomNodeTests(unittest.TestCase):
         def save_path(prefix, output_dir, width, height):
             prefix_path = Path(prefix)
             folder = Path(output_dir) / prefix_path.parent
-            return str(folder), prefix_path.name, 1, "", str(prefix_path.parent)
+            counter = 1
+            while (folder / f"{prefix_path.name}_{counter:05d}.dds").exists():
+                counter += 1
+            return str(folder), prefix_path.name, counter, "", str(prefix_path.parent)
 
         fake.get_save_image_path = save_path
         sys.modules["folder_paths"] = fake
@@ -228,6 +240,7 @@ class CustomNodeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             module = self._load_module(root)
+            self.assertIs(module.Hoi4SaveDDS.OUTPUT_NODE, True)
             image = torch.rand((1, 210, 156, 3), dtype=torch.float32)
             module.Hoi4SaveDDS().save(image, "156x210/dds/test", "argb8888")
             dds = next((root / "output/156x210/dds").glob("*.dds"))
@@ -243,6 +256,51 @@ class CustomNodeTests(unittest.TestCase):
             self.assertEqual(int.from_bytes(data[96:100], "little"), 0x0000FF00)
             self.assertEqual(int.from_bytes(data[100:104], "little"), 0x000000FF)
             self.assertEqual(int.from_bytes(data[104:108], "little"), 0xFF000000)
+
+    def test_dds_output_node_saves_every_batch_item_without_overwrite(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            module = self._load_module(root)
+            images = torch.rand((3, 210, 156, 3), dtype=torch.float32)
+            saver = module.Hoi4SaveDDS()
+            saver.save(images, "156x210/dds/batch_test", "argb8888")
+            saver.save(images[:1], "156x210/dds/batch_test", "argb8888")
+            files = sorted((root / "output/156x210/dds").glob("batch_test_*.dds"))
+            self.assertEqual([path.name for path in files], [
+                "batch_test_00001.dds",
+                "batch_test_00002.dds",
+                "batch_test_00003.dds",
+                "batch_test_00004.dds",
+            ])
+            self.assertTrue(all(path.read_bytes()[:4] == b"DDS " for path in files))
+
+    def test_batch_input_loads_every_matching_file_in_stable_order(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            batch = root / "input/hoi4_portraits_batch"
+            batch.mkdir(parents=True)
+            Image.new("RGB", (18, 24), (255, 0, 0)).save(batch / "b.JPG")
+            Image.new("RGB", (20, 30), (0, 255, 0)).save(batch / "A.png")
+            Image.new("RGB", (22, 28), (0, 0, 255)).save(batch / "c.webp")
+            (batch / "ignore.txt").write_text("not an image")
+            module = self._load_module(root)
+            self.assertTrue(math.isnan(module.Hoi4BatchInput.IS_CHANGED("hoi4_portraits_batch", "*.png")))
+            images, masks, names = module.Hoi4BatchInput().load_batch(
+                "hoi4_portraits_batch", "*.png;*.jpg;*.jpeg;*.webp"
+            )
+            self.assertEqual(names, ["A.png", "b.JPG", "c.webp"])
+            self.assertEqual([tuple(image.shape) for image in images], [
+                (1, 30, 20, 3),
+                (1, 24, 18, 3),
+                (1, 28, 22, 3),
+            ])
+            self.assertEqual([tuple(mask.shape) for mask in masks], [
+                (1, 30, 20),
+                (1, 24, 18),
+                (1, 28, 22),
+            ])
+            with self.assertRaises(ValueError):
+                module.Hoi4BatchInput().load_batch("../outside", "*.png")
 
     def test_batch_input_returns_list_items_for_one_by_one_execution(self) -> None:
         source = (ROOT / "custom_nodes/hoi4_portraits/__init__.py").read_text()
