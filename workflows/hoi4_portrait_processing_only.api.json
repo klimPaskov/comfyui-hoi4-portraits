@@ -257,6 +257,23 @@
   },
   "20": {
     "inputs": {
+      "width": [
+        "16",
+        1
+      ],
+      "height": [
+        "16",
+        2
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyFlux2LatentImage",
+    "_meta": {
+      "title": "Restoration latent"
+    }
+  },
+  "21": {
+    "inputs": {
       "conditioning": [
         "17",
         0
@@ -271,7 +288,7 @@
       "title": "Base positive reference"
     }
   },
-  "21": {
+  "22": {
     "inputs": {
       "conditioning": [
         "18",
@@ -285,23 +302,6 @@
     "class_type": "ReferenceLatent",
     "_meta": {
       "title": "Base negative reference"
-    }
-  },
-  "22": {
-    "inputs": {
-      "width": [
-        "16",
-        1
-      ],
-      "height": [
-        "16",
-        2
-      ],
-      "batch_size": 1
-    },
-    "class_type": "EmptyFlux2LatentImage",
-    "_meta": {
-      "title": "Restoration latent"
     }
   },
   "23": {
@@ -357,15 +357,15 @@
         0
       ],
       "positive": [
-        "20",
-        0
-      ],
-      "negative": [
         "21",
         0
       ],
-      "latent_image": [
+      "negative": [
         "22",
+        0
+      ],
+      "latent_image": [
+        "20",
         0
       ],
       "options_group.options0": [
@@ -437,34 +437,6 @@
   },
   "31": {
     "inputs": {
-      "samples": [
-        "26",
-        0
-      ],
-      "vae": [
-        "13",
-        0
-      ]
-    },
-    "class_type": "VAEDecode",
-    "_meta": {
-      "title": "Decode Adonis Base result"
-    }
-  },
-  "32": {
-    "inputs": {
-      "images": [
-        "31",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Adonis Base preview"
-    }
-  },
-  "33": {
-    "inputs": {
       "eta": 0.5,
       "sampler_name": "exponential/res_2s",
       "scheduler": "simple",
@@ -494,7 +466,7 @@
         0
       ],
       "latent_image": [
-        "22",
+        "20",
         0
       ],
       "options_group.options0": [
@@ -507,10 +479,10 @@
       "title": "Finish details — Adonis Post"
     }
   },
-  "34": {
+  "32": {
     "inputs": {
       "samples": [
-        "33",
+        "31",
         0
       ],
       "vae": [
@@ -523,14 +495,31 @@
       "title": "Decode restored portrait"
     }
   },
-  "35": {
+  "33": {
+    "inputs": {
+      "switch": true,
+      "on_false": [
+        "10",
+        0
+      ],
+      "on_true": [
+        "32",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Use Adonis restoration"
+    }
+  },
+  "34": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "34",
+        "33",
         0
       ]
     },
@@ -539,14 +528,14 @@
       "title": "Restored master — 1024×1365"
     }
   },
-  "36": {
+  "35": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "35",
+        "34",
         0
       ]
     },
@@ -555,11 +544,11 @@
       "title": "Game portrait — 156×210"
     }
   },
-  "37": {
+  "36": {
     "inputs": {
       "filename_prefix": "1024x1365/processing_only",
       "images": [
-        "35",
+        "34",
         0
       ]
     },
@@ -568,11 +557,11 @@
       "title": "Save restored master PNG"
     }
   },
-  "38": {
+  "37": {
     "inputs": {
       "filename_prefix": "156x210/processing_only",
       "images": [
-        "36",
+        "35",
         0
       ]
     },
@@ -581,12 +570,12 @@
       "title": "Save game PNG"
     }
   },
-  "39": {
+  "38": {
     "inputs": {
       "filename_prefix": "156x210/dds/processing_only",
       "format": "argb8888",
       "images": [
-        "36",
+        "35",
         0
       ]
     },
@@ -595,7 +584,7 @@
       "title": "Save game DDS"
     }
   },
-  "40": {
+  "39": {
     "inputs": {
       "images": [
         "10",
@@ -607,10 +596,10 @@
       "title": "Prepared portrait"
     }
   },
-  "41": {
+  "40": {
     "inputs": {
       "images": [
-        "34",
+        "33",
         0
       ]
     },
@@ -619,10 +608,10 @@
       "title": "Restored portrait"
     }
   },
-  "42": {
+  "41": {
     "inputs": {
       "images": [
-        "36",
+        "35",
         0
       ]
     },

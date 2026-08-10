@@ -47,7 +47,7 @@ ADONIS_POST_PROMPT = "clean natural skin, hair and body texture, no jpeg artifac
 ADONIS_BASE_COMBINED_PROMPT = f"{ADONIS_BASE_PROMPT}, {ADONIS_FIXED_PROMPT}"
 ADONIS_POST_COMBINED_PROMPT = f"{ADONIS_POST_PROMPT}, {ADONIS_FIXED_PROMPT}"
 
-SETUP_GUIDE_SIZE = (620, 1400)
+SETUP_GUIDE_SIZE = (620, 1440)
 
 COLORS = {
     "note": ("#6b4c36", "#3f2f24"),
@@ -247,7 +247,7 @@ def _preview(g: Graph, title: str, pos: tuple[int, int], group: str) -> Ref:
 
 def _unet(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "UNETLoader", "FLUX.2 Klein 9B", pos, (440, 130), group,
+        "UNETLoader", "FLUX.2 Klein 9B", pos, (400, 130), group,
         [("unet_name", "COMBO", True), ("weight_dtype", "COMBO", True)], [("MODEL", "MODEL")],
         [BASE_MODEL, "default"], {"unet_name": BASE_MODEL, "weight_dtype": "default"}, "model",
     )
@@ -256,7 +256,7 @@ def _unet(g: Graph, pos: tuple[int, int], group: str) -> Ref:
 def _clip(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     values = [TEXT_ENCODER, "flux2", "default"]
     return g.node(
-        "ClipLoaderGGUF", "Load Qwen3 8B Q8 text encoder", pos, (440, 150), group,
+        "ClipLoaderGGUF", "Load Qwen3 8B Q8 text encoder", pos, (400, 160), group,
         [("clip_name", "COMBO", True), ("type", "COMBO", True), ("device", "COMBO", True)], [("CLIP", "CLIP")],
         values, dict(zip(("clip_name", "type", "device"), values)), "model",
     )
@@ -264,14 +264,14 @@ def _clip(g: Graph, pos: tuple[int, int], group: str) -> Ref:
 
 def _vae(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "VAELoader", "Load FLUX.2 VAE", pos, (440, 100), group,
+        "VAELoader", "Load FLUX.2 VAE", pos, (400, 100), group,
         [("vae_name", "COMBO", True)], [("VAE", "VAE")], [VAE_MODEL], {"vae_name": VAE_MODEL}, "model",
     )
 
 
 def _lora(g: Graph, title: str, filename: str, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "LoraLoaderModelOnly", title, pos, (500, 140), group,
+        "LoraLoaderModelOnly", title, pos, (400, 140), group,
         [("model", "MODEL", False), ("lora_name", "COMBO", True), ("strength_model", "FLOAT", True)], [("MODEL", "MODEL")],
         [filename, 1.0], {"lora_name": filename, "strength_model": 1.0}, "model",
     )
@@ -299,7 +299,7 @@ def _face_detect(g: Graph, pos: tuple[int, int], group: str) -> Ref:
 
 def _background_model(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "LoadBackgroundRemovalModel", "Load BiRefNet mask model", pos, (440, 100), group,
+        "LoadBackgroundRemovalModel", "Load BiRefNet mask model", pos, (400, 100), group,
         [("bg_removal_name", "COMBO", True)], [("bg_model", "BACKGROUND_REMOVAL")],
         [BACKGROUND_MODEL], {"bg_removal_name": BACKGROUND_MODEL}, "model",
     )
@@ -359,13 +359,13 @@ def _image_scale(g: Graph, title: str, width: int, height: int, pos: tuple[int, 
 
 def _source_pipeline(g: Graph, source: Ref, group: str, *, x: int = 1600) -> Ref:
     face_loader = _face_loader(g, (x, 100), group)
-    detector = _face_detect(g, (x, 260), group)
-    mask_loader = _background_model(g, (x, 640), group)
-    mask = _remove_background(g, "Generate subject silhouette for crop", (x, 800), group)
+    detector = _face_detect(g, (x, 240), group)
+    mask_loader = _background_model(g, (x, 580), group)
+    mask = _remove_background(g, "Generate subject silhouette for crop", (x, 720), group)
     crop = _adaptive_crop(g, (x + 540, 100), group)
-    upscale_loader = _upscale_loader(g, (x + 540, 600), group)
-    upscale = _upscale(g, (x + 540, 760), group)
-    normalized = _image_scale(g, "Resize prepared portrait to 1024×1365", 1024, 1365, (x + 540, 920), group)
+    upscale_loader = _upscale_loader(g, (x + 540, 560), group)
+    upscale = _upscale(g, (x + 540, 700), group)
+    normalized = _image_scale(g, "Resize prepared portrait to 1024×1365", 1024, 1365, (x + 540, 840), group)
     g.connect(face_loader, 0, detector, "face_detection_model")
     g.connect(source, 0, detector, "image")
     g.connect(mask_loader, 0, mask, "bg_removal_model")
@@ -477,34 +477,35 @@ def _vae_decode(
     )
 
 
-def _adonis_base_preview(g: Graph, pos: tuple[int, int], group: str) -> Ref:
+def _switch(g: Graph, title: str, enabled: bool, pos: tuple[int, int], group: str) -> Ref:
     return g.node(
-        "PreviewImage", "Adonis Base preview", pos, (440, 594), group,
-        [("images", "IMAGE", False)], [("IMAGE", "IMAGE")], [], {}, "restore",
+        "ComfySwitchNode", title, pos, (360, 160), group,
+        [("switch", "BOOLEAN", True), ("on_false", "IMAGE", False), ("on_true", "IMAGE", False)],
+        [("IMAGE", "IMAGE")], [enabled], {"switch": enabled}, "switch",
     )
 
 
 def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *, x: int = 4000) -> tuple[Ref, Ref]:
     scale = _scale_total(g, (x, 100), group)
-    base_prompt = _clip_encode(g, "Adonis Base prompt", ADONIS_BASE_COMBINED_PROMPT, (x, 420), group)
-    base_negative = _zero_conditioning(g, (x, 760), group)
-    encoded = _vae_encode(g, (x + 480, 100), group)
-    base_positive_ref = _reference(g, "Base positive reference", (x + 480, 280), group)
-    base_negative_ref = _reference(g, "Base negative reference", (x + 480, 460), group)
-    empty = _empty_latent(g, (x + 480, 640), group)
-    options = _shark_options(g, (x + 880, 100), group)
-    seed = _primitive_int(g, "Shared Adonis seed", 42, (x + 880, 360), group)
-    steps = _primitive_int(g, "Steps per Adonis model", 9, (x + 880, 540), group)
-    base = _adonis_sampler(g, "Restore details — Adonis Base", (x + 1320, 100), group, post=False)
+    base_prompt = _clip_encode(g, "Adonis Base prompt", ADONIS_BASE_COMBINED_PROMPT, (x, 380), group)
+    base_negative = _zero_conditioning(g, (x, 680), group)
+    encoded = _vae_encode(g, (x, 800), group)
+    empty = _empty_latent(g, (x, 940), group)
 
-    post_prompt = _clip_encode(g, "Adonis Post prompt", ADONIS_POST_COMBINED_PROMPT, (x + 1780, 100), group)
-    post_negative = _zero_conditioning(g, (x + 1780, 440), group)
-    post_positive_ref = _reference(g, "Post positive reference", (x + 1780, 600), group)
-    post_negative_ref = _reference(g, "Post negative reference", (x + 1780, 780), group)
-    base_decoded = _vae_decode(g, (x + 1780, 960), group, "Decode Adonis Base result", (260, 100))
-    base_preview = _adonis_base_preview(g, (x + 1780, 1120), group)
-    post = _adonis_sampler(g, "Finish details — Adonis Post", (x + 2260, 100), group, post=True)
-    decoded = _vae_decode(g, (x + 2260, 1280), group, size=(260, 100))
+    base_positive_ref = _reference(g, "Base positive reference", (x + 480, 100), group)
+    base_negative_ref = _reference(g, "Base negative reference", (x + 480, 240), group)
+    options = _shark_options(g, (x + 480, 380), group)
+    seed = _primitive_int(g, "Shared Adonis seed", 42, (x + 480, 600), group)
+    steps = _primitive_int(g, "Steps per Adonis model", 9, (x + 480, 740), group)
+    base = _adonis_sampler(g, "Restore details — Adonis Base", (x + 920, 100), group, post=False)
+
+    post_prompt = _clip_encode(g, "Adonis Post prompt", ADONIS_POST_COMBINED_PROMPT, (x + 1360, 100), group)
+    post_negative = _zero_conditioning(g, (x + 1360, 400), group)
+    post_positive_ref = _reference(g, "Post positive reference", (x + 1360, 520), group)
+    post_negative_ref = _reference(g, "Post negative reference", (x + 1360, 660), group)
+    post = _adonis_sampler(g, "Finish details — Adonis Post", (x + 1840, 100), group, post=True)
+    decoded = _vae_decode(g, (x + 1840, 1240), group, size=(260, 100))
+    enabled = _switch(g, "Use Adonis restoration", True, (x + 1840, 1380), group)
 
     g.connect(image, 0, scale, "image")
     g.connect(model["clip"], 0, base_prompt, "clip")
@@ -526,10 +527,6 @@ def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *,
     g.connect(steps, 0, base, "steps")
     g.connect(seed, 0, base, "seed")
 
-    g.connect(base, 0, base_decoded, "samples")
-    g.connect(model["vae"], 0, base_decoded, "vae")
-    g.connect(base_decoded, 0, base_preview, "images")
-
     g.connect(model["clip"], 0, post_prompt, "clip")
     g.connect(post_prompt, 0, post_negative, "conditioning")
     g.connect(post_prompt, 0, post_positive_ref, "conditioning")
@@ -546,26 +543,36 @@ def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *,
     g.connect(seed, 0, post, "seed")
     g.connect(post, 0, decoded, "samples")
     g.connect(model["vae"], 0, decoded, "vae")
-    return decoded, scale
+    g.connect(image, 0, enabled, "on_false")
+    g.connect(decoded, 0, enabled, "on_true")
+    return enabled, scale
 
 
 def _model_pipeline(g: Graph, group: str, *, x: int, y: int = 100, style: bool, adonis: bool, background: bool) -> dict[str, Ref]:
-    unet = _unet(g, (x, y), group)
-    clip = _clip(g, (x, y + 220), group)
-    vae = _vae(g, (x, y + 440), group)
+    if adonis:
+        unet = _unet(g, (x, y), group)
+        clip = _clip(g, (x, y + 180), group)
+        vae = _vae(g, (x + 460, y + 180), group)
+    else:
+        unet = _unet(g, (x, y), group)
+        clip = _clip(g, (x, y + 220), group)
+        vae = _vae(g, (x, y + 440), group)
     result: dict[str, Ref] = {"unet": unet, "clip": clip, "vae": vae}
     if style:
-        style_lora = _lora(g, "HOI4 portrait style LoRA", STYLE_LORA, (x + 500, y), group)
+        style_lora = _lora(g, "HOI4 portrait style LoRA", STYLE_LORA, (x + 460, y), group)
         g.connect(unet, 0, style_lora, "model")
         result["style"] = style_lora
     if adonis:
-        base = _lora(g, "Adonis Base LoRA", ADONIS_BASE, (x + 500, y + 220), group)
-        post = _lora(g, "Adonis Post LoRA", ADONIS_POST, (x + 500, y + 440), group)
+        base_column = 920 if style else 460
+        post_column = 1380 if style else 920
+        base = _lora(g, "Adonis Base LoRA", ADONIS_BASE, (x + base_column, y), group)
+        post = _lora(g, "Adonis Post LoRA", ADONIS_POST, (x + post_column, y), group)
         g.connect(unet, 0, base, "model")
         g.connect(unet, 0, post, "model")
         result.update({"adonis_base": base, "adonis_post": post})
     if background:
-        result["background_model"] = _background_model(g, (x, y + 620), group)
+        position = (x + 920, y + 180) if adonis else (x, y + 620)
+        result["background_model"] = _background_model(g, position, group)
     return result
 
 
@@ -606,21 +613,21 @@ def _style_inputs(
 ) -> tuple[Ref, Ref, Ref]:
     positive = _style_text_encode(g, "Portrait prompt", prompt, (x, y), (520, 300), group)
     negative = _style_text_encode(g, "Negative prompt", "", (x, y + 380), (520, 180), group)
-    guidance = _flux_guidance(g, (x + 600, y), group)
+    guidance = _flux_guidance(g, (x + 560, y), group)
     g.connect(model["clip"], 0, positive, "clip")
     g.connect(model["clip"], 0, negative, "clip")
     g.connect(positive, 0, guidance, "conditioning")
 
     if reference is None:
-        latent = _portrait_latent(g, (x + 600, y + 180), group)
+        latent = _portrait_latent(g, (x + 560, y + 180), group)
         return guidance, negative, latent
 
     latent = g.node(
-        "VAEEncode", "Encode portrait reference", (x + 600, y + 180), (300, 100), group,
+        "VAEEncode", "Encode portrait reference", (x + 560, y + 180), (300, 100), group,
         [("pixels", "IMAGE", False), ("vae", "VAE", False)], [("LATENT", "LATENT")], [], {},
     )
-    positive_ref = _reference(g, "Positive portrait reference", (x + 1000, y), group)
-    negative_ref = _reference(g, "Negative portrait reference", (x + 1000, y + 180), group)
+    positive_ref = _reference(g, "Positive portrait reference", (x + 960, y), group)
+    negative_ref = _reference(g, "Negative portrait reference", (x + 960, y + 180), group)
     g.connect(reference, 0, latent, "pixels")
     g.connect(model["vae"], 0, latent, "vae")
     g.connect(guidance, 0, positive_ref, "conditioning")
@@ -713,7 +720,7 @@ def _save_dds(g: Graph, title: str, prefix: str, pos: tuple[int, int], group: st
 def _batch_input(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     values = ["hoi4_portraits_batch", "*.png;*.jpg;*.jpeg;*.webp"]
     return g.node(
-        "Hoi4BatchInput", "Batch portrait folder", pos, (700, 260), group,
+        "Hoi4BatchInput", "Batch portrait folder", pos, (680, 260), group,
         [("input_folder", "STRING", True), ("file_pattern", "STRING", True)],
         [("images", "IMAGE"), ("masks", "MASK"), ("filenames", "STRING")], values,
         {"input_folder": values[0], "file_pattern": values[1]}, "source",
@@ -735,24 +742,24 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
     source = _load_image(g, "Choose a source portrait", "source_portrait.jpg", (860, 100), (680, 620), "01 Prepare portrait")
     esrgan = _source_pipeline(g, source, "01 Prepare portrait", x=1620)
 
-    model = _model_pipeline(g, "02 Models", x=860, y=1280, style=True, adonis=True, background=True)
+    model = _model_pipeline(g, "02 Models", x=860, y=1200, style=True, adonis=True, background=True)
     restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800)
 
     positive, negative, latent = _style_inputs(
-        g, model, "04 Create three portraits", x=5640, y=100, prompt=STYLE_PROMPT, reference=restored,
+        g, model, "04 Create three portraits", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
     )
     portraits: list[Ref] = []
     for index, (seed, y) in enumerate(((42, 100), (43, 680), (44, 1260)), start=1):
         sampler = _ksampler(
             g, f"Portrait {index} sampling", model, positive, negative, latent, seed,
-            (7040, y), "04 Create three portraits",
+            (6520, y), "04 Create three portraits",
         )
-        portraits.append(_decode_style(g, model, sampler, (7680, y), "04 Create three portraits"))
+        portraits.append(_decode_style(g, model, sampler, (7120, y), "04 Create three portraits"))
 
-    first_pair = _image_batch(g, "Join portraits 1 and 2", portraits[0], portraits[1], (8060, 100), "04 Create three portraits")
-    all_portraits = _image_batch(g, "Add portrait 3", first_pair, portraits[2], (8060, 260), "04 Create three portraits")
-    background = _load_image(g, "Choose a replacement background", "hoi4_leader_portrait_background.png", (8060, 440), (600, 560), "04 Create three portraits")
-    replace = _background_replace(g, "Use replacement background", (8060, 1080), "04 Create three portraits")
+    first_pair = _image_batch(g, "Join portraits 1 and 2", portraits[0], portraits[1], (7460, 100), "04 Create three portraits")
+    all_portraits = _image_batch(g, "Add portrait 3", first_pair, portraits[2], (7460, 260), "04 Create three portraits")
+    background = _load_image(g, "Choose a replacement background", "hoi4_leader_portrait_background.png", (7460, 440), (600, 560), "04 Create three portraits")
+    replace = _background_replace(g, "Use replacement background", (7460, 1080), "04 Create three portraits")
     g.connect(all_portraits, 0, replace, "image")
     g.connect(model["background_model"], 0, replace, "bg_removal_model")
     g.connect(background, 0, replace, "background")
@@ -760,9 +767,9 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
     finals: list[Ref] = []
     masters: list[Ref] = []
     for index, y in enumerate((760, 1020, 1280), start=1):
-        portrait = _image_from_batch(g, f"Take portrait {index}", replace, index - 1, (8740, 100 + (index - 1) * 220), "04 Create three portraits")
-        master = _image_scale(g, f"Portrait {index} master — 1024×1365", 1024, 1365, (8740, y), "04 Create three portraits")
-        game = _image_scale(g, f"Portrait {index} game — 156×210", 156, 210, (9220, y), "04 Create three portraits")
+        portrait = _image_from_batch(g, f"Take portrait {index}", replace, index - 1, (8100, 100 + (index - 1) * 220), "04 Create three portraits")
+        master = _image_scale(g, f"Portrait {index} master — 1024×1365", 1024, 1365, (8100, y), "04 Create three portraits")
+        game = _image_scale(g, f"Portrait {index} game — 156×210", 156, 210, (8540, y), "04 Create three portraits")
         g.connect(portrait, 0, master, "image")
         g.connect(master, 0, game, "image")
         masters.append(master)
@@ -770,9 +777,9 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
 
     for index, (master, game) in enumerate(zip(masters, finals), start=1):
         oy = 100 + (index - 1) * 480
-        save_master = _save_image(g, f"Save portrait {index} master PNG", f"1024x1365/portrait_{index}", (9780, oy), "05 Save portraits")
-        save_game = _save_image(g, f"Save portrait {index} game PNG", f"156x210/portrait_{index}", (10280, oy), "05 Save portraits")
-        save_dds = _save_dds(g, f"Save portrait {index} DDS", f"156x210/dds/portrait_{index}", (10280, oy + 200), "05 Save portraits")
+        save_master = _save_image(g, f"Save portrait {index} master PNG", f"1024x1365/portrait_{index}", (9100, oy), "05 Save portraits")
+        save_game = _save_image(g, f"Save portrait {index} game PNG", f"156x210/portrait_{index}", (9560, oy), "05 Save portraits")
+        save_dds = _save_dds(g, f"Save portrait {index} DDS", f"156x210/dds/portrait_{index}", (9560, oy + 200), "05 Save portraits")
         g.connect(master, 0, save_master, "images")
         g.connect(game, 0, save_game, "images")
         g.connect(game, 0, save_dds, "images")
@@ -798,24 +805,24 @@ def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
     _setup_guide(g, (80, 100), "00 Setup")
     model = _model_pipeline(g, "01 Models", x=860, style=True, adonis=False, background=True)
     positive, negative, latent = _style_inputs(
-        g, model, "02 Create portrait", x=2020, y=100, prompt=TEXT_PROMPT, reference=None,
+        g, model, "02 Create portrait", x=1880, y=100, prompt=TEXT_PROMPT, reference=None,
     )
-    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, latent, 42, (3400, 100), "02 Create portrait")
-    portrait = _decode_style(g, model, sampler, (4040, 100), "02 Create portrait")
+    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, latent, 42, (2840, 100), "02 Create portrait")
+    portrait = _decode_style(g, model, sampler, (3440, 100), "02 Create portrait")
 
-    replace = _background_replace(g, "Use replacement background", (4500, 100), "03 Finish and save")
-    master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (4500, 440), "03 Finish and save")
-    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (4500, 700), "03 Finish and save")
-    background = _load_image(g, "Choose a replacement background", "hoi4_leader_portrait_background.png", (5080, 100), (600, 560), "03 Finish and save")
+    replace = _background_replace(g, "Use replacement background", (3900, 100), "03 Finish and save")
+    master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (3900, 440), "03 Finish and save")
+    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (3900, 700), "03 Finish and save")
+    background = _load_image(g, "Choose a replacement background", "hoi4_leader_portrait_background.png", (4440, 100), (600, 560), "03 Finish and save")
     g.connect(portrait, 0, replace, "image")
     g.connect(model["background_model"], 0, replace, "bg_removal_model")
     g.connect(background, 0, replace, "background")
     g.connect(replace, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save master PNG", "1024x1365/text_to_image", (4500, 960), "03 Finish and save")
-    save_game = _save_image(g, "Save game PNG", "156x210/text_to_image", (4500, 1200), "03 Finish and save")
-    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/text_to_image", (4500, 1440), "03 Finish and save")
-    preview = _preview(g, "Game portrait", (5080, 740), "03 Finish and save")
+    save_master = _save_image(g, "Save master PNG", "1024x1365/text_to_image", (3900, 960), "03 Finish and save")
+    save_game = _save_image(g, "Save game PNG", "156x210/text_to_image", (3900, 1200), "03 Finish and save")
+    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/text_to_image", (3900, 1440), "03 Finish and save")
+    preview = _preview(g, "Game portrait", (4440, 740), "03 Finish and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
@@ -833,20 +840,20 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     _setup_guide(g, (80, 100), "00 Setup")
     source = _load_image(g, "Choose a source portrait", "source_portrait.jpg", (860, 100), (680, 620), "01 Prepare portrait")
     esrgan = _source_pipeline(g, source, "01 Prepare portrait", x=1620)
-    model = _model_pipeline(g, "02 Models", x=860, y=1280, style=False, adonis=True, background=False)
+    model = _model_pipeline(g, "02 Models", x=860, y=1200, style=False, adonis=True, background=False)
     restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800)
-    master = _image_scale(g, "Restored master — 1024×1365", 1024, 1365, (5640, 100), "04 Finish and save")
-    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (6120, 100), "04 Finish and save")
+    master = _image_scale(g, "Restored master — 1024×1365", 1024, 1365, (5200, 100), "04 Finish and save")
+    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (5640, 100), "04 Finish and save")
     g.connect(restored, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save restored master PNG", "1024x1365/processing_only", (6600, 100), "04 Finish and save")
-    save_game = _save_image(g, "Save game PNG", "156x210/processing_only", (6600, 340), "04 Finish and save")
-    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/processing_only", (6600, 580), "04 Finish and save")
+    save_master = _save_image(g, "Save restored master PNG", "1024x1365/processing_only", (6080, 100), "04 Finish and save")
+    save_game = _save_image(g, "Save game PNG", "156x210/processing_only", (6080, 340), "04 Finish and save")
+    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/processing_only", (6080, 580), "04 Finish and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
     for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Game portrait", game))):
-        preview = _preview(g, title, (5640 + index * 640, 880), "04 Finish and save")
+        preview = _preview(g, title, (5200 + index * 640, 880), "04 Finish and save")
         g.connect(ref, 0, preview, "images")
     return g.serialize(style_lora=None)
 
@@ -860,26 +867,26 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     g.group("04 Create and save", "#654572", "sample")
     _setup_guide(g, (80, 100), "00 Setup")
     batch = _batch_input(g, (860, 100), "01 Prepare portraits")
-    esrgan = _source_pipeline(g, batch, "01 Prepare portraits", x=1640)
-    model = _model_pipeline(g, "02 Models", x=860, y=1280, style=True, adonis=True, background=False)
-    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2820)
+    esrgan = _source_pipeline(g, batch, "01 Prepare portraits", x=1620)
+    model = _model_pipeline(g, "02 Models", x=860, y=1200, style=True, adonis=True, background=False)
+    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800)
     positive, negative, latent = _style_inputs(
-        g, model, "04 Create and save", x=5660, y=100, prompt=STYLE_PROMPT, reference=restored,
+        g, model, "04 Create and save", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
     )
-    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, latent, 42, (7040, 100), "04 Create and save")
-    portrait = _decode_style(g, model, sampler, (7680, 100), "04 Create and save")
-    master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (8060, 100), "04 Create and save")
-    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (8540, 100), "04 Create and save")
+    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, latent, 42, (6520, 100), "04 Create and save")
+    portrait = _decode_style(g, model, sampler, (7120, 100), "04 Create and save")
+    master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (7460, 100), "04 Create and save")
+    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (7900, 100), "04 Create and save")
     g.connect(portrait, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save every master PNG", "1024x1365/batch", (8060, 360), "04 Create and save")
-    save_game = _save_image(g, "Save every game PNG", "156x210/batch", (8540, 360), "04 Create and save")
-    save_dds = _save_dds(g, "Save every game DDS", "156x210/dds/batch", (8540, 600), "04 Create and save")
+    save_master = _save_image(g, "Save every master PNG", "1024x1365/batch", (7460, 360), "04 Create and save")
+    save_game = _save_image(g, "Save every game PNG", "156x210/batch", (7920, 360), "04 Create and save")
+    save_dds = _save_dds(g, "Save every game DDS", "156x210/dds/batch", (7920, 600), "04 Create and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
     for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Game portrait", game))):
-        preview = _preview(g, title, (7040 + index * 640, 900), "04 Create and save")
+        preview = _preview(g, title, (6520 + index * 640, 900), "04 Create and save")
         g.connect(ref, 0, preview, "images")
     return g.serialize(style_lora=STYLE_LORA)
 

@@ -11,8 +11,8 @@ This repository documents one current, internally consistent package.
 - Default sampler: Euler, simple, four steps, CFG 1, guidance 1, denoise 1
 - Sampling UI: standard ComfyUI `KSampler`; the retired project sampler is not registered
 - Setup UI: one narrow dark-brown card with a folder tree and 16 clickable downloads
-- Restoration: current upstream Adonis Base → Post graph, with the Base
-  intermediate preview and both official prompt branches
+- Restoration: current upstream Adonis Base → Post graph, with both official
+  prompt branches and one red true/false control for the complete restoration
 - Shared LoRAs: HOI4 step 2500 plus Adonis Base, Refine, and Post
 
 ## Workflow contract
@@ -22,6 +22,8 @@ This repository documents one current, internally consistent package.
 - Text to image: one sampler and one final portrait
 - Processing only: RealESRGAN plus complete current Adonis Base → Post, no style LoRA
 - Batch: list input, one sampler, sequential per-source execution
+- Layout: compact 40 px node gutters, 80 px group gutters, aligned top-stage
+  heights, and tightly packed model/restoration/style sections
 - Output: 1024×1365 PNG, centered 156×210 PNG, 156×210 A8R8G8B8 DDS with no mipmaps
 
 ## Installation contract

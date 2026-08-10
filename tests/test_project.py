@@ -29,7 +29,7 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {75, 20, 42, 51})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {74, 20, 41, 50})
 
     def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
@@ -61,6 +61,7 @@ class WorkflowTests(unittest.TestCase):
         for required in ("UNETLoader", "ClipLoaderGGUF", "VAELoader", "ImageUpscaleWithModel"):
             self.assertEqual(sum(node["class_type"] == required for node in source.values()), 1, required)
         self.assertEqual(sum(node["class_type"] == "LoraLoaderModelOnly" for node in source.values()), 3)
+        self.assertEqual(sum(node["class_type"] == "ComfySwitchNode" for node in source.values()), 1)
         self.assertEqual(sum(node["class_type"] == "Hoi4BackgroundReplace" for node in source.values()), 1)
 
     def test_source_comparison_and_outputs_are_exact(self) -> None:
@@ -109,6 +110,11 @@ class WorkflowTests(unittest.TestCase):
         post_refs = [api[post["inputs"][name][0]] for name in ("positive", "negative")]
         self.assertTrue(all(node["class_type"] == "ReferenceLatent" for node in post_refs))
         self.assertTrue(all(node["inputs"]["latent"][0] == next(node_id for node_id, node in api.items() if node is base) for node in post_refs))
+        switch = next(node for node in api.values() if node["class_type"] == "ComfySwitchNode")
+        self.assertIs(switch["inputs"]["switch"], True)
+        self.assertEqual(api[switch["inputs"]["on_false"][0]]["class_type"], "ImageScale")
+        self.assertEqual(api[switch["inputs"]["on_true"][0]]["class_type"], "VAEDecode")
+        self.assertEqual(sum(node["class_type"] == "VAEDecode" for node in api.values()), 1)
 
     def test_batch_has_one_sampler_and_all_three_output_types(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.api.json").read_text())

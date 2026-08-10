@@ -68,12 +68,14 @@ create a read-only token. GGUF files are not gated.
 3. Select the source image; the upload card already shows it. Check the
    prepared portrait in the comparison row, then adjust **Face zoom** if
    needed or use the manual crop for a specific person.
-4. Keep the default prompt `make this portrait hoi4_portrait style`. Append a
+4. Leave the red **Use Adonis restoration** switch on for the full Base → Post
+   cleanup, or turn it off to use the prepared RealESRGAN portrait directly.
+5. Keep the default prompt `make this portrait hoi4_portrait style`. Append a
    short description only when the model needs help (see the Prompting guide).
-5. Leave background replacement off for the first run.
-6. Queue once. The source workflow creates three candidates from the same
+6. Leave background replacement off for the first run.
+7. Queue once. The source workflow creates three candidates from the same
    input and shows them side by side in the comparison row.
-7. Pick a final from the comparison row; the game-ready file is the
+8. Pick a final from the comparison row; the game-ready file is the
    `156x210/dds/` output.
 
 Outputs are saved under `ComfyUI/output/1024x1365/`, `ComfyUI/output/156x210/`,

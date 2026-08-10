@@ -1,8 +1,8 @@
 {
   "id": "hoi4_portrait_flux2_klein_9b_source",
   "revision": 0,
-  "last_node_id": 75,
-  "last_link_id": 106,
+  "last_node_id": 74,
+  "last_link_id": 105,
   "nodes": [
     {
       "id": 1,
@@ -14,7 +14,7 @@
       ],
       "size": [
         620,
-        1400
+        1440
       ],
       "color": "#6b4c36",
       "bgcolor": "#3f2f24",
@@ -131,7 +131,7 @@
       "title": "Find the face",
       "pos": [
         1620,
-        260
+        240
       ],
       "size": [
         500,
@@ -217,10 +217,10 @@
       "title": "Load BiRefNet mask model",
       "pos": [
         1620,
-        640
+        580
       ],
       "size": [
-        440,
+        400,
         100
       ],
       "color": "#446a4d",
@@ -261,7 +261,7 @@
       "title": "Generate subject silhouette for crop",
       "pos": [
         1620,
-        800
+        720
       ],
       "size": [
         360,
@@ -445,7 +445,7 @@
       "title": "Load RealESRGAN ×2",
       "pos": [
         2160,
-        600
+        560
       ],
       "size": [
         400,
@@ -489,7 +489,7 @@
       "title": "Run RealESRGAN ×2",
       "pos": [
         2160,
-        760
+        700
       ],
       "size": [
         360,
@@ -533,7 +533,7 @@
       "title": "Resize prepared portrait to 1024×1365",
       "pos": [
         2160,
-        920
+        840
       ],
       "size": [
         400,
@@ -589,7 +589,8 @@
           "type": "IMAGE",
           "links": [
             14,
-            102
+            47,
+            101
           ]
         }
       ],
@@ -610,10 +611,10 @@
       "title": "FLUX.2 Klein 9B",
       "pos": [
         860,
-        1280
+        1200
       ],
       "size": [
-        440,
+        400,
         130
       ],
       "color": "#385d7a",
@@ -665,11 +666,11 @@
       "title": "Load Qwen3 8B Q8 text encoder",
       "pos": [
         860,
-        1500
+        1380
       ],
       "size": [
-        440,
-        150
+        400,
+        160
       ],
       "color": "#385d7a",
       "bgcolor": "#29465c",
@@ -708,9 +709,9 @@
           "type": "CLIP",
           "links": [
             15,
-            35,
-            50,
-            51
+            32,
+            49,
+            50
           ]
         }
       ],
@@ -729,11 +730,11 @@
       "type": "VAELoader",
       "title": "Load FLUX.2 VAE",
       "pos": [
-        860,
-        1720
+        1320,
+        1380
       ],
       "size": [
-        440,
+        400,
         100
       ],
       "color": "#385d7a",
@@ -757,12 +758,11 @@
           "type": "VAE",
           "links": [
             18,
-            33,
-            49,
-            54,
-            64,
-            70,
-            76
+            46,
+            53,
+            63,
+            69,
+            75
           ]
         }
       ],
@@ -779,11 +779,11 @@
       "type": "LoraLoaderModelOnly",
       "title": "HOI4 portrait style LoRA",
       "pos": [
-        1360,
-        1280
+        1320,
+        1200
       ],
       "size": [
-        500,
+        400,
         140
       ],
       "color": "#385d7a",
@@ -819,9 +819,9 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            59,
-            65,
-            71
+            58,
+            64,
+            70
           ]
         }
       ],
@@ -839,11 +839,11 @@
       "type": "LoraLoaderModelOnly",
       "title": "Adonis Base LoRA",
       "pos": [
-        1360,
-        1500
+        1780,
+        1200
       ],
       "size": [
-        500,
+        400,
         140
       ],
       "color": "#385d7a",
@@ -897,11 +897,11 @@
       "type": "LoraLoaderModelOnly",
       "title": "Adonis Post LoRA",
       "pos": [
-        1360,
-        1720
+        2240,
+        1200
       ],
       "size": [
-        500,
+        400,
         140
       ],
       "color": "#385d7a",
@@ -937,7 +937,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            41
+            38
           ]
         }
       ],
@@ -955,11 +955,11 @@
       "type": "LoadBackgroundRemovalModel",
       "title": "Load BiRefNet mask model",
       "pos": [
-        860,
-        1900
+        1780,
+        1380
       ],
       "size": [
-        440,
+        400,
         100
       ],
       "color": "#385d7a",
@@ -982,7 +982,7 @@
           "name": "bg_model",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            82
+            81
           ]
         }
       ],
@@ -1090,7 +1090,7 @@
       "title": "Adonis Base prompt",
       "pos": [
         2800,
-        420
+        380
       ],
       "size": [
         440,
@@ -1140,7 +1140,7 @@
       "title": "Zero negative conditioning",
       "pos": [
         2800,
-        760
+        680
       ],
       "size": [
         320,
@@ -1178,8 +1178,8 @@
       "type": "VAEEncode",
       "title": "Encode restored reference latent",
       "pos": [
-        3280,
-        100
+        2800,
+        800
       ],
       "size": [
         300,
@@ -1220,99 +1220,11 @@
     },
     {
       "id": 22,
-      "type": "ReferenceLatent",
-      "title": "Base positive reference",
-      "pos": [
-        3280,
-        280
-      ],
-      "size": [
-        320,
-        100
-      ],
-      "color": "#80613d",
-      "bgcolor": "#5d472e",
-      "flags": {},
-      "order": 21,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "link": 19
-        },
-        {
-          "name": "latent",
-          "type": "LATENT",
-          "link": 20
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            26
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "03 Restore details"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 23,
-      "type": "ReferenceLatent",
-      "title": "Base negative reference",
-      "pos": [
-        3280,
-        460
-      ],
-      "size": [
-        320,
-        100
-      ],
-      "color": "#80613d",
-      "bgcolor": "#5d472e",
-      "flags": {},
-      "order": 22,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "link": 21
-        },
-        {
-          "name": "latent",
-          "type": "LATENT",
-          "link": 22
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            27
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "03 Restore details"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 24,
       "type": "EmptyFlux2LatentImage",
       "title": "Restoration latent",
       "pos": [
-        3280,
-        640
+        2800,
+        940
       ],
       "size": [
         360,
@@ -1321,7 +1233,7 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 23,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
@@ -1355,7 +1267,7 @@
           "type": "LATENT",
           "links": [
             28,
-            44
+            41
           ]
         }
       ],
@@ -1370,12 +1282,100 @@
       ]
     },
     {
+      "id": 23,
+      "type": "ReferenceLatent",
+      "title": "Base positive reference",
+      "pos": [
+        3280,
+        100
+      ],
+      "size": [
+        320,
+        100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 19
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "hoi4_group": "03 Restore details"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "ReferenceLatent",
+      "title": "Base negative reference",
+      "pos": [
+        3280,
+        240
+      ],
+      "size": [
+        320,
+        100
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 21
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "hoi4_group": "03 Restore details"
+      },
+      "widgets_values": []
+    },
+    {
       "id": 25,
       "type": "SharkOptions_Beta",
       "title": "Restoration sampler settings",
       "pos": [
-        3680,
-        100
+        3280,
+        380
       ],
       "size": [
         400,
@@ -1426,7 +1426,7 @@
           "type": "OPTIONS",
           "links": [
             29,
-            45
+            42
           ]
         }
       ],
@@ -1446,8 +1446,8 @@
       "type": "PrimitiveInt",
       "title": "Shared Adonis seed",
       "pos": [
-        3680,
-        360
+        3280,
+        600
       ],
       "size": [
         300,
@@ -1474,7 +1474,7 @@
           "type": "INT",
           "links": [
             31,
-            47
+            44
           ]
         }
       ],
@@ -1491,8 +1491,8 @@
       "type": "PrimitiveInt",
       "title": "Steps per Adonis model",
       "pos": [
-        3680,
-        540
+        3280,
+        740
       ],
       "size": [
         300,
@@ -1519,7 +1519,7 @@
           "type": "INT",
           "links": [
             30,
-            46
+            43
           ]
         }
       ],
@@ -1536,7 +1536,7 @@
       "type": "ClownsharKSampler_Beta",
       "title": "Restore details — Adonis Base",
       "pos": [
-        4120,
+        3720,
         100
       ],
       "size": [
@@ -1668,9 +1668,8 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            32,
-            38,
-            40
+            35,
+            37
           ]
         },
         {
@@ -1707,7 +1706,7 @@
       "type": "CLIPTextEncode",
       "title": "Adonis Post prompt",
       "pos": [
-        4580,
+        4160,
         100
       ],
       "size": [
@@ -1723,7 +1722,7 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 35
+          "link": 32
         },
         {
           "name": "text",
@@ -1739,8 +1738,8 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            36,
-            37
+            33,
+            34
           ]
         }
       ],
@@ -1757,8 +1756,8 @@
       "type": "ConditioningZeroOut",
       "title": "Zero negative conditioning",
       "pos": [
-        4580,
-        440
+        4160,
+        400
       ],
       "size": [
         320,
@@ -1773,7 +1772,7 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 36
+          "link": 33
         }
       ],
       "outputs": [
@@ -1781,7 +1780,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            39
+            36
           ]
         }
       ],
@@ -1796,8 +1795,8 @@
       "type": "ReferenceLatent",
       "title": "Post positive reference",
       "pos": [
-        4580,
-        600
+        4160,
+        520
       ],
       "size": [
         320,
@@ -1812,12 +1811,12 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 37
+          "link": 34
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 38
+          "link": 35
         }
       ],
       "outputs": [
@@ -1825,7 +1824,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            42
+            39
           ]
         }
       ],
@@ -1840,8 +1839,8 @@
       "type": "ReferenceLatent",
       "title": "Post negative reference",
       "pos": [
-        4580,
-        780
+        4160,
+        660
       ],
       "size": [
         320,
@@ -1856,12 +1855,12 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 39
+          "link": 36
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 40
+          "link": 37
         }
       ],
       "outputs": [
@@ -1869,7 +1868,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            43
+            40
           ]
         }
       ],
@@ -1881,91 +1880,10 @@
     },
     {
       "id": 33,
-      "type": "VAEDecode",
-      "title": "Decode Adonis Base result",
-      "pos": [
-        4580,
-        960
-      ],
-      "size": [
-        260,
-        100
-      ],
-      "color": "#80613d",
-      "bgcolor": "#5d472e",
-      "flags": {},
-      "order": 32,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 32
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 33
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            34
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode",
-        "hoi4_group": "03 Restore details"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 34,
-      "type": "PreviewImage",
-      "title": "Adonis Base preview",
-      "pos": [
-        4580,
-        1120
-      ],
-      "size": [
-        440,
-        594
-      ],
-      "color": "#80613d",
-      "bgcolor": "#5d472e",
-      "flags": {},
-      "order": 33,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 34
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "03 Restore details"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 35,
       "type": "ClownsharKSampler_Beta",
       "title": "Finish details — Adonis Post",
       "pos": [
-        5060,
+        4640,
         100
       ],
       "size": [
@@ -1975,33 +1893,33 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 34,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 41
+          "link": 38
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 42
+          "link": 39
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 43
+          "link": 40
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 44
+          "link": 41
         },
         {
           "name": "options",
           "type": "OPTIONS",
-          "link": 45
+          "link": 42
         },
         {
           "name": "eta",
@@ -2030,7 +1948,7 @@
         {
           "name": "steps",
           "type": "INT",
-          "link": 46,
+          "link": 43,
           "widget": {
             "name": "steps"
           }
@@ -2062,7 +1980,7 @@
         {
           "name": "seed",
           "type": "INT",
-          "link": 47,
+          "link": 44,
           "widget": {
             "name": "seed"
           }
@@ -2097,7 +2015,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            48
+            45
           ]
         },
         {
@@ -2130,12 +2048,12 @@
       ]
     },
     {
-      "id": 36,
+      "id": 34,
       "type": "VAEDecode",
       "title": "Decode restored portrait",
       "pos": [
-        5060,
-        1280
+        4640,
+        1240
       ],
       "size": [
         260,
@@ -2144,18 +2062,18 @@
       "color": "#80613d",
       "bgcolor": "#5d472e",
       "flags": {},
-      "order": 35,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 48
+          "link": 45
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 49
+          "link": 46
         }
       ],
       "outputs": [
@@ -2163,8 +2081,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            53,
-            103
+            48
           ]
         }
       ],
@@ -2175,16 +2092,120 @@
       "widgets_values": []
     },
     {
-      "id": 37,
+      "id": 35,
+      "type": "ComfySwitchNode",
+      "title": "Use Adonis restoration",
+      "pos": [
+        4640,
+        1380
+      ],
+      "size": [
+        360,
+        160
+      ],
+      "color": "#b84949",
+      "bgcolor": "#702f2f",
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "switch"
+          }
+        },
+        {
+          "name": "on_false",
+          "type": "IMAGE",
+          "link": 47
+        },
+        {
+          "name": "on_true",
+          "type": "IMAGE",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            52,
+            102
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ComfySwitchNode",
+        "hoi4_group": "03 Restore details"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 36,
       "type": "CLIPTextEncode",
       "title": "Portrait prompt",
       "pos": [
-        5640,
+        5200,
         100
       ],
       "size": [
         520,
         300
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 49
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            51
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "make this portrait hoi4_portrait style"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "CLIPTextEncode",
+      "title": "Negative prompt",
+      "pos": [
+        5200,
+        480
+      ],
+      "size": [
+        520,
+        180
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
@@ -2211,56 +2232,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            52
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        "make this portrait hoi4_portrait style"
-      ]
-    },
-    {
-      "id": 38,
-      "type": "CLIPTextEncode",
-      "title": "Negative prompt",
-      "pos": [
-        5640,
-        480
-      ],
-      "size": [
-        520,
-        180
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 37,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 51
-        },
-        {
-          "name": "text",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "text"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            57
+            56
           ]
         }
       ],
@@ -2273,11 +2245,11 @@
       ]
     },
     {
-      "id": 39,
+      "id": 38,
       "type": "FluxGuidance",
       "title": "Prompt guidance — 1",
       "pos": [
-        6240,
+        5760,
         100
       ],
       "size": [
@@ -2287,13 +2259,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 38,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 52
+          "link": 51
         },
         {
           "name": "guidance",
@@ -2309,7 +2281,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            55
+            54
           ]
         }
       ],
@@ -2322,11 +2294,11 @@
       ]
     },
     {
-      "id": 40,
+      "id": 39,
       "type": "VAEEncode",
       "title": "Encode portrait reference",
       "pos": [
-        6240,
+        5760,
         280
       ],
       "size": [
@@ -2336,18 +2308,18 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 39,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 53
+          "link": 52
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 54
+          "link": 53
         }
       ],
       "outputs": [
@@ -2355,11 +2327,11 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            56,
-            58,
-            62,
-            68,
-            74
+            55,
+            57,
+            61,
+            67,
+            73
           ]
         }
       ],
@@ -2370,12 +2342,58 @@
       "widgets_values": []
     },
     {
-      "id": 41,
+      "id": 40,
       "type": "ReferenceLatent",
       "title": "Positive portrait reference",
       "pos": [
-        6640,
+        6160,
         100
+      ],
+      "size": [
+        320,
+        100
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 54
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            59,
+            65,
+            71
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 41,
+      "type": "ReferenceLatent",
+      "title": "Negative portrait reference",
+      "pos": [
+        6160,
+        280
       ],
       "size": [
         320,
@@ -2390,12 +2408,12 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 55
+          "link": 56
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 56
+          "link": 57
         }
       ],
       "outputs": [
@@ -2417,56 +2435,10 @@
     },
     {
       "id": 42,
-      "type": "ReferenceLatent",
-      "title": "Negative portrait reference",
-      "pos": [
-        6640,
-        280
-      ],
-      "size": [
-        320,
-        100
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 41,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "link": 57
-        },
-        {
-          "name": "latent",
-          "type": "LATENT",
-          "link": 58
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            61,
-            67,
-            73
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 43,
       "type": "KSampler",
       "title": "Portrait 1 sampling",
       "pos": [
-        7040,
+        6520,
         100
       ],
       "size": [
@@ -2476,13 +2448,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 42,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 59
+          "link": 58
         },
         {
           "name": "seed",
@@ -2527,17 +2499,17 @@
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 60
+          "link": 59
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 61
+          "link": 60
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 62
+          "link": 61
         },
         {
           "name": "denoise",
@@ -2553,7 +2525,7 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            63
+            62
           ]
         }
       ],
@@ -2571,11 +2543,11 @@
       ]
     },
     {
-      "id": 44,
+      "id": 43,
       "type": "VAEDecode",
       "title": "Decode portrait",
       "pos": [
-        7680,
+        7120,
         100
       ],
       "size": [
@@ -2585,18 +2557,171 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 43,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 63
+          "link": 62
         },
         {
           "name": "vae",
           "type": "VAE",
+          "link": 63
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            76
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 44,
+      "type": "KSampler",
+      "title": "Portrait 2 sampling",
+      "pos": [
+        6520,
+        680
+      ],
+      "size": [
+        560,
+        500
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
           "link": 64
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "seed"
+          }
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "steps"
+          }
+        },
+        {
+          "name": "cfg",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "cfg"
+          }
+        },
+        {
+          "name": "sampler_name",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "sampler_name"
+          }
+        },
+        {
+          "name": "scheduler",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "scheduler"
+          }
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 65
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 66
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 67
+        },
+        {
+          "name": "denoise",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "denoise"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            68
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        43,
+        4,
+        1.0,
+        "euler",
+        "simple",
+        1.0
+      ]
+    },
+    {
+      "id": 45,
+      "type": "VAEDecode",
+      "title": "Decode portrait",
+      "pos": [
+        7120,
+        680
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 68
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 69
         }
       ],
       "outputs": [
@@ -2615,164 +2740,11 @@
       "widgets_values": []
     },
     {
-      "id": 45,
-      "type": "KSampler",
-      "title": "Portrait 2 sampling",
-      "pos": [
-        7040,
-        680
-      ],
-      "size": [
-        560,
-        500
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 44,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 65
-        },
-        {
-          "name": "seed",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "seed"
-          }
-        },
-        {
-          "name": "steps",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "steps"
-          }
-        },
-        {
-          "name": "cfg",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "cfg"
-          }
-        },
-        {
-          "name": "sampler_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "sampler_name"
-          }
-        },
-        {
-          "name": "scheduler",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "scheduler"
-          }
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 66
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 67
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 68
-        },
-        {
-          "name": "denoise",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "denoise"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            69
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "KSampler",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        43,
-        4,
-        1.0,
-        "euler",
-        "simple",
-        1.0
-      ]
-    },
-    {
       "id": 46,
-      "type": "VAEDecode",
-      "title": "Decode portrait",
-      "pos": [
-        7680,
-        680
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 45,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 69
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 70
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            78
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 47,
       "type": "KSampler",
       "title": "Portrait 3 sampling",
       "pos": [
-        7040,
+        6520,
         1260
       ],
       "size": [
@@ -2782,13 +2754,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 46,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 71
+          "link": 70
         },
         {
           "name": "seed",
@@ -2833,17 +2805,17 @@
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 72
+          "link": 71
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 73
+          "link": 72
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 74
+          "link": 73
         },
         {
           "name": "denoise",
@@ -2859,7 +2831,7 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            75
+            74
           ]
         }
       ],
@@ -2877,11 +2849,11 @@
       ]
     },
     {
-      "id": 48,
+      "id": 47,
       "type": "VAEDecode",
       "title": "Decode portrait",
       "pos": [
-        7680,
+        7120,
         1260
       ],
       "size": [
@@ -2891,18 +2863,18 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 47,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 75
+          "link": 74
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 76
+          "link": 75
         }
       ],
       "outputs": [
@@ -2910,7 +2882,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            80
+            79
           ]
         }
       ],
@@ -2921,12 +2893,56 @@
       "widgets_values": []
     },
     {
-      "id": 49,
+      "id": 48,
       "type": "ImageBatch",
       "title": "Join portraits 1 and 2",
       "pos": [
-        8060,
+        7460,
         100
+      ],
+      "size": [
+        360,
+        100
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 76
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 77
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            78
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 49,
+      "type": "ImageBatch",
+      "title": "Add portrait 3",
+      "pos": [
+        7460,
+        260
       ],
       "size": [
         360,
@@ -2941,12 +2957,12 @@
         {
           "name": "image1",
           "type": "IMAGE",
-          "link": 77
+          "link": 78
         },
         {
           "name": "image2",
           "type": "IMAGE",
-          "link": 78
+          "link": 79
         }
       ],
       "outputs": [
@@ -2954,7 +2970,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            79
+            80
           ]
         }
       ],
@@ -2966,54 +2982,10 @@
     },
     {
       "id": 50,
-      "type": "ImageBatch",
-      "title": "Add portrait 3",
-      "pos": [
-        8060,
-        260
-      ],
-      "size": [
-        360,
-        100
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 49,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image1",
-          "type": "IMAGE",
-          "link": 79
-        },
-        {
-          "name": "image2",
-          "type": "IMAGE",
-          "link": 80
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            81
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageBatch",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 51,
       "type": "LoadImage",
       "title": "Choose a replacement background",
       "pos": [
-        8060,
+        7460,
         440
       ],
       "size": [
@@ -3023,7 +2995,7 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 50,
+      "order": 49,
       "mode": 0,
       "inputs": [
         {
@@ -3040,7 +3012,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            83
+            82
           ]
         },
         {
@@ -3059,11 +3031,11 @@
       ]
     },
     {
-      "id": 52,
+      "id": 51,
       "type": "Hoi4BackgroundReplace",
       "title": "Use replacement background",
       "pos": [
-        8060,
+        7460,
         1080
       ],
       "size": [
@@ -3073,18 +3045,18 @@
       "color": "#b84949",
       "bgcolor": "#702f2f",
       "flags": {},
-      "order": 51,
+      "order": 50,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 81
+          "link": 80
         },
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 82
+          "link": 81
         },
         {
           "name": "use_background",
@@ -3097,7 +3069,7 @@
         {
           "name": "background",
           "type": "IMAGE",
-          "link": 83
+          "link": 82
         }
       ],
       "outputs": [
@@ -3105,9 +3077,9 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            84,
-            87,
-            90
+            83,
+            86,
+            89
           ]
         }
       ],
@@ -3120,11 +3092,11 @@
       ]
     },
     {
-      "id": 53,
+      "id": 52,
       "type": "ImageFromBatch",
       "title": "Take portrait 1",
       "pos": [
-        8740,
+        8100,
         100
       ],
       "size": [
@@ -3134,13 +3106,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 52,
+      "order": 51,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 84
+          "link": 83
         },
         {
           "name": "batch_index",
@@ -3164,7 +3136,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            85
+            84
           ]
         }
       ],
@@ -3178,11 +3150,88 @@
       ]
     },
     {
-      "id": 54,
+      "id": 53,
       "type": "ImageScale",
       "title": "Portrait 1 master — 1024×1365",
       "pos": [
-        8740,
+        8100,
+        760
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 52,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 84
+        },
+        {
+          "name": "upscale_method",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "upscale_method"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "crop",
+          "type": "COMBO",
+          "link": null,
+          "widget": {
+            "name": "crop"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            85,
+            92
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
+    },
+    {
+      "id": 54,
+      "type": "ImageScale",
+      "title": "Portrait 1 game — 156×210",
+      "pos": [
+        8540,
         760
       ],
       "size": [
@@ -3238,8 +3287,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            86,
-            93
+            93,
+            94,
+            103
           ]
         }
       ],
@@ -3249,22 +3299,22 @@
       },
       "widgets_values": [
         "lanczos",
-        1024,
-        1365,
+        156,
+        210,
         "center"
       ]
     },
     {
       "id": 55,
-      "type": "ImageScale",
-      "title": "Portrait 1 game — 156×210",
+      "type": "ImageFromBatch",
+      "title": "Take portrait 2",
       "pos": [
-        9220,
-        760
+        8100,
+        320
       ],
       "size": [
-        400,
-        180
+        360,
+        140
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
@@ -3276,6 +3326,64 @@
           "name": "image",
           "type": "IMAGE",
           "link": 86
+        },
+        {
+          "name": "batch_index",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "batch_index"
+          }
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "length"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            87
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageFromBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": 56,
+      "type": "ImageScale",
+      "title": "Portrait 2 master — 1024×1365",
+      "pos": [
+        8100,
+        1020
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 55,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 87
         },
         {
           "name": "upscale_method",
@@ -3315,9 +3423,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            94,
-            95,
-            104
+            88,
+            95
           ]
         }
       ],
@@ -3327,75 +3434,17 @@
       },
       "widgets_values": [
         "lanczos",
-        156,
-        210,
+        1024,
+        1365,
         "center"
-      ]
-    },
-    {
-      "id": 56,
-      "type": "ImageFromBatch",
-      "title": "Take portrait 2",
-      "pos": [
-        8740,
-        320
-      ],
-      "size": [
-        360,
-        140
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 55,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 87
-        },
-        {
-          "name": "batch_index",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "batch_index"
-          }
-        },
-        {
-          "name": "length",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "length"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            88
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageFromBatch",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        1,
-        1
       ]
     },
     {
       "id": 57,
       "type": "ImageScale",
-      "title": "Portrait 2 master — 1024×1365",
+      "title": "Portrait 2 game — 156×210",
       "pos": [
-        8740,
+        8540,
         1020
       ],
       "size": [
@@ -3451,8 +3500,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            89,
-            96
+            96,
+            97,
+            104
           ]
         }
       ],
@@ -3462,22 +3512,22 @@
       },
       "widgets_values": [
         "lanczos",
-        1024,
-        1365,
+        156,
+        210,
         "center"
       ]
     },
     {
       "id": 58,
-      "type": "ImageScale",
-      "title": "Portrait 2 game — 156×210",
+      "type": "ImageFromBatch",
+      "title": "Take portrait 3",
       "pos": [
-        9220,
-        1020
+        8100,
+        540
       ],
       "size": [
-        400,
-        180
+        360,
+        140
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
@@ -3489,6 +3539,64 @@
           "name": "image",
           "type": "IMAGE",
           "link": 89
+        },
+        {
+          "name": "batch_index",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "batch_index"
+          }
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "length"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            90
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageFromBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": 59,
+      "type": "ImageScale",
+      "title": "Portrait 3 master — 1024×1365",
+      "pos": [
+        8100,
+        1280
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 58,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 90
         },
         {
           "name": "upscale_method",
@@ -3528,9 +3636,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            97,
-            98,
-            105
+            91,
+            98
           ]
         }
       ],
@@ -3540,75 +3647,17 @@
       },
       "widgets_values": [
         "lanczos",
-        156,
-        210,
+        1024,
+        1365,
         "center"
-      ]
-    },
-    {
-      "id": 59,
-      "type": "ImageFromBatch",
-      "title": "Take portrait 3",
-      "pos": [
-        8740,
-        540
-      ],
-      "size": [
-        360,
-        140
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 58,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 90
-        },
-        {
-          "name": "batch_index",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "batch_index"
-          }
-        },
-        {
-          "name": "length",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "length"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            91
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageFromBatch",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        2,
-        1
       ]
     },
     {
       "id": 60,
       "type": "ImageScale",
-      "title": "Portrait 3 master — 1024×1365",
+      "title": "Portrait 3 game — 156×210",
       "pos": [
-        8740,
+        8540,
         1280
       ],
       "size": [
@@ -3664,86 +3713,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            92,
-            99
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        "lanczos",
-        1024,
-        1365,
-        "center"
-      ]
-    },
-    {
-      "id": 61,
-      "type": "ImageScale",
-      "title": "Portrait 3 game — 156×210",
-      "pos": [
-        9220,
-        1280
-      ],
-      "size": [
-        400,
-        180
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 60,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 92
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
+            99,
             100,
-            101,
-            106
+            105
           ]
         }
       ],
@@ -3759,11 +3731,58 @@
       ]
     },
     {
-      "id": 62,
+      "id": 61,
       "type": "SaveImage",
       "title": "Save portrait 1 master PNG",
       "pos": [
-        9780,
+        9100,
+        100
+      ],
+      "size": [
+        420,
+        150
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 60,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 92
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "1024x1365/portrait_1"
+      ]
+    },
+    {
+      "id": 62,
+      "type": "SaveImage",
+      "title": "Save portrait 1 game PNG",
+      "pos": [
+        9560,
         100
       ],
       "size": [
@@ -3802,20 +3821,20 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "1024x1365/portrait_1"
+        "156x210/portrait_1"
       ]
     },
     {
       "id": 63,
-      "type": "SaveImage",
-      "title": "Save portrait 1 game PNG",
+      "type": "Hoi4SaveDDS",
+      "title": "Save portrait 1 DDS",
       "pos": [
-        10280,
-        100
+        9560,
+        300
       ],
       "size": [
         420,
-        150
+        190
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -3827,53 +3846,6 @@
           "name": "images",
           "type": "IMAGE",
           "link": 94
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Save portraits"
-      },
-      "widgets_values": [
-        "156x210/portrait_1"
-      ]
-    },
-    {
-      "id": 64,
-      "type": "Hoi4SaveDDS",
-      "title": "Save portrait 1 DDS",
-      "pos": [
-        10280,
-        300
-      ],
-      "size": [
-        420,
-        190
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 63,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 95
         },
         {
           "name": "filename_prefix",
@@ -3909,11 +3881,58 @@
       ]
     },
     {
-      "id": 65,
+      "id": 64,
       "type": "SaveImage",
       "title": "Save portrait 2 master PNG",
       "pos": [
-        9780,
+        9100,
+        580
+      ],
+      "size": [
+        420,
+        150
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 63,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 95
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "1024x1365/portrait_2"
+      ]
+    },
+    {
+      "id": 65,
+      "type": "SaveImage",
+      "title": "Save portrait 2 game PNG",
+      "pos": [
+        9560,
         580
       ],
       "size": [
@@ -3952,20 +3971,20 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "1024x1365/portrait_2"
+        "156x210/portrait_2"
       ]
     },
     {
       "id": 66,
-      "type": "SaveImage",
-      "title": "Save portrait 2 game PNG",
+      "type": "Hoi4SaveDDS",
+      "title": "Save portrait 2 DDS",
       "pos": [
-        10280,
-        580
+        9560,
+        780
       ],
       "size": [
         420,
-        150
+        190
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -3977,53 +3996,6 @@
           "name": "images",
           "type": "IMAGE",
           "link": 97
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Save portraits"
-      },
-      "widgets_values": [
-        "156x210/portrait_2"
-      ]
-    },
-    {
-      "id": 67,
-      "type": "Hoi4SaveDDS",
-      "title": "Save portrait 2 DDS",
-      "pos": [
-        10280,
-        780
-      ],
-      "size": [
-        420,
-        190
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 66,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 98
         },
         {
           "name": "filename_prefix",
@@ -4059,11 +4031,58 @@
       ]
     },
     {
-      "id": 68,
+      "id": 67,
       "type": "SaveImage",
       "title": "Save portrait 3 master PNG",
       "pos": [
-        9780,
+        9100,
+        1060
+      ],
+      "size": [
+        420,
+        150
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 66,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 98
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "1024x1365/portrait_3"
+      ]
+    },
+    {
+      "id": 68,
+      "type": "SaveImage",
+      "title": "Save portrait 3 game PNG",
+      "pos": [
+        9560,
         1060
       ],
       "size": [
@@ -4102,20 +4121,20 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "1024x1365/portrait_3"
+        "156x210/portrait_3"
       ]
     },
     {
       "id": 69,
-      "type": "SaveImage",
-      "title": "Save portrait 3 game PNG",
+      "type": "Hoi4SaveDDS",
+      "title": "Save portrait 3 DDS",
       "pos": [
-        10280,
-        1060
+        9560,
+        1260
       ],
       "size": [
         420,
-        150
+        190
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -4127,53 +4146,6 @@
           "name": "images",
           "type": "IMAGE",
           "link": 100
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "hoi4_group": "05 Save portraits"
-      },
-      "widgets_values": [
-        "156x210/portrait_3"
-      ]
-    },
-    {
-      "id": 70,
-      "type": "Hoi4SaveDDS",
-      "title": "Save portrait 3 DDS",
-      "pos": [
-        10280,
-        1260
-      ],
-      "size": [
-        420,
-        190
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 69,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 101
         },
         {
           "name": "filename_prefix",
@@ -4209,11 +4181,48 @@
       ]
     },
     {
-      "id": 71,
+      "id": 70,
       "type": "PreviewImage",
       "title": "Prepared portrait",
       "pos": [
         2800,
+        1940
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 69,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 101
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "06 Compare portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 71,
+      "type": "PreviewImage",
+      "title": "Restored portrait",
+      "pos": [
+        3440,
         1940
       ],
       "size": [
@@ -4248,9 +4257,9 @@
     {
       "id": 72,
       "type": "PreviewImage",
-      "title": "Restored portrait",
+      "title": "Portrait 1 — 156×210",
       "pos": [
-        3440,
+        4080,
         1940
       ],
       "size": [
@@ -4285,9 +4294,9 @@
     {
       "id": 73,
       "type": "PreviewImage",
-      "title": "Portrait 1 — 156×210",
+      "title": "Portrait 2 — 156×210",
       "pos": [
-        4080,
+        4720,
         1940
       ],
       "size": [
@@ -4322,9 +4331,9 @@
     {
       "id": 74,
       "type": "PreviewImage",
-      "title": "Portrait 2 — 156×210",
+      "title": "Portrait 3 — 156×210",
       "pos": [
-        4720,
+        5360,
         1940
       ],
       "size": [
@@ -4341,43 +4350,6 @@
           "name": "images",
           "type": "IMAGE",
           "link": 105
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Compare portraits"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 75,
-      "type": "PreviewImage",
-      "title": "Portrait 3 — 156×210",
-      "pos": [
-        5360,
-        1940
-      ],
-      "size": [
-        600,
-        810
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 74,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 106
         }
       ],
       "outputs": [
@@ -4543,7 +4515,7 @@
       19,
       19,
       0,
-      22,
+      23,
       0,
       "CONDITIONING"
     ],
@@ -4551,7 +4523,7 @@
       20,
       21,
       0,
-      22,
+      23,
       1,
       "LATENT"
     ],
@@ -4559,7 +4531,7 @@
       21,
       20,
       0,
-      23,
+      24,
       0,
       "CONDITIONING"
     ],
@@ -4567,7 +4539,7 @@
       22,
       21,
       0,
-      23,
+      24,
       1,
       "LATENT"
     ],
@@ -4575,7 +4547,7 @@
       23,
       18,
       1,
-      24,
+      22,
       0,
       "INT"
     ],
@@ -4583,7 +4555,7 @@
       24,
       18,
       2,
-      24,
+      22,
       1,
       "INT"
     ],
@@ -4597,7 +4569,7 @@
     ],
     [
       26,
-      22,
+      23,
       0,
       28,
       1,
@@ -4605,7 +4577,7 @@
     ],
     [
       27,
-      23,
+      24,
       0,
       28,
       2,
@@ -4613,7 +4585,7 @@
     ],
     [
       28,
-      24,
+      22,
       0,
       28,
       3,
@@ -4645,30 +4617,6 @@
     ],
     [
       32,
-      28,
-      0,
-      33,
-      0,
-      "LATENT"
-    ],
-    [
-      33,
-      13,
-      0,
-      33,
-      1,
-      "VAE"
-    ],
-    [
-      34,
-      33,
-      0,
-      34,
-      0,
-      "IMAGE"
-    ],
-    [
-      35,
       12,
       0,
       29,
@@ -4676,116 +4624,140 @@
       "CLIP"
     ],
     [
-      36,
+      33,
       29,
       0,
       30,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      34,
+      29,
+      0,
+      31,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      35,
+      28,
+      0,
+      31,
+      1,
+      "LATENT"
+    ],
+    [
+      36,
+      30,
+      0,
+      32,
       0,
       "CONDITIONING"
     ],
     [
       37,
-      29,
+      28,
       0,
-      31,
-      0,
-      "CONDITIONING"
+      32,
+      1,
+      "LATENT"
     ],
     [
       38,
-      28,
-      0,
-      31,
-      1,
-      "LATENT"
-    ],
-    [
-      39,
-      30,
-      0,
-      32,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      40,
-      28,
-      0,
-      32,
-      1,
-      "LATENT"
-    ],
-    [
-      41,
       16,
       0,
-      35,
+      33,
       0,
       "MODEL"
     ],
     [
-      42,
+      39,
       31,
       0,
-      35,
+      33,
       1,
       "CONDITIONING"
     ],
     [
-      43,
+      40,
       32,
       0,
-      35,
+      33,
       2,
       "CONDITIONING"
     ],
     [
-      44,
-      24,
+      41,
+      22,
       0,
-      35,
+      33,
       3,
       "LATENT"
     ],
     [
-      45,
+      42,
       25,
       0,
-      35,
+      33,
       4,
       "OPTIONS"
     ],
     [
-      46,
+      43,
       27,
       0,
-      35,
+      33,
       8,
       "INT"
     ],
     [
-      47,
+      44,
       26,
       0,
-      35,
+      33,
       12,
       "INT"
     ],
     [
-      48,
-      35,
+      45,
+      33,
       0,
-      36,
+      34,
       0,
       "LATENT"
     ],
     [
-      49,
+      46,
       13,
       0,
-      36,
+      34,
       1,
       "VAE"
+    ],
+    [
+      47,
+      10,
+      0,
+      35,
+      1,
+      "IMAGE"
+    ],
+    [
+      48,
+      34,
+      0,
+      35,
+      2,
+      "IMAGE"
+    ],
+    [
+      49,
+      12,
+      0,
+      36,
+      0,
+      "CLIP"
     ],
     [
       50,
@@ -4797,266 +4769,266 @@
     ],
     [
       51,
-      12,
+      36,
       0,
       38,
-      0,
-      "CLIP"
-    ],
-    [
-      52,
-      37,
-      0,
-      39,
       0,
       "CONDITIONING"
     ],
     [
-      53,
-      36,
+      52,
+      35,
       0,
-      40,
+      39,
       0,
       "IMAGE"
     ],
     [
-      54,
+      53,
       13,
       0,
-      40,
+      39,
       1,
       "VAE"
+    ],
+    [
+      54,
+      38,
+      0,
+      40,
+      0,
+      "CONDITIONING"
     ],
     [
       55,
       39,
       0,
-      41,
-      0,
-      "CONDITIONING"
+      40,
+      1,
+      "LATENT"
     ],
     [
       56,
-      40,
+      37,
+      0,
+      41,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      57,
+      39,
       0,
       41,
       1,
       "LATENT"
     ],
     [
-      57,
-      38,
-      0,
-      42,
-      0,
-      "CONDITIONING"
-    ],
-    [
       58,
-      40,
+      14,
       0,
       42,
-      1,
-      "LATENT"
+      0,
+      "MODEL"
     ],
     [
       59,
-      14,
+      40,
       0,
-      43,
-      0,
-      "MODEL"
+      42,
+      6,
+      "CONDITIONING"
     ],
     [
       60,
       41,
       0,
-      43,
-      6,
-      "CONDITIONING"
-    ],
-    [
-      61,
       42,
-      0,
-      43,
       7,
       "CONDITIONING"
     ],
     [
-      62,
-      40,
+      61,
+      39,
       0,
-      43,
+      42,
       8,
       "LATENT"
     ],
     [
-      63,
-      43,
+      62,
+      42,
       0,
-      44,
+      43,
       0,
       "LATENT"
     ],
     [
-      64,
+      63,
       13,
       0,
-      44,
+      43,
       1,
       "VAE"
     ],
     [
-      65,
+      64,
       14,
       0,
-      45,
+      44,
       0,
       "MODEL"
+    ],
+    [
+      65,
+      40,
+      0,
+      44,
+      6,
+      "CONDITIONING"
     ],
     [
       66,
       41,
       0,
-      45,
-      6,
-      "CONDITIONING"
-    ],
-    [
-      67,
-      42,
-      0,
-      45,
+      44,
       7,
       "CONDITIONING"
     ],
     [
-      68,
-      40,
+      67,
+      39,
       0,
-      45,
+      44,
       8,
       "LATENT"
     ],
     [
-      69,
-      45,
+      68,
+      44,
       0,
-      46,
+      45,
       0,
       "LATENT"
     ],
     [
-      70,
+      69,
       13,
       0,
-      46,
+      45,
       1,
       "VAE"
     ],
     [
-      71,
+      70,
       14,
       0,
-      47,
+      46,
       0,
       "MODEL"
+    ],
+    [
+      71,
+      40,
+      0,
+      46,
+      6,
+      "CONDITIONING"
     ],
     [
       72,
       41,
       0,
-      47,
-      6,
-      "CONDITIONING"
-    ],
-    [
-      73,
-      42,
-      0,
-      47,
+      46,
       7,
       "CONDITIONING"
     ],
     [
-      74,
-      40,
+      73,
+      39,
       0,
-      47,
+      46,
       8,
       "LATENT"
     ],
     [
-      75,
-      47,
+      74,
+      46,
       0,
-      48,
+      47,
       0,
       "LATENT"
     ],
     [
-      76,
+      75,
       13,
       0,
-      48,
+      47,
       1,
       "VAE"
     ],
     [
+      76,
+      43,
+      0,
+      48,
+      0,
+      "IMAGE"
+    ],
+    [
       77,
-      44,
+      45,
       0,
-      49,
-      0,
+      48,
+      1,
       "IMAGE"
     ],
     [
       78,
-      46,
+      48,
       0,
       49,
-      1,
+      0,
       "IMAGE"
     ],
     [
       79,
+      47,
+      0,
       49,
-      0,
-      50,
-      0,
+      1,
       "IMAGE"
     ],
     [
       80,
-      48,
+      49,
       0,
-      50,
-      1,
+      51,
+      0,
       "IMAGE"
     ],
     [
       81,
-      50,
+      17,
       0,
-      52,
-      0,
-      "IMAGE"
+      51,
+      1,
+      "BACKGROUND_REMOVAL"
     ],
     [
       82,
-      17,
+      50,
       0,
-      52,
-      1,
-      "BACKGROUND_REMOVAL"
+      51,
+      3,
+      "IMAGE"
     ],
     [
       83,
       51,
       0,
       52,
-      3,
+      0,
       "IMAGE"
     ],
     [
@@ -5077,7 +5049,7 @@
     ],
     [
       86,
-      54,
+      51,
       0,
       55,
       0,
@@ -5085,7 +5057,7 @@
     ],
     [
       87,
-      52,
+      55,
       0,
       56,
       0,
@@ -5101,7 +5073,7 @@
     ],
     [
       89,
-      57,
+      51,
       0,
       58,
       0,
@@ -5109,7 +5081,7 @@
     ],
     [
       90,
-      52,
+      58,
       0,
       59,
       0,
@@ -5125,7 +5097,7 @@
     ],
     [
       92,
-      60,
+      53,
       0,
       61,
       0,
@@ -5141,7 +5113,7 @@
     ],
     [
       94,
-      55,
+      54,
       0,
       63,
       0,
@@ -5149,7 +5121,7 @@
     ],
     [
       95,
-      55,
+      56,
       0,
       64,
       0,
@@ -5165,7 +5137,7 @@
     ],
     [
       97,
-      58,
+      57,
       0,
       66,
       0,
@@ -5173,7 +5145,7 @@
     ],
     [
       98,
-      58,
+      59,
       0,
       67,
       0,
@@ -5189,7 +5161,7 @@
     ],
     [
       100,
-      61,
+      60,
       0,
       69,
       0,
@@ -5197,7 +5169,7 @@
     ],
     [
       101,
-      61,
+      10,
       0,
       70,
       0,
@@ -5205,7 +5177,7 @@
     ],
     [
       102,
-      10,
+      35,
       0,
       71,
       0,
@@ -5213,7 +5185,7 @@
     ],
     [
       103,
-      36,
+      54,
       0,
       72,
       0,
@@ -5221,7 +5193,7 @@
     ],
     [
       104,
-      55,
+      57,
       0,
       73,
       0,
@@ -5229,17 +5201,9 @@
     ],
     [
       105,
-      58,
+      60,
       0,
       74,
-      0,
-      "IMAGE"
-    ],
-    [
-      106,
-      61,
-      0,
-      75,
       0,
       "IMAGE"
     ]
@@ -5252,7 +5216,7 @@
         40,
         40,
         700,
-        1500
+        1540
       ],
       "color": "#4b3327",
       "font_size": 28,
@@ -5270,7 +5234,7 @@
         820,
         40,
         1860,
-        1100
+        1020
       ],
       "color": "#365b41",
       "font_size": 28,
@@ -5286,9 +5250,9 @@
       "title": "02 Models",
       "bounding": [
         820,
-        1220,
-        1080,
-        820
+        1140,
+        1860,
+        440
       ],
       "color": "#365b73",
       "font_size": 28,
@@ -5305,8 +5269,8 @@
       "bounding": [
         2760,
         40,
-        2740,
-        1714
+        2320,
+        1540
       ],
       "color": "#765b35",
       "font_size": 28,
@@ -5321,9 +5285,9 @@
       "id": 5,
       "title": "04 Create three portraits",
       "bounding": [
-        5600,
+        5160,
         40,
-        4060,
+        3820,
         1760
       ],
       "color": "#654572",
@@ -5339,9 +5303,9 @@
       "id": 6,
       "title": "05 Save portraits",
       "bounding": [
-        9740,
+        9060,
         40,
-        1000,
+        960,
         1450
       ],
       "color": "#3d596f",

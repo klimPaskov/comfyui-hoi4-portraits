@@ -52,7 +52,8 @@ For source portraits, RealESRGAN follows the centered face-aware crop. The
 restoration group executes the complete current upstream Adonis 1.7 MP
 Base → Post topology before style sampling. The Base latent becomes Post
 reference conditioning and both generations share the seed, nine-step control,
-empty latent, and Shark options. Final output is a centered
+empty latent, and Shark options. One red switch enables or bypasses the whole
+restoration result and defaults to enabled. Final output is a centered
 1024×1365 master and a non-stretched 156×210 game crop.
 
 ## Source prompt

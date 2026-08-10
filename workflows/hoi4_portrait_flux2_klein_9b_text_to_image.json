@@ -14,7 +14,7 @@
       ],
       "size": [
         620,
-        1400
+        1440
       ],
       "color": "#6b4c36",
       "bgcolor": "#3f2f24",
@@ -38,7 +38,7 @@
         100
       ],
       "size": [
-        440,
+        400,
         130
       ],
       "color": "#385d7a",
@@ -91,8 +91,8 @@
         320
       ],
       "size": [
-        440,
-        150
+        400,
+        160
       ],
       "color": "#385d7a",
       "bgcolor": "#29465c",
@@ -154,7 +154,7 @@
         540
       ],
       "size": [
-        440,
+        400,
         100
       ],
       "color": "#385d7a",
@@ -194,11 +194,11 @@
       "type": "LoraLoaderModelOnly",
       "title": "HOI4 portrait style LoRA",
       "pos": [
-        1360,
+        1320,
         100
       ],
       "size": [
-        500,
+        400,
         140
       ],
       "color": "#385d7a",
@@ -256,7 +256,7 @@
         720
       ],
       "size": [
-        440,
+        400,
         100
       ],
       "color": "#385d7a",
@@ -296,7 +296,7 @@
       "type": "CLIPTextEncode",
       "title": "Portrait prompt",
       "pos": [
-        2020,
+        1880,
         100
       ],
       "size": [
@@ -345,7 +345,7 @@
       "type": "CLIPTextEncode",
       "title": "Negative prompt",
       "pos": [
-        2020,
+        1880,
         480
       ],
       "size": [
@@ -394,7 +394,7 @@
       "type": "FluxGuidance",
       "title": "Prompt guidance — 1",
       "pos": [
-        2620,
+        2440,
         100
       ],
       "size": [
@@ -443,7 +443,7 @@
       "type": "EmptyFlux2LatentImage",
       "title": "Empty 1024×1365 portrait latent",
       "pos": [
-        2620,
+        2440,
         280
       ],
       "size": [
@@ -505,7 +505,7 @@
       "type": "KSampler",
       "title": "Portrait sampling",
       "pos": [
-        3400,
+        2840,
         100
       ],
       "size": [
@@ -614,7 +614,7 @@
       "type": "VAEDecode",
       "title": "Decode portrait",
       "pos": [
-        4040,
+        3440,
         100
       ],
       "size": [
@@ -658,7 +658,7 @@
       "type": "Hoi4BackgroundReplace",
       "title": "Use replacement background",
       "pos": [
-        4500,
+        3900,
         100
       ],
       "size": [
@@ -717,7 +717,7 @@
       "type": "ImageScale",
       "title": "Master portrait — 1024×1365",
       "pos": [
-        4500,
+        3900,
         440
       ],
       "size": [
@@ -794,7 +794,7 @@
       "type": "ImageScale",
       "title": "Game portrait — 156×210",
       "pos": [
-        4500,
+        3900,
         700
       ],
       "size": [
@@ -872,7 +872,7 @@
       "type": "LoadImage",
       "title": "Choose a replacement background",
       "pos": [
-        5080,
+        4440,
         100
       ],
       "size": [
@@ -922,7 +922,7 @@
       "type": "SaveImage",
       "title": "Save master PNG",
       "pos": [
-        4500,
+        3900,
         960
       ],
       "size": [
@@ -969,7 +969,7 @@
       "type": "SaveImage",
       "title": "Save game PNG",
       "pos": [
-        4500,
+        3900,
         1200
       ],
       "size": [
@@ -1016,7 +1016,7 @@
       "type": "Hoi4SaveDDS",
       "title": "Save game DDS",
       "pos": [
-        4500,
+        3900,
         1440
       ],
       "size": [
@@ -1072,7 +1072,7 @@
       "type": "PreviewImage",
       "title": "Game portrait",
       "pos": [
-        5080,
+        4440,
         740
       ],
       "size": [
@@ -1267,7 +1267,7 @@
         40,
         40,
         700,
-        1500
+        1540
       ],
       "color": "#4b3327",
       "font_size": 28,
@@ -1284,7 +1284,7 @@
       "bounding": [
         820,
         40,
-        1080,
+        940,
         820
       ],
       "color": "#365b73",
@@ -1300,9 +1300,9 @@
       "id": 3,
       "title": "02 Create portrait",
       "bounding": [
-        1980,
+        1840,
         40,
-        2400,
+        1940,
         660
       ],
       "color": "#654572",
@@ -1318,9 +1318,9 @@
       "id": 4,
       "title": "03 Finish and save",
       "bounding": [
-        4460,
+        3860,
         40,
-        1260,
+        1220,
         1630
       ],
       "color": "#3d596f",

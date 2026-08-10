@@ -134,8 +134,9 @@ The workflow is arranged from left to right in clear, colour-coded stages.
    reference conditioning, shared empty latent, seed, nine-step control, and
    Shark options. Adonis Base performs the first generation; its latent feeds
    both Post reference branches, and Adonis Post performs a second full
-   generation before the final VAE decode. The intermediate Base result is
-   visible inside the restoration group.
+   generation before the final VAE decode. One red **Use Adonis restoration**
+   switch defaults on; turn it off to send the prepared portrait directly to
+   the next stage.
 3. **Style:** three independent candidates use the exact 2500-step LoRA. Each
    candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`,
    four steps, Euler, simple scheduling, full denoise, and its own seed.

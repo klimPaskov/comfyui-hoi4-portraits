@@ -280,6 +280,23 @@
   },
   "22": {
     "inputs": {
+      "width": [
+        "18",
+        1
+      ],
+      "height": [
+        "18",
+        2
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyFlux2LatentImage",
+    "_meta": {
+      "title": "Restoration latent"
+    }
+  },
+  "23": {
+    "inputs": {
       "conditioning": [
         "19",
         0
@@ -294,7 +311,7 @@
       "title": "Base positive reference"
     }
   },
-  "23": {
+  "24": {
     "inputs": {
       "conditioning": [
         "20",
@@ -308,23 +325,6 @@
     "class_type": "ReferenceLatent",
     "_meta": {
       "title": "Base negative reference"
-    }
-  },
-  "24": {
-    "inputs": {
-      "width": [
-        "18",
-        1
-      ],
-      "height": [
-        "18",
-        2
-      ],
-      "batch_size": 1
-    },
-    "class_type": "EmptyFlux2LatentImage",
-    "_meta": {
-      "title": "Restoration latent"
     }
   },
   "25": {
@@ -380,15 +380,15 @@
         0
       ],
       "positive": [
-        "22",
-        0
-      ],
-      "negative": [
         "23",
         0
       ],
-      "latent_image": [
+      "negative": [
         "24",
+        0
+      ],
+      "latent_image": [
+        "22",
         0
       ],
       "options_group.options0": [
@@ -460,34 +460,6 @@
   },
   "33": {
     "inputs": {
-      "samples": [
-        "28",
-        0
-      ],
-      "vae": [
-        "13",
-        0
-      ]
-    },
-    "class_type": "VAEDecode",
-    "_meta": {
-      "title": "Decode Adonis Base result"
-    }
-  },
-  "34": {
-    "inputs": {
-      "images": [
-        "33",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Adonis Base preview"
-    }
-  },
-  "35": {
-    "inputs": {
       "eta": 0.5,
       "sampler_name": "exponential/res_2s",
       "scheduler": "simple",
@@ -517,7 +489,7 @@
         0
       ],
       "latent_image": [
-        "24",
+        "22",
         0
       ],
       "options_group.options0": [
@@ -530,10 +502,10 @@
       "title": "Finish details — Adonis Post"
     }
   },
-  "36": {
+  "34": {
     "inputs": {
       "samples": [
-        "35",
+        "33",
         0
       ],
       "vae": [
@@ -546,7 +518,24 @@
       "title": "Decode restored portrait"
     }
   },
-  "37": {
+  "35": {
+    "inputs": {
+      "switch": true,
+      "on_false": [
+        "10",
+        0
+      ],
+      "on_true": [
+        "34",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Use Adonis restoration"
+    }
+  },
+  "36": {
     "inputs": {
       "text": "make this portrait hoi4_portrait style",
       "clip": [
@@ -559,7 +548,7 @@
       "title": "Portrait prompt"
     }
   },
-  "38": {
+  "37": {
     "inputs": {
       "text": "",
       "clip": [
@@ -572,11 +561,11 @@
       "title": "Negative prompt"
     }
   },
-  "39": {
+  "38": {
     "inputs": {
       "guidance": 1.0,
       "conditioning": [
-        "37",
+        "36",
         0
       ]
     },
@@ -585,10 +574,10 @@
       "title": "Prompt guidance — 1"
     }
   },
-  "40": {
+  "39": {
     "inputs": {
       "pixels": [
-        "36",
+        "35",
         0
       ],
       "vae": [
@@ -601,14 +590,14 @@
       "title": "Encode portrait reference"
     }
   },
-  "41": {
+  "40": {
     "inputs": {
       "conditioning": [
-        "39",
+        "38",
         0
       ],
       "latent": [
-        "40",
+        "39",
         0
       ]
     },
@@ -617,14 +606,14 @@
       "title": "Positive portrait reference"
     }
   },
-  "42": {
+  "41": {
     "inputs": {
       "conditioning": [
-        "38",
+        "37",
         0
       ],
       "latent": [
-        "40",
+        "39",
         0
       ]
     },
@@ -633,7 +622,7 @@
       "title": "Negative portrait reference"
     }
   },
-  "43": {
+  "42": {
     "inputs": {
       "seed": 42,
       "steps": 4,
@@ -646,15 +635,15 @@
         0
       ],
       "positive": [
-        "41",
+        "40",
         0
       ],
       "negative": [
-        "42",
+        "41",
         0
       ],
       "latent_image": [
-        "40",
+        "39",
         0
       ]
     },
@@ -663,10 +652,10 @@
       "title": "Portrait 1 sampling"
     }
   },
-  "44": {
+  "43": {
     "inputs": {
       "samples": [
-        "43",
+        "42",
         0
       ],
       "vae": [
@@ -679,7 +668,7 @@
       "title": "Decode portrait"
     }
   },
-  "45": {
+  "44": {
     "inputs": {
       "seed": 43,
       "steps": 4,
@@ -692,15 +681,15 @@
         0
       ],
       "positive": [
-        "41",
+        "40",
         0
       ],
       "negative": [
-        "42",
+        "41",
         0
       ],
       "latent_image": [
-        "40",
+        "39",
         0
       ]
     },
@@ -709,10 +698,10 @@
       "title": "Portrait 2 sampling"
     }
   },
-  "46": {
+  "45": {
     "inputs": {
       "samples": [
-        "45",
+        "44",
         0
       ],
       "vae": [
@@ -725,7 +714,7 @@
       "title": "Decode portrait"
     }
   },
-  "47": {
+  "46": {
     "inputs": {
       "seed": 44,
       "steps": 4,
@@ -738,15 +727,15 @@
         0
       ],
       "positive": [
-        "41",
+        "40",
         0
       ],
       "negative": [
-        "42",
+        "41",
         0
       ],
       "latent_image": [
-        "40",
+        "39",
         0
       ]
     },
@@ -755,10 +744,10 @@
       "title": "Portrait 3 sampling"
     }
   },
-  "48": {
+  "47": {
     "inputs": {
       "samples": [
-        "47",
+        "46",
         0
       ],
       "vae": [
@@ -771,14 +760,14 @@
       "title": "Decode portrait"
     }
   },
-  "49": {
+  "48": {
     "inputs": {
       "image1": [
-        "44",
+        "43",
         0
       ],
       "image2": [
-        "46",
+        "45",
         0
       ]
     },
@@ -787,14 +776,14 @@
       "title": "Join portraits 1 and 2"
     }
   },
-  "50": {
+  "49": {
     "inputs": {
       "image1": [
-        "49",
+        "48",
         0
       ],
       "image2": [
-        "48",
+        "47",
         0
       ]
     },
@@ -803,7 +792,7 @@
       "title": "Add portrait 3"
     }
   },
-  "51": {
+  "50": {
     "inputs": {
       "image": "hoi4_leader_portrait_background.png"
     },
@@ -812,11 +801,11 @@
       "title": "Choose a replacement background"
     }
   },
-  "52": {
+  "51": {
     "inputs": {
       "use_background": false,
       "image": [
-        "50",
+        "49",
         0
       ],
       "bg_removal_model": [
@@ -824,7 +813,7 @@
         0
       ],
       "background": [
-        "51",
+        "50",
         0
       ]
     },
@@ -833,12 +822,12 @@
       "title": "Use replacement background"
     }
   },
-  "53": {
+  "52": {
     "inputs": {
       "batch_index": 0,
       "length": 1,
       "image": [
-        "52",
+        "51",
         0
       ]
     },
@@ -847,14 +836,14 @@
       "title": "Take portrait 1"
     }
   },
-  "54": {
+  "53": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "53",
+        "52",
         0
       ]
     },
@@ -863,14 +852,14 @@
       "title": "Portrait 1 master — 1024×1365"
     }
   },
-  "55": {
+  "54": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "54",
+        "53",
         0
       ]
     },
@@ -879,12 +868,12 @@
       "title": "Portrait 1 game — 156×210"
     }
   },
-  "56": {
+  "55": {
     "inputs": {
       "batch_index": 1,
       "length": 1,
       "image": [
-        "52",
+        "51",
         0
       ]
     },
@@ -893,14 +882,14 @@
       "title": "Take portrait 2"
     }
   },
-  "57": {
+  "56": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "56",
+        "55",
         0
       ]
     },
@@ -909,14 +898,14 @@
       "title": "Portrait 2 master — 1024×1365"
     }
   },
-  "58": {
+  "57": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "57",
+        "56",
         0
       ]
     },
@@ -925,12 +914,12 @@
       "title": "Portrait 2 game — 156×210"
     }
   },
-  "59": {
+  "58": {
     "inputs": {
       "batch_index": 2,
       "length": 1,
       "image": [
-        "52",
+        "51",
         0
       ]
     },
@@ -939,14 +928,14 @@
       "title": "Take portrait 3"
     }
   },
-  "60": {
+  "59": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "59",
+        "58",
         0
       ]
     },
@@ -955,14 +944,14 @@
       "title": "Portrait 3 master — 1024×1365"
     }
   },
-  "61": {
+  "60": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "60",
+        "59",
         0
       ]
     },
@@ -971,11 +960,11 @@
       "title": "Portrait 3 game — 156×210"
     }
   },
-  "62": {
+  "61": {
     "inputs": {
       "filename_prefix": "1024x1365/portrait_1",
       "images": [
-        "54",
+        "53",
         0
       ]
     },
@@ -984,11 +973,11 @@
       "title": "Save portrait 1 master PNG"
     }
   },
-  "63": {
+  "62": {
     "inputs": {
       "filename_prefix": "156x210/portrait_1",
       "images": [
-        "55",
+        "54",
         0
       ]
     },
@@ -997,12 +986,12 @@
       "title": "Save portrait 1 game PNG"
     }
   },
-  "64": {
+  "63": {
     "inputs": {
       "filename_prefix": "156x210/dds/portrait_1",
       "format": "argb8888",
       "images": [
-        "55",
+        "54",
         0
       ]
     },
@@ -1011,11 +1000,11 @@
       "title": "Save portrait 1 DDS"
     }
   },
-  "65": {
+  "64": {
     "inputs": {
       "filename_prefix": "1024x1365/portrait_2",
       "images": [
-        "57",
+        "56",
         0
       ]
     },
@@ -1024,11 +1013,11 @@
       "title": "Save portrait 2 master PNG"
     }
   },
-  "66": {
+  "65": {
     "inputs": {
       "filename_prefix": "156x210/portrait_2",
       "images": [
-        "58",
+        "57",
         0
       ]
     },
@@ -1037,12 +1026,12 @@
       "title": "Save portrait 2 game PNG"
     }
   },
-  "67": {
+  "66": {
     "inputs": {
       "filename_prefix": "156x210/dds/portrait_2",
       "format": "argb8888",
       "images": [
-        "58",
+        "57",
         0
       ]
     },
@@ -1051,11 +1040,11 @@
       "title": "Save portrait 2 DDS"
     }
   },
-  "68": {
+  "67": {
     "inputs": {
       "filename_prefix": "1024x1365/portrait_3",
       "images": [
-        "60",
+        "59",
         0
       ]
     },
@@ -1064,11 +1053,11 @@
       "title": "Save portrait 3 master PNG"
     }
   },
-  "69": {
+  "68": {
     "inputs": {
       "filename_prefix": "156x210/portrait_3",
       "images": [
-        "61",
+        "60",
         0
       ]
     },
@@ -1077,12 +1066,12 @@
       "title": "Save portrait 3 game PNG"
     }
   },
-  "70": {
+  "69": {
     "inputs": {
       "filename_prefix": "156x210/dds/portrait_3",
       "format": "argb8888",
       "images": [
-        "61",
+        "60",
         0
       ]
     },
@@ -1091,7 +1080,7 @@
       "title": "Save portrait 3 DDS"
     }
   },
-  "71": {
+  "70": {
     "inputs": {
       "images": [
         "10",
@@ -1103,10 +1092,10 @@
       "title": "Prepared portrait"
     }
   },
-  "72": {
+  "71": {
     "inputs": {
       "images": [
-        "36",
+        "35",
         0
       ]
     },
@@ -1115,10 +1104,10 @@
       "title": "Restored portrait"
     }
   },
-  "73": {
+  "72": {
     "inputs": {
       "images": [
-        "55",
+        "54",
         0
       ]
     },
@@ -1127,10 +1116,10 @@
       "title": "Portrait 1 — 156×210"
     }
   },
-  "74": {
+  "73": {
     "inputs": {
       "images": [
-        "58",
+        "57",
         0
       ]
     },
@@ -1139,10 +1128,10 @@
       "title": "Portrait 2 — 156×210"
     }
   },
-  "75": {
+  "74": {
     "inputs": {
       "images": [
-        "61",
+        "60",
         0
       ]
     },

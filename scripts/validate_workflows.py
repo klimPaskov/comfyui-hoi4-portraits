@@ -199,10 +199,10 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     is_processing = workflow_id == WORKFLOW_IDS[2]
     is_batch = workflow_id == WORKFLOW_IDS[3]
     compact_limits = {
-        WORKFLOW_IDS[0]: (10700, 2750),
-        WORKFLOW_IDS[1]: (5680, 1630),
-        WORKFLOW_IDS[2]: (7520, 1860),
-        WORKFLOW_IDS[3]: (8960, 1860),
+        WORKFLOW_IDS[0]: (10000, 2750),
+        WORKFLOW_IDS[1]: (5060, 1630),
+        WORKFLOW_IDS[2]: (7100, 1700),
+        WORKFLOW_IDS[3]: (8420, 1720),
     }
     if ui.get("groups") and workflow_id in compact_limits:
         left = min(group["bounding"][0] for group in ui["groups"])
@@ -311,7 +311,8 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         "EmptyFlux2LatentImage": 1,
         "SharkOptions_Beta": 1,
         "ClownsharKSampler_Beta": 2,
-        "VAEDecode": 2,
+        "VAEDecode": 1,
+        "ComfySwitchNode": 1,
     }.items():
         if restore_counts.get(class_type, 0) != expected_adonis_nodes * multiplier:
             errors.append(f"{path}: expanded Adonis graph needs {expected_adonis_nodes * multiplier} visible {class_type} node(s)")
@@ -333,7 +334,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         if node.get("type") != "PreviewImage":
             continue
         width, height = node.get("size", [0, 0])
-        expected_preview_size = [440, 594] if node.get("title") == "Adonis Base preview" else [600, 810]
+        expected_preview_size = [600, 810]
         if [width, height] != expected_preview_size:
             errors.append(
                 f"{path}: portrait preview {node.get('id')} must be "
@@ -435,6 +436,16 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
             linked = ("model", "positive", "negative", "latent_image", "options_group.options0", "steps", "seed")
             if any(not isinstance(inputs.get(name), list) for name in linked):
                 errors.append(f"{path}: Adonis sampler inputs must remain visibly connected")
+        elif class_type == "ComfySwitchNode":
+            if inputs.get("switch") is not True:
+                errors.append(f"{path}: Adonis restoration must default to enabled")
+            if any(not isinstance(inputs.get(name), list) for name in ("on_false", "on_true")):
+                errors.append(f"{path}: Adonis restoration toggle must connect both image choices")
+            else:
+                false_source = api.get(inputs["on_false"][0], {})
+                true_source = api.get(inputs["on_true"][0], {})
+                if false_source.get("class_type") != "ImageScale" or true_source.get("class_type") != "VAEDecode":
+                    errors.append(f"{path}: Adonis toggle must choose prepared or fully restored portrait")
         elif class_type == "ImageScale":
             title = node.get("_meta", {}).get("title", "")
             if "1024×1365" in title and [inputs.get("width"), inputs.get("height"), inputs.get("crop")] != [1024, 1365, "center"]:
