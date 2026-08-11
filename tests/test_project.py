@@ -9,8 +9,12 @@ import types
 import unittest
 from pathlib import Path
 
-import torch
-from PIL import Image
+try:
+    import torch
+    from PIL import Image
+except ImportError:  # Keep graph/installer CI lightweight when image runtimes are absent.
+    torch = None
+    Image = None
 
 from scripts import apply_variant, build_workflows, download_models, install_workflows, validate_workflows
 
@@ -224,6 +228,7 @@ class InstallerTests(unittest.TestCase):
             self.assertEqual(personal.read_bytes(), before)
 
 
+@unittest.skipIf(torch is None or Image is None, "requires Torch and Pillow")
 class CustomNodeTests(unittest.TestCase):
     @staticmethod
     def _load_module(root: Path):
