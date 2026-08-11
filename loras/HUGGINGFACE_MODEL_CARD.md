@@ -20,9 +20,9 @@ ComfyUI package. Trigger: `hoi4_portrait`.
 
 ## Checkpoint
 
-The workflow uses only
-`hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors`, the tuned
-2500-step checkpoint, at model strength `1`. It targets the **distilled**
+The workflow uses
+`hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` at model strength
+`1`. It targets the **distilled**
 `black-forest-labs/FLUX.2-klein-9B` model and works with the package's full,
 FP8, and GGUF variants. FLUX.2 Klein Base variants are unsupported.
 
@@ -34,7 +34,7 @@ The workflow's separate model-loader nodes load:
    `flux-2-klein-9b-*.gguf` diffusion model;
 2. `Qwen3-8B-Q8_0.gguf` through `calcuis/gguf` `ClipLoaderGGUF`, type `flux2`;
 3. `flux2-vae.safetensors`;
-4. the step-2500 style LoRA;
+4. the HOI4 style LoRA;
 5. `adonis_base.safetensors` and `adonis_post.safetensors` for the default
    pre-style restoration path; `adonis_refine.safetensors` remains installed
    as the official alternative first pass.

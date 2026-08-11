@@ -1,27 +1,20 @@
 {
-  "schema_version": "3.1.0",
+  "schema_version": "1.0.0",
   "default_workflows": 4,
   "workflows": [
     {
-      "id": "hoi4_portrait_flux2_klein_9b_source",
+      "id": "hoi4_portrait_source",
       "title": "HOI4 Portrait — source reference, three portraits",
-      "workflow": "hoi4_portrait_flux2_klein_9b_source.json",
-      "api_workflow": "hoi4_portrait_flux2_klein_9b_source.api.json",
+      "workflow": "hoi4_portrait_source.json",
+      "api_workflow": "hoi4_portrait_source.api.json",
       "nodes": 74
     },
     {
-      "id": "hoi4_portrait_flux2_klein_9b_text_to_image",
+      "id": "hoi4_portrait_text_to_image",
       "title": "HOI4 Portrait — text to image",
-      "workflow": "hoi4_portrait_flux2_klein_9b_text_to_image.json",
-      "api_workflow": "hoi4_portrait_flux2_klein_9b_text_to_image.api.json",
+      "workflow": "hoi4_portrait_text_to_image.json",
+      "api_workflow": "hoi4_portrait_text_to_image.api.json",
       "nodes": 20
-    },
-    {
-      "id": "hoi4_portrait_processing_only",
-      "title": "HOI4 Portrait — processing and restoration only",
-      "workflow": "hoi4_portrait_processing_only.json",
-      "api_workflow": "hoi4_portrait_processing_only.api.json",
-      "nodes": 41
     },
     {
       "id": "hoi4_portrait_batch",
@@ -29,6 +22,13 @@
       "workflow": "hoi4_portrait_batch.json",
       "api_workflow": "hoi4_portrait_batch.api.json",
       "nodes": 50
+    },
+    {
+      "id": "hoi4_portrait_processing_only",
+      "title": "HOI4 Portrait — processing and restoration only",
+      "workflow": "hoi4_portrait_processing_only.json",
+      "api_workflow": "hoi4_portrait_processing_only.api.json",
+      "nodes": 41
     }
   ]
 }

@@ -196,13 +196,13 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     workflow_id = ui.get("extra", {}).get("workflow_id")
     is_source = workflow_id == WORKFLOW_IDS[0]
     is_text = workflow_id == WORKFLOW_IDS[1]
-    is_processing = workflow_id == WORKFLOW_IDS[2]
-    is_batch = workflow_id == WORKFLOW_IDS[3]
+    is_batch = workflow_id == WORKFLOW_IDS[2]
+    is_processing = workflow_id == WORKFLOW_IDS[3]
     compact_limits = {
         WORKFLOW_IDS[0]: (10000, 2750),
         WORKFLOW_IDS[1]: (5060, 1630),
-        WORKFLOW_IDS[2]: (7100, 1700),
-        WORKFLOW_IDS[3]: (8420, 1720),
+        WORKFLOW_IDS[2]: (8420, 1720),
+        WORKFLOW_IDS[3]: (7100, 1700),
     }
     if ui.get("groups") and workflow_id in compact_limits:
         left = min(group["bounding"][0] for group in ui["groups"])
@@ -491,7 +491,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     if is_processing and ui.get("extra", {}).get("style_lora") is not None:
         errors.append(f"{path}: processing-only metadata advertises a style LoRA")
     if not is_processing and ui.get("extra", {}).get("style_lora") != build_workflows.STYLE_LORA:
-        errors.append(f"{path}: step-2500 style LoRA metadata is missing")
+        errors.append(f"{path}: HOI4 style LoRA metadata is missing")
     return errors
 
 

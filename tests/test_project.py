@@ -42,8 +42,8 @@ class WorkflowTests(unittest.TestCase):
             self.assertNotIn("definitions", ui, path.name)
 
     def test_exact_prompts_and_only_focused_custom_nodes(self) -> None:
-        source = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text())
-        text = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_text_to_image.api.json").read_text())
+        source = json.loads((WORKFLOW_DIR / "hoi4_portrait_source.api.json").read_text())
+        text = json.loads((WORKFLOW_DIR / "hoi4_portrait_text_to_image.api.json").read_text())
         source_samplers = [node for node in source.values() if node["class_type"] == "KSampler"]
         self.assertEqual(len(source_samplers), 3)
         self.assertEqual({node["inputs"]["seed"] for node in source_samplers}, {42, 43, 44})
@@ -67,8 +67,8 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(sum(node["class_type"] == "Hoi4BackgroundReplace" for node in source.values()), 1)
 
     def test_source_comparison_and_outputs_are_exact(self) -> None:
-        ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.json").read_text())
-        api = json.loads((WORKFLOW_DIR / "hoi4_portrait_flux2_klein_9b_source.api.json").read_text())
+        ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_source.json").read_text())
+        api = json.loads((WORKFLOW_DIR / "hoi4_portrait_source.api.json").read_text())
         previews = [
             node for node in ui["nodes"]
             if node["type"] == "PreviewImage"
@@ -181,6 +181,28 @@ class InstallerTests(unittest.TestCase):
                 )
             )
 
+    def test_every_diffusion_variant_uses_distilled_klein_9b_weights(self) -> None:
+        manifest = json.loads((ROOT / "models.json").read_text())
+        diffusion_models = [
+            entry for entry in manifest["models"]
+            if entry["directory"] == "diffusion_models"
+        ]
+        self.assertEqual({entry["variant"] for entry in diffusion_models}, {"full", "fp8", "gguf"})
+        self.assertTrue(all("distilled" in entry["name"].casefold() for entry in diffusion_models))
+        self.assertNotIn("klein-base", json.dumps(diffusion_models).casefold())
+        self.assertEqual(
+            {entry["source"] for entry in diffusion_models if entry["variant"] == "full"},
+            {"black-forest-labs/FLUX.2-klein-9B"},
+        )
+        self.assertEqual(
+            {entry["source"] for entry in diffusion_models if entry["variant"] == "fp8"},
+            {"black-forest-labs/FLUX.2-klein-9b-fp8"},
+        )
+        self.assertEqual(
+            {entry["source"] for entry in diffusion_models if entry["variant"] == "gguf"},
+            {"drends/FLUX.2-klein-9B-GGUF"},
+        )
+
     def test_variant_selector_patches_visible_model_loader_and_preserves_personal_files(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             comfy_root = self._comfy_root(directory)
@@ -193,10 +215,10 @@ class InstallerTests(unittest.TestCase):
                 ["--comfyui-root", str(comfy_root), "--variant", "fp8", "--variant", "gguf", "--gguf-quants", "Q5_K_M"]
             )
             self.assertEqual(result, 0)
-            source = json.loads((target / "hoi4_portrait_flux2_klein_9b_source.json").read_text())
+            source = json.loads((target / "hoi4_portrait_source.json").read_text())
             loader = next(node for node in source["nodes"] if node["type"] == "UNETLoader")
             self.assertEqual(loader["widgets_values"][0], "flux-2-klein-9b-fp8.safetensors")
-            gguf = json.loads((target / "hoi4_portrait_flux2_klein_9b_source_gguf.json").read_text())
+            gguf = json.loads((target / "hoi4_portrait_source_gguf.json").read_text())
             gguf_loader = next(node for node in gguf["nodes"] if node["type"] == "UnetLoaderGGUF")
             self.assertEqual(gguf_loader["widgets_values"][0], "flux-2-klein-9b-Q5_K_M.gguf")
             self.assertEqual(personal.read_bytes(), before)

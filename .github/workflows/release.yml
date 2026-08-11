@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Release name, for example v2.0.0
+        description: Release name, for example v1.0.0
         required: true
         type: string
   push:
@@ -40,22 +40,25 @@ jobs:
 
       - name: Build model-free ZIP and Windows installer
         env:
-          RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
-        run: python scripts/release/build_release_artifacts.py --version "$RELEASE_VERSION"
+          RELEASE_TAG: ${{ inputs.version || github.ref_name }}
+        run: |
+          PACKAGE_VERSION="${RELEASE_TAG#v}"
+          python scripts/release/build_release_artifacts.py --version "$PACKAGE_VERSION"
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
+          RELEASE_TAG: ${{ inputs.version || github.ref_name }}
         run: |
-          NOTES_FILE=".github/release-notes/${RELEASE_VERSION}.md"
-          if gh release view "$RELEASE_VERSION" >/dev/null 2>&1; then
+          PACKAGE_VERSION="${RELEASE_TAG#v}"
+          NOTES_FILE=".github/release-notes/${RELEASE_TAG}.md"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             if [ -f "$NOTES_FILE" ]; then
-              gh release edit "$RELEASE_VERSION" --title "HOI4 Portrait Workflows $RELEASE_VERSION" --notes-file "$NOTES_FILE"
+              gh release edit "$RELEASE_TAG" --title "HOI4 Portrait Workflows $PACKAGE_VERSION" --notes-file "$NOTES_FILE"
             fi
           elif [ -f "$NOTES_FILE" ]; then
-            gh release create "$RELEASE_VERSION" --title "HOI4 Portrait Workflows $RELEASE_VERSION" --notes-file "$NOTES_FILE" --target "$GITHUB_SHA"
+            gh release create "$RELEASE_TAG" --title "HOI4 Portrait Workflows $PACKAGE_VERSION" --notes-file "$NOTES_FILE" --target "$GITHUB_SHA"
           else
-            gh release create "$RELEASE_VERSION" --title "HOI4 Portrait Workflows $RELEASE_VERSION" --generate-notes --target "$GITHUB_SHA"
+            gh release create "$RELEASE_TAG" --title "HOI4 Portrait Workflows $PACKAGE_VERSION" --generate-notes --target "$GITHUB_SHA"
           fi
-          gh release upload "$RELEASE_VERSION" dist/* --clobber
+          gh release upload "$RELEASE_TAG" dist/* --clobber

@@ -43,10 +43,10 @@ under `ComfyUI/models/`:
 
 | Folder | File |
 | --- | --- |
-| `diffusion_models/` | `flux-2-klein-9b.safetensors` (full), `flux-2-klein-9b-fp8.safetensors` (FP8), or `flux-2-klein-9b-Q5_K_M.gguf` (GGUF) |
+| `diffusion_models/` | Distilled `flux-2-klein-9b.safetensors` (full), `flux-2-klein-9b-fp8.safetensors` (FP8), or `flux-2-klein-9b-Q5_K_M.gguf` (GGUF) |
 | `text_encoders/` | `Qwen3-8B-Q8_0.gguf` |
 | `vae/` | `flux2-vae.safetensors` |
-| `loras/` | `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` (tuned 2500-step LoRA) |
+| `loras/` | `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` (HOI4 style LoRA) |
 | `loras/` | `adonis_base.safetensors`, `adonis_refine.safetensors`, and `adonis_post.safetensors` |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
@@ -92,7 +92,7 @@ Append only deliberate changes to one candidate to test them:
 make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, wearing a military uniform
 ```
 
-For text-to-image, keep the exact example prompt
+For text-to-image, start from the example prompt
 `hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair,
 wearing a plain civilian jacket.` and edit the person description as needed.
 Do not describe the game, visual style, background, lighting, framing, or
@@ -108,4 +108,4 @@ rendering.
 | Too much body | Increase **Face zoom**; `0.90` is the default and `1.00` is the closest safe framing. |
 | Style is weak | Keep `hoi4_portrait` in the prompt, confirm LoRA strength is `1.00`, and keep the crop clean. |
 | Monochrome result | Keep the Base/Post colour wording unless black and white is intended. |
-| Game crashes on the DDS | Confirm the file is 156×210 A8R8G8B8 with no mipmaps (the workflow's default output). |
+| Game crashes on the DDS | Confirm the workflow saved it as a 156×210, 32-bit BGRA DDS (A8R8G8B8/B8G8R8A8-style). |

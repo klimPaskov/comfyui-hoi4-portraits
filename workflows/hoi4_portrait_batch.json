@@ -3628,7 +3628,7 @@
   "extra": {
     "workflow_id": "hoi4_portrait_batch",
     "title": "HOI4 Portrait — batch input and output",
-    "schema_version": "3.1.0",
+    "schema_version": "1.0.0",
     "base_model": "flux-2-klein-9b.safetensors",
     "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
     "master_size": [

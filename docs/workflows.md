@@ -16,7 +16,7 @@ The main visible controls are:
 | `Use Adonis restoration` | One red true/false control for the complete Base → Post branch; enabled by default |
 | `HOI4 Optional Background Replacement` | One optional BiRefNet background-replacement operation; sizing remains separate |
 | `HOI4 Batch Input Folder` | List output that executes one source at a time |
-| `HOI4 Save DDS` | 156×210 A8R8G8B8 portrait DDS with no mipmaps |
+| `HOI4 Save DDS` | HOI4-ready 156×210 portrait DDS |
 
 The following steps use separate nodes: diffusion model,
 Qwen Q8 encoder, VAE, every LoRA loader, face detection, subject mask,
@@ -25,7 +25,7 @@ encoding, Adonis Base sampling, Adonis Post reference conditioning, Adonis
 Post sampling, final VAE decode, restoration switch, master crop, and game crop.
 
 The tuned style settings are CFG `1`, guidance `1`, **Euler**, **simple**,
-**4 steps**, and denoise `1`. The only style checkpoint is
+**4 steps**, and denoise `1`. The HOI4 style checkpoint is
 `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` at strength `1`.
 
 ## Restoration path
@@ -83,7 +83,7 @@ portrait without style sampling.
 This 20-node graph keeps the diffusion model, Qwen encoder, VAE, and style
 LoRA loaders separate. It runs one standard ComfyUI sampler, then shows optional
 background replacement, master sizing, game sizing, all three saves, and one
-tall final preview. Its exact prompt is:
+tall final preview. Its example prompt is:
 
 ```text
 hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
@@ -110,10 +110,12 @@ All workflows save to:
 ```text
 ComfyUI/output/1024x1365/     master PNG
 ComfyUI/output/156x210/       centered game PNG
-ComfyUI/output/156x210/dds/   156×210 A8R8G8B8 DDS, no mipmaps
+ComfyUI/output/156x210/dds/   HOI4-ready DDS
 ```
 
-Both native PNG savers and `HOI4 Save DDS` are terminal output nodes. Queueing
+The DDS saver writes uncompressed 32-bit BGRA data with alpha in the
+A8R8G8B8/B8G8R8A8-style layout used by HOI4 portraits. Both native PNG savers
+and `HOI4 Save DDS` are terminal output nodes. Queueing
 the workflow therefore executes every connected save branch automatically;
 numbered counters prevent repeated runs from overwriting existing portraits.
 

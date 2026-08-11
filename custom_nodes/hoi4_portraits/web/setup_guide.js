@@ -24,7 +24,7 @@ const downloads = [
   {
     folder: "loras",
     files: [
-      ["HOI4 portrait LoRA — step 2500", "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors"],
+      ["HOI4 portrait style LoRA", "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors"],
       ["Adonis Base", "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors"],
       ["Adonis Refine", "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_refine.safetensors"],
       ["Adonis Post", "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_post.safetensors"],

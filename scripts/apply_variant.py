@@ -26,10 +26,10 @@ FP8_MODEL = "flux-2-klein-9b-fp8.safetensors"
 GGUF_QUANTS = ("Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0")
 LOADER_CLASSES = {"UNETLoader", "UnetLoaderGGUF"}
 WORKFLOW_IDS = (
-    "hoi4_portrait_flux2_klein_9b_source",
-    "hoi4_portrait_flux2_klein_9b_text_to_image",
-    "hoi4_portrait_processing_only",
+    "hoi4_portrait_source",
+    "hoi4_portrait_text_to_image",
     "hoi4_portrait_batch",
+    "hoi4_portrait_processing_only",
 )
 
 

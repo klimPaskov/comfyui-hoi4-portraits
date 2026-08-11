@@ -11,19 +11,19 @@
 
 The installer downloads only the selected distilled model variant plus the
 shared support set. The shared set is **12,893,345,742 bytes (12.89 GB / 12.01
-GiB)**: Qwen 3 8B Q8 GGUF, FLUX.2 VAE, the 2500-step style LoRA, Adonis Base,
+GiB)**: Qwen 3 8B Q8 GGUF, FLUX.2 VAE, the HOI4 style LoRA, Adonis Base,
 Refine, and Post, RealESRGAN, BiRefNet, and both face detectors.
 All four LoRAs remain mandatory shared downloads for full, FP8, and GGUF
 installs.
 
 | Install | Variant file | Exact model payload | Practical free space | VRAM selection |
 | --- | --- | --- | --- | --- |
-| Full | `flux-2-klein-9b.safetensors` | 31.051 GB / 28.918 GiB | 40 GB | more than 20 GB |
-| FP8 | `flux-2-klein-9b-fp8.safetensors` | 22.326 GB / 20.793 GiB | 30 GB | 16–20 GB |
-| GGUF Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` | 18.803 GB / 17.512 GiB | 25 GB | 8–10 GB |
-| GGUF Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` | 19.912 GB / 18.545 GiB | 26 GB | 10–14 GB |
-| GGUF Q6_K | `flux-2-klein-9b-Q6_K.gguf` | 20.759 GB / 19.333 GiB | 27 GB | 12–16 GB |
-| GGUF Q8_0 | `flux-2-klein-9b-Q8_0.gguf` | 22.872 GB / 21.301 GiB | 30 GB | 16+ GB |
+| Full distilled | `flux-2-klein-9b.safetensors` | 31.051 GB / 28.918 GiB | 40 GB | more than 20 GB |
+| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 22.326 GB / 20.793 GiB | 30 GB | 16–20 GB |
+| GGUF distilled Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` | 18.803 GB / 17.512 GiB | 25 GB | 8–10 GB |
+| GGUF distilled Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` | 19.912 GB / 18.545 GiB | 26 GB | 10–14 GB |
+| GGUF distilled Q6_K | `flux-2-klein-9b-Q6_K.gguf` | 20.759 GB / 19.333 GiB | 27 GB | 12–16 GB |
+| GGUF distilled Q8_0 | `flux-2-klein-9b-Q8_0.gguf` | 22.872 GB / 21.301 GiB | 30 GB | 16+ GB |
 
 The bare minimum for the full workflow's model files is therefore
 **31,050,530,910 bytes (31.05 GB / 28.92 GiB)**. Keep about **40 GB free** for
@@ -49,8 +49,9 @@ python scripts/apply_variant.py --comfyui-root /path/to/ComfyUI --variant fp8
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 ```
 
-The setup script changes the visible diffusion-model loader in every installed
-workflow:
+All three choices use the distilled FLUX.2 Klein 9B model; FP8 and GGUF are
+lower-precision forms of the same distilled weights. The setup script changes
+the visible diffusion-model loader in every installed workflow:
 
 - `--variant full` → `flux-2-klein-9b.safetensors`
 - `--variant fp8` → `flux-2-klein-9b-fp8.safetensors`
@@ -110,7 +111,7 @@ Startup checks that every required node loaded and reports anything missing.
 The release executable is a complete installer wizard, not just an unpacker:
 
 1. Run
-   `.\HOI4-Portrait-Workflows-3.1.0-windows-x64.exe`.
+   `.\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe`.
 2. It detects your GPU VRAM with `nvidia-smi` and pre-checks the recommended
    variant (GGUF for 8–16 GB, FP8 for 16–20 GB, full above 20 GB).
 3. Toggle any combination of variants — including all three, if you want every

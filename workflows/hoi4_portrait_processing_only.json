@@ -2990,7 +2990,7 @@
   "extra": {
     "workflow_id": "hoi4_portrait_processing_only",
     "title": "HOI4 Portrait — processing and restoration only",
-    "schema_version": "3.1.0",
+    "schema_version": "1.0.0",
     "base_model": "flux-2-klein-9b.safetensors",
     "style_lora": null,
     "master_size": [

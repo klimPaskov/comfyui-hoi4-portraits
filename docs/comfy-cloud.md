@@ -44,7 +44,7 @@ needed for the source, text-to-image, and batch workflows.
    keep a full multi-person composition. Adonis Base and Post run before styling.
 4. Keep the source prompt exactly as
    `make this portrait hoi4_portrait style` and append only deliberate
-   changes. The text-to-image workflow uses the exact example prompt
+   changes. The text-to-image workflow uses the example prompt
    `hoi4_portrait style, an Irish middle-aged man with neatly combed dark
    hair, wearing a plain civilian jacket.`
 5. Queue the workflow. A source run returns three candidates; download the

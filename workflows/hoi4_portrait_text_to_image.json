@@ -1,5 +1,5 @@
 {
-  "id": "hoi4_portrait_flux2_klein_9b_text_to_image",
+  "id": "hoi4_portrait_text_to_image",
   "revision": 0,
   "last_node_id": 20,
   "last_link_id": 19,
@@ -1335,9 +1335,9 @@
   ],
   "config": {},
   "extra": {
-    "workflow_id": "hoi4_portrait_flux2_klein_9b_text_to_image",
+    "workflow_id": "hoi4_portrait_text_to_image",
     "title": "HOI4 Portrait — text to image",
-    "schema_version": "3.1.0",
+    "schema_version": "1.0.0",
     "base_model": "flux-2-klein-9b.safetensors",
     "style_lora": "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
     "master_size": [

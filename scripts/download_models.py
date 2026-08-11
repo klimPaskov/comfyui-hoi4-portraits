@@ -56,7 +56,7 @@ def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) ->
         raise RuntimeError(
             "FLUX.2 Klein 9B is gated. Accept its Hugging Face agreement, run `hf auth login` or set HF_TOKEN, then retry."
         )
-    headers = {"User-Agent": "comfyui-hoi4-portraits/2.0"}
+    headers = {"User-Agent": "comfyui-hoi4-portraits/1.0.0"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
     destination.parent.mkdir(parents=True, exist_ok=True)

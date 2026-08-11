@@ -11,7 +11,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_DIR = ROOT / "workflows"
-SCHEMA_VERSION = "3.1.0"
+SCHEMA_VERSION = "1.0.0"
 
 BASE_MODEL = "flux-2-klein-9b.safetensors"
 TEXT_ENCODER = "Qwen3-8B-Q8_0.gguf"
@@ -728,7 +728,7 @@ def _batch_input(g: Graph, pos: tuple[int, int], group: str) -> Ref:
 
 
 def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
-    g = Graph("hoi4_portrait_flux2_klein_9b_source", "HOI4 Portrait — source reference, three portraits")
+    g = Graph("hoi4_portrait_source", "HOI4 Portrait — source reference, three portraits")
     g.group("00 Setup", "#4b3327", "note")
     g.group("01 Prepare portrait", "#365b41", "source")
     g.group("02 Models", "#365b73", "model")
@@ -797,7 +797,7 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
 
 
 def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
-    g = Graph("hoi4_portrait_flux2_klein_9b_text_to_image", "HOI4 Portrait — text to image")
+    g = Graph("hoi4_portrait_text_to_image", "HOI4 Portrait — text to image")
     g.group("00 Setup", "#4b3327", "note")
     g.group("01 Models", "#365b73", "model")
     g.group("02 Create portrait", "#654572", "sample")
@@ -892,10 +892,10 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
 
 
 BUILDERS = {
-    "hoi4_portrait_flux2_klein_9b_source": build_source,
-    "hoi4_portrait_flux2_klein_9b_text_to_image": build_text,
-    "hoi4_portrait_processing_only": build_processing,
+    "hoi4_portrait_source": build_source,
+    "hoi4_portrait_text_to_image": build_text,
     "hoi4_portrait_batch": build_batch,
+    "hoi4_portrait_processing_only": build_processing,
 }
 
 

@@ -1,6 +1,6 @@
 # Hugging Face model access
 
-The installer downloads the gated FLUX.2 Klein 9B checkpoint (full or FP8)
+The installer downloads the gated distilled FLUX.2 Klein 9B checkpoint (full or FP8)
 from Hugging Face. The GGUF variant is not gated. Complete these steps once
 for the Hugging Face account whose token will be used by the installer.
 

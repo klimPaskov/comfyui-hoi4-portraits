@@ -553,7 +553,7 @@ class Hoi4SaveDDS:
                 "format": (
                     ["argb8888", "dxt5"],
                     {
-                        "tooltip": "A8R8G8B8 is the vanilla HOI4 leader-portrait format. Both choices use one 156x210 image with no mipmaps.",
+                        "tooltip": "Creates a HOI4-ready 156x210 DDS portrait.",
                     },
                 ),
             }
@@ -564,7 +564,7 @@ class Hoi4SaveDDS:
     FUNCTION = "save"
     OUTPUT_NODE = True
     CATEGORY = "HOI4 portraits/output"
-    DESCRIPTION = "Save vanilla-style 156x210 A8R8G8B8 DDS portraits with no mipmaps for HOI4."
+    DESCRIPTION = "Save HOI4-ready 156x210 DDS portraits."
 
     def save(self, images, filename_prefix, format="argb8888"):
         output_dir = Path(folder_paths.get_output_directory())

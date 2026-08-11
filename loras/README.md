@@ -1,6 +1,6 @@
 # FLUX.2 Klein 9B style LoRA
 
-The tuned checkpoint is the **2500-step** LoRA:
+The project uses this HOI4 style LoRA:
 
 ```text
 hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors
@@ -24,7 +24,7 @@ Source portraits default to the exact prompt:
 make this portrait hoi4_portrait style
 ```
 
-The text-to-image workflow uses the exact example prompt:
+The text-to-image workflow uses the example prompt:
 
 ```text
 hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.

@@ -4,7 +4,7 @@
 [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
 
 Create Hearts of Iron IV-style leader portraits with ComfyUI and the FLUX.2
-Klein 9B model plus the project's tuned 2500-step LoRA. The source workflow
+Klein 9B distilled model plus the project's HOI4 style LoRA. The source workflow
 keeps the person's crop, pose, framing, and facial identity anchored, restores
 old photos, and styles three portrait candidates for comparison. The batch
 workflow turns a whole folder of photos into game-ready portraits in one
@@ -19,17 +19,17 @@ and every workflow saves **HOI4-ready 156×210 DDS files** for a mod's
 
 | Workflow | Best for | What it runs |
 | --- | --- | --- |
-| [`hoi4_portrait_flux2_klein_9b_source.json`](workflows/hoi4_portrait_flux2_klein_9b_source.json) | Identity-preserving portrait from a photo | RealESRGAN → Adonis Base + Post restoration → **three** HOI4 LoRA candidates |
-| [`hoi4_portrait_flux2_klein_9b_text_to_image.json`](workflows/hoi4_portrait_flux2_klein_9b_text_to_image.json) | Fictional portrait without a photo | One HOI4 LoRA generation from a text prompt |
-| [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → Adonis Base + Post restoration, no style LoRA |
+| [`hoi4_portrait_source.json`](workflows/hoi4_portrait_source.json) | Identity-preserving portrait from a photo | RealESRGAN → Adonis Base + Post restoration → **three** HOI4 LoRA candidates |
+| [`hoi4_portrait_text_to_image.json`](workflows/hoi4_portrait_text_to_image.json) | Fictional portrait without a photo | One HOI4 LoRA generation from a text prompt |
 | [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | One sampler processes every image in `input/hoi4_portraits_batch` |
+| [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → Adonis Base + Post restoration, no style LoRA |
 
 Every workflow saves:
 
 ```text
 ComfyUI/output/1024x1365/     full-res master PNG
 ComfyUI/output/156x210/       game-size PNG
-ComfyUI/output/156x210/dds/   HOI4-ready DDS (A8R8G8B8, no mipmaps)
+ComfyUI/output/156x210/dds/   HOI4-ready DDS
 ```
 
 The PNG and DDS nodes are automatic terminal outputs. One queue run writes
@@ -43,14 +43,14 @@ The installer downloads only the model variant you choose:
 
 | Variant | File | Download size | VRAM |
 | --- | --- | --- | --- |
-| Full | `flux-2-klein-9b.safetensors` | 18.2 GB | above 20 GB |
-| FP8 | `flux-2-klein-9b-fp8.safetensors` | 9.4 GB | 16–20 GB |
-| GGUF | `flux-2-klein-9b-*.gguf` | 5.9–10.0 GB | 8–16 GB |
+| Full distilled | `flux-2-klein-9b.safetensors` | 18.2 GB | above 20 GB |
+| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 9.4 GB | 16–20 GB |
+| GGUF distilled | `flux-2-klein-9b-*.gguf` | 5.9–10.0 GB | 8–16 GB |
 
 Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, the style LoRA, all
 three Adonis LoKrs, RealESRGAN, BiRefNet, and face detectors) add **12.89 GB**
-on top. Every variant install keeps all four LoRAs: the step-2500 HOI4 style
-LoRA plus Adonis Base, Refine, and Post. Refine stays installed as the
+on top. Every variant install keeps all four LoRAs: the HOI4 style LoRA plus
+Adonis Base, Refine, and Post. Refine stays installed as the
 official alternative first pass; the default graph uses Base → Post.
 The full install's exact model payload is **31.05 GB (28.92 GiB)**. Storage and VRAM
 requirements for each install are documented in
@@ -72,7 +72,7 @@ contains:
 ### Windows
 
 ```powershell
-.\HOI4-Portrait-Workflows-3.1.0-windows-x64.exe
+.\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe
 ```
 
 Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard
@@ -128,7 +128,7 @@ GGUF files are not gated.
 
 The workflow is arranged from left to right in clear, colour-coded stages.
 
-![Source workflow overview](docs/assets/workflows/audit/source-overview-2026-08-10.jpg)
+![Source workflow overview](docs/assets/workflows/audit/source-overview-2026-08-11.jpg)
 
 1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and
    **Preserve hat/headwear**, then compare the prepared result below. The
@@ -142,22 +142,22 @@ The workflow is arranged from left to right in clear, colour-coded stages.
    generation before the final VAE decode. One red **Use Adonis restoration**
    switch defaults on; turn it off to send the prepared portrait directly to
    the next stage.
-3. **Style:** three independent candidates use the exact 2500-step LoRA. Each
+3. **Style:** three independent candidates use the HOI4 style LoRA. Each
    candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`,
    four steps, Euler, simple scheduling, full denoise, and its own seed.
 4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and
    all three finals together. One shared background switch applies the same
    choice to all three portraits after generation.
    Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a
-   unique 156×210 A8R8G8B8 DDS with no mipmaps.
+   unique HOI4-ready DDS.
 
 The other three workflow canvases use the same stage colors and controls:
 
-![Text-to-image workflow overview](docs/assets/workflows/audit/text-overview-2026-08-10.jpg)
+![Text-to-image workflow overview](docs/assets/workflows/audit/text-overview-2026-08-11.jpg)
 
-![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview-2026-08-10.jpg)
+![Batch workflow overview](docs/assets/workflows/audit/batch-overview-2026-08-11.jpg)
 
-![Batch workflow overview](docs/assets/workflows/audit/batch-overview-2026-08-10.jpg)
+![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview-2026-08-11.jpg)
 
 ## Prompting
 
@@ -177,7 +177,7 @@ make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, 
 ```
 
 Don't describe the game, background, lighting, or rendering — the LoRA handles
-those. The text-to-image workflow uses the exact example prompt:
+those. The text-to-image workflow uses the example prompt:
 
 ```text
 hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.

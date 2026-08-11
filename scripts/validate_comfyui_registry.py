@@ -47,10 +47,10 @@ UPSTREAM_ADONIS_REQUIRED = {
 
 FRONTEND_ONLY = {"Note"}
 WORKFLOW_IDS = {
-    "hoi4_portrait_flux2_klein_9b_source",
-    "hoi4_portrait_flux2_klein_9b_text_to_image",
-    "hoi4_portrait_processing_only",
+    "hoi4_portrait_source",
+    "hoi4_portrait_text_to_image",
     "hoi4_portrait_batch",
+    "hoi4_portrait_processing_only",
 }
 
 
