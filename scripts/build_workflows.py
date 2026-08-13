@@ -58,68 +58,73 @@ COLORS = {
 
 # The right half follows the user's hand-arranged source workflow, snapped to a consistent grid and regularized into aligned columns and portrait lanes.
 SOURCE_LAYOUT = {
-    36: ((5200, 100), None),
-    37: ((5200, 480), None),
-    38: ((5200, 720), None),
-    39: ((5200, 860), None),
-    40: ((5200, 1000), None),
-    41: ((5200, 1140), None),
-    42: ((5760, 100), (560, 420)),
-    43: ((6360, 100), None),
-    44: ((5760, 600), (560, 420)),
-    45: ((6360, 600), None),
-    46: ((5760, 1100), (560, 420)),
-    47: ((6360, 1100), None),
-    48: ((6720, 100), None),
-    49: ((6720, 240), None),
-    50: ((6720, 400), None),
-    51: ((6720, 1000), None),
-    52: ((7360, 100), None),
-    53: ((7360, 740), None),
-    54: ((7800, 740), None),
-    55: ((7360, 320), None),
-    56: ((7360, 1000), None),
-    57: ((7800, 1000), None),
-    58: ((7360, 540), None),
-    59: ((7360, 1260), None),
-    60: ((7800, 1260), None),
-    61: ((8360, 100), None),
-    62: ((8360, 300), None),
-    63: ((8820, 100), None),
-    64: ((8820, 300), None),
-    65: ((8360, 620), None),
-    66: ((8360, 820), None),
-    67: ((8820, 620), None),
-    68: ((8820, 820), None),
-    69: ((8360, 1140), None),
-    70: ((8360, 1340), None),
-    71: ((8820, 1140), None),
-    72: ((8820, 1340), None),
-    73: ((2800, 1720), None),
-    74: ((3440, 1720), None),
-    75: ((4080, 1720), None),
-    76: ((4720, 1720), None),
-    77: ((5360, 1720), None),
+    34: ((4640, 1240), (260, 80)),
+    35: ((4160, 800), None),
+    36: ((4640, 1360), None),
+    37: ((5200, 100), None),
+    38: ((5200, 480), None),
+    39: ((5200, 720), None),
+    40: ((5200, 860), None),
+    41: ((5200, 1000), None),
+    42: ((5200, 1140), None),
+    43: ((5760, 100), (560, 420)),
+    44: ((6360, 100), None),
+    45: ((5760, 600), (560, 420)),
+    46: ((6360, 600), None),
+    47: ((5760, 1100), (560, 420)),
+    48: ((6360, 1100), None),
+    49: ((6720, 100), None),
+    50: ((6720, 240), None),
+    51: ((6720, 400), None),
+    52: ((6720, 1000), None),
+    53: ((7360, 100), None),
+    54: ((7360, 740), None),
+    55: ((7800, 740), None),
+    56: ((7360, 320), None),
+    57: ((7360, 1000), None),
+    58: ((7800, 1000), None),
+    59: ((7360, 540), None),
+    60: ((7360, 1260), None),
+    61: ((7800, 1260), None),
+    62: ((8360, 100), None),
+    63: ((8360, 300), None),
+    64: ((8820, 100), None),
+    65: ((8820, 300), (420, 180)),
+    66: ((8360, 620), None),
+    67: ((8360, 820), None),
+    68: ((8820, 620), None),
+    69: ((8820, 820), (420, 180)),
+    70: ((8360, 1140), None),
+    71: ((8360, 1340), None),
+    72: ((8820, 1140), None),
+    73: ((8820, 1340), (420, 180)),
+    74: ((2800, 1720), None),
+    75: ((3440, 1720), None),
+    76: ((4080, 1720), None),
+    77: ((4720, 1720), None),
+    78: ((5360, 1720), None),
 }
 
 BATCH_LAYOUT = {
-    35: ((5200, 100), None),
-    36: ((5200, 480), None),
-    37: ((5760, 100), None),
-    38: ((5760, 280), None),
-    39: ((6160, 100), None),
-    40: ((6160, 280), None),
-    41: ((6520, 100), (520, 500)),
-    42: ((7080, 100), None),
-    43: ((7540, 100), None),
-    44: ((8000, 100), None),
-    45: ((7540, 360), None),
-    46: ((8000, 360), None),
-    47: ((8000, 600), None),
-    48: ((7540, 600), None),
-    49: ((5360, 740), None),
-    50: ((6000, 740), None),
-    51: ((6640, 740), None),
+    34: ((4160, 800), None),
+    35: ((4640, 1380), None),
+    36: ((5200, 100), None),
+    37: ((5200, 480), None),
+    38: ((5760, 100), None),
+    39: ((5760, 280), None),
+    40: ((6160, 100), None),
+    41: ((6160, 280), None),
+    42: ((6520, 100), (520, 500)),
+    43: ((7080, 100), None),
+    44: ((7540, 100), None),
+    45: ((8000, 100), None),
+    46: ((7540, 360), None),
+    47: ((8000, 360), None),
+    48: ((8000, 600), None),
+    49: ((7540, 600), None),
+    50: ((5360, 740), None),
+    51: ((6000, 740), None),
+    52: ((6640, 740), None),
 }
 
 
@@ -589,7 +594,25 @@ def _switch(g: Graph, title: str, enabled: bool, pos: tuple[int, int], group: st
     )
 
 
-def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *, x: int = 4000) -> tuple[Ref, Ref]:
+def _restoration_cache(g: Graph, image: Ref, source_filename: tuple[Ref, int], pos: tuple[int, int], group: str) -> Ref:
+    cache = g.node(
+        "Hoi4RestorationCache", "Reuse restored portrait", pos, (440, 140), group,
+        [("image", "IMAGE", False), ("source_filename", "STRING", False)], [("IMAGE", "IMAGE")], [], {}, "restore",
+    )
+    g.connect(image, 0, cache, "image")
+    g.connect(source_filename[0], source_filename[1], cache, "source_filename")
+    return cache
+
+
+def _adonis_pipeline(
+    g: Graph,
+    image: Ref,
+    model: dict[str, Ref],
+    group: str,
+    *,
+    x: int = 4000,
+    source_filename: tuple[Ref, int] | None = None,
+) -> tuple[Ref, Ref]:
     scale = _scale_total(g, (x, 100), group)
     base_prompt = _clip_encode(g, "Adonis Base prompt", ADONIS_BASE_COMBINED_PROMPT, (x, 380), group)
     base_negative = _zero_conditioning(g, (x, 680), group)
@@ -609,6 +632,7 @@ def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *,
     post_negative_ref = _reference(g, "Post negative reference", (x + 1360, 660), group)
     post = _adonis_sampler(g, "Finish details — Adonis Post", (x + 1840, 100), group, post=True)
     decoded = _vae_decode(g, (x + 1840, 1240), group, size=(260, 100))
+    restored = _restoration_cache(g, decoded, source_filename, (x + 1360, 800), group) if source_filename else decoded
     enabled = _switch(g, "Use Adonis restoration", True, (x + 1840, 1380), group)
 
     g.connect(image, 0, scale, "image")
@@ -648,7 +672,7 @@ def _adonis_pipeline(g: Graph, image: Ref, model: dict[str, Ref], group: str, *,
     g.connect(post, 0, decoded, "samples")
     g.connect(model["vae"], 0, decoded, "vae")
     g.connect(image, 0, enabled, "on_false")
-    g.connect(decoded, 0, enabled, "on_true")
+    g.connect(restored, 0, enabled, "on_true")
     return enabled, scale
 
 
@@ -898,7 +922,7 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
     esrgan = _source_pipeline(g, source, "01 Prepare portrait", x=1620)
 
     model = _model_pipeline(g, "02 Models", x=860, y=1200, style=True, adonis=True, background=True)
-    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800)
+    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800, source_filename=(source, 2))
 
     positive, negative, latent = _style_inputs(
         g, model, "04 Create three portraits", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
@@ -954,9 +978,9 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
     comparison = [
         ("Prepared portrait", esrgan),
         ("Restored portrait", restored),
-        ("Portrait 1 — 156×210", finals[0]),
-        ("Portrait 2 — 156×210", finals[1]),
-        ("Portrait 3 — 156×210", finals[2]),
+        ("Portrait 1 — full resolution", masters[0]),
+        ("Portrait 2 — full resolution", masters[1]),
+        ("Portrait 3 — full resolution", masters[2]),
     ]
     for index, (title, ref) in enumerate(comparison):
         preview = _preview(g, title, (2800 + index * 640, 1940), "06 Compare portraits")
@@ -995,11 +1019,11 @@ def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
     save_master = _save_image(g, "Save master PNG", "hoi4_portraits/1024x1365/text_to_image", (3900, 960), "03 Finish and save", (names, 0))
     save_game = _save_image(g, "Save game PNG", "hoi4_portraits/156x210/text_to_image", (3900, 1200), "03 Finish and save", (names, 1))
     save_dds = _save_dds(g, "Save game DDS", "hoi4_portraits/156x210/dds/text_to_image", (3900, 1440), "03 Finish and save", (names, 2))
-    preview = _preview(g, "Game portrait", (4440, 740), "03 Finish and save")
+    preview = _preview(g, "Full-resolution portrait", (4440, 740), "03 Finish and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
-    g.connect(game, 0, preview, "images")
+    g.connect(master, 0, preview, "images")
     return g.serialize(style_lora=STYLE_LORA)
 
 
@@ -1017,7 +1041,7 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     )
     esrgan = _source_pipeline(g, source, "01 Prepare portrait", x=1620)
     model = _model_pipeline(g, "02 Models", x=860, y=1200, style=False, adonis=True, background=False)
-    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800)
+    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800, source_filename=(source, 2))
     master = _image_scale(g, "Restored master — 1024×1365", 1024, 1365, (5200, 100), "04 Finish and save")
     game = _image_scale(g, "Game portrait — 156×210", 156, 210, (5640, 100), "04 Finish and save")
     g.connect(restored, 0, master, "image")
@@ -1032,7 +1056,7 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
-    for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Game portrait", game))):
+    for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Full-resolution portrait", master))):
         preview = _preview(g, title, (5200 + index * 640, 880), "04 Finish and save")
         g.connect(ref, 0, preview, "images")
     return g.serialize(style_lora=None)
@@ -1050,7 +1074,7 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     batch = _batch_input(g, (860, 100), "01 Prepare portraits")
     esrgan = _source_pipeline(g, batch, "01 Prepare portraits", x=1620)
     model = _model_pipeline(g, "02 Models", x=860, y=1200, style=True, adonis=True, background=False)
-    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800)
+    restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800, source_filename=(batch, 2))
     positive, negative, latent = _style_inputs(
         g, model, "04 Create portraits", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
     )
@@ -1073,7 +1097,7 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
-    for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Game portrait", game))):
+    for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Full-resolution portrait", master))):
         preview = _preview(g, title, (6520 + index * 640, 900), "04 Create portraits", None)
         g.connect(ref, 0, preview, "images")
     g.apply_layout(BATCH_LAYOUT)

@@ -54,6 +54,7 @@ ALLOWED_NODES = {
     "ImageFromBatch",
     "Hoi4BatchInput",
     "Hoi4OutputFilename",
+    "Hoi4RestorationCache",
     "Hoi4SaveDDS",
 }
 
@@ -496,7 +497,13 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
             else:
                 false_source = api.get(inputs["on_false"][0], {})
                 true_source = api.get(inputs["on_true"][0], {})
-                if false_source.get("class_type") != "ImageScale" or true_source.get("class_type") != "VAEDecode":
+                cached_image = true_source.get("inputs", {}).get("image")
+                decoded_source = api.get(cached_image[0], {}) if isinstance(cached_image, list) else {}
+                if (
+                    false_source.get("class_type") != "ImageScale"
+                    or true_source.get("class_type") != "Hoi4RestorationCache"
+                    or decoded_source.get("class_type") != "VAEDecode"
+                ):
                     errors.append(f"{path}: Adonis toggle must choose prepared or fully restored portrait")
         elif class_type == "ImageScale":
             title = node.get("_meta", {}).get("title", "")

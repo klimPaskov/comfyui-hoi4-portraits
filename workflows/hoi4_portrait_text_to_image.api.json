@@ -279,13 +279,13 @@
   "21": {
     "inputs": {
       "images": [
-        "16",
+        "15",
         0
       ]
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Game portrait"
+      "title": "Full-resolution portrait"
     }
   }
 }

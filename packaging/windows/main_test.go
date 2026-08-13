@@ -5,6 +5,36 @@ import (
 	"testing"
 )
 
+func TestGPUDetectionPrefersDiscreteNvidiaOverAMDIntegratedGraphics(t *testing.T) {
+	gpu := classifyGPU("AMD Radeon(TM) Graphics\r\nNVIDIA GeForce RTX 4090\r\n")
+	if gpu.vendor != "nvidia" || gpu.name != "NVIDIA GeForce RTX 4090" {
+		t.Fatalf("unexpected GPU classification: %#v", gpu)
+	}
+}
+
+func TestAMDUsesOfficialROCmPortable(t *testing.T) {
+	gpu := classifyGPU("AMD Radeon RX 7900 XTX\n")
+	if gpu.vendor != "amd" {
+		t.Fatalf("unexpected GPU classification: %#v", gpu)
+	}
+	if !amdWindowsROCmSupported(gpu.name) {
+		t.Fatalf("expected %q to be supported by the Windows ROCm portable", gpu.name)
+	}
+	if got := portableURL(gpu); got != amdPortableURL {
+		t.Fatalf("portableURL(%#v) = %q, want %q", gpu, got, amdPortableURL)
+	}
+}
+
+func TestOlderAMDWarnsButStillSelectsTheOfficialAMDPortable(t *testing.T) {
+	gpu := classifyGPU("Radeon RX 6700 XT\n")
+	if amdWindowsROCmSupported(gpu.name) {
+		t.Fatalf("did not expect %q in the official Windows ROCm support range", gpu.name)
+	}
+	if got := portableURL(gpu); got != amdPortableURL {
+		t.Fatalf("portableURL(%#v) = %q, want %q", gpu, got, amdPortableURL)
+	}
+}
+
 func TestRecommendedVariantNeverAutomaticallySelectsFull(t *testing.T) {
 	tests := []struct {
 		vram float64

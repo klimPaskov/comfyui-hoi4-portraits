@@ -37,7 +37,7 @@ python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 
 ## 4. Use the token on RunPod
 
-Add `HF_TOKEN` to the pod environment or export it in the RunPod Web Terminal before running the installation command:
+Add `HF_TOKEN` to the pod environment or export it in a Jupyter terminal before running the installation command:
 
 ```bash
 export HF_TOKEN="hf_..."

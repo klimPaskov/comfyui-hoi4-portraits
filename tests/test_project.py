@@ -36,7 +36,7 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {77, 21, 42, 51})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {78, 21, 43, 52})
 
     def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
@@ -107,6 +107,14 @@ class WorkflowTests(unittest.TestCase):
         titles = {node["title"] for node in previews}
         self.assertTrue({"Prepared portrait", "Restored portrait"}.issubset(titles))
         self.assertEqual(sum(title.startswith("Portrait ") for title in titles), 3)
+        self.assertTrue(all("full resolution" in title for title in titles if title.startswith("Portrait ")))
+        stage_groups = {
+            group["title"]: group["bounding"]
+            for group in ui["groups"]
+            if group["title"] in {"03 Restore details", "04 Create three portraits", "05 Save portraits"}
+        }
+        self.assertEqual({bounding[1] for bounding in stage_groups.values()}, {40})
+        self.assertEqual({bounding[3] for bounding in stage_groups.values()}, {1520})
         masters = [node for node in api.values() if node["class_type"] == "ImageScale" and "master" in node["_meta"]["title"]]
         games = [node for node in api.values() if node["class_type"] == "ImageScale" and "game" in node["_meta"]["title"]]
         self.assertEqual(len(masters), 3)
@@ -122,8 +130,28 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(len(extracts), 3)
         self.assertTrue(all(node["inputs"]["image"][0] == background_id for node in extracts))
 
+    def test_final_previews_use_full_resolution_masters(self) -> None:
+        expected_titles = {
+            "hoi4_portrait_source": {"Portrait 1 — full resolution", "Portrait 2 — full resolution", "Portrait 3 — full resolution"},
+            "hoi4_portrait_text_to_image": {"Full-resolution portrait"},
+            "hoi4_portrait_batch": {"Full-resolution portrait"},
+            "hoi4_portrait_processing_only": {"Full-resolution portrait"},
+        }
+        for workflow_id, titles in expected_titles.items():
+            ui = json.loads((WORKFLOW_DIR / f"{workflow_id}.json").read_text())
+            nodes = {node["id"]: node for node in ui["nodes"]}
+            links = {link[0]: link for link in ui["links"]}
+            previews = [node for node in ui["nodes"] if node["type"] == "PreviewImage" and node["title"] in titles]
+            self.assertEqual({node["title"] for node in previews}, titles)
+            for preview in previews:
+                source_id = links[preview["inputs"][0]["link"]][1]
+                source = nodes[source_id]
+                self.assertEqual(source["type"], "ImageScale")
+                self.assertEqual(source["widgets_values"][1:3], [1024, 1365])
+
     def test_adonis_defaults_match_the_upstream_base_post_graph(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_processing_only.api.json").read_text())
+        ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_processing_only.json").read_text())
         scale = next(node for node in api.values() if node["class_type"] == "ImageScaleToTotalPixelsX")
         self.assertEqual([scale["inputs"][key] for key in ("megapixels", "multiple_of", "resize_mode", "upscale_method")], [1.7, 16, "crop", "lanczos"])
         options = next(node for node in api.values() if node["class_type"] == "SharkOptions_Beta")
@@ -143,8 +171,15 @@ class WorkflowTests(unittest.TestCase):
         switch = next(node for node in api.values() if node["class_type"] == "ComfySwitchNode")
         self.assertIs(switch["inputs"]["switch"], True)
         self.assertEqual(api[switch["inputs"]["on_false"][0]]["class_type"], "ImageScale")
-        self.assertEqual(api[switch["inputs"]["on_true"][0]]["class_type"], "VAEDecode")
+        cached = api[switch["inputs"]["on_true"][0]]
+        self.assertEqual(cached["class_type"], "Hoi4RestorationCache")
+        self.assertEqual(api[cached["inputs"]["image"][0]]["class_type"], "VAEDecode")
         self.assertEqual(sum(node["class_type"] == "VAEDecode" for node in api.values()), 1)
+        adonis_ui_samplers = [node for node in ui["nodes"] if node["type"] == "ClownsharKSampler_Beta"]
+        self.assertEqual(len(adonis_ui_samplers), 2)
+        self.assertTrue(all(node["widgets_values"][8] == "fixed" for node in adonis_ui_samplers))
+        shared_seed = next(node for node in ui["nodes"] if node["title"] == "Shared Adonis seed")
+        self.assertEqual(shared_seed["widgets_values"], [42])
 
     def test_batch_has_one_sampler_and_all_three_output_types(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.api.json").read_text())
@@ -239,10 +274,15 @@ class InstallerTests(unittest.TestCase):
             self.assertEqual((runtime_root / "input/existing.jpg").read_bytes(), b"existing")
             self.assertEqual((runtime_root / "output/156x210/dds/existing.dds").read_bytes(), b"existing")
 
-    def test_every_variant_install_keeps_all_four_loras(self) -> None:
+    def test_every_variant_install_keeps_all_nine_loras(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())
         expected = {
+            "hoi4_portrait_flux2_klein_9b_lora_000001750.safetensors",
+            "hoi4_portrait_flux2_klein_9b_lora_000002000.safetensors",
+            "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
             "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
+            "hoi4_portrait_flux2_klein_9b_lora_000002750.safetensors",
+            "hoi4_portrait_flux2_klein_9b_lora_000003000.safetensors",
             "adonis_base.safetensors",
             "adonis_refine.safetensors",
             "adonis_post.safetensors",
@@ -266,6 +306,16 @@ class InstallerTests(unittest.TestCase):
         windows = (ROOT / "scripts/install_windows.ps1").read_text()
         self.assertIn("VARIANTS=(fp8)", runpod)
         self.assertIn('[string]$Variant = "fp8"', windows)
+
+    def test_windows_wizard_offers_official_comfyui_and_amd_rocm_install(self) -> None:
+        wizard = (ROOT / "packaging/windows/main.go").read_text()
+        starter = (ROOT / "scripts/start_windows.ps1").read_text()
+        self.assertIn("Install ComfyUI automatically now?", wizard)
+        self.assertIn("Install ComfyUI with ROCm automatically now?", wizard)
+        self.assertIn("ComfyUI_windows_portable_amd.7z", wizard)
+        self.assertIn("ComfyUI_windows_portable_nvidia.7z", wizard)
+        self.assertIn("amdWindowsROCmSupported", wizard)
+        self.assertIn("run_amd_gpu.bat", starter)
 
     def test_three_ireland_batch_examples_are_bundled(self) -> None:
         self.assertEqual(
@@ -382,6 +432,8 @@ class CustomNodeTests(unittest.TestCase):
         fake = types.ModuleType("folder_paths")
         fake.get_input_directory = lambda: str(root / "input")
         fake.get_output_directory = lambda: str(root / "output")
+        fake.get_temp_directory = lambda: str(root / "temp")
+        fake.get_annotated_filepath = lambda name: str(root / "input" / str(name))
 
         def save_path(prefix, output_dir, width, height):
             prefix_path = Path(prefix)
@@ -421,6 +473,29 @@ class CustomNodeTests(unittest.TestCase):
                     "hoi4_portraits/156x210/dds/My General.Portrait_2",
                 ),
             )
+
+    def test_restoration_cache_skips_lazy_adonis_input_for_an_unchanged_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "input").mkdir()
+            (root / "input/source.png").write_bytes(b"source-v1")
+            module = self._load_module(root)
+            prompt = {
+                "8": {"class_type": "VAEDecode", "inputs": {"samples": ["7", 0], "setting": 42}},
+                "7": {"class_type": "ClownsharKSampler_Beta", "inputs": {"seed": 42}},
+                "9": {"class_type": "Hoi4RestorationCache", "inputs": {"image": ["8", 0], "source_filename": ["1", 2]}},
+            }
+            cache = module.Hoi4RestorationCache()
+            self.assertEqual(cache.check_lazy_status(None, "source.png", prompt, "9"), ["image"])
+            image = torch.rand((1, 64, 48, 3), dtype=torch.float32)
+            saved = cache.reuse(image, "source.png", prompt, "9")[0]
+            self.assertIs(saved, image)
+            self.assertEqual(cache.check_lazy_status(None, "source.png", prompt, "9"), [])
+            loaded = cache.reuse(None, "source.png", prompt, "9")[0]
+            self.assertTrue(torch.equal(loaded, image))
+            changed_prompt = json.loads(json.dumps(prompt))
+            changed_prompt["7"]["inputs"]["seed"] = 43
+            self.assertEqual(cache.check_lazy_status(None, "source.png", changed_prompt, "9"), ["image"])
 
     def test_dds_matches_vanilla_argb8888_portrait_profile(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -474,7 +549,11 @@ class CustomNodeTests(unittest.TestCase):
             images, masks, names = module.Hoi4BatchInput().load_batch(
                 "hoi4_portraits_batch", "*.png;*.jpg;*.jpeg;*.webp"
             )
-            self.assertEqual(names, ["A.png", "b.JPG", "c.webp"])
+            self.assertEqual(names, [
+                "hoi4_portraits_batch/A.png",
+                "hoi4_portraits_batch/b.JPG",
+                "hoi4_portraits_batch/c.webp",
+            ])
             self.assertEqual([tuple(image.shape) for image in images], [
                 (1, 30, 20, 3),
                 (1, 24, 18, 3),
@@ -496,6 +575,7 @@ class CustomNodeTests(unittest.TestCase):
         self.assertNotIn("Hoi4PortraitSampler", source)
         self.assertIn('"Hoi4SetupGuide": Hoi4SetupGuide', source)
         self.assertIn('"Hoi4BackgroundReplace": Hoi4BackgroundReplace', source)
+        self.assertIn('"Hoi4RestorationCache": Hoi4RestorationCache', source)
 
 
 if __name__ == "__main__":

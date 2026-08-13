@@ -512,13 +512,29 @@
   },
   "34": {
     "inputs": {
+      "image": [
+        "33",
+        0
+      ],
+      "source_filename": [
+        "2",
+        2
+      ]
+    },
+    "class_type": "Hoi4RestorationCache",
+    "_meta": {
+      "title": "Reuse restored portrait"
+    }
+  },
+  "35": {
+    "inputs": {
       "switch": true,
       "on_false": [
         "10",
         0
       ],
       "on_true": [
-        "33",
+        "34",
         0
       ]
     },
@@ -527,7 +543,7 @@
       "title": "Use Adonis restoration"
     }
   },
-  "35": {
+  "36": {
     "inputs": {
       "text": "make this portrait hoi4_portrait style",
       "clip": [
@@ -540,7 +556,7 @@
       "title": "Portrait prompt"
     }
   },
-  "36": {
+  "37": {
     "inputs": {
       "text": "",
       "clip": [
@@ -553,11 +569,11 @@
       "title": "Negative prompt"
     }
   },
-  "37": {
+  "38": {
     "inputs": {
       "guidance": 1.0,
       "conditioning": [
-        "35",
+        "36",
         0
       ]
     },
@@ -566,10 +582,10 @@
       "title": "Prompt guidance — 1"
     }
   },
-  "38": {
+  "39": {
     "inputs": {
       "pixels": [
-        "34",
+        "35",
         0
       ],
       "vae": [
@@ -582,14 +598,14 @@
       "title": "Encode portrait reference"
     }
   },
-  "39": {
+  "40": {
     "inputs": {
       "conditioning": [
-        "37",
+        "38",
         0
       ],
       "latent": [
-        "38",
+        "39",
         0
       ]
     },
@@ -598,14 +614,14 @@
       "title": "Positive portrait reference"
     }
   },
-  "40": {
+  "41": {
     "inputs": {
       "conditioning": [
-        "36",
+        "37",
         0
       ],
       "latent": [
-        "38",
+        "39",
         0
       ]
     },
@@ -614,7 +630,7 @@
       "title": "Negative portrait reference"
     }
   },
-  "41": {
+  "42": {
     "inputs": {
       "seed": 42,
       "steps": 4,
@@ -627,15 +643,15 @@
         0
       ],
       "positive": [
-        "39",
-        0
-      ],
-      "negative": [
         "40",
         0
       ],
+      "negative": [
+        "41",
+        0
+      ],
       "latent_image": [
-        "38",
+        "39",
         0
       ]
     },
@@ -644,10 +660,10 @@
       "title": "Portrait sampling"
     }
   },
-  "42": {
+  "43": {
     "inputs": {
       "samples": [
-        "41",
+        "42",
         0
       ],
       "vae": [
@@ -660,14 +676,14 @@
       "title": "Decode portrait"
     }
   },
-  "43": {
+  "44": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "42",
+        "43",
         0
       ]
     },
@@ -676,14 +692,14 @@
       "title": "Master portrait — 1024×1365"
     }
   },
-  "44": {
+  "45": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "43",
+        "44",
         0
       ]
     },
@@ -692,14 +708,14 @@
       "title": "Game portrait — 156×210"
     }
   },
-  "45": {
+  "46": {
     "inputs": {
       "filename_prefix": [
-        "48",
+        "49",
         0
       ],
       "images": [
-        "43",
+        "44",
         0
       ]
     },
@@ -708,14 +724,14 @@
       "title": "Save every master PNG"
     }
   },
-  "46": {
+  "47": {
     "inputs": {
       "filename_prefix": [
-        "48",
+        "49",
         1
       ],
       "images": [
-        "44",
+        "45",
         0
       ]
     },
@@ -724,15 +740,15 @@
       "title": "Save every game PNG"
     }
   },
-  "47": {
+  "48": {
     "inputs": {
       "filename_prefix": [
-        "48",
+        "49",
         2
       ],
       "format": "argb8888",
       "images": [
-        "44",
+        "45",
         0
       ]
     },
@@ -741,7 +757,7 @@
       "title": "Save every game DDS"
     }
   },
-  "48": {
+  "49": {
     "inputs": {
       "source_filename": [
         "2",
@@ -754,7 +770,7 @@
       "title": "Keep each source image name"
     }
   },
-  "49": {
+  "50": {
     "inputs": {
       "images": [
         "10",
@@ -766,10 +782,10 @@
       "title": "Prepared portrait"
     }
   },
-  "50": {
+  "51": {
     "inputs": {
       "images": [
-        "34",
+        "35",
         0
       ]
     },
@@ -778,7 +794,7 @@
       "title": "Restored portrait"
     }
   },
-  "51": {
+  "52": {
     "inputs": {
       "images": [
         "44",
@@ -787,7 +803,7 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Game portrait"
+      "title": "Full-resolution portrait"
     }
   }
 }

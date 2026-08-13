@@ -30,7 +30,7 @@ The installers place everything for you. For manual installs, use the folders un
 | `diffusion_models/` | Distilled `flux-2-klein-9b.safetensors` (full), `flux-2-klein-9b-fp8.safetensors` (FP8), or `flux-2-klein-9b-Q5_K_M.gguf` (GGUF) |
 | `text_encoders/` | `Qwen3-8B-Q8_0.gguf` |
 | `vae/` | `flux2-vae.safetensors` |
-| `loras/` | `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` (HOI4 style LoRA) |
+| `loras/` | HOI4 style LoRAs at steps 1750, 2000, 2250, 2500, 2750, and 3000; the workflow currently selects 2500 |
 | `loras/` | `adonis_base.safetensors`, `adonis_refine.safetensors`, and `adonis_post.safetensors` |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
@@ -48,7 +48,7 @@ Before downloading the gated full/FP8 model, follow the [Hugging Face access gui
 4. Leave the red **Use Adonis restoration** switch on for the full Base → Post cleanup, or turn it off to use the prepared RealESRGAN portrait directly.
 5. Keep the default prompt `make this portrait hoi4_portrait style`. Append a short description only when the model needs help (see the Prompting guide).
 6. Leave background replacement off for the first run.
-7. Queue once. The source workflow creates three candidates from the same input and shows them side by side in the comparison row.
+7. Queue once. The source workflow keeps the three HOI4 style seeds fixed for checkpoint comparisons and shows the full-resolution candidates side by side in the comparison row.
 8. Pick a final from the comparison row; the game-ready file is the `156x210/dds/` output.
 
 RunPod outputs are saved under `/workspace/hoi4-portrait-runpod/output/1024x1365/`, `/workspace/hoi4-portrait-runpod/output/156x210/`, and `/workspace/hoi4-portrait-runpod/output/156x210/dds/`. The Windows installer defaults to `Documents\hoi4-portraits\output` and lets you choose the ComfyUI folder or a custom path. Manual installations use the same subfolders under `ComfyUI/output/hoi4_portraits/`.

@@ -4,6 +4,18 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$PortableRoot = Split-Path -Parent $ComfyUIRoot
+$AmdLauncher = Join-Path $PortableRoot "run_amd_gpu.bat"
+if (Test-Path $AmdLauncher) {
+    Push-Location $PortableRoot
+    try {
+        & $AmdLauncher
+        exit $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+}
+
 $Candidates = @(
     (Join-Path $ComfyUIRoot ".venv\Scripts\python.exe"),
     (Join-Path (Split-Path -Parent $ComfyUIRoot) "python_embeded\python.exe"),

@@ -37,12 +37,12 @@ The installer downloads only the model variant you choose:
 | FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 9.4 GB | 16–20 GB |
 | GGUF distilled | `flux-2-klein-9b-*.gguf` | 5.9–10.0 GB | 8–16 GB |
 
-Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, the style LoRA, all three Adonis LoKrs, RealESRGAN, BiRefNet, and face detectors) add **12.89 GB** on top. Every variant install keeps all four LoRAs: the HOI4 style LoRA plus Adonis Base, Refine, and Post. Refine stays installed as the official alternative first pass; the default graph uses Base → Post. The full install's exact model payload is **31.05 GB (28.92 GiB)**. Storage and VRAM requirements for each install are documented in [`docs/local-install.md`](docs/local-install.md).
+Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, six HOI4 style LoRA checkpoints from steps 1750 through 3000, all three Adonis LoKrs, RealESRGAN, BiRefNet, and face detectors) add **14.55 GB** on top. Every variant install keeps all nine LoRAs. Refine stays installed as the official alternative first pass; the default graph uses Base → Post. The full install's exact model payload is **32.71 GB (30.46 GiB)**. Storage and VRAM requirements for each install are documented in [`docs/local-install.md`](docs/local-install.md).
 
 The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest) contains:
 
 - a model-free ZIP for manual installs;
-- a **Windows x64 installer wizard** that detects VRAM for guidance, pre-checks FP8, lets you pick any combination (including GGUF and full BF16), asks for GGUF quantizations when GGUF is selected, finds your ComfyUI, and installs workflows, custom nodes, and models;
+- a **Windows x64 installer wizard** that detects the GPU, offers to install the official ComfyUI portable package when ComfyUI is missing, uses the ROCm package for AMD GPUs, pre-checks FP8, lets you pick any model combination, and installs the workflows, custom nodes, and models;
 - a **RunPod runtime archive** whose command defaults to FP8 and accepts `--variant full|fp8|gguf` plus `--gguf-quants`.
 
 ## Fastest start
@@ -53,9 +53,11 @@ The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releas
 .\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe
 ```
 
-Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard detect your VRAM and pre-check the recommended variant. It finds ComfyUI and shows separate selection boxes for batch inputs and portrait outputs. Both default to the local `Documents\hoi4-portraits` workspace, and each can instead use the ComfyUI folder or a custom path. It installs the node packs, copies the workflows and example inputs, and downloads the models. After restarting ComfyUI, open **Workflows → hoi4_portraits** and queue.
+Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard detect your GPU and pre-check FP8. If it cannot find ComfyUI, it asks whether to install the official Windows portable package automatically; an AMD detection selects the ROCm-enabled package. You can decline and provide an existing ComfyUI path. The wizard also lets you choose the batch input and portrait output folders, which default to the local `Documents\hoi4-portraits` workspace. It installs the node packs, copies the workflows and example inputs, and downloads the models. After restarting ComfyUI, open **Workflows → hoi4_portraits** and queue.
 
 ### RunPod
+
+Open a Jupyter terminal on the pod and run:
 
 ```bash
 (
@@ -70,7 +72,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The RunPod command uses FP8 by default. Batch sources go in `/workspace/hoi4-portrait-runpod/input/`, and every PNG and DDS is written below `/workspace/hoi4-portrait-runpod/output/`. You can explicitly select full BF16 on a larger GPU or use GGUF on a smaller GPU, for example:
+The RunPod command uses FP8 by default, and a 25 GB RunPod volume is enough for that default installation. Batch sources go in `/workspace/hoi4-portrait-runpod/input/`, and every PNG and DDS is written below `/workspace/hoi4-portrait-runpod/output/`. You can explicitly select full BF16 on a larger GPU or use GGUF on a smaller GPU, for example:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q5_K_M
@@ -98,9 +100,9 @@ The workflow is arranged from left to right in clear, colour-coded stages.
 ![Source workflow overview](docs/assets/workflows/audit/source-overview-2026-08-13.png)
 
 1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then compare the prepared result below. The upload node already shows the source, so there is no duplicate preview.
-2. **Restoration:** the restoration group fully expands the current upstream [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json). It keeps the upstream 1.7 MP Lanczos crop, reference conditioning, shared empty latent, seed, nine-step control, and Shark options, with neutral restoration prompts that handle old photographs, scans, digital images, any gender, and monochrome, sepia, or colour sources. Adonis Base performs the first generation; its latent feeds both Post reference branches, and Adonis Post performs a second full generation before the final VAE decode. One red **Use Adonis restoration** switch defaults on; turn it off to send the prepared portrait directly to the next stage.
-3. **Style:** three independent candidates use the HOI4 style LoRA. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and its own seed.
-4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS.
+2. **Restoration:** the restoration group fully expands the current upstream [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json). It keeps the upstream 1.7 MP Lanczos crop, reference conditioning, shared empty latent, fixed seed, nine-step control, and Shark options, with neutral restoration prompts that handle old photographs, scans, digital images, any gender, and monochrome, sepia, or colour sources. Adonis Base performs the first generation; its latent feeds both Post reference branches, and Adonis Post performs a second full generation before the final VAE decode. One red **Use Adonis restoration** switch defaults on; turn it off to send the prepared portrait directly to the next stage. When the input and restoration settings are unchanged, the workflow reuses the completed Adonis result.
+3. **Style:** three independent candidates use the selected HOI4 style LoRA. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and fixed seeds for checkpoint comparisons. The installers include the 1750, 2000, 2250, 2500, 2750, and 3000-step LoRAs; the workflow keeps 2500 selected until a final checkpoint is chosen.
+4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three full-resolution finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS.
 
 The other three workflow canvases use the same stage colors and controls:
 

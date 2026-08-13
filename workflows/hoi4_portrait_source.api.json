@@ -520,13 +520,29 @@
   },
   "35": {
     "inputs": {
+      "image": [
+        "34",
+        0
+      ],
+      "source_filename": [
+        "2",
+        2
+      ]
+    },
+    "class_type": "Hoi4RestorationCache",
+    "_meta": {
+      "title": "Reuse restored portrait"
+    }
+  },
+  "36": {
+    "inputs": {
       "switch": true,
       "on_false": [
         "10",
         0
       ],
       "on_true": [
-        "34",
+        "35",
         0
       ]
     },
@@ -535,7 +551,7 @@
       "title": "Use Adonis restoration"
     }
   },
-  "36": {
+  "37": {
     "inputs": {
       "text": "make this portrait hoi4_portrait style",
       "clip": [
@@ -548,7 +564,7 @@
       "title": "Portrait prompt"
     }
   },
-  "37": {
+  "38": {
     "inputs": {
       "text": "",
       "clip": [
@@ -561,11 +577,11 @@
       "title": "Negative prompt"
     }
   },
-  "38": {
+  "39": {
     "inputs": {
       "guidance": 1.0,
       "conditioning": [
-        "36",
+        "37",
         0
       ]
     },
@@ -574,10 +590,10 @@
       "title": "Prompt guidance — 1"
     }
   },
-  "39": {
+  "40": {
     "inputs": {
       "pixels": [
-        "35",
+        "36",
         0
       ],
       "vae": [
@@ -590,14 +606,14 @@
       "title": "Encode portrait reference"
     }
   },
-  "40": {
+  "41": {
     "inputs": {
       "conditioning": [
-        "38",
+        "39",
         0
       ],
       "latent": [
-        "39",
+        "40",
         0
       ]
     },
@@ -606,14 +622,14 @@
       "title": "Positive portrait reference"
     }
   },
-  "41": {
+  "42": {
     "inputs": {
       "conditioning": [
-        "37",
+        "38",
         0
       ],
       "latent": [
-        "39",
+        "40",
         0
       ]
     },
@@ -622,7 +638,7 @@
       "title": "Negative portrait reference"
     }
   },
-  "42": {
+  "43": {
     "inputs": {
       "seed": 42,
       "steps": 4,
@@ -635,15 +651,15 @@
         0
       ],
       "positive": [
-        "40",
-        0
-      ],
-      "negative": [
         "41",
         0
       ],
+      "negative": [
+        "42",
+        0
+      ],
       "latent_image": [
-        "39",
+        "40",
         0
       ]
     },
@@ -652,10 +668,10 @@
       "title": "Portrait 1 sampling"
     }
   },
-  "43": {
+  "44": {
     "inputs": {
       "samples": [
-        "42",
+        "43",
         0
       ],
       "vae": [
@@ -668,7 +684,7 @@
       "title": "Decode portrait"
     }
   },
-  "44": {
+  "45": {
     "inputs": {
       "seed": 43,
       "steps": 4,
@@ -681,15 +697,15 @@
         0
       ],
       "positive": [
-        "40",
-        0
-      ],
-      "negative": [
         "41",
         0
       ],
+      "negative": [
+        "42",
+        0
+      ],
       "latent_image": [
-        "39",
+        "40",
         0
       ]
     },
@@ -698,10 +714,10 @@
       "title": "Portrait 2 sampling"
     }
   },
-  "45": {
+  "46": {
     "inputs": {
       "samples": [
-        "44",
+        "45",
         0
       ],
       "vae": [
@@ -714,7 +730,7 @@
       "title": "Decode portrait"
     }
   },
-  "46": {
+  "47": {
     "inputs": {
       "seed": 44,
       "steps": 4,
@@ -727,15 +743,15 @@
         0
       ],
       "positive": [
-        "40",
-        0
-      ],
-      "negative": [
         "41",
         0
       ],
+      "negative": [
+        "42",
+        0
+      ],
       "latent_image": [
-        "39",
+        "40",
         0
       ]
     },
@@ -744,10 +760,10 @@
       "title": "Portrait 3 sampling"
     }
   },
-  "47": {
+  "48": {
     "inputs": {
       "samples": [
-        "46",
+        "47",
         0
       ],
       "vae": [
@@ -760,14 +776,14 @@
       "title": "Decode portrait"
     }
   },
-  "48": {
+  "49": {
     "inputs": {
       "image1": [
-        "43",
+        "44",
         0
       ],
       "image2": [
-        "45",
+        "46",
         0
       ]
     },
@@ -776,14 +792,14 @@
       "title": "Join portraits 1 and 2"
     }
   },
-  "49": {
+  "50": {
     "inputs": {
       "image1": [
-        "48",
+        "49",
         0
       ],
       "image2": [
-        "47",
+        "48",
         0
       ]
     },
@@ -792,7 +808,7 @@
       "title": "Add portrait 3"
     }
   },
-  "50": {
+  "51": {
     "inputs": {
       "image": "hoi4_leader_portrait_background.png"
     },
@@ -801,11 +817,11 @@
       "title": "Choose a replacement background"
     }
   },
-  "51": {
+  "52": {
     "inputs": {
       "use_background": false,
       "image": [
-        "49",
+        "50",
         0
       ],
       "bg_removal_model": [
@@ -813,7 +829,7 @@
         0
       ],
       "background": [
-        "50",
+        "51",
         0
       ]
     },
@@ -822,12 +838,12 @@
       "title": "Use replacement background"
     }
   },
-  "52": {
+  "53": {
     "inputs": {
       "batch_index": 0,
       "length": 1,
       "image": [
-        "51",
+        "52",
         0
       ]
     },
@@ -836,27 +852,11 @@
       "title": "Take portrait 1"
     }
   },
-  "53": {
+  "54": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
-      "crop": "center",
-      "image": [
-        "52",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Portrait 1 master — 1024×1365"
-    }
-  },
-  "54": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
       "crop": "center",
       "image": [
         "53",
@@ -865,15 +865,31 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Portrait 1 game — 156×210"
+      "title": "Portrait 1 master — 1024×1365"
     }
   },
   "55": {
     "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "54",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 1 game — 156×210"
+    }
+  },
+  "56": {
+    "inputs": {
       "batch_index": 1,
       "length": 1,
       "image": [
-        "51",
+        "52",
         0
       ]
     },
@@ -882,27 +898,11 @@
       "title": "Take portrait 2"
     }
   },
-  "56": {
+  "57": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
-      "crop": "center",
-      "image": [
-        "55",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Portrait 2 master — 1024×1365"
-    }
-  },
-  "57": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
       "crop": "center",
       "image": [
         "56",
@@ -911,15 +911,31 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Portrait 2 game — 156×210"
+      "title": "Portrait 2 master — 1024×1365"
     }
   },
   "58": {
     "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "57",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 2 game — 156×210"
+    }
+  },
+  "59": {
+    "inputs": {
       "batch_index": 2,
       "length": 1,
       "image": [
-        "51",
+        "52",
         0
       ]
     },
@@ -928,27 +944,11 @@
       "title": "Take portrait 3"
     }
   },
-  "59": {
+  "60": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
-      "crop": "center",
-      "image": [
-        "58",
-        0
-      ]
-    },
-    "class_type": "ImageScale",
-    "_meta": {
-      "title": "Portrait 3 master — 1024×1365"
-    }
-  },
-  "60": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "width": 156,
-      "height": 210,
       "crop": "center",
       "image": [
         "59",
@@ -957,10 +957,26 @@
     },
     "class_type": "ImageScale",
     "_meta": {
-      "title": "Portrait 3 game — 156×210"
+      "title": "Portrait 3 master — 1024×1365"
     }
   },
   "61": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 156,
+      "height": 210,
+      "crop": "center",
+      "image": [
+        "60",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Portrait 3 game — 156×210"
+    }
+  },
+  "62": {
     "inputs": {
       "source_filename": [
         "2",
@@ -973,14 +989,14 @@
       "title": "Keep source name — portrait 1"
     }
   },
-  "62": {
+  "63": {
     "inputs": {
       "filename_prefix": [
-        "61",
+        "62",
         0
       ],
       "images": [
-        "53",
+        "54",
         0
       ]
     },
@@ -989,14 +1005,14 @@
       "title": "Save portrait 1 master PNG"
     }
   },
-  "63": {
+  "64": {
     "inputs": {
       "filename_prefix": [
-        "61",
+        "62",
         1
       ],
       "images": [
-        "54",
+        "55",
         0
       ]
     },
@@ -1005,15 +1021,15 @@
       "title": "Save portrait 1 game PNG"
     }
   },
-  "64": {
+  "65": {
     "inputs": {
       "filename_prefix": [
-        "61",
+        "62",
         2
       ],
       "format": "argb8888",
       "images": [
-        "54",
+        "55",
         0
       ]
     },
@@ -1022,7 +1038,7 @@
       "title": "Save portrait 1 DDS"
     }
   },
-  "65": {
+  "66": {
     "inputs": {
       "source_filename": [
         "2",
@@ -1035,14 +1051,14 @@
       "title": "Keep source name — portrait 2"
     }
   },
-  "66": {
+  "67": {
     "inputs": {
       "filename_prefix": [
-        "65",
+        "66",
         0
       ],
       "images": [
-        "56",
+        "57",
         0
       ]
     },
@@ -1051,14 +1067,14 @@
       "title": "Save portrait 2 master PNG"
     }
   },
-  "67": {
+  "68": {
     "inputs": {
       "filename_prefix": [
-        "65",
+        "66",
         1
       ],
       "images": [
-        "57",
+        "58",
         0
       ]
     },
@@ -1067,15 +1083,15 @@
       "title": "Save portrait 2 game PNG"
     }
   },
-  "68": {
+  "69": {
     "inputs": {
       "filename_prefix": [
-        "65",
+        "66",
         2
       ],
       "format": "argb8888",
       "images": [
-        "57",
+        "58",
         0
       ]
     },
@@ -1084,7 +1100,7 @@
       "title": "Save portrait 2 DDS"
     }
   },
-  "69": {
+  "70": {
     "inputs": {
       "source_filename": [
         "2",
@@ -1097,14 +1113,14 @@
       "title": "Keep source name — portrait 3"
     }
   },
-  "70": {
+  "71": {
     "inputs": {
       "filename_prefix": [
-        "69",
+        "70",
         0
       ],
       "images": [
-        "59",
+        "60",
         0
       ]
     },
@@ -1113,14 +1129,14 @@
       "title": "Save portrait 3 master PNG"
     }
   },
-  "71": {
+  "72": {
     "inputs": {
       "filename_prefix": [
-        "69",
+        "70",
         1
       ],
       "images": [
-        "60",
+        "61",
         0
       ]
     },
@@ -1129,15 +1145,15 @@
       "title": "Save portrait 3 game PNG"
     }
   },
-  "72": {
+  "73": {
     "inputs": {
       "filename_prefix": [
-        "69",
+        "70",
         2
       ],
       "format": "argb8888",
       "images": [
-        "60",
+        "61",
         0
       ]
     },
@@ -1146,7 +1162,7 @@
       "title": "Save portrait 3 DDS"
     }
   },
-  "73": {
+  "74": {
     "inputs": {
       "images": [
         "10",
@@ -1158,10 +1174,10 @@
       "title": "Prepared portrait"
     }
   },
-  "74": {
+  "75": {
     "inputs": {
       "images": [
-        "35",
+        "36",
         0
       ]
     },
@@ -1170,7 +1186,7 @@
       "title": "Restored portrait"
     }
   },
-  "75": {
+  "76": {
     "inputs": {
       "images": [
         "54",
@@ -1179,10 +1195,10 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Portrait 1 — 156×210"
+      "title": "Portrait 1 — full resolution"
     }
   },
-  "76": {
+  "77": {
     "inputs": {
       "images": [
         "57",
@@ -1191,10 +1207,10 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Portrait 2 — 156×210"
+      "title": "Portrait 2 — full resolution"
     }
   },
-  "77": {
+  "78": {
     "inputs": {
       "images": [
         "60",
@@ -1203,7 +1219,7 @@
     },
     "class_type": "PreviewImage",
     "_meta": {
-      "title": "Portrait 3 — 156×210"
+      "title": "Portrait 3 — full resolution"
     }
   }
 }

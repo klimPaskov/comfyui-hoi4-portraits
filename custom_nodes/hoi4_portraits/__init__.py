@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from fnmatch import fnmatch
+import hashlib
+import json
 from pathlib import Path
 import re
 from typing import Any
@@ -503,8 +505,7 @@ class Hoi4LoadImage:
 
     def load_image(self, image):
         loaded_image, mask = _registered_node("LoadImage")().load_image(image)
-        filename = Path(folder_paths.get_annotated_filepath(image)).name
-        return (loaded_image, mask, filename)
+        return (loaded_image, mask, str(image))
 
 
 class Hoi4BatchInput:
@@ -568,7 +569,7 @@ class Hoi4BatchInput:
         return (
             [tensor.clamp(0, 1) for tensor in tensors],
             masks,
-            [path.name for path in paths],
+            [(relative_folder / path.name).as_posix() for path in paths],
         )
 
 
@@ -592,6 +593,94 @@ class Hoi4OutputFilename:
 
     def build(self, source_filename, suffix=""):
         return _output_filename_prefixes(source_filename, suffix)
+
+
+class Hoi4RestorationCache:
+    """Reuse a completed Adonis image without evaluating its lazy input again."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE", {"lazy": True}),
+                "source_filename": ("STRING", {"forceInput": True}),
+            },
+            "hidden": {"prompt": "PROMPT", "unique_id": "UNIQUE_ID"},
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "reuse"
+    CATEGORY = "HOI4 portraits/restoration"
+    DESCRIPTION = "Reuse the completed fixed-seed Adonis restoration for an unchanged source and unchanged settings."
+
+    @staticmethod
+    def _ancestor_signature(prompt, node_id):
+        nodes = prompt if isinstance(prompt, dict) else {}
+        active: set[str] = set()
+
+        def visit(current_id):
+            key = str(current_id)
+            if key in active:
+                return {"cycle": key}
+            node = nodes.get(key, {})
+            active.add(key)
+            inputs = {}
+            for name, value in sorted(node.get("inputs", {}).items()):
+                if isinstance(value, list) and len(value) == 2 and str(value[0]) in nodes:
+                    inputs[name] = {"node": visit(value[0]), "slot": value[1]}
+                else:
+                    inputs[name] = value
+            active.remove(key)
+            return {"class_type": node.get("class_type"), "inputs": inputs}
+
+        cache_node = nodes.get(str(node_id), {})
+        image_link = cache_node.get("inputs", {}).get("image")
+        return visit(image_link[0]) if isinstance(image_link, list) and len(image_link) == 2 else {}
+
+    @classmethod
+    def _cache_path(cls, source_filename, prompt, unique_id):
+        digest = hashlib.sha256()
+        signature = cls._ancestor_signature(prompt, unique_id)
+        digest.update(json.dumps({"schema": 1, "graph": signature}, sort_keys=True, separators=(",", ":"), default=str).encode())
+        source_name = str(source_filename)
+        digest.update(source_name.encode(errors="replace"))
+        try:
+            source_path = Path(folder_paths.get_annotated_filepath(source_name))
+            with source_path.open("rb") as source:
+                for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                    digest.update(chunk)
+        except OSError:
+            pass
+        cache_root = Path(folder_paths.get_temp_directory()) / "hoi4_portraits" / "restoration_cache"
+        return cache_root / f"{digest.hexdigest()}.npy"
+
+    @staticmethod
+    def _valid(path: Path) -> bool:
+        try:
+            array = np.load(path, mmap_mode="r", allow_pickle=False)
+            return array.ndim == 4 and array.shape[-1] in (3, 4)
+        except (OSError, ValueError):
+            path.unlink(missing_ok=True)
+            return False
+
+    def check_lazy_status(self, image, source_filename, prompt=None, unique_id=None):
+        path = self._cache_path(source_filename, prompt, unique_id)
+        if self._valid(path):
+            return []
+        return ["image"] if image is None else []
+
+    def reuse(self, image, source_filename, prompt=None, unique_id=None):
+        path = self._cache_path(source_filename, prompt, unique_id)
+        if image is None:
+            array = np.load(path, allow_pickle=False)
+            return (torch.from_numpy(np.array(array, copy=True)).clamp(0, 1),)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix(".tmp")
+        with temporary.open("wb") as target:
+            np.save(target, image.detach().cpu().numpy(), allow_pickle=False)
+        temporary.replace(path)
+        return (image,)
 
 
 class Hoi4SaveDDS:
@@ -673,6 +762,7 @@ NODE_CLASS_MAPPINGS = {
     "Hoi4LoadImage": Hoi4LoadImage,
     "Hoi4BatchInput": Hoi4BatchInput,
     "Hoi4OutputFilename": Hoi4OutputFilename,
+    "Hoi4RestorationCache": Hoi4RestorationCache,
     "Hoi4SaveDDS": Hoi4SaveDDS,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -683,5 +773,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Hoi4LoadImage": "HOI4 Portrait Upload",
     "Hoi4BatchInput": "HOI4 Batch Input Folder",
     "Hoi4OutputFilename": "Keep Input Filename",
+    "Hoi4RestorationCache": "Reuse Restored Portrait",
     "Hoi4SaveDDS": "HOI4 Save DDS Portrait (156x210)",
 }

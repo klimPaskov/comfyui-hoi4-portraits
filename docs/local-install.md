@@ -8,18 +8,18 @@
 
 ## Storage and VRAM requirements
 
-The installer downloads only the selected distilled model variant plus the shared support set. The shared set is **12,893,345,742 bytes (12.89 GB / 12.01 GiB)**: Qwen 3 8B Q8 GGUF, FLUX.2 VAE, the HOI4 style LoRA, Adonis Base, Refine, and Post, RealESRGAN, BiRefNet, and both face detectors. All four LoRAs remain mandatory shared downloads for full, FP8, and GGUF installs.
+The installer downloads only the selected distilled model variant plus the shared support set. The shared set is **14,550,242,942 bytes (14.55 GB / 13.55 GiB)**: Qwen 3 8B Q8 GGUF, FLUX.2 VAE, the six HOI4 style LoRA checkpoints from steps 1750 through 3000, Adonis Base, Refine, and Post, RealESRGAN, BiRefNet, and both face detectors. All nine LoRAs remain mandatory shared downloads for full, FP8, and GGUF installs.
 
 | Install | Variant file | Exact model payload | Practical free space | VRAM selection |
 | --- | --- | --- | --- | --- |
-| Full distilled | `flux-2-klein-9b.safetensors` | 31.051 GB / 28.918 GiB | 40 GB | more than 20 GB |
-| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 22.326 GB / 20.793 GiB | 30 GB | 16–20 GB |
-| GGUF distilled Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` | 18.803 GB / 17.512 GiB | 25 GB | 8–10 GB |
-| GGUF distilled Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` | 19.912 GB / 18.545 GiB | 26 GB | 10–14 GB |
-| GGUF distilled Q6_K | `flux-2-klein-9b-Q6_K.gguf` | 20.759 GB / 19.333 GiB | 27 GB | 12–16 GB |
-| GGUF distilled Q8_0 | `flux-2-klein-9b-Q8_0.gguf` | 22.872 GB / 21.301 GiB | 30 GB | 16+ GB |
+| Full distilled | `flux-2-klein-9b.safetensors` | 32.707 GB / 30.461 GiB | 40 GB | more than 20 GB |
+| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 23.983 GB / 22.336 GiB | 25 GB on RunPod | 16–20 GB |
+| GGUF distilled Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` | 20.460 GB / 19.055 GiB | 25 GB | 8–10 GB |
+| GGUF distilled Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` | 21.569 GB / 20.088 GiB | 26 GB | 10–14 GB |
+| GGUF distilled Q6_K | `flux-2-klein-9b-Q6_K.gguf` | 22.416 GB / 20.876 GiB | 27 GB | 12–16 GB |
+| GGUF distilled Q8_0 | `flux-2-klein-9b-Q8_0.gguf` | 24.529 GB / 22.844 GiB | 30 GB | 16+ GB |
 
-The bare minimum for the full workflow's model files is therefore **31,050,530,910 bytes (31.05 GB / 28.92 GiB)**. Keep about **40 GB free** for the model payload, ComfyUI package, Hugging Face metadata/cache behavior, and generated images. For multiple variants, count the shared set once: full + FP8 + GGUF Q5_K_M is **47.50 GB** of model files.
+The bare minimum for the full workflow's model files is therefore **32,707,428,110 bytes (32.71 GB / 30.46 GiB)**. Keep about **40 GB free** for the model payload, ComfyUI package, Hugging Face metadata/cache behavior, and generated images. For multiple variants, count the shared set once: full + FP8 + GGUF Q5_K_M is **49.16 GB** of model files.
 
 The Windows installer defaults to **FP8** at every detected VRAM size. The detected VRAM remains visible so you can select GGUF for an 8–16 GB GPU or full BF16 above 20 GB.
 
@@ -52,6 +52,8 @@ Pass `--variant` multiple times to prepare several variants; the first is applie
 
 On a RunPod image that already contains ComfyUI, the installer places the four workflows in `user/default/workflows/hoi4_portraits`, installs the project node pack plus the pinned Adonis/RES4LYF dependencies, copies the bundled backgrounds and sample source into `input/`, connects the batch and portrait output folders to the runtime workspace, and downloads the selected models:
 
+Open a Jupyter terminal on the pod and run:
+
 ```bash
 (
 set -euo pipefail
@@ -67,7 +69,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 
 Drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The archive supplies example portraits of Éamon de Valera, W. T. Cosgrave, and Seán Lemass. Master PNGs, game PNGs, and DDS files are written below `/workspace/hoi4-portrait-runpod/output/` in the `1024x1365`, `156x210`, and `156x210/dds` subfolders.
 
-The command defaults to **FP8**. Select full BF16 explicitly on a larger GPU or pass a GGUF variant and quantization on a smaller GPU:
+The command defaults to **FP8**, and a **25 GB RunPod volume is enough** for that default installation. Use a larger volume if you plan to retain many generated outputs. Select full BF16 explicitly on a larger GPU or pass a GGUF variant and quantization on a smaller GPU:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q4_K_M,Q5_K_M
@@ -88,11 +90,12 @@ Startup checks that every required node loaded and reports anything missing.
 The release executable is a complete installer wizard, not just an unpacker:
 
 1. Run `.\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe`.
-2. It detects your GPU VRAM with `nvidia-smi` for guidance and always pre-checks FP8. GGUF and full BF16 remain selectable but are never preselected.
-3. Toggle any combination of variants — including all three, if you want every model type available.
-4. If GGUF is selected, choose the quantization(s); the recommended one is pre-checked (Q4_K_M ≤ 10 GB, Q5_K_M 10–14 GB, Q6_K 12–16 GB, Q8_0 16+ GB).
-5. It finds your ComfyUI (or you type its root), then shows separate choices for the batch input and portrait output locations. Both default to `Documents\hoi4-portraits`, while the ComfyUI folders and custom paths remain selectable.
-6. It runs the bundled PowerShell installer, which installs the node packs, copies the workflows and three Ireland example sources, and downloads the selected models.
+2. It detects the installed GPU. NVIDIA VRAM is read with `nvidia-smi` for guidance, and FP8 remains pre-checked for every GPU.
+3. If ComfyUI is not found, the wizard asks whether to install it automatically. Accepting downloads the official ComfyUI Windows portable package; AMD detection selects the experimental ROCm-enabled package. ComfyUI currently limits that Windows ROCm package to RDNA 3, RDNA 3.5, and RDNA 4 hardware, so the wizard warns when another AMD family is detected. Declining keeps the manual ComfyUI path prompt.
+4. Toggle any combination of variants — including all three, if you want every model type available.
+5. If GGUF is selected, choose the quantization(s); the recommended one is pre-checked (Q4_K_M ≤ 10 GB, Q5_K_M 10–14 GB, Q6_K 12–16 GB, Q8_0 16+ GB).
+6. Choose separate batch input and portrait output locations. Both default to `Documents\hoi4-portraits`, while the ComfyUI folders and custom paths remain selectable.
+7. The bundled PowerShell installer installs the node packs, copies the workflows and three Ireland example sources, and downloads the selected models.
 
 The wizard works exactly like the RunPod command: after it finishes, restart ComfyUI and open **Workflows → hoi4_portraits**. Everything is ready out of the box.
 

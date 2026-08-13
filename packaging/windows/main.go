@@ -1,11 +1,9 @@
 // Command hoi4-portrait-setup extracts the model-free workflow package and
 // installs it into an existing ComfyUI with a VRAM-guided model variant.
 //
-// The wizard detects the GPU VRAM for guidance, pre-checks FP8 by default,
-// lets the user toggle any variant including GGUF and optional full BF16,
-// combination, asks for GGUF quantizations when gguf is chosen, finds the
-// ComfyUI root, and then runs the bundled PowerShell installer exactly like
-// the RunPod installer does.
+// The wizard detects the GPU, offers the official ComfyUI portable package
+// when ComfyUI is missing, selects the ROCm package for AMD, pre-checks FP8,
+// lets the user toggle optional variants, and then runs the bundled installer.
 package main
 
 import (
@@ -16,9 +14,11 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -28,6 +28,18 @@ import (
 var payload []byte
 
 var version = "dev"
+
+const (
+	amdPortableURL    = "https://github.com/Comfy-Org/ComfyUI/releases/latest/download/ComfyUI_windows_portable_amd.7z"
+	nvidiaPortableURL = "https://github.com/Comfy-Org/ComfyUI/releases/latest/download/ComfyUI_windows_portable_nvidia.7z"
+	sevenZipURL       = "https://www.7-zip.org/a/7zr.exe"
+)
+
+type gpuInfo struct {
+	vendor string
+	name   string
+	vramGB float64
+}
 
 type variant struct {
 	key      string
@@ -99,8 +111,8 @@ func extract(destination string) {
 	}
 }
 
-// detectVRAM returns the total GPU VRAM in GB, or 0 when it cannot be found.
-func detectVRAM() float64 {
+// detectNvidiaVRAM returns the first NVIDIA GPU's total VRAM in GB.
+func detectNvidiaVRAM() float64 {
 	cmd := exec.Command("nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits")
 	output, err := cmd.Output()
 	if err != nil {
@@ -115,6 +127,67 @@ func detectVRAM() float64 {
 		return 0
 	}
 	return mb / 1024.0
+}
+
+func classifyGPU(names string) gpuInfo {
+	lines := strings.FieldsFunc(names, func(r rune) bool { return r == '\r' || r == '\n' })
+	for _, line := range lines {
+		name := strings.TrimSpace(line)
+		lower := strings.ToLower(name)
+		if strings.Contains(lower, "nvidia") {
+			return gpuInfo{vendor: "nvidia", name: name}
+		}
+	}
+	for _, line := range lines {
+		name := strings.TrimSpace(line)
+		lower := strings.ToLower(name)
+		if strings.Contains(lower, "amd") || strings.Contains(lower, "radeon") || strings.Contains(lower, "advanced micro devices") {
+			return gpuInfo{vendor: "amd", name: name}
+		}
+	}
+	if len(lines) > 0 {
+		return gpuInfo{vendor: "other", name: strings.TrimSpace(lines[0])}
+	}
+	return gpuInfo{}
+}
+
+func detectGPU() gpuInfo {
+	command := "Get-CimInstance Win32_VideoController | ForEach-Object { $_.Name }"
+	output, _ := exec.Command("powershell.exe", "-NoProfile", "-Command", command).Output()
+	gpu := classifyGPU(string(output))
+	nvidiaVRAM := detectNvidiaVRAM()
+	if gpu.vendor == "nvidia" {
+		gpu.vramGB = nvidiaVRAM
+	} else if gpu.vendor == "" && nvidiaVRAM > 0 {
+		gpu = gpuInfo{vendor: "nvidia", name: "NVIDIA GPU", vramGB: nvidiaVRAM}
+	}
+	return gpu
+}
+
+func amdWindowsROCmSupported(name string) bool {
+	normalized := strings.ToLower(name)
+	if strings.Contains(normalized, "strix halo") || strings.Contains(normalized, "ryzen ai max") {
+		return true
+	}
+	rxSeries := regexp.MustCompile(`(?i)\brx\s*(7|9)\d{3}\b`)
+	return rxSeries.MatchString(name)
+}
+
+func portableURL(gpu gpuInfo) string {
+	if gpu.vendor == "amd" {
+		return amdPortableURL
+	}
+	return nvidiaPortableURL
+}
+
+func gpuLabel(gpu gpuInfo) string {
+	if gpu.name == "" {
+		return "not detected"
+	}
+	if gpu.vramGB > 0 {
+		return fmt.Sprintf("%s (%.0f GB VRAM)", gpu.name, gpu.vramGB)
+	}
+	return gpu.name
 }
 
 func recommendedVariant(vram float64) string {
@@ -201,9 +274,28 @@ func askVariantMenu(vram float64) []string {
 
 func vramLabel(vram float64) string {
 	if vram <= 0 {
-		return "not detected (NVIDIA GPU not found)"
+		return "not available"
 	}
 	return fmt.Sprintf("%.0f GB", vram)
+}
+
+func askYesNo(prompt string, defaultYes bool) bool {
+	suffix := " [Y/n]: "
+	if !defaultYes {
+		suffix = " [y/N]: "
+	}
+	for {
+		switch strings.ToLower(promptLine(prompt + suffix)) {
+		case "":
+			return defaultYes
+		case "y", "yes":
+			return true
+		case "n", "no":
+			return false
+		default:
+			fmt.Println("Please answer y or n.")
+		}
+	}
 }
 
 func askQuantMenu(vram float64) []string {
@@ -264,18 +356,26 @@ func askQuantMenu(vram float64) []string {
 	}
 }
 
-func findComfyUI() string {
+func findComfyUI() (string, bool) {
+	home, _ := os.UserHomeDir()
 	candidates := []string{
 		`C:\ComfyUI`,
+		`C:\ComfyUI_windows_portable\ComfyUI`,
 		filepath.Join(os.Getenv("USERPROFILE"), "ComfyUI"),
 		filepath.Join(os.Getenv("USERPROFILE"), "Documents", "ComfyUI"),
+		filepath.Join(home, "Documents", "ComfyUI_windows_portable", "ComfyUI"),
 		`D:\ComfyUI`,
+		`D:\ComfyUI_windows_portable\ComfyUI`,
 	}
 	for _, candidate := range candidates {
 		if fileExists(filepath.Join(candidate, "main.py")) {
-			return candidate
+			return candidate, true
 		}
 	}
+	return "", false
+}
+
+func promptForComfyUIRoot() string {
 	for {
 		path := promptLine("ComfyUI root (folder containing main.py): ")
 		if path == "" {
@@ -323,6 +423,97 @@ func askStoragePath(label, defaultPath, comfyPath string) string {
 	}
 }
 
+func askComfyInstallRoot(defaultRoot string) string {
+	for {
+		line := promptLine(fmt.Sprintf("ComfyUI install folder (Enter for %s): ", defaultRoot))
+		root := defaultRoot
+		if line != "" {
+			absolute, err := filepath.Abs(line)
+			if err != nil {
+				fmt.Println("Please enter a valid folder path.")
+				continue
+			}
+			root = absolute
+		}
+		if directoryEmpty(root) {
+			return root
+		}
+		fmt.Printf("%s is not empty. Choose another folder.\n", root)
+	}
+}
+
+func downloadFile(url, destination, label string) {
+	fmt.Printf("Downloading %s...\n", label)
+	response, err := http.Get(url)
+	if err != nil {
+		fail("cannot download %s: %v", label, err)
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		fail("cannot download %s: HTTP %s", label, response.Status)
+	}
+	target, err := os.OpenFile(destination, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o644)
+	if err != nil {
+		fail("cannot create the %s download: %v", label, err)
+	}
+	written, copyErr := io.Copy(target, response.Body)
+	closeErr := target.Close()
+	if copyErr != nil || closeErr != nil {
+		fail("cannot save %s", label)
+	}
+	if written <= 0 {
+		fail("downloaded %s is empty", label)
+	}
+	fmt.Printf("Downloaded %s (%.1f GB).\n", label, float64(written)/1_000_000_000)
+}
+
+func installComfyUI(gpu gpuInfo, installRoot string) string {
+	parent := filepath.Dir(installRoot)
+	if err := os.MkdirAll(parent, 0o755); err != nil {
+		fail("cannot create the ComfyUI parent folder: %v", err)
+	}
+	temporary, err := os.MkdirTemp(parent, ".hoi4-comfyui-install-")
+	if err != nil {
+		fail("cannot create a temporary ComfyUI folder: %v", err)
+	}
+	defer os.RemoveAll(temporary)
+	archive := filepath.Join(temporary, "ComfyUI_windows_portable.7z")
+	sevenZip := filepath.Join(temporary, "7zr.exe")
+	flavor := "NVIDIA/CPU"
+	if gpu.vendor == "amd" {
+		flavor = "AMD ROCm"
+	}
+	downloadFile(portableURL(gpu), archive, "official ComfyUI "+flavor+" portable")
+	downloadFile(sevenZipURL, sevenZip, "7-Zip command-line extractor")
+	staging := filepath.Join(temporary, "extracted")
+	if err := os.MkdirAll(staging, 0o755); err != nil {
+		fail("cannot create the ComfyUI extraction folder: %v", err)
+	}
+	command := exec.Command(sevenZip, "x", archive, "-o"+staging, "-y")
+	command.Stdout = os.Stdout
+	command.Stderr = os.Stderr
+	if err := command.Run(); err != nil {
+		fail("cannot extract the official ComfyUI package: %v", err)
+	}
+	extractedRoot := filepath.Join(staging, "ComfyUI_windows_portable")
+	comfyRoot := filepath.Join(extractedRoot, "ComfyUI")
+	if !fileExists(filepath.Join(comfyRoot, "main.py")) {
+		fail("the official ComfyUI package did not contain ComfyUI\\main.py")
+	}
+	if _, err := os.Stat(installRoot); err == nil {
+		if !directoryEmpty(installRoot) {
+			fail("the selected ComfyUI install folder is no longer empty: %s", installRoot)
+		}
+		if err := os.Remove(installRoot); err != nil {
+			fail("cannot prepare the selected ComfyUI install folder: %v", err)
+		}
+	}
+	if err := os.Rename(extractedRoot, installRoot); err != nil {
+		fail("cannot move ComfyUI into %s: %v", installRoot, err)
+	}
+	return filepath.Join(installRoot, "ComfyUI")
+}
+
 func runInstaller(destination, comfyRoot, batchInput, portraitOutput string, variants, quants []string) {
 	ps1 := filepath.Join(destination, "scripts", "install_windows.ps1")
 	if !fileExists(ps1) {
@@ -366,9 +557,39 @@ func main() {
 	extract(absolute)
 	fmt.Printf("Package extracted to:\n%s\n\n", absolute)
 
-	vram := detectVRAM()
+	gpu := detectGPU()
+	vram := gpu.vramGB
 	if *comfyRoot == "" {
-		*comfyRoot = findComfyUI()
+		if detectedRoot, found := findComfyUI(); found {
+			*comfyRoot = detectedRoot
+			fmt.Printf("Found ComfyUI at %s.\n", *comfyRoot)
+		} else {
+			fmt.Println("ComfyUI was not found in the usual locations.")
+			fmt.Printf("Detected GPU: %s\n", gpuLabel(gpu))
+			if gpu.vendor == "amd" {
+				fmt.Println("The automatic install uses the official experimental AMD portable package with ROCm-enabled PyTorch.")
+				if !amdWindowsROCmSupported(gpu.name) {
+					fmt.Println("Warning: official Windows ROCm support currently targets RDNA 3, RDNA 3.5, and RDNA 4 GPUs.")
+				}
+			}
+			installPrompt := "Install ComfyUI automatically now?"
+			if gpu.vendor == "amd" {
+				installPrompt = "Install ComfyUI with ROCm automatically now?"
+			}
+			if askYesNo(installPrompt, true) {
+				home, err := os.UserHomeDir()
+				if err != nil {
+					fail("cannot resolve the user folder: %v", err)
+				}
+				installRoot := askComfyInstallRoot(filepath.Join(home, "Documents", "ComfyUI_windows_portable"))
+				*comfyRoot = installComfyUI(gpu, installRoot)
+				fmt.Printf("Installed ComfyUI at %s.\n", *comfyRoot)
+			} else {
+				*comfyRoot = promptForComfyUIRoot()
+			}
+		}
+	} else if !fileExists(filepath.Join(*comfyRoot, "main.py")) {
+		fail("the supplied ComfyUI root does not contain main.py: %s", *comfyRoot)
 	}
 	workspaceRoot := filepath.Join(filepath.Dir(absolute), "hoi4-portraits")
 	if *batchInput == "" {

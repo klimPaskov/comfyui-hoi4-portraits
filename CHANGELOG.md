@@ -9,9 +9,11 @@ This repository contains one current, internally consistent package.
 - Model family: distilled FLUX.2 Klein 9B only, in full, FP8, and GGUF forms
 - Style adapter: the project's HOI4 style LoRA
 - Default style sampler: Euler, simple, four steps, CFG 1, guidance 1, denoise 1
+- Style seeds: fixed for controlled comparisons until the final HOI4 LoRA checkpoint is selected
 - Restoration: complete Adonis Base → Post graph with one red enable/bypass control
+- Restoration seed: fixed so unchanged restoration inputs remain cacheable across new style generations
 - Restoration prompts: source-neutral archival wording preserves identity, composition, gender, historical character, and the input's monochrome, sepia, or colour treatment
-- Shared LoRAs: HOI4 style, Adonis Base, Adonis Refine, and Adonis Post
+- Shared LoRAs: HOI4 style checkpoints 1750, 2000, 2250, 2500, 2750, and 3000 plus Adonis Base, Adonis Refine, and Adonis Post
 
 ## Workflow contract
 
@@ -34,6 +36,7 @@ This repository contains one current, internally consistent package.
 - Full distilled weights above 20 GB VRAM
 - RunPod defaults to FP8 distilled; full BF16 remains an explicit option
 - RunPod uses `/workspace/hoi4-portrait-runpod/input` and `/workspace/hoi4-portrait-runpod/output`; the input folder includes three Ireland example sources
-- Windows detects NVIDIA VRAM for guidance, always preselects FP8, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, offers default, ComfyUI, and custom batch input and portrait output paths, installs pinned node packs, and downloads the selected model set
+- RunPod storage: a 25 GB volume is enough for the default FP8 installation
+- Windows detects the GPU, offers the official ComfyUI portable install when ComfyUI is missing, selects the ROCm-enabled package for AMD, always preselects FP8, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, offers default, ComfyUI, and custom batch input and portrait output paths, installs pinned node packs, and downloads the selected model set
 
 Pinned commits, model revisions, sizes, hashes, and licenses are in [`models.json`](models.json), [`scripts/install_custom_node_packs.py`](scripts/install_custom_node_packs.py), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).

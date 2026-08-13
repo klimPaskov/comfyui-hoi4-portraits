@@ -612,7 +612,8 @@
           "type": "IMAGE",
           "links": [
             15,
-            19
+            19,
+            22
           ]
         }
       ],
@@ -657,8 +658,7 @@
           "type": "IMAGE",
           "links": [
             20,
-            21,
-            22
+            21
           ]
         }
       ],
@@ -859,7 +859,7 @@
     {
       "id": 21,
       "type": "PreviewImage",
-      "title": "Game portrait",
+      "title": "Full-resolution portrait",
       "pos": [
         4440,
         740
@@ -1065,7 +1065,7 @@
     ],
     [
       22,
-      16,
+      15,
       0,
       21,
       0,

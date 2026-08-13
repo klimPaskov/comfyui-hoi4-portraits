@@ -1,8 +1,8 @@
 {
   "id": "hoi4_portrait_source",
   "revision": 0,
-  "last_node_id": 77,
-  "last_link_id": 117,
+  "last_node_id": 78,
+  "last_link_id": 119,
   "nodes": [
     {
       "id": 1,
@@ -66,9 +66,10 @@
           "name": "filename",
           "type": "STRING",
           "links": [
-            92,
-            99,
-            106
+            15,
+            94,
+            101,
+            108
           ]
         }
       ],
@@ -430,9 +431,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            14,
-            47,
-            113
+            16,
+            49,
+            115
           ]
         }
       ],
@@ -508,10 +509,10 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            15,
-            32,
-            49,
-            50
+            17,
+            34,
+            51,
+            52
           ]
         }
       ],
@@ -548,12 +549,12 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            18,
-            46,
-            53,
-            63,
-            69,
-            75
+            20,
+            48,
+            55,
+            65,
+            71,
+            77
           ]
         }
       ],
@@ -594,9 +595,9 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            58,
-            64,
-            70
+            60,
+            66,
+            72
           ]
         }
       ],
@@ -638,7 +639,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            25
+            27
           ]
         }
       ],
@@ -680,7 +681,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            38
+            40
           ]
         }
       ],
@@ -716,7 +717,7 @@
           "name": "bg_model",
           "type": "BACKGROUND_REMOVAL",
           "links": [
-            81
+            83
           ]
         }
       ],
@@ -749,7 +750,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 14
+          "link": 16
         }
       ],
       "outputs": [
@@ -757,21 +758,21 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            17
+            19
           ]
         },
         {
           "name": "width",
           "type": "INT",
           "links": [
-            23
+            25
           ]
         },
         {
           "name": "height",
           "type": "INT",
           "links": [
-            24
+            26
           ]
         }
       ],
@@ -807,7 +808,7 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 15
+          "link": 17
         }
       ],
       "outputs": [
@@ -815,8 +816,8 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            16,
-            19
+            18,
+            21
           ]
         }
       ],
@@ -849,7 +850,7 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 16
+          "link": 18
         }
       ],
       "outputs": [
@@ -857,7 +858,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            21
+            23
           ]
         }
       ],
@@ -888,12 +889,12 @@
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 17
+          "link": 19
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 18
+          "link": 20
         }
       ],
       "outputs": [
@@ -901,8 +902,8 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            20,
-            22
+            22,
+            24
           ]
         }
       ],
@@ -933,7 +934,7 @@
         {
           "name": "width",
           "type": "INT",
-          "link": 23,
+          "link": 25,
           "widget": {
             "name": "width"
           }
@@ -941,7 +942,7 @@
         {
           "name": "height",
           "type": "INT",
-          "link": 24,
+          "link": 26,
           "widget": {
             "name": "height"
           }
@@ -952,8 +953,8 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            28,
-            41
+            30,
+            43
           ]
         }
       ],
@@ -988,12 +989,12 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 19
+          "link": 21
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 20
+          "link": 22
         }
       ],
       "outputs": [
@@ -1001,7 +1002,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            26
+            28
           ]
         }
       ],
@@ -1032,12 +1033,12 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 21
+          "link": 23
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 22
+          "link": 24
         }
       ],
       "outputs": [
@@ -1045,7 +1046,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            27
+            29
           ]
         }
       ],
@@ -1078,8 +1079,8 @@
           "name": "options",
           "type": "OPTIONS",
           "links": [
-            29,
-            42
+            31,
+            44
           ]
         }
       ],
@@ -1117,8 +1118,8 @@
           "name": "INT",
           "type": "INT",
           "links": [
-            31,
-            44
+            33,
+            46
           ]
         }
       ],
@@ -1153,8 +1154,8 @@
           "name": "INT",
           "type": "INT",
           "links": [
-            30,
-            43
+            32,
+            45
           ]
         }
       ],
@@ -1187,32 +1188,32 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 25
+          "link": 27
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 26
+          "link": 28
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 27
+          "link": 29
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 28
+          "link": 30
         },
         {
           "name": "options",
           "type": "OPTIONS",
-          "link": 29
+          "link": 31
         },
         {
           "name": "steps",
           "type": "INT",
-          "link": 30,
+          "link": 32,
           "widget": {
             "name": "steps"
           }
@@ -1220,7 +1221,7 @@
         {
           "name": "seed",
           "type": "INT",
-          "link": 31,
+          "link": 33,
           "widget": {
             "name": "seed"
           }
@@ -1231,8 +1232,8 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            35,
-            37
+            37,
+            39
           ]
         },
         {
@@ -1285,7 +1286,7 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 32
+          "link": 34
         }
       ],
       "outputs": [
@@ -1293,8 +1294,8 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            33,
-            34
+            35,
+            36
           ]
         }
       ],
@@ -1327,7 +1328,7 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 33
+          "link": 35
         }
       ],
       "outputs": [
@@ -1335,7 +1336,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            36
+            38
           ]
         }
       ],
@@ -1366,12 +1367,12 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 34
+          "link": 36
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 35
+          "link": 37
         }
       ],
       "outputs": [
@@ -1379,7 +1380,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            39
+            41
           ]
         }
       ],
@@ -1410,12 +1411,12 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 36
+          "link": 38
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 37
+          "link": 39
         }
       ],
       "outputs": [
@@ -1423,7 +1424,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            40
+            42
           ]
         }
       ],
@@ -1454,32 +1455,32 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 38
+          "link": 40
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 39
+          "link": 41
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 40
+          "link": 42
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 41
+          "link": 43
         },
         {
           "name": "options",
           "type": "OPTIONS",
-          "link": 42
+          "link": 44
         },
         {
           "name": "steps",
           "type": "INT",
-          "link": 43,
+          "link": 45,
           "widget": {
             "name": "steps"
           }
@@ -1487,7 +1488,7 @@
         {
           "name": "seed",
           "type": "INT",
-          "link": 44,
+          "link": 46,
           "widget": {
             "name": "seed"
           }
@@ -1498,7 +1499,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            45
+            47
           ]
         },
         {
@@ -1540,7 +1541,7 @@
       ],
       "size": [
         260,
-        100
+        80
       ],
       "color": "#80613d",
       "bgcolor": "#5d472e",
@@ -1551,12 +1552,12 @@
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 45
+          "link": 47
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 46
+          "link": 48
         }
       ],
       "outputs": [
@@ -1564,7 +1565,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            48
+            14
           ]
         }
       ],
@@ -1576,11 +1577,55 @@
     },
     {
       "id": 35,
+      "type": "Hoi4RestorationCache",
+      "title": "Reuse restored portrait",
+      "pos": [
+        4160,
+        800
+      ],
+      "size": [
+        440,
+        140
+      ],
+      "color": "#80613d",
+      "bgcolor": "#5d472e",
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 14
+        },
+        {
+          "name": "source_filename",
+          "type": "STRING",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            50
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Hoi4RestorationCache",
+        "hoi4_group": "03 Restore details"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 36,
       "type": "ComfySwitchNode",
       "title": "Use Adonis restoration",
       "pos": [
         4640,
-        1380
+        1360
       ],
       "size": [
         360,
@@ -1589,18 +1634,18 @@
       "color": "#b84949",
       "bgcolor": "#702f2f",
       "flags": {},
-      "order": 34,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "on_false",
           "type": "IMAGE",
-          "link": 47
+          "link": 49
         },
         {
           "name": "on_true",
           "type": "IMAGE",
-          "link": 48
+          "link": 50
         }
       ],
       "outputs": [
@@ -1608,8 +1653,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            52,
-            114
+            54,
+            116
           ]
         }
       ],
@@ -1622,7 +1667,7 @@
       ]
     },
     {
-      "id": 36,
+      "id": 37,
       "type": "CLIPTextEncode",
       "title": "Portrait prompt",
       "pos": [
@@ -1636,13 +1681,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 35,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 49
+          "link": 51
         }
       ],
       "outputs": [
@@ -1650,7 +1695,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            51
+            53
           ]
         }
       ],
@@ -1663,7 +1708,7 @@
       ]
     },
     {
-      "id": 37,
+      "id": 38,
       "type": "CLIPTextEncode",
       "title": "Negative prompt",
       "pos": [
@@ -1677,13 +1722,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 36,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 50
+          "link": 52
         }
       ],
       "outputs": [
@@ -1691,7 +1736,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            56
+            58
           ]
         }
       ],
@@ -1704,7 +1749,7 @@
       ]
     },
     {
-      "id": 38,
+      "id": 39,
       "type": "FluxGuidance",
       "title": "Prompt guidance — 1",
       "pos": [
@@ -1718,13 +1763,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 37,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 51
+          "link": 53
         }
       ],
       "outputs": [
@@ -1732,7 +1777,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            54
+            56
           ]
         }
       ],
@@ -1745,7 +1790,7 @@
       ]
     },
     {
-      "id": 39,
+      "id": 40,
       "type": "VAEEncode",
       "title": "Encode portrait reference",
       "pos": [
@@ -1759,18 +1804,18 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 38,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 52
+          "link": 54
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 53
+          "link": 55
         }
       ],
       "outputs": [
@@ -1778,11 +1823,11 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            55,
             57,
-            61,
-            67,
-            73
+            59,
+            63,
+            69,
+            75
           ]
         }
       ],
@@ -1793,58 +1838,12 @@
       "widgets_values": []
     },
     {
-      "id": 40,
+      "id": 41,
       "type": "ReferenceLatent",
       "title": "Positive portrait reference",
       "pos": [
         5200,
         1000
-      ],
-      "size": [
-        320,
-        100
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 39,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "conditioning",
-          "type": "CONDITIONING",
-          "link": 54
-        },
-        {
-          "name": "latent",
-          "type": "LATENT",
-          "link": 55
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            59,
-            65,
-            71
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ReferenceLatent",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 41,
-      "type": "ReferenceLatent",
-      "title": "Negative portrait reference",
-      "pos": [
-        5200,
-        1140
       ],
       "size": [
         320,
@@ -1872,9 +1871,9 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            60,
-            66,
-            72
+            61,
+            67,
+            73
           ]
         }
       ],
@@ -1886,6 +1885,52 @@
     },
     {
       "id": 42,
+      "type": "ReferenceLatent",
+      "title": "Negative portrait reference",
+      "pos": [
+        5200,
+        1140
+      ],
+      "size": [
+        320,
+        100
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 58
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 59
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            62,
+            68,
+            74
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ReferenceLatent",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 43,
       "type": "KSampler",
       "title": "Portrait 1 sampling",
       "pos": [
@@ -1899,28 +1944,28 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 41,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 58
+          "link": 60
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 59
+          "link": 61
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 60
+          "link": 62
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 61
+          "link": 63
         }
       ],
       "outputs": [
@@ -1928,7 +1973,7 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            62
+            64
           ]
         }
       ],
@@ -1947,7 +1992,7 @@
       ]
     },
     {
-      "id": 43,
+      "id": 44,
       "type": "VAEDecode",
       "title": "Decode portrait",
       "pos": [
@@ -1961,18 +2006,18 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 42,
+      "order": 43,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 62
+          "link": 64
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 63
+          "link": 65
         }
       ],
       "outputs": [
@@ -1980,7 +2025,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            76
+            78
           ]
         }
       ],
@@ -1991,7 +2036,7 @@
       "widgets_values": []
     },
     {
-      "id": 44,
+      "id": 45,
       "type": "KSampler",
       "title": "Portrait 2 sampling",
       "pos": [
@@ -2005,28 +2050,28 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 43,
+      "order": 44,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 64
+          "link": 66
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 65
+          "link": 67
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 66
+          "link": 68
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 67
+          "link": 69
         }
       ],
       "outputs": [
@@ -2034,7 +2079,7 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            68
+            70
           ]
         }
       ],
@@ -2053,7 +2098,7 @@
       ]
     },
     {
-      "id": 45,
+      "id": 46,
       "type": "VAEDecode",
       "title": "Decode portrait",
       "pos": [
@@ -2067,124 +2112,18 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 44,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 68
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 69
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            77
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 46,
-      "type": "KSampler",
-      "title": "Portrait 3 sampling",
-      "pos": [
-        5760,
-        1100
-      ],
-      "size": [
-        560,
-        420
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
       "order": 45,
       "mode": 0,
       "inputs": [
         {
-          "name": "model",
-          "type": "MODEL",
-          "link": 70
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 71
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 72
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 73
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            74
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "KSampler",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        44,
-        "fixed",
-        4,
-        1.0,
-        "euler",
-        "simple",
-        1.0
-      ]
-    },
-    {
-      "id": 47,
-      "type": "VAEDecode",
-      "title": "Decode portrait",
-      "pos": [
-        6360,
-        1100
-      ],
-      "size": [
-        300,
-        100
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 46,
-      "mode": 0,
-      "inputs": [
-        {
           "name": "samples",
           "type": "LATENT",
-          "link": 74
+          "link": 70
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 75
+          "link": 71
         }
       ],
       "outputs": [
@@ -2203,15 +2142,77 @@
       "widgets_values": []
     },
     {
-      "id": 48,
-      "type": "ImageBatch",
-      "title": "Join portraits 1 and 2",
+      "id": 47,
+      "type": "KSampler",
+      "title": "Portrait 3 sampling",
       "pos": [
-        6720,
-        100
+        5760,
+        1100
       ],
       "size": [
-        360,
+        560,
+        420
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 72
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 73
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 74
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 75
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            76
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        44,
+        "fixed",
+        4,
+        1.0,
+        "euler",
+        "simple",
+        1.0
+      ]
+    },
+    {
+      "id": 48,
+      "type": "VAEDecode",
+      "title": "Decode portrait",
+      "pos": [
+        6360,
+        1100
+      ],
+      "size": [
+        300,
         100
       ],
       "color": "#705080",
@@ -2221,13 +2222,13 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "image1",
-          "type": "IMAGE",
+          "name": "samples",
+          "type": "LATENT",
           "link": 76
         },
         {
-          "name": "image2",
-          "type": "IMAGE",
+          "name": "vae",
+          "type": "VAE",
           "link": 77
         }
       ],
@@ -2236,12 +2237,12 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            78
+            81
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "ImageBatch",
+        "Node name for S&R": "VAEDecode",
         "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": []
@@ -2249,10 +2250,10 @@
     {
       "id": 49,
       "type": "ImageBatch",
-      "title": "Add portrait 3",
+      "title": "Join portraits 1 and 2",
       "pos": [
         6720,
-        240
+        100
       ],
       "size": [
         360,
@@ -2292,6 +2293,50 @@
     },
     {
       "id": 50,
+      "type": "ImageBatch",
+      "title": "Add portrait 3",
+      "pos": [
+        6720,
+        240
+      ],
+      "size": [
+        360,
+        100
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 49,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 80
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 81
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            82
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 51,
       "type": "LoadImage",
       "title": "Choose a replacement background",
       "pos": [
@@ -2305,7 +2350,7 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 49,
+      "order": 50,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -2313,7 +2358,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            82
+            84
           ]
         },
         {
@@ -2332,7 +2377,7 @@
       ]
     },
     {
-      "id": 51,
+      "id": 52,
       "type": "Hoi4BackgroundReplace",
       "title": "Use replacement background",
       "pos": [
@@ -2346,23 +2391,23 @@
       "color": "#b84949",
       "bgcolor": "#702f2f",
       "flags": {},
-      "order": 50,
+      "order": 51,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 80
+          "link": 82
         },
         {
           "name": "bg_removal_model",
           "type": "BACKGROUND_REMOVAL",
-          "link": 81
+          "link": 83
         },
         {
           "name": "background",
           "type": "IMAGE",
-          "link": 82
+          "link": 84
         }
       ],
       "outputs": [
@@ -2370,9 +2415,9 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            83,
-            86,
-            89
+            85,
+            88,
+            91
           ]
         }
       ],
@@ -2385,7 +2430,7 @@
       ]
     },
     {
-      "id": 52,
+      "id": 53,
       "type": "ImageFromBatch",
       "title": "Take portrait 1",
       "pos": [
@@ -2399,13 +2444,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 51,
+      "order": 52,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 83
+          "link": 85
         }
       ],
       "outputs": [
@@ -2413,7 +2458,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            84
+            86
           ]
         }
       ],
@@ -2427,56 +2472,11 @@
       ]
     },
     {
-      "id": 53,
+      "id": 54,
       "type": "ImageScale",
       "title": "Portrait 1 master — 1024×1365",
       "pos": [
         7360,
-        740
-      ],
-      "size": [
-        400,
-        180
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 52,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 84
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            85,
-            96
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        "lanczos",
-        1024,
-        1365,
-        "center"
-      ]
-    },
-    {
-      "id": 54,
-      "type": "ImageScale",
-      "title": "Portrait 1 game — 156×210",
-      "pos": [
-        7800,
         740
       ],
       "size": [
@@ -2492,52 +2492,6 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 85
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            97,
-            98,
-            115
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        "lanczos",
-        156,
-        210,
-        "center"
-      ]
-    },
-    {
-      "id": 55,
-      "type": "ImageFromBatch",
-      "title": "Take portrait 2",
-      "pos": [
-        7360,
-        320
-      ],
-      "size": [
-        360,
-        140
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 54,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
           "link": 86
         }
       ],
@@ -2546,50 +2500,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            87
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageFromBatch",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        1,
-        1
-      ]
-    },
-    {
-      "id": 56,
-      "type": "ImageScale",
-      "title": "Portrait 2 master — 1024×1365",
-      "pos": [
-        7360,
-        1000
-      ],
-      "size": [
-        400,
-        180
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 55,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 87
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            88,
-            103
+            87,
+            98,
+            117
           ]
         }
       ],
@@ -2605,11 +2518,98 @@
       ]
     },
     {
-      "id": 57,
+      "id": 55,
       "type": "ImageScale",
-      "title": "Portrait 2 game — 156×210",
+      "title": "Portrait 1 game — 156×210",
       "pos": [
         7800,
+        740
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 54,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 87
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            99,
+            100
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "lanczos",
+        156,
+        210,
+        "center"
+      ]
+    },
+    {
+      "id": 56,
+      "type": "ImageFromBatch",
+      "title": "Take portrait 2",
+      "pos": [
+        7360,
+        320
+      ],
+      "size": [
+        360,
+        140
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 55,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 88
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            89
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageFromBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": 57,
+      "type": "ImageScale",
+      "title": "Portrait 2 master — 1024×1365",
+      "pos": [
+        7360,
         1000
       ],
       "size": [
@@ -2625,52 +2625,6 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 88
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            104,
-            105,
-            116
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        "lanczos",
-        156,
-        210,
-        "center"
-      ]
-    },
-    {
-      "id": 58,
-      "type": "ImageFromBatch",
-      "title": "Take portrait 3",
-      "pos": [
-        7360,
-        540
-      ],
-      "size": [
-        360,
-        140
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 57,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
           "link": 89
         }
       ],
@@ -2679,50 +2633,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            90
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageFromBatch",
-        "hoi4_group": "04 Create three portraits"
-      },
-      "widgets_values": [
-        2,
-        1
-      ]
-    },
-    {
-      "id": 59,
-      "type": "ImageScale",
-      "title": "Portrait 3 master — 1024×1365",
-      "pos": [
-        7360,
-        1260
-      ],
-      "size": [
-        400,
-        180
-      ],
-      "color": "#705080",
-      "bgcolor": "#523b60",
-      "flags": {},
-      "order": 58,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 90
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            91,
-            110
+            90,
+            105,
+            118
           ]
         }
       ],
@@ -2738,12 +2651,12 @@
       ]
     },
     {
-      "id": 60,
+      "id": 58,
       "type": "ImageScale",
-      "title": "Portrait 3 game — 156×210",
+      "title": "Portrait 2 game — 156×210",
       "pos": [
         7800,
-        1260
+        1000
       ],
       "size": [
         400,
@@ -2752,13 +2665,13 @@
       "color": "#705080",
       "bgcolor": "#523b60",
       "flags": {},
-      "order": 59,
+      "order": 57,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 91
+          "link": 90
         }
       ],
       "outputs": [
@@ -2766,9 +2679,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            111,
-            112,
-            117
+            106,
+            107
           ]
         }
       ],
@@ -2784,7 +2696,140 @@
       ]
     },
     {
+      "id": 59,
+      "type": "ImageFromBatch",
+      "title": "Take portrait 3",
+      "pos": [
+        7360,
+        540
+      ],
+      "size": [
+        360,
+        140
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 58,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 91
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            92
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageFromBatch",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": 60,
+      "type": "ImageScale",
+      "title": "Portrait 3 master — 1024×1365",
+      "pos": [
+        7360,
+        1260
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 59,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 92
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            93,
+            112,
+            119
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
+    },
+    {
       "id": 61,
+      "type": "ImageScale",
+      "title": "Portrait 3 game — 156×210",
+      "pos": [
+        7800,
+        1260
+      ],
+      "size": [
+        400,
+        180
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 60,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 93
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            113,
+            114
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "04 Create three portraits"
+      },
+      "widgets_values": [
+        "lanczos",
+        156,
+        210,
+        "center"
+      ]
+    },
+    {
+      "id": 62,
       "type": "Hoi4OutputFilename",
       "title": "Keep source name — portrait 1",
       "pos": [
@@ -2798,13 +2843,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 60,
+      "order": 61,
       "mode": 0,
       "inputs": [
         {
           "name": "source_filename",
           "type": "STRING",
-          "link": 92,
+          "link": 94,
           "widget": {
             "name": "source_filename"
           }
@@ -2815,21 +2860,21 @@
           "name": "master_png",
           "type": "STRING",
           "links": [
-            93
+            95
           ]
         },
         {
           "name": "game_png",
           "type": "STRING",
           "links": [
-            94
+            96
           ]
         },
         {
           "name": "game_dds",
           "type": "STRING",
           "links": [
-            95
+            97
           ]
         }
       ],
@@ -2843,7 +2888,7 @@
       ]
     },
     {
-      "id": 62,
+      "id": 63,
       "type": "SaveImage",
       "title": "Save portrait 1 master PNG",
       "pos": [
@@ -2857,18 +2902,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 61,
+      "order": 62,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 96
+          "link": 98
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 93,
+          "link": 95,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2890,7 +2935,7 @@
       ]
     },
     {
-      "id": 63,
+      "id": 64,
       "type": "SaveImage",
       "title": "Save portrait 1 game PNG",
       "pos": [
@@ -2904,18 +2949,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 62,
+      "order": 63,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 97
+          "link": 99
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 94,
+          "link": 96,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2937,7 +2982,7 @@
       ]
     },
     {
-      "id": 64,
+      "id": 65,
       "type": "Hoi4SaveDDS",
       "title": "Save portrait 1 DDS",
       "pos": [
@@ -2946,23 +2991,23 @@
       ],
       "size": [
         420,
-        190
+        180
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 63,
+      "order": 64,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 98
+          "link": 100
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 95,
+          "link": 97,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2985,7 +3030,7 @@
       ]
     },
     {
-      "id": 65,
+      "id": 66,
       "type": "Hoi4OutputFilename",
       "title": "Keep source name — portrait 2",
       "pos": [
@@ -2999,13 +3044,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 64,
+      "order": 65,
       "mode": 0,
       "inputs": [
         {
           "name": "source_filename",
           "type": "STRING",
-          "link": 99,
+          "link": 101,
           "widget": {
             "name": "source_filename"
           }
@@ -3016,21 +3061,21 @@
           "name": "master_png",
           "type": "STRING",
           "links": [
-            100
+            102
           ]
         },
         {
           "name": "game_png",
           "type": "STRING",
           "links": [
-            101
+            103
           ]
         },
         {
           "name": "game_dds",
           "type": "STRING",
           "links": [
-            102
+            104
           ]
         }
       ],
@@ -3044,7 +3089,7 @@
       ]
     },
     {
-      "id": 66,
+      "id": 67,
       "type": "SaveImage",
       "title": "Save portrait 2 master PNG",
       "pos": [
@@ -3058,18 +3103,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 65,
+      "order": 66,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 103
+          "link": 105
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 100,
+          "link": 102,
           "widget": {
             "name": "filename_prefix"
           }
@@ -3091,7 +3136,7 @@
       ]
     },
     {
-      "id": 67,
+      "id": 68,
       "type": "SaveImage",
       "title": "Save portrait 2 game PNG",
       "pos": [
@@ -3105,18 +3150,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 66,
+      "order": 67,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 104
+          "link": 106
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 101,
+          "link": 103,
           "widget": {
             "name": "filename_prefix"
           }
@@ -3138,7 +3183,7 @@
       ]
     },
     {
-      "id": 68,
+      "id": 69,
       "type": "Hoi4SaveDDS",
       "title": "Save portrait 2 DDS",
       "pos": [
@@ -3147,23 +3192,23 @@
       ],
       "size": [
         420,
-        190
+        180
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 67,
+      "order": 68,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 105
+          "link": 107
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 102,
+          "link": 104,
           "widget": {
             "name": "filename_prefix"
           }
@@ -3186,7 +3231,7 @@
       ]
     },
     {
-      "id": 69,
+      "id": 70,
       "type": "Hoi4OutputFilename",
       "title": "Keep source name — portrait 3",
       "pos": [
@@ -3200,13 +3245,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 68,
+      "order": 69,
       "mode": 0,
       "inputs": [
         {
           "name": "source_filename",
           "type": "STRING",
-          "link": 106,
+          "link": 108,
           "widget": {
             "name": "source_filename"
           }
@@ -3217,21 +3262,21 @@
           "name": "master_png",
           "type": "STRING",
           "links": [
-            107
+            109
           ]
         },
         {
           "name": "game_png",
           "type": "STRING",
           "links": [
-            108
+            110
           ]
         },
         {
           "name": "game_dds",
           "type": "STRING",
           "links": [
-            109
+            111
           ]
         }
       ],
@@ -3245,7 +3290,7 @@
       ]
     },
     {
-      "id": 70,
+      "id": 71,
       "type": "SaveImage",
       "title": "Save portrait 3 master PNG",
       "pos": [
@@ -3259,18 +3304,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 69,
+      "order": 70,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 110
+          "link": 112
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 107,
+          "link": 109,
           "widget": {
             "name": "filename_prefix"
           }
@@ -3292,7 +3337,7 @@
       ]
     },
     {
-      "id": 71,
+      "id": 72,
       "type": "SaveImage",
       "title": "Save portrait 3 game PNG",
       "pos": [
@@ -3306,18 +3351,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 70,
+      "order": 71,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 111
+          "link": 113
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 108,
+          "link": 110,
           "widget": {
             "name": "filename_prefix"
           }
@@ -3339,7 +3384,7 @@
       ]
     },
     {
-      "id": 72,
+      "id": 73,
       "type": "Hoi4SaveDDS",
       "title": "Save portrait 3 DDS",
       "pos": [
@@ -3348,23 +3393,23 @@
       ],
       "size": [
         420,
-        190
+        180
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 71,
+      "order": 72,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 112
+          "link": 114
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 109,
+          "link": 111,
           "widget": {
             "name": "filename_prefix"
           }
@@ -3387,7 +3432,7 @@
       ]
     },
     {
-      "id": 73,
+      "id": 74,
       "type": "PreviewImage",
       "title": "Prepared portrait",
       "pos": [
@@ -3401,81 +3446,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 72,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 113
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Compare portraits"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 74,
-      "type": "PreviewImage",
-      "title": "Restored portrait",
-      "pos": [
-        3440,
-        1720
-      ],
-      "size": [
-        600,
-        810
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
       "order": 73,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 114
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Compare portraits"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 75,
-      "type": "PreviewImage",
-      "title": "Portrait 1 — 156×210",
-      "pos": [
-        4080,
-        1720
-      ],
-      "size": [
-        600,
-        810
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 74,
       "mode": 0,
       "inputs": [
         {
@@ -3498,11 +3469,11 @@
       "widgets_values": []
     },
     {
-      "id": 76,
+      "id": 75,
       "type": "PreviewImage",
-      "title": "Portrait 2 — 156×210",
+      "title": "Restored portrait",
       "pos": [
-        4720,
+        3440,
         1720
       ],
       "size": [
@@ -3512,7 +3483,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 75,
+      "order": 74,
       "mode": 0,
       "inputs": [
         {
@@ -3535,11 +3506,48 @@
       "widgets_values": []
     },
     {
+      "id": 76,
+      "type": "PreviewImage",
+      "title": "Portrait 1 — full resolution",
+      "pos": [
+        4080,
+        1720
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 75,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 117
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "06 Compare portraits"
+      },
+      "widgets_values": []
+    },
+    {
       "id": 77,
       "type": "PreviewImage",
-      "title": "Portrait 3 — 156×210",
+      "title": "Portrait 2 — full resolution",
       "pos": [
-        5360,
+        4720,
         1720
       ],
       "size": [
@@ -3555,7 +3563,44 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 117
+          "link": 118
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "06 Compare portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 78,
+      "type": "PreviewImage",
+      "title": "Portrait 3 — full resolution",
+      "pos": [
+        5360,
+        1720
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 77,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 119
         }
       ],
       "outputs": [
@@ -3679,30 +3724,46 @@
     ],
     [
       14,
-      10,
+      34,
       0,
-      18,
+      35,
       0,
       "IMAGE"
     ],
     [
       15,
-      12,
-      0,
-      19,
-      0,
-      "CLIP"
+      2,
+      2,
+      35,
+      1,
+      "STRING"
     ],
     [
       16,
-      19,
+      10,
       0,
-      20,
+      18,
       0,
-      "CONDITIONING"
+      "IMAGE"
     ],
     [
       17,
+      12,
+      0,
+      19,
+      0,
+      "CLIP"
+    ],
+    [
+      18,
+      19,
+      0,
+      20,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      19,
       18,
       0,
       21,
@@ -3710,7 +3771,7 @@
       "IMAGE"
     ],
     [
-      18,
+      20,
       13,
       0,
       21,
@@ -3718,26 +3779,10 @@
       "VAE"
     ],
     [
-      19,
+      21,
       19,
       0,
       23,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      20,
-      21,
-      0,
-      23,
-      1,
-      "LATENT"
-    ],
-    [
-      21,
-      20,
-      0,
-      24,
       0,
       "CONDITIONING"
     ],
@@ -3745,12 +3790,28 @@
       22,
       21,
       0,
-      24,
+      23,
       1,
       "LATENT"
     ],
     [
       23,
+      20,
+      0,
+      24,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      24,
+      21,
+      0,
+      24,
+      1,
+      "LATENT"
+    ],
+    [
+      25,
       18,
       1,
       22,
@@ -3758,7 +3819,7 @@
       "INT"
     ],
     [
-      24,
+      26,
       18,
       2,
       22,
@@ -3766,7 +3827,7 @@
       "INT"
     ],
     [
-      25,
+      27,
       15,
       0,
       28,
@@ -3774,7 +3835,7 @@
       "MODEL"
     ],
     [
-      26,
+      28,
       23,
       0,
       28,
@@ -3782,7 +3843,7 @@
       "CONDITIONING"
     ],
     [
-      27,
+      29,
       24,
       0,
       28,
@@ -3790,7 +3851,7 @@
       "CONDITIONING"
     ],
     [
-      28,
+      30,
       22,
       0,
       28,
@@ -3798,7 +3859,7 @@
       "LATENT"
     ],
     [
-      29,
+      31,
       25,
       0,
       28,
@@ -3806,7 +3867,7 @@
       "OPTIONS"
     ],
     [
-      30,
+      32,
       27,
       0,
       28,
@@ -3814,7 +3875,7 @@
       "INT"
     ],
     [
-      31,
+      33,
       26,
       0,
       28,
@@ -3822,7 +3883,7 @@
       "INT"
     ],
     [
-      32,
+      34,
       12,
       0,
       29,
@@ -3830,34 +3891,18 @@
       "CLIP"
     ],
     [
-      33,
+      35,
       29,
       0,
       30,
       0,
       "CONDITIONING"
-    ],
-    [
-      34,
-      29,
-      0,
-      31,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      35,
-      28,
-      0,
-      31,
-      1,
-      "LATENT"
     ],
     [
       36,
-      30,
+      29,
       0,
-      32,
+      31,
       0,
       "CONDITIONING"
     ],
@@ -3865,12 +3910,28 @@
       37,
       28,
       0,
-      32,
+      31,
       1,
       "LATENT"
     ],
     [
       38,
+      30,
+      0,
+      32,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      39,
+      28,
+      0,
+      32,
+      1,
+      "LATENT"
+    ],
+    [
+      40,
       16,
       0,
       33,
@@ -3878,7 +3939,7 @@
       "MODEL"
     ],
     [
-      39,
+      41,
       31,
       0,
       33,
@@ -3886,7 +3947,7 @@
       "CONDITIONING"
     ],
     [
-      40,
+      42,
       32,
       0,
       33,
@@ -3894,7 +3955,7 @@
       "CONDITIONING"
     ],
     [
-      41,
+      43,
       22,
       0,
       33,
@@ -3902,7 +3963,7 @@
       "LATENT"
     ],
     [
-      42,
+      44,
       25,
       0,
       33,
@@ -3910,7 +3971,7 @@
       "OPTIONS"
     ],
     [
-      43,
+      45,
       27,
       0,
       33,
@@ -3918,7 +3979,7 @@
       "INT"
     ],
     [
-      44,
+      46,
       26,
       0,
       33,
@@ -3926,7 +3987,7 @@
       "INT"
     ],
     [
-      45,
+      47,
       33,
       0,
       34,
@@ -3934,88 +3995,72 @@
       "LATENT"
     ],
     [
-      46,
+      48,
       13,
       0,
       34,
       1,
       "VAE"
-    ],
-    [
-      47,
-      10,
-      0,
-      35,
-      0,
-      "IMAGE"
-    ],
-    [
-      48,
-      34,
-      0,
-      35,
-      1,
-      "IMAGE"
     ],
     [
       49,
-      12,
+      10,
       0,
       36,
-      0,
-      "CLIP"
-    ],
-    [
-      50,
-      12,
-      0,
-      37,
-      0,
-      "CLIP"
-    ],
-    [
-      51,
-      36,
-      0,
-      38,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      52,
-      35,
-      0,
-      39,
       0,
       "IMAGE"
     ],
     [
-      53,
-      13,
+      50,
+      35,
       0,
-      39,
+      36,
       1,
-      "VAE"
+      "IMAGE"
     ],
     [
-      54,
+      51,
+      12,
+      0,
+      37,
+      0,
+      "CLIP"
+    ],
+    [
+      52,
+      12,
+      0,
       38,
       0,
-      40,
+      "CLIP"
+    ],
+    [
+      53,
+      37,
+      0,
+      39,
       0,
       "CONDITIONING"
     ],
     [
+      54,
+      36,
+      0,
+      40,
+      0,
+      "IMAGE"
+    ],
+    [
       55,
-      39,
+      13,
       0,
       40,
       1,
-      "LATENT"
+      "VAE"
     ],
     [
       56,
-      37,
+      39,
       0,
       41,
       0,
@@ -4023,7 +4068,7 @@
     ],
     [
       57,
-      39,
+      40,
       0,
       41,
       1,
@@ -4031,11 +4076,11 @@
     ],
     [
       58,
-      14,
+      38,
       0,
       42,
       0,
-      "MODEL"
+      "CONDITIONING"
     ],
     [
       59,
@@ -4043,155 +4088,155 @@
       0,
       42,
       1,
-      "CONDITIONING"
+      "LATENT"
     ],
     [
       60,
-      41,
+      14,
       0,
-      42,
-      2,
-      "CONDITIONING"
+      43,
+      0,
+      "MODEL"
     ],
     [
       61,
-      39,
+      41,
       0,
-      42,
-      3,
-      "LATENT"
+      43,
+      1,
+      "CONDITIONING"
     ],
     [
       62,
       42,
       0,
       43,
-      0,
-      "LATENT"
+      2,
+      "CONDITIONING"
     ],
     [
       63,
-      13,
+      40,
       0,
       43,
-      1,
-      "VAE"
+      3,
+      "LATENT"
     ],
     [
       64,
-      14,
+      43,
       0,
       44,
       0,
-      "MODEL"
+      "LATENT"
     ],
     [
       65,
-      40,
-      0,
-      44,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      66,
-      41,
-      0,
-      44,
-      2,
-      "CONDITIONING"
-    ],
-    [
-      67,
-      39,
-      0,
-      44,
-      3,
-      "LATENT"
-    ],
-    [
-      68,
-      44,
-      0,
-      45,
-      0,
-      "LATENT"
-    ],
-    [
-      69,
       13,
       0,
-      45,
+      44,
       1,
       "VAE"
     ],
     [
-      70,
+      66,
       14,
       0,
-      46,
+      45,
       0,
       "MODEL"
     ],
     [
-      71,
-      40,
+      67,
+      41,
       0,
-      46,
+      45,
       1,
       "CONDITIONING"
     ],
     [
-      72,
-      41,
+      68,
+      42,
       0,
-      46,
+      45,
       2,
       "CONDITIONING"
     ],
     [
-      73,
-      39,
+      69,
+      40,
       0,
-      46,
+      45,
       3,
       "LATENT"
     ],
     [
-      74,
-      46,
+      70,
+      45,
       0,
-      47,
+      46,
       0,
       "LATENT"
     ],
     [
-      75,
+      71,
       13,
       0,
-      47,
+      46,
       1,
       "VAE"
     ],
     [
+      72,
+      14,
+      0,
+      47,
+      0,
+      "MODEL"
+    ],
+    [
+      73,
+      41,
+      0,
+      47,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      74,
+      42,
+      0,
+      47,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      75,
+      40,
+      0,
+      47,
+      3,
+      "LATENT"
+    ],
+    [
       76,
-      43,
+      47,
       0,
       48,
       0,
-      "IMAGE"
+      "LATENT"
     ],
     [
       77,
-      45,
+      13,
       0,
       48,
       1,
-      "IMAGE"
+      "VAE"
     ],
     [
       78,
-      48,
+      44,
       0,
       49,
       0,
@@ -4199,7 +4244,7 @@
     ],
     [
       79,
-      47,
+      46,
       0,
       49,
       1,
@@ -4209,140 +4254,148 @@
       80,
       49,
       0,
-      51,
+      50,
       0,
       "IMAGE"
     ],
     [
       81,
-      17,
+      48,
       0,
-      51,
+      50,
       1,
-      "BACKGROUND_REMOVAL"
+      "IMAGE"
     ],
     [
       82,
       50,
       0,
-      51,
-      2,
+      52,
+      0,
       "IMAGE"
     ],
     [
       83,
-      51,
+      17,
       0,
       52,
-      0,
-      "IMAGE"
+      1,
+      "BACKGROUND_REMOVAL"
     ],
     [
       84,
+      51,
+      0,
       52,
-      0,
-      53,
-      0,
+      2,
       "IMAGE"
     ],
     [
       85,
-      53,
+      52,
       0,
-      54,
+      53,
       0,
       "IMAGE"
     ],
     [
       86,
-      51,
+      53,
       0,
-      55,
+      54,
       0,
       "IMAGE"
     ],
     [
       87,
-      55,
+      54,
       0,
-      56,
+      55,
       0,
       "IMAGE"
     ],
     [
       88,
-      56,
+      52,
       0,
-      57,
+      56,
       0,
       "IMAGE"
     ],
     [
       89,
-      51,
+      56,
       0,
-      58,
+      57,
       0,
       "IMAGE"
     ],
     [
       90,
-      58,
+      57,
       0,
-      59,
+      58,
       0,
       "IMAGE"
     ],
     [
       91,
-      59,
+      52,
       0,
-      60,
+      59,
       0,
       "IMAGE"
     ],
     [
       92,
-      2,
-      2,
-      61,
+      59,
       0,
-      "STRING"
+      60,
+      0,
+      "IMAGE"
     ],
     [
       93,
+      60,
+      0,
       61,
       0,
-      62,
-      1,
-      "STRING"
+      "IMAGE"
     ],
     [
       94,
-      61,
-      1,
-      63,
-      1,
+      2,
+      2,
+      62,
+      0,
       "STRING"
     ],
     [
       95,
-      61,
-      2,
-      64,
+      62,
+      0,
+      63,
       1,
       "STRING"
     ],
     [
       96,
-      53,
-      0,
       62,
-      0,
-      "IMAGE"
+      1,
+      64,
+      1,
+      "STRING"
     ],
     [
       97,
+      62,
+      2,
+      65,
+      1,
+      "STRING"
+    ],
+    [
+      98,
       54,
       0,
       63,
@@ -4350,55 +4403,55 @@
       "IMAGE"
     ],
     [
-      98,
-      54,
+      99,
+      55,
       0,
       64,
       0,
       "IMAGE"
     ],
     [
-      99,
-      2,
-      2,
-      65,
-      0,
-      "STRING"
-    ],
-    [
       100,
+      55,
+      0,
       65,
       0,
-      66,
-      1,
-      "STRING"
+      "IMAGE"
     ],
     [
       101,
-      65,
-      1,
-      67,
-      1,
+      2,
+      2,
+      66,
+      0,
       "STRING"
     ],
     [
       102,
-      65,
-      2,
-      68,
+      66,
+      0,
+      67,
       1,
       "STRING"
     ],
     [
       103,
-      56,
-      0,
       66,
-      0,
-      "IMAGE"
+      1,
+      68,
+      1,
+      "STRING"
     ],
     [
       104,
+      66,
+      2,
+      69,
+      1,
+      "STRING"
+    ],
+    [
+      105,
       57,
       0,
       67,
@@ -4406,55 +4459,55 @@
       "IMAGE"
     ],
     [
-      105,
-      57,
+      106,
+      58,
       0,
       68,
       0,
       "IMAGE"
     ],
     [
-      106,
-      2,
-      2,
-      69,
-      0,
-      "STRING"
-    ],
-    [
       107,
+      58,
+      0,
       69,
       0,
-      70,
-      1,
-      "STRING"
+      "IMAGE"
     ],
     [
       108,
-      69,
-      1,
-      71,
-      1,
+      2,
+      2,
+      70,
+      0,
       "STRING"
     ],
     [
       109,
-      69,
-      2,
-      72,
+      70,
+      0,
+      71,
       1,
       "STRING"
     ],
     [
       110,
-      59,
-      0,
       70,
-      0,
-      "IMAGE"
+      1,
+      72,
+      1,
+      "STRING"
     ],
     [
       111,
+      70,
+      2,
+      73,
+      1,
+      "STRING"
+    ],
+    [
+      112,
       60,
       0,
       71,
@@ -4462,50 +4515,58 @@
       "IMAGE"
     ],
     [
-      112,
-      60,
+      113,
+      61,
       0,
       72,
       0,
       "IMAGE"
     ],
     [
-      113,
-      10,
+      114,
+      61,
       0,
       73,
       0,
       "IMAGE"
     ],
     [
-      114,
-      35,
+      115,
+      10,
       0,
       74,
       0,
       "IMAGE"
     ],
     [
-      115,
-      54,
+      116,
+      36,
       0,
       75,
       0,
       "IMAGE"
     ],
     [
-      116,
-      57,
+      117,
+      54,
       0,
       76,
       0,
       "IMAGE"
     ],
     [
-      117,
-      60,
+      118,
+      57,
       0,
       77,
+      0,
+      "IMAGE"
+    ],
+    [
+      119,
+      60,
+      0,
+      78,
       0,
       "IMAGE"
     ]
@@ -4572,7 +4633,7 @@
         2760,
         40,
         2320,
-        1540
+        1520
       ],
       "color": "#765b35",
       "font_size": 28,
@@ -4608,7 +4669,7 @@
         8320,
         40,
         960,
-        1530
+        1520
       ],
       "color": "#3d596f",
       "font_size": 28,

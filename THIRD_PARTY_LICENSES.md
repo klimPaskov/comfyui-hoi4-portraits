@@ -4,7 +4,8 @@ The MIT license in this repository applies only to project-owned material. It do
 
 | Component | Upstream | Notes |
 | --- | --- | --- |
-| ComfyUI | [comfyanonymous/ComfyUI](https://github.com/comfyanonymous/ComfyUI) | GPL-3.0 source project; not bundled here. |
+| ComfyUI | [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) | GPL-3.0 source project; not bundled here. The Windows wizard can download its official portable package after explicit confirmation. |
+| 7-Zip command-line extractor | [7-zip.org](https://www.7-zip.org/) | LGPL/BSD/unRAR terms maintained upstream; downloaded temporarily by the Windows wizard to unpack the official ComfyUI portable archive, then removed. |
 | ComfyUI-GGUF | [city96/ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) | Node extension installed from a pinned revision when the GGUF variant is selected; not bundled here. |
 | gguf text loader | [calcuis/gguf](https://github.com/calcuis/gguf) | Provides the exact `ClipLoaderGGUF` implementation serialized by the Adonis workflow. |
 | RES4LYF | [ClownsharkBatwing/RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) | Provides the Base → Post restoration sampling used by Adonis. |

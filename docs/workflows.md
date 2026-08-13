@@ -9,7 +9,7 @@ The main visible controls are:
 | Control | Responsibility |
 | --- | --- |
 | `📂 Setup and downloads` | Narrow dark-brown card with a clear folder tree and clickable model downloads |
-| `KSampler` | Standard ComfyUI sampler with seed, 4 steps, CFG 1, Euler, simple scheduling, and full denoise |
+| `KSampler` | Standard ComfyUI sampler with a fixed seed, 4 steps, CFG 1, Euler, simple scheduling, and full denoise |
 | `Adaptive Portrait Crop` | Automatic, centered, or manual portrait framing with headwear protection |
 | `Use Adonis restoration` | One red true/false control for the complete Base → Post branch; enabled by default |
 | `HOI4 Optional Background Replacement` | One optional BiRefNet background-replacement operation; sizing remains separate |
@@ -37,7 +37,7 @@ The source, processing-only, and batch canvases inline the current functional gr
 10. VAE-decode the Post result;
 11. use one red toggle to choose the prepared portrait or the complete Adonis result for every downstream node.
 
-Base and Post share the same seed (`42`) and per-model step (`9`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`, matching the current upstream graph.
+Base and Post share the same fixed seed (`42`) and per-model step (`9`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`, matching the current upstream graph. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style seeds also remain fixed while the LoRA checkpoints are being compared.
 
 ## Source workflow
 
@@ -57,11 +57,11 @@ Every source sampler uses the exact prompt:
 make this portrait hoi4_portrait style
 ```
 
-The three seeds are `42`, `43`, and `44`. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
+The three HOI4 style seeds remain fixed at `42`, `43`, and `44` for checkpoint comparisons. The installers include the 1750, 2000, 2250, 2500, 2750, and 3000-step LoRAs, while the visible loader keeps the 2500-step checkpoint selected until a final checkpoint is chosen. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
 
 ## Text-to-image workflow
 
-This 21-node graph keeps the diffusion model, Qwen encoder, VAE, and style LoRA loaders separate. It runs one standard ComfyUI sampler, then shows optional background replacement, master sizing, game sizing, all three saves, and one tall final preview. Its example prompt is:
+This 21-node graph keeps the diffusion model, Qwen encoder, VAE, and style LoRA loaders separate. It runs one standard ComfyUI sampler with a fixed seed, then shows optional background replacement, master sizing, game sizing, all three saves, and one tall full-resolution final preview. Its example prompt is:
 
 ```text
 hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
@@ -69,11 +69,11 @@ hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wear
 
 ## Processing-only workflow
 
-This 42-node graph includes source preparation and the entire Adonis topology. It does not load the style LoRA. RealESRGAN, restored, and final 156×210 portraits appear together in the comparison row.
+This 43-node graph includes source preparation and the entire Adonis topology. It does not load the style LoRA. RealESRGAN, restored, and the full-resolution final portrait appear together in the comparison row.
 
 ## Batch workflow
 
-This 51-node graph reads compatible images from `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, and `ComfyUI/input/hoi4_portraits_batch/` on manual installations. The installers place three Ireland example sources in the input folder. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. There is one standard sampler and one set of automatic final saves. The create and save stages use separate colour-consistent groups, and the three comparison previews are centered with equal spacing.
+This 52-node graph reads compatible images from `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, and `ComfyUI/input/hoi4_portraits_batch/` on manual installations. The installers place three Ireland example sources in the input folder. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. There is one standard sampler and one set of automatic final saves. The create and save stages use separate colour-consistent groups, and the three comparison previews are centered with equal spacing.
 
 ## Output contract
 
