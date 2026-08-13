@@ -118,7 +118,7 @@ The other three workflow canvases use the same stage colors and controls:
 
 ![Batch workflow overview](docs/assets/workflows/audit/batch-overview-2026-08-13.png)
 
-![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview-2026-08-11.jpg)
+![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview-2026-08-13.png)
 
 ## Prompting
 

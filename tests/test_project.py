@@ -159,6 +159,20 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(source["type"], "ImageScale")
                 self.assertEqual(source["widgets_values"][1:3], [1024, 1365])
 
+    def test_processing_canvas_uses_the_reviewed_compact_layout(self) -> None:
+        ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_processing_only.json").read_text())
+        nodes = {node["title"]: node for node in ui["nodes"]}
+        self.assertEqual(
+            next(group["bounding"] for group in ui["groups"] if group["title"] == "04 Finish and save"),
+            build_workflows.PROCESSING_GROUP_BOUNDS["04 Finish and save"],
+        )
+        self.assertEqual(nodes["Keep source image name"]["pos"], [6080, 100])
+        self.assertEqual(nodes["Save game PNG"]["pos"], [6540, 100])
+        self.assertEqual(nodes["Save prepared portrait"]["pos"], [5200, 320])
+        self.assertEqual(nodes["Save restored portrait"]["pos"], [5660, 320])
+        previews = [nodes[title] for title in ("Prepared portrait", "Restored portrait", "Full-resolution portrait")]
+        self.assertEqual([node["pos"] for node in previews], [[5200, 540], [5840, 540], [6480, 540]])
+
     def test_adonis_defaults_match_the_upstream_base_post_graph(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_processing_only.api.json").read_text())
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_processing_only.json").read_text())

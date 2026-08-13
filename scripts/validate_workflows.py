@@ -87,6 +87,7 @@ def _overlap(a: list[float], b: list[float], padding: float = 0) -> bool:
 
 def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
     errors: list[str] = []
+    workflow_id = ui.get("extra", {}).get("workflow_id")
     nodes = ui.get("nodes", [])
     links = ui.get("links", [])
     groups = ui.get("groups")
@@ -171,7 +172,12 @@ def _ui_errors(path: Path, ui: dict[str, Any]) -> list[str]:
         right = max(node["pos"][0] + node["size"][0] for node in members)
         bottom = max(node["pos"][1] + node["size"][1] for node in members)
         expected = [left - 40, top - 60, right - left + 80, bottom - top + 100]
-        if group_bounds[title] != expected:
+        reviewed = (
+            build_workflows.PROCESSING_GROUP_BOUNDS.get(title)
+            if workflow_id == "hoi4_portrait_processing_only"
+            else None
+        )
+        if group_bounds[title] != expected and group_bounds[title] != reviewed:
             errors.append(f"{path}: group {title!r} is not tightly fitted with symmetric gutters")
 
     for index, node in enumerate(nodes):

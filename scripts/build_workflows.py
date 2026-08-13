@@ -140,6 +140,27 @@ BATCH_LAYOUT = {
     56: ((6640, 740), None),
 }
 
+# The processing output area follows the user's hand-arranged canvas. The two
+# newer stage savers complete the second control row without changing the
+# supplied preview row or the equal-height blue and brown groups.
+PROCESSING_LAYOUT = {
+    35: ((5200, 100), None),
+    36: ((5640, 100), None),
+    37: ((6080, 100), None),
+    38: ((6580, 320), None),
+    39: ((6540, 100), None),
+    40: ((6120, 320), (420, 140)),
+    41: ((5200, 320), None),
+    42: ((5660, 320), None),
+    43: ((5200, 540), None),
+    44: ((5840, 540), None),
+    45: ((6480, 540), None),
+}
+
+PROCESSING_GROUP_BOUNDS = {
+    "04 Finish and save": [5160, 40, 1960, 1540],
+}
+
 
 @dataclass(frozen=True)
 class Ref:
@@ -156,6 +177,7 @@ class Graph:
         self.groups: list[dict[str, Any]] = []
         self._group_titles: set[str] = set()
         self._group_node_colors: dict[str, str] = {}
+        self._group_bounds: dict[str, list[int]] = {}
         self._input_specs: dict[int, list[tuple[str, str, bool]]] = {}
         self._node_id = 0
         self._link_id = 0
@@ -278,6 +300,8 @@ class Graph:
             bottom = max(node["pos"][1] + node["size"][1] for node in members)
             # The extra 20px above the nodes leaves room for the group title.
             group["bounding"] = [left - 40, top - 60, right - left + 80, bottom - top + 100]
+            if group["title"] in self._group_bounds:
+                group["bounding"] = list(self._group_bounds[group["title"]])
 
     def apply_layout(self, layout: dict[int, tuple[tuple[int, int], tuple[int, int] | None]]) -> None:
         """Apply a reviewed editor layout without changing graph semantics."""
@@ -289,6 +313,14 @@ class Graph:
             node["pos"] = list(position)
             if size is not None:
                 node["size"] = list(size)
+
+    def apply_group_bounds(self, bounds: dict[str, list[int]]) -> None:
+        """Apply reviewed editor group bounds without changing graph semantics."""
+
+        for title, bounding in bounds.items():
+            if title not in self._group_titles:
+                raise ValueError(f"unknown visible group: {title}")
+            self._group_bounds[title] = list(bounding)
 
     def serialize(self, *, style_lora: str | None) -> tuple[dict[str, Any], dict[str, Any]]:
         self._fit_groups()
@@ -1125,6 +1157,8 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Full-resolution portrait", master))):
         preview = _preview(g, title, (5200 + index * 640, 880), "04 Finish and save")
         g.connect(ref, 0, preview, "images")
+    g.apply_layout(PROCESSING_LAYOUT)
+    g.apply_group_bounds(PROCESSING_GROUP_BOUNDS)
     return g.serialize(style_lora=None)
 
 

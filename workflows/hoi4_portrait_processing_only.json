@@ -1676,8 +1676,8 @@
       "type": "Hoi4OutputFilename",
       "title": "Keep source image name",
       "pos": [
-        5620,
-        340
+        6080,
+        100
       ],
       "size": [
         420,
@@ -1749,8 +1749,8 @@
       "type": "Hoi4SavePNG",
       "title": "Save restored master PNG",
       "pos": [
-        6080,
-        100
+        6580,
+        320
       ],
       "size": [
         420,
@@ -1796,8 +1796,8 @@
       "type": "Hoi4SavePNG",
       "title": "Save game PNG",
       "pos": [
-        6080,
-        340
+        6540,
+        100
       ],
       "size": [
         420,
@@ -1843,12 +1843,12 @@
       "type": "Hoi4SaveDDS",
       "title": "Save game DDS",
       "pos": [
-        6080,
-        580
+        6120,
+        320
       ],
       "size": [
         420,
-        190
+        140
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -1891,8 +1891,8 @@
       "type": "Hoi4SavePNG",
       "title": "Save prepared portrait",
       "pos": [
-        6540,
-        100
+        5200,
+        320
       ],
       "size": [
         420,
@@ -1938,8 +1938,8 @@
       "type": "Hoi4SavePNG",
       "title": "Save restored portrait",
       "pos": [
-        6540,
-        340
+        5660,
+        320
       ],
       "size": [
         420,
@@ -1986,7 +1986,7 @@
       "title": "Prepared portrait",
       "pos": [
         5200,
-        880
+        540
       ],
       "size": [
         600,
@@ -2023,7 +2023,7 @@
       "title": "Restored portrait",
       "pos": [
         5840,
-        880
+        540
       ],
       "size": [
         600,
@@ -2060,7 +2060,7 @@
       "title": "Full-resolution portrait",
       "pos": [
         6480,
-        880
+        540
       ],
       "size": [
         600,
@@ -2694,7 +2694,7 @@
         5160,
         40,
         1960,
-        1690
+        1540
       ],
       "color": "#3d596f",
       "font_size": 28,
