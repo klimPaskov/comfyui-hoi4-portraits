@@ -22,6 +22,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 //go:embed payload.zip
@@ -51,6 +52,23 @@ type variant struct {
 func fail(format string, values ...any) {
 	fmt.Fprintf(os.Stderr, "Setup stopped: "+format+"\n", values...)
 	os.Exit(1)
+}
+
+func formatElapsed(duration time.Duration) string {
+	totalSeconds := int64(duration.Round(time.Second) / time.Second)
+	if totalSeconds < 0 {
+		totalSeconds = 0
+	}
+	hours := totalSeconds / 3600
+	minutes := (totalSeconds % 3600) / 60
+	seconds := totalSeconds % 60
+	if hours > 0 {
+		return fmt.Sprintf("%dh %dm %ds", hours, minutes, seconds)
+	}
+	if minutes > 0 {
+		return fmt.Sprintf("%dm %ds", minutes, seconds)
+	}
+	return fmt.Sprintf("%ds", seconds)
 }
 
 func destinationDefault() string {
@@ -540,6 +558,7 @@ func runInstaller(destination, comfyRoot, batchInput, portraitOutput string, var
 }
 
 func main() {
+	installationStarted := time.Now()
 	destination := flag.String("destination", "", "empty destination folder for the extracted package")
 	comfyRoot := flag.String("comfyui-root", "", "existing ComfyUI root; skips detection")
 	batchInput := flag.String("batch-input", "", "batch input folder; skips the location menu")
@@ -621,6 +640,7 @@ func main() {
 
 	fmt.Println()
 	fmt.Println("Installation finished.")
+	fmt.Printf("Total installation time: %s.\n", formatElapsed(time.Since(installationStarted)))
 	fmt.Println("Restart ComfyUI, then open Workflows > hoi4_portraits and queue a workflow.")
 	fmt.Printf("Add batch images to %s and collect PNG and DDS files from %s.\n", *batchInput, *portraitOutput)
 }

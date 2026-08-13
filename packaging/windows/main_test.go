@@ -3,7 +3,24 @@ package main
 import (
 	"path/filepath"
 	"testing"
+	"time"
 )
+
+func TestFormatElapsedUsesReadableUnits(t *testing.T) {
+	tests := []struct {
+		duration time.Duration
+		want     string
+	}{
+		{duration: 42 * time.Second, want: "42s"},
+		{duration: 12*time.Minute + 7*time.Second, want: "12m 7s"},
+		{duration: 2*time.Hour + 3*time.Minute + 4*time.Second, want: "2h 3m 4s"},
+	}
+	for _, test := range tests {
+		if got := formatElapsed(test.duration); got != test.want {
+			t.Fatalf("formatElapsed(%s) = %q, want %q", test.duration, got, test.want)
+		}
+	}
+}
 
 func TestGPUDetectionPrefersDiscreteNvidiaOverAMDIntegratedGraphics(t *testing.T) {
 	gpu := classifyGPU("AMD Radeon(TM) Graphics\r\nNVIDIA GeForce RTX 4090\r\n")

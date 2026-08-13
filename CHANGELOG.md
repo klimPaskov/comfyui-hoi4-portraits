@@ -29,6 +29,7 @@ This repository contains one current, internally consistent package.
 - Output: 1024×1365 PNG, centered 156×210 PNG, and HOI4-ready DDS under the selected portrait output folder
 - Downloads: high-performance Xet is enabled, independent repositories run in parallel, files from each repository transfer concurrently through one shared Xet token, short rate-limit retries recover before resumable HTTPS fallback, and integrity checks protect every installed file
 - Linked folders: the batch restoration cache and automatic savers validate and follow only the installer-managed input and output links, avoiding current ComfyUI's external-symlink rejection without allowing arbitrary paths
+- Installer summary: RunPod and Windows setup show the total elapsed installation time at completion
 
 ## Installation contract
 

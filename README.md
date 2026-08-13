@@ -25,6 +25,8 @@ On RunPod, drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The
 
 The Windows installer defaults to `Documents\hoi4-portraits\input` and `Documents\hoi4-portraits\output`, with choices for ComfyUI-managed folders or custom paths. Manual and Comfy Cloud installs use the same output subfolders under `ComfyUI/output/hoi4_portraits/`.
 
+The RunPod and Windows installers show the total installation time when they finish.
+
 The PNG and DDS nodes are automatic terminal outputs and safely use the installer-selected portrait output folder on current ComfyUI versions. Image-based workflows keep the source image stem in every saved file; the three source candidates append `_1`, `_2`, and `_3`. For example, `general_macarthur.jpg` produces PNG and DDS names beginning with `general_macarthur_1` for the first candidate. Text-to-image uses `text_to_image` because it has no source file. Numbered counters prevent overwrites, and the batch folder is rescanned on every queue in stable filename order.
 
 ## Which model do I need?

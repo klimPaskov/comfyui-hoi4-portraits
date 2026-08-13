@@ -1,7 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+INSTALL_STARTED_AT="$(date +%s)"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+print_install_duration() {
+  local finished_at elapsed hours minutes seconds
+  finished_at="$(date +%s)"
+  elapsed=$((finished_at - INSTALL_STARTED_AT))
+  hours=$((elapsed / 3600))
+  minutes=$(((elapsed % 3600) / 60))
+  seconds=$((elapsed % 60))
+  if (( hours > 0 )); then
+    printf 'Total installation time: %dh %dm %ds.\n' "${hours}" "${minutes}" "${seconds}"
+  elif (( minutes > 0 )); then
+    printf 'Total installation time: %dm %ds.\n' "${minutes}" "${seconds}"
+  else
+    printf 'Total installation time: %ds.\n' "${seconds}"
+  fi
+}
 
 VARIANTS=()
 GGUF_QUANTS="Q5_K_M"
@@ -151,3 +168,4 @@ echo "Restart ComfyUI, then open Workflows > hoi4_portraits."
 if [[ " ${VARIANTS[*]} " == *" full "* ]]; then
   echo "Note: the optional full BF16 model needs a gated HF token (HF_TOKEN)."
 fi
+print_install_duration

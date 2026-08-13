@@ -308,6 +308,14 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("VARIANTS=(fp8)", runpod)
         self.assertIn('[string]$Variant = "fp8"', windows)
 
+    def test_installers_report_total_elapsed_time(self) -> None:
+        runpod = (ROOT / "scripts/install_runpod.sh").read_text()
+        windows_exe = (ROOT / "packaging/windows/main.go").read_text()
+        self.assertIn("INSTALL_STARTED_AT", runpod)
+        self.assertIn("Total installation time:", runpod)
+        self.assertIn("installationStarted := time.Now()", windows_exe)
+        self.assertIn("Total installation time: %s.", windows_exe)
+
     def test_windows_wizard_offers_official_comfyui_and_amd_rocm_install(self) -> None:
         wizard = (ROOT / "packaging/windows/main.go").read_text()
         starter = (ROOT / "scripts/start_windows.ps1").read_text()
