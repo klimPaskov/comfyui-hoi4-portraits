@@ -1,8 +1,8 @@
 {
   "id": "hoi4_portrait_batch",
   "revision": 0,
-  "last_node_id": 50,
-  "last_link_id": 71,
+  "last_node_id": 51,
+  "last_link_id": 75,
   "nodes": [
     {
       "id": 1,
@@ -82,7 +82,9 @@
         {
           "name": "filenames",
           "type": "STRING",
-          "links": null
+          "links": [
+            66
+          ]
         }
       ],
       "properties": {
@@ -603,7 +605,7 @@
           "links": [
             14,
             47,
-            69
+            73
           ]
         }
       ],
@@ -2099,7 +2101,7 @@
           "type": "IMAGE",
           "links": [
             52,
-            70
+            74
           ]
         }
       ],
@@ -2607,7 +2609,7 @@
           "type": "IMAGE",
           "links": [
             65,
-            66
+            70
           ]
         }
       ],
@@ -2683,9 +2685,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            67,
-            68,
-            71
+            71,
+            72,
+            75
           ]
         }
       ],
@@ -2721,12 +2723,12 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 66
+          "link": 70
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": null,
+          "link": 67,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2768,12 +2770,12 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 67
+          "link": 71
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": null,
+          "link": 68,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2815,12 +2817,12 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 68
+          "link": 72
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": null,
+          "link": 69,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2852,15 +2854,15 @@
     },
     {
       "id": 48,
-      "type": "PreviewImage",
-      "title": "Prepared portrait",
+      "type": "Hoi4OutputFilename",
+      "title": "Keep each source image name",
       "pos": [
-        6520,
-        900
+        7460,
+        600
       ],
       "size": [
-        600,
-        810
+        420,
+        160
       ],
       "color": "#705080",
       "bgcolor": "#523b60",
@@ -2869,30 +2871,60 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 69
+          "name": "source_filename",
+          "type": "STRING",
+          "link": 66,
+          "widget": {
+            "name": "source_filename"
+          }
+        },
+        {
+          "name": "suffix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "suffix"
+          }
         }
       ],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
+          "name": "master_png",
+          "type": "STRING",
+          "links": [
+            67
+          ]
+        },
+        {
+          "name": "game_png",
+          "type": "STRING",
+          "links": [
+            68
+          ]
+        },
+        {
+          "name": "game_dds",
+          "type": "STRING",
+          "links": [
+            69
+          ]
         }
       ],
       "properties": {
-        "Node name for S&R": "PreviewImage",
+        "Node name for S&R": "Hoi4OutputFilename",
         "hoi4_group": "04 Create and save"
       },
-      "widgets_values": []
+      "widgets_values": [
+        "portrait.png",
+        ""
+      ]
     },
     {
       "id": 49,
       "type": "PreviewImage",
-      "title": "Restored portrait",
+      "title": "Prepared portrait",
       "pos": [
-        7160,
+        6520,
         900
       ],
       "size": [
@@ -2908,7 +2940,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 70
+          "link": 73
         }
       ],
       "outputs": [
@@ -2927,9 +2959,9 @@
     {
       "id": 50,
       "type": "PreviewImage",
-      "title": "Game portrait",
+      "title": "Restored portrait",
       "pos": [
-        7800,
+        7160,
         900
       ],
       "size": [
@@ -2945,7 +2977,44 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 71
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "04 Create and save"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 51,
+      "type": "PreviewImage",
+      "title": "Game portrait",
+      "pos": [
+        7800,
+        900
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 50,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 75
         }
       ],
       "outputs": [
@@ -3485,6 +3554,38 @@
     ],
     [
       66,
+      2,
+      2,
+      48,
+      0,
+      "STRING"
+    ],
+    [
+      67,
+      48,
+      0,
+      45,
+      1,
+      "STRING"
+    ],
+    [
+      68,
+      48,
+      1,
+      46,
+      1,
+      "STRING"
+    ],
+    [
+      69,
+      48,
+      2,
+      47,
+      1,
+      "STRING"
+    ],
+    [
+      70,
       43,
       0,
       45,
@@ -3492,7 +3593,7 @@
       "IMAGE"
     ],
     [
-      67,
+      71,
       44,
       0,
       46,
@@ -3500,7 +3601,7 @@
       "IMAGE"
     ],
     [
-      68,
+      72,
       44,
       0,
       47,
@@ -3508,26 +3609,26 @@
       "IMAGE"
     ],
     [
-      69,
+      73,
       10,
-      0,
-      48,
-      0,
-      "IMAGE"
-    ],
-    [
-      70,
-      34,
       0,
       49,
       0,
       "IMAGE"
     ],
     [
-      71,
-      44,
+      74,
+      34,
       0,
       50,
+      0,
+      "IMAGE"
+    ],
+    [
+      75,
+      44,
+      0,
+      51,
       0,
       "IMAGE"
     ]

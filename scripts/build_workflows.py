@@ -230,10 +230,23 @@ def _setup_guide(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     )
 
 
-def _load_image(g: Graph, title: str, filename: str, pos: tuple[int, int], size: tuple[int, int], group: str) -> Ref:
+def _load_image(
+    g: Graph,
+    title: str,
+    filename: str,
+    pos: tuple[int, int],
+    size: tuple[int, int],
+    group: str,
+    *,
+    keep_filename: bool = False,
+) -> Ref:
+    class_type = "Hoi4LoadImage" if keep_filename else "LoadImage"
+    outputs = [("IMAGE", "IMAGE"), ("MASK", "MASK")]
+    if keep_filename:
+        outputs.append(("filename", "STRING"))
     return g.node(
-        "LoadImage", title, pos, size, group,
-        [("image", "COMBO", True)], [("IMAGE", "IMAGE"), ("MASK", "MASK")],
+        class_type, title, pos, size, group,
+        [("image", "COMBO", True)], outputs,
         [filename, "image"], {"image": filename}, "source",
     )
 
@@ -701,20 +714,61 @@ def _image_from_batch(g: Graph, title: str, image: Ref, index: int, pos: tuple[i
     return node
 
 
-def _save_image(g: Graph, title: str, prefix: str, pos: tuple[int, int], group: str) -> Ref:
-    return g.node(
+def _output_filenames(
+    g: Graph,
+    title: str,
+    source_filename: str,
+    suffix: str,
+    pos: tuple[int, int],
+    group: str,
+    filename_source: tuple[Ref, int] | None,
+    size: tuple[int, int] = (420, 160),
+) -> Ref:
+    node = g.node(
+        "Hoi4OutputFilename", title, pos, size, group,
+        [("source_filename", "STRING", True), ("suffix", "STRING", True)],
+        [("master_png", "STRING"), ("game_png", "STRING"), ("game_dds", "STRING")],
+        [source_filename, suffix], {"source_filename": source_filename, "suffix": suffix}, "output",
+    )
+    if filename_source is not None:
+        g.connect(filename_source[0], filename_source[1], node, "source_filename")
+    return node
+
+
+def _save_image(
+    g: Graph,
+    title: str,
+    prefix: str,
+    pos: tuple[int, int],
+    group: str,
+    prefix_source: tuple[Ref, int] | None = None,
+) -> Ref:
+    node = g.node(
         "SaveImage", title, pos, (420, 150), group,
         [("images", "IMAGE", False), ("filename_prefix", "STRING", True)], [("IMAGE", "IMAGE")],
         [prefix], {"filename_prefix": prefix}, "output",
     )
+    if prefix_source is not None:
+        g.connect(prefix_source[0], prefix_source[1], node, "filename_prefix")
+    return node
 
 
-def _save_dds(g: Graph, title: str, prefix: str, pos: tuple[int, int], group: str) -> Ref:
-    return g.node(
+def _save_dds(
+    g: Graph,
+    title: str,
+    prefix: str,
+    pos: tuple[int, int],
+    group: str,
+    prefix_source: tuple[Ref, int] | None = None,
+) -> Ref:
+    node = g.node(
         "Hoi4SaveDDS", title, pos, (420, 190), group,
         [("images", "IMAGE", False), ("filename_prefix", "STRING", True), ("format", "COMBO", True)], [("images", "IMAGE")],
         [prefix, "argb8888"], {"filename_prefix": prefix, "format": "argb8888"}, "output",
     )
+    if prefix_source is not None:
+        g.connect(prefix_source[0], prefix_source[1], node, "filename_prefix")
+    return node
 
 
 def _batch_input(g: Graph, pos: tuple[int, int], group: str) -> Ref:
@@ -739,7 +793,10 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
 
     _setup_guide(g, (80, 100), "00 Setup")
 
-    source = _load_image(g, "Choose a source portrait", "source_portrait.jpg", (860, 100), (680, 620), "01 Prepare portrait")
+    source = _load_image(
+        g, "Choose a source portrait", "source_portrait.jpg", (860, 100), (680, 620),
+        "01 Prepare portrait", keep_filename=True,
+    )
     esrgan = _source_pipeline(g, source, "01 Prepare portrait", x=1620)
 
     model = _model_pipeline(g, "02 Models", x=860, y=1200, style=True, adonis=True, background=True)
@@ -777,9 +834,22 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
 
     for index, (master, game) in enumerate(zip(masters, finals), start=1):
         oy = 100 + (index - 1) * 480
-        save_master = _save_image(g, f"Save portrait {index} master PNG", f"1024x1365/portrait_{index}", (9100, oy), "05 Save portraits")
-        save_game = _save_image(g, f"Save portrait {index} game PNG", f"156x210/portrait_{index}", (9560, oy), "05 Save portraits")
-        save_dds = _save_dds(g, f"Save portrait {index} DDS", f"156x210/dds/portrait_{index}", (9560, oy + 200), "05 Save portraits")
+        names = _output_filenames(
+            g, f"Keep source name — portrait {index}", "source_portrait.jpg", f"_{index}",
+            (9100, oy), "05 Save portraits", (source, 2),
+        )
+        save_master = _save_image(
+            g, f"Save portrait {index} master PNG", f"1024x1365/source_portrait_{index}",
+            (9100, oy + 200), "05 Save portraits", (names, 0),
+        )
+        save_game = _save_image(
+            g, f"Save portrait {index} game PNG", f"156x210/source_portrait_{index}",
+            (9560, oy), "05 Save portraits", (names, 1),
+        )
+        save_dds = _save_dds(
+            g, f"Save portrait {index} DDS", f"156x210/dds/source_portrait_{index}",
+            (9560, oy + 200), "05 Save portraits", (names, 2),
+        )
         g.connect(master, 0, save_master, "images")
         g.connect(game, 0, save_game, "images")
         g.connect(game, 0, save_dds, "images")
@@ -809,6 +879,10 @@ def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
     )
     sampler = _ksampler(g, "Portrait sampling", model, positive, negative, latent, 42, (2840, 100), "02 Create portrait")
     portrait = _decode_style(g, model, sampler, (3440, 100), "02 Create portrait")
+    names = _output_filenames(
+        g, "Name generated portrait files", "text_to_image.png", "", (3440, 280),
+        "02 Create portrait", None, (300, 160),
+    )
 
     replace = _background_replace(g, "Use replacement background", (3900, 100), "03 Finish and save")
     master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (3900, 440), "03 Finish and save")
@@ -819,9 +893,9 @@ def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
     g.connect(background, 0, replace, "background")
     g.connect(replace, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save master PNG", "1024x1365/text_to_image", (3900, 960), "03 Finish and save")
-    save_game = _save_image(g, "Save game PNG", "156x210/text_to_image", (3900, 1200), "03 Finish and save")
-    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/text_to_image", (3900, 1440), "03 Finish and save")
+    save_master = _save_image(g, "Save master PNG", "1024x1365/text_to_image", (3900, 960), "03 Finish and save", (names, 0))
+    save_game = _save_image(g, "Save game PNG", "156x210/text_to_image", (3900, 1200), "03 Finish and save", (names, 1))
+    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/text_to_image", (3900, 1440), "03 Finish and save", (names, 2))
     preview = _preview(g, "Game portrait", (4440, 740), "03 Finish and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
@@ -838,7 +912,10 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     g.group("03 Restore details", "#765b35", "restore")
     g.group("04 Finish and save", "#3d596f", "output")
     _setup_guide(g, (80, 100), "00 Setup")
-    source = _load_image(g, "Choose a source portrait", "source_portrait.jpg", (860, 100), (680, 620), "01 Prepare portrait")
+    source = _load_image(
+        g, "Choose a source portrait", "source_portrait.jpg", (860, 100), (680, 620),
+        "01 Prepare portrait", keep_filename=True,
+    )
     esrgan = _source_pipeline(g, source, "01 Prepare portrait", x=1620)
     model = _model_pipeline(g, "02 Models", x=860, y=1200, style=False, adonis=True, background=False)
     restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800)
@@ -846,9 +923,13 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     game = _image_scale(g, "Game portrait — 156×210", 156, 210, (5640, 100), "04 Finish and save")
     g.connect(restored, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save restored master PNG", "1024x1365/processing_only", (6080, 100), "04 Finish and save")
-    save_game = _save_image(g, "Save game PNG", "156x210/processing_only", (6080, 340), "04 Finish and save")
-    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/processing_only", (6080, 580), "04 Finish and save")
+    names = _output_filenames(
+        g, "Keep source image name", "source_portrait.jpg", "", (5620, 340),
+        "04 Finish and save", (source, 2),
+    )
+    save_master = _save_image(g, "Save restored master PNG", "1024x1365/source_portrait", (6080, 100), "04 Finish and save", (names, 0))
+    save_game = _save_image(g, "Save game PNG", "156x210/source_portrait", (6080, 340), "04 Finish and save", (names, 1))
+    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/source_portrait", (6080, 580), "04 Finish and save", (names, 2))
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
@@ -882,6 +963,13 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     save_master = _save_image(g, "Save every master PNG", "1024x1365/batch", (7460, 360), "04 Create and save")
     save_game = _save_image(g, "Save every game PNG", "156x210/batch", (7920, 360), "04 Create and save")
     save_dds = _save_dds(g, "Save every game DDS", "156x210/dds/batch", (7920, 600), "04 Create and save")
+    names = _output_filenames(
+        g, "Keep each source image name", "portrait.png", "", (7460, 600),
+        "04 Create and save", (batch, 2),
+    )
+    g.connect(names, 0, save_master, "filename_prefix")
+    g.connect(names, 1, save_game, "filename_prefix")
+    g.connect(names, 2, save_dds, "filename_prefix")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")

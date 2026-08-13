@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fnmatch import fnmatch
 from pathlib import Path
+import re
 from typing import Any
 
 import numpy as np
@@ -17,6 +18,21 @@ from PIL import Image, ImageOps
 ASPECT = 1024 / 1365
 YUNET_MODEL = "face_detection_yunet_2023mar.onnx"
 WEB_DIRECTORY = "./web"
+
+
+def _output_filename_prefixes(source_filename: str, suffix: str = "") -> tuple[str, str, str]:
+    """Build safe output paths while preserving the input image stem."""
+
+    basename = str(source_filename).replace("\\", "/").rsplit("/", 1)[-1]
+    stem = Path(basename).stem.strip() or "portrait"
+    safe_stem = re.sub(r'[\x00-\x1f<>:"/\\|?*]', "_", stem)
+    safe_suffix = re.sub(r'[\x00-\x1f<>:"/\\|?*]', "_", str(suffix).strip())
+    output_name = f"{safe_stem}{safe_suffix}"
+    return (
+        f"1024x1365/{output_name}",
+        f"156x210/{output_name}",
+        f"156x210/dds/{output_name}",
+    )
 
 
 def _resize_center_crop(image: torch.Tensor, width: int, height: int) -> torch.Tensor:
@@ -464,6 +480,33 @@ class Hoi4BackgroundReplace:
         return ((image * mask + backdrop[: image.shape[0]] * (1.0 - mask)).clamp(0, 1),)
 
 
+class Hoi4LoadImage:
+    """Core image upload with the selected filename exposed downstream."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return _registered_node("LoadImage").INPUT_TYPES()
+
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING")
+    RETURN_NAMES = ("image", "mask", "filename")
+    FUNCTION = "load_image"
+    CATEGORY = "HOI4 portraits/input"
+    DESCRIPTION = "Upload a portrait and pass its filename to the automatic savers."
+
+    @classmethod
+    def IS_CHANGED(cls, image):
+        return _registered_node("LoadImage").IS_CHANGED(image)
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, image):
+        return _registered_node("LoadImage").VALIDATE_INPUTS(image)
+
+    def load_image(self, image):
+        loaded_image, mask = _registered_node("LoadImage")().load_image(image)
+        filename = Path(folder_paths.get_annotated_filepath(image)).name
+        return (loaded_image, mask, filename)
+
+
 class Hoi4BatchInput:
     """Load compatible images as list items for one-by-one workflow execution."""
 
@@ -526,6 +569,28 @@ class Hoi4BatchInput:
             masks,
             [path.name for path in paths],
         )
+
+
+class Hoi4OutputFilename:
+    """Keep the source image stem across master PNG, game PNG, and DDS saves."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "source_filename": ("STRING", {"default": "portrait.png"}),
+                "suffix": ("STRING", {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING", "STRING", "STRING")
+    RETURN_NAMES = ("master_png", "game_png", "game_dds")
+    FUNCTION = "build"
+    CATEGORY = "HOI4 portraits/output"
+    DESCRIPTION = "Preserve the input image name in every automatic output."
+
+    def build(self, source_filename, suffix=""):
+        return _output_filename_prefixes(source_filename, suffix)
 
 
 class Hoi4SaveDDS:
@@ -604,7 +669,9 @@ NODE_CLASS_MAPPINGS = {
     "PortraitIdentityMask": PortraitIdentityMask,
     "Hoi4SetupGuide": Hoi4SetupGuide,
     "Hoi4BackgroundReplace": Hoi4BackgroundReplace,
+    "Hoi4LoadImage": Hoi4LoadImage,
     "Hoi4BatchInput": Hoi4BatchInput,
+    "Hoi4OutputFilename": Hoi4OutputFilename,
     "Hoi4SaveDDS": Hoi4SaveDDS,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -612,6 +679,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PortraitIdentityMask": "Portrait Identity Mask",
     "Hoi4SetupGuide": "📂 Setup and downloads",
     "Hoi4BackgroundReplace": "HOI4 Optional Background Replacement",
+    "Hoi4LoadImage": "HOI4 Portrait Upload",
     "Hoi4BatchInput": "HOI4 Batch Input Folder",
+    "Hoi4OutputFilename": "Keep Input Filename",
     "Hoi4SaveDDS": "HOI4 Save DDS Portrait (156x210)",
 }

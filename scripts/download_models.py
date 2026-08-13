@@ -9,12 +9,20 @@ import hashlib
 import json
 import os
 import sys
+import threading
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+RETRY_DELAYS_SECONDS = (15, 30, 60, 120, 120, 120)
+
+# Give accelerated Hugging Face/Xet transfers enough time on large model files.
+# Repository-aware scheduling below prevents files in one repository from
+# competing for the same Xet read token while other repositories stay parallel.
+os.environ.setdefault("HF_HUB_DOWNLOAD_TIMEOUT", "120")
 
 
 def _sha256(path: Path) -> str:
@@ -111,6 +119,70 @@ def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) ->
     return "downloaded"
 
 
+def _retryable_download_error(exc: BaseException) -> bool:
+    """Return whether another attempt can recover without user intervention."""
+
+    current: BaseException | None = exc
+    while current is not None:
+        if isinstance(current, urllib.error.HTTPError) and (
+            current.code == 429 or 500 <= current.code <= 599
+        ):
+            return True
+        if isinstance(current, (TimeoutError, ConnectionError, urllib.error.URLError)):
+            return True
+        current = current.__cause__
+    message = str(exc).casefold()
+    return any(
+        marker in message
+        for marker in (
+            "429",
+            "too many requests",
+            "rate limit",
+            "timed out",
+            "timeout",
+            "connection reset",
+            "temporary failure",
+            "server error",
+            "status client error (5",
+        )
+    )
+
+
+def _retry_after_seconds(exc: BaseException, fallback: int) -> int:
+    current: BaseException | None = exc
+    while current is not None:
+        if isinstance(current, urllib.error.HTTPError):
+            value = current.headers.get("Retry-After") if current.headers else None
+            if value and value.isdecimal():
+                return max(fallback, min(int(value), 300))
+        current = current.__cause__
+    return fallback
+
+
+def _download_with_retries(
+    entry: dict[str, Any],
+    destination: Path,
+    *,
+    verify_only: bool,
+    sleep_fn=time.sleep,
+) -> str:
+    attempts = len(RETRY_DELAYS_SECONDS) + 1
+    for attempt in range(1, attempts + 1):
+        try:
+            return _download(entry, destination, verify_only=verify_only)
+        except RuntimeError as exc:
+            if verify_only or attempt == attempts or not _retryable_download_error(exc):
+                raise
+            delay = _retry_after_seconds(exc, RETRY_DELAYS_SECONDS[attempt - 1])
+            print(
+                f"  {entry['filename']}: Hugging Face is rate-limiting the download; "
+                f"retrying in {delay}s ({attempt}/{attempts - 1}).",
+                flush=True,
+            )
+            sleep_fn(delay)
+    raise AssertionError("unreachable")
+
+
 def _selected_model_entries(
     manifest: dict[str, Any],
     selected: set[str],
@@ -137,6 +209,18 @@ def _selected_model_entries(
     return entries
 
 
+def _group_jobs_by_source(
+    jobs: list[tuple[dict[str, Any], Path]],
+) -> list[list[tuple[dict[str, Any], Path]]]:
+    """Keep one transfer per repository while allowing unrelated repositories in parallel."""
+
+    grouped: dict[str, list[tuple[dict[str, Any], Path]]] = {}
+    for entry, destination in jobs:
+        key = str(entry.get("source") or entry["url"].split("/resolve/", 1)[0])
+        grouped.setdefault(key, []).append((entry, destination))
+    return list(grouped.values())
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--comfyui-root", required=True, type=Path)
@@ -159,7 +243,12 @@ def main(argv: list[str] | None = None) -> int:
             "Only used with --variant gguf. Defaults to every listed quantization."
         ),
     )
-    parser.add_argument("--workers", type=int, default=4, help="Parallel model checks/downloads (default: 4)")
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=4,
+        help="Parallel source repositories (default: 4); files from the same repository remain sequential.",
+    )
     args = parser.parse_args(argv)
     comfy_root = args.comfyui_root.expanduser().resolve()
     if not (comfy_root / "main.py").is_file():
@@ -176,18 +265,26 @@ def main(argv: list[str] | None = None) -> int:
         jobs.append((entry, destination))
 
     results: list[dict[str, str]] = []
+    result_lock = threading.Lock()
     try:
-        def run(job: tuple[dict[str, Any], Path]) -> dict[str, str]:
-            entry, destination = job
-            print(f"Checking {entry['name']}...", flush=True)
-            status = _download(entry, destination, verify_only=args.verify_only)
-            return {"filename": entry["filename"], "path": str(destination), "status": status}
+        def run_group(group: list[tuple[dict[str, Any], Path]]) -> None:
+            for entry, destination in group:
+                print(f"Checking {entry['name']}...", flush=True)
+                status = _download_with_retries(entry, destination, verify_only=args.verify_only)
+                result = {"filename": entry["filename"], "path": str(destination), "status": status}
+                with result_lock:
+                    results.append(result)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=min(args.workers, len(jobs) or 1)) as executor:
-            results = list(executor.map(run, jobs))
+        groups = _group_jobs_by_source(jobs)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(args.workers, len(groups) or 1)) as executor:
+            futures = [executor.submit(run_group, group) for group in groups]
+            for future in concurrent.futures.as_completed(futures):
+                future.result()
     except RuntimeError as exc:
         print(json.dumps({"status": "FAIL", "error": str(exc), "completed": results}, indent=2), file=sys.stderr)
         return 1
+    result_order = {entry["filename"]: index for index, (entry, _) in enumerate(jobs)}
+    results.sort(key=lambda item: result_order[item["filename"]])
     print(json.dumps({"status": "PASS", "models": results}, indent=2))
     return 0
 

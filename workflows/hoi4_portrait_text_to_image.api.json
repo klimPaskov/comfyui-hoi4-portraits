@@ -157,6 +157,16 @@
   },
   "13": {
     "inputs": {
+      "source_filename": "text_to_image.png",
+      "suffix": ""
+    },
+    "class_type": "Hoi4OutputFilename",
+    "_meta": {
+      "title": "Name generated portrait files"
+    }
+  },
+  "14": {
+    "inputs": {
       "use_background": false,
       "image": [
         "12",
@@ -167,7 +177,7 @@
         0
       ],
       "background": [
-        "16",
+        "17",
         0
       ]
     },
@@ -176,14 +186,14 @@
       "title": "Use replacement background"
     }
   },
-  "14": {
+  "15": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "13",
+        "14",
         0
       ]
     },
@@ -192,14 +202,14 @@
       "title": "Master portrait — 1024×1365"
     }
   },
-  "15": {
+  "16": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "14",
+        "15",
         0
       ]
     },
@@ -208,7 +218,7 @@
       "title": "Game portrait — 156×210"
     }
   },
-  "16": {
+  "17": {
     "inputs": {
       "image": "hoi4_leader_portrait_background.png"
     },
@@ -217,11 +227,14 @@
       "title": "Choose a replacement background"
     }
   },
-  "17": {
+  "18": {
     "inputs": {
-      "filename_prefix": "1024x1365/text_to_image",
+      "filename_prefix": [
+        "13",
+        0
+      ],
       "images": [
-        "14",
+        "15",
         0
       ]
     },
@@ -230,11 +243,14 @@
       "title": "Save master PNG"
     }
   },
-  "18": {
+  "19": {
     "inputs": {
-      "filename_prefix": "156x210/text_to_image",
+      "filename_prefix": [
+        "13",
+        1
+      ],
       "images": [
-        "15",
+        "16",
         0
       ]
     },
@@ -243,12 +259,15 @@
       "title": "Save game PNG"
     }
   },
-  "19": {
+  "20": {
     "inputs": {
-      "filename_prefix": "156x210/dds/text_to_image",
+      "filename_prefix": [
+        "13",
+        2
+      ],
       "format": "argb8888",
       "images": [
-        "15",
+        "16",
         0
       ]
     },
@@ -257,10 +276,10 @@
       "title": "Save game DDS"
     }
   },
-  "20": {
+  "21": {
     "inputs": {
       "images": [
-        "15",
+        "16",
         0
       ]
     },

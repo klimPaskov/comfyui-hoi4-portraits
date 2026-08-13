@@ -1,8 +1,8 @@
 {
   "id": "hoi4_portrait_text_to_image",
   "revision": 0,
-  "last_node_id": 20,
-  "last_link_id": 19,
+  "last_node_id": 21,
+  "last_link_id": 22,
   "nodes": [
     {
       "id": 1,
@@ -655,6 +655,73 @@
     },
     {
       "id": 13,
+      "type": "Hoi4OutputFilename",
+      "title": "Name generated portrait files",
+      "pos": [
+        3440,
+        280
+      ],
+      "size": [
+        300,
+        160
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source_filename",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "source_filename"
+          }
+        },
+        {
+          "name": "suffix",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "suffix"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "master_png",
+          "type": "STRING",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "game_png",
+          "type": "STRING",
+          "links": [
+            17
+          ]
+        },
+        {
+          "name": "game_dds",
+          "type": "STRING",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Hoi4OutputFilename",
+        "hoi4_group": "02 Create portrait"
+      },
+      "widgets_values": [
+        "text_to_image.png",
+        ""
+      ]
+    },
+    {
+      "id": 14,
       "type": "Hoi4BackgroundReplace",
       "title": "Use replacement background",
       "pos": [
@@ -668,7 +735,7 @@
       "color": "#b84949",
       "bgcolor": "#702f2f",
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -713,7 +780,7 @@
       ]
     },
     {
-      "id": 14,
+      "id": 15,
       "type": "ImageScale",
       "title": "Master portrait — 1024×1365",
       "pos": [
@@ -727,7 +794,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -774,7 +841,7 @@
           "type": "IMAGE",
           "links": [
             15,
-            16
+            19
           ]
         }
       ],
@@ -790,7 +857,7 @@
       ]
     },
     {
-      "id": 15,
+      "id": 16,
       "type": "ImageScale",
       "title": "Game portrait — 156×210",
       "pos": [
@@ -804,7 +871,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -850,9 +917,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            17,
-            18,
-            19
+            20,
+            21,
+            22
           ]
         }
       ],
@@ -868,7 +935,7 @@
       ]
     },
     {
-      "id": 16,
+      "id": 17,
       "type": "LoadImage",
       "title": "Choose a replacement background",
       "pos": [
@@ -882,7 +949,7 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -918,7 +985,7 @@
       ]
     },
     {
-      "id": 17,
+      "id": 18,
       "type": "SaveImage",
       "title": "Save master PNG",
       "pos": [
@@ -932,18 +999,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 16
+          "link": 19
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": null,
+          "link": 16,
           "widget": {
             "name": "filename_prefix"
           }
@@ -965,7 +1032,7 @@
       ]
     },
     {
-      "id": 18,
+      "id": 19,
       "type": "SaveImage",
       "title": "Save game PNG",
       "pos": [
@@ -979,18 +1046,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 17
+          "link": 20
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": null,
+          "link": 17,
           "widget": {
             "name": "filename_prefix"
           }
@@ -1012,7 +1079,7 @@
       ]
     },
     {
-      "id": 19,
+      "id": 20,
       "type": "Hoi4SaveDDS",
       "title": "Save game DDS",
       "pos": [
@@ -1026,18 +1093,18 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 18
+          "link": 21
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": null,
+          "link": 18,
           "widget": {
             "name": "filename_prefix"
           }
@@ -1068,7 +1135,7 @@
       ]
     },
     {
-      "id": 20,
+      "id": 21,
       "type": "PreviewImage",
       "title": "Game portrait",
       "pos": [
@@ -1082,13 +1149,13 @@
       "color": "#47647a",
       "bgcolor": "#344b5c",
       "flags": {},
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 19
+          "link": 22
         }
       ],
       "outputs": [
@@ -1190,7 +1257,7 @@
       11,
       12,
       0,
-      13,
+      14,
       0,
       "IMAGE"
     ],
@@ -1198,44 +1265,60 @@
       12,
       6,
       0,
-      13,
+      14,
       1,
       "BACKGROUND_REMOVAL"
     ],
     [
       13,
-      16,
+      17,
       0,
-      13,
+      14,
       3,
       "IMAGE"
     ],
     [
       14,
-      13,
-      0,
       14,
+      0,
+      15,
       0,
       "IMAGE"
     ],
     [
       15,
-      14,
-      0,
       15,
+      0,
+      16,
       0,
       "IMAGE"
     ],
     [
       16,
-      14,
+      13,
       0,
-      17,
-      0,
-      "IMAGE"
+      18,
+      1,
+      "STRING"
     ],
     [
       17,
+      13,
+      1,
+      19,
+      1,
+      "STRING"
+    ],
+    [
+      18,
+      13,
+      2,
+      20,
+      1,
+      "STRING"
+    ],
+    [
+      19,
       15,
       0,
       18,
@@ -1243,18 +1326,26 @@
       "IMAGE"
     ],
     [
-      18,
-      15,
+      20,
+      16,
       0,
       19,
       0,
       "IMAGE"
     ],
     [
-      19,
-      15,
+      21,
+      16,
       0,
       20,
+      0,
+      "IMAGE"
+    ],
+    [
+      22,
+      16,
+      0,
+      21,
       0,
       "IMAGE"
     ]

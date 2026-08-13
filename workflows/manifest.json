@@ -7,28 +7,28 @@
       "title": "HOI4 Portrait — source reference, three portraits",
       "workflow": "hoi4_portrait_source.json",
       "api_workflow": "hoi4_portrait_source.api.json",
-      "nodes": 74
+      "nodes": 77
     },
     {
       "id": "hoi4_portrait_text_to_image",
       "title": "HOI4 Portrait — text to image",
       "workflow": "hoi4_portrait_text_to_image.json",
       "api_workflow": "hoi4_portrait_text_to_image.api.json",
-      "nodes": 20
+      "nodes": 21
     },
     {
       "id": "hoi4_portrait_batch",
       "title": "HOI4 Portrait — batch input and output",
       "workflow": "hoi4_portrait_batch.json",
       "api_workflow": "hoi4_portrait_batch.api.json",
-      "nodes": 50
+      "nodes": 51
     },
     {
       "id": "hoi4_portrait_processing_only",
       "title": "HOI4 Portrait — processing and restoration only",
       "workflow": "hoi4_portrait_processing_only.json",
       "api_workflow": "hoi4_portrait_processing_only.api.json",
-      "nodes": 41
+      "nodes": 42
     }
   ]
 }

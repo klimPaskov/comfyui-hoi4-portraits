@@ -1,8 +1,6 @@
 # Third-party models and software
 
-The MIT license in this repository applies only to project-owned material. It
-does not relicense the software and model files below. Before downloading,
-hosting, or using them, read the current upstream terms for your use case.
+The MIT license in this repository applies only to project-owned material. It does not relicense the software and model files below. Before downloading, hosting, or using them, read the current upstream terms for your use case.
 
 | Component | Upstream | Notes |
 | --- | --- | --- |
@@ -21,10 +19,6 @@ hosting, or using them, read the current upstream terms for your use case.
 | MediaPipe face detection | [Comfy-Org/mediapipe](https://huggingface.co/Comfy-Org/mediapipe) | Apache-2.0. |
 | OpenCV and YuNet | [opencv/opencv](https://github.com/opencv/opencv), [opencv/opencv_zoo](https://github.com/opencv/opencv_zoo) | Apache-2.0 software and model. |
 
-Exact source revisions, filenames, and byte sizes are pinned
-in [`models.json`](models.json). No third-party weights are committed to this
-repository or bundled in its workflow release ZIP.
+Exact source revisions, filenames, and byte sizes are pinned in [`models.json`](models.json). No third-party weights are committed to this repository or bundled in its workflow release ZIP.
 
-Hearts of Iron IV and related marks and game assets belong to Paradox
-Interactive. This independent community project is not affiliated with or
-endorsed by Paradox Interactive.
+Hearts of Iron IV and related marks and game assets belong to Paradox Interactive. This independent community project is not affiliated with or endorsed by Paradox Interactive.

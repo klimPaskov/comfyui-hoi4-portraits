@@ -10,7 +10,7 @@
     "inputs": {
       "image": "source_portrait.jpg"
     },
-    "class_type": "LoadImage",
+    "class_type": "Hoi4LoadImage",
     "_meta": {
       "title": "Choose a source portrait"
     }
@@ -546,7 +546,23 @@
   },
   "36": {
     "inputs": {
-      "filename_prefix": "1024x1365/processing_only",
+      "source_filename": [
+        "2",
+        2
+      ],
+      "suffix": ""
+    },
+    "class_type": "Hoi4OutputFilename",
+    "_meta": {
+      "title": "Keep source image name"
+    }
+  },
+  "37": {
+    "inputs": {
+      "filename_prefix": [
+        "36",
+        0
+      ],
       "images": [
         "34",
         0
@@ -557,9 +573,12 @@
       "title": "Save restored master PNG"
     }
   },
-  "37": {
+  "38": {
     "inputs": {
-      "filename_prefix": "156x210/processing_only",
+      "filename_prefix": [
+        "36",
+        1
+      ],
       "images": [
         "35",
         0
@@ -570,9 +589,12 @@
       "title": "Save game PNG"
     }
   },
-  "38": {
+  "39": {
     "inputs": {
-      "filename_prefix": "156x210/dds/processing_only",
+      "filename_prefix": [
+        "36",
+        2
+      ],
       "format": "argb8888",
       "images": [
         "35",
@@ -584,7 +606,7 @@
       "title": "Save game DDS"
     }
   },
-  "39": {
+  "40": {
     "inputs": {
       "images": [
         "10",
@@ -596,7 +618,7 @@
       "title": "Prepared portrait"
     }
   },
-  "40": {
+  "41": {
     "inputs": {
       "images": [
         "33",
@@ -608,7 +630,7 @@
       "title": "Restored portrait"
     }
   },
-  "41": {
+  "42": {
     "inputs": {
       "images": [
         "35",

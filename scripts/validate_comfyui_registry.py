@@ -25,6 +25,8 @@ ALWAYS_REQUIRED = {
     "Hoi4BatchInput",
     "Hoi4SetupGuide",
     "Hoi4BackgroundReplace",
+    "Hoi4LoadImage",
+    "Hoi4OutputFilename",
     "Hoi4SaveDDS",
 }
 

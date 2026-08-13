@@ -694,7 +694,10 @@
   },
   "45": {
     "inputs": {
-      "filename_prefix": "1024x1365/batch",
+      "filename_prefix": [
+        "48",
+        0
+      ],
       "images": [
         "43",
         0
@@ -707,7 +710,10 @@
   },
   "46": {
     "inputs": {
-      "filename_prefix": "156x210/batch",
+      "filename_prefix": [
+        "48",
+        1
+      ],
       "images": [
         "44",
         0
@@ -720,7 +726,10 @@
   },
   "47": {
     "inputs": {
-      "filename_prefix": "156x210/dds/batch",
+      "filename_prefix": [
+        "48",
+        2
+      ],
       "format": "argb8888",
       "images": [
         "44",
@@ -734,6 +743,19 @@
   },
   "48": {
     "inputs": {
+      "source_filename": [
+        "2",
+        2
+      ],
+      "suffix": ""
+    },
+    "class_type": "Hoi4OutputFilename",
+    "_meta": {
+      "title": "Keep each source image name"
+    }
+  },
+  "49": {
+    "inputs": {
       "images": [
         "10",
         0
@@ -744,7 +766,7 @@
       "title": "Prepared portrait"
     }
   },
-  "49": {
+  "50": {
     "inputs": {
       "images": [
         "34",
@@ -756,7 +778,7 @@
       "title": "Restored portrait"
     }
   },
-  "50": {
+  "51": {
     "inputs": {
       "images": [
         "44",

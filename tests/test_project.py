@@ -8,6 +8,7 @@ import tempfile
 import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 try:
     import torch
@@ -35,7 +36,7 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {74, 20, 41, 50})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {77, 21, 42, 51})
 
     def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
@@ -128,15 +129,42 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(sum(node["class_type"] == "KSampler" for node in api.values()), 1)
         self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 2)
         self.assertEqual(sum(node["class_type"] == "Hoi4SaveDDS" for node in api.values()), 1)
-        prefixes = [node["inputs"].get("filename_prefix", "") for node in api.values()]
-        self.assertTrue(any(str(prefix).startswith("1024x1365/") for prefix in prefixes))
-        self.assertTrue(any(str(prefix).startswith("156x210/") for prefix in prefixes))
-        self.assertTrue(any(str(prefix).startswith("156x210/dds/") for prefix in prefixes))
+        filename_node_id, filename_node = next(
+            (node_id, node) for node_id, node in api.items()
+            if node["class_type"] == "Hoi4OutputFilename"
+        )
+        self.assertEqual(api[filename_node["inputs"]["source_filename"][0]]["class_type"], "Hoi4BatchInput")
+        prefixes = [node["inputs"]["filename_prefix"] for node in api.values() if node["class_type"] in {"SaveImage", "Hoi4SaveDDS"}]
+        self.assertEqual({tuple(prefix) for prefix in prefixes}, {(filename_node_id, 0), (filename_node_id, 1), (filename_node_id, 2)})
         for node in api.values():
             if node["class_type"] not in {"SaveImage", "Hoi4SaveDDS"}:
                 continue
             source = api[node["inputs"]["images"][0]]
             self.assertEqual(source["class_type"], "ImageScale")
+
+    def test_every_workflow_uses_input_aware_output_names(self) -> None:
+        expected_sources = {
+            "hoi4_portrait_source": "Hoi4LoadImage",
+            "hoi4_portrait_batch": "Hoi4BatchInput",
+            "hoi4_portrait_processing_only": "Hoi4LoadImage",
+        }
+        for workflow_id in build_workflows.BUILDERS:
+            api = json.loads((WORKFLOW_DIR / f"{workflow_id}.api.json").read_text())
+            filename_nodes = {
+                node_id: node for node_id, node in api.items()
+                if node["class_type"] == "Hoi4OutputFilename"
+            }
+            self.assertEqual(len(filename_nodes), 3 if workflow_id == "hoi4_portrait_source" else 1)
+            for node in filename_nodes.values():
+                source_filename = node["inputs"]["source_filename"]
+                if workflow_id == "hoi4_portrait_text_to_image":
+                    self.assertEqual(source_filename, "text_to_image.png")
+                else:
+                    self.assertEqual(source_filename[1], 2)
+                    self.assertEqual(api[source_filename[0]]["class_type"], expected_sources[workflow_id])
+            for saver in (node for node in api.values() if node["class_type"] in {"SaveImage", "Hoi4SaveDDS"}):
+                prefix = saver["inputs"]["filename_prefix"]
+                self.assertIn(prefix[0], filename_nodes)
 
 
 class InstallerTests(unittest.TestCase):
@@ -207,6 +235,49 @@ class InstallerTests(unittest.TestCase):
             {"drends/FLUX.2-klein-9B-GGUF"},
         )
 
+    def test_model_downloader_retries_hugging_face_rate_limits(self) -> None:
+        entry = {"filename": "model.safetensors"}
+        sleeps: list[int] = []
+        with mock.patch.object(
+            download_models,
+            "_download",
+            side_effect=[RuntimeError("HTTP status client error (429 Too Many Requests)"), "downloaded"],
+        ) as downloader:
+            result = download_models._download_with_retries(
+                entry,
+                Path("model.safetensors"),
+                verify_only=False,
+                sleep_fn=sleeps.append,
+            )
+        self.assertEqual(result, "downloaded")
+        self.assertEqual(sleeps, [15])
+        self.assertEqual(downloader.call_count, 2)
+
+    def test_model_downloader_does_not_retry_integrity_errors(self) -> None:
+        entry = {"filename": "model.safetensors"}
+        with mock.patch.object(
+            download_models,
+            "_download",
+            side_effect=RuntimeError("downloaded file failed integrity validation"),
+        ) as downloader:
+            with self.assertRaisesRegex(RuntimeError, "integrity"):
+                download_models._download_with_retries(
+                    entry,
+                    Path("model.safetensors"),
+                    verify_only=False,
+                    sleep_fn=lambda _: self.fail("non-network errors must not sleep"),
+                )
+        self.assertEqual(downloader.call_count, 1)
+
+    def test_model_downloader_serializes_each_source_repository(self) -> None:
+        jobs = [
+            ({"source": "repo/adonis", "url": "https://example.invalid/a", "filename": "base"}, Path("base")),
+            ({"source": "repo/other", "url": "https://example.invalid/b", "filename": "other"}, Path("other")),
+            ({"source": "repo/adonis", "url": "https://example.invalid/c", "filename": "post"}, Path("post")),
+        ]
+        groups = download_models._group_jobs_by_source(jobs)
+        self.assertEqual([[entry["filename"] for entry, _ in group] for group in groups], [["base", "post"], ["other"]])
+
     def test_variant_selector_patches_visible_model_loader_and_preserves_personal_files(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             comfy_root = self._comfy_root(directory)
@@ -262,6 +333,18 @@ class CustomNodeTests(unittest.TestCase):
             self.assertEqual(tuple(master.shape), (1, 1365, 1024, 3))
             self.assertEqual(tuple(game.shape), (1, 210, 156, 3))
             self.assertGreater(float(game.std()), 0.05)
+
+    def test_output_paths_keep_the_input_image_stem(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            module = self._load_module(Path(directory))
+            self.assertEqual(
+                module._output_filename_prefixes("uploads/My General.Portrait.JPG", "_2"),
+                (
+                    "1024x1365/My General.Portrait_2",
+                    "156x210/My General.Portrait_2",
+                    "156x210/dds/My General.Portrait_2",
+                ),
+            )
 
     def test_dds_matches_vanilla_argb8888_portrait_profile(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -49,9 +49,11 @@ ALLOWED_NODES = {
     "ComfySwitchNode",
     "Hoi4SetupGuide",
     "Hoi4BackgroundReplace",
+    "Hoi4LoadImage",
     "ImageBatch",
     "ImageFromBatch",
     "Hoi4BatchInput",
+    "Hoi4OutputFilename",
     "Hoi4SaveDDS",
 }
 
@@ -259,25 +261,50 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: expected {expected_png_savers} automatic PNG saver(s)")
     if counts.get("Hoi4SaveDDS", 0) != expected_dds_savers:
         errors.append(f"{path}: expected {expected_dds_savers} automatic DDS saver(s)")
-    save_prefixes: list[str] = []
+    expected_filename_nodes = 3 if is_source else 1
+    if counts.get("Hoi4OutputFilename", 0) != expected_filename_nodes:
+        errors.append(f"{path}: expected {expected_filename_nodes} input-aware filename node(s)")
+    expected_source_loaders = 1 if is_source or is_processing else 0
+    if counts.get("Hoi4LoadImage", 0) != expected_source_loaders:
+        errors.append(f"{path}: expected {expected_source_loaders} filename-aware source loader(s)")
+
+    save_prefixes: list[tuple[str, int]] = []
     for node in api.values():
         if node.get("class_type") not in {"SaveImage", "Hoi4SaveDDS"}:
             continue
         inputs = node.get("inputs", {})
-        prefix = str(inputs.get("filename_prefix", ""))
-        save_prefixes.append(prefix)
+        prefix_link = inputs.get("filename_prefix")
+        prefix_source = api.get(prefix_link[0], {}) if isinstance(prefix_link, list) and prefix_link else {}
+        prefix_slot = prefix_link[1] if isinstance(prefix_link, list) and len(prefix_link) == 2 else -1
+        if prefix_source.get("class_type") != "Hoi4OutputFilename" or prefix_slot not in {0, 1, 2}:
+            errors.append(f"{path}: automatic saver must receive an input-aware filename prefix")
+        else:
+            save_prefixes.append((prefix_link[0], prefix_slot))
         image_link = inputs.get("images")
         source = api.get(image_link[0], {}) if isinstance(image_link, list) and image_link else {}
         if source.get("class_type") != "ImageScale":
-            errors.append(f"{path}: automatic saver {prefix!r} must receive a sized portrait")
+            errors.append(f"{path}: automatic saver must receive a sized portrait")
             continue
         source_inputs = source.get("inputs", {})
-        expected_size = (1024, 1365) if prefix.startswith("1024x1365/") else (156, 210)
+        expected_size = (1024, 1365) if prefix_slot == 0 else (156, 210)
         actual_size = (source_inputs.get("width"), source_inputs.get("height"))
         if actual_size != expected_size:
-            errors.append(f"{path}: automatic saver {prefix!r} receives {actual_size}, expected {expected_size}")
+            errors.append(f"{path}: automatic saver receives {actual_size}, expected {expected_size}")
     if len(save_prefixes) != len(set(save_prefixes)):
         errors.append(f"{path}: automatic save prefixes must be unique")
+
+    filename_nodes = [node for node in api.values() if node.get("class_type") == "Hoi4OutputFilename"]
+    expected_filename_source = "Hoi4BatchInput" if is_batch else "Hoi4LoadImage"
+    for node in filename_nodes:
+        source_filename = node.get("inputs", {}).get("source_filename")
+        if is_text:
+            if source_filename != "text_to_image.png":
+                errors.append(f"{path}: text-to-image must keep its descriptive fallback name")
+            continue
+        filename_source = api.get(source_filename[0], {}) if isinstance(source_filename, list) and source_filename else {}
+        filename_slot = source_filename[1] if isinstance(source_filename, list) and len(source_filename) == 2 else -1
+        if filename_source.get("class_type") != expected_filename_source or filename_slot != 2:
+            errors.append(f"{path}: output filenames must come from each input image")
     if is_batch and counts.get("Hoi4BatchInput", 0) != 1:
         errors.append(f"{path}: batch workflow needs one list-output input card")
     if is_source:
@@ -478,7 +505,8 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
             if "156×210" in title and [inputs.get("width"), inputs.get("height"), inputs.get("crop")] != [156, 210, "center"]:
                 errors.append(f"{path}: game output must be a centered 156×210 crop")
         elif class_type == "Hoi4SaveDDS":
-            if inputs.get("format") != "argb8888" or not str(inputs.get("filename_prefix", "")).startswith("156x210/dds/"):
+            filename_prefix = inputs.get("filename_prefix")
+            if inputs.get("format") != "argb8888" or not isinstance(filename_prefix, list) or filename_prefix[1] != 2:
                 errors.append(f"{path}: DDS output is not game-ready")
 
     primitive_values = {

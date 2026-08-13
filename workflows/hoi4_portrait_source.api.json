@@ -10,7 +10,7 @@
     "inputs": {
       "image": "source_portrait.jpg"
     },
-    "class_type": "LoadImage",
+    "class_type": "Hoi4LoadImage",
     "_meta": {
       "title": "Choose a source portrait"
     }
@@ -962,7 +962,23 @@
   },
   "61": {
     "inputs": {
-      "filename_prefix": "1024x1365/portrait_1",
+      "source_filename": [
+        "2",
+        2
+      ],
+      "suffix": "_1"
+    },
+    "class_type": "Hoi4OutputFilename",
+    "_meta": {
+      "title": "Keep source name — portrait 1"
+    }
+  },
+  "62": {
+    "inputs": {
+      "filename_prefix": [
+        "61",
+        0
+      ],
       "images": [
         "53",
         0
@@ -973,9 +989,12 @@
       "title": "Save portrait 1 master PNG"
     }
   },
-  "62": {
+  "63": {
     "inputs": {
-      "filename_prefix": "156x210/portrait_1",
+      "filename_prefix": [
+        "61",
+        1
+      ],
       "images": [
         "54",
         0
@@ -986,9 +1005,12 @@
       "title": "Save portrait 1 game PNG"
     }
   },
-  "63": {
+  "64": {
     "inputs": {
-      "filename_prefix": "156x210/dds/portrait_1",
+      "filename_prefix": [
+        "61",
+        2
+      ],
       "format": "argb8888",
       "images": [
         "54",
@@ -1000,9 +1022,25 @@
       "title": "Save portrait 1 DDS"
     }
   },
-  "64": {
+  "65": {
     "inputs": {
-      "filename_prefix": "1024x1365/portrait_2",
+      "source_filename": [
+        "2",
+        2
+      ],
+      "suffix": "_2"
+    },
+    "class_type": "Hoi4OutputFilename",
+    "_meta": {
+      "title": "Keep source name — portrait 2"
+    }
+  },
+  "66": {
+    "inputs": {
+      "filename_prefix": [
+        "65",
+        0
+      ],
       "images": [
         "56",
         0
@@ -1013,9 +1051,12 @@
       "title": "Save portrait 2 master PNG"
     }
   },
-  "65": {
+  "67": {
     "inputs": {
-      "filename_prefix": "156x210/portrait_2",
+      "filename_prefix": [
+        "65",
+        1
+      ],
       "images": [
         "57",
         0
@@ -1026,9 +1067,12 @@
       "title": "Save portrait 2 game PNG"
     }
   },
-  "66": {
+  "68": {
     "inputs": {
-      "filename_prefix": "156x210/dds/portrait_2",
+      "filename_prefix": [
+        "65",
+        2
+      ],
       "format": "argb8888",
       "images": [
         "57",
@@ -1040,9 +1084,25 @@
       "title": "Save portrait 2 DDS"
     }
   },
-  "67": {
+  "69": {
     "inputs": {
-      "filename_prefix": "1024x1365/portrait_3",
+      "source_filename": [
+        "2",
+        2
+      ],
+      "suffix": "_3"
+    },
+    "class_type": "Hoi4OutputFilename",
+    "_meta": {
+      "title": "Keep source name — portrait 3"
+    }
+  },
+  "70": {
+    "inputs": {
+      "filename_prefix": [
+        "69",
+        0
+      ],
       "images": [
         "59",
         0
@@ -1053,9 +1113,12 @@
       "title": "Save portrait 3 master PNG"
     }
   },
-  "68": {
+  "71": {
     "inputs": {
-      "filename_prefix": "156x210/portrait_3",
+      "filename_prefix": [
+        "69",
+        1
+      ],
       "images": [
         "60",
         0
@@ -1066,9 +1129,12 @@
       "title": "Save portrait 3 game PNG"
     }
   },
-  "69": {
+  "72": {
     "inputs": {
-      "filename_prefix": "156x210/dds/portrait_3",
+      "filename_prefix": [
+        "69",
+        2
+      ],
       "format": "argb8888",
       "images": [
         "60",
@@ -1080,7 +1146,7 @@
       "title": "Save portrait 3 DDS"
     }
   },
-  "70": {
+  "73": {
     "inputs": {
       "images": [
         "10",
@@ -1092,7 +1158,7 @@
       "title": "Prepared portrait"
     }
   },
-  "71": {
+  "74": {
     "inputs": {
       "images": [
         "35",
@@ -1104,7 +1170,7 @@
       "title": "Restored portrait"
     }
   },
-  "72": {
+  "75": {
     "inputs": {
       "images": [
         "54",
@@ -1116,7 +1182,7 @@
       "title": "Portrait 1 — 156×210"
     }
   },
-  "73": {
+  "76": {
     "inputs": {
       "images": [
         "57",
@@ -1128,7 +1194,7 @@
       "title": "Portrait 2 — 156×210"
     }
   },
-  "74": {
+  "77": {
     "inputs": {
       "images": [
         "60",

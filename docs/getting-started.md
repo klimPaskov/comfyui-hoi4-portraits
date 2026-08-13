@@ -2,28 +2,14 @@
 
 ## Choose a workflow
 
-- Use **source** for an identity-preserving portrait from a reference photo.
-  It crops, upscales with RealESRGAN, runs the Adonis Base + Post restoration
-  pass, and produces **three** HOI4-style candidates for comparison.
-- Use **processing** when you need the crop/upscale/restoration result without
-  LoRA styling.
+- Use **source** for an identity-preserving portrait from a reference photo. It crops, upscales with RealESRGAN, runs the Adonis Base + Post restoration pass, and produces **three** HOI4-style candidates for comparison.
+- Use **processing** when you need the crop/upscale/restoration result without LoRA styling.
 - Use **text to image** for a fictional portrait without a reference photo.
-- Use **batch** to drop a whole folder of photos into
-  `ComfyUI/input/hoi4_portraits_batch/` and process them one by one with one
-  sampler. Supported extensions are matched case-insensitively, and each queue
-  run rescans the folder and automatically saves master PNGs, game PNGs, and
-  HOI4-ready DDS files.
+- Use **batch** to drop a whole folder of photos into `ComfyUI/input/hoi4_portraits_batch/` and process them one by one with one sampler. Supported extensions are matched case-insensitively, and each queue run rescans the folder and automatically saves master PNGs, game PNGs, and HOI4-ready DDS files.
 
 ## Prepare a source image
 
-In the source, processing, and batch workflows, confirm that the automatic
-crop contains one person's complete head and shoulders. **Face zoom** defaults
-to `0.90`; lower it to retain more body. **Preserve hat/headwear** defaults to
-`true`; disable it when the hat may be cropped and a closer face-led
-composition is preferred. Turn off **Toggle face processing** when a
-multi-person image should retain the whole composition (centered resizing and
-RealESRGAN still run). Use **Manual crop** only when selecting one particular
-person.
+In the source, processing, and batch workflows, confirm that the automatic crop contains one person's complete head and shoulders. **Face zoom** defaults to `0.90`; lower it to retain more body. **Preserve hat/headwear** defaults to `true`; disable it when the hat may be cropped and a closer face-led composition is preferred. Turn off **Toggle face processing** when a multi-person image should retain the whole composition (centered resizing and RealESRGAN still run). Use **Manual crop** only when selecting one particular person.
 
 Good input:
 
@@ -33,13 +19,11 @@ Good input:
 - limited motion blur and obstruction;
 - historically accurate visible clothing if preservation matters.
 
-For a group photograph, use the manual bounding box only when the automatic
-detector selects the wrong person.
+For a group photograph, use the manual bounding box only when the automatic detector selects the wrong person.
 
 ## Required model files
 
-The installers place everything for you. For manual installs, use the folders
-under `ComfyUI/models/`:
+The installers place everything for you. For manual installs, use the folders under `ComfyUI/models/`:
 
 | Folder | File |
 | --- | --- |
@@ -52,51 +36,34 @@ under `ComfyUI/models/`:
 | `background_removal/` | `birefnet.safetensors` |
 | `detection/` | `mediapipe_face_fp32.safetensors` and `face_detection_yunet_2023mar.onnx` |
 
-Find filenames and sizes in
-[`models.json`](../models.json).
+Find filenames and sizes in [`models.json`](../models.json).
 
-Before downloading the gated full/FP8 model, follow the
-[Hugging Face access guide](hugging-face.md) to accept the agreement and
-create a read-only token. GGUF files are not gated.
+Before downloading the gated full/FP8 model, follow the [Hugging Face access guide](hugging-face.md) to accept the agreement and create a read-only token. GGUF files are not gated.
 
 ## First run
 
-1. Open the workflow JSON file in the ComfyUI editor. The narrow dark-brown
-   **Setup and downloads** card on the left shows the exact folder tree and
-   gives you clickable links for every required model.
-2. Check the diffusion-model loader below the green preparation stage. The installer sets it to the
-   selected full, FP8, or GGUF variant. Qwen Q8, VAE, and every LoRA have
-   their own loaders beside it.
-3. Select the source image; the upload card already shows it. Check the
-   prepared portrait in the comparison row, then adjust **Face zoom** if
-   needed or use the manual crop for a specific person.
-4. Leave the red **Use Adonis restoration** switch on for the full Base → Post
-   cleanup, or turn it off to use the prepared RealESRGAN portrait directly.
-5. Keep the default prompt `make this portrait hoi4_portrait style`. Append a
-   short description only when the model needs help (see the Prompting guide).
+1. Open the workflow JSON file in the ComfyUI editor. The narrow dark-brown **Setup and downloads** card on the left shows the exact folder tree and gives you clickable links for every required model.
+2. Check the diffusion-model loader below the green preparation stage. The installer sets it to the selected full, FP8, or GGUF variant. Qwen Q8, VAE, and every LoRA have their own loaders beside it.
+3. Select the source image; the upload card already shows it. Check the prepared portrait in the comparison row, then adjust **Face zoom** if needed or use the manual crop for a specific person.
+4. Leave the red **Use Adonis restoration** switch on for the full Base → Post cleanup, or turn it off to use the prepared RealESRGAN portrait directly.
+5. Keep the default prompt `make this portrait hoi4_portrait style`. Append a short description only when the model needs help (see the Prompting guide).
 6. Leave background replacement off for the first run.
-7. Queue once. The source workflow creates three candidates from the same
-   input and shows them side by side in the comparison row.
-8. Pick a final from the comparison row; the game-ready file is the
-   `156x210/dds/` output.
+7. Queue once. The source workflow creates three candidates from the same input and shows them side by side in the comparison row.
+8. Pick a final from the comparison row; the game-ready file is the `156x210/dds/` output.
 
-Outputs are saved under `ComfyUI/output/1024x1365/`, `ComfyUI/output/156x210/`,
-and `ComfyUI/output/156x210/dds/`.
+Outputs are saved under `ComfyUI/output/1024x1365/`, `ComfyUI/output/156x210/`, and `ComfyUI/output/156x210/dds/`.
+
+Saved PNG and DDS files keep the uploaded image's stem. A source named `general_macarthur.jpg` yields three candidates beginning with `general_macarthur_1`, `general_macarthur_2`, and `general_macarthur_3`. Batch and processing-only outputs keep the stem without a candidate suffix.
 
 ## Prompt rules
 
-Keep the source default prompt `make this portrait hoi4_portrait style`.
-Append only deliberate changes to one candidate to test them:
+Keep the source default prompt `make this portrait hoi4_portrait style`. Append only deliberate changes to one candidate to test them:
 
 ```text
 make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, wearing a military uniform
 ```
 
-For text-to-image, start from the example prompt
-`hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair,
-wearing a plain civilian jacket.` and edit the person description as needed.
-Do not describe the game, visual style, background, lighting, framing, or
-rendering.
+For text-to-image, start from the example prompt `hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.` and edit the person description as needed. Do not describe the game, visual style, background, lighting, framing, or rendering.
 
 ## Common problems
 
