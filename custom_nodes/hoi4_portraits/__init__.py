@@ -219,7 +219,7 @@ def _yunet_faces(frame: torch.Tensor) -> list[dict]:
     return faces
 
 
-def _select_face(frame: torch.Tensor, provided: list[dict]) -> dict:
+def _select_face(frame: torch.Tensor, provided: list[dict]) -> dict | None:
     height, width = int(frame.shape[0]), int(frame.shape[1])
     reliable = [face for face in provided if float(face.get("score", 0.0)) >= 0.45]
     if reliable:
@@ -230,7 +230,45 @@ def _select_face(frame: torch.Tensor, provided: list[dict]) -> dict:
     usable = [face for face in provided if float(face.get("score", 0.0)) >= 0.20]
     if usable:
         return max(usable, key=lambda face: _face_score(face, width, height))
-    raise RuntimeError("No portrait subject was detected. Use the manual crop branch for this source.")
+    return None
+
+
+def _fallback_portrait_box(width: int, height: int, mask: np.ndarray) -> tuple[int, int, int, int]:
+    """Frame the likely subject without failing when both face detectors miss."""
+
+    crop_height = min(float(height), width / ASPECT)
+    crop_width = crop_height * ASPECT
+    center_x = width / 2
+    top = (height - crop_height) / 2
+
+    if mask.ndim > 2:
+        mask = np.squeeze(mask)
+    if mask.ndim == 2 and mask.size:
+        binary = mask >= 0.31
+        labels, count = ndimage.label(binary)
+        if count:
+            components = ndimage.find_objects(labels)
+            ranked: list[tuple[int, tuple[slice, slice]]] = []
+            for label, bounds in enumerate(components, start=1):
+                if bounds is not None:
+                    ranked.append((int(np.count_nonzero(labels[bounds] == label)), bounds))
+            if ranked:
+                _, (ys, xs) = max(ranked, key=lambda item: item[0])
+                mask_height, mask_width = mask.shape
+                scale_x = width / mask_width
+                scale_y = height / mask_height
+                subject_left = xs.start * scale_x
+                subject_right = xs.stop * scale_x
+                subject_top = ys.start * scale_y
+                center_x = (subject_left + subject_right) / 2
+                # Keep the top of the foreground inside the frame with a small
+                # margin. For full-body photos this naturally favors the upper
+                # body, which is the safest portrait fallback.
+                top = subject_top - 0.04 * crop_height
+
+    left = min(max(0.0, center_x - crop_width / 2), width - crop_width)
+    top = min(max(0.0, top), height - crop_height)
+    return round(left), round(top), round(left + crop_width), round(top + crop_height)
 
 
 def _frame_box(
@@ -419,16 +457,21 @@ class AdaptivePortraitCrop:
             boxes = face_bboxes[min(index, len(face_bboxes) - 1)] if face_bboxes else []
             frame = image[index]
             height, width = int(frame.shape[0]), int(frame.shape[1])
-            face = _select_face(frame, boxes)
             mask_index = min(index, subject_mask.shape[0] - 1) if subject_mask.ndim == 3 else None
             mask = subject_mask[mask_index] if mask_index is not None else subject_mask
-            box = _frame_box(
-                width,
-                height,
-                face,
-                mask.detach().float().cpu().numpy(),
-                zoom,
-                bool(preserve_headwear),
+            mask_array = mask.detach().float().cpu().numpy()
+            face = _select_face(frame, boxes)
+            box = (
+                _frame_box(
+                    width,
+                    height,
+                    face,
+                    mask_array,
+                    zoom,
+                    bool(preserve_headwear),
+                )
+                if face is not None
+                else _fallback_portrait_box(width, height, mask_array)
             )
             left, top, right, bottom = box
             crop = frame[top:bottom, left:right, :].permute(2, 0, 1).unsqueeze(0)

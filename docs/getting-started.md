@@ -9,7 +9,7 @@
 
 ## Prepare a source image
 
-In the source, processing, and batch workflows, confirm that the automatic crop contains one person's complete head and shoulders. **Face zoom** defaults to `0.90`; lower it to retain more body. **Preserve hat/headwear** defaults to `true`; disable it when the hat may be cropped and a closer face-led composition is preferred. Turn off **Toggle face processing** when a multi-person image should retain the whole composition (centered resizing and RealESRGAN still run). Use **Manual crop** only when selecting one particular person.
+In the source, processing, and batch workflows, confirm that the automatic crop contains one person's complete head and shoulders. **Face zoom** defaults to `0.90`; lower it to retain more body. **Preserve hat/headwear** defaults to `true`; disable it when the hat may be cropped and a closer face-led composition is preferred. If both face detectors miss, the crop automatically uses the foreground mask and continues instead of stopping the queue. Turn off **Toggle face processing** when a multi-person image should retain the whole composition (centered resizing and RealESRGAN still run). Use **Manual crop** only when selecting one particular person.
 
 Good input:
 

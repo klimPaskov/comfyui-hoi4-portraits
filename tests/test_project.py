@@ -581,6 +581,44 @@ class CustomNodeTests(unittest.TestCase):
             self.assertEqual(tuple(game.shape), (1, 210, 156, 3))
             self.assertGreater(float(game.std()), 0.05)
 
+    def test_adaptive_crop_uses_the_subject_mask_when_face_detection_misses(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            module = self._load_module(Path(directory))
+            module._yunet_faces = lambda _frame: []
+            image = torch.zeros((1, 600, 1000, 3), dtype=torch.float32)
+            image[:, 60:540, 700:920, :] = 1.0
+            mask = torch.zeros((1, 600, 1000), dtype=torch.float32)
+            mask[:, 60:540, 700:920] = 1.0
+
+            portrait = module.AdaptivePortraitCrop().crop(
+                image,
+                [[]],
+                mask,
+                output_width=512,
+                output_height=683,
+            )[0]
+
+            self.assertEqual(tuple(portrait.shape), (1, 683, 512, 3))
+            self.assertGreater(float(portrait.mean()), 0.20)
+
+    def test_adaptive_crop_centers_the_image_when_all_detection_fallbacks_are_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            module = self._load_module(Path(directory))
+            module._yunet_faces = lambda _frame: []
+            image = torch.rand((1, 480, 720, 3), dtype=torch.float32)
+            mask = torch.zeros((1, 480, 720), dtype=torch.float32)
+
+            portrait = module.AdaptivePortraitCrop().crop(
+                image,
+                [],
+                mask,
+                output_width=512,
+                output_height=683,
+            )[0]
+
+            self.assertEqual(tuple(portrait.shape), (1, 683, 512, 3))
+            self.assertGreater(float(portrait.std()), 0.20)
+
     def test_output_paths_keep_the_input_image_stem(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             module = self._load_module(Path(directory))
