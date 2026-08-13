@@ -1986,7 +1986,7 @@
       },
       "widgets_values": [
         42,
-        "fixed",
+        "randomize",
         4,
         1.0,
         "euler",
@@ -2092,7 +2092,7 @@
       },
       "widgets_values": [
         43,
-        "fixed",
+        "randomize",
         4,
         1.0,
         "euler",
@@ -2198,7 +2198,7 @@
       },
       "widgets_values": [
         44,
-        "fixed",
+        "randomize",
         4,
         1.0,
         "euler",

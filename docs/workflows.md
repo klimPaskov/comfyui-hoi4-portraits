@@ -9,7 +9,7 @@ The main visible controls are:
 | Control | Responsibility |
 | --- | --- |
 | `📂 Setup and downloads` | Narrow dark-brown card with a clear folder tree and clickable model downloads |
-| `KSampler` | Standard ComfyUI sampler with a fixed seed, 4 steps, CFG 1, Euler, simple scheduling, and full denoise |
+| `KSampler` | Standard ComfyUI sampler with a randomized seed, 4 steps, CFG 1, Euler, simple scheduling, and full denoise |
 | `Adaptive Portrait Crop` | Automatic, centered, or manual portrait framing with headwear protection |
 | `Use Adonis restoration` | One red true/false control for the complete Base → Post branch; enabled by default |
 | `HOI4 Optional Background Replacement` | One optional BiRefNet background-replacement operation; sizing remains separate |
@@ -40,7 +40,7 @@ The source, processing-only, and batch canvases inline the current functional gr
 10. VAE-decode the Post result;
 11. use one red toggle to choose the prepared portrait or the complete Adonis result for every downstream node.
 
-Base and Post share the same fixed seed (`42`) and per-model step (`9`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`, matching the current upstream graph. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style seeds also remain fixed while the LoRA checkpoints are being compared.
+Base and Post share the same fixed seed (`42`) and per-model step (`9`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`, matching the current upstream graph. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style samplers randomize their seeds independently.
 
 The shared Adonis prompt keeps the original broadly useful restoration detail: `uhdmanscale`, JPEG and compression artifact cleanup, descreening, halftone removal, repeating and diagonal-pattern noise removal, checkerboard cleanup, scratch and dust cleanup, deblurring, focus correction, colour-blotch cleanup, hair-strand separation, and full-scene texture recovery. It removes assumptions about cellphones, camera RAW, high ISO, or the subject's gender, and it explicitly preserves identity, composition, historical character, and the source's monochrome, sepia, or colour treatment.
 
@@ -62,11 +62,11 @@ Every source sampler uses the exact prompt:
 make this portrait hoi4_portrait style
 ```
 
-The three HOI4 style seeds remain fixed at `42`, `43`, and `44` for checkpoint comparisons. The installers include the 1750, 2000, 2250, 2500, 2750, and 3000-step LoRAs, while the visible loader keeps the 2500-step checkpoint selected until a final checkpoint is chosen. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
+The three HOI4 style samplers randomize their seeds for every generation. The visible loader defaults to the 2500-step checkpoint at strength `1`; the installers also include the 1750, 2000, 2250, 2750, and 3000-step LoRAs for manual comparisons. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
 
 ## Text-to-image workflow
 
-This 21-node graph keeps the diffusion model, Qwen encoder, VAE, and style LoRA loaders separate. It runs one standard ComfyUI sampler with a fixed seed, then shows optional background replacement, master sizing, game sizing, all three saves, and one tall full-resolution final preview. Its example prompt is:
+This 21-node graph keeps the diffusion model, Qwen encoder, VAE, and style LoRA loaders separate. It runs one standard ComfyUI sampler with a randomized seed, then shows optional background replacement, master sizing, game sizing, all three saves, and one tall full-resolution final preview. Its example prompt is:
 
 ```text
 hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.

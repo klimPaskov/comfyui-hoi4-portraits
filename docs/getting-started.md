@@ -48,7 +48,7 @@ Before downloading the gated full/FP8 model, follow the [Hugging Face access gui
 4. Leave the red **Use Adonis restoration** switch on for the full Base → Post cleanup, or turn it off to use the prepared RealESRGAN portrait directly.
 5. Keep the default prompt `make this portrait hoi4_portrait style`. Append a short description only when the model needs help (see the Prompting guide).
 6. Leave background replacement off for the first run.
-7. Queue once. The source workflow keeps the three HOI4 style seeds fixed for checkpoint comparisons and shows the full-resolution candidates side by side in the comparison row.
+7. Queue once. The source workflow randomizes the three HOI4 style seeds for each generation and shows the full-resolution candidates side by side in the comparison row.
 8. Pick a final from the comparison row; the game-ready file is the `156x210/dds/` output.
 
 RunPod outputs are saved under `/workspace/hoi4-portrait-runpod/output/1024x1365/`, `/workspace/hoi4-portrait-runpod/output/156x210/`, and `/workspace/hoi4-portrait-runpod/output/156x210/dds/`. The Windows installer defaults to `Documents\hoi4-portraits\output` and lets you choose the ComfyUI folder or a custom path. Manual installations use the same subfolders under `ComfyUI/output/hoi4_portraits/`.

@@ -444,6 +444,11 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         if any(lower["pos"][1] - (upper["pos"][1] + upper["size"][1]) != 80 for upper, lower in zip(candidate_samplers, candidate_samplers[1:])):
             errors.append(f"{path}: candidate samplers must use exact 80px vertical gutters")
 
+    for sampler in (node for node in ui.get("nodes", []) if node.get("type") == "KSampler"):
+        widgets = sampler.get("widgets_values", [])
+        if len(widgets) < 2 or widgets[1] != "randomize":
+            errors.append(f"{path}: HOI4 style sampler seeds must randomize after generation")
+
     for node in api.values():
         class_type = node["class_type"]
         inputs = node.get("inputs", {})
@@ -458,7 +463,8 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         elif class_type == "LoraLoaderModelOnly":
             filename = inputs.get("lora_name")
             allowed = {build_workflows.STYLE_LORA, build_workflows.ADONIS_BASE, build_workflows.ADONIS_POST}
-            if filename not in allowed or inputs.get("strength_model") != 1.0:
+            expected_strength = build_workflows.STYLE_LORA_STRENGTH if filename == build_workflows.STYLE_LORA else 1.0
+            if filename not in allowed or inputs.get("strength_model") != expected_strength:
                 errors.append(f"{path}: unexpected visible LoRA loader {filename!r}")
             if is_processing and filename == build_workflows.STYLE_LORA:
                 errors.append(f"{path}: processing-only must not load the style LoRA")

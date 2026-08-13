@@ -17,6 +17,7 @@ BASE_MODEL = "flux-2-klein-9b.safetensors"
 TEXT_ENCODER = "Qwen3-8B-Q8_0.gguf"
 VAE_MODEL = "flux2-vae.safetensors"
 STYLE_LORA = "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors"
+STYLE_LORA_STRENGTH = 1.0
 ADONIS_BASE = "adonis_base.safetensors"
 ADONIS_REFINE = "adonis_refine.safetensors"
 ADONIS_POST = "adonis_post.safetensors"
@@ -422,11 +423,11 @@ def _vae(g: Graph, pos: tuple[int, int], group: str) -> Ref:
     )
 
 
-def _lora(g: Graph, title: str, filename: str, pos: tuple[int, int], group: str) -> Ref:
+def _lora(g: Graph, title: str, filename: str, pos: tuple[int, int], group: str, strength: float = 1.0) -> Ref:
     return g.node(
         "LoraLoaderModelOnly", title, pos, (400, 140), group,
         [("model", "MODEL", False), ("lora_name", "COMBO", True), ("strength_model", "FLOAT", True)], [("MODEL", "MODEL")],
-        [filename, 1.0], {"lora_name": filename, "strength_model": 1.0}, "model",
+        [filename, strength], {"lora_name": filename, "strength_model": strength}, "model",
     )
 
 
@@ -732,7 +733,7 @@ def _model_pipeline(g: Graph, group: str, *, x: int, y: int = 100, style: bool, 
         vae = _vae(g, (x, y + 440), group)
     result: dict[str, Ref] = {"unet": unet, "clip": clip, "vae": vae}
     if style:
-        style_lora = _lora(g, "HOI4 portrait style LoRA", STYLE_LORA, (x + 460, y), group)
+        style_lora = _lora(g, "HOI4 portrait style LoRA", STYLE_LORA, (x + 460, y), group, STYLE_LORA_STRENGTH)
         g.connect(unet, 0, style_lora, "model")
         result["style"] = style_lora
     if adonis:
@@ -821,7 +822,7 @@ def _ksampler(
     pos: tuple[int, int],
     group: str,
 ) -> Ref:
-    values = [seed, "fixed", 4, 1.0, "euler", "simple", 1.0]
+    values = [seed, "randomize", 4, 1.0, "euler", "simple", 1.0]
     sampler = g.node(
         "KSampler", title, pos, (560, 500), group,
         [("model", "MODEL", False), ("seed", "INT", True), ("steps", "INT", True),
