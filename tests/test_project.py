@@ -369,10 +369,15 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("amdWindowsROCmSupported", wizard)
         self.assertIn("run_amd_gpu.bat", starter)
 
-    def test_three_ireland_batch_examples_are_bundled(self) -> None:
+    def test_four_ireland_batch_examples_are_bundled(self) -> None:
         self.assertEqual(
             {path.name for path in (ROOT / "examples/batch_input").iterdir() if path.is_file()},
-            {"portrait_eamon_de_valera.jpg", "portrait_sean_lemass_1932.png", "portrait_w_t_cosgrave.jpg"},
+            {
+                "portrait_douglas_hyde_1903.jpg",
+                "portrait_eamon_de_valera.jpg",
+                "portrait_sean_lemass_1932.png",
+                "portrait_w_t_cosgrave.jpg",
+            },
         )
 
     def test_every_diffusion_variant_uses_distilled_klein_9b_weights(self) -> None:
