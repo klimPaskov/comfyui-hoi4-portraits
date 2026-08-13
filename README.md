@@ -15,24 +15,26 @@ The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod defaults 
 | [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | Processes every input one by one, with a configurable number of candidates |
 | [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → Adonis Base + Post restoration, no style LoRA |
 
-On RunPod, drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The archive includes example portraits of Éamon de Valera, W. T. Cosgrave, and Seán Lemass. Every workflow saves into:
+On RunPod, drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. Every workflow saves into:
 
 ```text
 /workspace/hoi4-portrait-runpod/output/1024x1365/                       full-res master PNG
 /workspace/hoi4-portrait-runpod/output/1024x1365/processed/             prepared source PNG
 /workspace/hoi4-portrait-runpod/output/1024x1365/restored/              restored source PNG
-/workspace/hoi4-portrait-runpod/output/1024x1365/batch_1/               first batch's master PNGs
-/workspace/hoi4-portrait-runpod/output/1024x1365/batch_1/processed/     first batch's prepared PNGs
-/workspace/hoi4-portrait-runpod/output/1024x1365/batch_1/restored/      first batch's restored PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/               batch master PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/processed/     batch prepared PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/restored/      batch restored PNGs
 /workspace/hoi4-portrait-runpod/output/156x210/                         game-size PNG
 /workspace/hoi4-portrait-runpod/output/156x210/dds/                     HOI4-ready DDS
+/workspace/hoi4-portrait-runpod/output/156x210/<batch_name>/                 batch game-size PNGs
+/workspace/hoi4-portrait-runpod/output/156x210/<batch_name>/dds/             batch HOI4-ready DDS files
 ```
 
 The Windows installer defaults to `Documents\hoi4-portraits\input` and `Documents\hoi4-portraits\output`, with choices for ComfyUI-managed folders or custom paths. Manual and Comfy Cloud installs use the same output subfolders under `ComfyUI/output/hoi4_portraits/`.
 
 The RunPod and Windows installers show the total installation time when they finish.
 
-The PNG and DDS nodes are automatic terminal outputs and safely use the installer-selected portrait output folder on current ComfyUI versions. Image-based workflows keep the source image stem in every saved file; the three source candidates append `_1`, `_2`, and `_3`. For example, `general_macarthur.jpg` produces PNG and DDS names beginning with `general_macarthur_1` for the first candidate. Text-to-image uses `text_to_image` because it has no source file. Numbered counters prevent overwrites, and the batch folder is rescanned on every queue in stable filename order. Each batch queue defaults to the next free `batch_1`, `batch_2`, and so on. The batch settings node accepts a custom subfolder, can keep master portraits directly in `1024x1365`, and defaults to one HOI4 candidate per source.
+The PNG and DDS nodes are automatic terminal outputs and safely use the installer-selected portrait output folder on current ComfyUI versions. Image-based workflows keep the source image stem in every saved file; the three source candidates append `_1`, `_2`, and `_3`. For example, `general_macarthur.jpg` produces PNG and DDS names beginning with `general_macarthur_1` for the first candidate. Text-to-image uses `text_to_image` because it has no source file. Numbered counters prevent overwrites, and the batch folder is rescanned on every queue in stable filename order. `<batch_name>` is configurable; if left blank, each queue automatically uses the next free name: `batch_1`, `batch_2`, and so on. The same name is used under both output resolutions. The batch settings can also keep portraits directly in the standard resolution folders and default to one HOI4 candidate per source.
 
 ## Which model do I need?
 

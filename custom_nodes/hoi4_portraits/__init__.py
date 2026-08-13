@@ -102,12 +102,12 @@ def _single_list_value(value: Any, default: Any) -> Any:
     return value
 
 
-def _batch_output_subfolder(custom_subfolder: Any, save_without_batch_folder: Any) -> str:
+def _batch_output_subfolder(batch_name: Any, save_without_batch_folder: Any) -> str:
     """Reserve the next batch folder, or validate a user-supplied folder name."""
 
     if bool(_single_list_value(save_without_batch_folder, False)):
         return ""
-    custom = str(_single_list_value(custom_subfolder, "")).strip()
+    custom = str(_single_list_value(batch_name, "")).strip()
     if custom:
         if (
             custom in {".", ".."}
@@ -116,7 +116,7 @@ def _batch_output_subfolder(custom_subfolder: Any, save_without_batch_folder: An
             or "\\" in custom
             or re.search(r'[\x00-\x1f<>:"|?*]', custom)
         ):
-            raise ValueError("Custom batch subfolder must be one valid folder name.")
+            raise ValueError("Batch name must be one valid folder name.")
         _safe_output_prefix(f"hoi4_portraits/1024x1365/{custom}/portrait")
         return custom
 
@@ -709,7 +709,7 @@ class Hoi4BatchOutputFilename:
         return {
             "required": {
                 "source_filenames": ("STRING", {"forceInput": True}),
-                "custom_subfolder": ("STRING", {"default": ""}),
+                "batch_name": ("STRING", {"default": ""}),
                 "save_without_batch_folder": ("BOOLEAN", {"default": False}),
             }
         }
@@ -720,21 +720,25 @@ class Hoi4BatchOutputFilename:
     INPUT_IS_LIST = True
     FUNCTION = "build"
     CATEGORY = "HOI4 portraits/output"
-    DESCRIPTION = "Leave the folder blank for batch_1, batch_2, and so on, or enter your own folder name."
+    DESCRIPTION = "Set a batch name, or leave it blank to use batch_1, batch_2, and so on."
 
     @classmethod
-    def IS_CHANGED(cls, source_filenames, custom_subfolder, save_without_batch_folder):
-        # A blank folder creates a new batch_N directory on every queue.
+    def IS_CHANGED(cls, source_filenames, batch_name, save_without_batch_folder):
+        # A blank name creates the next numbered batch directory on every queue.
         return float("nan")
 
-    def build(self, source_filenames, custom_subfolder, save_without_batch_folder):
+    def build(self, source_filenames, batch_name, save_without_batch_folder):
         sources = [str(item) for item in source_filenames]
         if not sources:
             raise ValueError("Batch output needs at least one source filename.")
-        subfolder = _batch_output_subfolder(custom_subfolder, save_without_batch_folder)
+        subfolder = _batch_output_subfolder(batch_name, save_without_batch_folder)
         master_root = "hoi4_portraits/1024x1365"
+        game_root = "hoi4_portraits/156x210"
+        dds_root = "hoi4_portraits/156x210/dds"
         if subfolder:
             master_root = f"{master_root}/{subfolder}"
+            game_root = f"{game_root}/{subfolder}"
+            dds_root = f"{game_root}/dds"
         masters: list[str] = []
         games: list[str] = []
         dds: list[str] = []
@@ -743,8 +747,8 @@ class Hoi4BatchOutputFilename:
         for source in sources:
             output_name = _safe_output_name(source)
             masters.append(f"{master_root}/{output_name}")
-            games.append(f"hoi4_portraits/156x210/{output_name}")
-            dds.append(f"hoi4_portraits/156x210/dds/{output_name}")
+            games.append(f"{game_root}/{output_name}")
+            dds.append(f"{dds_root}/{output_name}")
             processed.append(f"{master_root}/processed/{output_name}")
             restored.append(f"{master_root}/restored/{output_name}")
         return masters, games, dds, processed, restored

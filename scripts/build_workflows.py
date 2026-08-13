@@ -913,11 +913,11 @@ def _batch_output_filenames(
     values = ["", False]
     node = g.node(
         "Hoi4BatchOutputFilename", "Batch folders and filenames", pos, (420, 260), group,
-        [("source_filenames", "STRING", False), ("custom_subfolder", "STRING", True),
+        [("source_filenames", "STRING", False), ("batch_name", "STRING", True),
          ("save_without_batch_folder", "BOOLEAN", True)],
         [("master_png", "STRING"), ("game_png", "STRING"), ("game_dds", "STRING"),
          ("processed_png", "STRING"), ("restored_png", "STRING")],
-        values, {"custom_subfolder": values[0], "save_without_batch_folder": values[1]}, "output",
+        values, {"batch_name": values[0], "save_without_batch_folder": values[1]}, "output",
     )
     g.connect(source_filenames[0], source_filenames[1], node, "source_filenames")
     return node

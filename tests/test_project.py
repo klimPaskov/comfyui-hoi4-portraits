@@ -224,7 +224,7 @@ class WorkflowTests(unittest.TestCase):
             if node["class_type"] == "Hoi4BatchOutputFilename"
         )
         self.assertEqual(api[filename_node["inputs"]["source_filenames"][0]]["class_type"], "Hoi4BatchInput")
-        self.assertEqual(filename_node["inputs"]["custom_subfolder"], "")
+        self.assertEqual(filename_node["inputs"]["batch_name"], "")
         self.assertIs(filename_node["inputs"]["save_without_batch_folder"], False)
         prefixes = [node["inputs"]["filename_prefix"] for node in api.values() if node["class_type"] in {"Hoi4SavePNG", "Hoi4SaveDDS"}]
         self.assertEqual({tuple(prefix) for prefix in prefixes}, {(filename_node_id, index) for index in range(5)})
@@ -611,14 +611,24 @@ class CustomNodeTests(unittest.TestCase):
                 "hoi4_portraits/1024x1365/batch_1/one",
                 "hoi4_portraits/1024x1365/batch_1/two",
             ])
+            self.assertEqual(first[1], [
+                "hoi4_portraits/156x210/batch_1/one",
+                "hoi4_portraits/156x210/batch_1/two",
+            ])
+            self.assertEqual(first[2], [
+                "hoi4_portraits/156x210/batch_1/dds/one",
+                "hoi4_portraits/156x210/batch_1/dds/two",
+            ])
             self.assertTrue(all("/batch_2/" in prefix for prefix in second[0]))
             self.assertEqual(custom[3][0], "hoi4_portraits/1024x1365/leaders/processed/one")
             self.assertEqual(custom[4][0], "hoi4_portraits/1024x1365/leaders/restored/one")
             self.assertEqual(flat[0][0], "hoi4_portraits/1024x1365/one")
             self.assertEqual(flat[3][0], "hoi4_portraits/1024x1365/processed/one")
             self.assertEqual(flat[4][0], "hoi4_portraits/1024x1365/restored/one")
-            self.assertEqual(first[1][0], "hoi4_portraits/156x210/one")
-            self.assertEqual(first[2][0], "hoi4_portraits/156x210/dds/one")
+            self.assertEqual(custom[1][0], "hoi4_portraits/156x210/leaders/one")
+            self.assertEqual(custom[2][0], "hoi4_portraits/156x210/leaders/dds/one")
+            self.assertEqual(flat[1][0], "hoi4_portraits/156x210/one")
+            self.assertEqual(flat[2][0], "hoi4_portraits/156x210/dds/one")
             self.assertTrue(module.Hoi4BatchOutputFilename.INPUT_IS_LIST)
             self.assertTrue(math.isnan(module.Hoi4BatchOutputFilename.IS_CHANGED(sources, [""], [False])))
             with self.assertRaises(ValueError):

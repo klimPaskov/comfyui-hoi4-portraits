@@ -78,7 +78,7 @@ This 45-node graph includes source preparation and the entire Adonis topology. I
 
 ## Batch workflow
 
-This 56-node graph reads compatible images from `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, and `ComfyUI/input/hoi4_portraits_batch/` on manual installations. The installers place three Ireland example sources in the input folder. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. **Number of portrait candidates** defaults to one and repeats the source latent before the standard sampler. Each queue reserves the next `1024x1365/batch_N/` folder unless a custom name is supplied. Enabling **save without batch folder** keeps final masters directly in `1024x1365/`; the checkbox is disabled by default. Prepared and restored portraits use `processed/` and `restored/` inside the selected master folder. The three comparison previews remain centered with equal spacing.
+This 56-node graph reads compatible images from `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, and `ComfyUI/input/hoi4_portraits_batch/` on manual installations. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. **Number of portrait candidates** defaults to one and repeats the source latent before the standard sampler. Each queue reserves matching `<batch_name>/` folders under `1024x1365/` and `156x210/`. If no name is set, the workflow defaults to the next free `batch_1`, `batch_2`, and so on. Enabling **save without batch folder** keeps outputs directly in their standard resolution folders; the checkbox is disabled by default. Prepared and restored portraits use `processed/` and `restored/` inside the selected full-resolution folder, and DDS files use `dds/` inside the selected game-resolution folder. The three comparison previews remain centered with equal spacing.
 
 ## Output contract
 
@@ -88,11 +88,13 @@ On RunPod, all workflows save to:
 /workspace/hoi4-portrait-runpod/output/1024x1365/                       master PNG
 /workspace/hoi4-portrait-runpod/output/1024x1365/processed/             prepared PNG
 /workspace/hoi4-portrait-runpod/output/1024x1365/restored/              restored PNG
-/workspace/hoi4-portrait-runpod/output/1024x1365/batch_N/               batch master PNGs
-/workspace/hoi4-portrait-runpod/output/1024x1365/batch_N/processed/     batch prepared PNGs
-/workspace/hoi4-portrait-runpod/output/1024x1365/batch_N/restored/      batch restored PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/               batch master PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/processed/     batch prepared PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/restored/      batch restored PNGs
 /workspace/hoi4-portrait-runpod/output/156x210/                         centered game PNG
 /workspace/hoi4-portrait-runpod/output/156x210/dds/                     HOI4-ready DDS
+/workspace/hoi4-portrait-runpod/output/156x210/<batch_name>/                 batch game PNGs
+/workspace/hoi4-portrait-runpod/output/156x210/<batch_name>/dds/             batch HOI4-ready DDS files
 ```
 
 Windows uses the output folder selected during installation. Manual and Comfy Cloud installations use `ComfyUI/output/hoi4_portraits/1024x1365/`, `ComfyUI/output/hoi4_portraits/156x210/`, and `ComfyUI/output/hoi4_portraits/156x210/dds/`.

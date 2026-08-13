@@ -5,7 +5,7 @@
 - Use **source** for an identity-preserving portrait from a reference photo. It crops, upscales with RealESRGAN, runs the Adonis Base + Post restoration pass, and produces **three** HOI4-style candidates for comparison.
 - Use **processing** when you need the crop/upscale/restoration result without LoRA styling.
 - Use **text to image** for a fictional portrait without a reference photo.
-- Use **batch** to drop photos into `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, or `ComfyUI/input/hoi4_portraits_batch/` for a manual installation. The installers include three Ireland example sources. Supported extensions are matched case-insensitively, and each queue run rescans the folder and automatically saves master PNGs, prepared and restored PNGs, game PNGs, and HOI4-ready DDS files. The candidate control defaults to one portrait per source.
+- Use **batch** to drop photos into `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, or `ComfyUI/input/hoi4_portraits_batch/` for a manual installation. Supported extensions are matched case-insensitively, and each queue run rescans the folder and automatically saves master PNGs, prepared and restored PNGs, game PNGs, and HOI4-ready DDS files. The candidate control defaults to one portrait per source.
 
 ## Prepare a source image
 
@@ -55,7 +55,7 @@ RunPod outputs are saved under `/workspace/hoi4-portrait-runpod/output/1024x1365
 
 Saved PNG and DDS files keep the uploaded image's stem. A source named `general_macarthur.jpg` yields three candidates beginning with `general_macarthur_1`, `general_macarthur_2`, and `general_macarthur_3`. Batch and processing-only outputs keep the stem; multiple batch candidates receive non-overwriting numbered suffixes.
 
-Prepared and restored 1024×1365 portraits use `processed/` and `restored/`. A batch queue creates the next free `batch_N/` inside `1024x1365/`, with its own `processed/` and `restored/` subfolders. Enter a custom name in **Batch folders and filenames** to reuse a chosen subfolder. Enable **save without batch folder** only when final masters should remain directly in `1024x1365/`; that option is off by default.
+Prepared and restored 1024×1365 portraits use `processed/` and `restored/`. A batch queue creates the same `<batch_name>/` inside both `1024x1365/` and `156x210/`; the full-resolution folder contains `processed/` and `restored/`, while game DDS files use `156x210/<batch_name>/dds/`. Enter a name in **Batch folders and filenames** to use matching named folders. If no name is set, it defaults to the next free `batch_1`, `batch_2`, and so on. Enable **save without batch folder** only when outputs should remain directly in their standard resolution folders; that option is off by default.
 
 ## Prompt rules
 

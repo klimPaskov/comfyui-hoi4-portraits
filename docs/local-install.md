@@ -68,7 +68,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-Drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The archive supplies example portraits of Éamon de Valera, W. T. Cosgrave, and Seán Lemass. Each queue creates the next `1024x1365/batch_N` folder for master PNGs, prepared PNGs, and restored PNGs. Game PNGs and DDS files use `156x210` and `156x210/dds`. The workflow also supports a custom batch subfolder or direct master saves in `1024x1365`.
+Drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. Each queue creates matching `<batch_name>` folders under `1024x1365` and `156x210`. Full-resolution master, prepared, and restored PNGs use the first folder; game PNGs and DDS files use `156x210/<batch_name>` and `156x210/<batch_name>/dds`. If no batch name is set, the workflow defaults to the next free `batch_1`, `batch_2`, and so on. It also supports direct saves in the standard resolution folders.
 
 The command defaults to **FP8**, and a **25 GB RunPod volume is enough** for that default installation. Use a larger volume if you plan to retain many generated outputs. Select full BF16 explicitly on a larger GPU or pass a GGUF variant and quantization on a smaller GPU:
 
@@ -96,7 +96,7 @@ The release executable is a complete installer wizard, not just an unpacker:
 4. Toggle any combination of variants — including all three, if you want every model type available.
 5. If GGUF is selected, choose the quantization(s); the recommended one is pre-checked (Q4_K_M ≤ 10 GB, Q5_K_M 10–14 GB, Q6_K 12–16 GB, Q8_0 16+ GB).
 6. Choose separate batch input and portrait output locations. Both default to `Documents\hoi4-portraits`, while the ComfyUI folders and custom paths remain selectable.
-7. The bundled PowerShell installer installs the node packs, copies the workflows and three Ireland example sources, and downloads the selected models.
+7. The bundled PowerShell installer installs the node packs, copies the workflows, and downloads the selected models.
 
 The wizard works exactly like the RunPod command: after it finishes, restart ComfyUI and open **Workflows → hoi4_portraits**. Everything is ready out of the box.
 

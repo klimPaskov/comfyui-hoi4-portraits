@@ -324,7 +324,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         filename_slot = source_filenames[1] if isinstance(source_filenames, list) and len(source_filenames) == 2 else -1
         if filename_source.get("class_type") != "Hoi4BatchInput" or filename_slot != 2:
             errors.append(f"{path}: batch output folders must receive the full source filename list")
-        if node.get("inputs", {}).get("custom_subfolder") != "" or node.get("inputs", {}).get("save_without_batch_folder") is not False:
+        if node.get("inputs", {}).get("batch_name") != "" or node.get("inputs", {}).get("save_without_batch_folder") is not False:
             errors.append(f"{path}: numbered batch folders must be enabled by default")
     if is_batch and counts.get("Hoi4BatchInput", 0) != 1:
         errors.append(f"{path}: batch workflow needs one list-output input card")
