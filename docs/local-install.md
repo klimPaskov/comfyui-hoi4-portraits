@@ -50,7 +50,7 @@ Pass `--variant` multiple times to prepare several variants; the first is applie
 
 ## RunPod
 
-On a RunPod image that already contains ComfyUI, the installer places the four workflows in `user/default/workflows/hoi4_portraits`, installs the project node pack plus the pinned Adonis/RES4LYF dependencies, copies the bundled backgrounds and sample source into `input/`, creates the batch/output folders, and downloads the selected models:
+On a RunPod image that already contains ComfyUI, the installer places the four workflows in `user/default/workflows/hoi4_portraits`, installs the project node pack plus the pinned Adonis/RES4LYF dependencies, copies the bundled backgrounds and sample source into `input/`, connects the batch and portrait output folders to the runtime workspace, and downloads the selected models:
 
 ```bash
 (
@@ -64,6 +64,8 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant fp8
 )
 ```
+
+Drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The archive supplies example portraits of Éamon de Valera, W. T. Cosgrave, and Seán Lemass. Master PNGs, game PNGs, and DDS files are written below `/workspace/hoi4-portrait-runpod/output/` in the `1024x1365`, `156x210`, and `156x210/dds` subfolders.
 
 The command defaults to **FP8**. Select full BF16 explicitly on a larger GPU or pass a GGUF variant and quantization on a smaller GPU:
 
@@ -89,14 +91,15 @@ The release executable is a complete installer wizard, not just an unpacker:
 2. It detects your GPU VRAM with `nvidia-smi` for guidance and always pre-checks FP8. GGUF and full BF16 remain selectable but are never preselected.
 3. Toggle any combination of variants — including all three, if you want every model type available.
 4. If GGUF is selected, choose the quantization(s); the recommended one is pre-checked (Q4_K_M ≤ 10 GB, Q5_K_M 10–14 GB, Q6_K 12–16 GB, Q8_0 16+ GB).
-5. It finds your ComfyUI (or you type its root) and runs the bundled PowerShell installer, which installs the node packs, copies the workflows, and downloads the selected models.
+5. It finds your ComfyUI (or you type its root), then shows separate choices for the batch input and portrait output locations. Both default to `Documents\hoi4-portraits`, while the ComfyUI folders and custom paths remain selectable.
+6. It runs the bundled PowerShell installer, which installs the node packs, copies the workflows and three Ireland example sources, and downloads the selected models.
 
 The wizard works exactly like the RunPod command: after it finishes, restart ComfyUI and open **Workflows → hoi4_portraits**. Everything is ready out of the box.
 
 You can also run the installer script directly:
 
 ```powershell
-.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Variant "fp8"
+.\scripts\install_windows.ps1 -ComfyUIRoot "C:\path\to\ComfyUI" -Variant "fp8" -BatchInputPath "C:\Users\me\Documents\hoi4-portraits\input" -PortraitOutputPath "C:\Users\me\Documents\hoi4-portraits\output"
 ```
 
 Use `-Variant "gguf" -GgufQuants "Q5_K_M"` for GGUF or `-Variant "full,fp8,gguf"` for several model types. Pass `-SkipModels` if the model files are already installed. Start ComfyUI with:

@@ -5,7 +5,7 @@
 - Use **source** for an identity-preserving portrait from a reference photo. It crops, upscales with RealESRGAN, runs the Adonis Base + Post restoration pass, and produces **three** HOI4-style candidates for comparison.
 - Use **processing** when you need the crop/upscale/restoration result without LoRA styling.
 - Use **text to image** for a fictional portrait without a reference photo.
-- Use **batch** to drop a whole folder of photos into `ComfyUI/input/hoi4_portraits_batch/` and process them one by one with one sampler. Supported extensions are matched case-insensitively, and each queue run rescans the folder and automatically saves master PNGs, game PNGs, and HOI4-ready DDS files.
+- Use **batch** to drop photos into `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, or `ComfyUI/input/hoi4_portraits_batch/` for a manual installation. The installers include three Ireland example sources. Supported extensions are matched case-insensitively, and each queue run rescans the folder and automatically saves master PNGs, game PNGs, and HOI4-ready DDS files.
 
 ## Prepare a source image
 
@@ -51,7 +51,7 @@ Before downloading the gated full/FP8 model, follow the [Hugging Face access gui
 7. Queue once. The source workflow creates three candidates from the same input and shows them side by side in the comparison row.
 8. Pick a final from the comparison row; the game-ready file is the `156x210/dds/` output.
 
-Outputs are saved under `ComfyUI/output/1024x1365/`, `ComfyUI/output/156x210/`, and `ComfyUI/output/156x210/dds/`.
+RunPod outputs are saved under `/workspace/hoi4-portrait-runpod/output/1024x1365/`, `/workspace/hoi4-portrait-runpod/output/156x210/`, and `/workspace/hoi4-portrait-runpod/output/156x210/dds/`. The Windows installer defaults to `Documents\hoi4-portraits\output` and lets you choose the ComfyUI folder or a custom path. Manual installations use the same subfolders under `ComfyUI/output/hoi4_portraits/`.
 
 Saved PNG and DDS files keep the uploaded image's stem. A source named `general_macarthur.jpg` yields three candidates beginning with `general_macarthur_1`, `general_macarthur_2`, and `general_macarthur_3`. Batch and processing-only outputs keep the stem without a candidate suffix.
 

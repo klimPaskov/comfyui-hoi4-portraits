@@ -36,6 +36,11 @@ repos/
 *.jpeg
 !docs/assets/**/*.jpg
 !docs/assets/**/*.jpeg
+!examples/
+!examples/batch_input/
+!examples/batch_input/portrait_eamon_de_valera.jpg
+!examples/batch_input/portrait_sean_lemass_1932.png
+!examples/batch_input/portrait_w_t_cosgrave.jpg
 *.webp
 *.dds
 *.psd

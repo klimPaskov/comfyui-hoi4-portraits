@@ -6,11 +6,18 @@ param(
 
     [string]$GgufQuants = "Q5_K_M",
 
+    [string]$BatchInputPath = "",
+
+    [string]$PortraitOutputPath = "",
+
     [switch]$SkipModels
 )
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
+$WorkspaceRoot = Join-Path (Split-Path -Parent $ProjectRoot) "hoi4-portraits"
+if (-not $BatchInputPath) { $BatchInputPath = Join-Path $WorkspaceRoot "input" }
+if (-not $PortraitOutputPath) { $PortraitOutputPath = Join-Path $WorkspaceRoot "output" }
 $Variants = @($Variant -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 
 foreach ($item in $Variants) {
@@ -53,6 +60,12 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & $Python (Join-Path $ProjectRoot "scripts\install_workflows.py") --comfyui-root $ComfyUIRoot
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& $Python (Join-Path $ProjectRoot "scripts\configure_workspace.py") --comfyui-root $ComfyUIRoot --input-dir $BatchInputPath --output-dir $PortraitOutputPath
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Get-ChildItem (Join-Path $ProjectRoot "examples\batch_input") -File | ForEach-Object {
+    $Destination = Join-Path $BatchInputPath $_.Name
+    if (-not (Test-Path $Destination)) { Copy-Item $_.FullName $Destination }
+}
 
 $VariantArgs = @()
 foreach ($item in $Variants) {
@@ -71,4 +84,6 @@ if (-not $SkipModels) {
 }
 
 Write-Host "Installed $($Variants.Count) model variant(s): $($Variants -join ', ') (GGUF quants: $GgufQuants)."
+Write-Host "Batch inputs: $BatchInputPath"
+Write-Host "Portrait outputs: $PortraitOutputPath"
 Write-Host "Four workflows are under user\default\workflows\hoi4_portraits. Restart ComfyUI, then open Workflows > hoi4_portraits."

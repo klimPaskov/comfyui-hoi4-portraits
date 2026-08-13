@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     _copy(sample_source, comfy_root / "input" / "source_portrait.jpg")
     (comfy_root / "input" / "hoi4_portraits_batch").mkdir(parents=True, exist_ok=True)
     for relative in ("1024x1365", "156x210", "156x210/dds"):
-        (comfy_root / "output" / relative).mkdir(parents=True, exist_ok=True)
+        (comfy_root / "output" / "hoi4_portraits" / relative).mkdir(parents=True, exist_ok=True)
     custom_node_source = ROOT / "custom_nodes" / "hoi4_portraits"
     custom_node_destination = comfy_root / "custom_nodes" / "hoi4_portraits"
     legacy_custom_node = comfy_root / "custom_nodes" / "adaptive_portrait_crop"

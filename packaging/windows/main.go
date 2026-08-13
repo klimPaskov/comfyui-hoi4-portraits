@@ -294,7 +294,36 @@ func fileExists(path string) bool {
 	return err == nil && !info.IsDir()
 }
 
-func runInstaller(destination, comfyRoot string, variants, quants []string) {
+func askStoragePath(label, defaultPath, comfyPath string) string {
+	for {
+		fmt.Println()
+		fmt.Printf("Where should %s be located?\n", label)
+		fmt.Printf("  [x] 1) HOI4 workspace: %s\n", defaultPath)
+		fmt.Printf("  [ ] 2) ComfyUI folder: %s\n", comfyPath)
+		fmt.Println("  [ ] 3) Custom path")
+		switch promptLine("Selection (Enter keeps the HOI4 workspace): ") {
+		case "", "1":
+			return defaultPath
+		case "2":
+			return comfyPath
+		case "3":
+			for {
+				path := promptLine("Custom folder path: ")
+				if strings.TrimSpace(path) != "" {
+					absolute, err := filepath.Abs(path)
+					if err == nil {
+						return absolute
+					}
+				}
+				fmt.Println("Please enter a valid folder path.")
+			}
+		default:
+			fmt.Println("Please choose 1, 2, or 3.")
+		}
+	}
+}
+
+func runInstaller(destination, comfyRoot, batchInput, portraitOutput string, variants, quants []string) {
 	ps1 := filepath.Join(destination, "scripts", "install_windows.ps1")
 	if !fileExists(ps1) {
 		fail("installer script missing after extraction: %s", ps1)
@@ -304,6 +333,8 @@ func runInstaller(destination, comfyRoot string, variants, quants []string) {
 		"-File", ps1,
 		"-ComfyUIRoot", comfyRoot,
 		"-Variant", strings.Join(variants, ","),
+		"-BatchInputPath", batchInput,
+		"-PortraitOutputPath", portraitOutput,
 	}
 	args = append(args, "-GgufQuants", strings.Join(quants, ","))
 	cmd := exec.Command("powershell.exe", args...)
@@ -320,6 +351,8 @@ func runInstaller(destination, comfyRoot string, variants, quants []string) {
 func main() {
 	destination := flag.String("destination", "", "empty destination folder for the extracted package")
 	comfyRoot := flag.String("comfyui-root", "", "existing ComfyUI root; skips detection")
+	batchInput := flag.String("batch-input", "", "batch input folder; skips the location menu")
+	portraitOutput := flag.String("portrait-output", "", "portrait output folder; skips the location menu")
 	flag.Parse()
 	if *destination == "" {
 		*destination = destinationDefault()
@@ -337,6 +370,13 @@ func main() {
 	if *comfyRoot == "" {
 		*comfyRoot = findComfyUI()
 	}
+	workspaceRoot := filepath.Join(filepath.Dir(absolute), "hoi4-portraits")
+	if *batchInput == "" {
+		*batchInput = askStoragePath("batch inputs", filepath.Join(workspaceRoot, "input"), filepath.Join(*comfyRoot, "input", "hoi4_portraits_batch"))
+	}
+	if *portraitOutput == "" {
+		*portraitOutput = askStoragePath("portrait outputs", filepath.Join(workspaceRoot, "output"), filepath.Join(*comfyRoot, "output", "hoi4_portraits"))
+	}
 	variants := askVariantMenu(vram)
 	quants := []string{"Q5_K_M"}
 	for _, v := range variants {
@@ -353,11 +393,13 @@ func main() {
 	fmt.Printf("Selected variants: %s\n", strings.Join(variants, ", "))
 	fmt.Printf("Selected GGUF quants: %s\n", strings.Join(quants, ", "))
 	fmt.Printf("ComfyUI root: %s\n", *comfyRoot)
+	fmt.Printf("Batch inputs: %s\n", *batchInput)
+	fmt.Printf("Portrait outputs: %s\n", *portraitOutput)
 
-	runInstaller(absolute, *comfyRoot, variants, quants)
+	runInstaller(absolute, *comfyRoot, *batchInput, *portraitOutput, variants, quants)
 
 	fmt.Println()
 	fmt.Println("Installation finished.")
 	fmt.Println("Restart ComfyUI, then open Workflows > hoi4_portraits and queue a workflow.")
-	fmt.Println("Everything (workflows, custom nodes, models, and DDS outputs) is ready to use.")
+	fmt.Printf("Add batch images to %s and collect PNG and DDS files from %s.\n", *batchInput, *portraitOutput)
 }

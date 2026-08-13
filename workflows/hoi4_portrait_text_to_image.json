@@ -758,7 +758,7 @@
         "hoi4_group": "03 Finish and save"
       },
       "widgets_values": [
-        "1024x1365/text_to_image"
+        "hoi4_portraits/1024x1365/text_to_image"
       ]
     },
     {
@@ -805,7 +805,7 @@
         "hoi4_group": "03 Finish and save"
       },
       "widgets_values": [
-        "156x210/text_to_image"
+        "hoi4_portraits/156x210/text_to_image"
       ]
     },
     {
@@ -852,7 +852,7 @@
         "hoi4_group": "03 Finish and save"
       },
       "widgets_values": [
-        "156x210/dds/text_to_image",
+        "hoi4_portraits/156x210/dds/text_to_image",
         "argb8888"
       ]
     },

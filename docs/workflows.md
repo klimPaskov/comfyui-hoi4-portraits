@@ -73,17 +73,19 @@ This 42-node graph includes source preparation and the entire Adonis topology. I
 
 ## Batch workflow
 
-This 51-node graph reads compatible images from `ComfyUI/input/hoi4_portraits_batch/`. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. There is one standard sampler and one set of automatic final saves. The create and save stages use separate colour-consistent groups, and the three comparison previews are centered with equal spacing.
+This 51-node graph reads compatible images from `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, and `ComfyUI/input/hoi4_portraits_batch/` on manual installations. The installers place three Ireland example sources in the input folder. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. There is one standard sampler and one set of automatic final saves. The create and save stages use separate colour-consistent groups, and the three comparison previews are centered with equal spacing.
 
 ## Output contract
 
-All workflows save to:
+On RunPod, all workflows save to:
 
 ```text
-ComfyUI/output/1024x1365/     master PNG
-ComfyUI/output/156x210/       centered game PNG
-ComfyUI/output/156x210/dds/   HOI4-ready DDS
+/workspace/hoi4-portrait-runpod/output/1024x1365/     master PNG
+/workspace/hoi4-portrait-runpod/output/156x210/       centered game PNG
+/workspace/hoi4-portrait-runpod/output/156x210/dds/   HOI4-ready DDS
 ```
+
+Windows uses the output folder selected during installation. Manual and Comfy Cloud installations use `ComfyUI/output/hoi4_portraits/1024x1365/`, `ComfyUI/output/hoi4_portraits/156x210/`, and `ComfyUI/output/hoi4_portraits/156x210/dds/`.
 
 The DDS saver writes uncompressed 32-bit BGRA data with alpha in the A8R8G8B8/B8G8R8A8-style layout used by HOI4 portraits. Both native PNG savers and `HOI4 Save DDS` are terminal output nodes. Queueing the workflow therefore executes every connected save branch automatically; numbered counters prevent repeated runs from overwriting existing portraits.
 

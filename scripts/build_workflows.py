@@ -937,15 +937,15 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
             (9100, oy), "05 Save portraits", (source, 2),
         )
         save_master = _save_image(
-            g, f"Save portrait {index} master PNG", f"1024x1365/source_portrait_{index}",
+            g, f"Save portrait {index} master PNG", f"hoi4_portraits/1024x1365/source_portrait_{index}",
             (9100, oy + 200), "05 Save portraits", (names, 0),
         )
         save_game = _save_image(
-            g, f"Save portrait {index} game PNG", f"156x210/source_portrait_{index}",
+            g, f"Save portrait {index} game PNG", f"hoi4_portraits/156x210/source_portrait_{index}",
             (9560, oy), "05 Save portraits", (names, 1),
         )
         save_dds = _save_dds(
-            g, f"Save portrait {index} DDS", f"156x210/dds/source_portrait_{index}",
+            g, f"Save portrait {index} DDS", f"hoi4_portraits/156x210/dds/source_portrait_{index}",
             (9560, oy + 200), "05 Save portraits", (names, 2),
         )
         g.connect(master, 0, save_master, "images")
@@ -992,9 +992,9 @@ def build_text() -> tuple[dict[str, Any], dict[str, Any]]:
     g.connect(background, 0, replace, "background")
     g.connect(replace, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save master PNG", "1024x1365/text_to_image", (3900, 960), "03 Finish and save", (names, 0))
-    save_game = _save_image(g, "Save game PNG", "156x210/text_to_image", (3900, 1200), "03 Finish and save", (names, 1))
-    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/text_to_image", (3900, 1440), "03 Finish and save", (names, 2))
+    save_master = _save_image(g, "Save master PNG", "hoi4_portraits/1024x1365/text_to_image", (3900, 960), "03 Finish and save", (names, 0))
+    save_game = _save_image(g, "Save game PNG", "hoi4_portraits/156x210/text_to_image", (3900, 1200), "03 Finish and save", (names, 1))
+    save_dds = _save_dds(g, "Save game DDS", "hoi4_portraits/156x210/dds/text_to_image", (3900, 1440), "03 Finish and save", (names, 2))
     preview = _preview(g, "Game portrait", (4440, 740), "03 Finish and save")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
@@ -1026,9 +1026,9 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
         g, "Keep source image name", "source_portrait.jpg", "", (5620, 340),
         "04 Finish and save", (source, 2),
     )
-    save_master = _save_image(g, "Save restored master PNG", "1024x1365/source_portrait", (6080, 100), "04 Finish and save", (names, 0))
-    save_game = _save_image(g, "Save game PNG", "156x210/source_portrait", (6080, 340), "04 Finish and save", (names, 1))
-    save_dds = _save_dds(g, "Save game DDS", "156x210/dds/source_portrait", (6080, 580), "04 Finish and save", (names, 2))
+    save_master = _save_image(g, "Save restored master PNG", "hoi4_portraits/1024x1365/source_portrait", (6080, 100), "04 Finish and save", (names, 0))
+    save_game = _save_image(g, "Save game PNG", "hoi4_portraits/156x210/source_portrait", (6080, 340), "04 Finish and save", (names, 1))
+    save_dds = _save_dds(g, "Save game DDS", "hoi4_portraits/156x210/dds/source_portrait", (6080, 580), "04 Finish and save", (names, 2))
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
@@ -1060,9 +1060,9 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     game = _image_scale(g, "Game portrait — 156×210", 156, 210, (7900, 100), "05 Save portraits")
     g.connect(portrait, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save every master PNG", "1024x1365/batch", (7460, 360), "05 Save portraits")
-    save_game = _save_image(g, "Save every game PNG", "156x210/batch", (7920, 360), "05 Save portraits")
-    save_dds = _save_dds(g, "Save every game DDS", "156x210/dds/batch", (7920, 600), "05 Save portraits")
+    save_master = _save_image(g, "Save every master PNG", "hoi4_portraits/1024x1365/batch", (7460, 360), "05 Save portraits")
+    save_game = _save_image(g, "Save every game PNG", "hoi4_portraits/156x210/batch", (7920, 360), "05 Save portraits")
+    save_dds = _save_dds(g, "Save every game DDS", "hoi4_portraits/156x210/dds/batch", (7920, 600), "05 Save portraits")
     names = _output_filenames(
         g, "Keep each source image name", "portrait.png", "", (7460, 600),
         "05 Save portraits", (batch, 2),

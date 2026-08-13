@@ -17,7 +17,7 @@ except ImportError:  # Keep graph/installer CI lightweight when image runtimes a
     torch = None
     Image = None
 
-from scripts import apply_variant, build_workflows, download_models, install_workflows, validate_workflows
+from scripts import apply_variant, build_workflows, configure_workspace, download_models, install_workflows, validate_workflows
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -219,7 +219,25 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue((comfy_root / "input/source_portrait.jpg").is_file())
             self.assertTrue((comfy_root / "input/hoi4_leader_portrait_background.png").is_file())
             self.assertTrue((comfy_root / "input/hoi4_portraits_batch").is_dir())
-            self.assertTrue((comfy_root / "output/156x210/dds").is_dir())
+            self.assertTrue((comfy_root / "output/hoi4_portraits/156x210/dds").is_dir())
+
+    @unittest.skipIf(sys.platform == "win32", "directory symlinks require elevated Windows privileges")
+    def test_runpod_workspace_uses_runtime_input_and_output(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            comfy_root = self._comfy_root(directory)
+            runtime_root = root / "hoi4-portrait-runpod"
+            old_input = comfy_root / "input/hoi4_portraits_batch"
+            old_input.mkdir(parents=True)
+            (old_input / "existing.jpg").write_bytes(b"existing")
+            old_output = comfy_root / "output/hoi4_portraits/156x210/dds"
+            old_output.mkdir(parents=True)
+            (old_output / "existing.dds").write_bytes(b"existing")
+            self.assertEqual(configure_workspace.main(["--comfyui-root", str(comfy_root), "--runtime-root", str(runtime_root)]), 0)
+            self.assertTrue((comfy_root / "input/hoi4_portraits_batch").is_symlink())
+            self.assertTrue((comfy_root / "output/hoi4_portraits").is_symlink())
+            self.assertEqual((runtime_root / "input/existing.jpg").read_bytes(), b"existing")
+            self.assertEqual((runtime_root / "output/156x210/dds/existing.dds").read_bytes(), b"existing")
 
     def test_every_variant_install_keeps_all_four_loras(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())
@@ -248,6 +266,12 @@ class InstallerTests(unittest.TestCase):
         windows = (ROOT / "scripts/install_windows.ps1").read_text()
         self.assertIn("VARIANTS=(fp8)", runpod)
         self.assertIn('[string]$Variant = "fp8"', windows)
+
+    def test_three_ireland_batch_examples_are_bundled(self) -> None:
+        self.assertEqual(
+            {path.name for path in (ROOT / "examples/batch_input").iterdir() if path.is_file()},
+            {"portrait_eamon_de_valera.jpg", "portrait_sean_lemass_1932.png", "portrait_w_t_cosgrave.jpg"},
+        )
 
     def test_every_diffusion_variant_uses_distilled_klein_9b_weights(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())
@@ -392,9 +416,9 @@ class CustomNodeTests(unittest.TestCase):
             self.assertEqual(
                 module._output_filename_prefixes("uploads/My General.Portrait.JPG", "_2"),
                 (
-                    "1024x1365/My General.Portrait_2",
-                    "156x210/My General.Portrait_2",
-                    "156x210/dds/My General.Portrait_2",
+                    "hoi4_portraits/1024x1365/My General.Portrait_2",
+                    "hoi4_portraits/156x210/My General.Portrait_2",
+                    "hoi4_portraits/156x210/dds/My General.Portrait_2",
                 ),
             )
 
@@ -404,8 +428,8 @@ class CustomNodeTests(unittest.TestCase):
             module = self._load_module(root)
             self.assertIs(module.Hoi4SaveDDS.OUTPUT_NODE, True)
             image = torch.rand((1, 210, 156, 3), dtype=torch.float32)
-            module.Hoi4SaveDDS().save(image, "156x210/dds/test", "argb8888")
-            dds = next((root / "output/156x210/dds").glob("*.dds"))
+            module.Hoi4SaveDDS().save(image, "hoi4_portraits/156x210/dds/test", "argb8888")
+            dds = next((root / "output/hoi4_portraits/156x210/dds").glob("*.dds"))
             data = dds.read_bytes()
             self.assertEqual(data[:4], b"DDS ")
             self.assertEqual(data[84:88], b"\x00\x00\x00\x00")
@@ -425,9 +449,9 @@ class CustomNodeTests(unittest.TestCase):
             module = self._load_module(root)
             images = torch.rand((3, 210, 156, 3), dtype=torch.float32)
             saver = module.Hoi4SaveDDS()
-            saver.save(images, "156x210/dds/batch_test", "argb8888")
-            saver.save(images[:1], "156x210/dds/batch_test", "argb8888")
-            files = sorted((root / "output/156x210/dds").glob("batch_test_*.dds"))
+            saver.save(images, "hoi4_portraits/156x210/dds/batch_test", "argb8888")
+            saver.save(images[:1], "hoi4_portraits/156x210/dds/batch_test", "argb8888")
+            files = sorted((root / "output/hoi4_portraits/156x210/dds").glob("batch_test_*.dds"))
             self.assertEqual([path.name for path in files], [
                 "batch_test_00001.dds",
                 "batch_test_00002.dds",

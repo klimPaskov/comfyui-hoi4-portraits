@@ -102,6 +102,9 @@ echo "Installing the exact Adonis workflow dependencies..."
   --comfyui-root "${COMFY_ROOT}"
 
 "${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/install_workflows.py" --comfyui-root "${COMFY_ROOT}"
+"${PYTHON_BIN}" "${PROJECT_ROOT}/scripts/configure_workspace.py" \
+  --comfyui-root "${COMFY_ROOT}" \
+  --runtime-root "${PROJECT_ROOT}"
 
 VARIANT_ARGS=()
 for variant in "${VARIANTS[@]}"; do
@@ -144,6 +147,8 @@ PY
 echo
 echo "Installed ${#VARIANTS[@]} model variant(s): ${VARIANTS[*]} (GGUF quants: ${GGUF_QUANTS})."
 echo "Four workflows are under user/default/workflows/hoi4_portraits."
+echo "Batch inputs: ${PROJECT_ROOT}/input"
+echo "Portrait outputs: ${PROJECT_ROOT}/output"
 echo "Restart ComfyUI, then open Workflows > hoi4_portraits."
 if [[ " ${VARIANTS[*]} " == *" full "* ]]; then
   echo "Note: the optional full BF16 model needs a gated HF token (HF_TOKEN)."

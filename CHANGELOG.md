@@ -24,7 +24,7 @@ This repository contains one current, internally consistent package.
 - Layout: four fully visible, compact, colour-coded canvases with portrait-ratio previews
 - Frontend compatibility: connected widget sockets and saved widget values follow ComfyUI frontend 1.45.19, preventing the crop dimensions and KSampler CFG, sampler, and scheduler values from shifting when a workflow opens
 - Batch layout: the hand-arranged canvas is grid-aligned and split into symmetric create and save groups, with three centered comparison previews and consistent group colours
-- Output: 1024×1365 PNG, centered 156×210 PNG, and HOI4-ready DDS
+- Output: 1024×1365 PNG, centered 156×210 PNG, and HOI4-ready DDS under the selected portrait output folder
 - Downloads: independent repositories transfer in parallel at full Xet speed, files from the same repository run sequentially, Xet rate limits switch automatically to resumable HTTPS, incomplete downloads resume, and temporary HTTP failures retry with backoff
 
 ## Installation contract
@@ -33,6 +33,7 @@ This repository contains one current, internally consistent package.
 - FP8 for 16–20 GB VRAM
 - Full distilled weights above 20 GB VRAM
 - RunPod defaults to FP8 distilled; full BF16 remains an explicit option
-- Windows detects NVIDIA VRAM for guidance, always preselects FP8, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, finds ComfyUI, installs pinned node packs, and downloads the selected model set
+- RunPod uses `/workspace/hoi4-portrait-runpod/input` and `/workspace/hoi4-portrait-runpod/output`; the input folder includes three Ireland example sources
+- Windows detects NVIDIA VRAM for guidance, always preselects FP8, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, offers default, ComfyUI, and custom batch input and portrait output paths, installs pinned node packs, and downloads the selected model set
 
 Pinned commits, model revisions, sizes, hashes, and licenses are in [`models.json`](models.json), [`scripts/install_custom_node_packs.py`](scripts/install_custom_node_packs.py), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).

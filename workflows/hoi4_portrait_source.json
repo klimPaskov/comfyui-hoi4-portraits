@@ -2886,7 +2886,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "1024x1365/source_portrait_1"
+        "hoi4_portraits/1024x1365/source_portrait_1"
       ]
     },
     {
@@ -2933,7 +2933,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/source_portrait_1"
+        "hoi4_portraits/156x210/source_portrait_1"
       ]
     },
     {
@@ -2980,7 +2980,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/dds/source_portrait_1",
+        "hoi4_portraits/156x210/dds/source_portrait_1",
         "argb8888"
       ]
     },
@@ -3087,7 +3087,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "1024x1365/source_portrait_2"
+        "hoi4_portraits/1024x1365/source_portrait_2"
       ]
     },
     {
@@ -3134,7 +3134,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/source_portrait_2"
+        "hoi4_portraits/156x210/source_portrait_2"
       ]
     },
     {
@@ -3181,7 +3181,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/dds/source_portrait_2",
+        "hoi4_portraits/156x210/dds/source_portrait_2",
         "argb8888"
       ]
     },
@@ -3288,7 +3288,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "1024x1365/source_portrait_3"
+        "hoi4_portraits/1024x1365/source_portrait_3"
       ]
     },
     {
@@ -3335,7 +3335,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/source_portrait_3"
+        "hoi4_portraits/156x210/source_portrait_3"
       ]
     },
     {
@@ -3382,7 +3382,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/dds/source_portrait_3",
+        "hoi4_portraits/156x210/dds/source_portrait_3",
         "argb8888"
       ]
     },

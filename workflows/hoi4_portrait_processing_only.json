@@ -1727,7 +1727,7 @@
         "hoi4_group": "04 Finish and save"
       },
       "widgets_values": [
-        "1024x1365/source_portrait"
+        "hoi4_portraits/1024x1365/source_portrait"
       ]
     },
     {
@@ -1774,7 +1774,7 @@
         "hoi4_group": "04 Finish and save"
       },
       "widgets_values": [
-        "156x210/source_portrait"
+        "hoi4_portraits/156x210/source_portrait"
       ]
     },
     {
@@ -1821,7 +1821,7 @@
         "hoi4_group": "04 Finish and save"
       },
       "widgets_values": [
-        "156x210/dds/source_portrait",
+        "hoi4_portraits/156x210/dds/source_portrait",
         "argb8888"
       ]
     },

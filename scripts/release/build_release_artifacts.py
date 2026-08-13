@@ -29,11 +29,12 @@ ROOT_FILES = {
     "models.json",
     "pyproject.toml",
 }
-INCLUDED_TREES = {"backgrounds", "custom_nodes", "docs", "loras", "prompts", "scripts", "tests", "workflows"}
+INCLUDED_TREES = {"backgrounds", "custom_nodes", "docs", "examples", "loras", "prompts", "scripts", "tests", "workflows"}
 IGNORED_PARTS = {"__pycache__", ".DS_Store"}
 MODEL_SUFFIXES = {".bin", ".ckpt", ".gguf", ".onnx", ".pt", ".pth", ".safetensors"}
 RUNPOD_SCRIPTS = {
     "apply_variant.py",
+    "configure_workspace.py",
     "download_models.py",
     "install_runpod.sh",
     "install_custom_node_packs.py",
@@ -107,6 +108,9 @@ def _runpod_files() -> dict[str, Path]:
             files[f"workflows/{path.name}"] = path
     for path in sorted((ROOT / "backgrounds").glob("*.png")):
         files[f"backgrounds/{path.name}"] = path
+    for path in sorted((ROOT / "examples" / "batch_input").glob("*")):
+        if path.is_file():
+            files[f"input/{path.name}"] = path
     custom_node_root = ROOT / "custom_nodes" / "hoi4_portraits"
     for path in sorted(custom_node_root.rglob("*")):
         if path.is_file():
@@ -141,6 +145,7 @@ def _build_windows(zip_path: Path, version: str) -> Path:
     environment = os.environ.copy()
     environment.update({"GOOS": "windows", "GOARCH": "amd64", "CGO_ENABLED": "0"})
     try:
+        subprocess.run(["go", "test", "./..."], cwd=WINDOWS_SOURCE, check=True)
         subprocess.run(
             [
                 "go",

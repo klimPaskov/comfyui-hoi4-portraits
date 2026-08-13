@@ -12,16 +12,18 @@ The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod and the W
 | --- | --- | --- |
 | [`hoi4_portrait_source.json`](workflows/hoi4_portrait_source.json) | Identity-preserving portrait from a photo | RealESRGAN → Adonis Base + Post restoration → **three** HOI4 LoRA candidates |
 | [`hoi4_portrait_text_to_image.json`](workflows/hoi4_portrait_text_to_image.json) | Fictional portrait without a photo | One HOI4 LoRA generation from a text prompt |
-| [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | One sampler processes every image in `input/hoi4_portraits_batch` |
+| [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | One sampler processes every image in the RunPod `input` folder |
 | [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → Adonis Base + Post restoration, no style LoRA |
 
-Every workflow saves:
+On RunPod, drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The archive includes example portraits of Éamon de Valera, W. T. Cosgrave, and Seán Lemass. Every workflow saves into:
 
 ```text
-ComfyUI/output/1024x1365/     full-res master PNG
-ComfyUI/output/156x210/       game-size PNG
-ComfyUI/output/156x210/dds/   HOI4-ready DDS
+/workspace/hoi4-portrait-runpod/output/1024x1365/     full-res master PNG
+/workspace/hoi4-portrait-runpod/output/156x210/       game-size PNG
+/workspace/hoi4-portrait-runpod/output/156x210/dds/   HOI4-ready DDS
 ```
+
+The Windows installer defaults to `Documents\hoi4-portraits\input` and `Documents\hoi4-portraits\output`, with choices for ComfyUI-managed folders or custom paths. Manual and Comfy Cloud installs use the same output subfolders under `ComfyUI/output/hoi4_portraits/`.
 
 The PNG and DDS nodes are automatic terminal outputs. Image-based workflows keep the source image stem in every saved file; the three source candidates append `_1`, `_2`, and `_3`. For example, `general_macarthur.jpg` produces PNG and DDS names beginning with `general_macarthur_1` for the first candidate. Text-to-image uses `text_to_image` because it has no source file. ComfyUI's counters prevent overwrites, and the batch folder is rescanned on every queue in stable filename order.
 
@@ -51,7 +53,7 @@ The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releas
 .\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe
 ```
 
-Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard detect your VRAM and pre-check the recommended variant. It finds ComfyUI, installs the node packs, copies the workflows, and downloads the models. After restarting ComfyUI, open **Workflows → hoi4_portraits** and queue.
+Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard detect your VRAM and pre-check the recommended variant. It finds ComfyUI and shows separate selection boxes for batch inputs and portrait outputs. Both default to the local `Documents\hoi4-portraits` workspace, and each can instead use the ComfyUI folder or a custom path. It installs the node packs, copies the workflows and example inputs, and downloads the models. After restarting ComfyUI, open **Workflows → hoi4_portraits** and queue.
 
 ### RunPod
 
@@ -68,7 +70,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The RunPod command uses FP8 by default. You can explicitly select full BF16 on a larger GPU or use GGUF on a smaller GPU, for example:
+The RunPod command uses FP8 by default. Batch sources go in `/workspace/hoi4-portrait-runpod/input/`, and every PNG and DDS is written below `/workspace/hoi4-portrait-runpod/output/`. You can explicitly select full BF16 on a larger GPU or use GGUF on a smaller GPU, for example:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q5_K_M

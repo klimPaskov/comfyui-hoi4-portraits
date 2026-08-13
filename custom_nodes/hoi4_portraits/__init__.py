@@ -29,9 +29,9 @@ def _output_filename_prefixes(source_filename: str, suffix: str = "") -> tuple[s
     safe_suffix = re.sub(r'[\x00-\x1f<>:"/\\|?*]', "_", str(suffix).strip())
     output_name = f"{safe_stem}{safe_suffix}"
     return (
-        f"1024x1365/{output_name}",
-        f"156x210/{output_name}",
-        f"156x210/dds/{output_name}",
+        f"hoi4_portraits/1024x1365/{output_name}",
+        f"hoi4_portraits/156x210/{output_name}",
+        f"hoi4_portraits/156x210/dds/{output_name}",
     )
 
 
@@ -534,9 +534,10 @@ class Hoi4BatchInput:
 
     def load_batch(self, input_folder, file_pattern):
         input_root = Path(folder_paths.get_input_directory()).resolve()
-        root = (input_root / str(input_folder)).resolve()
-        if root != input_root and input_root not in root.parents:
+        relative_folder = Path(str(input_folder))
+        if relative_folder.is_absolute() or ".." in relative_folder.parts:
             raise ValueError("Batch input folder must stay inside the ComfyUI input folder.")
+        root = (input_root / relative_folder).resolve()
         if not root.is_dir():
             raise RuntimeError(f"Batch input folder does not exist: {root}")
         patterns = [item.strip() for item in str(file_pattern).split(";") if item.strip()]
@@ -611,8 +612,8 @@ class Hoi4SaveDDS:
                 "filename_prefix": (
                     "STRING",
                     {
-                        "default": "156x210/dds/hoi4_portrait",
-                        "tooltip": "Output subfolder and filename prefix inside ComfyUI's output folder. '156x210/dds/...' matches the workflow's game-ready folder.",
+                        "default": "hoi4_portraits/156x210/dds/hoi4_portrait",
+                        "tooltip": "Output subfolder and filename prefix inside ComfyUI's output folder.",
                     },
                 ),
                 "format": (

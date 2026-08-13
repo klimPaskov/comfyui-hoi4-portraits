@@ -2078,7 +2078,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "1024x1365/batch"
+        "hoi4_portraits/1024x1365/batch"
       ]
     },
     {
@@ -2125,7 +2125,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/batch"
+        "hoi4_portraits/156x210/batch"
       ]
     },
     {
@@ -2172,7 +2172,7 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "156x210/dds/batch",
+        "hoi4_portraits/156x210/dds/batch",
         "argb8888"
       ]
     },
