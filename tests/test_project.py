@@ -71,6 +71,29 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(sum(node["class_type"] == "ComfySwitchNode" for node in source.values()), 1)
         self.assertEqual(sum(node["class_type"] == "Hoi4BackgroundReplace" for node in source.values()), 1)
 
+    def test_current_comfyui_widget_contract_is_not_shifted(self) -> None:
+        for workflow_id in build_workflows.BUILDERS:
+            ui = json.loads((WORKFLOW_DIR / f"{workflow_id}.json").read_text())
+            for sampler in (node for node in ui["nodes"] if node["type"] == "KSampler"):
+                self.assertEqual([item["name"] for item in sampler["inputs"]], ["model", "positive", "negative", "latent_image"])
+                self.assertEqual(sampler["widgets_values"], [sampler["widgets_values"][0], "fixed", 4, 1.0, "euler", "simple", 1.0])
+            for crop in (node for node in ui["nodes"] if node["type"] == "AdaptivePortraitCrop"):
+                self.assertEqual([item["name"] for item in crop["inputs"]], ["image", "face_bboxes", "subject_mask"])
+                face_bboxes = next(item for item in crop["inputs"] if item["name"] == "face_bboxes")
+                self.assertEqual(face_bboxes["widget"], {"name": "face_bboxes"})
+                self.assertEqual(crop["widgets_values"], [{"x": 0, "y": 0, "width": 512, "height": 512}, 0, 0, 512, 512, True, False, 0.0, 0.0, 1.0, 1.0, 0.9, True, 512, 683])
+            for saver in (node for node in ui["nodes"] if node["type"] == "SaveImage"):
+                filename_prefix = next(item for item in saver["inputs"] if item["name"] == "filename_prefix")
+                self.assertEqual(filename_prefix["widget"], {"name": "filename_prefix"})
+                self.assertIsNotNone(filename_prefix["link"])
+
+    def test_adonis_prompts_are_source_neutral(self) -> None:
+        prompts = f"{build_workflows.ADONIS_BASE_COMBINED_PROMPT} {build_workflows.ADONIS_POST_COMBINED_PROMPT}".casefold()
+        for source_specific_term in ("cellphone", "camera raw", "high iso", "male portrait"):
+            self.assertNotIn(source_specific_term, prompts)
+        for preservation_term in ("monochrome", "sepia", "historical character", "only where present"):
+            self.assertIn(preservation_term, prompts)
+
     def test_source_comparison_and_outputs_are_exact(self) -> None:
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_source.json").read_text())
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_source.api.json").read_text())
@@ -125,6 +148,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_batch_has_one_sampler_and_all_three_output_types(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.api.json").read_text())
+        ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.json").read_text())
         self.assertEqual(sum(node["class_type"] == "Hoi4BatchInput" for node in api.values()), 1)
         self.assertEqual(sum(node["class_type"] == "KSampler" for node in api.values()), 1)
         self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 2)
@@ -141,6 +165,12 @@ class WorkflowTests(unittest.TestCase):
                 continue
             source = api[node["inputs"]["images"][0]]
             self.assertEqual(source["class_type"], "ImageScale")
+        self.assertEqual([group["title"] for group in ui["groups"]], ["00 Setup", "01 Prepare portraits", "02 Models", "03 Restore details", "04 Create portraits", "05 Save portraits"])
+        previews = [node for node in ui["nodes"] if node["type"] == "PreviewImage"]
+        self.assertEqual([node["pos"] for node in previews], [[5360, 740], [6000, 740], [6640, 740]])
+        self.assertTrue(all(node["color"] == build_workflows.COLORS["sample"][0] for node in previews))
+        create_group, save_group = ui["groups"][-2:]
+        self.assertEqual(save_group["bounding"][0] - (create_group["bounding"][0] + create_group["bounding"][2]), 80)
 
     def test_every_workflow_uses_input_aware_output_names(self) -> None:
         expected_sources = {

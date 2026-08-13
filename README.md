@@ -93,10 +93,10 @@ The full and FP8 FLUX.2 Klein files are gated. Before installing, accept the agr
 
 The workflow is arranged from left to right in clear, colour-coded stages.
 
-![Source workflow overview](docs/assets/workflows/audit/source-overview-2026-08-11.jpg)
+![Source workflow overview](docs/assets/workflows/audit/source-overview-2026-08-13.png)
 
 1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then compare the prepared result below. The upload node already shows the source, so there is no duplicate preview.
-2. **Restoration:** the restoration group fully expands the current upstream [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json). It keeps the official fixed, Base, and Post prompts, 1.7 MP Lanczos crop, reference conditioning, shared empty latent, seed, nine-step control, and Shark options. Adonis Base performs the first generation; its latent feeds both Post reference branches, and Adonis Post performs a second full generation before the final VAE decode. One red **Use Adonis restoration** switch defaults on; turn it off to send the prepared portrait directly to the next stage.
+2. **Restoration:** the restoration group fully expands the current upstream [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json). It keeps the upstream 1.7 MP Lanczos crop, reference conditioning, shared empty latent, seed, nine-step control, and Shark options, with neutral restoration prompts that handle old photographs, scans, digital images, any gender, and monochrome, sepia, or colour sources. Adonis Base performs the first generation; its latent feeds both Post reference branches, and Adonis Post performs a second full generation before the final VAE decode. One red **Use Adonis restoration** switch defaults on; turn it off to send the prepared portrait directly to the next stage.
 3. **Style:** three independent candidates use the HOI4 style LoRA. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and its own seed.
 4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS.
 
@@ -104,7 +104,7 @@ The other three workflow canvases use the same stage colors and controls:
 
 ![Text-to-image workflow overview](docs/assets/workflows/audit/text-overview-2026-08-11.jpg)
 
-![Batch workflow overview](docs/assets/workflows/audit/batch-overview-2026-08-11.jpg)
+![Batch workflow overview](docs/assets/workflows/audit/batch-overview-2026-08-13.png)
 
 ![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview-2026-08-11.jpg)
 

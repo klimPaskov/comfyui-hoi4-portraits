@@ -26,13 +26,13 @@ The tuned style settings are CFG `1`, guidance `1`, **Euler**, **simple**, **4 s
 The source, processing-only, and batch canvases inline the current functional graph from `adonis_post_workflows/Adonis_Base_Post_gguf.json`:
 
 1. scale to `1.7` MP, a multiple of `16`, using crop + Lanczos;
-2. combine and encode the official fixed + Base prompt;
+2. combine and encode the general-purpose restoration + Base prompt;
 3. zero the Base negative conditioning;
 4. VAE-encode the prepared source and apply both Base reference latents;
 5. create the correctly sized empty FLUX.2 latent;
 6. use the upstream RES4LYF options: Laplacian noise, initial scale `1`, alternate denoise `1`, channelwise CFG off;
 7. run a complete nine-step Adonis Base generation;
-8. combine and encode the official fixed + Post prompt, zero its negative, and use the Base output latent for both Post reference branches;
+8. combine and encode the general-purpose restoration + Post prompt, zero its negative, and use the Base output latent for both Post reference branches;
 9. run a second complete nine-step Adonis Post generation from the same empty latent, seed, and options;
 10. VAE-decode the Post result;
 11. use one red toggle to choose the prepared portrait or the complete Adonis result for every downstream node.
@@ -73,7 +73,7 @@ This 42-node graph includes source preparation and the entire Adonis topology. I
 
 ## Batch workflow
 
-This 51-node graph reads compatible images from `ComfyUI/input/hoi4_portraits_batch/`. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. There is one standard sampler and one set of automatic final saves.
+This 51-node graph reads compatible images from `ComfyUI/input/hoi4_portraits_batch/`. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. There is one standard sampler and one set of automatic final saves. The create and save stages use separate colour-consistent groups, and the three comparison previews are centered with equal spacing.
 
 ## Output contract
 

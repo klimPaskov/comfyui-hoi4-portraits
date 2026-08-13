@@ -32,20 +32,17 @@ TEXT_PROMPT = (
     "wearing a plain civilian jacket."
 )
 ADONIS_FIXED_PROMPT = (
-    "uhdmanscale. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. "
-    "Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. "
-    "Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\n"
-    "Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\n"
-    "Subject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\n"
-    "On skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. "
-    "On hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\n"
-    "Deblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover lip definition, and skin texture from motion blur.\n\n"
-    "Output as professional high resolution camera RAW image."
+    "Remove compression artifacts, halftone patterns, periodic grid noise, scratches, dust, scanning artifacts, sensor noise, and other defects only where present. "
+    "Reconstruct missing fine detail across the background, environment, surfaces, objects, clothing, and foreground while keeping texture natural and avoiding oversharpening.\n\n"
+    "Preserve the subject exactly: keep facial and body geometry, eye shape, nose and mouth shape, expression, pose, apparent age, distinctive features, composition, crop, and perspective unchanged.\n\n"
+    "Restore natural skin, hair, fabric, and material texture without plastic smoothing or invented features. Recover strand separation, edge definition, and fine surface detail conservatively where the source is soft or damaged.\n\n"
+    "Preserve the source's intended colour treatment and historical character. Keep monochrome or sepia images monochrome or sepia unless colourisation is explicitly requested; for colour images, correct unwanted casts without inventing colours.\n\n"
+    "Output a clean, faithful, high-resolution archival restoration."
 )
-ADONIS_BASE_PROMPT = "fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality."
-ADONIS_POST_PROMPT = "clean natural skin, hair and body texture, no jpeg artifacts, no checkerboard pattern, male portrait."
-ADONIS_BASE_COMBINED_PROMPT = f"{ADONIS_BASE_PROMPT}, {ADONIS_FIXED_PROMPT}"
-ADONIS_POST_COMBINED_PROMPT = f"{ADONIS_POST_PROMPT}, {ADONIS_FIXED_PROMPT}"
+ADONIS_BASE_PROMPT = "faithfully restore and reconstruct this entire image from its current source quality to clean high-resolution archival quality."
+ADONIS_POST_PROMPT = "refine natural skin, hair, clothing, objects, and background detail; remove remaining artifacts without altering identity, composition, expression, or the source's intended colour treatment."
+ADONIS_BASE_COMBINED_PROMPT = f"{ADONIS_BASE_PROMPT} {ADONIS_FIXED_PROMPT}"
+ADONIS_POST_COMBINED_PROMPT = f"{ADONIS_POST_PROMPT} {ADONIS_FIXED_PROMPT}"
 
 SETUP_GUIDE_SIZE = (620, 1440)
 
@@ -57,6 +54,72 @@ COLORS = {
     "sample": ("#705080", "#523b60"),
     "output": ("#47647a", "#344b5c"),
     "switch": ("#b84949", "#702f2f"),
+}
+
+# The right half follows the user's hand-arranged source workflow, snapped to a consistent grid and regularized into aligned columns and portrait lanes.
+SOURCE_LAYOUT = {
+    36: ((5200, 100), None),
+    37: ((5200, 480), None),
+    38: ((5200, 720), None),
+    39: ((5200, 860), None),
+    40: ((5200, 1000), None),
+    41: ((5200, 1140), None),
+    42: ((5760, 100), (560, 420)),
+    43: ((6360, 100), None),
+    44: ((5760, 600), (560, 420)),
+    45: ((6360, 600), None),
+    46: ((5760, 1100), (560, 420)),
+    47: ((6360, 1100), None),
+    48: ((6720, 100), None),
+    49: ((6720, 240), None),
+    50: ((6720, 400), None),
+    51: ((6720, 1000), None),
+    52: ((7360, 100), None),
+    53: ((7360, 740), None),
+    54: ((7800, 740), None),
+    55: ((7360, 320), None),
+    56: ((7360, 1000), None),
+    57: ((7800, 1000), None),
+    58: ((7360, 540), None),
+    59: ((7360, 1260), None),
+    60: ((7800, 1260), None),
+    61: ((8360, 100), None),
+    62: ((8360, 300), None),
+    63: ((8820, 100), None),
+    64: ((8820, 300), None),
+    65: ((8360, 620), None),
+    66: ((8360, 820), None),
+    67: ((8820, 620), None),
+    68: ((8820, 820), None),
+    69: ((8360, 1140), None),
+    70: ((8360, 1340), None),
+    71: ((8820, 1140), None),
+    72: ((8820, 1340), None),
+    73: ((2800, 1720), None),
+    74: ((3440, 1720), None),
+    75: ((4080, 1720), None),
+    76: ((4720, 1720), None),
+    77: ((5360, 1720), None),
+}
+
+BATCH_LAYOUT = {
+    35: ((5200, 100), None),
+    36: ((5200, 480), None),
+    37: ((5760, 100), None),
+    38: ((5760, 280), None),
+    39: ((6160, 100), None),
+    40: ((6160, 280), None),
+    41: ((6520, 100), (520, 500)),
+    42: ((7080, 100), None),
+    43: ((7540, 100), None),
+    44: ((8000, 100), None),
+    45: ((7540, 360), None),
+    46: ((8000, 360), None),
+    47: ((8000, 600), None),
+    48: ((7540, 600), None),
+    49: ((5360, 740), None),
+    50: ((6000, 740), None),
+    51: ((6640, 740), None),
 }
 
 
@@ -75,6 +138,7 @@ class Graph:
         self.groups: list[dict[str, Any]] = []
         self._group_titles: set[str] = set()
         self._group_node_colors: dict[str, str] = {}
+        self._input_specs: dict[int, list[tuple[str, str, bool]]] = {}
         self._node_id = 0
         self._link_id = 0
 
@@ -114,12 +178,12 @@ class Graph:
         node_id = self._node_id
         node_color = "switch" if color == "switch" else self._group_node_colors[group]
         foreground, background = COLORS[node_color]
-        ui_inputs = []
-        for name, type_name, is_widget in inputs:
-            item: dict[str, Any] = {"name": name, "type": type_name, "link": None}
-            if is_widget:
-                item["widget"] = {"name": name}
-            ui_inputs.append(item)
+        self._input_specs[node_id] = list(inputs)
+        ui_inputs = [
+            {"name": name, "type": type_name, "link": None}
+            for name, type_name, is_widget in inputs
+            if not is_widget
+        ]
         ui_outputs = [{"name": name, "type": type_name, "links": None} for name, type_name in outputs]
         self.nodes.append(
             {
@@ -154,6 +218,21 @@ class Graph:
     ) -> None:
         source_node = self.nodes[source.node_id - 1]
         target_node = self.nodes[target.node_id - 1]
+        if not any(item["name"] == target_input for item in target_node["inputs"]):
+            specs = self._input_specs[target.node_id]
+            spec_index = next(index for index, item in enumerate(specs) if item[0] == target_input)
+            name, type_name, is_widget = specs[spec_index]
+            if not is_widget:
+                raise ValueError(f"missing non-widget input socket: {target_input}")
+            included_names = {item["name"] for item in target_node["inputs"]}
+            insertion_index = sum(1 for item in specs[:spec_index] if not item[2] or item[0] in included_names)
+            target_node["inputs"].insert(
+                insertion_index,
+                {"name": name, "type": type_name, "link": None, "widget": {"name": name}},
+            )
+            for link in self.links:
+                if link[3] == target.node_id and link[4] >= insertion_index:
+                    link[4] += 1
         target_slot = next(index for index, item in enumerate(target_node["inputs"]) if item["name"] == target_input)
         self._link_id += 1
         link_id = self._link_id
@@ -182,6 +261,17 @@ class Graph:
             # The extra 20px above the nodes leaves room for the group title.
             group["bounding"] = [left - 40, top - 60, right - left + 80, bottom - top + 100]
 
+    def apply_layout(self, layout: dict[int, tuple[tuple[int, int], tuple[int, int] | None]]) -> None:
+        """Apply a reviewed editor layout without changing graph semantics."""
+
+        for node_id, (position, size) in layout.items():
+            node = self.nodes[node_id - 1]
+            if node["id"] != node_id:
+                raise ValueError(f"layout node id mismatch: {node_id}")
+            node["pos"] = list(position)
+            if size is not None:
+                node["size"] = list(size)
+
     def serialize(self, *, style_lora: str | None) -> tuple[dict[str, Any], dict[str, Any]]:
         self._fit_groups()
         uses_adonis = any(
@@ -203,7 +293,7 @@ class Graph:
                 "workflow": ADONIS_WORKFLOW,
                 "passes": ["adonis_base.safetensors", "adonis_post.safetensors"],
             } if uses_adonis else None,
-            "frontendVersion": "1.24.2",
+            "frontendVersion": "1.45.19",
             "ds": {"scale": 0.72, "offset": [0, 0]},
         }
         return (
@@ -251,10 +341,10 @@ def _load_image(
     )
 
 
-def _preview(g: Graph, title: str, pos: tuple[int, int], group: str) -> Ref:
+def _preview(g: Graph, title: str, pos: tuple[int, int], group: str, color: str | None = "output") -> Ref:
     return g.node(
         "PreviewImage", title, pos, (600, 810), group,
-        [("images", "IMAGE", False)], [("IMAGE", "IMAGE")], [], {}, "output",
+        [("images", "IMAGE", False)], [("IMAGE", "IMAGE")], [], {}, color,
     )
 
 
@@ -332,15 +422,16 @@ def _adaptive_crop(g: Graph, pos: tuple[int, int], group: str) -> Ref:
         "manual_height", "zoom", "preserve_headwear", "output_width", "output_height",
     )
     values = [True, False, 0.0, 0.0, 1.0, 1.0, 0.9, True, 512, 683]
+    bounding_box_widgets = [{"x": 0, "y": 0, "width": 512, "height": 512}, 0, 0, 512, 512]
     return g.node(
         "AdaptivePortraitCrop", "Crop portrait to 512×683", pos, (480, 420), group,
-        [("image", "IMAGE", False), ("face_bboxes", "BOUNDING_BOX", False), ("subject_mask", "MASK", False),
+        [("image", "IMAGE", False), ("face_bboxes", "BOUNDING_BOX", True), ("subject_mask", "MASK", False),
          ("face_processing", "BOOLEAN", True), ("use_manual_crop", "BOOLEAN", True),
          ("manual_x", "FLOAT", True), ("manual_y", "FLOAT", True),
          ("manual_width", "FLOAT", True), ("manual_height", "FLOAT", True),
          ("zoom", "FLOAT", True), ("preserve_headwear", "BOOLEAN", True),
          ("output_width", "INT", True), ("output_height", "INT", True)],
-        [("portrait", "IMAGE")], values, dict(zip(names, values)), "source",
+        [("portrait", "IMAGE")], bounding_box_widgets + values, dict(zip(names, values)), "source",
     )
 
 
@@ -661,7 +752,7 @@ def _ksampler(
     pos: tuple[int, int],
     group: str,
 ) -> Ref:
-    values = [seed, 4, 1.0, "euler", "simple", 1.0]
+    values = [seed, "fixed", 4, 1.0, "euler", "simple", 1.0]
     sampler = g.node(
         "KSampler", title, pos, (560, 500), group,
         [("model", "MODEL", False), ("seed", "INT", True), ("steps", "INT", True),
@@ -669,7 +760,14 @@ def _ksampler(
          ("positive", "CONDITIONING", False), ("negative", "CONDITIONING", False),
          ("latent_image", "LATENT", False), ("denoise", "FLOAT", True)],
         [("LATENT", "LATENT")], values,
-        dict(zip(("seed", "steps", "cfg", "sampler_name", "scheduler", "denoise"), values)),
+        {
+            "seed": seed,
+            "steps": 4,
+            "cfg": 1.0,
+            "sampler_name": "euler",
+            "scheduler": "simple",
+            "denoise": 1.0,
+        },
     )
     g.connect(model["style"], 0, sampler, "model")
     g.connect(positive, 0, sampler, "positive")
@@ -863,6 +961,7 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
     for index, (title, ref) in enumerate(comparison):
         preview = _preview(g, title, (2800 + index * 640, 1940), "06 Compare portraits")
         g.connect(ref, 0, preview, "images")
+    g.apply_layout(SOURCE_LAYOUT)
     return g.serialize(style_lora=STYLE_LORA)
 
 
@@ -945,27 +1044,28 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     g.group("01 Prepare portraits", "#365b41", "source")
     g.group("02 Models", "#365b73", "model")
     g.group("03 Restore details", "#765b35", "restore")
-    g.group("04 Create and save", "#654572", "sample")
+    g.group("04 Create portraits", "#654572", "sample")
+    g.group("05 Save portraits", "#3d596f", "output")
     _setup_guide(g, (80, 100), "00 Setup")
     batch = _batch_input(g, (860, 100), "01 Prepare portraits")
     esrgan = _source_pipeline(g, batch, "01 Prepare portraits", x=1620)
     model = _model_pipeline(g, "02 Models", x=860, y=1200, style=True, adonis=True, background=False)
     restored, _ = _adonis_pipeline(g, esrgan, model, "03 Restore details", x=2800)
     positive, negative, latent = _style_inputs(
-        g, model, "04 Create and save", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
+        g, model, "04 Create portraits", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
     )
-    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, latent, 42, (6520, 100), "04 Create and save")
-    portrait = _decode_style(g, model, sampler, (7120, 100), "04 Create and save")
-    master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (7460, 100), "04 Create and save")
-    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (7900, 100), "04 Create and save")
+    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, latent, 42, (6520, 100), "04 Create portraits")
+    portrait = _decode_style(g, model, sampler, (7120, 100), "04 Create portraits")
+    master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (7460, 100), "05 Save portraits")
+    game = _image_scale(g, "Game portrait — 156×210", 156, 210, (7900, 100), "05 Save portraits")
     g.connect(portrait, 0, master, "image")
     g.connect(master, 0, game, "image")
-    save_master = _save_image(g, "Save every master PNG", "1024x1365/batch", (7460, 360), "04 Create and save")
-    save_game = _save_image(g, "Save every game PNG", "156x210/batch", (7920, 360), "04 Create and save")
-    save_dds = _save_dds(g, "Save every game DDS", "156x210/dds/batch", (7920, 600), "04 Create and save")
+    save_master = _save_image(g, "Save every master PNG", "1024x1365/batch", (7460, 360), "05 Save portraits")
+    save_game = _save_image(g, "Save every game PNG", "156x210/batch", (7920, 360), "05 Save portraits")
+    save_dds = _save_dds(g, "Save every game DDS", "156x210/dds/batch", (7920, 600), "05 Save portraits")
     names = _output_filenames(
         g, "Keep each source image name", "portrait.png", "", (7460, 600),
-        "04 Create and save", (batch, 2),
+        "05 Save portraits", (batch, 2),
     )
     g.connect(names, 0, save_master, "filename_prefix")
     g.connect(names, 1, save_game, "filename_prefix")
@@ -974,8 +1074,9 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
     for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Game portrait", game))):
-        preview = _preview(g, title, (6520 + index * 640, 900), "04 Create and save")
+        preview = _preview(g, title, (6520 + index * 640, 900), "04 Create portraits", None)
         g.connect(ref, 0, preview, "images")
+    g.apply_layout(BATCH_LAYOUT)
     return g.serialize(style_lora=STYLE_LORA)
 
 

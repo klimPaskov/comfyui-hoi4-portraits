@@ -46,16 +46,7 @@
       "flags": {},
       "order": 1,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "image"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "IMAGE",
@@ -105,16 +96,7 @@
       "flags": {},
       "order": 2,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "model_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "model_name"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "FACE_DETECTION_MODEL",
@@ -159,38 +141,6 @@
           "name": "image",
           "type": "IMAGE",
           "link": 2
-        },
-        {
-          "name": "detector_variant",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "detector_variant"
-          }
-        },
-        {
-          "name": "num_faces",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "num_faces"
-          }
-        },
-        {
-          "name": "min_confidence",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "min_confidence"
-          }
-        },
-        {
-          "name": "missing_frame_fallback",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "missing_frame_fallback"
-          }
         }
       ],
       "outputs": [
@@ -235,16 +185,7 @@
       "flags": {},
       "order": 4,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "bg_removal_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "bg_removal_name"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "bg_model",
@@ -332,92 +273,15 @@
         {
           "name": "face_bboxes",
           "type": "BOUNDING_BOX",
-          "link": 6
+          "link": 6,
+          "widget": {
+            "name": "face_bboxes"
+          }
         },
         {
           "name": "subject_mask",
           "type": "MASK",
           "link": 7
-        },
-        {
-          "name": "face_processing",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "face_processing"
-          }
-        },
-        {
-          "name": "use_manual_crop",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "use_manual_crop"
-          }
-        },
-        {
-          "name": "manual_x",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "manual_x"
-          }
-        },
-        {
-          "name": "manual_y",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "manual_y"
-          }
-        },
-        {
-          "name": "manual_width",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "manual_width"
-          }
-        },
-        {
-          "name": "manual_height",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "manual_height"
-          }
-        },
-        {
-          "name": "zoom",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "zoom"
-          }
-        },
-        {
-          "name": "preserve_headwear",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "preserve_headwear"
-          }
-        },
-        {
-          "name": "output_width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "output_width"
-          }
-        },
-        {
-          "name": "output_height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "output_height"
-          }
         }
       ],
       "outputs": [
@@ -434,6 +298,16 @@
         "hoi4_group": "01 Prepare portrait"
       },
       "widgets_values": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        0,
+        0,
+        512,
+        512,
         true,
         false,
         0.0,
@@ -463,16 +337,7 @@
       "flags": {},
       "order": 7,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "model_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "model_name"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "UPSCALE_MODEL",
@@ -556,38 +421,6 @@
           "name": "image",
           "type": "IMAGE",
           "link": 10
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
-          }
         }
       ],
       "outputs": [
@@ -629,24 +462,7 @@
       "flags": {},
       "order": 10,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "unet_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "unet_name"
-          }
-        },
-        {
-          "name": "weight_dtype",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "weight_dtype"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "MODEL",
@@ -683,32 +499,7 @@
       "flags": {},
       "order": 11,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "clip_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "clip_name"
-          }
-        },
-        {
-          "name": "type",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "type"
-          }
-        },
-        {
-          "name": "device",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "device"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "CLIP",
@@ -746,16 +537,7 @@
       "flags": {},
       "order": 12,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "vae_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "vae_name"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "VAE",
@@ -796,22 +578,6 @@
           "name": "model",
           "type": "MODEL",
           "link": 11
-        },
-        {
-          "name": "lora_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "lora_name"
-          }
-        },
-        {
-          "name": "strength_model",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "strength_model"
-          }
         }
       ],
       "outputs": [
@@ -854,22 +620,6 @@
           "name": "model",
           "type": "MODEL",
           "link": 12
-        },
-        {
-          "name": "lora_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "lora_name"
-          }
-        },
-        {
-          "name": "strength_model",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "strength_model"
-          }
         }
       ],
       "outputs": [
@@ -912,38 +662,6 @@
           "name": "image",
           "type": "IMAGE",
           "link": 13
-        },
-        {
-          "name": "megapixels",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "megapixels"
-          }
-        },
-        {
-          "name": "multiple_of",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "multiple_of"
-          }
-        },
-        {
-          "name": "resize_mode",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "resize_mode"
-          }
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
         }
       ],
       "outputs": [
@@ -1002,14 +720,6 @@
           "name": "clip",
           "type": "CLIP",
           "link": 14
-        },
-        {
-          "name": "text",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "text"
-          }
         }
       ],
       "outputs": [
@@ -1027,7 +737,7 @@
         "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
-        "fully reconstruct this entire image from cellphone quality to professional high resolution color raw quality., uhdmanscale. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution camera RAW image."
+        "faithfully restore and reconstruct this entire image from its current source quality to clean high-resolution archival quality. Remove compression artifacts, halftone patterns, periodic grid noise, scratches, dust, scanning artifacts, sensor noise, and other defects only where present. Reconstruct missing fine detail across the background, environment, surfaces, objects, clothing, and foreground while keeping texture natural and avoiding oversharpening.\n\nPreserve the subject exactly: keep facial and body geometry, eye shape, nose and mouth shape, expression, pose, apparent age, distinctive features, composition, crop, and perspective unchanged.\n\nRestore natural skin, hair, fabric, and material texture without plastic smoothing or invented features. Recover strand separation, edge definition, and fine surface detail conservatively where the source is soft or damaged.\n\nPreserve the source's intended colour treatment and historical character. Keep monochrome or sepia images monochrome or sepia unless colourisation is explicitly requested; for colour images, correct unwanted casts without inventing colours.\n\nOutput a clean, faithful, high-resolution archival restoration."
       ]
     },
     {
@@ -1146,14 +856,6 @@
           "link": 23,
           "widget": {
             "name": "height"
-          }
-        },
-        {
-          "name": "batch_size",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "batch_size"
           }
         }
       ],
@@ -1282,40 +984,7 @@
       "flags": {},
       "order": 22,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "noise_type_init",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "noise_type_init"
-          }
-        },
-        {
-          "name": "s_noise_init",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "s_noise_init"
-          }
-        },
-        {
-          "name": "denoise_alt",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "denoise_alt"
-          }
-        },
-        {
-          "name": "channelwise_cfg",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "channelwise_cfg"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "options",
@@ -1354,16 +1023,7 @@
       "flags": {},
       "order": 23,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "value",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "value"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "INT",
@@ -1399,16 +1059,7 @@
       "flags": {},
       "order": 24,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "value",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "value"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "name": "INT",
@@ -1471,30 +1122,6 @@
           "link": 28
         },
         {
-          "name": "eta",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "eta"
-          }
-        },
-        {
-          "name": "sampler_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "sampler_name"
-          }
-        },
-        {
-          "name": "scheduler",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "scheduler"
-          }
-        },
-        {
           "name": "steps",
           "type": "INT",
           "link": 29,
@@ -1503,59 +1130,11 @@
           }
         },
         {
-          "name": "steps_to_run",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "steps_to_run"
-          }
-        },
-        {
-          "name": "cfg",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "cfg"
-          }
-        },
-        {
-          "name": "denoise",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "denoise"
-          }
-        },
-        {
           "name": "seed",
           "type": "INT",
           "link": 30,
           "widget": {
             "name": "seed"
-          }
-        },
-        {
-          "name": "control_after_generate",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "control_after_generate"
-          }
-        },
-        {
-          "name": "sampler_mode",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "sampler_mode"
-          }
-        },
-        {
-          "name": "bongmath",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "bongmath"
           }
         }
       ],
@@ -1619,14 +1198,6 @@
           "name": "clip",
           "type": "CLIP",
           "link": 31
-        },
-        {
-          "name": "text",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "text"
-          }
         }
       ],
       "outputs": [
@@ -1644,7 +1215,7 @@
         "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
-        "clean natural skin, hair and body texture, no jpeg artifacts, no checkerboard pattern, male portrait., uhdmanscale. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution high ISO noise areas with high resolution low ISO noise textures.\n\nApply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\nSubject identity is locked: preserve exact facial geometry and body geometry, eye shape and color, nose and mouth shape, and expression.\n\nOn skin areas, remove color blotch artifacts, normalize tone uniformity, preserve natural pore and texture detail. On hair areas, separate smeared color artifacts, restore strand separation and texture. Outside the subject's face, freely reconstruct all texture and sharpness with no restrictions.\n\nDeblur and focus correction pass. Infer and reconstruct underlying detail from soft source: sharpen edge definition, recover lip definition, and skin texture from motion blur.\n\nOutput as professional high resolution camera RAW image."
+        "refine natural skin, hair, clothing, objects, and background detail; remove remaining artifacts without altering identity, composition, expression, or the source's intended colour treatment. Remove compression artifacts, halftone patterns, periodic grid noise, scratches, dust, scanning artifacts, sensor noise, and other defects only where present. Reconstruct missing fine detail across the background, environment, surfaces, objects, clothing, and foreground while keeping texture natural and avoiding oversharpening.\n\nPreserve the subject exactly: keep facial and body geometry, eye shape, nose and mouth shape, expression, pose, apparent age, distinctive features, composition, crop, and perspective unchanged.\n\nRestore natural skin, hair, fabric, and material texture without plastic smoothing or invented features. Recover strand separation, edge definition, and fine surface detail conservatively where the source is soft or damaged.\n\nPreserve the source's intended colour treatment and historical character. Keep monochrome or sepia images monochrome or sepia unless colourisation is explicitly requested; for colour images, correct unwanted casts without inventing colours.\n\nOutput a clean, faithful, high-resolution archival restoration."
       ]
     },
     {
@@ -1818,30 +1389,6 @@
           "link": 41
         },
         {
-          "name": "eta",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "eta"
-          }
-        },
-        {
-          "name": "sampler_name",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "sampler_name"
-          }
-        },
-        {
-          "name": "scheduler",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "scheduler"
-          }
-        },
-        {
           "name": "steps",
           "type": "INT",
           "link": 42,
@@ -1850,59 +1397,11 @@
           }
         },
         {
-          "name": "steps_to_run",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "steps_to_run"
-          }
-        },
-        {
-          "name": "cfg",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "cfg"
-          }
-        },
-        {
-          "name": "denoise",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "denoise"
-          }
-        },
-        {
           "name": "seed",
           "type": "INT",
           "link": 43,
           "widget": {
             "name": "seed"
-          }
-        },
-        {
-          "name": "control_after_generate",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "control_after_generate"
-          }
-        },
-        {
-          "name": "sampler_mode",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "sampler_mode"
-          }
-        },
-        {
-          "name": "bongmath",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "bongmath"
           }
         }
       ],
@@ -2006,14 +1505,6 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "switch",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "switch"
-          }
-        },
-        {
           "name": "on_false",
           "type": "IMAGE",
           "link": 46
@@ -2064,38 +1555,6 @@
           "name": "image",
           "type": "IMAGE",
           "link": 48
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
-          }
         }
       ],
       "outputs": [
@@ -2141,38 +1600,6 @@
           "name": "image",
           "type": "IMAGE",
           "link": 49
-        },
-        {
-          "name": "upscale_method",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "upscale_method"
-          }
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "crop",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "crop"
-          }
         }
       ],
       "outputs": [
@@ -2221,14 +1648,6 @@
           "link": 50,
           "widget": {
             "name": "source_filename"
-          }
-        },
-        {
-          "name": "suffix",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "suffix"
           }
         }
       ],
@@ -2387,14 +1806,6 @@
           "link": 53,
           "widget": {
             "name": "filename_prefix"
-          }
-        },
-        {
-          "name": "format",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "format"
           }
         }
       ],
@@ -2756,7 +2167,7 @@
       25,
       0,
       26,
-      8,
+      5,
       "INT"
     ],
     [
@@ -2764,7 +2175,7 @@
       24,
       0,
       26,
-      12,
+      6,
       "INT"
     ],
     [
@@ -2860,7 +2271,7 @@
       25,
       0,
       31,
-      8,
+      5,
       "INT"
     ],
     [
@@ -2868,7 +2279,7 @@
       24,
       0,
       31,
-      12,
+      6,
       "INT"
     ],
     [
@@ -2892,7 +2303,7 @@
       10,
       0,
       33,
-      1,
+      0,
       "IMAGE"
     ],
     [
@@ -2900,7 +2311,7 @@
       32,
       0,
       33,
-      2,
+      1,
       "IMAGE"
     ],
     [
@@ -3120,7 +2531,7 @@
         "adonis_post.safetensors"
       ]
     },
-    "frontendVersion": "1.24.2",
+    "frontendVersion": "1.45.19",
     "ds": {
       "scale": 0.72,
       "offset": [

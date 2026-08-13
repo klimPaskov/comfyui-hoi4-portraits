@@ -10,6 +10,7 @@ This repository contains one current, internally consistent package.
 - Style adapter: the project's HOI4 style LoRA
 - Default style sampler: Euler, simple, four steps, CFG 1, guidance 1, denoise 1
 - Restoration: complete Adonis Base → Post graph with one red enable/bypass control
+- Restoration prompts: source-neutral archival wording preserves identity, composition, gender, historical character, and the input's monochrome, sepia, or colour treatment
 - Shared LoRAs: HOI4 style, Adonis Base, Adonis Refine, and Adonis Post
 
 ## Workflow contract
@@ -21,6 +22,8 @@ This repository contains one current, internally consistent package.
 - Automatic saving: master PNG, game PNG, and DDS branches are terminal outputs with non-overwriting numbered filenames
 - Output names: source, processing-only, and batch saves preserve each input image stem; source candidates add `_1`, `_2`, and `_3`
 - Layout: four fully visible, compact, colour-coded canvases with portrait-ratio previews
+- Frontend compatibility: connected widget sockets and saved widget values follow ComfyUI frontend 1.45.19, preventing the crop dimensions and KSampler CFG, sampler, and scheduler values from shifting when a workflow opens
+- Batch layout: the hand-arranged canvas is grid-aligned and split into symmetric create and save groups, with three centered comparison previews and consistent group colours
 - Output: 1024×1365 PNG, centered 156×210 PNG, and HOI4-ready DDS
 - Downloads: independent repositories transfer in parallel at full Xet speed, files from the same repository run sequentially, Xet rate limits switch automatically to resumable HTTPS, incomplete downloads resume, and temporary HTTP failures retry with backoff
 
