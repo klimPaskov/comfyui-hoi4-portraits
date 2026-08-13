@@ -21,7 +21,7 @@
       "title": "HOI4 Portrait — batch input and output",
       "workflow": "hoi4_portrait_batch.json",
       "api_workflow": "hoi4_portrait_batch.api.json",
-      "nodes": 56
+      "nodes": 59
     },
     {
       "id": "hoi4_portrait_processing_only",

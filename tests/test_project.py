@@ -37,7 +37,7 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {82, 21, 45, 56})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {82, 21, 45, 59})
 
     def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
@@ -219,6 +219,11 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(sampler["inputs"]["latent_image"], [candidate_node_id, 0])
         self.assertEqual(sum(node["class_type"] == "Hoi4SavePNG" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "Hoi4SaveDDS" for node in api.values()), 1)
+        self.assertEqual(sum(node["class_type"] == "Hoi4BackgroundReplace" for node in api.values()), 1)
+        background = next(node for node in api.values() if node["class_type"] == "Hoi4BackgroundReplace")
+        self.assertIs(background["inputs"]["use_background"], False)
+        self.assertEqual(api[background["inputs"]["bg_removal_model"][0]]["class_type"], "LoadBackgroundRemovalModel")
+        self.assertEqual(api[background["inputs"]["background"][0]]["class_type"], "LoadImage")
         filename_node_id, filename_node = next(
             (node_id, node) for node_id, node in api.items()
             if node["class_type"] == "Hoi4BatchOutputFilename"

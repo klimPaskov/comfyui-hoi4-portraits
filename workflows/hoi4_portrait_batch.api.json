@@ -696,7 +696,7 @@
       "height": 1365,
       "crop": "center",
       "image": [
-        "44",
+        "59",
         0
       ]
     },
@@ -866,6 +866,45 @@
     "class_type": "PreviewImage",
     "_meta": {
       "title": "Full-resolution portrait"
+    }
+  },
+  "57": {
+    "inputs": {
+      "bg_removal_name": "birefnet.safetensors"
+    },
+    "class_type": "LoadBackgroundRemovalModel",
+    "_meta": {
+      "title": "Load BiRefNet mask model"
+    }
+  },
+  "58": {
+    "inputs": {
+      "image": "hoi4_leader_portrait_background.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Choose a replacement background"
+    }
+  },
+  "59": {
+    "inputs": {
+      "use_background": false,
+      "image": [
+        "44",
+        0
+      ],
+      "bg_removal_model": [
+        "57",
+        0
+      ],
+      "background": [
+        "58",
+        0
+      ]
+    },
+    "class_type": "Hoi4BackgroundReplace",
+    "_meta": {
+      "title": "Use replacement background"
     }
   }
 }

@@ -1,8 +1,8 @@
 {
   "id": "hoi4_portrait_batch",
   "revision": 0,
-  "last_node_id": 56,
-  "last_link_id": 83,
+  "last_node_id": 59,
+  "last_link_id": 86,
   "nodes": [
     {
       "id": 1,
@@ -67,7 +67,7 @@
           "type": "STRING",
           "links": [
             15,
-            70
+            69
           ]
         }
       ],
@@ -431,8 +431,8 @@
           "links": [
             16,
             49,
-            79,
-            81
+            78,
+            80
           ]
         }
       ],
@@ -1614,8 +1614,8 @@
           "type": "IMAGE",
           "links": [
             54,
-            69,
-            82
+            68,
+            81
           ]
         }
       ],
@@ -2021,7 +2021,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            67
+            83
           ]
         }
       ],
@@ -2036,7 +2036,7 @@
       "type": "ImageScale",
       "title": "Master portrait — 1024×1365",
       "pos": [
-        7540,
+        8200,
         100
       ],
       "size": [
@@ -2052,7 +2052,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 67
+          "link": 86
         }
       ],
       "outputs": [
@@ -2060,9 +2060,9 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            68,
-            76,
-            83
+            67,
+            75,
+            82
           ]
         }
       ],
@@ -2082,7 +2082,7 @@
       "type": "ImageScale",
       "title": "Game portrait — 156×210",
       "pos": [
-        8000,
+        8660,
         100
       ],
       "size": [
@@ -2098,7 +2098,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 68
+          "link": 67
         }
       ],
       "outputs": [
@@ -2106,8 +2106,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            77,
-            78
+            76,
+            77
           ]
         }
       ],
@@ -2127,7 +2127,7 @@
       "type": "ImageScale",
       "title": "Restored portrait — 1024×1365",
       "pos": [
-        7540,
+        8200,
         700
       ],
       "size": [
@@ -2143,7 +2143,7 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 69
+          "link": 68
         }
       ],
       "outputs": [
@@ -2151,7 +2151,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            80
+            79
           ]
         }
       ],
@@ -2171,7 +2171,7 @@
       "type": "Hoi4SavePNG",
       "title": "Save every master PNG",
       "pos": [
-        8000,
+        8660,
         360
       ],
       "size": [
@@ -2182,6 +2182,53 @@
       "bgcolor": "#344b5c",
       "flags": {},
       "order": 47,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 75
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": 72,
+          "widget": {
+            "name": "filename_prefix"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Hoi4SavePNG",
+        "hoi4_group": "05 Save portraits"
+      },
+      "widgets_values": [
+        "hoi4_portraits/1024x1365/batch"
+      ]
+    },
+    {
+      "id": 49,
+      "type": "Hoi4SavePNG",
+      "title": "Save every game PNG",
+      "pos": [
+        9120,
+        100
+      ],
+      "size": [
+        420,
+        150
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 48,
       "mode": 0,
       "inputs": [
         {
@@ -2210,53 +2257,6 @@
         "hoi4_group": "05 Save portraits"
       },
       "widgets_values": [
-        "hoi4_portraits/1024x1365/batch"
-      ]
-    },
-    {
-      "id": 49,
-      "type": "Hoi4SavePNG",
-      "title": "Save every game PNG",
-      "pos": [
-        8460,
-        100
-      ],
-      "size": [
-        420,
-        150
-      ],
-      "color": "#47647a",
-      "bgcolor": "#344b5c",
-      "flags": {},
-      "order": 48,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 77
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "link": 74,
-          "widget": {
-            "name": "filename_prefix"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Hoi4SavePNG",
-        "hoi4_group": "05 Save portraits"
-      },
-      "widgets_values": [
         "hoi4_portraits/156x210/batch"
       ]
     },
@@ -2265,7 +2265,7 @@
       "type": "Hoi4SaveDDS",
       "title": "Save every game DDS",
       "pos": [
-        8460,
+        9120,
         360
       ],
       "size": [
@@ -2281,12 +2281,12 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 78
+          "link": 77
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 75,
+          "link": 74,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2313,7 +2313,7 @@
       "type": "Hoi4BatchOutputFilename",
       "title": "Batch folders and filenames",
       "pos": [
-        7540,
+        8200,
         360
       ],
       "size": [
@@ -2329,7 +2329,7 @@
         {
           "name": "source_filenames",
           "type": "STRING",
-          "link": 70
+          "link": 69
         }
       ],
       "outputs": [
@@ -2337,35 +2337,35 @@
           "name": "master_png",
           "type": "STRING",
           "links": [
-            73
+            72
           ]
         },
         {
           "name": "game_png",
           "type": "STRING",
           "links": [
-            74
+            73
           ]
         },
         {
           "name": "game_dds",
           "type": "STRING",
           "links": [
-            75
+            74
           ]
         },
         {
           "name": "processed_png",
           "type": "STRING",
           "links": [
-            71
+            70
           ]
         },
         {
           "name": "restored_png",
           "type": "STRING",
           "links": [
-            72
+            71
           ]
         }
       ],
@@ -2383,7 +2383,7 @@
       "type": "Hoi4SavePNG",
       "title": "Save every prepared portrait",
       "pos": [
-        8000,
+        8660,
         700
       ],
       "size": [
@@ -2399,12 +2399,12 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 79
+          "link": 78
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 71,
+          "link": 70,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2430,7 +2430,7 @@
       "type": "Hoi4SavePNG",
       "title": "Save every restored portrait",
       "pos": [
-        8460,
+        9120,
         700
       ],
       "size": [
@@ -2446,12 +2446,12 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 80
+          "link": 79
         },
         {
           "name": "filename_prefix",
           "type": "STRING",
-          "link": 72,
+          "link": 71,
           "widget": {
             "name": "filename_prefix"
           }
@@ -2493,7 +2493,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 81
+          "link": 80
         }
       ],
       "outputs": [
@@ -2530,7 +2530,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 82
+          "link": 81
         }
       ],
       "outputs": [
@@ -2567,7 +2567,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 83
+          "link": 82
         }
       ],
       "outputs": [
@@ -2582,6 +2582,133 @@
         "hoi4_group": "04 Create portraits"
       },
       "widgets_values": []
+    },
+    {
+      "id": 57,
+      "type": "LoadBackgroundRemovalModel",
+      "title": "Load BiRefNet mask model",
+      "pos": [
+        2240,
+        1380
+      ],
+      "size": [
+        400,
+        100
+      ],
+      "color": "#385d7a",
+      "bgcolor": "#29465c",
+      "flags": {},
+      "order": 56,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "bg_model",
+          "type": "BACKGROUND_REMOVAL",
+          "links": [
+            84
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadBackgroundRemovalModel",
+        "hoi4_group": "02 Models"
+      },
+      "widgets_values": [
+        "birefnet.safetensors"
+      ]
+    },
+    {
+      "id": 58,
+      "type": "LoadImage",
+      "title": "Choose a replacement background",
+      "pos": [
+        7080,
+        240
+      ],
+      "size": [
+        420,
+        420
+      ],
+      "color": "#705080",
+      "bgcolor": "#523b60",
+      "flags": {},
+      "order": 57,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            85
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage",
+        "hoi4_group": "04 Create portraits"
+      },
+      "widgets_values": [
+        "hoi4_leader_portrait_background.png",
+        "image"
+      ]
+    },
+    {
+      "id": 59,
+      "type": "Hoi4BackgroundReplace",
+      "title": "Use replacement background",
+      "pos": [
+        7540,
+        100
+      ],
+      "size": [
+        500,
+        260
+      ],
+      "color": "#b84949",
+      "bgcolor": "#702f2f",
+      "flags": {},
+      "order": 58,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 83
+        },
+        {
+          "name": "bg_removal_model",
+          "type": "BACKGROUND_REMOVAL",
+          "link": 84
+        },
+        {
+          "name": "background",
+          "type": "IMAGE",
+          "link": 85
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            86
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Hoi4BackgroundReplace",
+        "hoi4_group": "04 Create portraits"
+      },
+      "widgets_values": [
+        false
+      ]
     }
   ],
   "links": [
@@ -3115,14 +3242,6 @@
     ],
     [
       67,
-      44,
-      0,
-      45,
-      0,
-      "IMAGE"
-    ],
-    [
-      68,
       45,
       0,
       46,
@@ -3130,7 +3249,7 @@
       "IMAGE"
     ],
     [
-      69,
+      68,
       35,
       0,
       47,
@@ -3138,7 +3257,7 @@
       "IMAGE"
     ],
     [
-      70,
+      69,
       2,
       2,
       51,
@@ -3146,7 +3265,7 @@
       "STRING"
     ],
     [
-      71,
+      70,
       51,
       3,
       52,
@@ -3154,7 +3273,7 @@
       "STRING"
     ],
     [
-      72,
+      71,
       51,
       4,
       53,
@@ -3162,7 +3281,7 @@
       "STRING"
     ],
     [
-      73,
+      72,
       51,
       0,
       48,
@@ -3170,7 +3289,7 @@
       "STRING"
     ],
     [
-      74,
+      73,
       51,
       1,
       49,
@@ -3178,7 +3297,7 @@
       "STRING"
     ],
     [
-      75,
+      74,
       51,
       2,
       50,
@@ -3186,7 +3305,7 @@
       "STRING"
     ],
     [
-      76,
+      75,
       45,
       0,
       48,
@@ -3194,7 +3313,7 @@
       "IMAGE"
     ],
     [
-      77,
+      76,
       46,
       0,
       49,
@@ -3202,7 +3321,7 @@
       "IMAGE"
     ],
     [
-      78,
+      77,
       46,
       0,
       50,
@@ -3210,7 +3329,7 @@
       "IMAGE"
     ],
     [
-      79,
+      78,
       10,
       0,
       52,
@@ -3218,7 +3337,7 @@
       "IMAGE"
     ],
     [
-      80,
+      79,
       47,
       0,
       53,
@@ -3226,7 +3345,7 @@
       "IMAGE"
     ],
     [
-      81,
+      80,
       10,
       0,
       54,
@@ -3234,7 +3353,7 @@
       "IMAGE"
     ],
     [
-      82,
+      81,
       35,
       0,
       55,
@@ -3242,10 +3361,42 @@
       "IMAGE"
     ],
     [
-      83,
+      82,
       45,
       0,
       56,
+      0,
+      "IMAGE"
+    ],
+    [
+      83,
+      44,
+      0,
+      59,
+      0,
+      "IMAGE"
+    ],
+    [
+      84,
+      57,
+      0,
+      59,
+      1,
+      "BACKGROUND_REMOVAL"
+    ],
+    [
+      85,
+      58,
+      0,
+      59,
+      2,
+      "IMAGE"
+    ],
+    [
+      86,
+      59,
+      0,
+      45,
       0,
       "IMAGE"
     ]
@@ -3329,7 +3480,7 @@
       "bounding": [
         5160,
         40,
-        2260,
+        2920,
         1550
       ],
       "color": "#654572",
@@ -3345,7 +3496,7 @@
       "id": 6,
       "title": "05 Save portraits",
       "bounding": [
-        7500,
+        8160,
         40,
         1420,
         880

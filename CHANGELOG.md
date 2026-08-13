@@ -31,6 +31,7 @@ This repository contains one current, internally consistent package.
 - Source stages: source, batch, and processing workflows also save 1024×1365 prepared and restored portraits in dedicated folders
 - Batch folders: each queue uses matching `<batch_name>` folders under `1024x1365` and `156x210`, defaults to `batch_1`, `batch_2`, and so on when no name is set, and includes full-resolution `processed` and `restored` subfolders; a disabled-by-default checkbox keeps outputs directly in their standard resolution folders
 - Batch candidates: one visible control selects how many HOI4 portrait candidates are created for each source and defaults to one
+- Batch background: one red optional replacement-background control applies before master and game output sizing and defaults off
 - Downloads: high-performance Xet is enabled, independent repositories run in parallel, files from each repository transfer concurrently through one shared Xet token, short rate-limit retries recover before resumable HTTPS fallback, and integrity checks protect every installed file
 - Linked folders: the batch restoration cache and automatic savers validate and follow only the installer-managed input and output links, avoiding current ComfyUI's external-symlink rejection without allowing arbitrary paths
 - Installer summary: RunPod and Windows setup show the total elapsed installation time at completion

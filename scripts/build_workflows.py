@@ -127,15 +127,15 @@ BATCH_LAYOUT = {
     42: ((6120, 440), None),
     43: ((6520, 100), (520, 500)),
     44: ((7080, 100), None),
-    45: ((7540, 100), None),
-    46: ((8000, 100), None),
-    47: ((7540, 700), None),
-    48: ((8000, 360), None),
-    49: ((8460, 100), None),
-    50: ((8460, 360), None),
-    51: ((7540, 360), None),
-    52: ((8000, 700), None),
-    53: ((8460, 700), None),
+    45: ((8200, 100), None),
+    46: ((8660, 100), None),
+    47: ((8200, 700), None),
+    48: ((8660, 360), None),
+    49: ((9120, 100), None),
+    50: ((9120, 360), None),
+    51: ((8200, 360), None),
+    52: ((8660, 700), None),
+    53: ((9120, 700), None),
     54: ((5360, 740), None),
     55: ((6000, 740), None),
     56: ((6640, 740), None),
@@ -1185,7 +1185,6 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (7460, 100), "05 Save portraits")
     game = _image_scale(g, "Game portrait — 156×210", 156, 210, (7900, 100), "05 Save portraits")
     restored_master = _image_scale(g, "Restored portrait — 1024×1365", 1024, 1365, (7460, 700), "05 Save portraits")
-    g.connect(portrait, 0, master, "image")
     g.connect(master, 0, game, "image")
     g.connect(restored, 0, restored_master, "image")
     save_master = _save_image(g, "Save every master PNG", "hoi4_portraits/1024x1365/batch", (7460, 360), "05 Save portraits")
@@ -1205,6 +1204,16 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Full-resolution portrait", master))):
         preview = _preview(g, title, (6520 + index * 640, 900), "04 Create portraits", None)
         g.connect(ref, 0, preview, "images")
+    background_model = _background_model(g, (2240, 1380), "02 Models")
+    background = _load_image(
+        g, "Choose a replacement background", "hoi4_leader_portrait_background.png",
+        (7080, 240), (420, 420), "04 Create portraits",
+    )
+    replace = _background_replace(g, "Use replacement background", (7540, 100), "04 Create portraits")
+    g.connect(portrait, 0, replace, "image")
+    g.connect(background_model, 0, replace, "bg_removal_model")
+    g.connect(background, 0, replace, "background")
+    g.connect(replace, 0, master, "image")
     g.apply_layout(BATCH_LAYOUT)
     return g.serialize(style_lora=STYLE_LORA)
 

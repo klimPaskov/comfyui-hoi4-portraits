@@ -12,7 +12,7 @@ The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod defaults 
 | --- | --- | --- |
 | [`hoi4_portrait_source.json`](workflows/hoi4_portrait_source.json) | Identity-preserving portrait from a photo | RealESRGAN → Adonis Base + Post restoration → **three** HOI4 LoRA candidates |
 | [`hoi4_portrait_text_to_image.json`](workflows/hoi4_portrait_text_to_image.json) | Fictional portrait without a photo | One HOI4 LoRA generation from a text prompt |
-| [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | Processes every input one by one, with a configurable number of candidates |
+| [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | Processes every input one by one, with configurable candidates and optional background replacement |
 | [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → Adonis Base + Post restoration, no style LoRA |
 
 On RunPod, drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. Every workflow saves into:

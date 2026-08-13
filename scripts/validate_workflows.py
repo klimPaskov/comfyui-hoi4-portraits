@@ -212,7 +212,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     compact_limits = {
         WORKFLOW_IDS[0]: (10000, 2750),
         WORKFLOW_IDS[1]: (5060, 1630),
-        WORKFLOW_IDS[2]: (9000, 1720),
+        WORKFLOW_IDS[2]: (9600, 1720),
         WORKFLOW_IDS[3]: (7100, 1700),
     }
     if ui.get("groups") and workflow_id in compact_limits:
@@ -338,7 +338,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         ]
         if len(source_comparison) != 5:
             errors.append(f"{path}: source workflow needs exactly the five-card comparison row")
-    expected_background_controls = 1 if is_source or is_text else 0
+    expected_background_controls = 1 if is_source or is_text or is_batch else 0
     if counts.get("Hoi4BackgroundReplace", 0) != expected_background_controls:
         errors.append(f"{path}: expected {expected_background_controls} shared background true/false control(s)")
     if is_source and (counts.get("ImageBatch", 0) != 2 or counts.get("ImageFromBatch", 0) != 3):
