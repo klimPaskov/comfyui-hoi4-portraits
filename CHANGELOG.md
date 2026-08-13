@@ -29,7 +29,7 @@ This repository contains one current, internally consistent package.
 - GGUF for 8–16 GB VRAM, with selectable Q4_K_M/Q5_K_M/Q6_K/Q8_0 quants
 - FP8 for 16–20 GB VRAM
 - Full distilled weights above 20 GB VRAM
-- RunPod defaults to full distilled
-- Windows detects NVIDIA VRAM, preselects the matching distilled variant, supports multi-variant installs, finds ComfyUI, installs pinned node packs, and downloads the selected model set
+- RunPod defaults to FP8 distilled; full BF16 remains an explicit option
+- Windows detects NVIDIA VRAM for guidance, always preselects FP8, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, finds ComfyUI, installs pinned node packs, and downloads the selected model set
 
 Pinned commits, model revisions, sizes, hashes, and licenses are in [`models.json`](models.json), [`scripts/install_custom_node_packs.py`](scripts/install_custom_node_packs.py), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).

@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ComfyUIRoot,
 
-    [string]$Variant = "full",
+    [string]$Variant = "fp8",
 
     [string]$GgufQuants = "Q5_K_M",
 

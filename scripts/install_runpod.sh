@@ -18,7 +18,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --help|-h)
       echo "Usage: install_runpod.sh [COMFYUI_ROOT] [--variant full|fp8|gguf]... [--gguf-quants Q5_K_M,Q4_K_M,...]"
-      echo "Defaults to the full FLUX.2 Klein 9B model."
+      echo "Defaults to the FP8 FLUX.2 Klein 9B model."
       exit 0
       ;;
     *)
@@ -30,7 +30,7 @@ done
 
 COMFY_ROOT="${POSITIONAL[0]:-${COMFYUI_ROOT:-/workspace/runpod-slim/ComfyUI}}"
 if [[ ${#VARIANTS[@]} -eq 0 ]]; then
-  VARIANTS=(full)
+  VARIANTS=(fp8)
 fi
 for variant in "${VARIANTS[@]}"; do
   case "$variant" in
@@ -146,5 +146,5 @@ echo "Installed ${#VARIANTS[@]} model variant(s): ${VARIANTS[*]} (GGUF quants: $
 echo "Four workflows are under user/default/workflows/hoi4_portraits."
 echo "Restart ComfyUI, then open Workflows > hoi4_portraits."
 if [[ " ${VARIANTS[*]} " == *" full "* ]]; then
-  echo "Note: the full model is selected above 20 GB VRAM and needs a gated HF token (HF_TOKEN)."
+  echo "Note: the optional full BF16 model needs a gated HF token (HF_TOKEN)."
 fi

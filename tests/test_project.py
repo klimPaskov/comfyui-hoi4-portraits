@@ -213,6 +213,12 @@ class InstallerTests(unittest.TestCase):
                 )
             )
 
+    def test_runpod_and_windows_script_defaults_are_fp8(self) -> None:
+        runpod = (ROOT / "scripts/install_runpod.sh").read_text()
+        windows = (ROOT / "scripts/install_windows.ps1").read_text()
+        self.assertIn("VARIANTS=(fp8)", runpod)
+        self.assertIn('[string]$Variant = "fp8"', windows)
+
     def test_every_diffusion_variant_uses_distilled_klein_9b_weights(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())
         diffusion_models = [

@@ -4,7 +4,7 @@
 
 Create Hearts of Iron IV-style leader portraits with ComfyUI and the FLUX.2 Klein 9B distilled model plus the project's HOI4 style LoRA. The source workflow keeps the person's crop, pose, framing, and facial identity anchored, restores old photos, and styles three portrait candidates for comparison. The batch workflow turns a whole folder of photos into game-ready portraits in one queue.
 
-The same workflows open locally, on RunPod, and in Comfy Cloud. The installers detect your GPU VRAM and suggest the right model variant (GGUF / FP8 / full), and every workflow saves **HOI4-ready 156×210 DDS files** for a mod's `gfx/leaders/TAG/` folder.
+The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod and the Windows installer default to FP8; GGUF and full BF16 remain available as optional manual selections. Every workflow saves **HOI4-ready 156×210 DDS files** for a mod's `gfx/leaders/TAG/` folder.
 
 ## Four workflows
 
@@ -40,8 +40,8 @@ Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, the style LoRA, all three 
 The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest) contains:
 
 - a model-free ZIP for manual installs;
-- a **Windows x64 installer wizard** that detects VRAM, pre-checks the recommended variant, lets you pick any combination (including all three), asks for GGUF quantizations when GGUF is selected, finds your ComfyUI, and installs workflows, custom nodes, and models;
-- a **RunPod runtime archive** whose command defaults to the full model and accepts `--variant full|fp8|gguf` plus `--gguf-quants`.
+- a **Windows x64 installer wizard** that detects VRAM for guidance, pre-checks FP8, lets you pick any combination (including GGUF and full BF16), asks for GGUF quantizations when GGUF is selected, finds your ComfyUI, and installs workflows, custom nodes, and models;
+- a **RunPod runtime archive** whose command defaults to FP8 and accepts `--variant full|fp8|gguf` plus `--gguf-quants`.
 
 ## Fastest start
 
@@ -64,11 +64,11 @@ RUNTIME_DIR=/workspace/hoi4-portrait-runpod
 test -f "$COMFY_ROOT/main.py" || { echo "ComfyUI not found at $COMFY_ROOT; set COMFY_ROOT to the folder containing main.py."; exit 1; }
 mkdir -p "$RUNTIME_DIR"
 curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest/download/HOI4-Portrait-RunPod.tar.gz" | tar -xz -C "$RUNTIME_DIR"
-"$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT"
+"$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant fp8
 )
 ```
 
-The RunPod command defaults to the full model. For a GPU with limited VRAM, add the matching flags, for example:
+The RunPod command uses FP8 by default. You can explicitly select full BF16 on a larger GPU or use GGUF on a smaller GPU, for example:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q5_K_M

@@ -1,8 +1,8 @@
 // Command hoi4-portrait-setup extracts the model-free workflow package and
 // installs it into an existing ComfyUI with a VRAM-guided model variant.
 //
-// The wizard detects the GPU VRAM, pre-checks the recommended
-// FLUX.2 Klein 9B variant (gguf / fp8 / full), lets the user toggle any
+// The wizard detects the GPU VRAM for guidance, pre-checks FP8 by default,
+// lets the user toggle any variant including GGUF and optional full BF16,
 // combination, asks for GGUF quantizations when gguf is chosen, finds the
 // ComfyUI root, and then runs the bundled PowerShell installer exactly like
 // the RunPod installer does.
@@ -118,14 +118,7 @@ func detectVRAM() float64 {
 }
 
 func recommendedVariant(vram float64) string {
-	switch {
-	case vram > 20:
-		return "full"
-	case vram > 16:
-		return "fp8"
-	default:
-		return "gguf"
-	}
+	return "fp8"
 }
 
 func recommendedQuant(vram float64) string {
@@ -154,9 +147,9 @@ func promptLine(prompt string) string {
 func askVariantMenu(vram float64) []string {
 	recommended := recommendedVariant(vram)
 	variants := []variant{
-		{key: "gguf", label: "GGUF (8-16 GB VRAM)", vr: recommended == "gguf"},
-		{key: "fp8", label: "FP8 (16-20 GB VRAM)", vr: recommended == "fp8"},
-		{key: "full", label: "Full BF16 (>20 GB VRAM)", vr: recommended == "full"},
+		{key: "gguf", label: "GGUF (optional, 8-16 GB VRAM)", vr: false},
+		{key: "fp8", label: "FP8 (default)", vr: true},
+		{key: "full", label: "Full BF16 (optional, >20 GB VRAM)", vr: false},
 	}
 	for {
 		fmt.Println()
@@ -170,7 +163,7 @@ func askVariantMenu(vram float64) []string {
 			}
 			recommend := ""
 			if v.key == recommended {
-				recommend = "  <-- recommended for your GPU"
+				recommend = "  <-- default"
 			}
 			fmt.Printf("  [%s] %d) %s%s\n", marker, i+1, v.label, recommend)
 		}

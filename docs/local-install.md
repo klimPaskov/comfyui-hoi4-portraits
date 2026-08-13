@@ -21,11 +21,11 @@ The installer downloads only the selected distilled model variant plus the share
 
 The bare minimum for the full workflow's model files is therefore **31,050,530,910 bytes (31.05 GB / 28.92 GiB)**. Keep about **40 GB free** for the model payload, ComfyUI package, Hugging Face metadata/cache behavior, and generated images. For multiple variants, count the shared set once: full + FP8 + GGUF Q5_K_M is **47.50 GB** of model files.
 
-VRAM guidance used by the installer wizard:
+The Windows installer defaults to **FP8** at every detected VRAM size. The detected VRAM remains visible so you can select GGUF for an 8–16 GB GPU or full BF16 above 20 GB.
 
-- **8–16 GB** → GGUF (recommended quantization is auto-detected)
-- **16–20 GB** → FP8
-- **more than 20 GB** → full
+- **8–16 GB** → GGUF is available, with an automatically suggested quantization
+- **16 GB or more** → the default FP8 selection is appropriate
+- **more than 20 GB** → full BF16 is available as an optional selection
 
 The Qwen text encoder is 8.7 GB and is shared by every variant. ComfyUI offloads it to system RAM when VRAM is tight, so 8 GB GPUs work but are slow.
 
@@ -61,11 +61,11 @@ RUNTIME_DIR=/workspace/hoi4-portrait-runpod
 test -f "$COMFY_ROOT/main.py" || { echo "ComfyUI not found at $COMFY_ROOT; set COMFY_ROOT to the folder containing main.py."; exit 1; }
 mkdir -p "$RUNTIME_DIR"
 curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest/download/HOI4-Portrait-RunPod.tar.gz" | tar -xz -C "$RUNTIME_DIR"
-"$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT"
+"$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant fp8
 )
 ```
 
-The command defaults to the **full** model. On a smaller GPU, pass the variant and quantization flags:
+The command defaults to **FP8**. Select full BF16 explicitly on a larger GPU or pass a GGUF variant and quantization on a smaller GPU:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q4_K_M,Q5_K_M
@@ -86,7 +86,7 @@ Startup checks that every required node loaded and reports anything missing.
 The release executable is a complete installer wizard, not just an unpacker:
 
 1. Run `.\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe`.
-2. It detects your GPU VRAM with `nvidia-smi` and pre-checks the recommended variant (GGUF for 8–16 GB, FP8 for 16–20 GB, full above 20 GB).
+2. It detects your GPU VRAM with `nvidia-smi` for guidance and always pre-checks FP8. GGUF and full BF16 remain selectable but are never preselected.
 3. Toggle any combination of variants — including all three, if you want every model type available.
 4. If GGUF is selected, choose the quantization(s); the recommended one is pre-checked (Q4_K_M ≤ 10 GB, Q5_K_M 10–14 GB, Q6_K 12–16 GB, Q8_0 16+ GB).
 5. It finds your ComfyUI (or you type its root) and runs the bundled PowerShell installer, which installs the node packs, copies the workflows, and downloads the selected models.
