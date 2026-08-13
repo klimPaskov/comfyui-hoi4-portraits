@@ -58,8 +58,11 @@ COLORS = {
     "switch": ("#b84949", "#702f2f"),
 }
 
-# The right half follows the user's hand-arranged source workflow, snapped to a consistent grid and regularized into aligned columns and portrait lanes.
+# The existing source nodes follow the user's hand-arranged workflow. New stage
+# saves extend the save group without moving the supplied canvas.
 SOURCE_LAYOUT = {
+    2: ((860, 100), (712, 920)),
+    18: ((2800, 100), (400, 214)),
     34: ((4640, 1240), (260, 80)),
     35: ((4160, 800), None),
     36: ((4640, 1360), None),
@@ -100,11 +103,15 @@ SOURCE_LAYOUT = {
     71: ((8360, 1340), None),
     72: ((8820, 1140), None),
     73: ((8820, 1340), (420, 180)),
-    74: ((2800, 1720), None),
-    75: ((3440, 1720), None),
-    76: ((4080, 1720), None),
-    77: ((4720, 1720), None),
-    78: ((5360, 1720), None),
+    74: ((9280, 100), None),
+    75: ((9280, 300), None),
+    76: ((9280, 1140), None),
+    77: ((9280, 1360), None),
+    78: ((2800, 1720), None),
+    79: ((3440, 1720), None),
+    80: ((4080, 1720), None),
+    81: ((4720, 1720), None),
+    82: ((5360, 1720), None),
 }
 
 BATCH_LAYOUT = {
@@ -116,17 +123,21 @@ BATCH_LAYOUT = {
     39: ((5760, 280), None),
     40: ((6160, 100), None),
     41: ((6160, 280), None),
-    42: ((6520, 100), (520, 500)),
-    43: ((7080, 100), None),
-    44: ((7540, 100), None),
-    45: ((8000, 100), None),
-    46: ((7540, 360), None),
-    47: ((8000, 360), None),
-    48: ((8000, 600), None),
-    49: ((7540, 600), None),
-    50: ((5360, 740), None),
-    51: ((6000, 740), None),
-    52: ((6640, 740), None),
+    42: ((6120, 440), None),
+    43: ((6520, 100), (520, 500)),
+    44: ((7080, 100), None),
+    45: ((7540, 100), None),
+    46: ((8000, 100), None),
+    47: ((7540, 700), None),
+    48: ((8000, 360), None),
+    49: ((8460, 100), None),
+    50: ((8460, 360), None),
+    51: ((7540, 360), None),
+    52: ((8000, 700), None),
+    53: ((8460, 700), None),
+    54: ((5360, 740), None),
+    55: ((6000, 740), None),
+    56: ((6640, 740), None),
 }
 
 
@@ -851,11 +862,41 @@ def _output_filenames(
     node = g.node(
         "Hoi4OutputFilename", title, pos, size, group,
         [("source_filename", "STRING", True), ("suffix", "STRING", True)],
-        [("master_png", "STRING"), ("game_png", "STRING"), ("game_dds", "STRING")],
+        [("master_png", "STRING"), ("game_png", "STRING"), ("game_dds", "STRING"),
+         ("processed_png", "STRING"), ("restored_png", "STRING")],
         [source_filename, suffix], {"source_filename": source_filename, "suffix": suffix}, "output",
     )
     if filename_source is not None:
         g.connect(filename_source[0], filename_source[1], node, "source_filename")
+    return node
+
+
+def _batch_output_filenames(
+    g: Graph,
+    source_filenames: tuple[Ref, int],
+    pos: tuple[int, int],
+    group: str,
+) -> Ref:
+    values = ["", False]
+    node = g.node(
+        "Hoi4BatchOutputFilename", "Batch folders and filenames", pos, (420, 260), group,
+        [("source_filenames", "STRING", False), ("custom_subfolder", "STRING", True),
+         ("save_without_batch_folder", "BOOLEAN", True)],
+        [("master_png", "STRING"), ("game_png", "STRING"), ("game_dds", "STRING"),
+         ("processed_png", "STRING"), ("restored_png", "STRING")],
+        values, {"custom_subfolder": values[0], "save_without_batch_folder": values[1]}, "output",
+    )
+    g.connect(source_filenames[0], source_filenames[1], node, "source_filenames")
+    return node
+
+
+def _repeat_latent(g: Graph, latent: Ref, pos: tuple[int, int], group: str) -> Ref:
+    node = g.node(
+        "RepeatLatentBatch", "Number of portrait candidates", pos, (360, 120), group,
+        [("samples", "LATENT", False), ("amount", "INT", True)], [("LATENT", "LATENT")],
+        [1], {"amount": 1}, "sample",
+    )
+    g.connect(latent, 0, node, "samples")
     return node
 
 
@@ -977,6 +1018,25 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
         g.connect(master, 0, save_master, "images")
         g.connect(game, 0, save_game, "images")
         g.connect(game, 0, save_dds, "images")
+    stage_names = _output_filenames(
+        g, "Keep source name — prepared and restored", "source_portrait.jpg", "",
+        (9280, 100), "05 Save portraits", (source, 2),
+    )
+    save_processed = _save_image(
+        g, "Save prepared portrait", "hoi4_portraits/1024x1365/processed/source_portrait",
+        (9280, 300), "05 Save portraits", (stage_names, 3),
+    )
+    restored_master = _image_scale(
+        g, "Restored portrait — 1024×1365", 1024, 1365,
+        (9280, 620), "05 Save portraits",
+    )
+    save_restored = _save_image(
+        g, "Save restored portrait", "hoi4_portraits/1024x1365/restored/source_portrait",
+        (9280, 820), "05 Save portraits", (stage_names, 4),
+    )
+    g.connect(esrgan, 0, save_processed, "images")
+    g.connect(restored, 0, restored_master, "image")
+    g.connect(restored_master, 0, save_restored, "images")
     comparison = [
         ("Prepared portrait", esrgan),
         ("Restored portrait", restored),
@@ -1055,9 +1115,13 @@ def build_processing() -> tuple[dict[str, Any], dict[str, Any]]:
     save_master = _save_image(g, "Save restored master PNG", "hoi4_portraits/1024x1365/source_portrait", (6080, 100), "04 Finish and save", (names, 0))
     save_game = _save_image(g, "Save game PNG", "hoi4_portraits/156x210/source_portrait", (6080, 340), "04 Finish and save", (names, 1))
     save_dds = _save_dds(g, "Save game DDS", "hoi4_portraits/156x210/dds/source_portrait", (6080, 580), "04 Finish and save", (names, 2))
+    save_processed = _save_image(g, "Save prepared portrait", "hoi4_portraits/1024x1365/processed/source_portrait", (6540, 100), "04 Finish and save", (names, 3))
+    save_restored = _save_image(g, "Save restored portrait", "hoi4_portraits/1024x1365/restored/source_portrait", (6540, 340), "04 Finish and save", (names, 4))
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
+    g.connect(esrgan, 0, save_processed, "images")
+    g.connect(master, 0, save_restored, "images")
     for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Full-resolution portrait", master))):
         preview = _preview(g, title, (5200 + index * 640, 880), "04 Finish and save")
         g.connect(ref, 0, preview, "images")
@@ -1080,25 +1144,29 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
     positive, negative, latent = _style_inputs(
         g, model, "04 Create portraits", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
     )
-    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, latent, 42, (6520, 100), "04 Create portraits")
+    candidate_latent = _repeat_latent(g, latent, (6160, 440), "04 Create portraits")
+    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, candidate_latent, 42, (6520, 100), "04 Create portraits")
     portrait = _decode_style(g, model, sampler, (7120, 100), "04 Create portraits")
     master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (7460, 100), "05 Save portraits")
     game = _image_scale(g, "Game portrait — 156×210", 156, 210, (7900, 100), "05 Save portraits")
+    restored_master = _image_scale(g, "Restored portrait — 1024×1365", 1024, 1365, (7460, 700), "05 Save portraits")
     g.connect(portrait, 0, master, "image")
     g.connect(master, 0, game, "image")
+    g.connect(restored, 0, restored_master, "image")
     save_master = _save_image(g, "Save every master PNG", "hoi4_portraits/1024x1365/batch", (7460, 360), "05 Save portraits")
     save_game = _save_image(g, "Save every game PNG", "hoi4_portraits/156x210/batch", (7920, 360), "05 Save portraits")
     save_dds = _save_dds(g, "Save every game DDS", "hoi4_portraits/156x210/dds/batch", (7920, 600), "05 Save portraits")
-    names = _output_filenames(
-        g, "Keep each source image name", "portrait.png", "", (7460, 600),
-        "05 Save portraits", (batch, 2),
-    )
+    names = _batch_output_filenames(g, (batch, 2), (7460, 360), "05 Save portraits")
+    save_processed = _save_image(g, "Save every prepared portrait", "hoi4_portraits/1024x1365/batch/processed/portrait", (8000, 700), "05 Save portraits", (names, 3))
+    save_restored = _save_image(g, "Save every restored portrait", "hoi4_portraits/1024x1365/batch/restored/portrait", (8460, 700), "05 Save portraits", (names, 4))
     g.connect(names, 0, save_master, "filename_prefix")
     g.connect(names, 1, save_game, "filename_prefix")
     g.connect(names, 2, save_dds, "filename_prefix")
     g.connect(master, 0, save_master, "images")
     g.connect(game, 0, save_game, "images")
     g.connect(game, 0, save_dds, "images")
+    g.connect(esrgan, 0, save_processed, "images")
+    g.connect(restored_master, 0, save_restored, "images")
     for index, (title, ref) in enumerate((("Prepared portrait", esrgan), ("Restored portrait", restored), ("Full-resolution portrait", master))):
         preview = _preview(g, title, (6520 + index * 640, 900), "04 Create portraits", None)
         g.connect(ref, 0, preview, "images")

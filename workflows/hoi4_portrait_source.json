@@ -1,8 +1,8 @@
 {
   "id": "hoi4_portrait_source",
   "revision": 0,
-  "last_node_id": 78,
-  "last_link_id": 119,
+  "last_node_id": 82,
+  "last_link_id": 125,
   "nodes": [
     {
       "id": 1,
@@ -38,8 +38,8 @@
         100
       ],
       "size": [
-        680,
-        620
+        712,
+        920
       ],
       "color": "#446a4d",
       "bgcolor": "#304c38",
@@ -69,7 +69,8 @@
             15,
             94,
             101,
-            108
+            108,
+            115
           ]
         }
       ],
@@ -433,7 +434,8 @@
           "links": [
             16,
             49,
-            115
+            118,
+            121
           ]
         }
       ],
@@ -739,7 +741,7 @@
       ],
       "size": [
         400,
-        240
+        214
       ],
       "color": "#80613d",
       "bgcolor": "#5d472e",
@@ -1654,7 +1656,8 @@
           "type": "IMAGE",
           "links": [
             54,
-            116
+            119,
+            122
           ]
         }
       ],
@@ -2502,7 +2505,7 @@
           "links": [
             87,
             98,
-            117
+            123
           ]
         }
       ],
@@ -2635,7 +2638,7 @@
           "links": [
             90,
             105,
-            118
+            124
           ]
         }
       ],
@@ -2768,7 +2771,7 @@
           "links": [
             93,
             112,
-            119
+            125
           ]
         }
       ],
@@ -2876,6 +2879,16 @@
           "links": [
             97
           ]
+        },
+        {
+          "name": "processed_png",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "restored_png",
+          "type": "STRING",
+          "links": null
         }
       ],
       "properties": {
@@ -3077,6 +3090,16 @@
           "links": [
             104
           ]
+        },
+        {
+          "name": "processed_png",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "restored_png",
+          "type": "STRING",
+          "links": null
         }
       ],
       "properties": {
@@ -3278,6 +3301,16 @@
           "links": [
             111
           ]
+        },
+        {
+          "name": "processed_png",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "restored_png",
+          "type": "STRING",
+          "links": null
         }
       ],
       "properties": {
@@ -3433,15 +3466,15 @@
     },
     {
       "id": 74,
-      "type": "PreviewImage",
-      "title": "Prepared portrait",
+      "type": "Hoi4OutputFilename",
+      "title": "Keep source name — prepared and restored",
       "pos": [
-        2800,
-        1720
+        9280,
+        100
       ],
       "size": [
-        600,
-        810
+        420,
+        160
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -3450,35 +3483,65 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 115
+          "name": "source_filename",
+          "type": "STRING",
+          "link": 115,
+          "widget": {
+            "name": "source_filename"
+          }
         }
       ],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
+          "name": "master_png",
+          "type": "STRING",
           "links": null
+        },
+        {
+          "name": "game_png",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "game_dds",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "processed_png",
+          "type": "STRING",
+          "links": [
+            116
+          ]
+        },
+        {
+          "name": "restored_png",
+          "type": "STRING",
+          "links": [
+            117
+          ]
         }
       ],
       "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Compare portraits"
+        "Node name for S&R": "Hoi4OutputFilename",
+        "hoi4_group": "05 Save portraits"
       },
-      "widgets_values": []
+      "widgets_values": [
+        "source_portrait.jpg",
+        ""
+      ]
     },
     {
       "id": 75,
-      "type": "PreviewImage",
-      "title": "Restored portrait",
+      "type": "Hoi4SavePNG",
+      "title": "Save prepared portrait",
       "pos": [
-        3440,
-        1720
+        9280,
+        300
       ],
       "size": [
-        600,
-        810
+        420,
+        150
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -3489,7 +3552,15 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 116
+          "link": 118
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": 116,
+          "widget": {
+            "name": "filename_prefix"
+          }
         }
       ],
       "outputs": [
@@ -3500,22 +3571,24 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Compare portraits"
+        "Node name for S&R": "Hoi4SavePNG",
+        "hoi4_group": "05 Save portraits"
       },
-      "widgets_values": []
+      "widgets_values": [
+        "hoi4_portraits/1024x1365/processed/source_portrait"
+      ]
     },
     {
       "id": 76,
-      "type": "PreviewImage",
-      "title": "Portrait 1 — full resolution",
+      "type": "ImageScale",
+      "title": "Restored portrait — 1024×1365",
       "pos": [
-        4080,
-        1720
+        9280,
+        1140
       ],
       "size": [
-        600,
-        810
+        400,
+        180
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -3524,35 +3597,42 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "images",
+          "name": "image",
           "type": "IMAGE",
-          "link": 117
+          "link": 119
         }
       ],
       "outputs": [
         {
           "name": "IMAGE",
           "type": "IMAGE",
-          "links": null
+          "links": [
+            120
+          ]
         }
       ],
       "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Compare portraits"
+        "Node name for S&R": "ImageScale",
+        "hoi4_group": "05 Save portraits"
       },
-      "widgets_values": []
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1365,
+        "center"
+      ]
     },
     {
       "id": 77,
-      "type": "PreviewImage",
-      "title": "Portrait 2 — full resolution",
+      "type": "Hoi4SavePNG",
+      "title": "Save restored portrait",
       "pos": [
-        4720,
-        1720
+        9280,
+        1360
       ],
       "size": [
-        600,
-        810
+        420,
+        150
       ],
       "color": "#47647a",
       "bgcolor": "#344b5c",
@@ -3563,7 +3643,15 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 118
+          "link": 120
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": 117,
+          "widget": {
+            "name": "filename_prefix"
+          }
         }
       ],
       "outputs": [
@@ -3574,17 +3662,19 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "PreviewImage",
-        "hoi4_group": "06 Compare portraits"
+        "Node name for S&R": "Hoi4SavePNG",
+        "hoi4_group": "05 Save portraits"
       },
-      "widgets_values": []
+      "widgets_values": [
+        "hoi4_portraits/1024x1365/restored/source_portrait"
+      ]
     },
     {
       "id": 78,
       "type": "PreviewImage",
-      "title": "Portrait 3 — full resolution",
+      "title": "Prepared portrait",
       "pos": [
-        5360,
+        2800,
         1720
       ],
       "size": [
@@ -3600,7 +3690,155 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 119
+          "link": 121
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "06 Compare portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 79,
+      "type": "PreviewImage",
+      "title": "Restored portrait",
+      "pos": [
+        3440,
+        1720
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 78,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 122
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "06 Compare portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 80,
+      "type": "PreviewImage",
+      "title": "Portrait 1 — full resolution",
+      "pos": [
+        4080,
+        1720
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 79,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 123
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "06 Compare portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 81,
+      "type": "PreviewImage",
+      "title": "Portrait 2 — full resolution",
+      "pos": [
+        4720,
+        1720
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 80,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 124
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "hoi4_group": "06 Compare portraits"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 82,
+      "type": "PreviewImage",
+      "title": "Portrait 3 — full resolution",
+      "pos": [
+        5360,
+        1720
+      ],
+      "size": [
+        600,
+        810
+      ],
+      "color": "#47647a",
+      "bgcolor": "#344b5c",
+      "flags": {},
+      "order": 81,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 125
         }
       ],
       "outputs": [
@@ -4532,41 +4770,89 @@
     ],
     [
       115,
-      10,
-      0,
+      2,
+      2,
       74,
       0,
-      "IMAGE"
+      "STRING"
     ],
     [
       116,
-      36,
+      74,
+      3,
+      75,
+      1,
+      "STRING"
+    ],
+    [
+      117,
+      74,
+      4,
+      77,
+      1,
+      "STRING"
+    ],
+    [
+      118,
+      10,
       0,
       75,
       0,
       "IMAGE"
     ],
     [
-      117,
-      54,
+      119,
+      36,
       0,
       76,
       0,
       "IMAGE"
     ],
     [
-      118,
-      57,
+      120,
+      76,
       0,
       77,
       0,
       "IMAGE"
     ],
     [
-      119,
-      60,
+      121,
+      10,
       0,
       78,
+      0,
+      "IMAGE"
+    ],
+    [
+      122,
+      36,
+      0,
+      79,
+      0,
+      "IMAGE"
+    ],
+    [
+      123,
+      54,
+      0,
+      80,
+      0,
+      "IMAGE"
+    ],
+    [
+      124,
+      57,
+      0,
+      81,
+      0,
+      "IMAGE"
+    ],
+    [
+      125,
+      60,
+      0,
+      82,
       0,
       "IMAGE"
     ]
@@ -4668,7 +4954,7 @@
       "bounding": [
         8320,
         40,
-        960,
+        1420,
         1520
       ],
       "color": "#3d596f",

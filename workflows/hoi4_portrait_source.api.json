@@ -1164,6 +1164,67 @@
   },
   "74": {
     "inputs": {
+      "source_filename": [
+        "2",
+        2
+      ],
+      "suffix": ""
+    },
+    "class_type": "Hoi4OutputFilename",
+    "_meta": {
+      "title": "Keep source name — prepared and restored"
+    }
+  },
+  "75": {
+    "inputs": {
+      "filename_prefix": [
+        "74",
+        3
+      ],
+      "images": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "Hoi4SavePNG",
+    "_meta": {
+      "title": "Save prepared portrait"
+    }
+  },
+  "76": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "36",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Restored portrait — 1024×1365"
+    }
+  },
+  "77": {
+    "inputs": {
+      "filename_prefix": [
+        "74",
+        4
+      ],
+      "images": [
+        "76",
+        0
+      ]
+    },
+    "class_type": "Hoi4SavePNG",
+    "_meta": {
+      "title": "Save restored portrait"
+    }
+  },
+  "78": {
+    "inputs": {
       "images": [
         "10",
         0
@@ -1174,7 +1235,7 @@
       "title": "Prepared portrait"
     }
   },
-  "75": {
+  "79": {
     "inputs": {
       "images": [
         "36",
@@ -1186,7 +1247,7 @@
       "title": "Restored portrait"
     }
   },
-  "76": {
+  "80": {
     "inputs": {
       "images": [
         "54",
@@ -1198,7 +1259,7 @@
       "title": "Portrait 1 — full resolution"
     }
   },
-  "77": {
+  "81": {
     "inputs": {
       "images": [
         "57",
@@ -1210,7 +1271,7 @@
       "title": "Portrait 2 — full resolution"
     }
   },
-  "78": {
+  "82": {
     "inputs": {
       "images": [
         "60",

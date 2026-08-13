@@ -632,6 +632,19 @@
   },
   "42": {
     "inputs": {
+      "amount": 1,
+      "samples": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "RepeatLatentBatch",
+    "_meta": {
+      "title": "Number of portrait candidates"
+    }
+  },
+  "43": {
+    "inputs": {
       "seed": 42,
       "steps": 4,
       "cfg": 1.0,
@@ -651,7 +664,7 @@
         0
       ],
       "latent_image": [
-        "39",
+        "42",
         0
       ]
     },
@@ -660,10 +673,10 @@
       "title": "Portrait sampling"
     }
   },
-  "43": {
+  "44": {
     "inputs": {
       "samples": [
-        "42",
+        "43",
         0
       ],
       "vae": [
@@ -676,14 +689,14 @@
       "title": "Decode portrait"
     }
   },
-  "44": {
+  "45": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 1024,
       "height": 1365,
       "crop": "center",
       "image": [
-        "43",
+        "44",
         0
       ]
     },
@@ -692,14 +705,14 @@
       "title": "Master portrait — 1024×1365"
     }
   },
-  "45": {
+  "46": {
     "inputs": {
       "upscale_method": "lanczos",
       "width": 156,
       "height": 210,
       "crop": "center",
       "image": [
-        "44",
+        "45",
         0
       ]
     },
@@ -708,14 +721,30 @@
       "title": "Game portrait — 156×210"
     }
   },
-  "46": {
+  "47": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1024,
+      "height": 1365,
+      "crop": "center",
+      "image": [
+        "35",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Restored portrait — 1024×1365"
+    }
+  },
+  "48": {
     "inputs": {
       "filename_prefix": [
-        "49",
+        "51",
         0
       ],
       "images": [
-        "44",
+        "45",
         0
       ]
     },
@@ -724,14 +753,14 @@
       "title": "Save every master PNG"
     }
   },
-  "47": {
+  "49": {
     "inputs": {
       "filename_prefix": [
-        "49",
+        "51",
         1
       ],
       "images": [
-        "45",
+        "46",
         0
       ]
     },
@@ -740,15 +769,15 @@
       "title": "Save every game PNG"
     }
   },
-  "48": {
+  "50": {
     "inputs": {
       "filename_prefix": [
-        "49",
+        "51",
         2
       ],
       "format": "argb8888",
       "images": [
-        "45",
+        "46",
         0
       ]
     },
@@ -757,20 +786,53 @@
       "title": "Save every game DDS"
     }
   },
-  "49": {
+  "51": {
     "inputs": {
-      "source_filename": [
+      "custom_subfolder": "",
+      "save_without_batch_folder": false,
+      "source_filenames": [
         "2",
         2
-      ],
-      "suffix": ""
+      ]
     },
-    "class_type": "Hoi4OutputFilename",
+    "class_type": "Hoi4BatchOutputFilename",
     "_meta": {
-      "title": "Keep each source image name"
+      "title": "Batch folders and filenames"
     }
   },
-  "50": {
+  "52": {
+    "inputs": {
+      "filename_prefix": [
+        "51",
+        3
+      ],
+      "images": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "Hoi4SavePNG",
+    "_meta": {
+      "title": "Save every prepared portrait"
+    }
+  },
+  "53": {
+    "inputs": {
+      "filename_prefix": [
+        "51",
+        4
+      ],
+      "images": [
+        "47",
+        0
+      ]
+    },
+    "class_type": "Hoi4SavePNG",
+    "_meta": {
+      "title": "Save every restored portrait"
+    }
+  },
+  "54": {
     "inputs": {
       "images": [
         "10",
@@ -782,7 +844,7 @@
       "title": "Prepared portrait"
     }
   },
-  "51": {
+  "55": {
     "inputs": {
       "images": [
         "35",
@@ -794,10 +856,10 @@
       "title": "Restored portrait"
     }
   },
-  "52": {
+  "56": {
     "inputs": {
       "images": [
-        "44",
+        "45",
         0
       ]
     },

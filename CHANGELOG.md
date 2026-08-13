@@ -27,6 +27,9 @@ This repository contains one current, internally consistent package.
 - Frontend compatibility: connected widget sockets and saved widget values follow ComfyUI frontend 1.45.19, preventing the crop dimensions and KSampler CFG, sampler, and scheduler values from shifting when a workflow opens
 - Batch layout: the hand-arranged canvas is grid-aligned and split into symmetric create and save groups, with three centered comparison previews and consistent group colours
 - Output: 1024×1365 PNG, centered 156×210 PNG, and HOI4-ready DDS under the selected portrait output folder
+- Source stages: source, batch, and processing workflows also save 1024×1365 prepared and restored portraits in dedicated folders
+- Batch folders: each queue defaults to the next `batch_N` master folder, supports a custom folder name, and includes its own `processed` and `restored` subfolders; a disabled-by-default checkbox keeps masters directly in `1024x1365`
+- Batch candidates: one visible control selects how many HOI4 portrait candidates are created for each source and defaults to one
 - Downloads: high-performance Xet is enabled, independent repositories run in parallel, files from each repository transfer concurrently through one shared Xet token, short rate-limit retries recover before resumable HTTPS fallback, and integrity checks protect every installed file
 - Linked folders: the batch restoration cache and automatic savers validate and follow only the installer-managed input and output links, avoiding current ComfyUI's external-symlink rejection without allowing arbitrary paths
 - Installer summary: RunPod and Windows setup show the total elapsed installation time at completion
@@ -39,6 +42,6 @@ This repository contains one current, internally consistent package.
 - RunPod defaults to FP8 distilled; full BF16 remains an explicit option
 - RunPod uses `/workspace/hoi4-portrait-runpod/input` and `/workspace/hoi4-portrait-runpod/output`; the input folder includes three Ireland example sources
 - RunPod storage: a 25 GB volume is enough for the default FP8 installation
-- Windows detects the GPU, offers the official ComfyUI portable install when ComfyUI is missing, selects the ROCm-enabled package for AMD, always preselects FP8, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, offers default, ComfyUI, and custom batch input and portrait output paths, installs pinned node packs, and downloads the selected model set
+- Windows detects the GPU, recommends a suitable model, offers the official ComfyUI portable install when ComfyUI is missing, selects the ROCm-enabled package for AMD, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, offers default, ComfyUI, and custom batch input and portrait output paths, installs pinned node packs, and downloads the selected model set
 
 Pinned commits, model revisions, sizes, hashes, and licenses are in [`models.json`](models.json), [`scripts/install_custom_node_packs.py`](scripts/install_custom_node_packs.py), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).

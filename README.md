@@ -4,7 +4,7 @@
 
 Create Hearts of Iron IV-style leader portraits with ComfyUI and the FLUX.2 Klein 9B distilled model plus the project's HOI4 style LoRA. The source workflow keeps the person's crop, pose, framing, and facial identity anchored, restores old photos, and styles three portrait candidates for comparison. The batch workflow turns a whole folder of photos into game-ready portraits in one queue.
 
-The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod and the Windows installer default to FP8; GGUF and full BF16 remain available as optional manual selections. Every workflow saves **HOI4-ready 156×210 DDS files** for a mod's `gfx/leaders/TAG/` folder.
+The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod defaults to FP8, while the Windows installer uses GPU detection to recommend a suitable model; GGUF and full BF16 remain available as manual selections. Every workflow saves **HOI4-ready 156×210 DDS files** for a mod's `gfx/leaders/TAG/` folder.
 
 ## Four workflows
 
@@ -12,22 +12,27 @@ The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod and the W
 | --- | --- | --- |
 | [`hoi4_portrait_source.json`](workflows/hoi4_portrait_source.json) | Identity-preserving portrait from a photo | RealESRGAN → Adonis Base + Post restoration → **three** HOI4 LoRA candidates |
 | [`hoi4_portrait_text_to_image.json`](workflows/hoi4_portrait_text_to_image.json) | Fictional portrait without a photo | One HOI4 LoRA generation from a text prompt |
-| [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | One sampler processes every image in the RunPod `input` folder |
+| [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | Processes every input one by one, with a configurable number of candidates |
 | [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → Adonis Base + Post restoration, no style LoRA |
 
 On RunPod, drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The archive includes example portraits of Éamon de Valera, W. T. Cosgrave, and Seán Lemass. Every workflow saves into:
 
 ```text
-/workspace/hoi4-portrait-runpod/output/1024x1365/     full-res master PNG
-/workspace/hoi4-portrait-runpod/output/156x210/       game-size PNG
-/workspace/hoi4-portrait-runpod/output/156x210/dds/   HOI4-ready DDS
+/workspace/hoi4-portrait-runpod/output/1024x1365/                       full-res master PNG
+/workspace/hoi4-portrait-runpod/output/1024x1365/processed/             prepared source PNG
+/workspace/hoi4-portrait-runpod/output/1024x1365/restored/              restored source PNG
+/workspace/hoi4-portrait-runpod/output/1024x1365/batch_1/               first batch's master PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/batch_1/processed/     first batch's prepared PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/batch_1/restored/      first batch's restored PNGs
+/workspace/hoi4-portrait-runpod/output/156x210/                         game-size PNG
+/workspace/hoi4-portrait-runpod/output/156x210/dds/                     HOI4-ready DDS
 ```
 
 The Windows installer defaults to `Documents\hoi4-portraits\input` and `Documents\hoi4-portraits\output`, with choices for ComfyUI-managed folders or custom paths. Manual and Comfy Cloud installs use the same output subfolders under `ComfyUI/output/hoi4_portraits/`.
 
 The RunPod and Windows installers show the total installation time when they finish.
 
-The PNG and DDS nodes are automatic terminal outputs and safely use the installer-selected portrait output folder on current ComfyUI versions. Image-based workflows keep the source image stem in every saved file; the three source candidates append `_1`, `_2`, and `_3`. For example, `general_macarthur.jpg` produces PNG and DDS names beginning with `general_macarthur_1` for the first candidate. Text-to-image uses `text_to_image` because it has no source file. Numbered counters prevent overwrites, and the batch folder is rescanned on every queue in stable filename order.
+The PNG and DDS nodes are automatic terminal outputs and safely use the installer-selected portrait output folder on current ComfyUI versions. Image-based workflows keep the source image stem in every saved file; the three source candidates append `_1`, `_2`, and `_3`. For example, `general_macarthur.jpg` produces PNG and DDS names beginning with `general_macarthur_1` for the first candidate. Text-to-image uses `text_to_image` because it has no source file. Numbered counters prevent overwrites, and the batch folder is rescanned on every queue in stable filename order. Each batch queue defaults to the next free `batch_1`, `batch_2`, and so on. The batch settings node accepts a custom subfolder, can keep master portraits directly in `1024x1365`, and defaults to one HOI4 candidate per source.
 
 ## Which model do I need?
 
@@ -44,7 +49,7 @@ Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, six HOI4 style LoRA checkp
 The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest) contains:
 
 - a model-free ZIP for manual installs;
-- a **Windows x64 installer wizard** that detects the GPU, offers to install the official ComfyUI portable package when ComfyUI is missing, uses the ROCm package for AMD GPUs, pre-checks FP8, lets you pick any model combination, and installs the workflows, custom nodes, and models;
+- a **Windows x64 installer wizard** that detects the GPU, recommends a suitable model, offers to install the official ComfyUI portable package when ComfyUI is missing, uses the ROCm package for AMD GPUs, lets you pick any model combination, and installs the workflows, custom nodes, and models;
 - a **RunPod runtime archive** whose command defaults to FP8 and accepts `--variant full|fp8|gguf` plus `--gguf-quants`.
 
 ## Fastest start
@@ -55,7 +60,7 @@ The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releas
 .\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe
 ```
 
-Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard detect your GPU and pre-check FP8. If it cannot find ComfyUI, it asks whether to install the official Windows portable package automatically; an AMD detection selects the ROCm-enabled package. You can decline and provide an existing ComfyUI path. The wizard also lets you choose the batch input and portrait output folders, which default to the local `Documents\hoi4-portraits` workspace. It installs the node packs, copies the workflows and example inputs, and downloads the models. After restarting ComfyUI, open **Workflows → hoi4_portraits** and queue.
+Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard detect your GPU and recommend a suitable model. If it cannot find ComfyUI, it asks whether to install the official Windows portable package automatically; an AMD detection selects the ROCm-enabled package. You can decline and provide an existing ComfyUI path. The wizard also lets you choose the batch input and portrait output folders, which default to the local `Documents\hoi4-portraits` workspace. It installs the node packs, copies the workflows and example inputs, and downloads the models. After restarting ComfyUI, open **Workflows → hoi4_portraits** and queue.
 
 ### RunPod
 
@@ -105,7 +110,7 @@ The workflow is arranged from left to right in clear, colour-coded stages.
 1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then compare the prepared result below. The upload node already shows the source, so there is no duplicate preview.
 2. **Restoration:** the restoration group fully expands the current upstream [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json). It keeps the upstream 1.7 MP Lanczos crop, reference conditioning, shared empty latent, fixed seed, nine-step control, and Shark options. The detailed source-neutral prompts remove JPEG and compression artifacts, halftone patterns, repeating noise, scratches, dust, scan defects, and blur where present; recover natural skin, hair, fabric, object, and background detail; preserve identity and composition; and retain monochrome, sepia, or colour treatment. Adonis Base performs the first generation; its latent feeds both Post reference branches, and Adonis Post performs a second full generation before the final VAE decode. One red **Use Adonis restoration** switch defaults on; turn it off to send the prepared portrait directly to the next stage. When the input and restoration settings are unchanged, the workflow reuses the completed Adonis result.
 3. **Style:** three independent candidates use the selected HOI4 style LoRA. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and fixed seeds for checkpoint comparisons. The installers include the 1750, 2000, 2250, 2500, 2750, and 3000-step LoRAs; the workflow keeps 2500 selected until a final checkpoint is chosen.
-4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three full-resolution finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS.
+4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three full-resolution finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS. The prepared and restored 1024×1365 portraits are also saved in `processed` and `restored` folders.
 
 The other three workflow canvases use the same stage colors and controls:
 

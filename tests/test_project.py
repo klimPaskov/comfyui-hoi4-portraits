@@ -37,7 +37,7 @@ class WorkflowTests(unittest.TestCase):
     def test_structural_layout_and_policy_validation_pass(self) -> None:
         result = validate_workflows.validate_all(ROOT)
         self.assertEqual(result["status"], "PASS", "\n".join(result["errors"]))
-        self.assertEqual({item["nodes"] for item in result["workflows"]}, {78, 21, 43, 52})
+        self.assertEqual({item["nodes"] for item in result["workflows"]}, {82, 21, 45, 56})
 
     def test_every_node_stays_visible_inside_expanded_canvas_groups(self) -> None:
         for workflow_id in build_workflows.BUILDERS:
@@ -105,6 +105,9 @@ class WorkflowTests(unittest.TestCase):
         ]
         self.assertEqual(len(previews), 5)
         self.assertTrue(all(node["size"] == [600, 810] for node in previews))
+        source_loader = next(node for node in ui["nodes"] if node["type"] == "Hoi4LoadImage")
+        self.assertEqual(source_loader["pos"], [860, 100])
+        self.assertEqual(source_loader["size"], [712, 920])
         titles = {node["title"] for node in previews}
         self.assertTrue({"Prepared portrait", "Restored portrait"}.issubset(titles))
         self.assertEqual(sum(title.startswith("Portrait ") for title in titles), 3)
@@ -116,7 +119,7 @@ class WorkflowTests(unittest.TestCase):
         }
         self.assertEqual({bounding[1] for bounding in stage_groups.values()}, {40})
         self.assertEqual({bounding[3] for bounding in stage_groups.values()}, {1520})
-        masters = [node for node in api.values() if node["class_type"] == "ImageScale" and "master" in node["_meta"]["title"]]
+        masters = [node for node in api.values() if node["class_type"] == "ImageScale" and node["_meta"]["title"].startswith("Portrait") and "master" in node["_meta"]["title"]]
         games = [node for node in api.values() if node["class_type"] == "ImageScale" and "game" in node["_meta"]["title"]]
         self.assertEqual(len(masters), 3)
         self.assertEqual(len(games), 3)
@@ -125,6 +128,12 @@ class WorkflowTests(unittest.TestCase):
         dds = [node for node in api.values() if node["class_type"] == "Hoi4SaveDDS"]
         self.assertEqual(len(dds), 3)
         self.assertTrue(all(node["inputs"]["format"] == "argb8888" for node in dds))
+        stage_savers = {
+            node["_meta"]["title"]: node["inputs"]["filename_prefix"][1]
+            for node in api.values()
+            if node["class_type"] == "Hoi4SavePNG" and node["_meta"]["title"] in {"Save prepared portrait", "Save restored portrait"}
+        }
+        self.assertEqual(stage_savers, {"Save prepared portrait": 3, "Save restored portrait": 4})
         background_id, background = next((node_id, node) for node_id, node in api.items() if node["class_type"] == "Hoi4BackgroundReplace")
         self.assertEqual(api[background["inputs"]["image"][0]]["class_type"], "ImageBatch")
         extracts = [node for node in api.values() if node["class_type"] == "ImageFromBatch"]
@@ -187,15 +196,25 @@ class WorkflowTests(unittest.TestCase):
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.json").read_text())
         self.assertEqual(sum(node["class_type"] == "Hoi4BatchInput" for node in api.values()), 1)
         self.assertEqual(sum(node["class_type"] == "KSampler" for node in api.values()), 1)
-        self.assertEqual(sum(node["class_type"] == "Hoi4SavePNG" for node in api.values()), 2)
+        self.assertEqual(sum(node["class_type"] == "RepeatLatentBatch" for node in api.values()), 1)
+        candidate_node_id, candidate_node = next(
+            (node_id, node) for node_id, node in api.items()
+            if node["class_type"] == "RepeatLatentBatch"
+        )
+        self.assertEqual(candidate_node["inputs"]["amount"], 1)
+        sampler = next(node for node in api.values() if node["class_type"] == "KSampler")
+        self.assertEqual(sampler["inputs"]["latent_image"], [candidate_node_id, 0])
+        self.assertEqual(sum(node["class_type"] == "Hoi4SavePNG" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "Hoi4SaveDDS" for node in api.values()), 1)
         filename_node_id, filename_node = next(
             (node_id, node) for node_id, node in api.items()
-            if node["class_type"] == "Hoi4OutputFilename"
+            if node["class_type"] == "Hoi4BatchOutputFilename"
         )
-        self.assertEqual(api[filename_node["inputs"]["source_filename"][0]]["class_type"], "Hoi4BatchInput")
+        self.assertEqual(api[filename_node["inputs"]["source_filenames"][0]]["class_type"], "Hoi4BatchInput")
+        self.assertEqual(filename_node["inputs"]["custom_subfolder"], "")
+        self.assertIs(filename_node["inputs"]["save_without_batch_folder"], False)
         prefixes = [node["inputs"]["filename_prefix"] for node in api.values() if node["class_type"] in {"Hoi4SavePNG", "Hoi4SaveDDS"}]
-        self.assertEqual({tuple(prefix) for prefix in prefixes}, {(filename_node_id, 0), (filename_node_id, 1), (filename_node_id, 2)})
+        self.assertEqual({tuple(prefix) for prefix in prefixes}, {(filename_node_id, index) for index in range(5)})
         for node in api.values():
             if node["class_type"] not in {"Hoi4SavePNG", "Hoi4SaveDDS"}:
                 continue
@@ -209,18 +228,15 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(save_group["bounding"][0] - (create_group["bounding"][0] + create_group["bounding"][2]), 80)
 
     def test_every_workflow_uses_input_aware_output_names(self) -> None:
-        expected_sources = {
-            "hoi4_portrait_source": "Hoi4LoadImage",
-            "hoi4_portrait_batch": "Hoi4BatchInput",
-            "hoi4_portrait_processing_only": "Hoi4LoadImage",
-        }
+        expected_sources = {"hoi4_portrait_source": "Hoi4LoadImage", "hoi4_portrait_processing_only": "Hoi4LoadImage"}
         for workflow_id in build_workflows.BUILDERS:
             api = json.loads((WORKFLOW_DIR / f"{workflow_id}.api.json").read_text())
             filename_nodes = {
                 node_id: node for node_id, node in api.items()
                 if node["class_type"] == "Hoi4OutputFilename"
             }
-            self.assertEqual(len(filename_nodes), 3 if workflow_id == "hoi4_portrait_source" else 1)
+            expected_count = 4 if workflow_id == "hoi4_portrait_source" else 0 if workflow_id == "hoi4_portrait_batch" else 1
+            self.assertEqual(len(filename_nodes), expected_count)
             for node in filename_nodes.values():
                 source_filename = node["inputs"]["source_filename"]
                 if workflow_id == "hoi4_portrait_text_to_image":
@@ -228,9 +244,19 @@ class WorkflowTests(unittest.TestCase):
                 else:
                     self.assertEqual(source_filename[1], 2)
                     self.assertEqual(api[source_filename[0]]["class_type"], expected_sources[workflow_id])
+            batch_filename_nodes = {
+                node_id: node for node_id, node in api.items()
+                if node["class_type"] == "Hoi4BatchOutputFilename"
+            }
+            if workflow_id == "hoi4_portrait_batch":
+                self.assertEqual(len(batch_filename_nodes), 1)
+                batch_filename = next(iter(batch_filename_nodes.values()))
+                source = batch_filename["inputs"]["source_filenames"]
+                self.assertEqual(source[1], 2)
+                self.assertEqual(api[source[0]]["class_type"], "Hoi4BatchInput")
             for saver in (node for node in api.values() if node["class_type"] in {"Hoi4SavePNG", "Hoi4SaveDDS"}):
                 prefix = saver["inputs"]["filename_prefix"]
-                self.assertIn(prefix[0], filename_nodes)
+                self.assertIn(prefix[0], filename_nodes | batch_filename_nodes)
 
 
 class InstallerTests(unittest.TestCase):
@@ -255,6 +281,8 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue((comfy_root / "input/source_portrait.jpg").is_file())
             self.assertTrue((comfy_root / "input/hoi4_leader_portrait_background.png").is_file())
             self.assertTrue((comfy_root / "input/hoi4_portraits_batch").is_dir())
+            self.assertTrue((comfy_root / "output/hoi4_portraits/1024x1365/processed").is_dir())
+            self.assertTrue((comfy_root / "output/hoi4_portraits/1024x1365/restored").is_dir())
             self.assertTrue((comfy_root / "output/hoi4_portraits/156x210/dds").is_dir())
 
     @unittest.skipIf(sys.platform == "win32", "directory symlinks require elevated Windows privileges")
@@ -274,6 +302,8 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue((comfy_root / "output/hoi4_portraits").is_symlink())
             self.assertEqual((runtime_root / "input/existing.jpg").read_bytes(), b"existing")
             self.assertEqual((runtime_root / "output/156x210/dds/existing.dds").read_bytes(), b"existing")
+            self.assertTrue((runtime_root / "output/1024x1365/processed").is_dir())
+            self.assertTrue((runtime_root / "output/1024x1365/restored").is_dir())
 
     def test_every_variant_install_keeps_all_nine_loras(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())
@@ -547,8 +577,39 @@ class CustomNodeTests(unittest.TestCase):
                     "hoi4_portraits/1024x1365/My General.Portrait_2",
                     "hoi4_portraits/156x210/My General.Portrait_2",
                     "hoi4_portraits/156x210/dds/My General.Portrait_2",
+                    "hoi4_portraits/1024x1365/processed/My General.Portrait_2",
+                    "hoi4_portraits/1024x1365/restored/My General.Portrait_2",
                 ),
             )
+
+    def test_batch_output_uses_numbered_custom_and_flat_master_folders(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            module = self._load_module(root)
+            node = module.Hoi4BatchOutputFilename()
+            sources = ["hoi4_portraits_batch/one.jpg", "hoi4_portraits_batch/two.png"]
+
+            first = node.build(sources, [""], [False])
+            second = node.build(sources, [""], [False])
+            custom = node.build(sources, ["leaders"], [False])
+            flat = node.build(sources, ["ignored"], [True])
+
+            self.assertEqual(first[0], [
+                "hoi4_portraits/1024x1365/batch_1/one",
+                "hoi4_portraits/1024x1365/batch_1/two",
+            ])
+            self.assertTrue(all("/batch_2/" in prefix for prefix in second[0]))
+            self.assertEqual(custom[3][0], "hoi4_portraits/1024x1365/leaders/processed/one")
+            self.assertEqual(custom[4][0], "hoi4_portraits/1024x1365/leaders/restored/one")
+            self.assertEqual(flat[0][0], "hoi4_portraits/1024x1365/one")
+            self.assertEqual(flat[3][0], "hoi4_portraits/1024x1365/processed/one")
+            self.assertEqual(flat[4][0], "hoi4_portraits/1024x1365/restored/one")
+            self.assertEqual(first[1][0], "hoi4_portraits/156x210/one")
+            self.assertEqual(first[2][0], "hoi4_portraits/156x210/dds/one")
+            self.assertTrue(module.Hoi4BatchOutputFilename.INPUT_IS_LIST)
+            self.assertTrue(math.isnan(module.Hoi4BatchOutputFilename.IS_CHANGED(sources, [""], [False])))
+            with self.assertRaises(ValueError):
+                node.build(sources, ["../outside"], [False])
 
     def test_restoration_cache_skips_lazy_adonis_input_for_an_unchanged_source(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -693,6 +754,7 @@ class CustomNodeTests(unittest.TestCase):
         self.assertNotIn("Hoi4PortraitSampler", source)
         self.assertIn('"Hoi4SetupGuide": Hoi4SetupGuide', source)
         self.assertIn('"Hoi4BackgroundReplace": Hoi4BackgroundReplace', source)
+        self.assertIn('"Hoi4BatchOutputFilename": Hoi4BatchOutputFilename', source)
         self.assertIn('"Hoi4RestorationCache": Hoi4RestorationCache', source)
 
 

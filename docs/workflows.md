@@ -15,6 +15,8 @@ The main visible controls are:
 | `HOI4 Optional Background Replacement` | One optional BiRefNet background-replacement operation; sizing remains separate |
 | `HOI4 Batch Input Folder` | List output that executes one source at a time |
 | `Keep Input Filename` | Carries each source image stem into every PNG and DDS saver |
+| `Batch Output Folders` | Chooses the next numbered batch folder, a custom folder, or direct master saves |
+| `Number of portrait candidates` | Creates the selected number of final HOI4 portraits per batch source; defaults to one |
 | `Save Portrait PNG` | Automatically writes the master or game-size PNG to the selected output folder |
 | `HOI4 Save DDS` | HOI4-ready 156×210 portrait DDS |
 
@@ -44,14 +46,14 @@ The shared Adonis prompt keeps the original broadly useful restoration detail: `
 
 ## Source workflow
 
-The source canvas has 78 nodes in seven groups:
+The source canvas has 82 nodes in seven groups:
 
 1. one narrow setup card with model folders and clickable downloads;
 2. source loader, face detection, subject mask, focused crop controls, and RealESRGAN—the upload card itself already shows the source;
 3. six model/LoRA loaders below the green preparation group;
 4. the complete Adonis Base → Post restoration path and its single red toggle;
 5. three style samplers, one shared background switch, and separate output sizing;
-6. PNG and DDS saves for every portrait;
+6. PNG and DDS saves for every portrait, plus prepared and restored 1024×1365 PNGs;
 7. a compact portrait-ratio comparison row containing RealESRGAN, Adonis, and the three final full-resolution portraits.
 
 Every source sampler uses the exact prompt:
@@ -72,20 +74,25 @@ hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wear
 
 ## Processing-only workflow
 
-This 43-node graph includes source preparation and the entire Adonis topology. It does not load the style LoRA. RealESRGAN, restored, and the full-resolution final portrait appear together in the comparison row.
+This 45-node graph includes source preparation and the entire Adonis topology. It does not load the style LoRA. RealESRGAN, restored, and the full-resolution final portrait appear together in the comparison row, and the prepared and restored 1024×1365 files are saved separately.
 
 ## Batch workflow
 
-This 52-node graph reads compatible images from `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, and `ComfyUI/input/hoi4_portraits_batch/` on manual installations. The installers place three Ireland example sources in the input folder. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. There is one standard sampler and one set of automatic final saves. The create and save stages use separate colour-consistent groups, and the three comparison previews are centered with equal spacing.
+This 56-node graph reads compatible images from `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, and `ComfyUI/input/hoi4_portraits_batch/` on manual installations. The installers place three Ireland example sources in the input folder. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. **Number of portrait candidates** defaults to one and repeats the source latent before the standard sampler. Each queue reserves the next `1024x1365/batch_N/` folder unless a custom name is supplied. Enabling **save without batch folder** keeps final masters directly in `1024x1365/`; the checkbox is disabled by default. Prepared and restored portraits use `processed/` and `restored/` inside the selected master folder. The three comparison previews remain centered with equal spacing.
 
 ## Output contract
 
 On RunPod, all workflows save to:
 
 ```text
-/workspace/hoi4-portrait-runpod/output/1024x1365/     master PNG
-/workspace/hoi4-portrait-runpod/output/156x210/       centered game PNG
-/workspace/hoi4-portrait-runpod/output/156x210/dds/   HOI4-ready DDS
+/workspace/hoi4-portrait-runpod/output/1024x1365/                       master PNG
+/workspace/hoi4-portrait-runpod/output/1024x1365/processed/             prepared PNG
+/workspace/hoi4-portrait-runpod/output/1024x1365/restored/              restored PNG
+/workspace/hoi4-portrait-runpod/output/1024x1365/batch_N/               batch master PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/batch_N/processed/     batch prepared PNGs
+/workspace/hoi4-portrait-runpod/output/1024x1365/batch_N/restored/      batch restored PNGs
+/workspace/hoi4-portrait-runpod/output/156x210/                         centered game PNG
+/workspace/hoi4-portrait-runpod/output/156x210/dds/                     HOI4-ready DDS
 ```
 
 Windows uses the output folder selected during installation. Manual and Comfy Cloud installations use `ComfyUI/output/hoi4_portraits/1024x1365/`, `ComfyUI/output/hoi4_portraits/156x210/`, and `ComfyUI/output/hoi4_portraits/156x210/dds/`.

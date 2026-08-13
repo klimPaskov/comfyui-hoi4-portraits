@@ -520,6 +520,16 @@
           "links": [
             18
           ]
+        },
+        {
+          "name": "processed_png",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "restored_png",
+          "type": "STRING",
+          "links": null
         }
       ],
       "properties": {

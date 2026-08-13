@@ -23,18 +23,26 @@ YUNET_MODEL = "face_detection_yunet_2023mar.onnx"
 WEB_DIRECTORY = "./web"
 
 
-def _output_filename_prefixes(source_filename: str, suffix: str = "") -> tuple[str, str, str]:
-    """Build safe output paths while preserving the input image stem."""
+def _safe_output_name(source_filename: str, suffix: str = "") -> str:
+    """Build one filesystem-safe output name from an input image."""
 
     basename = str(source_filename).replace("\\", "/").rsplit("/", 1)[-1]
     stem = Path(basename).stem.strip() or "portrait"
     safe_stem = re.sub(r'[\x00-\x1f<>:"/\\|?*]', "_", stem)
     safe_suffix = re.sub(r'[\x00-\x1f<>:"/\\|?*]', "_", str(suffix).strip())
-    output_name = f"{safe_stem}{safe_suffix}"
+    return f"{safe_stem}{safe_suffix}"
+
+
+def _output_filename_prefixes(source_filename: str, suffix: str = "") -> tuple[str, str, str, str, str]:
+    """Build safe output paths while preserving the input image stem."""
+
+    output_name = _safe_output_name(source_filename, suffix)
     return (
         f"hoi4_portraits/1024x1365/{output_name}",
         f"hoi4_portraits/156x210/{output_name}",
         f"hoi4_portraits/156x210/dds/{output_name}",
+        f"hoi4_portraits/1024x1365/processed/{output_name}",
+        f"hoi4_portraits/1024x1365/restored/{output_name}",
     )
 
 
@@ -86,6 +94,46 @@ def _next_output_counter(target_folder: Path, filename: str, extension: str) -> 
     pattern = re.compile(rf"^{re.escape(filename)}_(\d{{5}}){re.escape(extension)}$", re.IGNORECASE)
     counters = [int(match.group(1)) for path in target_folder.iterdir() if (match := pattern.match(path.name))]
     return max(counters, default=0) + 1
+
+
+def _single_list_value(value: Any, default: Any) -> Any:
+    if isinstance(value, (list, tuple)):
+        return value[0] if value else default
+    return value
+
+
+def _batch_output_subfolder(custom_subfolder: Any, save_without_batch_folder: Any) -> str:
+    """Reserve the next batch folder, or validate a user-supplied folder name."""
+
+    if bool(_single_list_value(save_without_batch_folder, False)):
+        return ""
+    custom = str(_single_list_value(custom_subfolder, "")).strip()
+    if custom:
+        if (
+            custom in {".", ".."}
+            or Path(custom).name != custom
+            or "/" in custom
+            or "\\" in custom
+            or re.search(r'[\x00-\x1f<>:"|?*]', custom)
+        ):
+            raise ValueError("Custom batch subfolder must be one valid folder name.")
+        _safe_output_prefix(f"hoi4_portraits/1024x1365/{custom}/portrait")
+        return custom
+
+    master_root, _ = _safe_output_prefix("hoi4_portraits/1024x1365/portrait")
+    numbers = [
+        int(match.group(1))
+        for path in master_root.iterdir()
+        if path.is_dir() and (match := re.fullmatch(r"batch_(\d+)", path.name, re.IGNORECASE))
+    ]
+    number = max(numbers, default=0) + 1
+    while True:
+        folder = master_root / f"batch_{number}"
+        try:
+            folder.mkdir()
+            return folder.name
+        except FileExistsError:
+            number += 1
 
 
 def _tensor_to_pil(tensor: torch.Tensor) -> Image.Image:
@@ -632,7 +680,7 @@ class Hoi4BatchInput:
 
 
 class Hoi4OutputFilename:
-    """Keep the source image stem across master PNG, game PNG, and DDS saves."""
+    """Keep the source image stem across final, processed, and restored saves."""
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -643,14 +691,63 @@ class Hoi4OutputFilename:
             }
         }
 
-    RETURN_TYPES = ("STRING", "STRING", "STRING")
-    RETURN_NAMES = ("master_png", "game_png", "game_dds")
+    RETURN_TYPES = ("STRING", "STRING", "STRING", "STRING", "STRING")
+    RETURN_NAMES = ("master_png", "game_png", "game_dds", "processed_png", "restored_png")
     FUNCTION = "build"
     CATEGORY = "HOI4 portraits/output"
     DESCRIPTION = "Preserve the input image name in every automatic output."
 
     def build(self, source_filename, suffix=""):
         return _output_filename_prefixes(source_filename, suffix)
+
+
+class Hoi4BatchOutputFilename:
+    """Choose one numbered batch folder and build every source-aware output path."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "source_filenames": ("STRING", {"forceInput": True}),
+                "custom_subfolder": ("STRING", {"default": ""}),
+                "save_without_batch_folder": ("BOOLEAN", {"default": False}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING", "STRING", "STRING", "STRING", "STRING")
+    RETURN_NAMES = ("master_png", "game_png", "game_dds", "processed_png", "restored_png")
+    OUTPUT_IS_LIST = (True, True, True, True, True)
+    INPUT_IS_LIST = True
+    FUNCTION = "build"
+    CATEGORY = "HOI4 portraits/output"
+    DESCRIPTION = "Leave the folder blank for batch_1, batch_2, and so on, or enter your own folder name."
+
+    @classmethod
+    def IS_CHANGED(cls, source_filenames, custom_subfolder, save_without_batch_folder):
+        # A blank folder creates a new batch_N directory on every queue.
+        return float("nan")
+
+    def build(self, source_filenames, custom_subfolder, save_without_batch_folder):
+        sources = [str(item) for item in source_filenames]
+        if not sources:
+            raise ValueError("Batch output needs at least one source filename.")
+        subfolder = _batch_output_subfolder(custom_subfolder, save_without_batch_folder)
+        master_root = "hoi4_portraits/1024x1365"
+        if subfolder:
+            master_root = f"{master_root}/{subfolder}"
+        masters: list[str] = []
+        games: list[str] = []
+        dds: list[str] = []
+        processed: list[str] = []
+        restored: list[str] = []
+        for source in sources:
+            output_name = _safe_output_name(source)
+            masters.append(f"{master_root}/{output_name}")
+            games.append(f"hoi4_portraits/156x210/{output_name}")
+            dds.append(f"hoi4_portraits/156x210/dds/{output_name}")
+            processed.append(f"{master_root}/processed/{output_name}")
+            restored.append(f"{master_root}/restored/{output_name}")
+        return masters, games, dds, processed, restored
 
 
 class Hoi4RestorationCache:
@@ -851,6 +948,7 @@ NODE_CLASS_MAPPINGS = {
     "Hoi4LoadImage": Hoi4LoadImage,
     "Hoi4BatchInput": Hoi4BatchInput,
     "Hoi4OutputFilename": Hoi4OutputFilename,
+    "Hoi4BatchOutputFilename": Hoi4BatchOutputFilename,
     "Hoi4RestorationCache": Hoi4RestorationCache,
     "Hoi4SavePNG": Hoi4SavePNG,
     "Hoi4SaveDDS": Hoi4SaveDDS,
@@ -863,6 +961,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Hoi4LoadImage": "HOI4 Portrait Upload",
     "Hoi4BatchInput": "HOI4 Batch Input Folder",
     "Hoi4OutputFilename": "Keep Input Filename",
+    "Hoi4BatchOutputFilename": "Batch Output Folders",
     "Hoi4RestorationCache": "Reuse Restored Portrait",
     "Hoi4SavePNG": "Save Portrait PNG",
     "Hoi4SaveDDS": "HOI4 Save DDS Portrait (156x210)",

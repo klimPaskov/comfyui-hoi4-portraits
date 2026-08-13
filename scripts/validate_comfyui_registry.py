@@ -27,6 +27,7 @@ ALWAYS_REQUIRED = {
     "Hoi4BackgroundReplace",
     "Hoi4LoadImage",
     "Hoi4OutputFilename",
+    "Hoi4BatchOutputFilename",
     "Hoi4RestorationCache",
     "Hoi4SavePNG",
     "Hoi4SaveDDS",

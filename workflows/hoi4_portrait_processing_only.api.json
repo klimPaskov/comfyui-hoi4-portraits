@@ -624,6 +624,38 @@
   },
   "41": {
     "inputs": {
+      "filename_prefix": [
+        "37",
+        3
+      ],
+      "images": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "Hoi4SavePNG",
+    "_meta": {
+      "title": "Save prepared portrait"
+    }
+  },
+  "42": {
+    "inputs": {
+      "filename_prefix": [
+        "37",
+        4
+      ],
+      "images": [
+        "35",
+        0
+      ]
+    },
+    "class_type": "Hoi4SavePNG",
+    "_meta": {
+      "title": "Save restored portrait"
+    }
+  },
+  "43": {
+    "inputs": {
       "images": [
         "10",
         0
@@ -634,7 +666,7 @@
       "title": "Prepared portrait"
     }
   },
-  "42": {
+  "44": {
     "inputs": {
       "images": [
         "34",
@@ -646,7 +678,7 @@
       "title": "Restored portrait"
     }
   },
-  "43": {
+  "45": {
     "inputs": {
       "images": [
         "35",

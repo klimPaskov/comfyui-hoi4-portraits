@@ -68,7 +68,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-Drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The archive supplies example portraits of Éamon de Valera, W. T. Cosgrave, and Seán Lemass. Master PNGs, game PNGs, and DDS files are written below `/workspace/hoi4-portrait-runpod/output/` in the `1024x1365`, `156x210`, and `156x210/dds` subfolders.
+Drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. The archive supplies example portraits of Éamon de Valera, W. T. Cosgrave, and Seán Lemass. Each queue creates the next `1024x1365/batch_N` folder for master PNGs, prepared PNGs, and restored PNGs. Game PNGs and DDS files use `156x210` and `156x210/dds`. The workflow also supports a custom batch subfolder or direct master saves in `1024x1365`.
 
 The command defaults to **FP8**, and a **25 GB RunPod volume is enough** for that default installation. Use a larger volume if you plan to retain many generated outputs. Select full BF16 explicitly on a larger GPU or pass a GGUF variant and quantization on a smaller GPU:
 

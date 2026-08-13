@@ -45,6 +45,7 @@ ALLOWED_NODES = {
     "VAEDecode",
     "FluxGuidance",
     "KSampler",
+    "RepeatLatentBatch",
     "ComfySwitchNode",
     "Hoi4SetupGuide",
     "Hoi4BackgroundReplace",
@@ -53,6 +54,7 @@ ALLOWED_NODES = {
     "ImageFromBatch",
     "Hoi4BatchInput",
     "Hoi4OutputFilename",
+    "Hoi4BatchOutputFilename",
     "Hoi4RestorationCache",
     "Hoi4SavePNG",
     "Hoi4SaveDDS",
@@ -204,7 +206,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     compact_limits = {
         WORKFLOW_IDS[0]: (10000, 2750),
         WORKFLOW_IDS[1]: (5060, 1630),
-        WORKFLOW_IDS[2]: (8420, 1720),
+        WORKFLOW_IDS[2]: (9000, 1720),
         WORKFLOW_IDS[3]: (7100, 1700),
     }
     if ui.get("groups") and workflow_id in compact_limits:
@@ -256,15 +258,18 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
     expected_loras = 1 if is_text else 2 if is_processing else 3
     if counts.get("LoraLoaderModelOnly", 0) != expected_loras:
         errors.append(f"{path}: expected {expected_loras} separately visible LoRA loaders")
-    expected_png_savers = 6 if is_source else 2
+    expected_png_savers = 8 if is_source else 2 if is_text else 4
     expected_dds_savers = 3 if is_source else 1
     if counts.get("Hoi4SavePNG", 0) != expected_png_savers:
         errors.append(f"{path}: expected {expected_png_savers} automatic PNG saver(s)")
     if counts.get("Hoi4SaveDDS", 0) != expected_dds_savers:
         errors.append(f"{path}: expected {expected_dds_savers} automatic DDS saver(s)")
-    expected_filename_nodes = 3 if is_source else 1
+    expected_filename_nodes = 4 if is_source else 0 if is_batch else 1
     if counts.get("Hoi4OutputFilename", 0) != expected_filename_nodes:
         errors.append(f"{path}: expected {expected_filename_nodes} input-aware filename node(s)")
+    expected_batch_filename_nodes = 1 if is_batch else 0
+    if counts.get("Hoi4BatchOutputFilename", 0) != expected_batch_filename_nodes:
+        errors.append(f"{path}: expected {expected_batch_filename_nodes} batch folder node(s)")
     expected_source_loaders = 1 if is_source or is_processing else 0
     if counts.get("Hoi4LoadImage", 0) != expected_source_loaders:
         errors.append(f"{path}: expected {expected_source_loaders} filename-aware source loader(s)")
@@ -277,7 +282,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         prefix_link = inputs.get("filename_prefix")
         prefix_source = api.get(prefix_link[0], {}) if isinstance(prefix_link, list) and prefix_link else {}
         prefix_slot = prefix_link[1] if isinstance(prefix_link, list) and len(prefix_link) == 2 else -1
-        if prefix_source.get("class_type") != "Hoi4OutputFilename" or prefix_slot not in {0, 1, 2}:
+        if prefix_source.get("class_type") not in {"Hoi4OutputFilename", "Hoi4BatchOutputFilename"} or prefix_slot not in {0, 1, 2, 3, 4}:
             errors.append(f"{path}: automatic saver must receive an input-aware filename prefix")
         else:
             save_prefixes.append((prefix_link[0], prefix_slot))
@@ -287,7 +292,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
             errors.append(f"{path}: automatic saver must receive a sized portrait")
             continue
         source_inputs = source.get("inputs", {})
-        expected_size = (1024, 1365) if prefix_slot == 0 else (156, 210)
+        expected_size = (1024, 1365) if prefix_slot in {0, 3, 4} else (156, 210)
         actual_size = (source_inputs.get("width"), source_inputs.get("height"))
         if actual_size != expected_size:
             errors.append(f"{path}: automatic saver receives {actual_size}, expected {expected_size}")
@@ -295,7 +300,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: automatic save prefixes must be unique")
 
     filename_nodes = [node for node in api.values() if node.get("class_type") == "Hoi4OutputFilename"]
-    expected_filename_source = "Hoi4BatchInput" if is_batch else "Hoi4LoadImage"
+    expected_filename_source = "Hoi4LoadImage"
     for node in filename_nodes:
         source_filename = node.get("inputs", {}).get("source_filename")
         if is_text:
@@ -306,8 +311,19 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         filename_slot = source_filename[1] if isinstance(source_filename, list) and len(source_filename) == 2 else -1
         if filename_source.get("class_type") != expected_filename_source or filename_slot != 2:
             errors.append(f"{path}: output filenames must come from each input image")
+    batch_filename_nodes = [node for node in api.values() if node.get("class_type") == "Hoi4BatchOutputFilename"]
+    for node in batch_filename_nodes:
+        source_filenames = node.get("inputs", {}).get("source_filenames")
+        filename_source = api.get(source_filenames[0], {}) if isinstance(source_filenames, list) and source_filenames else {}
+        filename_slot = source_filenames[1] if isinstance(source_filenames, list) and len(source_filenames) == 2 else -1
+        if filename_source.get("class_type") != "Hoi4BatchInput" or filename_slot != 2:
+            errors.append(f"{path}: batch output folders must receive the full source filename list")
+        if node.get("inputs", {}).get("custom_subfolder") != "" or node.get("inputs", {}).get("save_without_batch_folder") is not False:
+            errors.append(f"{path}: numbered batch folders must be enabled by default")
     if is_batch and counts.get("Hoi4BatchInput", 0) != 1:
         errors.append(f"{path}: batch workflow needs one list-output input card")
+    if counts.get("RepeatLatentBatch", 0) != (1 if is_batch else 0):
+        errors.append(f"{path}: batch workflow needs one visible candidate-count control")
     if is_source:
         source_comparison = [
             node for node in ui.get("nodes", [])
@@ -449,6 +465,13 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
                     errors.append(f"{path}: sampler {key} must default to {expected!r}")
             if any(not isinstance(inputs.get(name), list) for name in ("model", "positive", "negative", "latent_image")):
                 errors.append(f"{path}: standard sampler inputs must remain visibly connected")
+        elif class_type == "RepeatLatentBatch":
+            if not is_batch or inputs.get("amount") != 1:
+                errors.append(f"{path}: batch candidate count must default to one")
+            source = inputs.get("samples")
+            source_node = api.get(source[0], {}) if isinstance(source, list) and source else {}
+            if source_node.get("class_type") != "VAEEncode":
+                errors.append(f"{path}: batch candidates must repeat the encoded source latent")
         elif class_type == "FluxGuidance" and inputs.get("guidance") != 1.0:
             errors.append(f"{path}: FLUX guidance must default to 1.0")
         elif class_type == "ImageScaleToTotalPixelsX":

@@ -82,7 +82,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("provide --runtime-root or both --input-dir and --output-dir")
     input_dir = args.input_dir.expanduser().resolve() if args.input_dir else runtime_root / "input"
     output_dir = args.output_dir.expanduser().resolve() if args.output_dir else runtime_root / "output"
-    for relative in ("1024x1365", "156x210", "156x210/dds"):
+    for relative in ("1024x1365", "1024x1365/processed", "1024x1365/restored", "156x210", "156x210/dds"):
         (output_dir / relative).mkdir(parents=True, exist_ok=True)
     _link_directory(comfy_root / "input" / "hoi4_portraits_batch", input_dir)
     _link_directory(comfy_root / "output" / "hoi4_portraits", output_dir)
