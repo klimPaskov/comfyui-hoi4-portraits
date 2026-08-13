@@ -18,6 +18,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 RETRY_DELAYS_SECONDS = (15, 30, 60, 120, 120, 120)
+XET_MIN_SIZE_BYTES = 64 * 1024 * 1024
 
 # Give accelerated Hugging Face/Xet transfers enough time on large model files.
 # Repository-aware scheduling below prevents files in one repository from
@@ -52,6 +53,53 @@ def _verify(path: Path, entry: dict[str, Any]) -> bool:
     )
 
 
+def _download_from_hub(entry: dict[str, Any], destination: Path, token: str | None) -> Path | None:
+    try:
+        from huggingface_hub import hf_hub_download
+    except ImportError:
+        return None
+    marker = f"/resolve/{entry['revision']}/"
+    remote_filename = entry["url"].split(marker, 1)[1]
+    try:
+        return Path(
+            hf_hub_download(
+                repo_id=entry["source"],
+                filename=remote_filename,
+                revision=entry["revision"],
+                token=token,
+                local_dir=destination.parent,
+            )
+        )
+    except Exception as exc:
+        raise RuntimeError(f"accelerated Xet download failed for {entry['filename']}: {exc}") from exc
+
+
+def _download_via_http(entry: dict[str, Any], destination: Path, headers: dict[str, str]) -> None:
+    partial = destination.with_name(f".{destination.name}.part")
+    offset = partial.stat().st_size if partial.exists() else 0
+    request_headers = dict(headers)
+    if offset:
+        request_headers["Range"] = f"bytes={offset}-"
+    request = urllib.request.Request(entry["url"], headers=request_headers)
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response:
+            resumed = offset > 0 and getattr(response, "status", None) == 206
+            downloaded = offset if resumed else 0
+            mode = "ab" if resumed else "wb"
+            total = int(entry["size_bytes"])
+            with partial.open(mode) as output:
+                while chunk := response.read(8 * 1024 * 1024):
+                    output.write(chunk)
+                    downloaded += len(chunk)
+                    if downloaded % (256 * 1024 * 1024) < len(chunk):
+                        print(f"  {entry['filename']}: {downloaded / total:.0%}", flush=True)
+    except (OSError, urllib.error.URLError) as exc:
+        raise RuntimeError(f"resumable HTTPS download failed for {entry['filename']}: {exc}") from exc
+    if partial.stat().st_size != int(entry["size_bytes"]) or _sha256(partial) != entry["sha256"]:
+        raise RuntimeError(f"downloaded file failed integrity validation: {entry['filename']}")
+    partial.replace(destination)
+
+
 def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) -> str:
     if _verify(destination, entry):
         return "verified"
@@ -68,54 +116,21 @@ def _download(entry: dict[str, Any], destination: Path, *, verify_only: bool) ->
     if token:
         headers["Authorization"] = f"Bearer {token}"
     destination.parent.mkdir(parents=True, exist_ok=True)
-    partial = destination.with_name(f".{destination.name}.part")
-    try:
-        if "huggingface.co" in entry["url"]:
-            try:
-                from huggingface_hub import hf_hub_download
-            except ImportError:
-                pass
-            else:
-                marker = f"/resolve/{entry['revision']}/"
-                remote_filename = entry["url"].split(marker, 1)[1]
-                try:
-                    downloaded_path = Path(
-                        hf_hub_download(
-                            repo_id=entry["source"],
-                            filename=remote_filename,
-                            revision=entry["revision"],
-                            token=token,
-                            local_dir=destination.parent,
-                        )
-                    )
-                except Exception as exc:
-                    raise RuntimeError(f"failed to download {entry['filename']}: {exc}") from exc
+    if "huggingface.co" in entry["url"] and int(entry["size_bytes"]) >= XET_MIN_SIZE_BYTES:
+        try:
+            downloaded_path = _download_from_hub(entry, destination, token)
+        except RuntimeError as exc:
+            if not _retryable_download_error(exc):
+                raise
+            print(f"  {entry['filename']}: Xet is rate-limited; switching to resumable HTTPS.", flush=True)
+        else:
+            if downloaded_path is not None:
                 if downloaded_path != destination:
                     downloaded_path.replace(destination)
                 if not _verify(destination, entry):
                     raise RuntimeError(f"downloaded file failed integrity validation: {entry['filename']}")
                 return "downloaded"
-
-        offset = partial.stat().st_size if partial.exists() else 0
-        if offset:
-            headers["Range"] = f"bytes={offset}-"
-        request = urllib.request.Request(entry["url"], headers=headers)
-        with urllib.request.urlopen(request, timeout=120) as response:
-            resumed = offset > 0 and getattr(response, "status", None) == 206
-            downloaded = offset if resumed else 0
-            mode = "ab" if resumed else "wb"
-            total = int(entry["size_bytes"])
-            with partial.open(mode) as output:
-                while chunk := response.read(8 * 1024 * 1024):
-                    output.write(chunk)
-                    downloaded += len(chunk)
-                    if downloaded % (256 * 1024 * 1024) < len(chunk):
-                        print(f"  {entry['filename']}: {downloaded / total:.0%}", flush=True)
-        if partial.stat().st_size != int(entry["size_bytes"]) or _sha256(partial) != entry["sha256"]:
-            raise RuntimeError(f"downloaded file failed integrity validation: {entry['filename']}")
-        partial.replace(destination)
-    except (OSError, urllib.error.URLError) as exc:
-        raise RuntimeError(f"failed to download {entry['filename']}: {exc}") from exc
+    _download_via_http(entry, destination, headers)
     return "downloaded"
 
 

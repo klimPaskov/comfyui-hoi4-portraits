@@ -71,7 +71,7 @@ The command defaults to the **full** model. On a smaller GPU, pass the variant a
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q4_K_M,Q5_K_M
 ```
 
-The downloader keeps up to four independent repositories active in parallel and uses Hugging Face's accelerated Xet transfers. Files from the same repository, such as Adonis Base, Refine, and Post, run sequentially so they do not compete for one Xet read token. HTTP 429 and temporary server errors retry with backoff; rerunning the same command verifies completed files and resumes incomplete Hub downloads. The final verification pass checks every downloaded file and the custom nodes. `HF_TOKEN` is read only from the process environment and is never printed or saved.
+The downloader keeps up to four independent repositories active in parallel and uses Hugging Face's accelerated Xet transfers for large files. Small files use HTTPS directly to avoid unnecessary Xet token requests. Files from the same repository, such as Adonis Base, Refine, and Post, run sequentially so they do not compete for one Xet read token. If Xet's token endpoint is rate-limited, that file immediately switches to resumable HTTPS while the other downloads continue; temporary HTTPS failures retry with backoff. Rerunning the same command verifies completed files and resumes incomplete downloads. The final verification pass checks every downloaded file and the custom nodes. `HF_TOKEN` is read only from the process environment and is never printed or saved.
 
 Start ComfyUI after installation:
 

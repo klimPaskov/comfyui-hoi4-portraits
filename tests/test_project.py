@@ -278,6 +278,22 @@ class InstallerTests(unittest.TestCase):
         groups = download_models._group_jobs_by_source(jobs)
         self.assertEqual([[entry["filename"] for entry, _ in group] for group in groups], [["base", "post"], ["other"]])
 
+    def test_model_downloader_falls_back_to_https_when_xet_is_rate_limited(self) -> None:
+        entry = {
+            "filename": "model.safetensors",
+            "url": "https://huggingface.co/example/model/resolve/revision/model.safetensors",
+            "revision": "revision",
+            "source": "example/model",
+            "size_bytes": download_models.XET_MIN_SIZE_BYTES,
+            "sha256": "unused",
+            "requires_huggingface_auth": False,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            destination = Path(directory) / entry["filename"]
+            with mock.patch.object(download_models, "_download_from_hub", side_effect=RuntimeError("429 Too Many Requests")), mock.patch.object(download_models, "_download_via_http") as https_download:
+                self.assertEqual(download_models._download(entry, destination, verify_only=False), "downloaded")
+            https_download.assert_called_once()
+
     def test_variant_selector_patches_visible_model_loader_and_preserves_personal_files(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             comfy_root = self._comfy_root(directory)

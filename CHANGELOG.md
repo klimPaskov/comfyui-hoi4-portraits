@@ -22,7 +22,7 @@ This repository contains one current, internally consistent package.
 - Output names: source, processing-only, and batch saves preserve each input image stem; source candidates add `_1`, `_2`, and `_3`
 - Layout: four fully visible, compact, colour-coded canvases with portrait-ratio previews
 - Output: 1024×1365 PNG, centered 156×210 PNG, and HOI4-ready DDS
-- Downloads: independent repositories transfer in parallel at full Xet speed, files from the same repository run sequentially, incomplete Hub downloads resume, and HTTP 429/temporary server failures retry with backoff
+- Downloads: independent repositories transfer in parallel at full Xet speed, files from the same repository run sequentially, Xet rate limits switch automatically to resumable HTTPS, incomplete downloads resume, and temporary HTTP failures retry with backoff
 
 ## Installation contract
 
