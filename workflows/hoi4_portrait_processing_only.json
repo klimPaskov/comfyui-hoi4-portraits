@@ -1730,7 +1730,7 @@
     },
     {
       "id": 38,
-      "type": "SaveImage",
+      "type": "Hoi4SavePNG",
       "title": "Save restored master PNG",
       "pos": [
         6080,
@@ -1768,7 +1768,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "SaveImage",
+        "Node name for S&R": "Hoi4SavePNG",
         "hoi4_group": "04 Finish and save"
       },
       "widgets_values": [
@@ -1777,7 +1777,7 @@
     },
     {
       "id": 39,
-      "type": "SaveImage",
+      "type": "Hoi4SavePNG",
       "title": "Save game PNG",
       "pos": [
         6080,
@@ -1815,7 +1815,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "SaveImage",
+        "Node name for S&R": "Hoi4SavePNG",
         "hoi4_group": "04 Finish and save"
       },
       "widgets_values": [

@@ -35,6 +35,7 @@ The Qwen text encoder is 8.7 GB and is shared by every variant. ComfyUI offloads
 python scripts/install_workflows.py --comfyui-root /path/to/ComfyUI
 python scripts/install_custom_node_packs.py --comfyui-root /path/to/ComfyUI
 python scripts/apply_variant.py --comfyui-root /path/to/ComfyUI --variant fp8
+python -m pip install -r scripts/requirements-download.txt
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 ```
 
@@ -75,7 +76,7 @@ The command defaults to **FP8**, and a **25 GB RunPod volume is enough** for tha
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q4_K_M,Q5_K_M
 ```
 
-The downloader keeps up to four independent repositories active in parallel and uses Hugging Face's accelerated Xet transfers for large files. Small files use HTTPS directly to avoid unnecessary Xet token requests. Files from the same repository, such as Adonis Base, Refine, and Post, run sequentially so they do not compete for one Xet read token. If Xet's token endpoint is rate-limited, that file immediately switches to resumable HTTPS while the other downloads continue; temporary HTTPS failures retry with backoff. Rerunning the same command verifies completed files and resumes incomplete downloads. The final verification pass checks every downloaded file and the custom nodes. `HF_TOKEN` is read only from the process environment and is never printed or saved.
+The downloader enables Hugging Face's high-performance Xet mode and keeps up to four independent repositories active in parallel. Files from one repository, such as Adonis Base, Refine, and Post, transfer concurrently inside one Xet group that shares a single read token instead of requesting a token per file. Short adaptive retries absorb temporary rate limits without dropping to a slow connection; resumable HTTPS remains the final fallback, and every completed file is checked against its exact size and SHA-256 hash. Rerunning the command verifies completed files and resumes an interrupted HTTPS fallback. `HF_TOKEN` is read only from the process environment and is never printed or saved.
 
 Start ComfyUI after installation:
 

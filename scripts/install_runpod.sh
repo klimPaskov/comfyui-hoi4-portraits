@@ -89,12 +89,10 @@ else
   "${PYTHON_BIN}" -m pip install -r "${PROJECT_ROOT}/custom_nodes/hoi4_portraits/requirements.txt"
 fi
 
-if ! "${PYTHON_BIN}" -c "import huggingface_hub, hf_xet" >/dev/null 2>&1; then
-  if command -v uv >/dev/null 2>&1; then
-    uv pip install --python "${PYTHON_BIN}" -r "${PROJECT_ROOT}/scripts/requirements-download.txt"
-  else
-    "${PYTHON_BIN}" -m pip install -r "${PROJECT_ROOT}/scripts/requirements-download.txt"
-  fi
+if command -v uv >/dev/null 2>&1; then
+  uv pip install --python "${PYTHON_BIN}" -r "${PROJECT_ROOT}/scripts/requirements-download.txt"
+else
+  "${PYTHON_BIN}" -m pip install -r "${PROJECT_ROOT}/scripts/requirements-download.txt"
 fi
 
 echo "Installing the exact Adonis workflow dependencies..."
@@ -138,7 +136,7 @@ if spec is None or spec.loader is None:
     raise RuntimeError(f"cannot load {node_path}")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-for required in ("AdaptivePortraitCrop", "Hoi4SetupGuide", "Hoi4BackgroundReplace", "Hoi4BatchInput", "Hoi4RestorationCache", "Hoi4SaveDDS"):
+for required in ("AdaptivePortraitCrop", "Hoi4SetupGuide", "Hoi4BackgroundReplace", "Hoi4BatchInput", "Hoi4RestorationCache", "Hoi4SavePNG", "Hoi4SaveDDS"):
     if required not in module.NODE_CLASS_MAPPINGS:
         raise RuntimeError(f"{required} did not register")
 print(f"Verified the hoi4_portraits node pack with {sys.executable}")

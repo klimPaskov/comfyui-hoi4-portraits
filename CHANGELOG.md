@@ -21,13 +21,14 @@ This repository contains one current, internally consistent package.
 - Text to image: one sampler and one final portrait
 - Batch: per-queue folder rescan, deterministic case-insensitive list input, one sampler, and sequential per-source execution
 - Processing only: RealESRGAN plus Adonis Base → Post, without the style LoRA
-- Automatic saving: master PNG, game PNG, and DDS branches are terminal outputs with non-overwriting numbered filenames
+- Automatic saving: path-validated master PNG, game PNG, and DDS terminal outputs follow the selected portrait output link on current ComfyUI versions and use non-overwriting numbered filenames
 - Output names: source, processing-only, and batch saves preserve each input image stem; source candidates add `_1`, `_2`, and `_3`
 - Layout: four fully visible, compact, colour-coded canvases with portrait-ratio previews
 - Frontend compatibility: connected widget sockets and saved widget values follow ComfyUI frontend 1.45.19, preventing the crop dimensions and KSampler CFG, sampler, and scheduler values from shifting when a workflow opens
 - Batch layout: the hand-arranged canvas is grid-aligned and split into symmetric create and save groups, with three centered comparison previews and consistent group colours
 - Output: 1024×1365 PNG, centered 156×210 PNG, and HOI4-ready DDS under the selected portrait output folder
-- Downloads: independent repositories transfer in parallel at full Xet speed, files from the same repository run sequentially, Xet rate limits switch automatically to resumable HTTPS, incomplete downloads resume, and temporary HTTP failures retry with backoff
+- Downloads: high-performance Xet is enabled, independent repositories run in parallel, files from each repository transfer concurrently through one shared Xet token, short rate-limit retries recover before resumable HTTPS fallback, and integrity checks protect every installed file
+- Linked folders: the batch restoration cache and automatic savers validate and follow only the installer-managed input and output links, avoiding current ComfyUI's external-symlink rejection without allowing arbitrary paths
 
 ## Installation contract
 

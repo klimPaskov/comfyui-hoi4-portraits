@@ -1,2 +1,2 @@
-huggingface_hub>=0.30
-hf_xet>=1.1
+huggingface_hub>=0.30,<2
+hf_xet>=1.5.2,<2

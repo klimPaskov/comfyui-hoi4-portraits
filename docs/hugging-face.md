@@ -32,6 +32,7 @@ Paste the read-only token when prompted. Alternatively, supply it only to the sh
 
 ```bash
 export HF_TOKEN="hf_..."
+python -m pip install -r scripts/requirements-download.txt
 python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 ```
 

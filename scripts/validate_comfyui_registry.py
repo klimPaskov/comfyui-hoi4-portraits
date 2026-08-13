@@ -28,6 +28,7 @@ ALWAYS_REQUIRED = {
     "Hoi4LoadImage",
     "Hoi4OutputFilename",
     "Hoi4RestorationCache",
+    "Hoi4SavePNG",
     "Hoi4SaveDDS",
 }
 
@@ -115,7 +116,7 @@ def main() -> int:
     contract_errors: list[str] = []
     if object_info.get("Hoi4BatchInput", {}).get("output_is_list") != [True, True, True]:
         contract_errors.append("Hoi4BatchInput must expose list outputs for one-by-one batch execution")
-    for class_type in ("SaveImage", "Hoi4SaveDDS"):
+    for class_type in ("Hoi4SavePNG", "Hoi4SaveDDS"):
         if object_info.get(class_type, {}).get("output_node") is not True:
             contract_errors.append(f"{class_type} must be registered as an automatic terminal output")
 

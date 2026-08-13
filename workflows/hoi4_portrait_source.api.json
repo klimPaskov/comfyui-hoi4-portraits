@@ -1000,7 +1000,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save portrait 1 master PNG"
     }
@@ -1016,7 +1016,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save portrait 1 game PNG"
     }
@@ -1062,7 +1062,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save portrait 2 master PNG"
     }
@@ -1078,7 +1078,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save portrait 2 game PNG"
     }
@@ -1124,7 +1124,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save portrait 3 master PNG"
     }
@@ -1140,7 +1140,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save portrait 3 game PNG"
     }

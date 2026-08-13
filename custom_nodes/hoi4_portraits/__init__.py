@@ -3,6 +3,7 @@ from __future__ import annotations
 from fnmatch import fnmatch
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 from typing import Any
@@ -14,7 +15,7 @@ from scipy import ndimage
 
 import cv2
 import folder_paths
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, PngImagePlugin
 
 
 ASPECT = 1024 / 1365
@@ -35,6 +36,63 @@ def _output_filename_prefixes(source_filename: str, suffix: str = "") -> tuple[s
         f"hoi4_portraits/156x210/{output_name}",
         f"hoi4_portraits/156x210/dds/{output_name}",
     )
+
+
+def _safe_output_prefix(filename_prefix: str) -> tuple[Path, str]:
+    """Resolve a safe output prefix, including the installer-managed portrait link."""
+
+    output_dir = Path(folder_paths.get_output_directory())
+    prefix = Path(str(filename_prefix))
+    if prefix.is_absolute() or not prefix.name or ".." in prefix.parts:
+        raise ValueError("Portrait filename_prefix must stay inside the configured output folder.")
+    target_folder = output_dir / prefix.parent
+    if prefix.parts and prefix.parts[0] == "hoi4_portraits":
+        allowed_root = (output_dir / "hoi4_portraits").resolve(strict=False)
+    else:
+        allowed_root = output_dir.resolve(strict=False)
+    resolved_target = target_folder.resolve(strict=False)
+    try:
+        if os.path.commonpath((str(allowed_root), str(resolved_target))) != str(allowed_root):
+            raise ValueError("Portrait filename_prefix resolves outside the configured output folder.")
+    except ValueError as exc:
+        raise ValueError("Portrait filename_prefix resolves outside the configured output folder.") from exc
+    target_folder.mkdir(parents=True, exist_ok=True)
+    return target_folder, prefix.name
+
+
+def _safe_input_file(source_filename: str) -> Path:
+    """Resolve an input file, including the installer-managed batch link."""
+
+    input_dir = Path(folder_paths.get_input_directory())
+    relative = Path(str(source_filename))
+    if relative.is_absolute() or not relative.name or ".." in relative.parts:
+        raise ValueError("Portrait source filename must stay inside the configured input folder.")
+    if relative.parts and relative.parts[0] == "hoi4_portraits_batch":
+        allowed_root = (input_dir / "hoi4_portraits_batch").resolve(strict=False)
+    else:
+        allowed_root = input_dir.resolve(strict=False)
+    source_path = (input_dir / relative).resolve(strict=False)
+    try:
+        if os.path.commonpath((str(allowed_root), str(source_path))) != str(allowed_root):
+            raise ValueError("Portrait source filename resolves outside the configured input folder.")
+    except ValueError as exc:
+        raise ValueError("Portrait source filename resolves outside the configured input folder.") from exc
+    if not source_path.is_file():
+        raise ValueError(f"Portrait source file does not exist: {source_filename!r}")
+    return source_path
+
+
+def _next_output_counter(target_folder: Path, filename: str, extension: str) -> int:
+    pattern = re.compile(rf"^{re.escape(filename)}_(\d{{5}}){re.escape(extension)}$", re.IGNORECASE)
+    counters = [int(match.group(1)) for path in target_folder.iterdir() if (match := pattern.match(path.name))]
+    return max(counters, default=0) + 1
+
+
+def _tensor_to_pil(tensor: torch.Tensor) -> Image.Image:
+    array = (tensor.detach().cpu().numpy().clip(0, 1) * 255.0 + 0.5).astype(np.uint8)
+    if array.ndim != 3 or array.shape[2] not in (3, 4):
+        raise ValueError(f"Portrait output expects RGB or RGBA images; received shape {array.shape}.")
+    return Image.fromarray(array)
 
 
 def _resize_center_crop(image: torch.Tensor, width: int, height: int) -> torch.Tensor:
@@ -647,10 +705,13 @@ class Hoi4RestorationCache:
         digest.update(source_name.encode(errors="replace"))
         try:
             source_path = Path(folder_paths.get_annotated_filepath(source_name))
+        except (OSError, ValueError):
+            source_path = _safe_input_file(source_name)
+        try:
             with source_path.open("rb") as source:
                 for chunk in iter(lambda: source.read(1024 * 1024), b""):
                     digest.update(chunk)
-        except OSError:
+        except (OSError, ValueError):
             pass
         cache_root = Path(folder_paths.get_temp_directory()) / "hoi4_portraits" / "restoration_cache"
         return cache_root / f"{digest.hexdigest()}.npy"
@@ -681,6 +742,41 @@ class Hoi4RestorationCache:
             np.save(target, image.detach().cpu().numpy(), allow_pickle=False)
         temporary.replace(path)
         return (image,)
+
+
+class Hoi4SavePNG:
+    """Automatically save PNG portraits through the configured output workspace."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "images": ("IMAGE",),
+                "filename_prefix": ("STRING", {"default": "hoi4_portraits/1024x1365/hoi4_portrait"}),
+            },
+            "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("images",)
+    FUNCTION = "save"
+    OUTPUT_NODE = True
+    CATEGORY = "HOI4 portraits/output"
+    DESCRIPTION = "Automatically save PNG portraits in the configured portrait output folder."
+
+    def save(self, images, filename_prefix, prompt=None, extra_pnginfo=None):
+        target_folder, filename = _safe_output_prefix(filename_prefix)
+        counter = _next_output_counter(target_folder, filename, ".png")
+        metadata = PngImagePlugin.PngInfo()
+        if prompt is not None:
+            metadata.add_text("prompt", json.dumps(prompt))
+        if extra_pnginfo:
+            for key, value in extra_pnginfo.items():
+                metadata.add_text(str(key), json.dumps(value))
+        for index, tensor in enumerate(images):
+            target = target_folder / f"{filename}_{counter + index:05d}.png"
+            _tensor_to_pil(tensor).save(target, format="PNG", pnginfo=metadata, compress_level=4)
+        return (images,)
 
 
 class Hoi4SaveDDS:
@@ -722,15 +818,11 @@ class Hoi4SaveDDS:
     DESCRIPTION = "Save HOI4-ready 156x210 DDS portraits."
 
     def save(self, images, filename_prefix, format="argb8888"):
-        output_dir = Path(folder_paths.get_output_directory())
-        prefix = Path(str(filename_prefix))
-        if prefix.is_absolute() or ".." in prefix.parts:
-            raise ValueError("DDS filename_prefix must stay inside the ComfyUI output folder.")
         if format not in {"argb8888", "dxt5"}:
             raise ValueError(f"Unsupported DDS format: {format!r}")
         prepared: list[Image.Image] = []
         for tensor in images:
-            array = (tensor.detach().cpu().numpy().clip(0, 1) * 255.0 + 0.5).astype(np.uint8)
+            array = np.asarray(_tensor_to_pil(tensor))
             if array.ndim != 3 or array.shape[0] != 210 or array.shape[1] != 156:
                 raise ValueError(
                     f"HOI4 DDS output must be 156x210; received {array.shape[1]}x{array.shape[0]}."
@@ -740,11 +832,8 @@ class Hoi4SaveDDS:
             prepared.append(Image.fromarray(np.concatenate((rgb, alpha), axis=2)))
         if not prepared:
             return (images,)
-        output_folder, filename, counter, _, _ = folder_paths.get_save_image_path(
-            str(prefix), str(output_dir), 156, 210
-        )
-        target_folder = Path(output_folder)
-        target_folder.mkdir(parents=True, exist_ok=True)
+        target_folder, filename = _safe_output_prefix(filename_prefix)
+        counter = _next_output_counter(target_folder, filename, ".dds")
         for index, image in enumerate(prepared):
             target = target_folder / f"{filename}_{counter + index:05d}.dds"
             if format == "dxt5":
@@ -763,6 +852,7 @@ NODE_CLASS_MAPPINGS = {
     "Hoi4BatchInput": Hoi4BatchInput,
     "Hoi4OutputFilename": Hoi4OutputFilename,
     "Hoi4RestorationCache": Hoi4RestorationCache,
+    "Hoi4SavePNG": Hoi4SavePNG,
     "Hoi4SaveDDS": Hoi4SaveDDS,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -774,5 +864,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Hoi4BatchInput": "HOI4 Batch Input Folder",
     "Hoi4OutputFilename": "Keep Input Filename",
     "Hoi4RestorationCache": "Reuse Restored Portrait",
+    "Hoi4SavePNG": "Save Portrait PNG",
     "Hoi4SaveDDS": "HOI4 Save DDS Portrait (156x210)",
 }

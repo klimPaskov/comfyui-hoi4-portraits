@@ -43,11 +43,8 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 if (-not $SkipModels) {
-    & $Python -c "import huggingface_hub, hf_xet" 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        & $Python -m pip install -r (Join-Path $ProjectRoot "scripts\requirements-download.txt")
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    }
+    & $Python -m pip install -r (Join-Path $ProjectRoot "scripts\requirements-download.txt")
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
 Write-Host "Installing the exact Adonis workflow dependencies..."

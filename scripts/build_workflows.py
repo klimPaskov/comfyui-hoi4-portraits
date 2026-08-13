@@ -868,7 +868,7 @@ def _save_image(
     prefix_source: tuple[Ref, int] | None = None,
 ) -> Ref:
     node = g.node(
-        "SaveImage", title, pos, (420, 150), group,
+        "Hoi4SavePNG", title, pos, (420, 150), group,
         [("images", "IMAGE", False), ("filename_prefix", "STRING", True)], [("IMAGE", "IMAGE")],
         [prefix], {"filename_prefix": prefix}, "output",
     )

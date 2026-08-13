@@ -15,6 +15,7 @@ The main visible controls are:
 | `HOI4 Optional Background Replacement` | One optional BiRefNet background-replacement operation; sizing remains separate |
 | `HOI4 Batch Input Folder` | List output that executes one source at a time |
 | `Keep Input Filename` | Carries each source image stem into every PNG and DDS saver |
+| `Save Portrait PNG` | Automatically writes the master or game-size PNG to the selected output folder |
 | `HOI4 Save DDS` | HOI4-ready 156×210 portrait DDS |
 
 The following steps use separate nodes: diffusion model, Qwen Q8 encoder, VAE, every LoRA loader, face detection, subject mask, RealESRGAN, Adonis preprocessing, both prompt encodes, source reference encoding, Adonis Base sampling, Adonis Post reference conditioning, Adonis Post sampling, final VAE decode, restoration switch, master crop, and game crop.
@@ -89,7 +90,7 @@ On RunPod, all workflows save to:
 
 Windows uses the output folder selected during installation. Manual and Comfy Cloud installations use `ComfyUI/output/hoi4_portraits/1024x1365/`, `ComfyUI/output/hoi4_portraits/156x210/`, and `ComfyUI/output/hoi4_portraits/156x210/dds/`.
 
-The DDS saver writes uncompressed 32-bit BGRA data with alpha in the A8R8G8B8/B8G8R8A8-style layout used by HOI4 portraits. Both native PNG savers and `HOI4 Save DDS` are terminal output nodes. Queueing the workflow therefore executes every connected save branch automatically; numbered counters prevent repeated runs from overwriting existing portraits.
+The DDS saver writes uncompressed 32-bit BGRA data with alpha in the A8R8G8B8/B8G8R8A8-style layout used by HOI4 portraits. The project PNG and DDS savers are terminal output nodes that safely follow the installer-configured portrait output folder on current ComfyUI versions. Queueing the workflow therefore executes every connected save branch automatically; numbered counters prevent repeated runs from overwriting existing portraits.
 
 Source, processing-only, and batch workflows derive every output prefix from the current input filename. The source workflow adds `_1`, `_2`, or `_3` to distinguish its candidates. Text-to-image has no input image and therefore uses the stable `text_to_image` prefix.
 

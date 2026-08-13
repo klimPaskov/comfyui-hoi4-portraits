@@ -20,7 +20,6 @@ WORKFLOW_IDS = tuple(build_workflows.BUILDERS)
 ALLOWED_NODES = {
     "LoadImage",
     "PreviewImage",
-    "SaveImage",
     "UNETLoader",
     "UnetLoaderGGUF",
     "ClipLoaderGGUF",
@@ -55,6 +54,7 @@ ALLOWED_NODES = {
     "Hoi4BatchInput",
     "Hoi4OutputFilename",
     "Hoi4RestorationCache",
+    "Hoi4SavePNG",
     "Hoi4SaveDDS",
 }
 
@@ -258,7 +258,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         errors.append(f"{path}: expected {expected_loras} separately visible LoRA loaders")
     expected_png_savers = 6 if is_source else 2
     expected_dds_savers = 3 if is_source else 1
-    if counts.get("SaveImage", 0) != expected_png_savers:
+    if counts.get("Hoi4SavePNG", 0) != expected_png_savers:
         errors.append(f"{path}: expected {expected_png_savers} automatic PNG saver(s)")
     if counts.get("Hoi4SaveDDS", 0) != expected_dds_savers:
         errors.append(f"{path}: expected {expected_dds_savers} automatic DDS saver(s)")
@@ -271,7 +271,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
 
     save_prefixes: list[tuple[str, int]] = []
     for node in api.values():
-        if node.get("class_type") not in {"SaveImage", "Hoi4SaveDDS"}:
+        if node.get("class_type") not in {"Hoi4SavePNG", "Hoi4SaveDDS"}:
             continue
         inputs = node.get("inputs", {})
         prefix_link = inputs.get("filename_prefix")

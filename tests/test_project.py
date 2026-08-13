@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import math
@@ -82,7 +83,7 @@ class WorkflowTests(unittest.TestCase):
                 face_bboxes = next(item for item in crop["inputs"] if item["name"] == "face_bboxes")
                 self.assertEqual(face_bboxes["widget"], {"name": "face_bboxes"})
                 self.assertEqual(crop["widgets_values"], [{"x": 0, "y": 0, "width": 512, "height": 512}, 0, 0, 512, 512, True, False, 0.0, 0.0, 1.0, 1.0, 0.9, True, 512, 683])
-            for saver in (node for node in ui["nodes"] if node["type"] == "SaveImage"):
+            for saver in (node for node in ui["nodes"] if node["type"] == "Hoi4SavePNG"):
                 filename_prefix = next(item for item in saver["inputs"] if item["name"] == "filename_prefix")
                 self.assertEqual(filename_prefix["widget"], {"name": "filename_prefix"})
                 self.assertIsNotNone(filename_prefix["link"])
@@ -186,17 +187,17 @@ class WorkflowTests(unittest.TestCase):
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.json").read_text())
         self.assertEqual(sum(node["class_type"] == "Hoi4BatchInput" for node in api.values()), 1)
         self.assertEqual(sum(node["class_type"] == "KSampler" for node in api.values()), 1)
-        self.assertEqual(sum(node["class_type"] == "SaveImage" for node in api.values()), 2)
+        self.assertEqual(sum(node["class_type"] == "Hoi4SavePNG" for node in api.values()), 2)
         self.assertEqual(sum(node["class_type"] == "Hoi4SaveDDS" for node in api.values()), 1)
         filename_node_id, filename_node = next(
             (node_id, node) for node_id, node in api.items()
             if node["class_type"] == "Hoi4OutputFilename"
         )
         self.assertEqual(api[filename_node["inputs"]["source_filename"][0]]["class_type"], "Hoi4BatchInput")
-        prefixes = [node["inputs"]["filename_prefix"] for node in api.values() if node["class_type"] in {"SaveImage", "Hoi4SaveDDS"}]
+        prefixes = [node["inputs"]["filename_prefix"] for node in api.values() if node["class_type"] in {"Hoi4SavePNG", "Hoi4SaveDDS"}]
         self.assertEqual({tuple(prefix) for prefix in prefixes}, {(filename_node_id, 0), (filename_node_id, 1), (filename_node_id, 2)})
         for node in api.values():
-            if node["class_type"] not in {"SaveImage", "Hoi4SaveDDS"}:
+            if node["class_type"] not in {"Hoi4SavePNG", "Hoi4SaveDDS"}:
                 continue
             source = api[node["inputs"]["images"][0]]
             self.assertEqual(source["class_type"], "ImageScale")
@@ -227,7 +228,7 @@ class WorkflowTests(unittest.TestCase):
                 else:
                     self.assertEqual(source_filename[1], 2)
                     self.assertEqual(api[source_filename[0]]["class_type"], expected_sources[workflow_id])
-            for saver in (node for node in api.values() if node["class_type"] in {"SaveImage", "Hoi4SaveDDS"}):
+            for saver in (node for node in api.values() if node["class_type"] in {"Hoi4SavePNG", "Hoi4SaveDDS"}):
                 prefix = saver["inputs"]["filename_prefix"]
                 self.assertIn(prefix[0], filename_nodes)
 
@@ -379,14 +380,86 @@ class InstallerTests(unittest.TestCase):
                 )
         self.assertEqual(downloader.call_count, 1)
 
-    def test_model_downloader_serializes_each_source_repository(self) -> None:
+    def test_model_downloader_batches_each_source_revision(self) -> None:
         jobs = [
-            ({"source": "repo/adonis", "url": "https://example.invalid/a", "filename": "base"}, Path("base")),
-            ({"source": "repo/other", "url": "https://example.invalid/b", "filename": "other"}, Path("other")),
-            ({"source": "repo/adonis", "url": "https://example.invalid/c", "filename": "post"}, Path("post")),
+            ({"source": "repo/adonis", "revision": "one", "url": "https://example.invalid/a", "filename": "base"}, Path("base")),
+            ({"source": "repo/other", "revision": "one", "url": "https://example.invalid/b", "filename": "other"}, Path("other")),
+            ({"source": "repo/adonis", "revision": "one", "url": "https://example.invalid/c", "filename": "post"}, Path("post")),
+            ({"source": "repo/adonis", "revision": "two", "url": "https://example.invalid/d", "filename": "new"}, Path("new")),
         ]
         groups = download_models._group_jobs_by_source(jobs)
-        self.assertEqual([[entry["filename"] for entry, _ in group] for group in groups], [["base", "post"], ["other"]])
+        self.assertEqual([[entry["filename"] for entry, _ in group] for group in groups], [["base", "post"], ["other"], ["new"]])
+
+    def test_model_downloader_enables_high_performance_xet(self) -> None:
+        self.assertEqual(download_models.os.environ["HF_XET_HIGH_PERFORMANCE"], "1")
+        requirements = (ROOT / "scripts/requirements-download.txt").read_text()
+        self.assertIn("huggingface_hub>=0.30,<2", requirements)
+        self.assertIn("hf_xet>=1.5.2,<2", requirements)
+        manifest = json.loads((ROOT / "models.json").read_text())
+        grouped = [entry for entry in manifest["models"] if "huggingface.co" in entry["url"] and entry["size_bytes"] >= download_models.XET_MIN_SIZE_BYTES]
+        self.assertTrue(all(len(entry.get("xet_hash", "")) == 64 for entry in grouped))
+
+    def test_repository_xet_group_retries_once_with_short_backoff(self) -> None:
+        jobs = [({"source": "repo/adonis", "filename": "base"}, Path("base"))]
+        sleeps: list[int] = []
+        with mock.patch.object(download_models, "_download_group_from_hub", side_effect=[RuntimeError("429 Too Many Requests"), None]) as downloader:
+            download_models._download_group_from_hub_with_retries(jobs, None, sleep_fn=sleeps.append)
+        self.assertEqual(sleeps, [2])
+        self.assertEqual(downloader.call_count, 2)
+
+    def test_repository_files_share_one_concurrent_xet_group(self) -> None:
+        contents = {"base.safetensors": b"base", "post.safetensors": b"post"}
+        revision = "a" * 40
+        jobs = []
+        for filename, content in contents.items():
+            entry = {
+                "filename": filename,
+                "source": "repo/adonis",
+                "revision": revision,
+                "url": f"https://huggingface.co/repo/adonis/resolve/{revision}/{filename}",
+                "size_bytes": len(content),
+                "sha256": hashlib.sha256(content).hexdigest(),
+                "xet_hash": ("1" if filename.startswith("base") else "2") * 64,
+            }
+            jobs.append((entry, Path(filename)))
+
+        class FakeGroup:
+            def __init__(self) -> None:
+                self.started: list[str] = []
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                return False
+
+            def start_download_file(self, _, destination: str) -> None:
+                name = Path(destination).name.removeprefix(".").removesuffix(".xet-part")
+                Path(destination).write_bytes(contents[name])
+                self.started.append(name)
+
+        class FakeSession:
+            def __init__(self, group: FakeGroup) -> None:
+                self.group = group
+                self.calls = 0
+
+            def new_file_download_group(self, **_):
+                self.calls += 1
+                return self.group
+
+        group = FakeGroup()
+        session = FakeSession(group)
+        fake_xet = types.ModuleType("hf_xet")
+        fake_xet.XetFileInfo = lambda hash, filesize: (hash, filesize)
+        with tempfile.TemporaryDirectory() as directory:
+            local_jobs = [(entry, Path(directory) / destination) for entry, destination in jobs]
+            with mock.patch.dict(sys.modules, {"hf_xet": fake_xet}), mock.patch.object(
+                download_models, "_xet_session", return_value=session
+            ):
+                download_models._download_group_from_hub(local_jobs, None)
+            self.assertEqual({path.name for _, path in local_jobs if path.is_file()}, set(contents))
+        self.assertEqual(session.calls, 1)
+        self.assertEqual(group.started, list(contents))
 
     def test_model_downloader_falls_back_to_https_when_xet_is_rate_limited(self) -> None:
         entry = {
@@ -435,15 +508,10 @@ class CustomNodeTests(unittest.TestCase):
         fake.get_temp_directory = lambda: str(root / "temp")
         fake.get_annotated_filepath = lambda name: str(root / "input" / str(name))
 
-        def save_path(prefix, output_dir, width, height):
-            prefix_path = Path(prefix)
-            folder = Path(output_dir) / prefix_path.parent
-            counter = 1
-            while (folder / f"{prefix_path.name}_{counter:05d}.dds").exists():
-                counter += 1
-            return str(folder), prefix_path.name, counter, "", str(prefix_path.parent)
+        def blocked_core_saver(*_):
+            raise AssertionError("portrait savers must not call ComfyUI's symlink-rejecting core save resolver")
 
-        fake.get_save_image_path = save_path
+        fake.get_save_image_path = blocked_core_saver
         sys.modules["folder_paths"] = fake
         path = ROOT / "custom_nodes/hoi4_portraits/__init__.py"
         spec = importlib.util.spec_from_file_location("hoi4_nodes_test", path)
@@ -496,6 +564,48 @@ class CustomNodeTests(unittest.TestCase):
             changed_prompt = json.loads(json.dumps(prompt))
             changed_prompt["7"]["inputs"]["seed"] = 43
             self.assertEqual(cache.check_lazy_status(None, "source.png", changed_prompt, "9"), ["image"])
+
+    def test_batch_restoration_cache_accepts_only_the_configured_input_link(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "input").mkdir()
+            batch = root / "selected-input"
+            batch.mkdir()
+            source = batch / "portrait.jpg"
+            source.write_bytes(b"source-v1")
+            (root / "input/hoi4_portraits_batch").symlink_to(batch, target_is_directory=True)
+            module = self._load_module(root)
+
+            def reject_link(_):
+                raise ValueError("Invalid file path")
+
+            module.folder_paths.get_annotated_filepath = reject_link
+            prompt = {"9": {"class_type": "Hoi4RestorationCache", "inputs": {"image": ["8", 0]}}}
+            first = module.Hoi4RestorationCache._cache_path("hoi4_portraits_batch/portrait.jpg", prompt, "9")
+            source.write_bytes(b"source-v2")
+            second = module.Hoi4RestorationCache._cache_path("hoi4_portraits_batch/portrait.jpg", prompt, "9")
+            self.assertNotEqual(first, second)
+            with self.assertRaises(ValueError):
+                module._safe_input_file("../selected-input/portrait.jpg")
+
+    def test_png_and_dds_follow_the_configured_output_link(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "output").mkdir()
+            selected = root / "selected-output"
+            selected.mkdir()
+            (root / "output/hoi4_portraits").symlink_to(selected, target_is_directory=True)
+            module = self._load_module(root)
+            master = torch.rand((1, 1365, 1024, 3), dtype=torch.float32)
+            game = torch.rand((1, 210, 156, 3), dtype=torch.float32)
+            module.Hoi4SavePNG().save(master, "hoi4_portraits/1024x1365/test")
+            module.Hoi4SavePNG().save(game, "hoi4_portraits/156x210/test")
+            module.Hoi4SaveDDS().save(game, "hoi4_portraits/156x210/dds/test", "argb8888")
+            self.assertTrue((selected / "1024x1365/test_00001.png").is_file())
+            self.assertTrue((selected / "156x210/test_00001.png").is_file())
+            self.assertTrue((selected / "156x210/dds/test_00001.dds").is_file())
+            with self.assertRaises(ValueError):
+                module._safe_output_prefix("../outside/test")
 
     def test_dds_matches_vanilla_argb8888_portrait_profile(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

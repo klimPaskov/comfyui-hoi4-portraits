@@ -719,7 +719,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save every master PNG"
     }
@@ -735,7 +735,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save every game PNG"
     }

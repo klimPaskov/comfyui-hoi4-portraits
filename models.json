@@ -54,6 +54,7 @@
       "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9B/resolve/92196c8e11f7b6cf2b7493e037d8c5345c559216/flux-2-klein-9b.safetensors",
       "size_bytes": 18157185168,
       "sha256": "0975d6b77b5f510b99547d6724a208e36527df654e8f6134f59ece3f9f30da58",
+      "xet_hash": "d26c34cddae760215b249e4eceea88be06241b5aa8a192be716f307ae106b657",
       "license": "FLUX Non-Commercial License",
       "requires_huggingface_auth": true,
       "recommended_vram": ">20 GB"
@@ -69,6 +70,7 @@
       "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/902d9d510b51533e07729f19211414a3648b77d2/flux-2-klein-9b-fp8.safetensors",
       "size_bytes": 9433061528,
       "sha256": "865ba09f5b4c3cbd3468a4bd3acb9fcb2f8740c54317482f0bcd4ed1d3655cee",
+      "xet_hash": "cdf1cb9926421882e7448aad7e206bbf56bcf7dceec02e267a3ceb0ccabea16f",
       "license": "FLUX Non-Commercial License",
       "requires_huggingface_auth": true,
       "recommended_vram": "16-20 GB"
@@ -84,6 +86,7 @@
       "url": "https://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q4_K_M.gguf",
       "size_bytes": 5909829920,
       "sha256": "5489463ed96056b0bb5472abb5d1bba7055e48d574e37877acb43b407465e26f",
+      "xet_hash": "262df1a3a98bc328911e03d4d0f5d7e3b1397477a2c485b24509b6d115259aef",
       "license": "See upstream repository",
       "requires_huggingface_auth": false,
       "recommended_vram": "8-10 GB"
@@ -99,6 +102,7 @@
       "url": "https://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q5_K_M.gguf",
       "size_bytes": 7018699040,
       "sha256": "ad0ace013fb401560ba4a7ff2b2bb3235795f07c19dffebf411806b424700503",
+      "xet_hash": "bac097be5094c7c3fba993a1e57c6bb9cfc1dd0b33d608cc419311334aa4d015",
       "license": "See upstream repository",
       "requires_huggingface_auth": false,
       "recommended_vram": "10-14 GB"
@@ -114,6 +118,7 @@
       "url": "https://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q6_K.gguf",
       "size_bytes": 7865424160,
       "sha256": "1cd667293607431e79c9e7e01ecf5c602bd00539c2c0f49d4817a62998b5fe98",
+      "xet_hash": "e19f643ba4b66ed5b779bc6283f0629363cabb0490cb06823cadb30a549eda5d",
       "license": "See upstream repository",
       "requires_huggingface_auth": false,
       "recommended_vram": "12-16 GB"
@@ -129,6 +134,7 @@
       "url": "https://huggingface.co/drends/FLUX.2-klein-9B-GGUF/resolve/9d468c2918205cc55ebd7a09802dc64c225fb2a6/flux-2-klein-9b-Q8_0.gguf",
       "size_bytes": 9978304800,
       "sha256": "dfa8908dd58c5af6479b944f80558e226ee40a8fe0903729309e8d1b98fe5297",
+      "xet_hash": "824b14b3d89f62779db9bcfe6af9084a52e1a3880e7ff93d50943969f9e25b27",
       "license": "See upstream repository",
       "requires_huggingface_auth": false,
       "recommended_vram": "16+ GB"
@@ -144,6 +150,7 @@
       "url": "https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/6cfbfc7d8ab95bf485c79fcc40be60930d5b4c8c/Qwen3-8B-Q8_0.gguf",
       "size_bytes": 8709518112,
       "sha256": "408b955510e196121c1c375201744783b5c9a43c7956d73fc78df54c66e883d6",
+      "xet_hash": "ce48260c074613c3e6632f26b19dd4cdab35ae91b0edf3259dd15cd3ea2a1830",
       "license": "Apache-2.0",
       "requires_huggingface_auth": false
     },
@@ -158,6 +165,7 @@
       "url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/23fbc8aa8b621f29f2249cd1bd9c47e5d0eebd83/split_files/vae/flux2-vae.safetensors",
       "size_bytes": 336211292,
       "sha256": "868fe7b343cc8f3a19dbcfcafbc3d5f888802be3f89bd81b65b3621a066ce8f3",
+      "xet_hash": "2d2ae7a1e3d7d2ee7da6bbe58d555a9a9d7c1909db79adaa1ecf75a67367536f",
       "license": "See upstream repository",
       "requires_huggingface_auth": false
     },
@@ -172,6 +180,7 @@
       "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000001750.safetensors",
       "size_bytes": 331379440,
       "sha256": "260e6d1cf0dd69cbb14f4fb19a61461d1802ca5fb8464346007500d320df5be2",
+      "xet_hash": "ae40e47b7cb8629a1b3ae494c22c727bd23f404f0d684450261b343908d224f5",
       "license": "MIT",
       "requires_huggingface_auth": false
     },
@@ -186,6 +195,7 @@
       "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002000.safetensors",
       "size_bytes": 331379440,
       "sha256": "2adb624b734ccaa19566e23b03a2e35706261fdbfece4e4e38b1bed644072e87",
+      "xet_hash": "0670588bea0e6c8a46d8e59daf2ff176028c52f1fb4b4d0ea9bf62575bc853ad",
       "license": "MIT",
       "requires_huggingface_auth": false
     },
@@ -200,6 +210,7 @@
       "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
       "size_bytes": 331379440,
       "sha256": "85c4bdd33fffee60f5c344a4ffb8fea97be8d879a810d31a9b3d0bc0fa985994",
+      "xet_hash": "9f81d46327d9d4c554705de5dd1d5bba6380f4898aee2a941bcafcd87452dcf5",
       "license": "MIT",
       "requires_huggingface_auth": false
     },
@@ -214,6 +225,7 @@
       "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
       "size_bytes": 331379440,
       "sha256": "e0f332213c7a3a7f6d02c712dba696f9671a464d08e5fbac44883f9fef3b53c5",
+      "xet_hash": "8ef4b97b64d1b898729346d532e214a4ab3f2cb919bfd3aba5bcb0b2392c69f2",
       "license": "MIT",
       "requires_huggingface_auth": false
     },
@@ -228,6 +240,7 @@
       "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000002750.safetensors",
       "size_bytes": 331379440,
       "sha256": "f4fdc9fd2f4e53946ccc77224d447946a0e53fcef9de61a47df7ef5ce310e683",
+      "xet_hash": "afee6a348a746aefd95b4b1256bef65c1e6887d7963a4c30f9f61e9ed716792e",
       "license": "MIT",
       "requires_huggingface_auth": false
     },
@@ -242,6 +255,7 @@
       "url": "https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora/resolve/001ab9fe6a795124432287125fb28c2b99b74f57/hoi4_portrait_flux2_klein_9b_lora_000003000.safetensors",
       "size_bytes": 331379440,
       "sha256": "87506c79315ee42a98cc9d7c5f76b1fefbc69b6144a6951e15c6fd53e6a3a6b6",
+      "xet_hash": "0e92eb743c62c5411df2ba979d020e508ff769044929114439bcf30387d463b6",
       "license": "MIT",
       "requires_huggingface_auth": false
     },
@@ -256,6 +270,7 @@
       "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_base.safetensors",
       "size_bytes": 1036034472,
       "sha256": "151227483e74d9ad0e30fd41e3aac52ddc32a75177e006d106a29f75dbc5d26d",
+      "xet_hash": "a46ee9e8dfddd321fba5e7f7647e1ac53cc66f4cec4cdcd0a9929ec43cf24b65",
       "license": "See upstream repository",
       "requires_huggingface_auth": false
     },
@@ -270,6 +285,7 @@
       "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_refine.safetensors",
       "size_bytes": 1036034472,
       "sha256": "dd6ee4f7f49bf610f06a20570ea047fdd8c498c92494bb5ec2c1180c609e2478",
+      "xet_hash": "8a4c7a5184ba000bd3b5e53f994e593ded0630c3419682454552c7d96617952c",
       "license": "See upstream repository",
       "requires_huggingface_auth": false
     },
@@ -284,6 +300,7 @@
       "url": "https://huggingface.co/n8te0/adonis_flux2klein/resolve/515ecf66717d14309a055811b3d478cdfa59bbda/adonis_post.safetensors",
       "size_bytes": 926976144,
       "sha256": "cf27c972eae1570a3c66500140a74b730c9f7bb079a141b7ae1595a9363d7b63",
+      "xet_hash": "082802aa5ee7bd1356567a6a65ea17af7f99841b6f08dd94d038b96742beada4",
       "license": "See upstream repository",
       "requires_huggingface_auth": false
     },
@@ -312,6 +329,7 @@
       "url": "https://huggingface.co/Comfy-Org/BiRefNet/resolve/8fdc9d315889de96cc0c6269eeecd333e2727889/background_removal/birefnet.safetensors",
       "size_bytes": 444473596,
       "sha256": "9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154",
+      "xet_hash": "796e4ababf8368833ae155c9063ce8a6bce38bc1b3783682e62c87f789cddcbe",
       "license": "See upstream repository",
       "requires_huggingface_auth": false
     },
@@ -326,6 +344,7 @@
       "url": "https://huggingface.co/Comfy-Org/mediapipe/resolve/b98d050e8bf406f14f063bdba697e5b5391bbbf5/detection/mediapipe_face_fp32.safetensors",
       "size_bytes": 5423900,
       "sha256": "a98c4806081d40eba35102a0f6dc0000c2e1388b72cf24e691703d0605bd888a",
+      "xet_hash": "8b2d5cd8eec02c12d2a6608cce6f24850895e0bf3dd5bc5b08103b2a832d5f6a",
       "license": "Apache-2.0",
       "requires_huggingface_auth": false
     },

@@ -238,7 +238,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save master PNG"
     }
@@ -254,7 +254,7 @@
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "Hoi4SavePNG",
     "_meta": {
       "title": "Save game PNG"
     }
