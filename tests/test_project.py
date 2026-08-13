@@ -323,15 +323,10 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue((runtime_root / "output/1024x1365/processed").is_dir())
             self.assertTrue((runtime_root / "output/1024x1365/restored").is_dir())
 
-    def test_every_variant_install_keeps_all_nine_loras(self) -> None:
+    def test_every_variant_install_keeps_only_the_canonical_style_lora_and_adonis(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())
         expected = {
-            "hoi4_portrait_flux2_klein_9b_lora_000001750.safetensors",
-            "hoi4_portrait_flux2_klein_9b_lora_000002000.safetensors",
-            "hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors",
             "hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors",
-            "hoi4_portrait_flux2_klein_9b_lora_000002750.safetensors",
-            "hoi4_portrait_flux2_klein_9b_lora_000003000.safetensors",
             "adonis_base.safetensors",
             "adonis_refine.safetensors",
             "adonis_post.safetensors",

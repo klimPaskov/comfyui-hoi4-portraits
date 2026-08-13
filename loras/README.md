@@ -1,17 +1,12 @@
 # FLUX.2 Klein 9B style LoRA
 
-The installers include these HOI4 style LoRA checkpoints for controlled comparisons:
+The installer uses one canonical HOI4 style LoRA:
 
 ```text
-hoi4_portrait_flux2_klein_9b_lora_000001750.safetensors
-hoi4_portrait_flux2_klein_9b_lora_000002000.safetensors
-hoi4_portrait_flux2_klein_9b_lora_000002250.safetensors
 hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors
-hoi4_portrait_flux2_klein_9b_lora_000002750.safetensors
-hoi4_portrait_flux2_klein_9b_lora_000003000.safetensors
 ```
 
-The workflows currently select the 2500-step checkpoint. Sampling seeds remain fixed until the final checkpoint is chosen.
+The workflows load this file at strength `1`, and style sampling seeds randomize after every generation.
 
 It targets FLUX.2 Klein 9B and uses the trigger `hoi4_portrait`. Place the checkpoint under `ComfyUI/models/loras/` and select it in `LoraLoaderModelOnly`.
 

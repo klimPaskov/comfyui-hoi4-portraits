@@ -62,7 +62,7 @@ Every source sampler uses the exact prompt:
 make this portrait hoi4_portrait style
 ```
 
-The three HOI4 style samplers randomize their seeds for every generation. The visible loader defaults to the 2500-step checkpoint at strength `1`; the installers also include the 1750, 2000, 2250, 2750, and 3000-step LoRAs for manual comparisons. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
+The three HOI4 style samplers randomize their seeds for every generation. The visible loader uses the canonical HOI4 style LoRA at strength `1`. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
 
 ## Text-to-image workflow
 

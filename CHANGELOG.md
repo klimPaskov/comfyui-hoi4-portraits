@@ -9,12 +9,12 @@ This repository contains one current, internally consistent package.
 - Model family: distilled FLUX.2 Klein 9B only, in full, FP8, and GGUF forms
 - Style adapter: the project's HOI4 style LoRA
 - Default style sampler: Euler, simple, four steps, CFG 1, guidance 1, denoise 1
-- Style adapter default: 2500-step HOI4 LoRA at strength 1
+- Style adapter: one canonical HOI4 style LoRA at strength 1
 - Style seeds: randomized for every HOI4 portrait generation
 - Restoration: complete Adonis Base → Post graph with one red enable/bypass control
 - Restoration seed: fixed so unchanged restoration inputs remain cacheable across new style generations
 - Restoration prompts: detailed source-neutral archival wording covers JPEG and compression artifacts, descreening, repeating noise, scratches, dust, scan defects, deblurring, and natural full-scene detail recovery while preserving identity, composition, historical character, and monochrome, sepia, or colour treatment
-- Shared LoRAs: HOI4 style checkpoints 1750, 2000, 2250, 2500, 2750, and 3000 plus Adonis Base, Adonis Refine, and Adonis Post
+- Shared LoRAs: the canonical HOI4 style LoRA plus Adonis Base, Adonis Refine, and Adonis Post
 
 ## Workflow contract
 

@@ -30,7 +30,7 @@ The installers place everything for you. For manual installs, use the folders un
 | `diffusion_models/` | Distilled `flux-2-klein-9b.safetensors` (full), `flux-2-klein-9b-fp8.safetensors` (FP8), or `flux-2-klein-9b-Q5_K_M.gguf` (GGUF) |
 | `text_encoders/` | `Qwen3-8B-Q8_0.gguf` |
 | `vae/` | `flux2-vae.safetensors` |
-| `loras/` | HOI4 style LoRAs at steps 1750, 2000, 2250, 2500, 2750, and 3000; the workflow currently selects 2500 |
+| `loras/` | Canonical HOI4 style LoRA plus Adonis restoration models |
 | `loras/` | `adonis_base.safetensors`, `adonis_refine.safetensors`, and `adonis_post.safetensors` |
 | `upscale_models/` | `RealESRGAN_x2plus.pth` |
 | `background_removal/` | `birefnet.safetensors` |
