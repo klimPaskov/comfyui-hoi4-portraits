@@ -74,5 +74,5 @@ For text-to-image, start from the example prompt `hoi4_portrait style, an Irish 
 | Wrong person | Use the manual crop to select that person, or turn face processing off. |
 | Too much body | Increase **Face zoom**; `0.90` is the default and `1.00` is the closest safe framing. |
 | Style is weak | Keep `hoi4_portrait` in the prompt, confirm LoRA strength is `1.00`, and keep the crop clean. |
-| Unexpected colour change | The restoration prompts preserve monochrome, sepia, or colour treatment by default; add an explicit colourisation request only when you want one. |
+| Unexpected colour change | The detailed restoration prompts clean common JPEG, scan, noise, and blur defects while preserving monochrome, sepia, or colour treatment by default; add an explicit colourisation request only when you want one. |
 | Game crashes on the DDS | Confirm the workflow saved it as a 156×210, 32-bit BGRA DDS (A8R8G8B8/B8G8R8A8-style). |

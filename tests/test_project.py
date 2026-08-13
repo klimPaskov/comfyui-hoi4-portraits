@@ -91,7 +91,7 @@ class WorkflowTests(unittest.TestCase):
         prompts = f"{build_workflows.ADONIS_BASE_COMBINED_PROMPT} {build_workflows.ADONIS_POST_COMBINED_PROMPT}".casefold()
         for source_specific_term in ("cellphone", "camera raw", "high iso", "male portrait"):
             self.assertNotIn(source_specific_term, prompts)
-        for preservation_term in ("monochrome", "sepia", "historical character", "only where present"):
+        for preservation_term in ("monochrome", "sepia", "historical character", "only where present", "jpeg", "descreen", "repeating noise", "deblur", "skin", "hair", "background"):
             self.assertIn(preservation_term, prompts)
 
     def test_source_comparison_and_outputs_are_exact(self) -> None:

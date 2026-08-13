@@ -12,7 +12,7 @@ This repository contains one current, internally consistent package.
 - Style seeds: fixed for controlled comparisons until the final HOI4 LoRA checkpoint is selected
 - Restoration: complete Adonis Base → Post graph with one red enable/bypass control
 - Restoration seed: fixed so unchanged restoration inputs remain cacheable across new style generations
-- Restoration prompts: source-neutral archival wording preserves identity, composition, gender, historical character, and the input's monochrome, sepia, or colour treatment
+- Restoration prompts: detailed source-neutral archival wording covers JPEG and compression artifacts, descreening, repeating noise, scratches, dust, scan defects, deblurring, and natural full-scene detail recovery while preserving identity, composition, historical character, and monochrome, sepia, or colour treatment
 - Shared LoRAs: HOI4 style checkpoints 1750, 2000, 2250, 2500, 2750, and 3000 plus Adonis Base, Adonis Refine, and Adonis Post
 
 ## Workflow contract

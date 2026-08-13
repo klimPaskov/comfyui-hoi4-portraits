@@ -39,9 +39,11 @@ The source, processing-only, and batch canvases inline the current functional gr
 
 Base and Post share the same fixed seed (`42`) and per-model step (`9`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`, matching the current upstream graph. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style seeds also remain fixed while the LoRA checkpoints are being compared.
 
+The shared Adonis prompt keeps the original broadly useful restoration detail: `uhdmanscale`, JPEG and compression artifact cleanup, descreening, halftone removal, repeating and diagonal-pattern noise removal, checkerboard cleanup, scratch and dust cleanup, deblurring, focus correction, colour-blotch cleanup, hair-strand separation, and full-scene texture recovery. It removes assumptions about cellphones, camera RAW, high ISO, or the subject's gender, and it explicitly preserves identity, composition, historical character, and the source's monochrome, sepia, or colour treatment.
+
 ## Source workflow
 
-The source canvas has 77 nodes in seven groups:
+The source canvas has 78 nodes in seven groups:
 
 1. one narrow setup card with model folders and clickable downloads;
 2. source loader, face detection, subject mask, focused crop controls, and RealESRGAN—the upload card itself already shows the source;
@@ -49,7 +51,7 @@ The source canvas has 77 nodes in seven groups:
 4. the complete Adonis Base → Post restoration path and its single red toggle;
 5. three style samplers, one shared background switch, and separate output sizing;
 6. PNG and DDS saves for every portrait;
-7. a compact portrait-ratio comparison row containing RealESRGAN, Adonis, and the three final 156×210 portraits.
+7. a compact portrait-ratio comparison row containing RealESRGAN, Adonis, and the three final full-resolution portraits.
 
 Every source sampler uses the exact prompt:
 
