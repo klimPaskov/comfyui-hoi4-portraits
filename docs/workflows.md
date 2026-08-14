@@ -28,7 +28,7 @@ The tuned style settings are CFG `1`, guidance `1`, **Euler**, **simple**, **4 s
 
 ## Restoration path
 
-The source, processing-only, and batch canvases inline the current functional graph from `adonis_post_workflows/Adonis_Base_Post_gguf.json`:
+The source, processing-only, and batch canvases inline the Adonis graph from `adonis_post_workflows/Adonis_Base_Post_gguf.json`:
 
 1. scale to `1.7` MP, a multiple of `16`, using crop + Lanczos;
 2. combine and encode the general-purpose restoration + Base prompt;
@@ -42,7 +42,7 @@ The source, processing-only, and batch canvases inline the current functional gr
 10. VAE-decode the Post result;
 11. use one red toggle to choose the prepared portrait or the complete Adonis result for every downstream node.
 
-Base and Post share the same fixed seed (`42`) and per-model step (`9`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`, matching the current upstream graph. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style samplers randomize their seeds independently.
+Base and Post share the same fixed seed (`42`) and per-model step (`9`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`, matching the Adonis graph. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style samplers randomize their seeds independently.
 
 The shared Adonis prompt keeps the original broadly useful restoration detail: `uhdmanscale`, JPEG and compression artifact cleanup, descreening, halftone removal, repeating and diagonal-pattern noise removal, checkerboard cleanup, scratch and dust cleanup, deblurring, focus correction, colour-blotch cleanup, hair-strand separation, and full-scene texture recovery. It removes assumptions about cellphones, camera RAW, high ISO, or the subject's gender, explicitly preserves identity, composition, and historical character, and always colorizes monochrome and sepia sources with restrained, plausible, period-appropriate colours.
 
@@ -76,7 +76,7 @@ The three HOI4 style samplers randomize their seeds for every generation. The vi
 
 ## Consistency across generations
 
-Repeated generations stay close in identity, framing, clothing, and overall HOI4 treatment while still varying expression, lighting, and background. The sheet contains 22 unique results across three repeated runs; byte-for-byte duplicate images are shown once.
+The same prompt keeps identity, framing, clothing, and the overall HOI4 treatment consistent while allowing small variations in expression, lighting, and background.
 
 ![Consistency sheet showing repeated HOI4 portrait generations](assets/showcase/consistency-sheet.webp)
 
@@ -123,7 +123,7 @@ On RunPod, all workflows save to:
 
 Windows uses the output folder selected during installation. Manual and Comfy Cloud installations use `ComfyUI/output/hoi4_portraits/1024x1365/`, `ComfyUI/output/hoi4_portraits/156x210/`, and `ComfyUI/output/hoi4_portraits/156x210/dds/`.
 
-The DDS saver writes uncompressed 32-bit BGRA data with alpha in the A8R8G8B8/B8G8R8A8-style layout used by HOI4 portraits. The project PNG and DDS savers are terminal output nodes that safely follow the installer-configured portrait output folder on current ComfyUI versions. Queueing the workflow therefore executes every connected save branch automatically; numbered counters prevent repeated runs from overwriting existing portraits.
+The DDS saver writes uncompressed 32-bit BGRA data with alpha in the A8R8G8B8/B8G8R8A8-style layout used by HOI4 portraits. The PNG and DDS savers follow the portrait output folder selected during installation. Queueing the workflow executes every connected save branch automatically, and numbered counters prevent repeated runs from overwriting existing portraits.
 
 ![Portrait export graph](assets/workflows/current/portrait-exports.png)
 
