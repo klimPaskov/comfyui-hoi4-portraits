@@ -61,11 +61,7 @@ Prepared and restored 1024×1365 portraits use `processed/` and `restored/`. A b
 
 ## Prompt rules
 
-Keep the source default prompt `make this portrait hoi4_portrait style`. Append only deliberate changes to one candidate to test them:
-
-```text
-make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, wearing a military uniform
-```
+Keep the source default prompt `make this portrait hoi4_portrait style`. Append only deliberate changes to physical features or clothing when the model needs extra guidance.
 
 For text-to-image, start from the example prompt `hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations.` and edit the subject description as needed. Do not describe the game, visual style, background, lighting, framing, or rendering.
 

@@ -163,11 +163,7 @@ Keep the source workflow's default prompt exactly as-is:
 make this portrait hoi4_portrait style
 ```
 
-That phrase already triggers the trained HOI4 look. You can safely append a short description when the model needs help — ethnicity or skin colour if it gets the skin wrong, or civilian/military/clerical clothing if it helps the outfit:
-
-```text
-make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, wearing a military uniform
-```
+That phrase already triggers the trained HOI4 look. You can append a short subject description when the model needs help with a specific physical feature or clothing choice.
 
 Don't describe the game, background, lighting, or rendering — the LoRA handles those. For a fictional portrait, edit the subject description in the default text-to-image prompt.
 
