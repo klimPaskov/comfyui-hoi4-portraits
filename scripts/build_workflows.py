@@ -599,7 +599,7 @@ def _primitive_int(g: Graph, title: str, value: int, pos: tuple[int, int], group
 
 
 def _adonis_sampler(g: Graph, title: str, pos: tuple[int, int], group: str, *, post: bool) -> Ref:
-    values = [0.5 if post else 0.8, "exponential/res_2s", "simple", 8 if post else 9, -1, 1.0, 1.0, 42, "fixed", "standard", True]
+    values = [0.5 if post else 0.8, "exponential/res_2s", "simple", 6, -1, 1.0, 1.0, 42, "fixed", "standard", True]
     names = ("eta", "sampler_name", "scheduler", "steps", "steps_to_run", "cfg", "denoise", "seed", "control_after_generate", "sampler_mode", "bongmath")
     api_values = dict(zip(names, values))
     api_values.pop("control_after_generate")
@@ -666,7 +666,7 @@ def _adonis_pipeline(
     base_negative_ref = _reference(g, "Base negative reference", (x + 480, 240), group)
     options = _shark_options(g, (x + 480, 380), group)
     seed = _primitive_int(g, "Shared Adonis seed", 42, (x + 480, 600), group)
-    steps = _primitive_int(g, "Steps per Adonis model", 9, (x + 480, 740), group)
+    steps = _primitive_int(g, "Steps per Adonis model", 6, (x + 480, 740), group)
     base = _adonis_sampler(g, "Restore details — Adonis Base", (x + 920, 100), group, post=False)
 
     post_prompt = _clip_encode(g, "Adonis Post prompt", ADONIS_POST_COMBINED_PROMPT, (x + 1360, 100), group)

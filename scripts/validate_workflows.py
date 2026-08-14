@@ -556,7 +556,7 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
         for node in api.values()
         if node.get("class_type") == "PrimitiveInt"
     }
-    if not is_text and primitive_values != {"Shared Adonis seed": 42, "Steps per Adonis model": 9}:
+    if not is_text and primitive_values != {"Shared Adonis seed": 42, "Steps per Adonis model": 6}:
         errors.append(f"{path}: visible shared Adonis seed/step controls changed")
     if is_processing and ui.get("extra", {}).get("style_lora") is not None:
         errors.append(f"{path}: processing-only metadata advertises a style LoRA")

@@ -205,6 +205,8 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue(all(node["widgets_values"][8] == "fixed" for node in adonis_ui_samplers))
         shared_seed = next(node for node in ui["nodes"] if node["title"] == "Shared Adonis seed")
         self.assertEqual(shared_seed["widgets_values"], [42])
+        shared_steps = next(node for node in ui["nodes"] if node["title"] == "Steps per Adonis model")
+        self.assertEqual(shared_steps["widgets_values"], [6])
 
     def test_batch_has_one_sampler_and_all_three_output_types(self) -> None:
         api = json.loads((WORKFLOW_DIR / "hoi4_portrait_batch.api.json").read_text())

@@ -1166,7 +1166,7 @@
         "hoi4_group": "03 Restore details"
       },
       "widgets_values": [
-        9
+        6
       ]
     },
     {
@@ -1257,7 +1257,7 @@
         0.8,
         "exponential/res_2s",
         "simple",
-        9,
+        6,
         -1,
         1.0,
         1.0,
@@ -1523,7 +1523,7 @@
         0.5,
         "exponential/res_2s",
         "simple",
-        8,
+        6,
         -1,
         1.0,
         1.0,
