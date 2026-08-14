@@ -47,5 +47,5 @@ Keep the exact trigger phrase. Append only short identity or clothing facts when
 ## Text-to-image example
 
 ```text
-hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations.
 ```

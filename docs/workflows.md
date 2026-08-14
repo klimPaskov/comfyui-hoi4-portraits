@@ -87,7 +87,7 @@ This 21-node graph keeps the diffusion model, Qwen encoder, VAE, and style LoRA 
 ![Text-to-image workflow](assets/workflows/current/text-to-image-overview.png)
 
 ```text
-hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations.
 ```
 
 ## Processing-only workflow

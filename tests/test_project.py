@@ -304,6 +304,38 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue((comfy_root / "output/hoi4_portraits/1024x1365/processed").is_dir())
             self.assertTrue((comfy_root / "output/hoi4_portraits/1024x1365/restored").is_dir())
             self.assertTrue((comfy_root / "output/hoi4_portraits/156x210/dds").is_dir())
+            text_ui = json.loads((target / "hoi4_portrait_text_to_image.json").read_text())
+            installed_prompt = next(
+                node["widgets_values"][0]
+                for node in text_ui["nodes"]
+                if node["type"] == "CLIPTextEncode" and node["title"] == "Portrait prompt"
+            )
+            self.assertEqual(installed_prompt, build_workflows.TEXT_PROMPT)
+
+    def test_documented_storage_minimums_follow_model_sizes(self) -> None:
+        manifest = json.loads((ROOT / "models.json").read_text())
+        expected = {
+            ("full", None): 34.0,
+            ("fp8", None): 25.0,
+            ("gguf", "Q4_K_M"): 21.0,
+            ("gguf", "Q5_K_M"): 22.0,
+            ("gguf", "Q6_K"): 23.0,
+            ("gguf", "Q8_0"): 25.5,
+        }
+        local_install = (ROOT / "docs/local-install.md").read_text()
+        for (variant, quant), minimum_gb in expected.items():
+            entries = download_models._selected_model_entries(
+                manifest,
+                set(),
+                {variant},
+                {quant} if quant else set(),
+            )
+            payload_gb = sum(entry["size_bytes"] for entry in entries) / 1_000_000_000
+            self.assertGreaterEqual(minimum_gb - payload_gb, 2.0)
+            self.assertLessEqual(minimum_gb - payload_gb, 3.0)
+            label = quant or ("Full distilled" if variant == "full" else "FP8 distilled")
+            self.assertIn(f"{label}", local_install)
+            self.assertIn(f"| {minimum_gb:g} GB |", local_install)
 
     @unittest.skipIf(sys.platform == "win32", "directory symlinks require elevated Windows privileges")
     def test_runpod_workspace_uses_runtime_input_and_output(self) -> None:

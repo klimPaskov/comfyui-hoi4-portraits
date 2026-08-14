@@ -23,7 +23,7 @@ make this portrait hoi4_portrait style
 The text-to-image workflow uses the example prompt:
 
 ```text
-hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations.
 ```
 
 For source portraits, the graph crops to 1024 × 1365 head and shoulders, applies RealESRGAN, optionally runs the Adonis restoration pass, and then uses the processed portrait as the sampler starting latent. The source workflows include these connections.

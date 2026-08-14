@@ -28,10 +28,7 @@ BACKGROUND_MODEL = "birefnet.safetensors"
 FACE_MODEL = "mediapipe_face_fp32.safetensors"
 
 STYLE_PROMPT = "make this portrait hoi4_portrait style"
-TEXT_PROMPT = (
-    "hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, "
-    "wearing a plain civilian jacket."
-)
+TEXT_PROMPT = "hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations."
 ADONIS_FIXED_PROMPT = (
     "uhdmanscale. Remove JPEG and other compression artifacts, halftone dot patterns, periodic grid noise, repeating noise patterns, uniform diagonal line texture patterns, checkerboard artifacts, scratches, dust, scanning artifacts, sensor noise, and other defects only where present. "
     "Apply a descreen filter where needed. Reconstruct low-resolution and noisy areas with clean, high-resolution natural texture.\n\n"

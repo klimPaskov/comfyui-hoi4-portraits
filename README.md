@@ -52,15 +52,18 @@ The PNG and DDS nodes save automatically to the portrait output folder selected 
 
 ## Which model do I need?
 
-The installer downloads only the model variant you choose:
+The installer downloads only the model variant you choose. Minimum storage includes the shared support models and about 2–3 GB of free space.
 
-| Variant | File | Download size | VRAM |
-| --- | --- | --- | --- |
-| Full distilled | `flux-2-klein-9b.safetensors` | 18.2 GB | above 20 GB |
-| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 9.4 GB | 16–20 GB |
-| GGUF distilled | `flux-2-klein-9b-*.gguf` | 5.9–10.0 GB | 8–16 GB |
+| Variant | Minimum storage | VRAM |
+| --- | --- | --- |
+| Full distilled | 34 GB | above 20 GB |
+| FP8 distilled | 25 GB | 16–20 GB |
+| GGUF Q4_K_M | 21 GB | 8–10 GB |
+| GGUF Q5_K_M | 22 GB | 10–14 GB |
+| GGUF Q6_K | 23 GB | 12–16 GB |
+| GGUF Q8_0 | 25.5 GB | 16+ GB |
 
-Shared support files (Qwen 3 8B Q8 GGUF encoder, VAE, the canonical HOI4 style LoRA, all three Adonis LoKrs, RealESRGAN, BiRefNet, and face detectors) add **12.89 GB** on top. Every variant uses the same canonical style LoRA at strength `1`. Refine stays installed as the official alternative first pass; the default graph uses Base → Post. The full install's exact model payload is **31.05 GB (28.92 GiB)**. Storage and VRAM requirements for each install are documented in [`docs/local-install.md`](docs/local-install.md).
+Every variant includes Qwen, the VAE, the canonical HOI4 style LoRA, all three Adonis models, RealESRGAN, BiRefNet, and the face detectors. Refine stays installed as the official alternative first pass; the default graph uses Base → Post. Storage and VRAM requirements are documented in [`docs/local-install.md`](docs/local-install.md).
 
 The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest) contains:
 
@@ -95,7 +98,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 )
 ```
 
-The RunPod command uses FP8 by default, and a 25 GB RunPod volume is enough for that default installation. Batch sources go in `/workspace/hoi4-portrait-runpod/input/`, and every PNG and DDS is written below `/workspace/hoi4-portrait-runpod/output/`. You can explicitly select full BF16 on a larger GPU or use GGUF on a smaller GPU, for example:
+The RunPod command uses FP8 by default and requires at least 25 GB of storage. Batch sources go in `/workspace/hoi4-portrait-runpod/input/`, and every PNG and DDS is written below `/workspace/hoi4-portrait-runpod/output/`. You can explicitly select full BF16 on a larger GPU or use GGUF on a smaller GPU, for example:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q5_K_M
@@ -117,7 +120,9 @@ python scripts/download_models.py --comfyui-root /path/to/ComfyUI --variant fp8
 
 The full and FP8 FLUX.2 Klein files are gated. Before installing, accept the agreement on [`black-forest-labs/FLUX.2-klein-9B`](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B) (and [`...-9b-fp8`](https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8) for the FP8 variant) and create a [read-only Hugging Face token](https://huggingface.co/settings/tokens/new?tokenType=read). The [Hugging Face guide](docs/hugging-face.md) shows the complete setup. GGUF files are not gated.
 
-## What the source workflow does
+## Workflows
+
+### Source portrait
 
 The workflow is arranged from left to right in clear, colour-coded stages.
 
@@ -128,27 +133,27 @@ The workflow is arranged from left to right in clear, colour-coded stages.
 3. **Style:** three independent candidates use the canonical HOI4 style LoRA at strength `1`. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and a seed that randomizes for every generation.
 4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three full-resolution finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS. The prepared and restored 1024×1365 portraits are also saved in `processed` and `restored` folders.
 
-The other three workflow canvases use the same stage colors and controls.
-
 ### Text to image
 
 ![Text-to-image workflow overview](docs/assets/workflows/current/text-to-image-overview.png)
 
-The workflow starts from this default prompt:
+Create a fictional portrait without a source image. Describe the subject in the purple prompt node, then use the same background, sizing, PNG, and DDS controls as the other workflows. The default prompt is:
 
 ```text
-hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations.
 ```
-
-![Text-to-image portrait generated with the default prompt](docs/assets/examples/text-to-image-orange-haired.png)
 
 ### Batch
 
 ![Batch workflow overview](docs/assets/workflows/current/batch-overview.png)
 
+Process every supported image in the batch input folder one by one. Choose the number of candidates, optionally replace the background, and save each queue in its own matching full-resolution and game-resolution folders.
+
 ### Processing only
 
 ![Processing-only workflow overview](docs/assets/workflows/current/processing-overview.png)
+
+Crop, upscale, and optionally restore a portrait without applying the HOI4 style LoRA. Prepared and restored portraits are saved separately at 1024×1365.
 
 ## Prompting
 
@@ -164,7 +169,7 @@ That phrase already triggers the trained HOI4 look. You can safely append a shor
 make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, wearing a military uniform
 ```
 
-Don't describe the game, background, lighting, or rendering — the LoRA handles those. For a fictional portrait, edit only the person description in the default text-to-image prompt.
+Don't describe the game, background, lighting, or rendering — the LoRA handles those. For a fictional portrait, edit the subject description in the default text-to-image prompt.
 
 ## Guides
 

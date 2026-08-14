@@ -8,18 +8,16 @@
 
 ## Storage and VRAM requirements
 
-The installer downloads only the selected distilled model variant plus the shared support set. The shared set is **12,893,345,742 bytes (12.89 GB / 12.01 GiB)**: Qwen 3 8B Q8 GGUF, FLUX.2 VAE, the canonical HOI4 style LoRA, Adonis Base, Refine, and Post, RealESRGAN, BiRefNet, and both face detectors. The same four LoRA/LoKr files are shared by full, FP8, and GGUF installs.
+The installer downloads the selected distilled model plus Qwen, the VAE, the canonical HOI4 style LoRA, Adonis Base, Refine, Post, RealESRGAN, BiRefNet, and both face detectors. Each minimum leaves about 2–3 GB of free space for installation and initial outputs.
 
-| Install | Variant file | Exact model payload | Practical free space | VRAM selection |
-| --- | --- | --- | --- | --- |
-| Full distilled | `flux-2-klein-9b.safetensors` | 31.051 GB / 28.918 GiB | 40 GB | more than 20 GB |
-| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 22.326 GB / 20.793 GiB | 25 GB on RunPod | 16–20 GB |
-| GGUF distilled Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` | 18.803 GB / 17.512 GiB | 25 GB | 8–10 GB |
-| GGUF distilled Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` | 19.912 GB / 18.545 GiB | 25 GB | 10–14 GB |
-| GGUF distilled Q6_K | `flux-2-klein-9b-Q6_K.gguf` | 20.759 GB / 19.333 GiB | 25 GB | 12–16 GB |
-| GGUF distilled Q8_0 | `flux-2-klein-9b-Q8_0.gguf` | 22.872 GB / 21.301 GiB | 27 GB | 16+ GB |
-
-The bare minimum for the full workflow's model files is therefore **31,050,530,910 bytes (31.05 GB / 28.92 GiB)**. Keep about **40 GB free** for the model payload, ComfyUI package, Hugging Face metadata/cache behavior, and generated images. For multiple variants, count the shared set once: full + FP8 + GGUF Q5_K_M is **47.50 GB** of model files.
+| Install | Variant file | Minimum storage | VRAM selection |
+| --- | --- | --- | --- |
+| Full distilled | `flux-2-klein-9b.safetensors` | 34 GB | more than 20 GB |
+| FP8 distilled | `flux-2-klein-9b-fp8.safetensors` | 25 GB | 16–20 GB |
+| GGUF distilled Q4_K_M | `flux-2-klein-9b-Q4_K_M.gguf` | 21 GB | 8–10 GB |
+| GGUF distilled Q5_K_M | `flux-2-klein-9b-Q5_K_M.gguf` | 22 GB | 10–14 GB |
+| GGUF distilled Q6_K | `flux-2-klein-9b-Q6_K.gguf` | 23 GB | 12–16 GB |
+| GGUF distilled Q8_0 | `flux-2-klein-9b-Q8_0.gguf` | 25.5 GB | 16+ GB |
 
 The Windows installer defaults to **FP8** at every detected VRAM size. The detected VRAM remains visible so you can select GGUF for an 8–16 GB GPU or full BF16 above 20 GB.
 
@@ -70,7 +68,7 @@ curl -fsSL "https://github.com/klimPaskov/comfyui-hoi4-portraits/releases/latest
 
 Drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. Each queue creates matching `<batch_name>` folders under `1024x1365` and `156x210`. Full-resolution master, prepared, and restored PNGs use the first folder; game PNGs and DDS files use `156x210/<batch_name>` and `156x210/<batch_name>/dds`. If no batch name is set, the workflow defaults to the next free `batch_1`, `batch_2`, and so on. It also supports direct saves in the standard resolution folders.
 
-The command defaults to **FP8**, and a **25 GB RunPod volume is enough** for that default installation. Use a larger volume if you plan to retain many generated outputs. Select full BF16 explicitly on a larger GPU or pass a GGUF variant and quantization on a smaller GPU:
+The command defaults to **FP8** and requires at least **25 GB** of RunPod storage. Select full BF16 explicitly on a larger GPU or pass a GGUF variant and quantization on a smaller GPU:
 
 ```bash
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q4_K_M,Q5_K_M

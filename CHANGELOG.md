@@ -43,7 +43,7 @@ This repository contains one current, internally consistent package.
 - Full distilled weights above 20 GB VRAM
 - RunPod defaults to FP8 distilled; full BF16 remains an explicit option
 - RunPod uses `/workspace/hoi4-portrait-runpod/input` and `/workspace/hoi4-portrait-runpod/output`
-- RunPod storage: a 25 GB volume is enough for the default FP8 installation
+- RunPod storage: the default FP8 installation requires at least 25 GB
 - Windows detects the GPU, recommends a suitable model, offers the official ComfyUI portable install when ComfyUI is missing, selects the ROCm-enabled package for AMD, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, offers default, ComfyUI, and custom batch input and portrait output paths, installs pinned node packs, and downloads the selected model set
 
 Pinned commits, model revisions, sizes, hashes, and licenses are in [`models.json`](models.json), [`scripts/install_custom_node_packs.py`](scripts/install_custom_node_packs.py), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).

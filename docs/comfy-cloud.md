@@ -21,7 +21,7 @@ The processing workflow does not use the project LoRA, so this import is only ne
 1. Open the workflow JSON file in Comfy Cloud.
 2. For the source, processing, and batch workflows, upload your photos and select them in the loaders. Upload one background from [`backgrounds/`](../backgrounds/) only if you enable background replacement (it is off by default).
 3. The upload card already shows the source; compare the prepared result in the portrait row below. **Face zoom** defaults to `0.90`; lower values keep more of the body. **Preserve hat/headwear** defaults to `true`. Turn off **Toggle face processing** to keep a full multi-person composition. Adonis Base and Post run before styling.
-4. Keep the source prompt exactly as `make this portrait hoi4_portrait style` and append only deliberate changes. The text-to-image workflow uses the example prompt `hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.`
+4. Keep the source prompt exactly as `make this portrait hoi4_portrait style` and append only deliberate changes. The text-to-image workflow uses `hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations.`
 5. Queue the workflow. A source run returns three candidates; download the 156×210 output you want and the 1024×1365 master.
 
 The workflows contain no paid partner nodes. Normal Comfy Cloud compute and subscription limits still apply.
