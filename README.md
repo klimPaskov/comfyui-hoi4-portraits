@@ -6,6 +6,20 @@ Create Hearts of Iron IV-style leader portraits with ComfyUI and the FLUX.2 Klei
 
 The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod defaults to FP8, while the Windows installer uses GPU detection to recommend a suitable model; GGUF and full BF16 remain available as manual selections. Every workflow saves **HOI4-ready 156×210 DDS files** for a mod's `gfx/leaders/TAG/` folder.
 
+## Portrait results
+
+Each comparison shows the original portrait, the restored portrait, and the final HOI4-style result. The portraits are shown exactly as produced.
+
+![Source portrait before restoration and after HOI4 styling](docs/assets/showcase/source-before-after.png)
+
+![Douglas Hyde source, restored, and HOI4 portrait](docs/assets/showcase/douglas-hyde-before-after.png)
+
+![Éamon de Valera source, restored, and HOI4 portrait](docs/assets/showcase/eamon-de-valera-before-after.png)
+
+![Seán Lemass source, restored, and HOI4 portrait](docs/assets/showcase/sean-lemass-before-after.png)
+
+![W. T. Cosgrave source, restored, and HOI4 portrait](docs/assets/showcase/wt-cosgrave-before-after.png)
+
 ## Four workflows
 
 | Workflow | Best for | What it runs |
@@ -107,20 +121,34 @@ The full and FP8 FLUX.2 Klein files are gated. Before installing, accept the agr
 
 The workflow is arranged from left to right in clear, colour-coded stages.
 
-![Source workflow overview](docs/assets/workflows/audit/source-overview-2026-08-13.png)
+![Source workflow overview](docs/assets/workflows/current/source-overview.png)
 
 1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then compare the prepared result below. The upload node already shows the source, so there is no duplicate preview.
 2. **Restoration:** the restoration group fully expands the current upstream [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json). It keeps the upstream 1.7 MP Lanczos crop, reference conditioning, shared empty latent, fixed seed, nine-step control, and Shark options. The detailed source-neutral prompts remove JPEG and compression artifacts, halftone patterns, repeating noise, scratches, dust, scan defects, and blur where present; recover natural skin, hair, fabric, object, and background detail; preserve identity and composition; and always colorize monochrome and sepia sources with restrained, period-appropriate colours. Adonis Base performs the first generation; its latent feeds both Post reference branches, and Adonis Post performs a second full generation before the final VAE decode. One red **Use Adonis restoration** switch defaults on; turn it off to send the prepared portrait directly to the next stage. When the input and restoration settings are unchanged, the workflow reuses the completed Adonis result.
 3. **Style:** three independent candidates use the canonical HOI4 style LoRA at strength `1`. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and a seed that randomizes for every generation.
 4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three full-resolution finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS. The prepared and restored 1024×1365 portraits are also saved in `processed` and `restored` folders.
 
-The other three workflow canvases use the same stage colors and controls:
+The other three workflow canvases use the same stage colors and controls.
 
-![Text-to-image workflow overview](docs/assets/workflows/audit/text-overview-2026-08-11.jpg)
+### Text to image
 
-![Batch workflow overview](docs/assets/workflows/audit/batch-overview-2026-08-13.png)
+![Text-to-image workflow overview](docs/assets/workflows/current/text-to-image-overview.png)
 
-![Processing-only workflow overview](docs/assets/workflows/audit/processing-overview-2026-08-13.png)
+The workflow starts from this default prompt:
+
+```text
+hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
+```
+
+![Text-to-image portrait generated with the default prompt](docs/assets/examples/text-to-image-orange-haired.png)
+
+### Batch
+
+![Batch workflow overview](docs/assets/workflows/current/batch-overview.png)
+
+### Processing only
+
+![Processing-only workflow overview](docs/assets/workflows/current/processing-overview.png)
 
 ## Prompting
 
@@ -136,11 +164,7 @@ That phrase already triggers the trained HOI4 look. You can safely append a shor
 make this portrait hoi4_portrait style, a middle-aged Irish man with dark hair, wearing a military uniform
 ```
 
-Don't describe the game, background, lighting, or rendering — the LoRA handles those. The text-to-image workflow uses the example prompt:
-
-```text
-hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
-```
+Don't describe the game, background, lighting, or rendering — the LoRA handles those. For a fictional portrait, edit only the person description in the text-to-image workflow's default prompt shown above.
 
 ## Guides
 

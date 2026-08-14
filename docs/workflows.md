@@ -4,6 +4,8 @@
 
 Every processing step stays on the main canvas. The coloured groups follow the same order as the portrait: preparation, models, restoration, styling, and saving.
 
+![Source preparation and model setup](assets/workflows/current/source-preparation.png)
+
 The main visible controls are:
 
 | Control | Responsibility |
@@ -44,9 +46,13 @@ Base and Post share the same fixed seed (`42`) and per-model step (`9`) controls
 
 The shared Adonis prompt keeps the original broadly useful restoration detail: `uhdmanscale`, JPEG and compression artifact cleanup, descreening, halftone removal, repeating and diagonal-pattern noise removal, checkerboard cleanup, scratch and dust cleanup, deblurring, focus correction, colour-blotch cleanup, hair-strand separation, and full-scene texture recovery. It removes assumptions about cellphones, camera RAW, high ISO, or the subject's gender, explicitly preserves identity, composition, and historical character, and always colorizes monochrome and sepia sources with restrained, plausible, period-appropriate colours.
 
+![Adonis restoration graph](assets/workflows/current/adonis-restoration.png)
+
 ## Source workflow
 
 The source canvas has 82 nodes in seven groups:
+
+![Complete source workflow](assets/workflows/current/source-overview.png)
 
 1. one narrow setup card with model folders and clickable downloads;
 2. source loader, face detection, subject mask, focused crop controls, and RealESRGAN—the upload card itself already shows the source;
@@ -64,9 +70,21 @@ make this portrait hoi4_portrait style
 
 The three HOI4 style samplers randomize their seeds for every generation. The visible loader uses the canonical HOI4 style LoRA at strength `1`. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
 
+![HOI4 styling graph](assets/workflows/current/hoi4-styling.png)
+
+![Source workflow comparison row](assets/workflows/current/source-comparison.png)
+
+## Consistency across generations
+
+Repeated generations stay close in identity, framing, clothing, and overall HOI4 treatment while still varying expression, lighting, and background. The sheet contains 22 unique results across three repeated runs; byte-for-byte duplicate images are shown once.
+
+![Consistency sheet showing repeated HOI4 portrait generations](assets/showcase/consistency-sheet.webp)
+
 ## Text-to-image workflow
 
 This 21-node graph keeps the diffusion model, Qwen encoder, VAE, and style LoRA loaders separate. It runs one standard ComfyUI sampler with a randomized seed, then shows optional background replacement, master sizing, game sizing, all three saves, and one tall full-resolution final preview. Its example prompt is:
+
+![Text-to-image workflow](assets/workflows/current/text-to-image-overview.png)
 
 ```text
 hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wearing a plain civilian jacket.
@@ -76,9 +94,15 @@ hoi4_portrait style, an Irish middle-aged man with neatly combed dark hair, wear
 
 This 45-node graph includes source preparation and the entire Adonis topology. It does not load the style LoRA. RealESRGAN, restored, and the full-resolution final portrait appear together in the comparison row, and the prepared and restored 1024×1365 files are saved separately.
 
+![Processing-only workflow](assets/workflows/current/processing-overview.png)
+
 ## Batch workflow
 
 This 59-node graph reads compatible images from `/workspace/hoi4-portrait-runpod/input/` on RunPod, the selected input folder on Windows, and `ComfyUI/input/hoi4_portraits_batch/` on manual installations. `HOI4 Batch Input` returns list items, so ComfyUI handles one source at a time in stable, case-insensitive filename order. It rescans the folder on every queue instead of reusing a cached file list. **Number of portrait candidates** defaults to one and repeats the source latent before the standard sampler. One red **Use replacement background** control applies the selected background after generation and before both output sizes; it is disabled by default. Each queue reserves matching `<batch_name>/` folders under `1024x1365/` and `156x210/`. If no name is set, the workflow defaults to the next free `batch_1`, `batch_2`, and so on. Enabling **save without batch folder** keeps outputs directly in their standard resolution folders; the checkbox is disabled by default. Prepared and restored portraits use `processed/` and `restored/` inside the selected full-resolution folder, and DDS files use `dds/` inside the selected game-resolution folder. The three comparison previews remain centered with equal spacing.
+
+![Batch workflow](assets/workflows/current/batch-overview.png)
+
+![Batch source, restoration, and final comparisons](assets/workflows/current/batch-comparison.png)
 
 ## Output contract
 
@@ -100,6 +124,8 @@ On RunPod, all workflows save to:
 Windows uses the output folder selected during installation. Manual and Comfy Cloud installations use `ComfyUI/output/hoi4_portraits/1024x1365/`, `ComfyUI/output/hoi4_portraits/156x210/`, and `ComfyUI/output/hoi4_portraits/156x210/dds/`.
 
 The DDS saver writes uncompressed 32-bit BGRA data with alpha in the A8R8G8B8/B8G8R8A8-style layout used by HOI4 portraits. The project PNG and DDS savers are terminal output nodes that safely follow the installer-configured portrait output folder on current ComfyUI versions. Queueing the workflow therefore executes every connected save branch automatically; numbered counters prevent repeated runs from overwriting existing portraits.
+
+![Portrait export graph](assets/workflows/current/portrait-exports.png)
 
 Source, processing-only, and batch workflows derive every output prefix from the current input filename. The source workflow adds `_1`, `_2`, or `_3` to distinguish its candidates. Text-to-image has no input image and therefore uses the stable `text_to_image` prefix.
 

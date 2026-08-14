@@ -51,6 +51,8 @@ Before downloading the gated full/FP8 model, follow the [Hugging Face access gui
 7. Queue once. The source workflow randomizes the three HOI4 style seeds for each generation and shows the full-resolution candidates side by side in the comparison row.
 8. Pick a final from the comparison row; the game-ready file is the `156x210/dds/` output.
 
+![Four game-ready 156×210 portrait examples](assets/examples/game-ready-portraits.png)
+
 RunPod outputs are saved under `/workspace/hoi4-portrait-runpod/output/1024x1365/`, `/workspace/hoi4-portrait-runpod/output/156x210/`, and `/workspace/hoi4-portrait-runpod/output/156x210/dds/`. The Windows installer defaults to `Documents\hoi4-portraits\output` and lets you choose the ComfyUI folder or a custom path. Manual installations use the same subfolders under `ComfyUI/output/hoi4_portraits/`.
 
 Saved PNG and DDS files keep the uploaded image's stem. A source named `general_macarthur.jpg` yields three candidates beginning with `general_macarthur_1`, `general_macarthur_2`, and `general_macarthur_3`. Batch and processing-only outputs keep the stem; multiple batch candidates receive non-overwriting numbered suffixes.
