@@ -13,7 +13,7 @@ This repository contains one current, internally consistent package.
 - Style seeds: randomized for every HOI4 portrait generation
 - Restoration: complete Adonis Base → Post graph with one red enable/bypass control
 - Restoration seed: fixed so unchanged restoration inputs remain cacheable across new style generations
-- Restoration prompts: detailed source-neutral archival wording covers JPEG and compression artifacts, descreening, repeating noise, scratches, dust, scan defects, deblurring, and natural full-scene detail recovery while preserving identity, composition, historical character, and monochrome, sepia, or colour treatment
+- Restoration prompts: Adonis wording covers JPEG artifacts, descreening, repeating noise, deblurring, identity preservation, and full-scene detail recovery while always colorizing monochrome and sepia sources
 - Shared LoRAs: the canonical HOI4 style LoRA plus Adonis Base, Adonis Refine, and Adonis Post
 
 ## Workflow contract

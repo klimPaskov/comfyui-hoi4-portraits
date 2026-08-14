@@ -36,15 +36,15 @@ The source, processing-only, and batch canvases inline the Adonis graph from `ad
 4. VAE-encode the prepared source and apply both Base reference latents;
 5. create the correctly sized empty FLUX.2 latent;
 6. use the upstream RES4LYF options: Laplacian noise, initial scale `1`, alternate denoise `1`, channelwise CFG off;
-7. run a complete nine-step Adonis Base generation;
+7. run a complete six-step Adonis Base generation;
 8. combine and encode the general-purpose restoration + Post prompt, zero its negative, and use the Base output latent for both Post reference branches;
-9. run a second complete nine-step Adonis Post generation from the same empty latent, seed, and options;
+9. run a second complete six-step Adonis Post generation from the same empty latent, seed, and options;
 10. VAE-decode the Post result;
 11. use one red toggle to choose the prepared portrait or the complete Adonis result for every downstream node.
 
-Base and Post share the same fixed seed (`42`) and per-model step (`9`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`, matching the Adonis graph. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style samplers randomize their seeds independently.
+Base and Post share the same fixed seed (`42`) and per-model step (`6`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style samplers randomize their seeds independently.
 
-The shared Adonis prompt keeps the original broadly useful restoration detail: `uhdmanscale`, JPEG and compression artifact cleanup, descreening, halftone removal, repeating and diagonal-pattern noise removal, checkerboard cleanup, scratch and dust cleanup, deblurring, focus correction, colour-blotch cleanup, hair-strand separation, and full-scene texture recovery. It removes assumptions about cellphones, camera RAW, high ISO, or the subject's gender, explicitly preserves identity, composition, and historical character, and always colorizes monochrome and sepia sources with restrained, plausible, period-appropriate colours.
+The shared Adonis prompt keeps the original broadly useful restoration detail: `uhdmanscale`, JPEG artifact cleanup, descreening, halftone removal, repeating and diagonal-pattern noise removal, deblurring, focus correction, colour-blotch cleanup, hair-strand separation, unrestricted texture reconstruction outside the face, and full-scene detail recovery. It removes assumptions about cellphones, camera RAW, high ISO, or the subject's gender and always colorizes monochrome and sepia sources with plausible, period-appropriate colours.
 
 ![Adonis restoration graph](assets/workflows/current/adonis-restoration.png)
 
