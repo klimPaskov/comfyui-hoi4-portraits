@@ -91,7 +91,7 @@ class WorkflowTests(unittest.TestCase):
         prompts = f"{build_workflows.ADONIS_BASE_COMBINED_PROMPT} {build_workflows.ADONIS_POST_COMBINED_PROMPT}".casefold()
         for source_specific_term in ("cellphone", "camera raw", "high iso", "male portrait"):
             self.assertNotIn(source_specific_term, prompts)
-        for required_term in ("always colorize monochrome", "sepia", "period-appropriate", "jpeg", "descreen", "repeating noise", "deblur", "skin", "hair", "background", "freely reconstruct all texture and sharpness with no restrictions"):
+        for required_term in ("always colorize monochrome", "sepia", "period-appropriate", "jpeg", "descreen", "repeating noise", "deblur", "skin", "hair", "background", "freely reconstruct all texture and sharpness with no restrictions", "remove overlay text", "severe pixelation", "poor lighting", "without changing identity"):
             self.assertIn(required_term, prompts)
         self.assertNotIn("conservatively", prompts)
         self.assertNotIn("keep monochrome or sepia images monochrome or sepia", prompts)
