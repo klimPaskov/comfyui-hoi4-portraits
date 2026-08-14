@@ -87,12 +87,14 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(filename_prefix["widget"], {"name": "filename_prefix"})
                 self.assertIsNotNone(filename_prefix["link"])
 
-    def test_adonis_prompts_are_source_neutral(self) -> None:
+    def test_adonis_prompts_are_source_neutral_and_always_colorize(self) -> None:
         prompts = f"{build_workflows.ADONIS_BASE_COMBINED_PROMPT} {build_workflows.ADONIS_POST_COMBINED_PROMPT}".casefold()
         for source_specific_term in ("cellphone", "camera raw", "high iso", "male portrait"):
             self.assertNotIn(source_specific_term, prompts)
-        for preservation_term in ("monochrome", "sepia", "historical character", "only where present", "jpeg", "descreen", "repeating noise", "deblur", "skin", "hair", "background"):
-            self.assertIn(preservation_term, prompts)
+        for required_term in ("always output a full natural-colour image", "colorize every monochrome", "sepia", "historical character", "period-appropriate", "only where present", "jpeg", "descreen", "repeating noise", "deblur", "skin", "hair", "background"):
+            self.assertIn(required_term, prompts)
+        self.assertNotIn("keep monochrome or sepia images monochrome or sepia", prompts)
+        self.assertNotIn("unless colourisation is explicitly requested", prompts)
 
     def test_source_comparison_and_outputs_are_exact(self) -> None:
         ui = json.loads((WORKFLOW_DIR / "hoi4_portrait_source.json").read_text())

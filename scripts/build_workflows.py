@@ -39,11 +39,11 @@ ADONIS_FIXED_PROMPT = (
     "Subject identity is locked: preserve exact facial and body geometry, eye shape and visible eye colour, nose and mouth shape, expression, pose, apparent age, distinctive features, composition, crop, and perspective.\n\n"
     "On skin areas, remove colour blotch artifacts and unwanted uneven tone while preserving natural pores and texture detail. On hair areas, separate smeared colour artifacts and restore strand separation and texture. Restore fabric and material texture, and reconstruct missing detail outside the face conservatively.\n\n"
     "Apply deblur and focus correction where needed. Infer and reconstruct underlying detail from a soft or damaged source: sharpen edge definition and recover lip, skin, hair, clothing, object, and background detail without changing identity or composition.\n\n"
-    "Preserve the source's intended colour treatment and historical character. Keep monochrome or sepia images monochrome or sepia unless colourisation is explicitly requested; for colour images, correct unwanted casts without inventing colours.\n\n"
+    "Always output a full natural-colour image while preserving its historical character. Colorize every monochrome, grayscale, and sepia source with restrained, plausible, period-appropriate skin, hair, eye, clothing, object, and background colours. Remove grayscale and sepia tint completely. For sources already in colour, correct unwanted casts while retaining plausible existing colours. Avoid oversaturation, modernized palettes, colour bleeding, patchy colour, and arbitrary colour changes.\n\n"
     "Output a clean, faithful, professional high-resolution archival restoration."
 )
 ADONIS_BASE_PROMPT = "faithfully and fully restore and reconstruct this entire image from its current source quality to clean professional high-resolution archival quality."
-ADONIS_POST_PROMPT = "clean and refine natural skin, hair, body, clothing, object, and background texture; remove remaining JPEG, checkerboard, compression, and reconstruction artifacts without altering identity, composition, expression, or the source's intended colour treatment."
+ADONIS_POST_PROMPT = "clean and refine natural skin, hair, body, clothing, object, and background texture; remove remaining JPEG, checkerboard, compression, and reconstruction artifacts without altering identity, composition, expression, or the restored natural colours."
 ADONIS_BASE_COMBINED_PROMPT = f"{ADONIS_BASE_PROMPT} {ADONIS_FIXED_PROMPT}"
 ADONIS_POST_COMBINED_PROMPT = f"{ADONIS_POST_PROMPT} {ADONIS_FIXED_PROMPT}"
 
