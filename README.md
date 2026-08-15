@@ -1,6 +1,6 @@
 # HOI4 portraits with FLUX.2 Klein 9B
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora) [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/rAXesGcT2t) [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/klimpaskov)
 
 Create Hearts of Iron IV-style leader portraits with ComfyUI and the FLUX.2 Klein 9B distilled model plus the project's HOI4 style LoRA. The source workflow keeps the person's crop, pose, framing, and facial identity anchored, restores old photos, and styles three portrait candidates for comparison. The batch workflow turns a whole folder of photos into game-ready portraits in one queue.
 
