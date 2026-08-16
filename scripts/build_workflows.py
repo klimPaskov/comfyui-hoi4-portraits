@@ -29,6 +29,8 @@ FACE_MODEL = "mediapipe_face_fp32.safetensors"
 
 STYLE_PROMPT = "make this portrait hoi4_portrait style"
 TEXT_PROMPT = "hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations."
+SOURCE_STYLE_SEEDS = (757254001619850, 629907966167866, 42)
+BATCH_STYLE_SEED = 42
 ADONIS_FIXED_PROMPT = (
     "uhdmanscale. Remove JPEG artifacts. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution noisy areas with high resolution natural textures.\n\n"
     "Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\n"
@@ -818,8 +820,10 @@ def _ksampler(
     seed: int,
     pos: tuple[int, int],
     group: str,
+    *,
+    control_after_generate: str = "randomize",
 ) -> Ref:
-    values = [seed, "randomize", 4, 1.0, "euler", "simple", 1.0]
+    values = [seed, control_after_generate, 4, 1.0, "euler", "simple", 1.0]
     sampler = g.node(
         "KSampler", title, pos, (560, 500), group,
         [("model", "MODEL", False), ("seed", "INT", True), ("steps", "INT", True),
@@ -1001,10 +1005,11 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
         g, model, "04 Create three portraits", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
     )
     portraits: list[Ref] = []
-    for index, (seed, y) in enumerate(((433682774328322, 100), (101825966811438, 680), (757254001619850, 1260)), start=1):
+    for index, (seed, y) in enumerate(zip(SOURCE_STYLE_SEEDS, (100, 680, 1260)), start=1):
         sampler = _ksampler(
             g, f"Portrait {index} sampling", model, positive, negative, latent, seed,
             (6520, y), "04 Create three portraits",
+            control_after_generate="fixed",
         )
         portraits.append(_decode_style(g, model, sampler, (7120, y), "04 Create three portraits"))
 
@@ -1177,7 +1182,10 @@ def build_batch() -> tuple[dict[str, Any], dict[str, Any]]:
         g, model, "04 Create portraits", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
     )
     candidate_latent = _repeat_latent(g, latent, (6160, 440), "04 Create portraits")
-    sampler = _ksampler(g, "Portrait sampling", model, positive, negative, candidate_latent, 42, (6520, 100), "04 Create portraits")
+    sampler = _ksampler(
+        g, "Portrait sampling", model, positive, negative, candidate_latent, BATCH_STYLE_SEED,
+        (6520, 100), "04 Create portraits", control_after_generate="fixed",
+    )
     portrait = _decode_style(g, model, sampler, (7120, 100), "04 Create portraits")
     master = _image_scale(g, "Master portrait — 1024×1365", 1024, 1365, (7460, 100), "05 Save portraits")
     game = _image_scale(g, "Game portrait — 156×210", 156, 210, (7900, 100), "05 Save portraits")

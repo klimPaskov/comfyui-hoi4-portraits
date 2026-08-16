@@ -134,7 +134,7 @@ The workflow is arranged from left to right in clear, colour-coded stages.
 
 1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then compare the prepared result below. The upload node already shows the source, so there is no duplicate preview.
 2. **Restoration:** the restoration group fully expands the [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json). It keeps the 1.7 MP Lanczos crop, reference conditioning, shared empty latent, fixed seed, six-step control, and Shark options. The prompts retain the original Adonis instructions for JPEG artifacts, halftone patterns, descreening, repeating noise, full-scene detail reconstruction, identity preservation, skin and hair texture, deblurring, and focus correction while removing capture-device and gender assumptions. Monochrome and sepia sources are always colorized with plausible, period-appropriate colours. Adonis Base performs the first generation; its latent feeds both Post reference branches, and Adonis Post performs a second full generation before the final VAE decode. One red **Use Adonis restoration** switch defaults on; turn it off to send the prepared portrait directly to the next stage. When the input and restoration settings are unchanged, the workflow reuses the completed Adonis result.
-3. **Style:** three independent candidates use the canonical HOI4 style LoRA at strength `1`. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and a seed that randomizes for every generation.
+3. **Style:** three independent candidates use the canonical HOI4 style LoRA at strength `1`. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and the fixed source defaults described in [Seed selection](#seed-selection).
 4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three full-resolution finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS. The prepared and restored 1024×1365 portraits are also saved in `processed` and `restored` folders.
 
 ### Text to image
@@ -170,6 +170,14 @@ make this portrait hoi4_portrait style
 That phrase already triggers the trained HOI4 look. You can append a short subject description when the model needs help with a specific physical feature or clothing choice.
 
 Don't describe the game, background, lighting, or rendering — the LoRA handles those. For a fictional portrait, edit the subject description in the default text-to-image prompt.
+
+## Seed selection
+
+Seeds can change the look of a candidate even when the prompt and settings stay the same. These examples were compared with the FP8 FLUX.2 Klein 9B model and the canonical HOI4 style LoRA; the following seeds have worked well: `433682774328322`, `101825966811438`, `757254001619850`, `629907966167866`, `514819207028619`, and `42`.
+
+The source workflow starts with fixed seeds `757254001619850`, `629907966167866`, and `42` for its three candidates. The batch workflow starts with fixed seed `42`. To vary results, change **Control after generate** from **fixed** to **randomize**, **increment**, or **decrement**. Text-to-image remains randomized by default.
+
+![Seed comparison across repeated portrait examples](docs/assets/showcase/seed-comparison.png)
 
 ## Guides
 

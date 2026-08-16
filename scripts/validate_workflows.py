@@ -446,8 +446,9 @@ def _policy_errors(path: Path, ui: dict[str, Any], api: dict[str, Any]) -> list[
 
     for sampler in (node for node in ui.get("nodes", []) if node.get("type") == "KSampler"):
         widgets = sampler.get("widgets_values", [])
-        if len(widgets) < 2 or widgets[1] != "randomize":
-            errors.append(f"{path}: HOI4 style sampler seeds must randomize after generation")
+        expected_control = "randomize" if is_text else "fixed"
+        if len(widgets) < 2 or widgets[1] != expected_control:
+            errors.append(f"{path}: HOI4 style sampler seed control must default to {expected_control}")
 
     for node in api.values():
         class_type = node["class_type"]

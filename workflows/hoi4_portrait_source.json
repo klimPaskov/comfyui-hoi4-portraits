@@ -1985,8 +1985,8 @@
         "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
-        433682774328322,
-        "randomize",
+        757254001619850,
+        "fixed",
         4,
         1.0,
         "euler",
@@ -2091,8 +2091,8 @@
         "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
-        101825966811438,
-        "randomize",
+        629907966167866,
+        "fixed",
         4,
         1.0,
         "euler",
@@ -2197,8 +2197,8 @@
         "hoi4_group": "04 Create three portraits"
       },
       "widgets_values": [
-        757254001619850,
-        "randomize",
+        42,
+        "fixed",
         4,
         1.0,
         "euler",

@@ -11,7 +11,7 @@ The main visible controls are:
 | Control | Responsibility |
 | --- | --- |
 | `📂 Setup and downloads` | Narrow dark-brown card with a clear folder tree and clickable model downloads |
-| `KSampler` | Standard ComfyUI sampler with a randomized seed, 4 steps, CFG 1, Euler, simple scheduling, and full denoise |
+| `KSampler` | Standard ComfyUI sampler with fixed source/batch defaults or a randomized text-to-image seed, 4 steps, CFG 1, Euler, simple scheduling, and full denoise |
 | `Adaptive Portrait Crop` | Automatic, centered, or manual portrait framing with headwear protection |
 | `Use Adonis restoration` | One red true/false control for the complete Base → Post branch; enabled by default |
 | `HOI4 Optional Background Replacement` | One optional BiRefNet background-replacement operation; sizing remains separate |
@@ -42,7 +42,7 @@ The source, processing-only, and batch canvases inline the Adonis graph from `ad
 10. VAE-decode the Post result;
 11. use one red toggle to choose the prepared portrait or the complete Adonis result for every downstream node.
 
-Base and Post share the same fixed seed (`42`) and per-model step (`6`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style samplers randomize their seeds independently.
+Base and Post share the same fixed seed (`42`) and per-model step (`6`) controls. Base uses eta `0.8`; Post uses eta `0.5`. Both use `exponential/res_2s`, simple scheduling, CFG `1`, full denoise, standard mode, and `steps_to_run = -1`. With the same source and restoration settings, ComfyUI reuses the cached Adonis result. The downstream HOI4 style samplers start with the fixed defaults described in [Seed selection](#seed-selection).
 
 The shared Adonis prompt keeps the original broadly useful restoration detail: `uhdmanscale`, JPEG artifact cleanup, descreening, halftone removal, repeating and diagonal-pattern noise removal, deblurring, focus correction, colour-blotch cleanup, hair-strand separation, unrestricted texture reconstruction outside the face, and full-scene detail recovery. It removes assumptions about cellphones, camera RAW, high ISO, or the subject's gender and always colorizes monochrome and sepia sources with plausible, period-appropriate colours.
 
@@ -68,7 +68,7 @@ Every source sampler uses the exact prompt:
 make this portrait hoi4_portrait style
 ```
 
-The three HOI4 style samplers randomize their seeds for every generation. The visible loader uses the canonical HOI4 style LoRA at strength `1`. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
+The three HOI4 style samplers start with fixed seeds `757254001619850`, `629907966167866`, and `42`. Change **Control after generate** from **fixed** to **randomize**, **increment**, or **decrement** when you want different seed behavior. The visible loader uses the canonical HOI4 style LoRA at strength `1`. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
 
 ![HOI4 styling graph](assets/workflows/current/hoi4-styling.png)
 
@@ -79,6 +79,14 @@ The three HOI4 style samplers randomize their seeds for every generation. The vi
 The same prompt keeps identity, framing, clothing, and the overall HOI4 treatment consistent while allowing small variations in expression, lighting, and background.
 
 ![Consistency sheet showing repeated HOI4 portrait generations](assets/showcase/consistency-sheet.webp)
+
+## Seed selection
+
+Seeds can change the candidate's appearance even when the prompt and settings remain the same. These examples were compared with the FP8 FLUX.2 Klein 9B model and the canonical HOI4 style LoRA. Seeds that have worked well include `433682774328322`, `101825966811438`, `757254001619850`, `629907966167866`, `514819207028619`, and `42`.
+
+The source workflow uses fixed seeds `757254001619850`, `629907966167866`, and `42` by default. The batch workflow uses fixed seed `42` by default. Set **Control after generate** to **randomize**, **increment**, or **decrement** to explore other results. Text-to-image remains randomized by default.
+
+![Seed comparison across repeated portrait examples](assets/showcase/seed-comparison.png)
 
 ## Text-to-image workflow
 

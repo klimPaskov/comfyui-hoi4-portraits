@@ -48,7 +48,7 @@ Before downloading the gated full/FP8 model, follow the [Hugging Face access gui
 4. Leave the red **Use Adonis restoration** switch on for the full Base → Post cleanup, or turn it off to use the prepared RealESRGAN portrait directly.
 5. Keep the default prompt `make this portrait hoi4_portrait style`. Append a short description only when the model needs help (see the Prompting guide).
 6. Leave background replacement off for the first run.
-7. Queue once. The source workflow randomizes the three HOI4 style seeds for each generation and shows the full-resolution candidates side by side in the comparison row.
+7. Queue once. The source workflow starts with three fixed HOI4 style seeds and shows the full-resolution candidates side by side in the comparison row; see [Seed selection](workflows.md#seed-selection) to change the control to randomize, increment, or decrement.
 8. Pick a final from the comparison row; the game-ready file is the `156x210/dds/` output.
 
 ![Four game-ready 156×210 portrait examples](assets/examples/game-ready-portraits.png)
@@ -58,6 +58,10 @@ RunPod outputs are saved under `/workspace/hoi4-portrait-runpod/output/1024x1365
 Saved PNG and DDS files keep the uploaded image's stem. A source named `general_macarthur.jpg` yields three candidates beginning with `general_macarthur_1`, `general_macarthur_2`, and `general_macarthur_3`. Batch and processing-only outputs keep the stem; multiple batch candidates receive non-overwriting numbered suffixes.
 
 Prepared and restored 1024×1365 portraits use `processed/` and `restored/`. A batch queue creates the same `<batch_name>/` inside both `1024x1365/` and `156x210/`; the full-resolution folder contains `processed/` and `restored/`, while game DDS files use `156x210/<batch_name>/dds/`. Enter a name in **Batch folders and filenames** to use matching named folders. If no name is set, it defaults to the next free `batch_1`, `batch_2`, and so on. Enable **save without batch folder** only when outputs should remain directly in their standard resolution folders; that option is off by default.
+
+## Seed selection
+
+The source workflow starts with fixed seeds `757254001619850`, `629907966167866`, and `42`. The batch workflow starts with fixed seed `42`. Change **Control after generate** from **fixed** to **randomize**, **increment**, or **decrement** when you want different seed behavior. The text-to-image workflow remains randomized by default. See the comparison sheet and the broader seed list in the [workflow guide](workflows.md#seed-selection).
 
 ## Prompt rules
 

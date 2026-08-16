@@ -52,6 +52,7 @@ class WorkflowTests(unittest.TestCase):
         text = json.loads((WORKFLOW_DIR / "hoi4_portrait_text_to_image.api.json").read_text())
         source_samplers = [node for node in source.values() if node["class_type"] == "KSampler"]
         self.assertEqual(len(source_samplers), 3)
+        self.assertEqual([node["inputs"]["seed"] for node in sorted(source_samplers, key=lambda node: node["_meta"]["title"])], list(build_workflows.SOURCE_STYLE_SEEDS))
         text_sampler = next(node for node in text.values() if node["class_type"] == "KSampler")
         for sampler in source_samplers + [text_sampler]:
             self.assertEqual(
@@ -76,7 +77,8 @@ class WorkflowTests(unittest.TestCase):
             ui = json.loads((WORKFLOW_DIR / f"{workflow_id}.json").read_text())
             for sampler in (node for node in ui["nodes"] if node["type"] == "KSampler"):
                 self.assertEqual([item["name"] for item in sampler["inputs"]], ["model", "positive", "negative", "latent_image"])
-                self.assertEqual(sampler["widgets_values"], [sampler["widgets_values"][0], "randomize", 4, 1.0, "euler", "simple", 1.0])
+                expected_control = "randomize" if workflow_id == "hoi4_portrait_text_to_image" else "fixed"
+                self.assertEqual(sampler["widgets_values"], [sampler["widgets_values"][0], expected_control, 4, 1.0, "euler", "simple", 1.0])
             for crop in (node for node in ui["nodes"] if node["type"] == "AdaptivePortraitCrop"):
                 self.assertEqual([item["name"] for item in crop["inputs"]], ["image", "face_bboxes", "subject_mask"])
                 face_bboxes = next(item for item in crop["inputs"] if item["name"] == "face_bboxes")
@@ -222,6 +224,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(candidate_node["inputs"]["amount"], 1)
         sampler = next(node for node in api.values() if node["class_type"] == "KSampler")
         self.assertEqual(sampler["inputs"]["latent_image"], [candidate_node_id, 0])
+        self.assertEqual(sampler["inputs"]["seed"], build_workflows.BATCH_STYLE_SEED)
         self.assertEqual(sum(node["class_type"] == "Hoi4SavePNG" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "Hoi4SaveDDS" for node in api.values()), 1)
         self.assertEqual(sum(node["class_type"] == "Hoi4BackgroundReplace" for node in api.values()), 1)

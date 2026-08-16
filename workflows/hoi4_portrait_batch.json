@@ -1979,7 +1979,7 @@
       },
       "widgets_values": [
         42,
-        "randomize",
+        "fixed",
         4,
         1.0,
         "euler",
