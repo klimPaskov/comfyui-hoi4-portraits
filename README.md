@@ -20,6 +20,8 @@ Each comparison shows the original portrait, the restored portrait, and the fina
 
 ![Seán Lemass source, restored, and HOI4 portrait](docs/assets/showcase/sean-lemass-before-after.png)
 
+See the [complete before-and-after gallery](docs/drive-gallery.md) for all of the image examples.
+
 ## Four workflows
 
 | Workflow | Best for | What it runs |
