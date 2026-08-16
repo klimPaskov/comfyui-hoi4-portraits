@@ -110,7 +110,7 @@ The RunPod command uses FP8 by default and requires at least 25 GB of storage. B
 
 ## Download RunPod outputs
 
-Generated files are in `/workspace/hoi4-portrait-runpod/output`. For direct SCP downloads, a `.tar.gz` archive, or manual JupyterLab downloads, see the full [RunPod output download instructions](docs/download-outputs.md).
+When your run is finished, use the [RunPod output download guide](docs/download-outputs.md) to copy your files with SCP, an archive, or JupyterLab.
 
 ### Manual install
 
