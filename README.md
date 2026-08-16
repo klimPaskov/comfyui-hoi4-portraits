@@ -85,6 +85,8 @@ Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard dete
 
 ### RunPod
 
+> **Starting on RunPod? [Use my referral link](https://runpod.io?ref=9t44ghaf) when creating a new account.** RunPod's current terms give eligible European referrals a fixed `$5` credit after the required `$10` account load; other regions may receive a randomized `$5–$500` credit. That credit can cover an initial test, and setup is usually under five minutes once your pod is ready. RunPod remains pay-as-you-go, so check the [current referral terms](https://docs.runpod.io/accounts-billing/referrals) for eligibility.
+
 Open a Jupyter terminal on the pod and run:
 
 ```bash
