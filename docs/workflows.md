@@ -112,29 +112,8 @@ This 59-node graph reads compatible images from `/workspace/hoi4-portrait-runpod
 
 ![Batch source, restoration, and final comparisons](assets/workflows/current/batch-comparison.png)
 
-## Output contract
+## Output layout
 
-On RunPod, all workflows save to:
-
-```text
-/workspace/hoi4-portrait-runpod/output/1024x1365/                       master PNG
-/workspace/hoi4-portrait-runpod/output/1024x1365/processed/             prepared PNG
-/workspace/hoi4-portrait-runpod/output/1024x1365/restored/              restored PNG
-/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/               batch master PNGs
-/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/processed/     batch prepared PNGs
-/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/restored/      batch restored PNGs
-/workspace/hoi4-portrait-runpod/output/156x210/                         centered game PNG
-/workspace/hoi4-portrait-runpod/output/156x210/dds/                     HOI4-ready DDS
-/workspace/hoi4-portrait-runpod/output/156x210/<batch_name>/                 batch game PNGs
-/workspace/hoi4-portrait-runpod/output/156x210/<batch_name>/dds/             batch HOI4-ready DDS files
-```
-
-Windows uses the output folder selected during installation. Manual and Comfy Cloud installations use `ComfyUI/output/hoi4_portraits/1024x1365/`, `ComfyUI/output/hoi4_portraits/156x210/`, and `ComfyUI/output/hoi4_portraits/156x210/dds/`.
-
-The DDS saver writes uncompressed 32-bit BGRA data with alpha in the A8R8G8B8/B8G8R8A8-style layout used by HOI4 portraits. The PNG and DDS savers follow the portrait output folder selected during installation. Queueing the workflow executes every connected save branch automatically, and numbered counters prevent repeated runs from overwriting existing portraits.
+See the [output layout reference](output-layout.md) for the folder tree, filename rules, image sizes, and HOI4 DDS export details.
 
 ![Portrait export graph](assets/workflows/current/portrait-exports.png)
-
-Source, processing-only, and batch workflows derive every output prefix from the current input filename. The source workflow adds `_1`, `_2`, or `_3` to distinguish its candidates. Text-to-image has no input image and therefore uses the stable `text_to_image` prefix.
-
-Master and game sizing use separate `ImageScale` nodes with Lanczos resampling and center cropping. The portrait is never stretched, and there is no redundant upscale after style generation.

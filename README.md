@@ -31,26 +31,7 @@ See the [complete before-and-after gallery](docs/drive-gallery.md) for all of th
 | [`hoi4_portrait_batch.json`](workflows/hoi4_portrait_batch.json) | Many photos at once | Processes every input one by one, with configurable candidates and optional background replacement |
 | [`hoi4_portrait_processing_only.json`](workflows/hoi4_portrait_processing_only.json) | Clean a source photo before styling | Crop → RealESRGAN → Adonis Base + Post restoration, no style LoRA |
 
-On RunPod, drop batch sources into `/workspace/hoi4-portrait-runpod/input/`. Every workflow saves into:
-
-```text
-/workspace/hoi4-portrait-runpod/output/1024x1365/                       full-res master PNG
-/workspace/hoi4-portrait-runpod/output/1024x1365/processed/             prepared source PNG
-/workspace/hoi4-portrait-runpod/output/1024x1365/restored/              restored source PNG
-/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/               batch master PNGs
-/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/processed/     batch prepared PNGs
-/workspace/hoi4-portrait-runpod/output/1024x1365/<batch_name>/restored/      batch restored PNGs
-/workspace/hoi4-portrait-runpod/output/156x210/                         game-size PNG
-/workspace/hoi4-portrait-runpod/output/156x210/dds/                     HOI4-ready DDS
-/workspace/hoi4-portrait-runpod/output/156x210/<batch_name>/                 batch game-size PNGs
-/workspace/hoi4-portrait-runpod/output/156x210/<batch_name>/dds/             batch HOI4-ready DDS files
-```
-
-The Windows installer defaults to `Documents\hoi4-portraits\input` and `Documents\hoi4-portraits\output`, with choices for ComfyUI-managed folders or custom paths. Manual and Comfy Cloud installs use the same output subfolders under `ComfyUI/output/hoi4_portraits/`.
-
-The RunPod and Windows installers show the total installation time when they finish.
-
-The PNG and DDS nodes save automatically to the portrait output folder selected during installation. Image-based workflows keep the source image stem in every saved file; the three source candidates append `_1`, `_2`, and `_3`. For example, `general_macarthur.jpg` produces PNG and DDS names beginning with `general_macarthur_1` for the first candidate. Text-to-image uses `text_to_image` because it has no source file. Numbered counters prevent overwrites, and the batch folder is rescanned on every queue in stable filename order. `<batch_name>` is configurable; if left blank, each queue automatically uses the next free name: `batch_1`, `batch_2`, and so on. The same name is used under both output resolutions. The batch settings can also keep portraits directly in the standard resolution folders and default to one HOI4 candidate per source.
+See the [output layout reference](docs/output-layout.md) for folders, filenames, image sizes, and HOI4 DDS details.
 
 ## Which model do I need?
 
@@ -110,7 +91,7 @@ The RunPod command uses FP8 by default and requires at least 25 GB of storage. B
 
 ## Download RunPod outputs
 
-When your run is finished, use the [RunPod output download guide](docs/download-outputs.md) to copy your files with SCP, an archive, or JupyterLab.
+Generated files are in `/workspace/hoi4-portrait-runpod/output`. For direct SCP downloads, a `.tar.gz` archive, or manual JupyterLab downloads, see the full [RunPod output download instructions](docs/download-outputs.md).
 
 ### Manual install
 
@@ -188,6 +169,7 @@ The source workflow starts with fixed seeds `757254001619850`, `629907966167866`
 - [Getting started](docs/getting-started.md)
 - [Hugging Face model access and read-only token](docs/hugging-face.md)
 - [Workflow controls and graph structure](docs/workflows.md)
+- [Output folders, filenames, and export format](docs/output-layout.md)
 - [Comfy Cloud](docs/comfy-cloud.md)
 - [Local and RunPod installation, storage and VRAM requirements](docs/local-install.md)
 - [Contributing](CONTRIBUTING.md)
