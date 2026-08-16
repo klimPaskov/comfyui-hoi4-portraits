@@ -1001,7 +1001,7 @@ def build_source() -> tuple[dict[str, Any], dict[str, Any]]:
         g, model, "04 Create three portraits", x=5200, y=100, prompt=STYLE_PROMPT, reference=restored,
     )
     portraits: list[Ref] = []
-    for index, (seed, y) in enumerate(((85229693141791, 100), (629907966167868, 680), (636825235380582, 1260)), start=1):
+    for index, (seed, y) in enumerate(((433682774328322, 100), (101825966811438, 680), (757254001619850, 1260)), start=1):
         sampler = _ksampler(
             g, f"Portrait {index} sampling", model, positive, negative, latent, seed,
             (6520, y), "04 Create three portraits",

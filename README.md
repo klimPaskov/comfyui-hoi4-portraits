@@ -104,6 +104,13 @@ The RunPod command uses FP8 by default and requires at least 25 GB of storage. B
 "$RUNTIME_DIR/scripts/install_runpod.sh" "$COMFY_ROOT" --variant gguf --gguf-quants Q5_K_M
 ```
 
+When processing is finished, create an archive of the output in the Jupyter terminal, then right-click `output.tar.gz` in the file browser, download it, and extract it on your computer:
+
+```bash
+cd /workspace/hoi4-portrait-runpod
+tar -czf output.tar.gz output
+```
+
 ### Manual install
 
 ```bash
