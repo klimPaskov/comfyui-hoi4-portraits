@@ -18,7 +18,7 @@ Portrait style adapter for the public [`comfyui-hoi4-portraits`](https://github.
 
 ## Checkpoint
 
-The canonical checkpoint is `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` at model strength `1`. It targets the **distilled** `black-forest-labs/FLUX.2-klein-9B` model and works with the package's full, FP8, and GGUF variants. FLUX.2 Klein Base variants are unsupported.
+The 2500-step checkpoint is `hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors` at model strength `1`. It targets the **distilled** `black-forest-labs/FLUX.2-klein-9B` model and works with the package's full, FP8, and GGUF variants. FLUX.2 Klein Base variants are unsupported.
 
 ## Required stack
 
@@ -30,7 +30,7 @@ The workflow's separate model-loader nodes load:
 4. the HOI4 style LoRA;
 5. `adonis_base.safetensors` and `adonis_post.safetensors` for the default pre-style restoration path; `adonis_refine.safetensors` remains installed as the official alternative first pass.
 
-The installers download the canonical HOI4 style LoRA plus Adonis Base, Refine, and Post for every full, FP8, or GGUF installation.
+The installers download the 2500-step HOI4 style LoRA plus Adonis Base, Refine, and Post for every full, FP8, or GGUF installation.
 
 The style sampler defaults are CFG `1`, guidance `1`, Euler, simple, four steps, and denoise `1`. Prompt encoding, FLUX guidance, reference latent, standard ComfyUI `KSampler`, and VAE decode remain separate visible nodes. ComfyUI's native sampler preview shows construction progress.
 

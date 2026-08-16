@@ -68,7 +68,7 @@ Every source sampler uses the exact prompt:
 make this portrait hoi4_portrait style
 ```
 
-The three HOI4 style samplers start with fixed seeds `757254001619850`, `629907966167866`, and `42`. Change **Control after generate** from **fixed** to **randomize**, **increment**, or **decrement** when you want different seed behavior. The visible loader uses the canonical HOI4 style LoRA at strength `1`. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
+The three HOI4 style samplers start with fixed seeds `757254001619850`, `629907966167866`, and `42`. Change **Control after generate** from **fixed** to **randomize**, **increment**, or **decrement** when you want different seed behavior. The visible loader uses the 2500-step HOI4 style LoRA at strength `1`. Adonis Base and Post are part of the source path; use the processing-only workflow when you want the restored portrait without style sampling.
 
 ![HOI4 styling graph](assets/workflows/current/hoi4-styling.png)
 
@@ -82,7 +82,7 @@ The same prompt keeps identity, framing, clothing, and the overall HOI4 treatmen
 
 ## Seed selection
 
-Seeds can change the candidate's appearance even when the prompt and settings remain the same. These examples were compared with the FP8 FLUX.2 Klein 9B model and the canonical HOI4 style LoRA. Seeds that have worked well include `433682774328322`, `101825966811438`, `757254001619850`, `629907966167866`, `514819207028619`, and `42`.
+Seeds can change the candidate's appearance even when the prompt and settings remain the same. These examples were compared with the FP8 FLUX.2 Klein 9B model and the 2500-step HOI4 style LoRA. Seeds that have worked well include `433682774328322`, `101825966811438`, `757254001619850`, `629907966167866`, `514819207028619`, and `42`.
 
 The source workflow uses fixed seeds `757254001619850`, `629907966167866`, and `42` by default. The batch workflow uses fixed seed `42` by default. Set **Control after generate** to **randomize**, **increment**, or **decrement** to explore other results. Text-to-image remains randomized by default.
 

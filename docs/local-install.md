@@ -8,7 +8,7 @@
 
 ## Storage and VRAM requirements
 
-The installer downloads the selected distilled model plus Qwen, the VAE, the canonical HOI4 style LoRA, Adonis Base, Refine, Post, RealESRGAN, BiRefNet, and both face detectors. Each minimum leaves about 2–3 GB of free space for installation and initial outputs.
+The installer downloads the selected distilled model plus Qwen, the VAE, the 2500-step HOI4 style LoRA, Adonis Base, Refine, Post, RealESRGAN, BiRefNet, and both face detectors. Each minimum leaves about 2–3 GB of free space for installation and initial outputs.
 
 | Install | Variant file | Minimum storage | VRAM selection |
 | --- | --- | --- | --- |

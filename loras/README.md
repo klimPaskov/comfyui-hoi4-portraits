@@ -1,6 +1,6 @@
 # FLUX.2 Klein 9B style LoRA
 
-The installer uses one canonical HOI4 style LoRA:
+The installer uses the 2500-step HOI4 style LoRA:
 
 ```text
 hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors
