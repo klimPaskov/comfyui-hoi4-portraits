@@ -72,7 +72,7 @@ func TestRecommendedVariantNeverAutomaticallySelectsFull(t *testing.T) {
 }
 
 func TestWorkspaceDefaultsUseLocalHoi4PortraitFolders(t *testing.T) {
-	destination := filepath.Join("C:", "Users", "Example", "Documents", "HOI4-Portrait-Workflows-1.0.0")
+	destination := filepath.Join("C:", "Users", "Example", "Documents", "HOI4-Portrait-Workflows-1.0.1")
 	workspace := filepath.Join(filepath.Dir(destination), "hoi4-portraits")
 	if got := filepath.Join(workspace, "input"); got != filepath.Join("C:", "Users", "Example", "Documents", "hoi4-portraits", "input") {
 		t.Fatalf("unexpected input default: %s", got)

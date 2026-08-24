@@ -88,7 +88,7 @@ Startup checks that every required node loaded and reports anything missing.
 
 The release executable is a complete installer wizard, not just an unpacker:
 
-1. Run `.\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe`.
+1. Run `.\HOI4-Portrait-Workflows-1.0.1-windows-x64.exe`.
 2. It detects the installed GPU. NVIDIA VRAM is read with `nvidia-smi` for guidance, and FP8 remains pre-checked for every GPU.
 3. If ComfyUI is not found, the wizard asks whether to install it automatically. Accepting downloads the official ComfyUI Windows portable package; AMD detection selects the experimental ROCm-enabled package. ComfyUI currently limits that Windows ROCm package to RDNA 3, RDNA 3.5, and RDNA 4 hardware, so the wizard warns when another AMD family is detected. Declining keeps the manual ComfyUI path prompt.
 4. Toggle any combination of variants — including all three, if you want every model type available.

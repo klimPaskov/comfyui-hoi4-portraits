@@ -4,13 +4,13 @@ This repository contains one current, internally consistent package.
 
 ## Release identity
 
-- Version: `1.0.0`
+- Version: `1.0.1`
 - Public workflows: exactly four
 - Model family: distilled FLUX.2 Klein 9B only, in full, FP8, and GGUF forms
 - Style adapter: the project's HOI4 style LoRA
 - Default style sampler: Euler, simple, four steps, CFG 1, guidance 1, denoise 1
 - Style adapter: one canonical HOI4 style LoRA at strength 1
-- Style seeds: randomized for every HOI4 portrait generation
+- Style seeds: fixed source defaults `757254001619850`, `629907966167866`, and `42`; fixed batch default `757254001619850`; randomized text-to-image default
 - Restoration: complete Adonis Base → Post graph with one red enable/bypass control
 - Restoration seed: fixed so unchanged restoration inputs remain cacheable across new style generations
 - Restoration prompts: Adonis wording covers JPEG artifacts, descreening, repeating noise, deblurring, identity preservation, and full-scene detail recovery while always colorizing monochrome and sepia sources

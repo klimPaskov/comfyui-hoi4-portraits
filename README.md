@@ -59,7 +59,7 @@ The [latest release](https://github.com/klimPaskov/comfyui-hoi4-portraits/releas
 ### Windows
 
 ```powershell
-.\HOI4-Portrait-Workflows-1.0.0-windows-x64.exe
+.\HOI4-Portrait-Workflows-1.0.1-windows-x64.exe
 ```
 
 Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard detect your GPU and recommend a suitable model. If it cannot find ComfyUI, it asks whether to install the official Windows portable package automatically; an AMD detection selects the ROCm-enabled package. You can decline and provide an existing ComfyUI path. The wizard also lets you choose the batch input and portrait output folders, which default to the local `Documents\hoi4-portraits` workspace. It installs the node packs, copies the workflows and example inputs, and downloads the models. After restarting ComfyUI, open **Workflows → hoi4_portraits** and queue.
