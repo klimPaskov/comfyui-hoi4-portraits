@@ -10,7 +10,7 @@ It targets the **distilled** FLUX.2 Klein 9B model and works with the project's 
 
 Place the checkpoint under `ComfyUI/models/loras/`. Comfy Cloud users can import it through **Models → Import**, select **LoRA**, and wait for the filename to appear in the loader dropdown.
 
-Style sampling uses CFG `1.0`, FLUX guidance `1.0`, **Euler**, **simple** scheduling, **4 steps**, and denoise `1.00`. The source workflow starts with fixed seeds `757254001619850`, `629907966167866`, and `42`; batch starts with fixed seed `42`; text-to-image is randomized by default. Set **Control after generate** to **randomize**, **increment**, or **decrement** to explore different results.
+Style sampling uses CFG `1.0`, FLUX guidance `1.0`, **Euler**, **simple** scheduling, **4 steps**, and denoise `1.00`. The source workflow starts with fixed seeds `757254001619850`, `629907966167866`, and `42`; batch starts with fixed seed `757254001619850`; text-to-image is randomized by default. Set **Control after generate** to **randomize**, **increment**, or **decrement** to explore different results.
 
 Source prompt:
 

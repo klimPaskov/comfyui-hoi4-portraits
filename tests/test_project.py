@@ -83,7 +83,7 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual([item["name"] for item in crop["inputs"]], ["image", "face_bboxes", "subject_mask"])
                 face_bboxes = next(item for item in crop["inputs"] if item["name"] == "face_bboxes")
                 self.assertEqual(face_bboxes["widget"], {"name": "face_bboxes"})
-                self.assertEqual(crop["widgets_values"], [{"x": 0, "y": 0, "width": 512, "height": 512}, 0, 0, 512, 512, True, False, 0.0, 0.0, 1.0, 1.0, 0.9, True, 512, 683])
+                self.assertEqual(crop["widgets_values"], [{"x": 0, "y": 0, "width": 512, "height": 512}, 0, 0, 512, 512, True, False, 0.0, 0.0, 1.0, 1.0, 1.0, True, 512, 683])
             for saver in (node for node in ui["nodes"] if node["type"] == "Hoi4SavePNG"):
                 filename_prefix = next(item for item in saver["inputs"] if item["name"] == "filename_prefix")
                 self.assertEqual(filename_prefix["widget"], {"name": "filename_prefix"})
@@ -224,6 +224,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(candidate_node["inputs"]["amount"], 1)
         sampler = next(node for node in api.values() if node["class_type"] == "KSampler")
         self.assertEqual(sampler["inputs"]["latent_image"], [candidate_node_id, 0])
+        self.assertEqual(build_workflows.BATCH_STYLE_SEED, 757254001619850)
         self.assertEqual(sampler["inputs"]["seed"], build_workflows.BATCH_STYLE_SEED)
         self.assertEqual(sum(node["class_type"] == "Hoi4SavePNG" for node in api.values()), 4)
         self.assertEqual(sum(node["class_type"] == "Hoi4SaveDDS" for node in api.values()), 1)
@@ -645,6 +646,35 @@ class CustomNodeTests(unittest.TestCase):
 
             self.assertEqual(tuple(portrait.shape), (1, 683, 512, 3))
             self.assertGreater(float(portrait.mean()), 0.20)
+
+    def test_default_automatic_crop_keeps_the_face_larger_and_crops_more_torso(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            module = self._load_module(Path(directory))
+            zoom_config = module.AdaptivePortraitCrop.INPUT_TYPES()["required"]["zoom"][1]
+            self.assertEqual(zoom_config["default"], 1.0)
+
+            face = {"x": 400, "y": 250, "width": 200, "height": 200, "score": 1.0}
+            empty_mask = module.np.zeros((1000, 1000), dtype=module.np.float32)
+            old_box = module._frame_box(1000, 1000, face, empty_mask, 0.9, True)
+            default_box = module._frame_box(
+                1000,
+                1000,
+                face,
+                empty_mask,
+                zoom_config["default"],
+                True,
+            )
+
+            old_height = old_box[3] - old_box[1]
+            default_height = default_box[3] - default_box[1]
+            face_bottom = face["y"] + face["height"]
+            self.assertLess(default_height, old_height)
+            self.assertGreater(face["height"] / default_height, face["height"] / old_height)
+            self.assertLess(default_box[3] - face_bottom, old_box[3] - face_bottom)
+            self.assertLessEqual(default_box[0], face["x"])
+            self.assertGreaterEqual(default_box[2], face["x"] + face["width"])
+            self.assertLessEqual(default_box[1], face["y"])
+            self.assertGreaterEqual(default_box[3], face_bottom)
 
     def test_adaptive_crop_centers_the_image_when_all_detection_fallbacks_are_empty(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

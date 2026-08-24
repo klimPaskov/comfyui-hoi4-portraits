@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora) [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/rAXesGcT2t) [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/klimpaskov)
 
-Create Hearts of Iron IV-style leader portraits with ComfyUI and the FLUX.2 Klein 9B distilled model plus the project's 2500-step HOI4 style LoRA. The source workflow keeps the person's crop, pose, framing, and facial identity anchored, restores old photos, and styles three portrait candidates for comparison. The batch workflow turns a whole folder of photos into game-ready portraits in one queue.
+Create Hearts of Iron IV-style leader portraits with ComfyUI, FLUX.2 Klein 9B, and the project's 2500-step HOI4 style LoRA.
 
 The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod defaults to FP8, while the Windows installer uses GPU detection to recommend a suitable model; GGUF and full BF16 remain available as manual selections. Every workflow saves **HOI4-ready 156×210 DDS files** for a mod's `gfx/leaders/TAG/` folder.
 
@@ -66,7 +66,7 @@ Accept the FLUX.2 Klein 9B agreement first (see below), then let the wizard dete
 
 ### RunPod
 
-> **Starting on RunPod? [Use my referral link](https://runpod.io?ref=9t44ghaf) when creating a new account.** RunPod's current terms give eligible European referrals a fixed `$5` credit after the required `$10` account load; other regions may receive a randomized `$5–$500` credit. That credit can cover an initial test, and setup is usually under five minutes once your pod is ready. RunPod remains pay-as-you-go, so check the [current referral terms](https://docs.runpod.io/accounts-billing/referrals) for eligibility.
+> **Starting on RunPod? [Use my referral link](https://runpod.io/?ref=9t44ghaf) when creating a new account. You get $5 free once you add $10.**
 
 Open a Jupyter terminal on the pod and run:
 
@@ -117,10 +117,10 @@ The workflow is arranged from left to right in clear, colour-coded stages.
 
 ![Source workflow overview](docs/assets/workflows/current/source-overview.png)
 
-1. **Source and ESRGAN:** load the portrait, tune **Face zoom** (`0.90`) and **Preserve hat/headwear**, then compare the prepared result below. The upload node already shows the source, so there is no duplicate preview.
-2. **Restoration:** the restoration group fully expands the [`Adonis Base + Post workflow`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json). It keeps the 1.7 MP Lanczos crop, reference conditioning, shared empty latent, fixed seed, six-step control, and Shark options. The prompts retain the original Adonis instructions for JPEG artifacts, halftone patterns, descreening, repeating noise, full-scene detail reconstruction, identity preservation, skin and hair texture, deblurring, and focus correction while removing capture-device and gender assumptions. Monochrome and sepia sources are always colorized with plausible, period-appropriate colours. Adonis Base performs the first generation; its latent feeds both Post reference branches, and Adonis Post performs a second full generation before the final VAE decode. One red **Use Adonis restoration** switch defaults on; turn it off to send the prepared portrait directly to the next stage. When the input and restoration settings are unchanged, the workflow reuses the completed Adonis result.
-3. **Style:** three independent candidates use the 2500-step HOI4 style LoRA at strength `1`. Each candidate uses ComfyUI's standard `KSampler` with CFG `1`, guidance `1`, four steps, Euler, simple scheduling, full denoise, and the fixed source defaults described in [Seed selection](#seed-selection).
-4. **Compare and export:** the comparison row keeps ESRGAN, restoration, and all three full-resolution finals together. One shared background switch applies the same choice to all three portraits after generation. Each lane writes a 1024×1365 PNG, a center-cropped 156×210 PNG, and a unique HOI4-ready DDS. The prepared and restored 1024×1365 portraits are also saved in `processed` and `restored` folders.
+1. **Source and ESRGAN:** load a portrait, adjust **Face zoom** (`1.00`) and **Preserve hat/headwear**, and review the prepared image.
+2. **Restoration:** [`Adonis Base + Post`](https://huggingface.co/n8te0/adonis_flux2klein/blob/main/adonis_post_workflows/Adonis_Base_Post_gguf.json) restores detail and colorizes monochrome or sepia photos. Turn off **Use Adonis restoration** to skip it.
+3. **Style:** generate three candidates with the 2500-step HOI4 style LoRA and the defaults in [Seed selection](#seed-selection).
+4. **Compare and export:** compare the prepared, restored, and styled portraits, optionally replace their background, and export full-size PNGs plus HOI4-ready PNG and DDS files.
 
 ### Text to image
 
@@ -160,7 +160,7 @@ Don't describe the game, background, lighting, or rendering — the LoRA handles
 
 Seeds can change the look of a candidate even when the prompt and settings stay the same. These examples were compared with the FP8 FLUX.2 Klein 9B model and the 2500-step HOI4 style LoRA; the following seeds have worked well: `433682774328322`, `101825966811438`, `757254001619850`, `629907966167866`, `514819207028619`, and `42`.
 
-The source workflow starts with fixed seeds `757254001619850`, `629907966167866`, and `42` for its three candidates. The batch workflow starts with fixed seed `42`. To vary results, change **Control after generate** from **fixed** to **randomize**, **increment**, or **decrement**. Text-to-image remains randomized by default.
+The source workflow starts with fixed seeds `757254001619850`, `629907966167866`, and `42` for its three candidates. The batch workflow starts with fixed seed `757254001619850`. To vary results, change **Control after generate** from **fixed** to **randomize**, **increment**, or **decrement**. Text-to-image remains randomized by default.
 
 ![Seed comparison across repeated portrait examples](docs/assets/showcase/seed-comparison.png)
 

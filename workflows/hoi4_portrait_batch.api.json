@@ -78,7 +78,7 @@
       "manual_y": 0.0,
       "manual_width": 1.0,
       "manual_height": 1.0,
-      "zoom": 0.9,
+      "zoom": 1.0,
       "preserve_headwear": true,
       "output_width": 512,
       "output_height": 683,
@@ -645,7 +645,7 @@
   },
   "43": {
     "inputs": {
-      "seed": 42,
+      "seed": 757254001619850,
       "steps": 4,
       "cfg": 1.0,
       "sampler_name": "euler",

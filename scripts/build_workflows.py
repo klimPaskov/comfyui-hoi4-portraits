@@ -30,7 +30,7 @@ FACE_MODEL = "mediapipe_face_fp32.safetensors"
 STYLE_PROMPT = "make this portrait hoi4_portrait style"
 TEXT_PROMPT = "hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a soviet hat, ears still visible. No military uniform decorations."
 SOURCE_STYLE_SEEDS = (757254001619850, 629907966167866, 42)
-BATCH_STYLE_SEED = 42
+BATCH_STYLE_SEED = 757254001619850
 ADONIS_FIXED_PROMPT = (
     "uhdmanscale. Remove JPEG artifacts. Remove halftone dot pattern. Apply descreen filter. Eliminate periodic grid noise. Eliminate repeating noise patterns and artifacts, remove uniform diagonal line texture patterns. Reconstruct low resolution noisy areas with high resolution natural textures.\n\n"
     "Apply full detail reconstruction to all areas: background, environment, surfaces, objects, clothing, and foreground elements — render everything sharp, textured, and high fidelity.\n\n"
@@ -471,7 +471,7 @@ def _adaptive_crop(g: Graph, pos: tuple[int, int], group: str) -> Ref:
         "face_processing", "use_manual_crop", "manual_x", "manual_y", "manual_width",
         "manual_height", "zoom", "preserve_headwear", "output_width", "output_height",
     )
-    values = [True, False, 0.0, 0.0, 1.0, 1.0, 0.9, True, 512, 683]
+    values = [True, False, 0.0, 0.0, 1.0, 1.0, 1.0, True, 512, 683]
     bounding_box_widgets = [{"x": 0, "y": 0, "width": 512, "height": 512}, 0, 0, 512, 512]
     return g.node(
         "AdaptivePortraitCrop", "Crop portrait to 512×683", pos, (480, 420), group,

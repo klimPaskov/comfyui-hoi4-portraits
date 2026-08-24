@@ -288,10 +288,15 @@ def _frame_box(
     if face_width <= 0 or face_height <= 0:
         raise RuntimeError("The detected face box is invalid.")
 
+    zoom = min(1.0, max(0.0, float(zoom)))
     center_x = (x1 + x2) / 2
     head_top = max(0.0, y1 - (0.88 if preserve_headwear else 0.52) * face_height)
-    head_left = max(0.0, x1 - 0.42 * face_height)
-    head_right = min(float(width), x2 + 0.42 * face_height)
+    # Let higher zoom values tighten the generic side allowance as well as the
+    # torso framing. A detected hair/headwear silhouette can still expand these
+    # bounds below, so close crops do not override real subject geometry.
+    head_side_margin = (0.42 - 0.20 * zoom) * face_height
+    head_left = max(0.0, x1 - head_side_margin)
+    head_right = min(float(width), x2 + head_side_margin)
 
     mask_height, mask_width = mask.shape
     scale_x = mask_width / width
@@ -324,7 +329,6 @@ def _frame_box(
                 head_left = min(head_left, max(0.0, silhouette_left - 0.08 * face_height))
                 head_right = max(head_right, min(float(width), silhouette_right + 0.08 * face_height))
 
-    zoom = min(1.0, max(0.0, float(zoom)))
     # Zoom primarily removes torso below the face. When headwear preservation
     # is enabled, its silhouette remains a hard constraint. Otherwise the crop
     # uses ordinary face/head geometry and may cut oversized hats.
@@ -378,7 +382,7 @@ class AdaptivePortraitCrop:
                 "zoom": (
                     "FLOAT",
                     {
-                        "default": 0.90,
+                        "default": 1.00,
                         "min": 0.0,
                         "max": 1.0,
                         "step": 0.05,
@@ -434,7 +438,7 @@ class AdaptivePortraitCrop:
         manual_y=0.0,
         manual_width=1.0,
         manual_height=1.0,
-        zoom=0.9,
+        zoom=1.0,
         preserve_headwear=True,
         output_width=1024,
         output_height=1365,
