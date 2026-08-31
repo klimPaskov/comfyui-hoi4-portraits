@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![LoRA](https://img.shields.io/badge/Hugging%20Face-FLUX.2%20Klein%209B%20LoRA-ffd21e)](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora) [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/rAXesGcT2t) [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/klimpaskov)
 
+**[Watch the full video tutorial on how to use the workflow](https://www.youtube.com/watch?v=t4cwY4u5UUU).**
+
 Create Hearts of Iron IV-style leader portraits with ComfyUI, FLUX.2 Klein 9B, and the project's 2500-step HOI4 style LoRA.
 
 The same workflows open locally, on RunPod, and in Comfy Cloud. RunPod defaults to FP8, while the Windows installer uses GPU detection to recommend a suitable model; GGUF and full BF16 remain available as manual selections. Every workflow saves **HOI4-ready 156×210 DDS files** for a mod's `gfx/leaders/TAG/` folder.
