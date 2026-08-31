@@ -95,7 +95,7 @@ The RunPod command uses FP8 by default and requires at least 25 GB of storage. B
 
 Generated files are in `/workspace/hoi4-portrait-runpod/output`. For direct SCP downloads, a `.tar.gz` archive, or manual JupyterLab downloads, see the full [RunPod output download instructions](docs/download-outputs.md).
 
-### Manual install
+## Manual install
 
 ```bash
 git clone https://github.com/klimPaskov/comfyui-hoi4-portraits.git
@@ -174,7 +174,7 @@ The source workflow starts with fixed seeds `757254001619850`, `629907966167866`
 - [Output folders, filenames, and export format](docs/output-layout.md)
 - [Comfy Cloud](docs/comfy-cloud.md)
 - [Local and RunPod installation, storage and VRAM requirements](docs/local-install.md)
-- [Contributing](CONTRIBUTING.md)
+- [Contributing](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/codex/portrait-pipeline/CONTRIBUTING.md)
 - [Third-party model terms](THIRD_PARTY_LICENSES.md)
 
 ## License and trademark

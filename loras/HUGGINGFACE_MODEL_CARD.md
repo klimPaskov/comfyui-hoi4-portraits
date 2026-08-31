@@ -58,7 +58,7 @@ hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a so
 
 Image-based workflows preserve each input image's filename stem. Source candidates use `_1`, `_2`, and `_3`; batch candidates receive non-overwriting numbered suffixes. Every styled or processed portrait has a centered 1024×1365 master PNG, a center-cropped 156×210 game PNG, and a HOI4-ready DDS. Prepared and restored 1024×1365 images are saved in their `processed/` and `restored/` folders. Batch runs use a selected `<batch_name>` folder and default to the next free `batch_1`, `batch_2`, and so on when no name is provided.
 
-See the project's [output layout reference](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/main/docs/output-layout.md) for folder names, filename rules, image sizes, and DDS export details. See the [RunPod download guide](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/main/docs/download-outputs.md) for SCP, archive, and JupyterLab download options.
+See the project's [output layout reference](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/codex/portrait-pipeline/docs/output-layout.md) for folder names, filename rules, image sizes, and DDS export details. See the [RunPod download guide](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/codex/portrait-pipeline/docs/download-outputs.md) for SCP, archive, and JupyterLab download options.
 
 ## Installation
 

@@ -58,4 +58,4 @@ If this reports truncation or an unexpected end-of-file error, the archive downl
 
 Open the JupyterLab file browser and navigate to `/workspace/hoi4-portrait-runpod/`. Download individual files directly. For a whole directory, create `output.tar.gz` first and download that single archive. If your JupyterLab installation supports direct folder downloads, you can use that option, but it is not available in every environment.
 
-Do not delete `/workspace/hoi4-portrait-runpod/output` immediately after starting a download. First verify that the local folder or archive contains the expected files, and keep the RunPod copy until the transfer is confirmed. Never put real passwords, private SSH keys, IP addresses, or personal credentials into this documentation.
+Do not delete `/workspace/hoi4-portrait-runpod/output` immediately after starting a download. First verify that the local folder or archive contains the expected files, and keep the RunPod copy until the transfer is confirmed.

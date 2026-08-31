@@ -363,6 +363,29 @@ class InstallerTests(unittest.TestCase):
                 self.assertEqual(set(package.namelist()), {"LICENSE", "models.json"})
                 self.assertNotIn("RELEASE_MANIFEST.json", package.namelist())
 
+    def test_public_documentation_has_no_internal_authoring_notes(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("\n## Manual install\n", readme)
+        self.assertNotIn("\n### Manual install\n", readme)
+
+        forbidden = (
+            "into this documentation",
+            "note to maintainer",
+            "note to assistant",
+            "do not publish",
+            "do not ship",
+            "not for public",
+        )
+        public_documents = [
+            path
+            for path in sorted(ROOT.rglob("*.md"))
+            if ".git" not in path.parts and ".venv" not in path.parts
+        ]
+        for path in public_documents:
+            content = path.read_text(encoding="utf-8").casefold()
+            for phrase in forbidden:
+                self.assertNotIn(phrase, content, f"{path.relative_to(ROOT)} contains internal-facing text")
+
     def test_documented_storage_minimums_follow_model_sizes(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())
         expected = {

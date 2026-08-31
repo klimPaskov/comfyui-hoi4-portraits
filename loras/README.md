@@ -26,4 +26,4 @@ hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a so
 
 Source, processing-only, and batch workflows use the Adonis Base → Post restoration path when enabled; the source and batch graphs keep one red restoration switch. Source starts with three candidates, while batch defaults to one candidate per input and can create more. All image-based outputs keep the input filename stem.
 
-See the [Hugging Face model card](HUGGINGFACE_MODEL_CARD.md), [workflow guide](../docs/workflows.md), and [output layout reference](../docs/output-layout.md) for the complete model stack, workflow behavior, and saved-file structure.
+See the [Hugging Face model card](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora), [workflow guide](../docs/workflows.md), and [output layout reference](../docs/output-layout.md) for the complete model stack, workflow behavior, and saved-file structure.
