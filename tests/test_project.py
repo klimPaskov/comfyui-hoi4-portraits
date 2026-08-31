@@ -8,6 +8,7 @@ import sys
 import tempfile
 import types
 import unittest
+import zipfile
 from pathlib import Path
 from unittest import mock
 
@@ -19,6 +20,7 @@ except ImportError:  # Keep graph/installer CI lightweight when image runtimes a
     Image = None
 
 from scripts import apply_variant, build_workflows, configure_workspace, download_models, install_workflows, validate_workflows
+from scripts.release import build_release_artifacts
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -302,6 +304,8 @@ class InstallerTests(unittest.TestCase):
             self.assertEqual(install_workflows.main(["--comfyui-root", str(comfy_root)]), 0)
             installed = sorted(target.glob("*.json"))
             self.assertEqual([path.stem for path in installed], sorted(build_workflows.BUILDERS))
+            self.assertFalse(any(path.name.endswith(".api.json") for path in installed))
+            self.assertFalse((target / "manifest.json").exists())
             self.assertFalse((target / "identity_test_bad.json").exists())
             self.assertTrue((comfy_root / "custom_nodes/hoi4_portraits/__init__.py").is_file())
             self.assertTrue((comfy_root / "custom_nodes/hoi4_portraits/web/setup_guide.js").is_file())
@@ -318,6 +322,46 @@ class InstallerTests(unittest.TestCase):
                 if node["type"] == "CLIPTextEncode" and node["title"] == "Portrait prompt"
             )
             self.assertEqual(installed_prompt, build_workflows.TEXT_PROMPT)
+
+    def test_release_packages_only_consumer_facing_files(self) -> None:
+        selected = {
+            path.relative_to(ROOT).as_posix()
+            for path in build_release_artifacts._selected_files()
+        }
+        self.assertEqual(
+            {name for name in selected if name.startswith("workflows/")},
+            {f"workflows/{name}" for name in build_release_artifacts.PUBLIC_WORKFLOWS},
+        )
+        self.assertTrue(
+            {f"scripts/{name}" for name in build_release_artifacts.CONSUMER_SCRIPTS}.issubset(selected)
+        )
+        for forbidden in (
+            "CHANGELOG.md",
+            "CONTRIBUTING.md",
+            "SECURITY.md",
+            "pyproject.toml",
+            "loras/HUGGINGFACE_MODEL_CARD.md",
+            "workflows/manifest.json",
+            "scripts/build_workflows.py",
+            "scripts/validate_workflows.py",
+            "scripts/release/build_release_artifacts.py",
+        ):
+            self.assertNotIn(forbidden, selected)
+        self.assertFalse(any(name.startswith("tests/") for name in selected))
+        self.assertFalse(any(name.endswith(".api.json") for name in selected))
+
+        runpod = set(build_release_artifacts._runpod_files())
+        self.assertFalse(any(name.startswith("tests/") for name in runpod))
+        self.assertNotIn("workflows/manifest.json", runpod)
+        self.assertFalse(any(name.endswith(".api.json") for name in runpod))
+
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "consumer.zip"
+            files = [ROOT / "LICENSE", ROOT / "models.json"]
+            self.assertEqual(build_release_artifacts._build_zip(archive, files, "test"), 2)
+            with zipfile.ZipFile(archive) as package:
+                self.assertEqual(set(package.namelist()), {"LICENSE", "models.json"})
+                self.assertNotIn("RELEASE_MANIFEST.json", package.namelist())
 
     def test_documented_storage_minimums_follow_model_sizes(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())

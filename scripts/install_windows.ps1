@@ -51,10 +51,6 @@ Write-Host "Installing the exact Adonis workflow dependencies..."
 & $Python (Join-Path $ProjectRoot "scripts\install_custom_node_packs.py") --comfyui-root $ComfyUIRoot
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-& $Python (Join-Path $ProjectRoot "scripts\build_workflows.py")
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-& $Python (Join-Path $ProjectRoot "scripts\validate_workflows.py")
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & $Python (Join-Path $ProjectRoot "scripts\install_workflows.py") --comfyui-root $ComfyUIRoot
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & $Python (Join-Path $ProjectRoot "scripts\configure_workspace.py") --comfyui-root $ComfyUIRoot --input-dir $BatchInputPath --output-dir $PortraitOutputPath

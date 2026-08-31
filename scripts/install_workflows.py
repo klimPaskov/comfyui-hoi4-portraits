@@ -9,6 +9,12 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+WORKFLOW_FILENAMES = (
+    "hoi4_portrait_source.json",
+    "hoi4_portrait_text_to_image.json",
+    "hoi4_portrait_batch.json",
+    "hoi4_portrait_processing_only.json",
+)
 
 
 def _copy(source: Path, destination: Path) -> None:
@@ -25,19 +31,19 @@ def main(argv: list[str] | None = None) -> int:
     comfy_root = args.comfyui_root.expanduser().resolve()
     if not (comfy_root / "main.py").is_file():
         parser.error("--comfyui-root must point to a ComfyUI checkout containing main.py")
-    manifest = json.loads((ROOT / "workflows" / "manifest.json").read_text(encoding="utf-8"))
     workflow_destination = comfy_root / "user" / "default" / "workflows" / "hoi4_portraits"
     workflow_destination.mkdir(parents=True, exist_ok=True)
-    desired_names = {Path(item.get("workflow") or item["workflow_json"]).name for item in manifest["workflows"]}
+    desired_names = set(WORKFLOW_FILENAMES)
     removed = []
     for stale in sorted(workflow_destination.iterdir()):
         if stale.is_file() and stale.name not in desired_names:
             stale.unlink()
             removed.append(str(stale))
     installed = []
-    for item in manifest["workflows"]:
-        source_name = item.get("workflow") or item["workflow_json"]
-        source = ROOT / "workflows" / source_name if not Path(source_name).is_absolute() and "/" not in source_name else ROOT / source_name
+    for source_name in WORKFLOW_FILENAMES:
+        source = ROOT / "workflows" / source_name
+        if not source.is_file():
+            parser.error(f"packaged workflow file not found: {source}")
         destination = workflow_destination / source.name
         _copy(source, destination)
         installed.append(str(destination))
@@ -56,7 +62,7 @@ def main(argv: list[str] | None = None) -> int:
     if legacy_custom_node.is_dir():
         shutil.rmtree(legacy_custom_node)
     for source in sorted(custom_node_source.rglob("*")):
-        if source.is_file() and "__pycache__" not in source.parts:
+        if source.is_file() and "__pycache__" not in source.parts and source.name != ".DS_Store" and source.suffix != ".pyc":
             _copy(source, custom_node_destination / source.relative_to(custom_node_source))
     print(
         json.dumps(

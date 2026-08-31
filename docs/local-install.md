@@ -88,9 +88,9 @@ Startup checks that every required node loaded and reports anything missing.
 
 The release executable is a complete installer wizard, not just an unpacker:
 
-1. Run `.\HOI4-Portrait-Workflows-1.0.1-windows-x64.exe`.
-2. It detects the installed GPU. NVIDIA VRAM is read with `nvidia-smi` for guidance, and FP8 remains pre-checked for every GPU.
-3. If ComfyUI is not found, the wizard asks whether to install it automatically. Accepting downloads the official ComfyUI Windows portable package; AMD detection selects the experimental ROCm-enabled package. ComfyUI currently limits that Windows ROCm package to RDNA 3, RDNA 3.5, and RDNA 4 hardware, so the wizard warns when another AMD family is detected. Declining keeps the manual ComfyUI path prompt.
+1. Run `.\HOI4-Portrait-Workflows-1.0.2-windows-x64.exe`.
+2. It automatically detects the installed GPU and searches common folders for ComfyUI. NVIDIA VRAM is read with `nvidia-smi` for guidance, and FP8 remains pre-checked for every GPU.
+3. If ComfyUI is not found, the wizard asks whether to install it automatically. Accepting downloads the official ComfyUI Windows portable package; AMD detection selects the experimental ROCm-enabled package. ComfyUI currently limits that Windows ROCm package to RDNA 3, RDNA 3.5, and RDNA 4 hardware, so the wizard warns when another AMD family is detected. If you select an existing install manually, paste either its folder (`C:\ComfyUI`) or its full `main.py` path (`C:\ComfyUI\main.py`); quoted and dragged paths are accepted.
 4. Toggle any combination of variants — including all three, if you want every model type available.
 5. If GGUF is selected, choose the quantization(s); the recommended one is pre-checked (Q4_K_M ≤ 10 GB, Q5_K_M 10–14 GB, Q6_K 12–16 GB, Q8_0 16+ GB).
 6. Choose separate batch input and portrait output locations. Both default to `Documents\hoi4-portraits`, while the ComfyUI folders and custom paths remain selectable.

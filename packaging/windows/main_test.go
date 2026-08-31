@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -72,12 +73,48 @@ func TestRecommendedVariantNeverAutomaticallySelectsFull(t *testing.T) {
 }
 
 func TestWorkspaceDefaultsUseLocalHoi4PortraitFolders(t *testing.T) {
-	destination := filepath.Join("C:", "Users", "Example", "Documents", "HOI4-Portrait-Workflows-1.0.1")
+	destination := filepath.Join("C:", "Users", "Example", "Documents", "HOI4-Portrait-Workflows-1.0.2")
 	workspace := filepath.Join(filepath.Dir(destination), "hoi4-portraits")
 	if got := filepath.Join(workspace, "input"); got != filepath.Join("C:", "Users", "Example", "Documents", "hoi4-portraits", "input") {
 		t.Fatalf("unexpected input default: %s", got)
 	}
 	if got := filepath.Join(workspace, "output"); got != filepath.Join("C:", "Users", "Example", "Documents", "hoi4-portraits", "output") {
 		t.Fatalf("unexpected output default: %s", got)
+	}
+}
+
+func TestComfyUIPathAcceptsFolderMainPyQuotesAndPortableParent(t *testing.T) {
+	parent := t.TempDir()
+	root := filepath.Join(parent, "ComfyUI")
+	if err := os.MkdirAll(root, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	mainPath := filepath.Join(root, "main.py")
+	if err := os.WriteFile(mainPath, []byte("# test\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, input := range []string{root, mainPath, `"` + root + `"`, parent} {
+		got, ok := resolveComfyUIRoot(input)
+		if !ok {
+			t.Fatalf("resolveComfyUIRoot(%q) did not find ComfyUI", input)
+		}
+		if got != root {
+			t.Fatalf("resolveComfyUIRoot(%q) = %q, want %q", input, got, root)
+		}
+	}
+}
+
+func TestComfyUISearchFindsNestedPortableInstall(t *testing.T) {
+	searchRoot := t.TempDir()
+	root := filepath.Join(searchRoot, "tools", "ComfyUI_windows_portable", "ComfyUI")
+	if err := os.MkdirAll(root, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "main.py"), []byte("# test\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, ok := searchForComfyUI(searchRoot, 4)
+	if !ok || got != root {
+		t.Fatalf("searchForComfyUI() = %q, %v; want %q, true", got, ok, root)
 	}
 }

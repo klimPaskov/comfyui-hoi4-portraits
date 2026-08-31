@@ -4,7 +4,7 @@ This repository contains one current, internally consistent package.
 
 ## Release identity
 
-- Version: `1.0.1`
+- Version: `1.0.2`
 - Public workflows: exactly four
 - Model family: distilled FLUX.2 Klein 9B only, in full, FP8, and GGUF forms
 - Style adapter: the project's HOI4 style LoRA
@@ -32,6 +32,7 @@ This repository contains one current, internally consistent package.
 - Batch folders: each queue uses matching `<batch_name>` folders under `1024x1365` and `156x210`, defaults to `batch_1`, `batch_2`, and so on when no name is set, and includes full-resolution `processed` and `restored` subfolders; a disabled-by-default checkbox keeps outputs directly in their standard resolution folders
 - Batch candidates: one visible control selects how many HOI4 portrait candidates are created for each source and defaults to one
 - Batch background: one red optional replacement-background control applies before master and game output sizing and defaults off
+- Release package: consumer-facing files only; development tests, API graphs, workflow/release manifests, build and validation tools, and repository-maintenance files are excluded
 - Downloads: high-performance Xet is enabled, independent repositories run in parallel, files from each repository transfer concurrently through one shared Xet token, short rate-limit retries recover before resumable HTTPS fallback, and integrity checks protect every installed file
 - Linked folders: the batch restoration cache and automatic savers validate and follow only the installer-managed input and output links, avoiding current ComfyUI's external-symlink rejection without allowing arbitrary paths
 - Installer summary: RunPod and Windows setup show the total elapsed installation time at completion
@@ -45,5 +46,6 @@ This repository contains one current, internally consistent package.
 - RunPod uses `/workspace/hoi4-portrait-runpod/input` and `/workspace/hoi4-portrait-runpod/output`
 - RunPod storage: the default FP8 installation requires at least 25 GB
 - Windows detects the GPU, recommends a suitable model, offers the official ComfyUI portable install when ComfyUI is missing, selects the ROCm-enabled package for AMD, keeps GGUF and full BF16 available as explicit options, supports multi-variant installs, offers default, ComfyUI, and custom batch input and portrait output paths, installs pinned node packs, and downloads the selected model set
+- Windows searches common locations for ComfyUI and accepts its folder, its full `main.py` path, quoted paths, and paths dragged into the installer window
 
 Pinned commits, model revisions, sizes, hashes, and licenses are in [`models.json`](models.json), [`scripts/install_custom_node_packs.py`](scripts/install_custom_node_packs.py), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).

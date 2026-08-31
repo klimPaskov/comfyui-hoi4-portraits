@@ -14,6 +14,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"os/exec"
@@ -374,36 +375,140 @@ func askQuantMenu(vram float64) []string {
 	}
 }
 
-func findComfyUI() (string, bool) {
-	home, _ := os.UserHomeDir()
+func absoluteUserPath(value string) (string, error) {
+	cleaned := strings.TrimSpace(value)
+	cleaned = strings.Trim(cleaned, `"'`)
+	cleaned = os.ExpandEnv(cleaned)
+	return filepath.Abs(cleaned)
+}
+
+func resolveComfyUIRoot(value string) (string, bool) {
+	if strings.TrimSpace(value) == "" {
+		return "", false
+	}
+	path, err := absoluteUserPath(value)
+	if err != nil {
+		return "", false
+	}
+	if strings.EqualFold(filepath.Base(path), "main.py") && fileExists(path) {
+		path = filepath.Dir(path)
+	}
 	candidates := []string{
-		`C:\ComfyUI`,
-		`C:\ComfyUI_windows_portable\ComfyUI`,
-		filepath.Join(os.Getenv("USERPROFILE"), "ComfyUI"),
-		filepath.Join(os.Getenv("USERPROFILE"), "Documents", "ComfyUI"),
-		filepath.Join(home, "Documents", "ComfyUI_windows_portable", "ComfyUI"),
-		`D:\ComfyUI`,
-		`D:\ComfyUI_windows_portable\ComfyUI`,
+		path,
+		filepath.Join(path, "ComfyUI"),
+		filepath.Join(path, "ComfyUI_windows_portable", "ComfyUI"),
 	}
 	for _, candidate := range candidates {
 		if fileExists(filepath.Join(candidate, "main.py")) {
-			return candidate, true
+			return filepath.Clean(candidate), true
+		}
+	}
+	return "", false
+}
+
+func searchForComfyUI(root string, maxDepth int) (string, bool) {
+	root, err := absoluteUserPath(root)
+	if err != nil {
+		return "", false
+	}
+	if info, err := os.Stat(root); err != nil || !info.IsDir() {
+		return "", false
+	}
+	found := ""
+	_ = filepath.WalkDir(root, func(path string, entry fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return nil
+		}
+		relative, err := filepath.Rel(root, path)
+		if err != nil {
+			return nil
+		}
+		depth := 0
+		if relative != "." {
+			depth = len(strings.Split(relative, string(os.PathSeparator)))
+		}
+		if entry.IsDir() {
+			if depth > maxDepth {
+				return fs.SkipDir
+			}
+			name := strings.ToLower(entry.Name())
+			if depth > 0 && (strings.HasPrefix(name, ".") || name == "node_modules" || name == "__pycache__" || name == "site-packages") {
+				return fs.SkipDir
+			}
+			if candidate, ok := resolveComfyUIRoot(path); ok {
+				found = candidate
+				return fs.SkipAll
+			}
+		}
+		return nil
+	})
+	return found, found != ""
+}
+
+func findComfyUI() (string, bool) {
+	home, _ := os.UserHomeDir()
+	workingDirectory, _ := os.Getwd()
+	executable, _ := os.Executable()
+	localAppData := os.Getenv("LOCALAPPDATA")
+	appData := os.Getenv("APPDATA")
+	candidates := []string{
+		os.Getenv("COMFYUI_ROOT"),
+		workingDirectory,
+		filepath.Dir(workingDirectory),
+		filepath.Dir(executable),
+		filepath.Dir(filepath.Dir(executable)),
+		`C:\ComfyUI`,
+		`C:\ComfyUI_windows_portable\ComfyUI`,
+		`C:\ComfyUI_windows_portable`,
+		filepath.Join(os.Getenv("USERPROFILE"), "ComfyUI"),
+		filepath.Join(os.Getenv("USERPROFILE"), "Documents", "ComfyUI"),
+		filepath.Join(home, "Documents", "ComfyUI_windows_portable", "ComfyUI"),
+		filepath.Join(home, "Documents", "ComfyUI_windows_portable"),
+		filepath.Join(home, "Downloads", "ComfyUI_windows_portable"),
+		filepath.Join(home, "Desktop", "ComfyUI_windows_portable"),
+		filepath.Join(localAppData, "Programs", "ComfyUI"),
+		filepath.Join(localAppData, "Programs", "ComfyUI", "resources", "ComfyUI"),
+		filepath.Join(localAppData, "ComfyUI"),
+		filepath.Join(appData, "ComfyUI"),
+		`D:\ComfyUI`,
+		`D:\ComfyUI_windows_portable\ComfyUI`,
+		`D:\ComfyUI_windows_portable`,
+	}
+	for _, candidate := range candidates {
+		if root, ok := resolveComfyUIRoot(candidate); ok {
+			return root, true
+		}
+	}
+	searchRoots := []string{
+		filepath.Join(home, "Desktop"),
+		filepath.Join(home, "Downloads"),
+		filepath.Join(home, "Documents"),
+		filepath.Join(localAppData, "Programs"),
+		filepath.Join(localAppData, "ComfyUI"),
+		filepath.Join(appData, "ComfyUI"),
+	}
+	for _, searchRoot := range searchRoots {
+		if root, ok := searchForComfyUI(searchRoot, 4); ok {
+			return root, true
 		}
 	}
 	return "", false
 }
 
 func promptForComfyUIRoot() string {
+	fmt.Println("Paste either the ComfyUI folder or its main.py file.")
+	fmt.Println(`Examples: C:\ComfyUI  or  C:\ComfyUI\main.py`)
+	fmt.Println("Quoted paths and paths dragged into this window are accepted.")
 	for {
-		path := promptLine("ComfyUI root (folder containing main.py): ")
-		if path == "" {
-			fmt.Println("No ComfyUI root was provided.")
+		path := promptLine("ComfyUI folder or main.py path: ")
+		if root, ok := resolveComfyUIRoot(path); ok {
+			return root
+		}
+		if strings.TrimSpace(path) == "" {
+			fmt.Println("No path was provided.")
 			continue
 		}
-		if fileExists(filepath.Join(path, "main.py")) {
-			return path
-		}
-		fmt.Printf("%s does not contain main.py. Try again.\n", path)
+		fmt.Println("ComfyUI was not found at that path. Select the ComfyUI folder itself or its main.py file and try again.")
 	}
 }
 
@@ -428,7 +533,7 @@ func askStoragePath(label, defaultPath, comfyPath string) string {
 			for {
 				path := promptLine("Custom folder path: ")
 				if strings.TrimSpace(path) != "" {
-					absolute, err := filepath.Abs(path)
+					absolute, err := absoluteUserPath(path)
 					if err == nil {
 						return absolute
 					}
@@ -446,7 +551,7 @@ func askComfyInstallRoot(defaultRoot string) string {
 		line := promptLine(fmt.Sprintf("ComfyUI install folder (Enter for %s): ", defaultRoot))
 		root := defaultRoot
 		if line != "" {
-			absolute, err := filepath.Abs(line)
+			absolute, err := absoluteUserPath(line)
 			if err != nil {
 				fmt.Println("Please enter a valid folder path.")
 				continue
@@ -607,8 +712,10 @@ func main() {
 				*comfyRoot = promptForComfyUIRoot()
 			}
 		}
-	} else if !fileExists(filepath.Join(*comfyRoot, "main.py")) {
-		fail("the supplied ComfyUI root does not contain main.py: %s", *comfyRoot)
+	} else if resolvedRoot, ok := resolveComfyUIRoot(*comfyRoot); ok {
+		*comfyRoot = resolvedRoot
+	} else {
+		fail("ComfyUI was not found at %s. Pass either a folder such as C:\\ComfyUI or the full path C:\\ComfyUI\\main.py.", *comfyRoot)
 	}
 	workspaceRoot := filepath.Join(filepath.Dir(absolute), "hoi4-portraits")
 	if *batchInput == "" {

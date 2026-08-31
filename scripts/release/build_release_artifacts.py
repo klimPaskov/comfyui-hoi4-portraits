@@ -17,19 +17,34 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DIST = ROOT / "dist"
 WINDOWS_SOURCE = ROOT / "packaging" / "windows"
-RELEASE_SCHEMA_VERSION = "1.0.0"
 FIXED_ZIP_TIME = (2026, 8, 4, 0, 0, 0)
 ROOT_FILES = {
-    "CHANGELOG.md",
-    "CONTRIBUTING.md",
     "LICENSE",
     "README.md",
-    "SECURITY.md",
     "THIRD_PARTY_LICENSES.md",
     "models.json",
-    "pyproject.toml",
 }
-INCLUDED_TREES = {"backgrounds", "custom_nodes", "docs", "examples", "loras", "prompts", "scripts", "tests", "workflows"}
+INCLUDED_TREES = {"backgrounds", "custom_nodes", "docs", "examples", "prompts"}
+CONSUMER_FILES = {"loras/README.md"}
+CONSUMER_SCRIPTS = {
+    "apply_variant.py",
+    "configure_workspace.py",
+    "download_models.py",
+    "install_custom_node_packs.py",
+    "install_runpod.sh",
+    "install_windows.ps1",
+    "install_workflows.py",
+    "requirements-download.txt",
+    "start_runpod.sh",
+    "start_windows.ps1",
+    "validate_comfyui_registry.py",
+}
+PUBLIC_WORKFLOWS = {
+    "hoi4_portrait_source.json",
+    "hoi4_portrait_text_to_image.json",
+    "hoi4_portrait_batch.json",
+    "hoi4_portrait_processing_only.json",
+}
 IGNORED_PARTS = {"__pycache__", ".DS_Store"}
 MODEL_SUFFIXES = {".bin", ".ckpt", ".gguf", ".onnx", ".pt", ".pth", ".safetensors"}
 RUNPOD_SCRIPTS = {
@@ -47,6 +62,9 @@ RUNPOD_SCRIPTS = {
 
 def _selected_files() -> list[Path]:
     selected = {ROOT / name for name in ROOT_FILES}
+    selected.update(ROOT / name for name in CONSUMER_FILES)
+    selected.update(ROOT / "scripts" / name for name in CONSUMER_SCRIPTS)
+    selected.update(ROOT / "workflows" / name for name in PUBLIC_WORKFLOWS)
     for tree in INCLUDED_TREES:
         selected.update(path for path in (ROOT / tree).rglob("*") if path.is_file())
     files: list[Path] = []
@@ -64,44 +82,28 @@ def _selected_files() -> list[Path]:
     expected_graph_files = 2 * len(manifest.get("workflows", [])) + 1
     if len(list((ROOT / "workflows").glob("*.json"))) != expected_graph_files:
         raise RuntimeError("workflow files do not match the generated manifest")
+    if PUBLIC_WORKFLOWS != {item["workflow"] for item in manifest["workflows"]}:
+        raise RuntimeError("public release workflows do not match the generated manifest")
     return files
 
 
 def _build_zip(path: Path, files: list[Path], version: str) -> int:
-    included_files: list[str] = []
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in files:
             relative = source.relative_to(ROOT).as_posix()
             data = source.read_bytes()
-            included_files.append(relative)
             info = zipfile.ZipInfo(relative, FIXED_ZIP_TIME)
             info.create_system = 3
             mode = 0o755 if source.suffix in {".py", ".sh"} else 0o644
             info.external_attr = (mode & 0xFFFF) << 16
             archive.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
-        manifest = json.dumps(
-            {
-                "schema_version": RELEASE_SCHEMA_VERSION,
-                "version": version,
-                "models_bundled": False,
-                "custom_nodes_bundled": True,
-                "files": included_files,
-            },
-            indent=2,
-            sort_keys=True,
-        ).encode() + b"\n"
-        info = zipfile.ZipInfo("RELEASE_MANIFEST.json", FIXED_ZIP_TIME)
-        info.create_system = 3
-        info.external_attr = (0o644 & 0xFFFF) << 16
-        archive.writestr(info, manifest, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
-    return len(included_files)
+    return len(files)
 
 
 def _runpod_files() -> dict[str, Path]:
     files: dict[str, Path] = {
         "models.json": ROOT / "models.json",
         "source_portrait.jpg": ROOT / "docs" / "assets" / "examples" / "source_portrait.jpg",
-        "workflows/manifest.json": ROOT / "workflows" / "manifest.json",
     }
     for path in sorted((ROOT / "workflows").glob("*.json")):
         if not path.name.endswith(".api.json") and path.name != "manifest.json":
@@ -109,11 +111,11 @@ def _runpod_files() -> dict[str, Path]:
     for path in sorted((ROOT / "backgrounds").glob("*.png")):
         files[f"backgrounds/{path.name}"] = path
     for path in sorted((ROOT / "examples" / "batch_input").glob("*")):
-        if path.is_file():
+        if path.is_file() and path.name not in IGNORED_PARTS and path.suffix != ".pyc":
             files[f"input/{path.name}"] = path
     custom_node_root = ROOT / "custom_nodes" / "hoi4_portraits"
     for path in sorted(custom_node_root.rglob("*")):
-        if path.is_file():
+        if path.is_file() and not any(part in IGNORED_PARTS for part in path.parts) and path.suffix != ".pyc":
             relative = path.relative_to(custom_node_root).as_posix()
             files[f"custom_nodes/hoi4_portraits/{relative}"] = path
     for name in sorted(RUNPOD_SCRIPTS):
