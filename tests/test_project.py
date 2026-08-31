@@ -386,6 +386,19 @@ class InstallerTests(unittest.TestCase):
             for phrase in forbidden:
                 self.assertNotIn(phrase, content, f"{path.relative_to(ROOT)} contains internal-facing text")
 
+    def test_hugging_face_model_card_matches_the_copy_shipped_in_the_zip(self) -> None:
+        shipped_model_card = (ROOT / "loras/README.md").read_bytes()
+        hugging_face_model_card = (ROOT / "loras/HUGGINGFACE_MODEL_CARD.md").read_bytes()
+
+        self.assertEqual(hugging_face_model_card, shipped_model_card)
+        text = shipped_model_card.decode("utf-8")
+        self.assertIn("Use the trigger `hoi4_portrait style`", text)
+        self.assertNotIn("Use the trigger `hoi4_portrait`", text)
+
+        getting_started = (ROOT / "docs/getting-started.md").read_text(encoding="utf-8")
+        self.assertIn("exact trigger `hoi4_portrait style`", getting_started)
+        self.assertNotIn("Keep `hoi4_portrait` in the prompt", getting_started)
+
     def test_documented_storage_minimums_follow_model_sizes(self) -> None:
         manifest = json.loads((ROOT / "models.json").read_text())
         expected = {

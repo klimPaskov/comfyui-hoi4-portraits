@@ -6,7 +6,7 @@ The project uses the 2500-step HOI4 style LoRA:
 hoi4_portrait_flux2_klein_9b_lora_000002500.safetensors
 ```
 
-It targets the **distilled** FLUX.2 Klein 9B model and works with the project's full, FP8, and GGUF distilled variants. Use the trigger `hoi4_portrait` and load the file at strength `1.00` in `LoraLoaderModelOnly`.
+It targets the **distilled** FLUX.2 Klein 9B model and works with the project's full, FP8, and GGUF distilled variants. Use the trigger `hoi4_portrait style` and load the file at strength `1.00` in `LoraLoaderModelOnly`.
 
 Place the checkpoint under `ComfyUI/models/loras/`. Comfy Cloud users can import it through **Models → Import**, select **LoRA**, and wait for the filename to appear in the loader dropdown.
 
@@ -26,4 +26,4 @@ hoi4_portrait style, a soviet soldier with the head of a brown bear wearing a so
 
 Source, processing-only, and batch workflows use the Adonis Base → Post restoration path when enabled; the source and batch graphs keep one red restoration switch. Source starts with three candidates, while batch defaults to one candidate per input and can create more. All image-based outputs keep the input filename stem.
 
-See the [Hugging Face model card](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora), [workflow guide](../docs/workflows.md), and [output layout reference](../docs/output-layout.md) for the complete model stack, workflow behavior, and saved-file structure.
+See the [Hugging Face model card](https://huggingface.co/Hoops-McCann/hoi4-portraits-flux2-klein-9b-lora), [workflow guide](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/codex/portrait-pipeline/docs/workflows.md), and [output layout reference](https://github.com/klimPaskov/comfyui-hoi4-portraits/blob/codex/portrait-pipeline/docs/output-layout.md) for the complete model stack, workflow behavior, and saved-file structure.

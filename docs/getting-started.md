@@ -77,6 +77,6 @@ For text-to-image, start from the example prompt `hoi4_portrait style, a soviet 
 | Out of memory | Install the GGUF or FP8 variant, reduce batch work, or use a larger GPU. |
 | Wrong person | Use the manual crop to select that person, or turn face processing off. |
 | Too much body | Keep **Face zoom** at its `1.00` default; lower values retain more body. |
-| Style is weak | Keep `hoi4_portrait` in the prompt, confirm LoRA strength is `1.00`, and keep the crop clean. |
+| Style is weak | Keep the exact trigger `hoi4_portrait style` in the prompt, confirm LoRA strength is `1.00`, and keep the crop clean. |
 | Unexpected colour change | Adonis always colorizes monochrome and sepia sources with restrained, period-appropriate colours and corrects unwanted casts in existing colour images. Turn off **Use Adonis restoration** only when the source treatment must remain untouched. |
 | Game crashes on the DDS | Confirm the workflow saved it as a 156×210, 32-bit BGRA DDS (A8R8G8B8/B8G8R8A8-style). |
